@@ -102,7 +102,8 @@ fn literal_after(body: &str, marker: &str, skip_args: usize) -> Option<Value> {
 }
 
 fn whitespaces_from_body(body: &str) -> Option<WhitespacesFixerConfig> {
-    let at = body.find("setWhitespacesConfig(new WhitespacesFixerConfig(")? + "setWhitespacesConfig(new WhitespacesFixerConfig(".len();
+    // `setWhitespacesConfig(` may be followed by a line break before `new WhitespacesFixerConfig(`.
+    let at = body.find("new WhitespacesFixerConfig(")? + "new WhitespacesFixerConfig(".len();
     let rest = &body.as_bytes()[at..];
     let mut lit = Lit(rest, 0);
     let indent = match lit.value() { Some(Value::String(s)) => s, _ => "    ".into() };
@@ -175,7 +176,8 @@ fn upstream_fixtures() {
                     got_text = got;
                 }
                 let mut tokens = pun_tokens::Tokens::from_code(expected.as_bytes());
-                if supported { fixer.fix(&file, &mut tokens); }
+                // AbstractFixer::fix: applyFix only for non-empty, candidate, supported input.
+                if supported && tokens.count() > 0 && fixer.is_candidate(&tokens) { fixer.fix(&file, &mut tokens); }
                 let got2 = tokens.generate_code();
                 if got2 != expected.as_bytes() { problems.push("expected code changed"); if input.is_none() { got_text = got2 } }
                 else if tokens.is_changed() { problems.push("expected tokens marked changed") }

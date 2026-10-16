@@ -12,3 +12,4 @@ pub mod namespaces_analyzer;
 pub mod namespace_uses_analyzer;
 pub mod attribute_analyzer;
 pub mod classy_analyzer;
+pub mod indentation_trait
