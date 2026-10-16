@@ -36,11 +36,11 @@ Analyzers owned: WhitespacesAnalyzer, WhitespacesFixerConfig, Preg (pcre2 wrappe
 - [x] no_blank_lines_after_class_opening
 - [x] no_blank_lines_after_phpdoc
 - [x] no_closing_tag (6 `testWithShortOpenTag` cases are skipped upstream too: need `short_open_tag=On`)
-- [ ] no_empty_statement (1 `testWithShortOpenTag` case is skipped upstream too: needs `short_open_tag=On`)
+- [x] no_empty_statement (1 `testWithShortOpenTag` case is skipped upstream too: needs `short_open_tag=On`)
 - [ ] no_extra_blank_lines
 - [x] no_leading_namespace_whitespace
 - [x] no_multiline_whitespace_around_double_arrow
-- [ ] no_multiple_statements_per_line
+- [x] no_multiple_statements_per_line
 - [x] no_singleline_whitespace_before_semicolons
 - [x] no_space_around_double_colon
 - [x] no_spaces_after_function_name
