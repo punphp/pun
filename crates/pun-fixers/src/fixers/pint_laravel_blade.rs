@@ -24,7 +24,7 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, channel};
-use std::sync::Mutex;
+use std::cell::RefCell;
 use std::time::Duration;
 
 const WORKER: &str = include_str!("pint_laravel_blade/worker.cjs");
@@ -119,7 +119,11 @@ struct Worker {
     events: Receiver<Chunk>,
 }
 
-static WORKER_PROCESS: Mutex<Option<Worker>> = Mutex::new(None);
+thread_local! {
+    /// One worker per formatting thread, so Blade files are formatted in parallel (Pint's parallel runner likewise
+    /// gives every PHP process its own worker). A worker exits when its stdin closes with the process.
+    static WORKER_PROCESS: RefCell<Option<Worker>> = const { RefCell::new(None) };
+}
 
 fn resources() -> Result<(PathBuf, PathBuf)> {
     let dir = std::env::temp_dir().join(format!("pun-blade-{}", std::process::id()));
@@ -171,7 +175,10 @@ const START: &[u8] = b"[PINT_PRETTIER_WORKER_START]";
 const END: &[u8] = b"[PINT_PRETTIER_WORKER_END]";
 
 fn prettier_format(path: &str, content: &[u8]) -> Result<Vec<u8>> {
-    let mut guard = WORKER_PROCESS.lock().unwrap_or_else(|e| e.into_inner());
+    WORKER_PROCESS.with(|w| prettier_format_with(&mut w.borrow_mut(), path, content))
+}
+
+fn prettier_format_with(guard: &mut Option<Worker>, path: &str, content: &[u8]) -> Result<Vec<u8>> {
     if guard.is_none() {
         *guard = Some(start()?);
     }
