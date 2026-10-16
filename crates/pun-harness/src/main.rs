@@ -25,6 +25,9 @@ enum Cmd {
         /// Enable only this fixer (options taken from the project's effective config).
         #[arg(long)]
         fixer: Option<String>,
+        /// Run both tools with this preset (`--preset`) instead of the project's own; the scoreboard is left alone.
+        #[arg(long)]
+        preset: Option<String>,
         /// Number of unified diffs to print per project.
         #[arg(long, default_value_t = 3)]
         diffs: usize,
@@ -56,7 +59,7 @@ fn main() -> Result<()> {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../.."))
         .canonicalize()?;
-    let Cmd::Format { corpus, fixer, diffs } = Cli::parse().cmd;
+    let Cmd::Format { corpus, fixer, preset, diffs } = Cli::parse().cmd;
     let manifest: Manifest = toml::from_str(&fs::read_to_string(root.join("corpus/manifest.toml"))?)?;
     let pint = root.join(".oracle/pint/builds/pint");
     if !pint.exists() {
@@ -85,6 +88,9 @@ fn main() -> Result<()> {
             fs::write(&cfg, single_fixer_config(&root, &src, name)?)?;
             args = vec!["--config".into(), cfg.display().to_string()];
         }
+        if let Some(p) = &preset {
+            args.extend(["--preset".into(), p.clone()]);
+        }
         run(Command::new("php").arg(&pint).args(&args).current_dir(&oracle_dir), "pint")?;
         if pun.exists() {
             run(Command::new(&pun).env("PUN_IGNORE_PHP_CONSTRAINT", "1").arg("format").arg("--no-cache").args(&args).current_dir(&pun_dir), "pun")?;
@@ -110,7 +116,7 @@ fn main() -> Result<()> {
     }
     fs::remove_dir_all(&tmp).ok();
 
-    if fixer.is_none() {
+    if fixer.is_none() && preset.is_none() {
         write_scoreboard(&root.join("docs/scoreboard.md"), &outcomes)?;
     }
     if outcomes.iter().any(|o| !o.differing.is_empty()) {

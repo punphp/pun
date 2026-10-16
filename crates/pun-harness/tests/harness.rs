@@ -110,6 +110,21 @@ fn single_fixer_identical() {
 }
 
 #[test]
+fn preset_override() {
+    let r = root("preset");
+    // A "pun" that, only when given `--preset psr12`, writes what PSR-12 makes of app.php: trailing spaces go,
+    // `array()` stays (no array_syntax in psr12, unlike a's laravel preset).
+    let pun = r.join("fake-pun");
+    script(&pun, "[ \"$3 $4\" = '--preset psr12' ] && printf '<?php\\n\\n$a = array(1);\\n' > app.php; true");
+    let before = fs::read_to_string(r.join("docs/scoreboard.md")).unwrap();
+    let (out, err, code) = harness(&r, &pun, &["--corpus", "a", "--preset", "psr12"]);
+    assert_eq!(out, "a: 5 files, 5 identical, 0 differing (pint changed 1, pun changed 1)\n", "stderr: {err}");
+    assert_eq!(code, Some(0));
+    assert_eq!(fs::read_to_string(r.join("docs/scoreboard.md")).unwrap(), before);
+    fs::remove_dir_all(&r).unwrap();
+}
+
+#[test]
 fn missing_pieces() {
     let r = root("missing");
     // No pun binary: identity, with a note. Only b so the run is short; b then matches its source.
