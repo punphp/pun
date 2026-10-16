@@ -50,10 +50,6 @@
   - Check single-fixer gaps with `PUN_FIXERS_ONLY=<name> scripts/coverage.sh`.
 - **pun-cli / pun-format (from agent 5, parity):** the two agent-2 requests above (active_preset::set after config load;
   Pipeline::run's `tokens.count() == 0` guard = AbstractFixer::fix) are **done** in 9d79db0 with cli.rs `blade_like_pint`.
-- **pun-cli (from agent 5, for the CLI-output owner):** `-v` diffs: `crates/pun-cli/src/php_diff.rs` (uncommitted, mine) ports
-  sebastian/diff 6.0.2 Differ + StrictUnifiedDiffOutputBuilder (LCS choice decides which lines pair up; `similar`'s
-  Myers picked different hunks on pinkary-dirty). Wiring is two lines in the uncommitted tree: `mod php_diff;` in
-  main.rs and `report::diff` returning `String::from_utf8_lossy(&crate::php_diff::unified(old.as_bytes(), new.as_bytes(), &p))`;
-  test `diffs_like_pint` in cli.rs (fixture tests/fixtures/dirty_imports.php, committed). Please commit them with your
-  report.rs work; `similar` can then leave pun-cli's Cargo.toml. With the current tree, `scripts/cli-parity.sh` is identical
-  to Pint on pinkary and pinkary-dirty (`--test`, ``, `-v`, `--test --format=json`).
+- **pun-cli (from agent 5):** `-v` diffs now use `php_diff.rs` (sebastian/diff 6.0.2 Differ + StrictUnifiedDiffOutputBuilder;
+  `similar`'s Myers paired other lines on pinkary-dirty), pinned by cli.rs `diffs_like_pint`. **Done** in 6964ad9.
+  `scripts/cli-parity.sh` is identical to Pint on pinkary and pinkary-dirty (`--test`, ``, `-v`, `--test --format=json`).
