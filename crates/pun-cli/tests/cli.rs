@@ -252,6 +252,37 @@ fn matches_pint() {
     cx.same(&dir, &changed, &[], &["--diff=main", "--test", "--format=json"], &[], b"");
 }
 
+/// Pint/laravel_blade (needs prettier in crates/pun-fixers/node_modules, resolved from the project dir):
+/// - embedded PHP is formatted with the configured preset's rules: under preset empty `@if(!$a)` keeps `!$a`
+///   (laravel would add a space);
+/// - a whitespace-only Blade file becomes empty and the later fixers are skipped (AbstractFixer::fix's
+///   `0 < $tokens->count()` guard) instead of running on an empty token list.
+#[test]
+fn blade_like_pint() {
+    let Some(oracle) = oracle() else { return };
+    let modules = Path::new(env!("CARGO_MANIFEST_DIR")).join("../pun-fixers/node_modules");
+    let dir = tmp("blade");
+    for (preset, blade, check) in [
+        ("empty", "<div>\n@if(!$a)\n{{ !$b }}\n@endif\n</div>\n", "@if (!$a)"),
+        ("laravel", "\n  \n", ""),
+    ] {
+        let pint_json = format!(r#"{{"preset":"{preset}","rules":{{"Pint/laravel_blade":true}}}}"#);
+        let tree = [("composer.json", r#"{"require":{"php":"^8.4"}}"#), ("pint.json", &pint_json), ("resources/v.blade.php", blade)];
+        let mut runs = vec![];
+        for program in [None, Some(pint_alias())] {
+            reset(&dir, &tree);
+            std::os::unix::fs::symlink(&modules, dir.join("node_modules")).unwrap();
+            runs.push(match &program {
+                None => run(Path::new("php"), &[oracle.to_str().unwrap()], &dir, &["--format=json"], &[], b"").0,
+                Some(alias) => run(alias, &[], &dir, &["--format=json"], &[], b"").0,
+            });
+        }
+        assert_eq!(runs[1], runs[0], "preset {preset}");
+        let out = String::from_utf8_lossy(&runs[0].files["resources/v.blade.php"]).into_owned();
+        assert!(if check.is_empty() { out.is_empty() } else { out.contains(check) }, "{out:?}");
+    }
+}
+
 /// Syntax errors: PHP's message text differs from mago's, so compare everything but the message.
 #[test]
 fn invalid_files_like_pint() {
