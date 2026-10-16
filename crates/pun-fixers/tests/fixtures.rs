@@ -137,8 +137,15 @@ fn upstream_fixtures() {
             for case in test["cases"].as_array().into_iter().flatten() {
                 let args = case["args"].as_array().cloned().unwrap_or_default();
                 let arg = |n: &[&str]| arg_index(n).and_then(|i| args.get(i)).cloned().unwrap_or(Value::Null);
-                let expected = arg(&["expected"]).as_str().unwrap_or("").to_string();
-                let input = arg(&["input"]).as_str().map(String::from);
+                let mut expected = arg(&["expected"]).as_str().unwrap_or("").to_string();
+                let mut input = arg(&["input"]).as_str().map(String::from);
+                // `$expected = str_replace("\n", $whitespacesConfig->getLineEnding(), $expected);` (and the same for input)
+                if let Some(eol) = arg(&["whitespacesConfig"]).get("lineEnding").and_then(Value::as_str) {
+                    if body.contains(r#"str_replace("\n", $whitespacesConfig->getLineEnding(), $expected)"#) {
+                        expected = expected.replace('\n', eol);
+                        input = input.map(|i| i.replace('\n', eol));
+                    }
+                }
                 let mut config = arg(&["configuration", "config"]);
                 if is_empty_config(&config) {
                     config = literal_after(body, "->configure(", 0)

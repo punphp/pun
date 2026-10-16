@@ -1,0 +1,23 @@
+[
+    {
+        "fixer": "ordered_class_elements",
+        "config": {
+            "order": [
+                "foo"
+            ]
+        },
+        "error": "[ordered_class_elements] Invalid configuration: The option \"order\" with value array is invalid."
+    },
+    {
+        "fixer": "ordered_class_elements",
+        "config": {
+            "order": [
+                "use_trait",
+                "method",
+                "use_trait"
+            ]
+        },
+        "input": "<?php\nclass C {\n    public function a() {}\n    use T;\n}\n",
+        "expected": "<?php\nclass C {\n    public function a() {}\n    use T;\n}\n"
+    }
+]

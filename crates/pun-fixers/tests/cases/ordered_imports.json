@@ -1,0 +1,46 @@
+[
+    {
+        "fixer": "ordered_imports",
+        "config": {
+            "imports_order": [
+                "class"
+            ]
+        },
+        "error": "[ordered_imports] Invalid configuration: Missing sort types \"const\" and \"function\"."
+    },
+    {
+        "fixer": "ordered_imports",
+        "config": {
+            "imports_order": [
+                "class",
+                "function"
+            ]
+        },
+        "error": "[ordered_imports] Invalid configuration: Missing sort type \"const\"."
+    },
+    {
+        "fixer": "ordered_imports",
+        "config": {
+            "imports_order": [
+                "class",
+                "function",
+                "const",
+                "foo"
+            ]
+        },
+        "error": "[ordered_imports] Invalid configuration: Unknown sort type \"foo\"."
+    },
+    {
+        "fixer": "ordered_imports",
+        "config": {
+            "imports_order": [
+                "class",
+                "function",
+                "const",
+                "foo",
+                "bar"
+            ]
+        },
+        "error": "[ordered_imports] Invalid configuration: Unknown sort types \"foo\" and \"bar\"."
+    }
+]

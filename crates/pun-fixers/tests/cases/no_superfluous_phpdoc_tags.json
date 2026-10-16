@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "no_superfluous_phpdoc_tags",
+        "input": "<?php\nclass C {\n    /**\n     * @param A&B $a\n     */\n    function f(A&B $a) {}\n}\n",
+        "expected": "<?php\nclass C {\n    /**\n     */\n    function f(A&B $a) {}\n}\n"
+    },
+    {
+        "fixer": "no_superfluous_phpdoc_tags",
+        "input": "<?php\nclass C {\n    /**\n     *\u000b@param int $a\n     */\n    function f(int $a) {}\n}\n",
+        "expected": "<?php\nclass C {\n    /**\n     *\u000b@param int $a\n     */\n    function f(int $a) {}\n}\n"
+    },
+    {
+        "fixer": "no_superfluous_phpdoc_tags",
+        "input": "<?php\nclass C {\n    /**\n     * @param (A&B)|null $a\n     */\n    function f((A&B)|null $a) {}\n}\n",
+        "expected": "<?php\nclass C {\n    /**\n     * @param (A&B)|null $a\n     */\n    function f((A&B)|null $a) {}\n}\n"
+    }
+]

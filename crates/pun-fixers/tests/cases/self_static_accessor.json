@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "self_static_accessor",
+        "input": "<?php\nfinal class C {\n    public function a() {\n        $f = function () { if (1) { return static::x(); } return static::y(); };\n    }\n}\n",
+        "expected": "<?php\nfinal class C {\n    public function a() {\n        $f = function () { if (1) { return static::x(); } return static::y(); };\n    }\n}\n"
+    }
+]

@@ -1,0 +1,18 @@
+[
+    {
+        "fixer": "fully_qualified_strict_types",
+        "config": {
+            "import_symbols": true
+        },
+        "input": "<?php\nnamespace A;\n// #[\\Foo\\Bar]\nclass C {}\n$a = 1;\n",
+        "expected": "<?php\nnamespace A;\nuse Foo\\Bar;\n// #[\\Foo\\Bar]\nclass C {}\n$a = 1;\n"
+    },
+    {
+        "fixer": "fully_qualified_strict_types",
+        "config": {
+            "import_symbols": true
+        },
+        "input": "<?php\nnamespace A;\n$a = 1;\n",
+        "expected": "<?php\nnamespace A;\n$a = 1;\n"
+    }
+]

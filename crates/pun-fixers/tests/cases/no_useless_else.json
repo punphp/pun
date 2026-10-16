@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_useless_else",
+        "input": "<?php\nfunction f($a) { if ($a) { return 1; } else echo 2; }\n",
+        "expected": "<?php\nfunction f($a) { if ($a) { return 1; }  echo 2; }\n"
+    }
+]
