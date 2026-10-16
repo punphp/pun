@@ -1,0 +1,186 @@
+{
+    "fixer": "phpdoc_summary",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocSummaryFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocSummaryFixerTest.php",
+    "case_count": 20,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocSummaryFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "with trailing space",
+                    "args": [
+                        "<?php\n/**\n * Test.\n */",
+                        "<?php\n/**\n * Test         \n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with period",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there.\n     */\n",
+                        "<?php\n    /**\n     * Hello there\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with question mark",
+                    "args": [
+                        "<?php\n    /**\n     * Hello?\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with exclamation mark",
+                    "args": [
+                        "<?php\n    /**\n     * Hello!\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with inverted question mark",
+                    "args": [
+                        "<?php\n    /**\n     * Hello¿\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with inverted exclamation mark",
+                    "args": [
+                        "<?php\n    /**\n     * Hello¡\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with unicode question mark",
+                    "args": [
+                        "<?php\n    /**\n     * ハロー？\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with unicode exclamation mark",
+                    "args": [
+                        "<?php\n    /**\n     * ハロー！\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with Japanese period",
+                    "args": [
+                        "<?php\n    /**\n     * ハロー。\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with inc blank",
+                    "args": [
+                        "<?php\n    /**\n     * Hi.\n     *\n     */\n",
+                        "<?php\n    /**\n     * Hi\n     *\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline",
+                    "args": [
+                        "<?php\n    /**\n     * Hello\n     * there.\n     */\n",
+                        "<?php\n    /**\n     * Hello\n     * there\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with list",
+                    "args": [
+                        "<?php\n    /**\n     * Options:\n     *  * a: aaa\n     *  * b: bbb\n     *  * c: ccc\n     */\n\n    /**\n     * Options:\n     *\n     *  * a: aaa\n     *  * b: bbb\n     *  * c: ccc\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with tags",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there.\n     *\n     * @param string $foo\n     *\n     * @return bool\n     */\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * @param string $foo\n     *\n     * @return bool\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with long description",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there.\n     *\n     * Long description\n     * goes here.\n     *\n     * @return bool\n     */\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @return bool\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "crazy multiline comments",
+                    "args": [
+                        "<?php\n    /**\n     * Clients accept an array of constructor parameters.\n     *\n     * Here's an example of creating a client using a URI template for the\n     * client's base_url and an array of default request options to apply\n     * to each request:\n     *\n     *     $client = new Client([\n     *         'base_url' => [\n     *              'https://www.foo.com/{version}/',\n     *              ['version' => '123']\n     *          ],\n     *         'defaults' => [\n     *             'timeout'         => 10,\n     *             'allow_redirects' => false,\n     *             'proxy'           => '192.168.16.1:10'\n     *         ]\n     *     ]);\n     *\n     * @param _AutogeneratedInputConfiguration $config Client configuration settings\n     *     - base_url: Base URL of the client that is merged into relative URLs.\n     *       Can be a string or an array that contains a URI template followed\n     *       by an associative array of expansion variables to inject into the\n     *       URI template.\n     *     - handler: callable RingPHP handler used to transfer requests\n     *     - message_factory: Factory used to create request and response object\n     *     - defaults: Default request options to apply to each request\n     *     - emitter: Event emitter used for request events\n     *     - fsm: (internal use only) The request finite state machine. A\n     *       function that accepts a transaction and optional final state. The\n     *       function is responsible for transitioning a request through its\n     *       lifecycle events.\n     * @param string $foo\n     */\n",
+                        "<?php\n    /**\n     * Clients accept an array of constructor parameters\n     *\n     * Here's an example of creating a client using a URI template for the\n     * client's base_url and an array of default request options to apply\n     * to each request:\n     *\n     *     $client = new Client([\n     *         'base_url' => [\n     *              'https://www.foo.com/{version}/',\n     *              ['version' => '123']\n     *          ],\n     *         'defaults' => [\n     *             'timeout'         => 10,\n     *             'allow_redirects' => false,\n     *             'proxy'           => '192.168.16.1:10'\n     *         ]\n     *     ]);\n     *\n     * @param _AutogeneratedInputConfiguration $config Client configuration settings\n     *     - base_url: Base URL of the client that is merged into relative URLs.\n     *       Can be a string or an array that contains a URI template followed\n     *       by an associative array of expansion variables to inject into the\n     *       URI template.\n     *     - handler: callable RingPHP handler used to transfer requests\n     *     - message_factory: Factory used to create request and response object\n     *     - defaults: Default request options to apply to each request\n     *     - emitter: Event emitter used for request events\n     *     - fsm: (internal use only) The request finite state machine. A\n     *       function that accepts a transaction and optional final state. The\n     *       function is responsible for transitioning a request through its\n     *       lifecycle events.\n     * @param string $foo\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with no description",
+                    "args": [
+                        "<?php\n    /**\n     * @return bool\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inheritdoc in braces",
+                    "args": [
+                        "<?php\n    /**\n     * {@inheritdoc}\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inheritdoc",
+                    "args": [
+                        "<?php\n    /**\n     * @inheritDoc\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty doc block",
+                    "args": [
+                        "<?php\n    /**\n     *\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tabs and windows line endings",
+                    "args": [
+                        "<?php\r\n\t/**\r\n\t * Hello there.\r\n\t */",
+                        "<?php\r\n\t/**\r\n\t * Hello there\r\n\t */",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,62 @@
+[
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\nunset($a ); unset( $b );\n",
+        "expected": "<?php\nunset($a , $b ); \n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\nunset($x, ); unset( $y);\n",
+        "expected": "<?php\nunset($x, $y); \n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\nunset($p) ; unset($q /* c */ , $r);\n",
+        "expected": "<?php\nunset($p, $q /* c */ , $r) ; \n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\n$a; unset($b);\n",
+        "expected": "<?php\n$a; unset($b);\n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\nfoo(); unset($c);\n",
+        "expected": "<?php\nfoo(); unset($c);\n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\nunset($a ); unset( $b );unset($x, );\n",
+        "expected": "<?php\nunset($a , $b , $x, ); \n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\nunset( $b ); unset($x, );\n",
+        "expected": "<?php\nunset( $b , $x, ); \n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\nunset($x, ); unset( $y);unset($p) ;\n",
+        "expected": "<?php\nunset($x, $y, $p);  \n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\nunset( $y);unset($p) ;\n",
+        "expected": "<?php\nunset( $y, $p); \n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\nunset($a); unset($b); unset($c);\n",
+        "expected": "<?php\nunset($a, $b, $c);  \n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\n$a; unset($b);\nfoo(); unset($c);\n",
+        "expected": "<?php\n$a; unset($b);\nfoo(); unset($c);\n"
+    },
+    {
+        "fixer": "combine_consecutive_unsets",
+        "input": "<?php\n$a; unset($b);\nfoo(); unset($c);\nunset($a ); unset( $b );\n",
+        "expected": "<?php\n$a; unset($b);\nfoo(); unset($c, $a , $b );\n \n"
+    }
+]

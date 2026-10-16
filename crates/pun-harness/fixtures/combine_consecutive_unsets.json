@@ -1,0 +1,149 @@
+{
+    "fixer": "combine_consecutive_unsets",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\CombineConsecutiveUnsetsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/CombineConsecutiveUnsetsFixerTest.php",
+    "case_count": 13,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\CombineConsecutiveUnsetsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php //1\n                    unset($foo/*;*/, /*;*/$bar, $c , $foobar  ,  $foobar2);\n                     //test\n                     /* more comment test*/\n                    \n                ",
+                        "<?php //1\n                    unset($foo/*;*/);\n                    unset(/*;*/$bar, $c ); //test\n                    unset($foobar  ); /* more comment test*/\n                    unset(  $foobar2);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php unset($d , $e);/*unset(    $d2);unset($e   );;*/    ",
+                        "<?php unset($d );/*unset(    $d2);unset($e   );;*/    uNseT($e);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php UNSET($a, $b,$c/**/); ",
+                        "<?php UNSET($a); unset($b,$c/**/);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n              $config = array();\n              if ($config) {\n              }\n              unset($config['autoescape_service'], $config['autoescape_service_method']);\n              "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php //2\n                    unset($foo, $bar, $foobar, $foobar2, $foobar3);/*1*/\n                    /*2*/\n                    //3\n                    /*4*/\n                    /*5*/ \n                ",
+                        "<?php //2\n                    unset($foo);/*1*/\n                    unset($bar);/*2*/\n                    unset($foobar);//3\n                    unset($foobar2);/*4*/\n                    /*5*/ unset($foobar3);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                    unset($foo3, $bar, $test,$test1);\n                        /* c1 */\n                        \n                \n                // c2\n                \n                ",
+                        "<?php\n                    unset($foo3);\n                        /* c1 */\n                        unset($bar);\n                \n                // c2\n                unset($test,$test1);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php unset($x, $b  , $d);  /**/   ?> b",
+                        "<?php unset($x);  /**/ unset ($b  , $d) ?> b"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php unset($x) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php unset($y, $u); ?>",
+                        "<?php unset($y);unset($u) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                    unset($a[0], $a['a'], $a[\"b\"], $a->b, $a->b->c, $a->b[0]->c['a']);\n                    \n                    \n                    \n                    \n                    \n                ",
+                        "<?php\n                    unset($a[0]);\n                    unset($a['a']);\n                    unset($a[\"b\"]);\n                    unset($a->b);\n                    unset($a->b->c);\n                    unset($a->b[0]->c['a']);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                unset(\n                    $array1[\"foo\"],\n                    $array2[\"bar2\"],\n                );\n\n                ",
+                        "<?php\n                unset(\n                    $array1[\"foo\"],\n                );\n\n                unset(\n                    $array2[\"bar2\"],\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                unset($array1[\"foo\"],$array2[\"bar2\"],);\n\n                ",
+                        "<?php\n                unset($array1[\"foo\"],);\n\n                unset($array2[\"bar2\"],);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\CombineConsecutiveUnsetsFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php (unset)$f;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

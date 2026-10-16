@@ -1,0 +1,74 @@
+{
+    "fixer": "phpdoc_trim_consecutive_blank_line_separation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTrimConsecutiveBlankLineSeparationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocTrimConsecutiveBlankLineSeparationFixerTest.php",
+    "case_count": 6,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTrimConsecutiveBlankLineSeparationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "no changes",
+                    "args": [
+                        "<?php /** Summary. */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only Summary and Description",
+                    "args": [
+                        "<?php\n                    /**\n                     * Summary.\n                     *\n                     * Description.\n                     *\n                     *\n                     *\n                     */",
+                        "<?php\n                    /**\n                     * Summary.\n                     *\n                     *\n                     * Description.\n                     *\n                     *\n                     *\n                     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "basic phpdoc",
+                    "args": [
+                        "<?php\n                    /**\n                     * Summary.\n                     *\n                     * Description.\n                     *\n                     * @var int\n                     *\n                     * @return int\n                     *\n                     * foo\n                     *\n                     * bar\n                     *\n                     *\n                     */",
+                        "<?php\n                    /**\n                     * Summary.\n                     *\n                     *\n                     * Description.\n                     *\n                     *\n                     * @var int\n                     *\n                     *\n                     *\n                     *\n                     * @return int\n                     *\n                     *\n                     * foo\n                     *\n                     *\n                     * bar\n                     *\n                     *\n                     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "extra blank lines in description",
+                    "args": [
+                        "<?php\n                    /**\n                     * Summary.\n                     *\n                     * Description has multiple blank lines:\n                     *\n                     *\n                     *\n                     * End.\n                     *\n                     * @var int\n                     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "extra blank lines after annotation",
+                    "args": [
+                        "<?php\n                    /**\n                     * Summary without description.\n                     *\n                     * @var int\n                     *\n                     * This is still @var annotation description...\n                     *\n                     * But this is not!\n                     *\n                     * @internal\n                     */",
+                        "<?php\n                    /**\n                     * Summary without description.\n                     *\n                     *\n                     * @var int\n                     *\n                     * This is still @var annotation description...\n                     *\n                     *\n                     *\n                     *\n                     * But this is not!\n                     *\n                     *\n                     *\n                     *\n                     *\n                     * @internal\n                     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "extra blank lines between annotations when no Summary no Description",
+                    "args": [
+                        "<?php\n                    /**\n                     * @param string $expected\n                     * @param string $input\n                     *\n                     * @dataProvider provideFix56Cases\n                     */",
+                        "<?php\n                    /**\n                     * @param string $expected\n                     * @param string $input\n                     *\n                     *\n                     * @dataProvider provideFix56Cases\n                     */"
+                    ]
+                }
+            ]
+        }
+    ]
+}

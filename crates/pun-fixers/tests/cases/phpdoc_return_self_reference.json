@@ -1,0 +1,93 @@
+[
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": "x"
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: The option \"replacements\" with value \"x\" is expected to be of type \"string[]\", but is of type \"string\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": [
+                "self"
+            ]
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: Unknown key \"integer#0\", expected any of \"this\", \"@this\", \"$self\", \"@self\", \"$static\" and \"@static\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": {
+                "foo": "self"
+            }
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: Unknown key \"string#foo\", expected any of \"this\", \"@this\", \"$self\", \"@self\", \"$static\" and \"@static\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": {
+                "THIS": "bar"
+            }
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: Unknown value \"string#bar\", expected any of \"$this\", \"static\" and \"self\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": {
+                "this": 1
+            }
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": {
+                "this": true
+            }
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"bool\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": {
+                "this": null
+            }
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"null\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": {
+                "this": 1.5
+            }
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"float\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "replacements": {
+                "this": []
+            }
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"array\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "config": {
+            "comment_type": "x"
+        },
+        "error": "[phpdoc_return_self_reference] Invalid configuration: The option \"comment_type\" does not exist. Defined options are: \"replacements\"."
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "input": "<?php\nclass A {\n    /**\n     * @return\n     */\n    public function a() { return $this; }\n    /** @return this */\n    public function b() { return $this; }\n}\n",
+        "expected": "<?php\nclass A {\n    /**\n     * @return\n     */\n    public function a() { return $this; }\n    /** @return $this */\n    public function b() { return $this; }\n}\n"
+    }
+]

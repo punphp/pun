@@ -1,0 +1,337 @@
+{
+    "fixer": "class_reference_name_casing",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Casing\\ClassReferenceNameCasingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Casing/ClassReferenceNameCasingFixerTest.php",
+    "case_count": 34,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\ClassReferenceNameCasingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                $a = new Exception;\n                $b = new \\Exception;\n                $c = new Exception();\n                $d = new \\Exception();\n                $e = \"a\".Exception::class;\n                $f = \"a\".\\Exception::class;\n                $g .= \"exception\";\n                echo \\Exception::class;\n                print(Exception::class);\n                // $a = new exception();\n                /** $a = new exception(); */\n            ",
+                        "<?php\n                $a = new exception;\n                $b = new \\exception;\n                $c = new exception();\n                $d = new \\exception();\n                $e = \"a\".exception::class;\n                $f = \"a\".\\exception::class;\n                $g .= \"exception\";\n                echo \\exception::class;\n                print(exception::class);\n                // $a = new exception();\n                /** $a = new exception(); */\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php namespace Foo {\n                $a = new exception;\n                $b = new \\Exception;\n            }",
+                        "<?php namespace Foo {\n                $a = new exception;\n                $b = new \\exception;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php namespace Foo;\n                $a = new exception;\n                $b = new \\Exception;\n            ",
+                        "<?php namespace Foo;\n                $a = new exception;\n                $b = new \\EXCEPTION;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                $a = exception();\n                $b = new A\\exception;\n                $c = new A\\B\\C\\exception;\n\n                $a1 = \\exception();\n                $b1 = new \\A\\exception;\n                $c1 = new \\A\\B\\C\\exception;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php class Foo extends Exception {};",
+                        "<?php class Foo extends exception {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php class exception {}; new foO();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php interface exception {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php trait exception {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function exception() {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php const exception = \"abc\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php class Foo { const FIRST = 1, EXCEPTION = 2, ERROR = 3; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $a = Foo::exception;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $a = $foo->exception;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php use Foo as exception;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php class Foo { use exception; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $foo = [\"const\" => exception];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nnamespace {\n    $a = new Exception;\n    $b = new \\Exception;\n}\n\nnamespace Bar {\n    $a = new exception;\n    $b = new \\Exception;\n}\n\nnamespace Foo {\n    $a = new exception;\n    $b = new \\Exception;\n    $c = new foO();\n}",
+                        "<?php\nnamespace {\n    $a = new exception;\n    $b = new \\exception;\n}\n\nnamespace Bar {\n    $a = new exception;\n    $b = new \\exception;\n}\n\nnamespace Foo {\n    $a = new exception;\n    $b = new \\exception;\n    $c = new foO();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php use Exception as baR;",
+                        "<?php use exception as baR;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php try { foo(); } catch(\\LogicException $e) {}",
+                        "<?php try { foo(); } catch(\\logicexception $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php try { foo(); } catch(LogicException $e) {}",
+                        "<?php try { foo(); } catch(logicexception $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n                Closure::bind(fn () => null, null, new class {});\n                \\Closure::bind(fn () => null, null, new class {});\n\n                Foo\\Bar::bind(fn () => null, null, new class {});\n                \\A\\B\\Bar::bind(fn () => null, null, new class {});\n            ",
+                        "<?php\n                CLOSURE::bind(fn () => null, null, new class {});\n                \\CLOSURE::bind(fn () => null, null, new class {});\n\n                Foo\\Bar::bind(fn () => null, null, new class {});\n                \\A\\B\\Bar::bind(fn () => null, null, new class {});\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\ndeclare(strict_types=1);\nuse Sonata\\Exporter\\Writer\\EXCEPTION;\n$services->set('sonata.exporter.writer.xml', EXCEPTION::class);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                const error = 1;\n                foo(error);\n                $b2 = $a[error];\n                $b21 = [1,error];\n                $b22 = [error,2];\n                $b23 = [1,error,2];\n                $b24 = [1,error,2,];\n                $b3 = [error];\n                $b4 = $a->{error};\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n                foo(\\error);\n                $b2 = $a[\\error];\n                $b21 = [1,\\error];\n                $b22 = [\\error,2];\n                $b23 = [1,\\error,2];\n                $b24 = [1,\\error,2,];\n                $b3 = [\\error];\n                $b4 = $a->{\\error};\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php echo error ?><?php echo error;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\ClassReferenceNameCasingFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php if ($var?->exception instanceof Exception) {};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\ClassReferenceNameCasingFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php enum exception {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php enum Foo {\n                case exception;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "multiple type catch with variable",
+                    "args": [
+                        "<?php try { foo(); } catch(\\InvalidArgumentException|\\LogicException $e) {}",
+                        "<?php try { foo(); } catch(\\INVALIDARGUMENTEXCEPTION|\\logicexception $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "multiple type catch without variable 3",
+                    "args": [
+                        "<?php try { foo(); } catch(\\InvalidArgumentException|\\LogicException) {}",
+                        "<?php try { foo(); } catch(\\INVALIDARGUMENTEXCEPTION|\\logicexception) {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\ClassReferenceNameCasingFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "typed constant name matching internal class",
+                    "args": [
+                        "<?php\n                class MessageType\n                {\n                    public const string ERROR = \"ERROR\";\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "nullable typed constant name matching internal class",
+                    "args": [
+                        "<?php class Foo { public const ?int EXCEPTION = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "typed constant name matching internal class in multiple declaration",
+                    "args": [
+                        "<?php class Foo { const string FIRST = \"a\", ERROR = \"b\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "class-typed constant name matching internal class",
+                    "args": [
+                        "<?php class Foo { public const Bar ERROR = Bar::X; }"
+                    ]
+                }
+            ]
+        }
+    ]
+}
