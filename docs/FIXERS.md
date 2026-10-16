@@ -1,159 +1,176 @@
 # Fixer porting split
 
-Source of truth for which agent ports what. Tick `[x]` when the fixer's upstream fixtures pass 100% and `punphp-harness format --fixer <name>` shows no diffs.
+Tick `[x]` when the fixer passes 100% of its upstream fixture cases and `pun-harness format --fixer <name>` shows no corpus diffs.
+Skipped fixture cases must be listed next to the entry with the reason.
 
-## Agent A (whitespace, syntax, casing, control flow, operators)
+Analyzer rule: the owner ports it. If you need an analyzer its owner hasn't committed yet, port other fixers first;
+if truly blocked, add `CLAIMED by agent N` next to the analyzer under its owner below, commit that line, then port it yourself.
+TokensAnalyzer lives in pun-tokens (already committed) — extend it there with small additive edits only.
 
-Analyzers owned: TokensAnalyzer (do first, both agents need it), WhitespacesAnalyzer, AlternativeSyntaxAnalyzer, GotoLabelAnalyzer, SwitchAnalyzer, ControlCaseStructuresAnalyzer, BlocksAnalyzer, CommentsAnalyzer, ReferenceAnalyzer, Preg, Utils, WhitespacesFixerConfig.
+## Agent 1: whitespace, blank lines, spacing
 
+Analyzers owned: WhitespacesAnalyzer, WhitespacesFixerConfig, Preg (pcre2 wrapper with PHP preg_* semantics — do first, everyone needs it), Utils, CommentsAnalyzer, AlternativeSyntaxAnalyzer, BlocksAnalyzer.
+
+- [ ] array_indentation
+- [ ] binary_operator_spaces
+- [ ] blank_line_after_namespace
+- [ ] blank_line_after_opening_tag
+- [ ] blank_line_before_statement
+- [ ] blank_line_between_import_groups
+- [ ] blank_lines_before_namespace
+- [ ] braces_position
+- [ ] cast_spaces
+- [ ] clean_namespace
+- [ ] concat_space
+- [ ] control_structure_braces
 - [ ] encoding
 - [ ] full_opening_tag
-- [ ] no_alternative_syntax
-- [ ] elseif
-- [ ] no_binary_string
-- [ ] no_empty_statement
-- [ ] no_unneeded_braces
-- [ ] no_superfluous_elseif
-- [ ] array_syntax
-- [ ] single_space_around_construct
-- [ ] no_multiline_whitespace_around_double_arrow
-- [ ] no_unneeded_control_parentheses
-- [ ] array_indentation
-- [ ] backtick_to_shell_exec
-- [ ] increment_style
-- [ ] single_quote
-- [ ] spaces_inside_parentheses
-- [ ] list_syntax
-- [ ] blank_line_after_opening_tag
-- [ ] control_structure_braces
-- [ ] no_space_around_double_colon
-- [ ] ternary_operator_spaces
-- [ ] array_push
-- [ ] concat_space
-- [ ] constant_case
-- [ ] control_structure_continuation_position
-- [ ] date_time_immutable
-- [ ] include
-- [ ] integer_literal_case
+- [ ] general_phpdoc_tag_rename
+- [ ] global_namespace_import
+- [ ] indentation_type
 - [ ] line_ending
 - [ ] linebreak_after_opening_tag
+- [ ] method_argument_space
+- [ ] method_chaining_indentation
+- [ ] multiline_whitespace_before_semicolons
+- [ ] no_blank_lines_after_class_opening
+- [ ] no_blank_lines_after_phpdoc
+- [ ] no_closing_tag
+- [ ] no_empty_statement
+- [ ] no_extra_blank_lines
+- [ ] no_leading_namespace_whitespace
+- [ ] no_multiline_whitespace_around_double_arrow
+- [ ] no_multiple_statements_per_line
+- [ ] no_singleline_whitespace_before_semicolons
+- [ ] no_space_around_double_colon
+- [ ] no_spaces_after_function_name
+- [ ] no_spaces_around_offset
+
+## Agent 2: syntax, casing, control flow, operators, strictness
+
+Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCaseStructuresAnalyzer, GotoLabelAnalyzer, ReferenceAnalyzer, AbstractNoUselessElseFixer, AbstractFunctionReferenceFixer.
+
+- [ ] no_trailing_comma_in_singleline
+- [ ] no_trailing_whitespace
+- [ ] no_trailing_whitespace_in_comment
+- [ ] no_unneeded_braces
+- [ ] no_whitespace_before_comma_in_array
+- [ ] no_whitespace_in_blank_line
+- [ ] not_operator_with_successor_space
+- [ ] object_operator_without_whitespace
+- [ ] phpdoc_indent
+- [ ] phpdoc_inline_tag_normalizer
+- [ ] phpdoc_single_line_var_spacing
+- [ ] phpdoc_tag_type
+- [ ] single_blank_line_at_eof
+- [ ] single_class_element_per_statement
+- [ ] single_import_per_statement
+- [ ] single_line_after_imports
+- [ ] single_line_comment_spacing
+- [ ] single_line_comment_style
+- [ ] single_line_empty_body
+- [ ] single_space_around_construct
+- [ ] space_after_semicolon
+- [ ] spaces_inside_parentheses
+- [ ] statement_indentation
+- [ ] switch_case_semicolon_to_colon
+- [ ] switch_case_space
+- [ ] ternary_operator_spaces
+- [ ] trailing_comma_in_multiline
+- [ ] trim_array_spaces
+- [ ] type_declaration_spaces
+- [ ] types_spaces
+- [ ] unary_operator_spaces
+- [ ] whitespace_after_comma_in_array
+- [ ] Pint/laravel_blade
+- [ ] array_push
+- [ ] array_syntax
+- [ ] backtick_to_shell_exec
+- [ ] compact_nullable_type_declaration
+- [ ] control_structure_continuation_position
+- [ ] date_time_immutable
+- [ ] declare_equal_normalize
+- [ ] declare_parentheses
+- [ ] declare_strict_types
+
+## Agent 3: imports, namespaces, classes
+
+Analyzers owned: NamespaceUsesAnalyzer, NamespacesAnalyzer, ClassyAnalyzer, AttributeAnalyzer, Analysis/* structs.
+
+- [ ] elseif
+- [ ] function_declaration
+- [ ] include
+- [ ] increment_style
+- [ ] integer_literal_case
+- [ ] list_syntax
 - [ ] lowercase_cast
 - [ ] lowercase_keywords
 - [ ] lowercase_static_reference
-- [ ] magic_constant_casing
-- [ ] multiline_whitespace_before_semicolons
-- [ ] no_alias_language_construct_call
-- [ ] no_closing_tag
-- [ ] no_singleline_whitespace_before_semicolons
-- [ ] no_spaces_around_offset
-- [ ] no_trailing_comma_in_singleline
-- [ ] no_trailing_whitespace
-- [ ] no_unreachable_default_argument_value
-- [ ] no_unset_cast
-- [ ] no_whitespace_before_comma_in_array
-- [ ] normalize_index_brace
-- [ ] object_operator_without_whitespace
-- [ ] short_scalar_cast
-- [ ] standardize_not_equals
-- [ ] switch_case_semicolon_to_colon
-- [ ] switch_case_space
-- [ ] trailing_comma_in_multiline
-- [ ] trim_array_spaces
-- [ ] unary_operator_spaces
-- [ ] whitespace_after_comma_in_array
-- [ ] yoda_style
-- [ ] no_multiple_statements_per_line
-- [ ] space_after_semicolon
-- [ ] Pint/laravel_blade
-- [ ] braces_position
-- [ ] statement_indentation
-- [ ] no_short_bool_cast
-- [ ] cast_spaces
-- [ ] no_mixed_echo_print
-- [ ] not_operator_with_successor_space
-- [ ] single_line_empty_body
-- [ ] no_extra_blank_lines
-- [ ] blank_line_before_statement
-- [ ] binary_operator_spaces
-- [ ] no_whitespace_in_blank_line
-- [ ] single_blank_line_at_eof
-## Agent B (imports, namespaces, classes, functions, phpdoc, strictness)
-
-Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, NamespaceUsesAnalyzer, NamespacesAnalyzer, AttributeAnalyzer, ClassyAnalyzer, the Analysis/* structs, DocBlock (DocBlock, Line, Annotation, Tag, TypeExpression), AbstractPhpdocTypesFixer and other Abstract*Fixer bases B's fixers use.
-
-- [ ] final_class
-- [ ] final_internal_class
-- [ ] protected_to_private
-- [ ] ordered_class_elements
-- [ ] modifier_keywords
-- [ ] single_class_element_per_statement
-- [ ] visibility_required
-- [ ] class_attributes_separation
-- [ ] indentation_type
-- [ ] no_alias_functions
-- [ ] no_useless_else
-- [ ] strict_comparison
-- [ ] class_definition
-- [ ] function_declaration
-- [ ] lambda_not_used_import
-- [ ] modernize_types_casting
-- [ ] method_argument_space
-- [ ] phpdoc_indent
-- [ ] phpdoc_types
-- [ ] phpdoc_scalar
-- [ ] general_phpdoc_tag_rename
-- [ ] clean_namespace
-- [ ] phpdoc_no_access
-- [ ] phpdoc_no_package
-- [ ] fully_qualified_strict_types
-- [ ] no_superfluous_phpdoc_tags
-- [ ] phpdoc_no_useless_inheritdoc
-- [ ] no_empty_phpdoc
-- [ ] no_spaces_after_function_name
-- [ ] nullable_type_declaration_for_default_null_value
-- [ ] declare_strict_types
-- [ ] mb_str_functions
-- [ ] nullable_type_declaration
-- [ ] no_unneeded_import_alias
-- [ ] single_import_per_statement
-- [ ] single_line_comment_spacing
-- [ ] compact_nullable_type_declaration
-- [ ] declare_equal_normalize
-- [ ] declare_parentheses
-- [ ] final_public_method_for_abstract_class
-- [ ] global_namespace_import
-- [ ] heredoc_to_nowdoc
 - [ ] magic_method_casing
-- [ ] method_chaining_indentation
+- [ ] mb_str_functions
+- [ ] modernize_types_casting
 - [ ] native_function_casing
 - [ ] native_type_declaration_casing
-- [ ] no_blank_lines_after_class_opening
-- [ ] no_leading_namespace_whitespace
-- [ ] no_trailing_whitespace_in_comment
+- [ ] no_alias_functions
+- [ ] no_alias_language_construct_call
+- [ ] no_alternative_syntax
+- [ ] no_binary_string
+- [ ] no_mixed_echo_print
+- [ ] no_short_bool_cast
+- [ ] no_superfluous_elseif
+- [ ] no_unneeded_control_parentheses
+- [ ] no_unreachable_default_argument_value
+- [ ] no_unset_cast
+- [ ] normalize_index_brace
+- [ ] nullable_type_declaration
+- [ ] nullable_type_declaration_for_default_null_value
+- [ ] php_unit_method_casing
+- [ ] return_type_declaration
+- [ ] short_scalar_cast
+- [ ] single_quote
+- [ ] standardize_not_equals
+- [ ] strict_comparison
+- [ ] yoda_style
+- [ ] class_attributes_separation
+- [ ] class_definition
+- [ ] constant_case
+- [ ] final_class
+- [ ] final_internal_class
+
+## Agent 4: class modifiers, phpdoc, comments
+
+Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeExpression), AbstractPhpdocTypesFixer, AbstractProxyFixer.
+
+- [ ] final_public_method_for_abstract_class
+- [ ] fully_qualified_strict_types
+- [ ] lambda_not_used_import
+- [ ] magic_constant_casing
+- [ ] modifier_keywords
+- [ ] no_leading_import_slash
+- [ ] no_unneeded_import_alias
+- [ ] no_unused_imports
+- [ ] no_useless_else
+- [ ] no_useless_return
+- [ ] ordered_class_elements
+- [ ] ordered_imports
 - [ ] ordered_interfaces
 - [ ] ordered_traits
-- [ ] php_unit_method_casing
 - [ ] php_unit_set_up_tear_down_visibility
-- [ ] phpdoc_inline_tag_normalizer
-- [ ] phpdoc_tag_type
-- [ ] phpdoc_var_without_name
-- [ ] type_declaration_spaces
-- [ ] types_spaces
+- [ ] protected_to_private
+- [ ] self_accessor
+- [ ] self_static_accessor
+- [ ] visibility_required
+- [ ] heredoc_to_nowdoc
+- [ ] no_empty_phpdoc
+- [ ] phpdoc_align
+- [ ] phpdoc_no_access
+- [ ] phpdoc_no_package
+- [ ] phpdoc_no_useless_inheritdoc
 - [ ] phpdoc_order
+- [ ] phpdoc_scalar
 - [ ] phpdoc_separation
 - [ ] phpdoc_trim
-- [ ] no_unused_imports
-- [ ] phpdoc_single_line_var_spacing
-- [ ] self_static_accessor
-- [ ] self_accessor
-- [ ] single_line_after_imports
-- [ ] return_type_declaration
-- [ ] no_useless_return
-- [ ] blank_line_after_namespace
-- [ ] no_blank_lines_after_phpdoc
-- [ ] no_leading_import_slash
-- [ ] ordered_imports
-- [ ] blank_lines_before_namespace
-- [ ] single_line_comment_style
-- [ ] blank_line_between_import_groups
-- [ ] phpdoc_align
+- [ ] phpdoc_types
+- [ ] phpdoc_var_without_name
+- [ ] no_superfluous_phpdoc_tags
+
