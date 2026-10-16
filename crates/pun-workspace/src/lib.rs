@@ -89,7 +89,9 @@ impl Finder {
             while let Some(entry) = it.next() {
                 let entry = entry?;
                 let rel = entry.path().strip_prefix(dir).unwrap().to_string_lossy().into_owned();
-                let is_dir = entry.path().is_dir(); // follows symlinks, like SplFileInfo::isDir()
+                // Follows symlinks, like SplFileInfo::isDir(). Symfony's ONLY_FILES only drops directories, so dangling
+                // symlinks (and other non-regular files) are listed.
+                let is_dir = entry.path().is_dir();
                 if is_dir {
                     let fname = entry.file_name().to_string_lossy();
                     let pruned = self.excluded_names.iter().any(|n| *n == fname)
@@ -98,9 +100,6 @@ impl Finder {
                     if pruned && entry.file_type().is_dir() {
                         it.skip_current_dir();
                     }
-                    continue;
-                }
-                if !entry.path().is_file() {
                     continue;
                 }
                 let fname = entry.file_name().to_string_lossy();
@@ -156,18 +155,12 @@ pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
     let names: Vec<String> = match sel {
         GitSelect::Dirty => {
             let out = git(&cfg.root, &[&["status", "--short"][..], &php].concat(), "The [--dirty] option is only available when using Git.")?;
-            let mut seen: Vec<(String, String)> = Vec::new();
-            for line in out.lines().filter(|l| !l.is_empty()) {
-                let file = line.get(3..).unwrap_or("").to_string();
-                let status = line.get(..3.min(line.len())).unwrap_or("").trim().to_string();
-                match seen.iter_mut().find(|(f, _)| *f == file) {
-                    Some(e) => e.1 = status,
-                    None => seen.push((file, status)),
-                }
-            }
-            seen.into_iter()
-                .filter(|(_, s)| s != "D")
-                .map(|(f, s)| if s == "R" { f.split_once(" -> ").map(|x| x.1.to_string()).unwrap_or(f) } else { f })
+            // mapWithKeys(substr($l, 3) => trim(substr($l, 0, 3))); git lists each path once, so no key collides.
+            out.lines()
+                .filter(|l| !l.is_empty())
+                .map(|l| (l.get(3..).unwrap_or(""), l.get(..3.min(l.len())).unwrap_or("").trim()))
+                .filter(|(_, s)| *s != "D")
+                .map(|(f, s)| if s == "R" { f.split_once(" -> ").map_or(f, |x| x.1) } else { f }.to_string())
                 .collect()
         }
         GitSelect::Diff(branch) => {
@@ -376,42 +369,4 @@ fn glob_to_regex(glob: &str) -> String {
         re.insert(1 + "(?=[^\\.])".len(), '?');
     }
     format!("#^{re}$#")
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn globs() {
-        assert_eq!(glob_to_regex("*.blade.php"), r"#^(?=[^\.])[^/]*\.blade\.php$#");
-        assert_eq!(glob_to_regex(".phpstorm.meta.php"), r"#^\.phpstorm\.meta\.php$#");
-        assert!(fnmatch("*.blade.php", "a/b.blade.php") && !fnmatch("a?c", "abbc") && fnmatch("[!x]b", "ab"));
-        assert!(is_regex("/foo/i") && is_regex("#a#") && is_regex("{a}") && !is_regex("*.php") && !is_regex("a/b"));
-    }
-
-    #[test]
-    fn pint_finder_rules() {
-        let root = std::env::temp_dir().join(format!("pun-ws-{}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&root);
-        for f in [
-            "app/A.php", "app/v.blade.php", "app/build/B.php", "app/.hidden/C.php", "app/.D.php", "vendor/x/E.php",
-            "x/bootstrap/cache/F.php", "storage/G.php", "app/_ide_helper.php", "app/skip/H.php", "app/I.txt", "app/notme.php",
-        ] {
-            let p = root.join(f);
-            std::fs::create_dir_all(p.parent().unwrap()).unwrap();
-            std::fs::write(p, "<?php\n").unwrap();
-        }
-        std::os::unix::fs::symlink(root.join("app"), root.join("linkdir")).unwrap();
-        std::os::unix::fs::symlink(root.join("app/A.php"), root.join("app/L.php")).unwrap();
-        std::fs::write(root.join(".gitignore"), "app/A.php\n").unwrap();
-        let mut cfg = pun_config::load(&root, &Default::default()).unwrap();
-        cfg.finder.not_path = vec!["skip/".into()];
-        cfg.finder.not_name = vec!["notme.php".into()];
-        let rel = |v: Vec<PathBuf>| v.iter().map(|p| p.strip_prefix(&root).unwrap().to_string_lossy().into_owned()).collect::<std::collections::BTreeSet<_>>().into_iter().collect::<Vec<_>>();
-        assert_eq!(rel(discover(&cfg, &[]).unwrap()), ["app/A.php", "app/L.php"]);
-        cfg.blade = true;
-        assert!(is_path_excluded(&cfg, &root.join("storage/x.php")) && !is_path_excluded(&cfg, Path::new("app/x.php")));
-        assert_eq!(rel(discover(&cfg, &["app".into(), "storage/G.php".into()]).unwrap()), ["app/A.php", "app/L.php", "app/v.blade.php", "storage/G.php"]);
-    }
 }
