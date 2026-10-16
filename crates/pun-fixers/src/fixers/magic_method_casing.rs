@@ -49,10 +49,8 @@ impl Fixer for MagicMethodCasingFixer {
             let i = index as usize;
             if in_class == 0 && tokens[i].is_classy() {
                 in_class = 1;
-                index = match tokens.get_next_token_of_kind(i, &["{".into()], true) {
-                    Some(n) => n as isize + 1,
-                    None => 1, // upstream: $index = null; ++$index
-                };
+                // Upstream `++$index` on a null index restarts at 1; every classy in valid code has a `{`.
+                index = tokens.get_next_token_of_kind(i, &["{".into()], true).map_or(1, |n| n as isize + 1);
                 continue;
             }
             index += 1;

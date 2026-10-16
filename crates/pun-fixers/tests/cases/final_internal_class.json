@@ -1,0 +1,77 @@
+[
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "include": [
+                ""
+            ]
+        },
+        "error": "[final_internal_class] Invalid configuration: The option \"include\" with value array is invalid."
+    },
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "include": [
+                "a"
+            ],
+            "annotation_include": [
+                "b"
+            ]
+        },
+        "error": "[final_internal_class] Configuration cannot contain deprecated option \"annotation_include\" and new option \"include\"."
+    },
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "exclude": [
+                "a"
+            ],
+            "annotation_exclude": [
+                "@b"
+            ]
+        },
+        "error": "[final_internal_class] Configuration cannot contain deprecated option \"annotation_exclude\" and new option \"exclude\"."
+    },
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "include": [
+                "a"
+            ],
+            "exclude": [
+                "a"
+            ]
+        },
+        "error": "[final_internal_class] Annotation cannot be used in both \"include\" and \"exclude\" list, got duplicates: \"a\"."
+    },
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "include": [
+                "a",
+                "b",
+                "c"
+            ],
+            "exclude": [
+                "A",
+                "b",
+                "@c"
+            ]
+        },
+        "error": "[final_internal_class] Annotation cannot be used in both \"include\" and \"exclude\" list, got duplicates: \"a\", \"b\" and \"c\"."
+    },
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "foo": 1
+        },
+        "error": "[final_internal_class] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"annotation_exclude\", \"annotation_include\", \"consider_absent_docblock_as_internal_class\", \"exclude\", \"include\"."
+    },
+    {
+        "fixer": "final_internal_class",
+        "config": {
+            "consider_absent_docblock_as_internal_class": "x"
+        },
+        "error": "[final_internal_class] Invalid configuration: The option \"consider_absent_docblock_as_internal_class\" with value \"x\" is expected to be of type \"bool\", but is of type \"string\"."
+    }
+]

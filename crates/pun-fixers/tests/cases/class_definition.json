@@ -1,0 +1,22 @@
+[
+    {
+        "fixer": "class_definition",
+        "config": {
+            "single_line": 1,
+            "foo": true
+        },
+        "error": "[class_definition] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"inline_constructor_arguments\", \"multi_line_extends_each_single_line\", \"single_item_single_line\", \"single_line\", \"space_before_parenthesis\"."
+    },
+    {
+        "fixer": "class_definition",
+        "config": {
+            "single_line": "yes"
+        },
+        "error": "[class_definition] Invalid configuration: The option \"single_line\" with value \"yes\" is expected to be of type \"bool\", but is of type \"string\"."
+    },
+    {
+        "fixer": "class_definition",
+        "input": "<?php\n$a = new class // x]\nextends B {};\n",
+        "expected": "<?php\n$a = new class // x]\nextends B {};\n"
+    }
+]

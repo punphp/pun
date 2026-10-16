@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_alternative_syntax",
+        "input": "<?php\nif ($a): echo 1; elseif($b): echo 2; else: echo 3; endif;\nif ($c) { echo 4; } elseif ($d) { echo 5; } else { echo 6; }\n",
+        "expected": "<?php\nif ($a) { echo 1; } elseif ($b){ echo 2; } else { echo 3; }\nif ($c) { echo 4; } elseif ($d) { echo 5; } else { echo 6; }\n"
+    }
+]

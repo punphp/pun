@@ -1,6 +1,7 @@
 //! Extra cases for branches the upstream fixtures miss: tests/cases/<fixer>.json is a list of
 //! `{"fixer", "config"?, "input", "expected"}` where `expected` is the real PHP-CS-Fixer's output for
-//! `input` (fixer alone, default whitespace config). Same checks as AbstractFixerTestCase::doTest.
+//! `input` (fixer alone, default whitespace config; scripts/oracle-case.php). Same checks as AbstractFixerTestCase::doTest.
+//! `{"fixer", "config", "error"}` cases (scripts/oracle-config-error.php) pin the message of an invalid configuration.
 extern crate punphp_fixers as pun_fixers;
 use serde_json::Value;
 use std::path::Path;
@@ -16,6 +17,17 @@ fn oracle_cases() {
         for (i, case) in cases.iter().enumerate() {
             let mut fixer = pun_fixers::all().into_iter().find(|f| f.name() == name).unwrap();
             let config = case.get("config").cloned().unwrap_or(Value::Null);
+            if let Some(error) = case.get("error") {
+                // An invalid configuration: configure must fail with the oracle's message.
+                match fixer.configure(&config) {
+                    Err(e) if e.to_string() == error.as_str().unwrap() => p += 1,
+                    got => {
+                        fail += 1;
+                        eprintln!("--- {name} case {i}: configure({config})\nexpected error: {error}\ngot: {:?}", got.err());
+                    }
+                }
+                continue;
+            }
             fixer.configure(&config).unwrap_or_else(|e| panic!("{name} case {i}: {e}"));
             let input = case["input"].as_str().unwrap();
             let expected = case["expected"].as_str().unwrap();
