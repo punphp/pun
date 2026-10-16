@@ -53,7 +53,10 @@ Embedded static libphp (pun-php): deferred, system `php` stands in.
 1. Finish running rows: perf, rules (laravel-framework native), watch/LSP.
 2. Speed: final round, done only when the scoreboard benchmarks Pint, Pun and Mago with and without the cache. Includes Blade batching.
 3. Wave 3 cleanup, run alone with no other agents: /code-review --fix, architecture pass, comment cleanup, cargo fmt, clippy to 0, clap ValueEnum.
+3b. Perf, structural (after cleanup, alone): token text as spans into the source buffer instead of one Vec<u8> per token (tokenize is ~17%). Re-measure Pint, Pun and Mago.
 4. Full gate: 100% coverage on every crate, corpus parity for laravel and psr12 on 7/7 projects, and fuzz.
 5. Phase 2 (`pun lint`, PHPStan parity), starting with M2.1 config and baseline.
+
+Later: in-process Blade formatter (Prettier-compatible), the only way to reach 30x Pint on cold Pinkary.
 
 Not autonomous (needs the user): publishing or tagging a release, making the repo public, the gh `workflow` scope.
