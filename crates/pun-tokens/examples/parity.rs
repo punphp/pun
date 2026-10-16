@@ -63,14 +63,29 @@ fn parse_dump(data: &[u8]) -> Vec<(String, Result<Stream, String>)> {
     files
 }
 
-fn ours(mode: &str, code: &[u8]) -> Stream {
+/// Our stream, plus the time spent producing it (excluding conversion for comparison).
+fn ours(mode: &str, code: &[u8]) -> (Stream, Duration) {
     let name = |k: Option<pun_tokens::Kind>| k.map_or("-".to_string(), |k| k.name().to_string());
     match mode {
         "raw" | "parse" => {
+            let t = Instant::now();
             let mut toks = pun_tokens::tokenize(code);
-            toks.iter().map(|t| (name(t.kind), t.text.to_vec(), if t.kind.is_some() { t.line } else { 0 })).collect()
+            if mode == "parse" {
+                pun_tokens::apply_parse_mode(&mut toks);
+            }
+            let d = t.elapsed();
+            let s = toks
+                .iter()
+                .map(|t| (name(t.kind), t.text.to_vec(), if t.kind.is_some() { t.line } else { 0 }))
+                .collect();
+            (s, d)
         }
-        _ => unimplemented!(),
+        _ => {
+            let t = Instant::now();
+            let tokens = pun_tokens::Tokens::from_code(code);
+            let d = t.elapsed();
+            (tokens.iter().map(|t| (name(t.id), t.content.clone(), 0)).collect(), d)
+        }
     }
 }
 
@@ -90,8 +105,15 @@ fn main() {
     }
     let verbose = args.iter().any(|a| a == "-v");
     args.retain(|a| a != "-v");
+    if run(&mode, &args, verbose) > 0 {
+        std::process::exit(1);
+    }
+}
+
+/// Compare every .php file under `paths`; prints a report, returns the number of mismatched files.
+pub fn run(mode: &str, paths: &[String], verbose: bool) -> usize {
     let mut files = Vec::new();
-    for a in &args {
+    for a in paths {
         collect(Path::new(a), &mut files);
     }
 
@@ -100,7 +122,7 @@ fn main() {
     let mut child = Command::new("php")
         .args(["-d", "short_open_tag=0", "-d", "memory_limit=-1"])
         .arg(&dumper)
-        .arg(&mode)
+        .arg(mode)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
@@ -116,9 +138,8 @@ fn main() {
     let mut rust_time = Duration::ZERO;
     for (path, expected) in &dump {
         let code = std::fs::read(path).unwrap();
-        let t = Instant::now();
-        let got = ours(&mode, &code);
-        rust_time += t.elapsed();
+        let (got, d) = ours(mode, &code);
+        rust_time += d;
         let expected = match expected {
             Ok(s) => s,
             Err(e) => {
@@ -150,4 +171,5 @@ fn main() {
         dump.len()
     );
     println!("time: php {:.2?} (incl. startup), ours {:.2?}", php_time, rust_time);
+    diff
 }
