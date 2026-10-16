@@ -1,0 +1,1512 @@
+{
+    "Pint/laravel_blade": {
+        "priority": -2,
+        "risky": false,
+        "configurable": false
+    },
+    "Pint/phpdoc_type_annotations_only": {
+        "priority": 56,
+        "risky": false,
+        "configurable": false
+    },
+    "align_multiline_comment": {
+        "priority": 27,
+        "risky": false,
+        "configurable": true
+    },
+    "array_indentation": {
+        "priority": 29,
+        "risky": false,
+        "configurable": false
+    },
+    "array_push": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "array_syntax": {
+        "priority": 37,
+        "risky": false,
+        "configurable": true
+    },
+    "assign_null_coalescing_to_coalesce_equal": {
+        "priority": -1,
+        "risky": false,
+        "configurable": false
+    },
+    "attribute_block_no_spaces": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "attribute_empty_parentheses": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "backtick_to_shell_exec": {
+        "priority": 17,
+        "risky": false,
+        "configurable": false
+    },
+    "binary_operator_spaces": {
+        "priority": -32,
+        "risky": false,
+        "configurable": true
+    },
+    "blank_line_after_namespace": {
+        "priority": -20,
+        "risky": false,
+        "configurable": false
+    },
+    "blank_line_after_opening_tag": {
+        "priority": 1,
+        "risky": false,
+        "configurable": false
+    },
+    "blank_line_before_statement": {
+        "priority": -21,
+        "risky": false,
+        "configurable": true
+    },
+    "blank_line_between_import_groups": {
+        "priority": -40,
+        "risky": false,
+        "configurable": false
+    },
+    "blank_lines_before_namespace": {
+        "priority": -31,
+        "risky": false,
+        "configurable": true
+    },
+    "braces": {
+        "priority": 35,
+        "risky": false,
+        "configurable": true
+    },
+    "braces_position": {
+        "priority": -2,
+        "risky": false,
+        "configurable": true
+    },
+    "cast_spaces": {
+        "priority": -10,
+        "risky": false,
+        "configurable": true
+    },
+    "class_attributes_separation": {
+        "priority": 55,
+        "risky": false,
+        "configurable": true
+    },
+    "class_definition": {
+        "priority": 36,
+        "risky": false,
+        "configurable": true
+    },
+    "class_keyword": {
+        "priority": 8,
+        "risky": true,
+        "configurable": false
+    },
+    "class_keyword_remove": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "class_reference_name_casing": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "clean_namespace": {
+        "priority": 10,
+        "risky": false,
+        "configurable": false
+    },
+    "combine_consecutive_issets": {
+        "priority": 4,
+        "risky": false,
+        "configurable": false
+    },
+    "combine_consecutive_unsets": {
+        "priority": 24,
+        "risky": false,
+        "configurable": false
+    },
+    "combine_nested_dirname": {
+        "priority": 35,
+        "risky": true,
+        "configurable": false
+    },
+    "comment_to_phpdoc": {
+        "priority": 26,
+        "risky": true,
+        "configurable": true
+    },
+    "compact_nullable_type_declaration": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "compact_nullable_typehint": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "concat_space": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "constant_case": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "control_structure_braces": {
+        "priority": 1,
+        "risky": false,
+        "configurable": false
+    },
+    "control_structure_continuation_position": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "curly_braces_position": {
+        "priority": -2,
+        "risky": false,
+        "configurable": true
+    },
+    "date_time_create_from_format_call": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "date_time_immutable": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "declare_equal_normalize": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "declare_parentheses": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "declare_strict_types": {
+        "priority": 2,
+        "risky": true,
+        "configurable": true
+    },
+    "dir_constant": {
+        "priority": 40,
+        "risky": true,
+        "configurable": false
+    },
+    "doctrine_annotation_array_assignment": {
+        "priority": 1,
+        "risky": false,
+        "configurable": true
+    },
+    "doctrine_annotation_braces": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "doctrine_annotation_indentation": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "doctrine_annotation_spaces": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "echo_tag_syntax": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "elseif": {
+        "priority": 40,
+        "risky": false,
+        "configurable": false
+    },
+    "empty_loop_body": {
+        "priority": 39,
+        "risky": false,
+        "configurable": true
+    },
+    "empty_loop_condition": {
+        "priority": 1,
+        "risky": false,
+        "configurable": true
+    },
+    "encoding": {
+        "priority": 100,
+        "risky": false,
+        "configurable": false
+    },
+    "ereg_to_preg": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "error_suppression": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "escape_implicit_backslashes": {
+        "priority": 15,
+        "risky": false,
+        "configurable": true
+    },
+    "explicit_indirect_variable": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "explicit_string_variable": {
+        "priority": 6,
+        "risky": false,
+        "configurable": false
+    },
+    "final_class": {
+        "priority": 67,
+        "risky": true,
+        "configurable": false
+    },
+    "final_internal_class": {
+        "priority": 67,
+        "risky": true,
+        "configurable": true
+    },
+    "final_public_method_for_abstract_class": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "fopen_flag_order": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "fopen_flags": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "full_opening_tag": {
+        "priority": 98,
+        "risky": false,
+        "configurable": false
+    },
+    "fully_qualified_strict_types": {
+        "priority": 7,
+        "risky": false,
+        "configurable": true
+    },
+    "function_declaration": {
+        "priority": 31,
+        "risky": false,
+        "configurable": true
+    },
+    "function_to_constant": {
+        "priority": 2,
+        "risky": true,
+        "configurable": true
+    },
+    "function_typehint_space": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "general_attribute_remove": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "general_phpdoc_annotation_remove": {
+        "priority": 10,
+        "risky": false,
+        "configurable": true
+    },
+    "general_phpdoc_tag_rename": {
+        "priority": 11,
+        "risky": false,
+        "configurable": true
+    },
+    "get_class_to_class_keyword": {
+        "priority": 1,
+        "risky": true,
+        "configurable": false
+    },
+    "global_namespace_import": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "group_import": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "header_comment": {
+        "priority": -30,
+        "risky": false,
+        "configurable": true
+    },
+    "heredoc_closing_marker": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "heredoc_indentation": {
+        "priority": -26,
+        "risky": false,
+        "configurable": true
+    },
+    "heredoc_to_nowdoc": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "implode_call": {
+        "priority": 37,
+        "risky": true,
+        "configurable": false
+    },
+    "include": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "increment_style": {
+        "priority": 15,
+        "risky": false,
+        "configurable": true
+    },
+    "indentation_type": {
+        "priority": 50,
+        "risky": false,
+        "configurable": false
+    },
+    "integer_literal_case": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "is_null": {
+        "priority": 1,
+        "risky": true,
+        "configurable": false
+    },
+    "lambda_not_used_import": {
+        "priority": 31,
+        "risky": false,
+        "configurable": false
+    },
+    "line_ending": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "linebreak_after_opening_tag": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "list_syntax": {
+        "priority": 2,
+        "risky": false,
+        "configurable": true
+    },
+    "logical_operators": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "long_to_shorthand_operator": {
+        "priority": 17,
+        "risky": true,
+        "configurable": false
+    },
+    "lowercase_cast": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "lowercase_keywords": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "lowercase_static_reference": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "magic_constant_casing": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "magic_method_casing": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "mb_str_functions": {
+        "priority": 2,
+        "risky": true,
+        "configurable": false
+    },
+    "method_argument_space": {
+        "priority": 30,
+        "risky": false,
+        "configurable": true
+    },
+    "method_chaining_indentation": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "modern_serialization_methods": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "modernize_strpos": {
+        "priority": 37,
+        "risky": true,
+        "configurable": true
+    },
+    "modernize_types_casting": {
+        "priority": 31,
+        "risky": true,
+        "configurable": false
+    },
+    "modifier_keywords": {
+        "priority": 56,
+        "risky": false,
+        "configurable": true
+    },
+    "multiline_comment_opening_closing": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "multiline_promoted_properties": {
+        "priority": 1,
+        "risky": false,
+        "configurable": true
+    },
+    "multiline_string_to_heredoc": {
+        "priority": 16,
+        "risky": false,
+        "configurable": false
+    },
+    "multiline_whitespace_before_semicolons": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "native_constant_invocation": {
+        "priority": 1,
+        "risky": true,
+        "configurable": true
+    },
+    "native_function_casing": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "native_function_invocation": {
+        "priority": 1,
+        "risky": true,
+        "configurable": true
+    },
+    "native_function_type_declaration_casing": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "native_type_declaration_casing": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "new_expression_parentheses": {
+        "priority": 29,
+        "risky": false,
+        "configurable": true
+    },
+    "new_with_braces": {
+        "priority": 38,
+        "risky": false,
+        "configurable": true
+    },
+    "new_with_parentheses": {
+        "priority": 38,
+        "risky": false,
+        "configurable": true
+    },
+    "no_alias_functions": {
+        "priority": 40,
+        "risky": true,
+        "configurable": true
+    },
+    "no_alias_language_construct_call": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_alternative_syntax": {
+        "priority": 42,
+        "risky": false,
+        "configurable": true
+    },
+    "no_binary_string": {
+        "priority": 40,
+        "risky": false,
+        "configurable": false
+    },
+    "no_blank_lines_after_class_opening": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_blank_lines_after_phpdoc": {
+        "priority": -20,
+        "risky": false,
+        "configurable": false
+    },
+    "no_blank_lines_before_namespace": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_break_comment": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "no_closing_tag": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_empty_comment": {
+        "priority": 2,
+        "risky": false,
+        "configurable": false
+    },
+    "no_empty_phpdoc": {
+        "priority": 3,
+        "risky": false,
+        "configurable": false
+    },
+    "no_empty_statement": {
+        "priority": 40,
+        "risky": false,
+        "configurable": false
+    },
+    "no_extra_blank_lines": {
+        "priority": -20,
+        "risky": false,
+        "configurable": true
+    },
+    "no_homoglyph_names": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "no_leading_import_slash": {
+        "priority": -20,
+        "risky": false,
+        "configurable": false
+    },
+    "no_leading_namespace_whitespace": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_mixed_echo_print": {
+        "priority": -10,
+        "risky": false,
+        "configurable": true
+    },
+    "no_multiline_whitespace_around_double_arrow": {
+        "priority": 31,
+        "risky": false,
+        "configurable": false
+    },
+    "no_multiple_statements_per_line": {
+        "priority": -1,
+        "risky": false,
+        "configurable": false
+    },
+    "no_null_property_initialization": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_php4_constructor": {
+        "priority": 75,
+        "risky": true,
+        "configurable": false
+    },
+    "no_redundant_readonly_property": {
+        "priority": 3,
+        "risky": false,
+        "configurable": false
+    },
+    "no_short_bool_cast": {
+        "priority": -9,
+        "risky": false,
+        "configurable": false
+    },
+    "no_singleline_whitespace_before_semicolons": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_space_around_double_colon": {
+        "priority": 1,
+        "risky": false,
+        "configurable": false
+    },
+    "no_spaces_after_function_name": {
+        "priority": 3,
+        "risky": false,
+        "configurable": false
+    },
+    "no_spaces_around_offset": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "no_spaces_inside_parenthesis": {
+        "priority": 3,
+        "risky": false,
+        "configurable": false
+    },
+    "no_superfluous_elseif": {
+        "priority": 39,
+        "risky": false,
+        "configurable": false
+    },
+    "no_superfluous_phpdoc_tags": {
+        "priority": 6,
+        "risky": false,
+        "configurable": true
+    },
+    "no_trailing_comma_in_list_call": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_trailing_comma_in_singleline": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "no_trailing_comma_in_singleline_array": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_trailing_comma_in_singleline_function_call": {
+        "priority": 3,
+        "risky": false,
+        "configurable": false
+    },
+    "no_trailing_whitespace": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_trailing_whitespace_in_comment": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_trailing_whitespace_in_string": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "no_unneeded_braces": {
+        "priority": 40,
+        "risky": false,
+        "configurable": true
+    },
+    "no_unneeded_control_parentheses": {
+        "priority": 30,
+        "risky": false,
+        "configurable": true
+    },
+    "no_unneeded_curly_braces": {
+        "priority": 40,
+        "risky": false,
+        "configurable": true
+    },
+    "no_unneeded_final_method": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "no_unneeded_import_alias": {
+        "priority": 1,
+        "risky": false,
+        "configurable": false
+    },
+    "no_unreachable_default_argument_value": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "no_unset_cast": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_unset_on_property": {
+        "priority": 25,
+        "risky": true,
+        "configurable": false
+    },
+    "no_unused_imports": {
+        "priority": -10,
+        "risky": false,
+        "configurable": false
+    },
+    "no_useless_concat_operator": {
+        "priority": 5,
+        "risky": false,
+        "configurable": true
+    },
+    "no_useless_else": {
+        "priority": 39,
+        "risky": false,
+        "configurable": false
+    },
+    "no_useless_nullsafe_operator": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "no_useless_printf": {
+        "priority": 10,
+        "risky": true,
+        "configurable": false
+    },
+    "no_useless_return": {
+        "priority": -18,
+        "risky": false,
+        "configurable": false
+    },
+    "no_useless_sprintf": {
+        "priority": 42,
+        "risky": true,
+        "configurable": false
+    },
+    "no_whitespace_before_comma_in_array": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "no_whitespace_in_blank_line": {
+        "priority": -99,
+        "risky": false,
+        "configurable": false
+    },
+    "no_whitespace_in_empty_array": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "non_printable_character": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "normalize_index_brace": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "not_operator_with_space": {
+        "priority": -10,
+        "risky": false,
+        "configurable": false
+    },
+    "not_operator_with_successor_space": {
+        "priority": -10,
+        "risky": false,
+        "configurable": false
+    },
+    "nullable_type_declaration": {
+        "priority": 2,
+        "risky": false,
+        "configurable": true
+    },
+    "nullable_type_declaration_for_default_null_value": {
+        "priority": 3,
+        "risky": false,
+        "configurable": true
+    },
+    "numeric_literal_separator": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "object_operator_without_whitespace": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "octal_notation": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "operator_linebreak": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "ordered_attributes": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "ordered_class_elements": {
+        "priority": 65,
+        "risky": false,
+        "configurable": true
+    },
+    "ordered_imports": {
+        "priority": -30,
+        "risky": false,
+        "configurable": true
+    },
+    "ordered_interfaces": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "ordered_traits": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "ordered_types": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "php_unit_assert_new_names": {
+        "priority": -10,
+        "risky": true,
+        "configurable": false
+    },
+    "php_unit_attributes": {
+        "priority": 8,
+        "risky": false,
+        "configurable": true
+    },
+    "php_unit_construct": {
+        "priority": -8,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_data_provider_method_order": {
+        "priority": 64,
+        "risky": false,
+        "configurable": true
+    },
+    "php_unit_data_provider_name": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_data_provider_return_type": {
+        "priority": 9,
+        "risky": true,
+        "configurable": false
+    },
+    "php_unit_data_provider_static": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_dedicate_assert": {
+        "priority": -9,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_dedicate_assert_internal_type": {
+        "priority": -16,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_expectation": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_fqcn_annotation": {
+        "priority": -9,
+        "risky": false,
+        "configurable": false
+    },
+    "php_unit_internal_class": {
+        "priority": 68,
+        "risky": false,
+        "configurable": true
+    },
+    "php_unit_method_casing": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "php_unit_mock": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_mock_short_will_return": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "php_unit_namespaced": {
+        "priority": 2,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_no_expectation_annotation": {
+        "priority": 10,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_set_up_tear_down_visibility": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "php_unit_size_class": {
+        "priority": 9,
+        "risky": false,
+        "configurable": true
+    },
+    "php_unit_strict": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_test_annotation": {
+        "priority": 10,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_test_case_static_method_calls": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "php_unit_test_class_requires_covers": {
+        "priority": 9,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_add_missing_param_annotation": {
+        "priority": 10,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_align": {
+        "priority": -42,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_annotation_without_dot": {
+        "priority": 17,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_array_type": {
+        "priority": 2,
+        "risky": true,
+        "configurable": false
+    },
+    "phpdoc_indent": {
+        "priority": 20,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_inline_tag_normalizer": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_line_span": {
+        "priority": 5,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_list_type": {
+        "priority": 1,
+        "risky": true,
+        "configurable": false
+    },
+    "phpdoc_no_access": {
+        "priority": 10,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_no_alias_tag": {
+        "priority": 11,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_no_duplicate_types": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_no_empty_return": {
+        "priority": 4,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_no_package": {
+        "priority": 10,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_no_useless_inheritdoc": {
+        "priority": 6,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_order": {
+        "priority": -2,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_order_by_value": {
+        "priority": -10,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_param_order": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_readonly_class_comment_to_keyword": {
+        "priority": 4,
+        "risky": true,
+        "configurable": false
+    },
+    "phpdoc_return_self_reference": {
+        "priority": 10,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_scalar": {
+        "priority": 15,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_separation": {
+        "priority": -3,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_single_line_var_spacing": {
+        "priority": -10,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_summary": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_tag_casing": {
+        "priority": 11,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_tag_no_named_arguments": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_tag_type": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_to_comment": {
+        "priority": 25,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_to_param_type": {
+        "priority": 8,
+        "risky": true,
+        "configurable": true
+    },
+    "phpdoc_to_property_type": {
+        "priority": 8,
+        "risky": true,
+        "configurable": true
+    },
+    "phpdoc_to_return_type": {
+        "priority": 13,
+        "risky": true,
+        "configurable": true
+    },
+    "phpdoc_trim": {
+        "priority": -5,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_trim_consecutive_blank_line_separation": {
+        "priority": -41,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_types": {
+        "priority": 16,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_types_no_duplicates": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_types_order": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "phpdoc_var_annotation_correct_order": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "phpdoc_var_without_name": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "pow_to_exponentiation": {
+        "priority": 32,
+        "risky": true,
+        "configurable": false
+    },
+    "protected_to_private": {
+        "priority": 66,
+        "risky": false,
+        "configurable": false
+    },
+    "psr_autoloading": {
+        "priority": -10,
+        "risky": true,
+        "configurable": true
+    },
+    "random_api_migration": {
+        "priority": 0,
+        "risky": true,
+        "configurable": true
+    },
+    "regular_callable_call": {
+        "priority": 2,
+        "risky": true,
+        "configurable": false
+    },
+    "return_assignment": {
+        "priority": -15,
+        "risky": false,
+        "configurable": true
+    },
+    "return_to_yield_from": {
+        "priority": 1,
+        "risky": false,
+        "configurable": false
+    },
+    "return_type_declaration": {
+        "priority": -17,
+        "risky": false,
+        "configurable": true
+    },
+    "self_accessor": {
+        "priority": -11,
+        "risky": true,
+        "configurable": false
+    },
+    "self_static_accessor": {
+        "priority": -10,
+        "risky": false,
+        "configurable": false
+    },
+    "semicolon_after_instruction": {
+        "priority": 2,
+        "risky": false,
+        "configurable": false
+    },
+    "set_type_to_cast": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "short_scalar_cast": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "simple_to_complex_string_variable": {
+        "priority": -10,
+        "risky": false,
+        "configurable": false
+    },
+    "simplified_if_return": {
+        "priority": 1,
+        "risky": false,
+        "configurable": false
+    },
+    "simplified_null_return": {
+        "priority": 16,
+        "risky": false,
+        "configurable": false
+    },
+    "single_blank_line_at_eof": {
+        "priority": -100,
+        "risky": false,
+        "configurable": false
+    },
+    "single_blank_line_before_namespace": {
+        "priority": -31,
+        "risky": false,
+        "configurable": false
+    },
+    "single_class_element_per_statement": {
+        "priority": 56,
+        "risky": false,
+        "configurable": true
+    },
+    "single_import_per_statement": {
+        "priority": 1,
+        "risky": false,
+        "configurable": true
+    },
+    "single_line_after_imports": {
+        "priority": -11,
+        "risky": false,
+        "configurable": false
+    },
+    "single_line_comment_spacing": {
+        "priority": 1,
+        "risky": false,
+        "configurable": false
+    },
+    "single_line_comment_style": {
+        "priority": -31,
+        "risky": false,
+        "configurable": true
+    },
+    "single_line_empty_body": {
+        "priority": -19,
+        "risky": false,
+        "configurable": false
+    },
+    "single_line_throw": {
+        "priority": 36,
+        "risky": false,
+        "configurable": false
+    },
+    "single_quote": {
+        "priority": 10,
+        "risky": false,
+        "configurable": true
+    },
+    "single_space_after_construct": {
+        "priority": 36,
+        "risky": false,
+        "configurable": true
+    },
+    "single_space_around_construct": {
+        "priority": 36,
+        "risky": false,
+        "configurable": true
+    },
+    "single_trait_insert_per_statement": {
+        "priority": 36,
+        "risky": false,
+        "configurable": false
+    },
+    "space_after_semicolon": {
+        "priority": -1,
+        "risky": false,
+        "configurable": true
+    },
+    "spaces_inside_parentheses": {
+        "priority": 3,
+        "risky": false,
+        "configurable": true
+    },
+    "standardize_increment": {
+        "priority": 16,
+        "risky": false,
+        "configurable": false
+    },
+    "standardize_not_equals": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "statement_indentation": {
+        "priority": -3,
+        "risky": false,
+        "configurable": true
+    },
+    "static_lambda": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "static_private_method": {
+        "priority": 1,
+        "risky": true,
+        "configurable": false
+    },
+    "strict_comparison": {
+        "priority": 38,
+        "risky": true,
+        "configurable": false
+    },
+    "strict_param": {
+        "priority": 31,
+        "risky": true,
+        "configurable": false
+    },
+    "string_implicit_backslashes": {
+        "priority": 15,
+        "risky": false,
+        "configurable": true
+    },
+    "string_length_to_empty": {
+        "priority": 1,
+        "risky": true,
+        "configurable": false
+    },
+    "string_line_ending": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "stringable_for_to_string": {
+        "priority": 37,
+        "risky": false,
+        "configurable": false
+    },
+    "switch_case_semicolon_to_colon": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "switch_case_space": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "switch_continue_to_break": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "ternary_operator_spaces": {
+        "priority": 1,
+        "risky": false,
+        "configurable": false
+    },
+    "ternary_to_elvis_operator": {
+        "priority": 2,
+        "risky": true,
+        "configurable": false
+    },
+    "ternary_to_null_coalescing": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "trailing_comma_in_multiline": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "trim_array_spaces": {
+        "priority": 0,
+        "risky": false,
+        "configurable": false
+    },
+    "type_declaration_spaces": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "types_spaces": {
+        "priority": -1,
+        "risky": false,
+        "configurable": true
+    },
+    "unary_operator_spaces": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "use_arrow_functions": {
+        "priority": 32,
+        "risky": true,
+        "configurable": false
+    },
+    "visibility_required": {
+        "priority": 56,
+        "risky": false,
+        "configurable": true
+    },
+    "void_return": {
+        "priority": 5,
+        "risky": true,
+        "configurable": true
+    },
+    "whitespace_after_comma_in_array": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    },
+    "yield_from_array_to_yields": {
+        "priority": 0,
+        "risky": true,
+        "configurable": false
+    },
+    "yoda_style": {
+        "priority": 0,
+        "risky": false,
+        "configurable": true
+    }
+}
