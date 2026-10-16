@@ -1,6 +1,7 @@
 //! Extra cases for branches the upstream fixtures miss: tests/cases/<fixer>.json is a list of
 //! `{"fixer", "config"?, "input", "expected"}` where `expected` is the real PHP-CS-Fixer's output for
-//! `input` (fixer alone, default whitespace config; scripts/oracle-case.php). Same checks as AbstractFixerTestCase::doTest.
+//! `input` (fixer alone, default whitespace config; scripts/oracle-case.php; Pint's own fixers: scripts/export-pint-fixer-cases.php,
+//! with an optional `path` for `supports`). Same checks as AbstractFixerTestCase::doTest.
 //! `{"fixer", "config", "error"}` cases (scripts/oracle-config-error.php) pin the message of an invalid configuration.
 extern crate punphp_fixers as pun_fixers;
 use serde_json::Value;
@@ -31,10 +32,10 @@ fn oracle_cases() {
             fixer.configure(&config).unwrap_or_else(|e| panic!("{name} case {i}: {e}"));
             let input = case["input"].as_str().unwrap();
             let expected = case["expected"].as_str().unwrap();
-            let file = Path::new("test.php");
+            let file = Path::new(case.get("path").and_then(Value::as_str).unwrap_or("test.php"));
             let mut problems = Vec::new();
             let mut tokens = pun_tokens::Tokens::from_code(input.as_bytes());
-            if tokens.count() > 0 && fixer.is_candidate(&tokens) {
+            if tokens.count() > 0 && fixer.is_candidate(&tokens) && fixer.supports(file) {
                 fixer.fix(file, &mut tokens);
             }
             let got = tokens.generate_code();
@@ -45,7 +46,7 @@ fn oracle_cases() {
                 problems.push("tokens not marked changed".into());
             }
             let mut tokens = pun_tokens::Tokens::from_code(expected.as_bytes());
-            if tokens.count() > 0 && fixer.is_candidate(&tokens) {
+            if tokens.count() > 0 && fixer.is_candidate(&tokens) && fixer.supports(file) {
                 fixer.fix(file, &mut tokens);
             }
             if tokens.generate_code() != expected.as_bytes() {

@@ -83,6 +83,8 @@ Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCa
 - [x] unary_operator_spaces
 - [x] whitespace_after_comma_in_array
 - [x] Pint/laravel_blade
+- [x] Pint/phpdoc_type_annotations_only (Pint's own Pest datasets via scripts/export-pint-fixer-cases.php)
+- [x] new_with_parentheses (laravel preset; 3 `< 8.0` fixture cases skipped by RequiresPhp)
 - [x] array_push
 - [x] array_syntax
 - [x] backtick_to_shell_exec

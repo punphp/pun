@@ -12,7 +12,8 @@ use PhpCsFixer\WhitespacesFixerConfig;
 $config = isset($argv[3]) && '' !== $argv[3] ? json_decode($argv[3], true, 512, JSON_THROW_ON_ERROR) : null;
 $input = file_get_contents($file);
 
-$factory = (new FixerFactory())->registerBuiltInFixers();
+require __DIR__.'/../.oracle/pint/app/Fixers/TypeAnnotationsOnlyFixer.php';
+$factory = (new FixerFactory())->registerBuiltInFixers()->registerCustomFixers([new App\Fixers\TypeAnnotationsOnlyFixer()]);
 $fixer = null;
 foreach ($factory->getFixers() as $f) {
     if ($f->getName() === $name) {
@@ -35,7 +36,7 @@ $fixer->fix(new SplFileInfo(__FILE__), $tokens);
 $expected = $tokens->generateCode();
 echo $expected;
 
-$out = __DIR__."/../crates/pun-fixers/tests/cases/$name.json";
+$out = __DIR__.'/../crates/pun-fixers/tests/cases/'.str_replace('/', '_', $name).'.json';
 $cases = is_file($out) ? json_decode(file_get_contents($out), true) : [];
 $case = ['fixer' => $name] + (null !== $config ? ['config' => $config] : []) + ['input' => $input, 'expected' => $expected];
 if (!in_array($case, $cases, false)) {
