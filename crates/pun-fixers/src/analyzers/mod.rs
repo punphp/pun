@@ -21,6 +21,7 @@ pub mod functions_analyzer;
 pub mod reference_analyzer;
 pub mod abstract_no_useless_else_fixer;
 pub mod abstract_function_reference_fixer;
+pub mod abstract_phpdoc_types_fixer;
 pub mod constant_invocation;
 pub mod import_processor;
 pub mod fully_qualified_name_analyzer;
