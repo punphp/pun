@@ -3,6 +3,11 @@ name = "punphp-config"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "Pun configuration loading (pint.json / pun.toml)"
+repository.workspace = true
+homepage = "https://github.com/punphp/pun"
+keywords = ["php", "formatter", "pint", "laravel", "php-cs-fixer"]
+categories = ["development-tools"]
 
 [dependencies]
 anyhow.workspace = true

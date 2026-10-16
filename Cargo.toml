@@ -37,3 +37,8 @@ mago-reporting = "=1.57.0"
 [profile.release]
 lto = "thin"
 codegen-units = 4
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
