@@ -1,6 +1,5 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\AttributeAnalyzer`.
 use crate::analyzers::analysis::{Attribute, AttributeAnalysis};
-use crate::analyzers::namespaces_analyzer::NamespacesAnalyzer;
 use crate::analyzers::preg::Preg;
 use pun_tokens::Kind::*;
 use pun_tokens::{Proto, Tokens};
@@ -27,11 +26,8 @@ impl AttributeAnalyzer {
         if !tokens[index].is_kind(T_STRING) || !tokens.is_any_token_kinds_found(&[T_ATTRIBUTE]) {
             return false;
         }
-        let Some(attribute_start_index) = tokens.get_prev_token_of_kind(index, TOKEN_KINDS_NOT_ALLOWED_IN_ATTRIBUTE, true)
-        else {
-            // ponytail: upstream reads $tokens[null] (index 0, never T_ATTRIBUTE).
-            return false;
-        };
+        // T_OPEN_TAG is in the list, so a T_STRING always finds one.
+        let attribute_start_index = tokens.get_prev_token_of_kind(index, TOKEN_KINDS_NOT_ALLOWED_IN_ATTRIBUTE, true).unwrap();
         if !tokens[attribute_start_index].is_kind(T_ATTRIBUTE) {
             return false;
         }
@@ -89,31 +85,6 @@ impl AttributeAnalyzer {
         }
     }
 
-    pub fn determine_attribute_fully_qualified_name(tokens: &Tokens, name: &[u8], mut index: usize) -> Vec<u8> {
-        if name[0] == b'\\' {
-            return name.to_vec();
-        }
-        if !tokens[index].is_given_kind(&[T_STRING, T_NS_SEPARATOR]) {
-            index = tokens.get_next_token_of_kind(index, &[T_STRING.into(), T_NS_SEPARATOR.into()], true).unwrap();
-        }
-        let (namespace_analysis, namespace_use_analyses) = NamespacesAnalyzer::collect_namespace_analysis(tokens, index);
-        let mut namespace = namespace_analysis.full_name;
-        let first_token_of_name = &tokens[index].content;
-        let mut name = name.to_vec();
-        if let Some(u) = namespace_use_analyses.get(first_token_of_name) {
-            namespace = u.full_name.clone();
-            if name == *first_token_of_name {
-                return namespace;
-            }
-            // substr((string) strstr($name, '\\'), 1)
-            name = match name.iter().position(|&c| c == b'\\') {
-                Some(p) => name[p + 1..].to_vec(),
-                None => Vec::new(),
-            };
-        }
-        [&namespace[..], b"\\", &name[..]].concat()
-    }
-
     fn collect_attributes(tokens: &Tokens, mut index: usize, closing_index: usize) -> Vec<Attribute> {
         let mut elements = Vec::new();
         loop {
@@ -148,5 +119,43 @@ impl AttributeAnalyzer {
             index -= 1;
         }
         elements
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Expected values: PhpCsFixer\Tokenizer\Analyzer\AttributeAnalyzer::collect($tokens, 1) on the same code
+    /// (the trailing ` ]` without a newline, and a last element ended at the line break).
+    #[test]
+    fn collect_matches_oracle() {
+        let tokens = Tokens::from_code(b"<?php\n#[A, B(1, 2) ]\n#[C,\n  D\n]\nclass X {}");
+        let got: Vec<_> = AttributeAnalyzer::collect(&tokens, 1)
+            .iter()
+            .map(|a| {
+                let attrs: Vec<_> = a.attributes.iter().map(|x| (x.start, x.end, String::from_utf8_lossy(&x.name).into_owned())).collect();
+                (a.start_index, a.end_index, a.opening_bracket_index, a.closing_bracket_index, attrs)
+            })
+            .collect();
+        let s = |v: &str| v.to_string();
+        assert_eq!(
+            got,
+            vec![
+                (1, 14, 1, 13, vec![(2, 2, s("A")), (4, 12, s("B"))]),
+                (15, 22, 15, 21, vec![(16, 16, s("C")), (18, 19, s("D"))]),
+            ]
+        );
+    }
+
+    /// Expected values: AttributeAnalyzer::isAttribute on each T_STRING of the same code.
+    #[test]
+    fn is_attribute_matches_oracle() {
+        let tokens = Tokens::from_code(b"<?php #[A(B), C(D)] class X {}");
+        let got: Vec<(usize, bool)> = (0..tokens.count())
+            .filter(|&i| tokens[i].is_kind(T_STRING))
+            .map(|i| (i, AttributeAnalyzer::is_attribute(&tokens, i)))
+            .collect();
+        assert_eq!(got, [(2, true), (4, false), (8, true), (10, false), (16, false)]);
     }
 }

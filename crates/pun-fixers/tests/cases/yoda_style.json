@@ -3,5 +3,12 @@
         "fixer": "yoda_style",
         "input": "<?php\nif ($a ->b /* c */ === 1) {}\nif ($a === -FOO) {}\n",
         "expected": "<?php\nif (1 /* c */ === $a ->b) {}\nif ($a === -FOO) {}\n"
+    },
+    {
+        "fixer": "yoda_style",
+        "config": {
+            "equal": "x"
+        },
+        "error": "[yoda_style] Invalid configuration: The option \"equal\" with value \"x\" is expected to be of type \"bool\" or \"null\", but is of type \"string\"."
     }
 ]

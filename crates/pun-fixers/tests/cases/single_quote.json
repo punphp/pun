@@ -1,0 +1,16 @@
+[
+    {
+        "fixer": "single_quote",
+        "config": {
+            "strings_containing_single_quote_chars": 1.5
+        },
+        "error": "[single_quote] Invalid configuration: The option \"strings_containing_single_quote_chars\" with value 1.5 is expected to be of type \"bool\", but is of type \"float\"."
+    },
+    {
+        "fixer": "single_quote",
+        "config": {
+            "strings_containing_single_quote_chars": null
+        },
+        "error": "[single_quote] Invalid configuration: The option \"strings_containing_single_quote_chars\" with value null is expected to be of type \"bool\", but is of type \"null\"."
+    }
+]

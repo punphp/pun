@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "increment_style",
+        "config": {
+            "style": true
+        },
+        "error": "[increment_style] Invalid configuration: The option \"style\" with value true is invalid. Accepted values are: \"pre\", \"post\"."
+    }
+]

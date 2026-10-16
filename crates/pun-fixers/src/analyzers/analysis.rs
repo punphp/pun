@@ -45,13 +45,6 @@ pub struct NamespaceUseAnalysis {
 }
 
 impl NamespaceUseAnalysis {
-    pub fn get_human_friendly_type(&self) -> &'static str {
-        match self.type_ {
-            NamespaceUseType::Class => "class",
-            NamespaceUseType::Function => "function",
-            NamespaceUseType::Constant => "constant",
-        }
-    }
     pub fn is_class(&self) -> bool {
         self.type_ == NamespaceUseType::Class
     }
@@ -111,15 +104,6 @@ pub struct ArgumentAnalysis {
     pub type_analysis: Option<TypeAnalysis>,
 }
 
-impl ArgumentAnalysis {
-    pub fn has_default(&self) -> bool {
-        self.default.is_some()
-    }
-    pub fn has_type_analysis(&self) -> bool {
-        self.type_analysis.is_some()
-    }
-}
-
 /// One entry of `AttributeAnalysis::getAttributes()`: `array{start: int, end: int, name: string}`.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Attribute {
@@ -136,21 +120,6 @@ pub struct AttributeAnalysis {
     pub opening_bracket_index: usize,
     pub closing_bracket_index: usize,
     pub attributes: Vec<Attribute>,
-}
-
-/// `DataProviderAnalysis`.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct DataProviderAnalysis {
-    pub name: Vec<u8>,
-    pub name_index: usize,
-    pub usage_indices: Vec<usize>,
-}
-
-impl DataProviderAnalysis {
-    pub fn new(name: Vec<u8>, name_index: usize, usage_indices: Vec<usize>) -> Self {
-        assert!(!usage_indices.is_empty(), "Parameter \"usageIndices\" should be a non-empty-list.");
-        DataProviderAnalysis { name, name_index, usage_indices }
-    }
 }
 
 #[cfg(test)]

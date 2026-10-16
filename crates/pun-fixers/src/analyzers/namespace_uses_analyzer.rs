@@ -1,7 +1,7 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\NamespaceUsesAnalyzer`.
 use crate::analyzers::analysis::{NamespaceAnalysis, NamespaceUseAnalysis, NamespaceUseType};
 use pun_tokens::Kind::*;
-use pun_tokens::{Tokens, TokensAnalyzer};
+use pun_tokens::{Proto, Tokens, TokensAnalyzer};
 
 pub struct NamespaceUsesAnalyzer;
 
@@ -116,8 +116,10 @@ impl NamespaceUsesAnalyzer {
     fn get_nearest_qualified_name(&self, tokens: &Tokens, index: usize) -> QualifiedName {
         let (mut full_name, mut short_name) = (Vec::new(), Vec::new());
         let mut aliased = false;
+        // Upstream breaks out of the loop on these; testing them first is equivalent (none is a T_STRING/`\`/`as`).
+        let ends: [Proto; 5] = [",".into(), ";".into(), CT_GROUP_IMPORT_BRACE_OPEN.into(), CT_GROUP_IMPORT_BRACE_CLOSE.into(), T_CLOSE_TAG.into()];
         let mut index = Some(index);
-        while let Some(i) = index {
+        while let Some(i) = index.filter(|&i| !tokens[i].equals_any(&ends, true)) {
             let token = &tokens[i];
             if token.is_kind(T_STRING) {
                 short_name = token.content.clone();
@@ -128,11 +130,6 @@ impl NamespaceUsesAnalyzer {
                 full_name.extend_from_slice(&token.content);
             } else if token.is_kind(T_AS) {
                 aliased = true;
-            } else if token.equals_any(
-                &[",".into(), ";".into(), CT_GROUP_IMPORT_BRACE_OPEN.into(), CT_GROUP_IMPORT_BRACE_CLOSE.into(), T_CLOSE_TAG.into()],
-                true,
-            ) {
-                break;
             }
             index = tokens.get_next_meaningful_token(i);
         }
