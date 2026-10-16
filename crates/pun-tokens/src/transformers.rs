@@ -488,11 +488,8 @@ fn use_(tokens: &mut Tokens, index: usize) {
         set(tokens, index, CT_USE_LAMBDA, &content);
         return;
     }
-    if tokens[index].is_kind(T_CLASS) {
-        if tokens[prev(tokens, index)].is_kind(T_DOUBLE_COLON) {
-            return;
-        }
-    } else if !tokens[index].is_given_kind(&[T_TRAIT, T_ENUM]) {
+    // Upstream also skips `::class` here, but class_constant has already made that CT_CLASS_CONSTANT.
+    if !tokens[index].is_given_kind(&[T_CLASS, T_TRAIT, T_ENUM]) {
         return;
     }
     let mut index = idx(tokens.get_next_token_of_kind(index, &[c("{")], true));

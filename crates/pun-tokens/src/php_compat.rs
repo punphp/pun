@@ -202,19 +202,18 @@ mod tests {
             $in = json_decode(stream_get_contents(STDIN));
             foreach ($in as $a) foreach ($in as $b)
                 echo strcmp($a,$b) <=> 0, ' ', strcasecmp($a,$b), ' ', strnatcmp($a,$b), ' ', strnatcasecmp($a,$b), "\n";
+            foreach ($in as $a) echo json_encode([ltrim($a, " \t0a"), rtrim($a, " \t7"), rtrim($a), trim($a)]), "\n";
         "#;
         let json = format!(
             "[{}]",
             INPUTS.iter().map(|s| format!("{:?}", s)).collect::<Vec<_>>().join(",")
         );
-        let Ok(mut child) = std::process::Command::new("php")
+        let mut child = std::process::Command::new("php")
             .args(["-r", script])
             .stdin(std::process::Stdio::piped())
             .stdout(std::process::Stdio::piped())
             .spawn()
-        else {
-            return;
-        };
+            .expect("php (the oracle) must be on PATH");
         use std::io::Write;
         child.stdin.take().unwrap().write_all(json.as_bytes()).unwrap();
         let out = String::from_utf8(child.wait_with_output().unwrap().stdout).unwrap();
@@ -226,6 +225,12 @@ mod tests {
                 let line = lines.next().expect("php output");
                 assert_eq!(got, line, "{:?} vs {:?}", a, b);
             }
+        }
+        for a in INPUTS {
+            let want: Vec<String> = serde_json::from_str(lines.next().expect("php output")).unwrap();
+            let a = a.as_bytes();
+            let got = [ltrim_chars(a, b" \t0a"), rtrim_chars(a, b" \t7"), rtrim(a), trim(a)].map(|x| String::from_utf8(x.to_vec()).unwrap());
+            assert_eq!(got.to_vec(), want, "{a:?}");
         }
     }
 

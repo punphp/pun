@@ -16,7 +16,7 @@ ported fixer reads like the PHP. Indices are `usize`; upstream's `?int` is `Opti
 | `token.equals(proto, case_sensitive)`, `equals_any(&[..], cs)`, `equals_token(&Token, cs)` | `equals` / `equalsAny` (incl. the `&` special case) |
 | `is_kind(k)`, `is_given_kind(&[k..])`, `is_array`, `is_comment`, `is_whitespace(Option<&[u8]>)`, `is_cast`, `is_classy`, `is_object_operator`, `is_keyword`, `is_magic_constant`, `is_native_constant`, `get_id`, `get_content`, `get_name` | same |
 | `Tokens::from_code(&[u8])`, `from_array(Vec<Token>)`, `set_code`, `generate_code() -> Vec<u8>`, `generate_partial_code(start, end)` (inclusive) | same |
-| `tokens[i]` (read), `tokens.set(i, token)` / `override_at` | `$tokens[$i]` / `$tokens[$i] = ...` (offsetSet: found-kinds + block-cache bookkeeping) |
+| `tokens[i]` (read), `tokens.set(i, token)` | `$tokens[$i]` / `$tokens[$i] = ...` (offsetSet: found-kinds + block-cache bookkeeping) |
 | `len`/`count`, `iter`, `offset_exists`, `is_empty_at`, `clear_at`, `clear_range` (inclusive), `override_range(start, end, Vec<Token>)`, `insert_at(i, Vec<Token>)`, `insert_slices(BTreeMap<usize, Vec<Token>>)`, `clear_empty_tokens`, `clear_token_and_merge_surrounding_whitespace` | same |
 | `ensure_whitespace_at_index(i, offset, ws) -> bool`, `remove_leading_whitespace(i, ws)`, `remove_trailing_whitespace(i, ws)` | same |
 | `get_next_meaningful_token`, `get_prev_meaningful_token`, `get_meaningful_token_sibling(i, dir)`, `get_next/prev_non_whitespace(i, ws)`, `get_non_whitespace_sibling`, `get_next/prev_token_of_kind(i, &[Proto], cs)`, `get_token_of_kind_sibling`, `get_token_not_of_kind_sibling(i, dir, &[Proto])`, `get_token_not_of_kinds_sibling(i, dir, &[Kind])`, `get_non_empty_sibling` | same |
