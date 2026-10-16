@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "combine_consecutive_issets",
+        "input": "<?php\nif (isset($a) && isset($b) && !isset($c) && isset($d, $e) && isset($f /* x */)) {}\n$x = isset($a[1]) && isset($b->c) || isset($d) && isset($e);\n",
+        "expected": "<?php\nif (isset($a, $b)   && !isset($c) && isset($d, $e, $f)   /* x */) {}\n$x = isset($a[1], $b->c)   || isset($d, $e)  ;\n"
+    }
+]

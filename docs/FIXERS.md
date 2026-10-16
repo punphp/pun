@@ -195,6 +195,20 @@ Rule lists from `.oracle/pint/resources/presets/psr12.php` and `src/RuleSet/Sets
   unary_operator_spaces `only_dec_inc: true`.
 - Other sets (`@PER-CS`, `@Symfony`, ...) are not expanded: they stay one unported rule (per/symfony presets go through delegate mode).
 
+## laravel-framework's own pint.json (rules agent)
+
+The 8 rules its config enables that the presets don't (all with default options, `true`). Upstream fixtures plus oracle
+cases in `crates/pun-fixers/tests/cases/`:
+
+- [x] align_multiline_comment (fixtures 28/28; `comment_type` all three values)
+- [x] class_reference_name_casing (fixtures 34/34; internal class list = the oracle PHP's, `analyzers/php_internal_classes.txt`)
+- [x] combine_consecutive_issets (fixtures 20/20)
+- [x] combine_consecutive_unsets (fixtures 12/13: `testFixPre80` requires PHP < 8.0)
+- [x] phpdoc_return_self_reference (fixtures 14/16: the 2 `testInvalidConfiguration` cases are oracle config-error cases instead)
+- [x] phpdoc_summary (fixtures 20/20)
+- [x] phpdoc_trim_consecutive_blank_line_separation (fixtures 6/6)
+- [x] switch_continue_to_break (fixtures 12/12)
+
 ## Deprecated rules (not supported)
 
 PHP-CS-Fixer 3.95 marks 18 rules deprecated (`DeprecatedFixerInterface`, see https://cs.symfony.com/doc/rules/index.html).

@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_trim_consecutive_blank_line_separation",
+        "input": "<?php\n/**\n * Summary.\n *\n *\n * Description.\n *\n *\n *\n * @param int $a\n *\n *\n * @return int\n *\n *\n */\nfunction a($a) {}\n",
+        "expected": "<?php\n/**\n * Summary.\n *\n * Description.\n *\n * @param int $a\n *\n * @return int\n *\n *\n */\nfunction a($a) {}\n"
+    }
+]

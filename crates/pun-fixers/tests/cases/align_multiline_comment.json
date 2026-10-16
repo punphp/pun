@@ -1,0 +1,23 @@
+[
+    {
+        "fixer": "align_multiline_comment",
+        "config": {
+            "comment_type": "phpdocs_like"
+        },
+        "input": "<?php\nclass A\n{\n    /**\n      * Foo\n    bar\n\n       */\n    public function a() {}\n\n        /*\n       * like\n         * doc\n    */\n    public $b;\n}\n",
+        "expected": "<?php\nclass A\n{\n    /**\n     * Foo\n     * bar\n     *\n     */\n    public function a() {}\n\n        /*\n         * like\n         * doc\n         */\n    public $b;\n}\n"
+    },
+    {
+        "fixer": "align_multiline_comment",
+        "config": {
+            "comment_type": "all_multiline"
+        },
+        "input": "<?php\nclass A\n{\n    /**\n      * Foo\n    bar\n\n       */\n    public function a() {}\n\n        /*\n       * like\n         * doc\n    */\n    public $b;\n}\n",
+        "expected": "<?php\nclass A\n{\n    /**\n     * Foo\n     * bar\n     *\n     */\n    public function a() {}\n\n        /*\n         * like\n         * doc\n         */\n    public $b;\n}\n"
+    },
+    {
+        "fixer": "align_multiline_comment",
+        "input": "<?php\nclass A\n{\n    /**\n      * Foo\n    bar\n\n       */\n    public function a() {}\n\n        /*\n       * like\n         * doc\n    */\n    public $b;\n}\n",
+        "expected": "<?php\nclass A\n{\n    /**\n     * Foo\n     * bar\n     *\n     */\n    public function a() {}\n\n        /*\n       * like\n         * doc\n    */\n    public $b;\n}\n"
+    }
+]

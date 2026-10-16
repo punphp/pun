@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_summary",
+        "input": "<?php\n/**\n * Summary line\n */\nfunction a() {}\n/**\n * List:\n * - one\n */\nfunction b() {}\n/**\n * Ends in ideograph。\n */\nfunction c() {}\n/**\n * Two\n * lines\n *\n * @return int\n */\nfunction d() {}\n",
+        "expected": "<?php\n/**\n * Summary line.\n */\nfunction a() {}\n/**\n * List:\n * - one\n */\nfunction b() {}\n/**\n * Ends in ideograph。\n */\nfunction c() {}\n/**\n * Two\n * lines.\n *\n * @return int\n */\nfunction d() {}\n"
+    }
+]

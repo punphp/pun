@@ -1,0 +1,340 @@
+{
+    "fixer": "align_multiline_comment",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\AlignMultilineCommentFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/AlignMultilineCommentFixerTest.php",
+    "case_count": 28,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\AlignMultilineCommentFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$a = 1;\n    /**\n     * Doc comment\n     *\n     *\n     *\n     * first without an asterisk\n     * second without an asterisk or space\n     */",
+                        "<?php\n$a = 1;\n    /**\n     * Doc comment\n       *\n\n*\n    first without an asterisk\nsecond without an asterisk or space\n   */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\r\n$a = 1;\r\n    /**\r\n     * Doc comment\r\n     *\r\n     *\r\n     *\r\n     * first without an asterisk\r\n     * second without an asterisk or space\r\n     */",
+                        "<?php\r\n$a = 1;\r\n    /**\r\n     * Doc comment\r\n       *\r\n\r\n*\r\n    first without an asterisk\r\nsecond without an asterisk or space\r\n   */",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    /**\n     * Document start\n     */",
+                        "<?php\n    /**\n* Document start\n    */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\r\n    /**\r\n     * Document start\r\n     */",
+                        "<?php\r\n    /**\r\n* Document start\r\n    */",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n \n /**\n  * Two new lines\n  */",
+                        "<?php\n \n /**\n* Two new lines\n*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\r\n \r\n /**\r\n  * Two new lines\r\n  */",
+                        "<?php\r\n \r\n /**\r\n* Two new lines\r\n*/",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\t/**\n\t * Tabs as indentation\n\t */",
+                        "<?php\n\t/**\n* Tabs as indentation\n        */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\r\n\t/**\r\n\t * Tabs as indentation\r\n\t */",
+                        "<?php\r\n\t/**\r\n* Tabs as indentation\r\n        */",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$a = 1;\n/**\n * Doc command without prior indentation\n */",
+                        "<?php\n$a = 1;\n/**\n* Doc command without prior indentation\n*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\r\n$a = 1;\r\n/**\r\n * Doc command without prior indentation\r\n */",
+                        "<?php\r\n$a = 1;\r\n/**\r\n* Doc command without prior indentation\r\n*/",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n/**\n * Doc command without prior indentation\n * Document start\n */",
+                        "<?php\n/**\n* Doc command without prior indentation\n* Document start\n*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\r\n/**\r\n * Doc command without prior indentation\r\n * Document start\r\n */",
+                        "<?php\r\n/**\r\n* Doc command without prior indentation\r\n* Document start\r\n*/",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n    /*\n     * Multiline comment\n       *\n*\n   */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\r\n    /*\r\n     * Multiline comment\r\n       *\r\n*\r\n   */",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n    /** inline doc comment */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\r\n    /** inline doc comment */",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n $a=1;  /**\n*\n doc comment that doesn't start in a new line\n\n*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\r\n $a=1;  /**\r\n*\r\n doc comment that doesn't start in a new line\r\n\r\n*/",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n    # Hash single line comments are untouched\n     #\n   #\n      #"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\r\n    # Hash single line comments are untouched\r\n     #\r\n   #\r\n      #",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n    // Slash single line comments are untouched\n     //\n   //\n      //"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\r\n    // Slash single line comments are untouched\r\n     //\r\n   //\r\n      //",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\nclass A\n{\n    /**\n     * @SWG\\Get(\n     *     path=\"/api/v0/cards\",\n     *     operationId=\"listCards\",\n     *     tags={\"Банковские карты\"},\n     *     summary=\"Возвращает список банковских карт.\"\n     *  )\n     */\n    public function indexAction()\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\r\nclass A\r\n{\r\n    /**\r\n     * @SWG\\Get(\r\n     *     path=\"/api/v0/cards\",\r\n     *     operationId=\"listCards\",\r\n     *     tags={\"Банковские карты\"},\r\n     *     summary=\"Возвращает список банковских карт.\"\r\n     *  )\r\n     */\r\n    public function indexAction()\r\n    {\r\n    }\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n    /*\n     * Doc-like Multiline comment\n     *\n     *\n     */",
+                        "<?php\n    /*\n     * Doc-like Multiline comment\n       *\n*\n   */",
+                        {
+                            "comment_type": "phpdocs_like"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n    /*\n     * Multiline comment with mixed content\n       *\n  Line without an asterisk\n*\n   */",
+                        null,
+                        {
+                            "comment_type": "phpdocs_like"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n    /*\n     * Two empty lines\n        *\n\n\n*\n   */",
+                        null,
+                        {
+                            "comment_type": "phpdocs_like"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n    /*\n     * Multiline comment with mixed content\n     *\n  Line without an asterisk\n     *\n     */",
+                        "<?php\n    /*\n     * Multiline comment with mixed content\n       *\n  Line without an asterisk\n*\n   */",
+                        {
+                            "comment_type": "all_multiline"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

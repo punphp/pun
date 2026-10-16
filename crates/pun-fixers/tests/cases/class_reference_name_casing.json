@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "class_reference_name_casing",
+        "input": "<?php\nnamespace Foo;\n\nuse Bar\\Exception;\n\nthrow new \\exception();\n$a = new \\STDCLASS;\n$b = \\arrayobject::class;\nnew Exception();\n\nnamespace Baz;\n\nfunction f(\\DATETIME $d): \\datetimeinterface {}\n",
+        "expected": "<?php\nnamespace Foo;\n\nuse Bar\\Exception;\n\nthrow new \\exception();\n$a = new \\stdClass;\n$b = \\ArrayObject::class;\nnew Exception();\n\nnamespace Baz;\n\nfunction f(\\DateTime $d): \\datetimeinterface {}\n"
+    }
+]

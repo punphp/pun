@@ -1,0 +1,121 @@
+{
+    "fixer": "switch_continue_to_break",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchContinueToBreakFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/SwitchContinueToBreakFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchContinueToBreakFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "alternative syntax |",
+                    "args": [
+                        "<?php\n                    switch($foo):\n                        case 3:\n                            continue;\n                    endswitch?>\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alternative syntax ||",
+                    "args": [
+                        "<?php\n\nforeach ([] as $v) {\n    continue;\n}\n\nif ($foo != 0) {\n}\n\nswitch ($foo):\nendswitch;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested switches",
+                    "args": [
+                        "<?php\nswitch($z) {\n    case 1:\n        switch($x) {\n            case 2:\n                switch($y) {\n                    case 3:\n                        switch($z) {\n                            case 4:\n                                break; // z.1\n                        }\n                        break; // z\n                }\n                break; // y\n        }\n        break; // x\n}\n",
+                        "<?php\nswitch($z) {\n    case 1:\n        switch($x) {\n            case 2:\n                switch($y) {\n                    case 3:\n                        switch($z) {\n                            case 4:\n                                continue; // z.1\n                        }\n                        continue; // z\n                }\n                continue; // y\n        }\n        continue; // x\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested 2",
+                    "args": [
+                        "<?php\nwhile ($foo) {\n    switch ($bar) {\n        case \"baz\":\n            while ($xyz) {\n                switch($zA) {\n                    case 1:\n                        break 3; // fix\n                }\n\n                if ($z) continue;\n                if ($zz){ continue; }\n\n                if ($zzz) continue 3;\n                if ($zzz){ continue 3; }\n\n                if ($b) break 2; // fix\n            }\n\n            switch($zG) {\n                case 1:\n                    switch($zF) {\n                        case 1:\n                            break 1; // fix\n                        case 2:\n                            break 2; // fix\n                        case 3:\n                            break 3; // fix\n                        case 4:\n                            while($a){\n                                while($a){\n                                    while($a){\n                                        if ($a) {\n                                            break 4; // fix\n                                        } elseif($z) {\n                                            break 5; // fix\n                                        } else {\n                                            break 6; // fix\n                                        }\n\n                                        continue 7;\n                                    }\n                                }\n                            }\n\n                            continue 4;\n                    }\n\n                    break 2; // fix\n            }\n    }\n}\n",
+                        "<?php\nwhile ($foo) {\n    switch ($bar) {\n        case \"baz\":\n            while ($xyz) {\n                switch($zA) {\n                    case 1:\n                        continue 3; // fix\n                }\n\n                if ($z) continue;\n                if ($zz){ continue; }\n\n                if ($zzz) continue 3;\n                if ($zzz){ continue 3; }\n\n                if ($b) continue 2; // fix\n            }\n\n            switch($zG) {\n                case 1:\n                    switch($zF) {\n                        case 1:\n                            continue 1; // fix\n                        case 2:\n                            continue 2; // fix\n                        case 3:\n                            continue 3; // fix\n                        case 4:\n                            while($a){\n                                while($a){\n                                    while($a){\n                                        if ($a) {\n                                            continue 4; // fix\n                                        } elseif($z) {\n                                            continue 5; // fix\n                                        } else {\n                                            continue 6; // fix\n                                        }\n\n                                        continue 7;\n                                    }\n                                }\n                            }\n\n                            continue 4;\n                    }\n\n                    continue 2; // fix\n            }\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested do while",
+                    "args": [
+                        "<?php\nswitch ($a) {\n    case 1:\n        do {\n            switch ($a) {\n                case 1:\n                    do {\n                        switch ($a) {\n                            case 1:\n                                do {\n                                    continue;\n                                } while (false);\n\n                            break;\n                        }\n\n                        continue;\n                    } while (false);\n\n                break;\n            }\n            continue;\n        } while (false);\n\n    break;\n}\n",
+                        "<?php\nswitch ($a) {\n    case 1:\n        do {\n            switch ($a) {\n                case 1:\n                    do {\n                        switch ($a) {\n                            case 1:\n                                do {\n                                    continue;\n                                } while (false);\n\n                            continue;\n                        }\n\n                        continue;\n                    } while (false);\n\n                continue;\n            }\n            continue;\n        } while (false);\n\n    continue;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested while without {}",
+                    "args": [
+                        "<?php\nswitch(foo()) {\n    case 1: while(bar($i))continue;break;\n    default: echo 7;\n}\n",
+                        "<?php\nswitch(foo()) {\n    case 1: while(bar($i))continue;continue;\n    default: echo 7;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested while with {}",
+                    "args": [
+                        "<?php\nswitch(foo()) {\n    case 1: while(bar($i)){ --$i; echo 1; continue;}break;\n    default: echo 8;\n}",
+                        "<?php\nswitch(foo()) {\n    case 1: while(bar($i)){ --$i; echo 1; continue;}continue;\n    default: echo 8;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix cases",
+                    "args": [
+                        "<?php\nswitch($a) {\n    case 1:\n        while (false) {\n            continue;\n        }\n\n        while (false) break 1;\n\n        do {\n            continue;\n        } while (false);\n\n        for ($a = 0; $a < 1; ++$a) {\n            continue;\n        }\n\n        foreach ($a as $b) continue;\n        for (; $i < 1; ++$i) break 1; echo $i;\n        for (;;) continue;\n        while(false) continue;\n        while(false) continue?><?php\n\n        // so bad and such a mess, not worth adding a ton of logic to fix this\n        switch($z) {\n            case 1:\n                continue ?>   <?php 23;\n            case 2:\n                continue 1?>   <?php + $a;\n        }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not int cases",
+                    "args": [
+                        "<?php\nwhile($b) {\nswitch($a) {\ncase 1:\n    break 01;\ncase 2:\n    break 0x1;\ncase 22:\n    break 0x01;\ncase 3:\n    break 0b1;\ncase 32:\n    break 0b0001;\ncase 4:\n    break 0b000001;\n// do not fix\ncase 1:\n    continue 02;\ncase 2:\n    continue 0x2;\ncase 3:\n    continue 0b10;\n}\n}",
+                        "<?php\nwhile($b) {\nswitch($a) {\ncase 1:\n    continue 01;\ncase 2:\n    continue 0x1;\ncase 22:\n    continue 0x01;\ncase 3:\n    continue 0b1;\ncase 32:\n    continue 0b0001;\ncase 4:\n    continue 0b000001;\n// do not fix\ncase 1:\n    continue 02;\ncase 2:\n    continue 0x2;\ncase 3:\n    continue 0b10;\n}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "deep nested case",
+                    "args": [
+                        "<?php\nswitch ($a) {\ncase $b:\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    switch ($a) {\n        case 1:\n            echo 1;\n\n            break 10;\n}}}}}}}}}}",
+                        "<?php\nswitch ($a) {\ncase $b:\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    switch ($a) {\n        case 1:\n            echo 1;\n\n            continue 10;\n}}}}}}}}}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "underscore constant",
+                    "args": [
+                        "<?php\n            switch($a) {\n                case \"a\":\n                    echo __FILE__;\n                    break;\n            }\n            ",
+                        "<?php\n            switch($a) {\n                case \"a\":\n                    echo __FILE__;\n                    continue;\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "numeric literal separator",
+                    "args": [
+                        "<?php\nswitch ($a) {\ncase $b:\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    switch ($a) {\n        case 1:\n            echo 1;\n\n            break 1_0;\n}}}}}}}}}}",
+                        "<?php\nswitch ($a) {\ncase $b:\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    while (false) {\n    switch ($a) {\n        case 1:\n            echo 1;\n\n            continue 1_0;\n}}}}}}}}}}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

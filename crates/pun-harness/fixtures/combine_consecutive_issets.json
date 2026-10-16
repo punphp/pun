@@ -1,0 +1,184 @@
+{
+    "fixer": "combine_consecutive_issets",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\CombineConsecutiveIssetsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/CombineConsecutiveIssetsFixerTest.php",
+    "case_count": 20,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\CombineConsecutiveIssetsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = isset($a, $b)  ;",
+                        "<?php $a = isset($a) && isset($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = isset($a, $b,$c)  ;",
+                        "<?php $a = isset($a) && isset($b,$c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = isset($a,$c, $b,$c)  ;",
+                        "<?php $a = isset($a,$c) && isset($b,$c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a = isset($a,$c, $b)  ;",
+                        "<?php $a = isset($a,$c) && isset($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $a = isset($a, $b)   || isset($c, $e)  ?>",
+                        "<?php $a = isset($a) && isset($b) || isset($c) && isset($e)?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $a = isset($a[a() ? b() : $d], $b)  ;",
+                        "<?php $a = isset($a[a() ? b() : $d]) && isset($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $a = isset($a[$b], $b/**/)  ;",
+                        "<?php $a = isset($a[$b]/**/) && isset($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a = isset ( $a, $c, $d /*1*/ )                 ;",
+                        "<?php $a = isset ( $a /*1*/ )    &&    isset ( $c   ) && isset( $d );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal fix case",
+                    "args": [
+                        "<?php {{isset($a, $b);}}",
+                        "<?php {{isset($a)&&isset($b);}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php foo(isset($a, $b, $c)    );",
+                        "<?php foo(isset($a) && isset($b) && isset($c));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php isset($a, $b)   && !isset($c) ?>",
+                        "<?php isset($a) && isset($b) && !isset($c) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $a = isset($a,$c, $b,$c, $b,$c,$d,$f, $b)      ;",
+                        "<?php $a = isset($a,$c) && isset($b,$c) && isset($b,$c,$d,$f) && isset($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments",
+                    "args": [
+                        "<?php\n\n$a =#0\nisset#1\n(#2\n$a, $b,$c, $d#3\n)#4\n#5\n\n #6\n #7\n  #8\n  #9\n /*10*/     /**11\n*/\n \n;",
+                        "<?php\n\n$a =#0\nisset#1\n(#2\n$a#3\n)#4\n&&#5\nisset\n #6\n #7\n ( #8\n $b #9\n /*10*/,     $c/**11\n*/\n)&& isset($d)\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                    $a = isset($a, $b, $c, $d, $e, $f)          ;\n                    echo 1; echo 1; echo 1; echo 1; echo 1; echo 1; echo 1;\n                    echo 1; echo 1; echo 1; echo 1; echo 1; echo 1; echo 1;\n                    echo 1; echo 1; echo 1; echo 1; echo 1; echo 1; echo 1;\n                    echo 1; echo 1; echo 1; echo 1; echo 1; echo 1; echo 1;\n                    $a = isset($a, $b)  ;\n                ",
+                        "<?php\n                    $a = isset($a) && isset($b) && isset($c) && isset($d) && isset($e) && isset($f);\n                    echo 1; echo 1; echo 1; echo 1; echo 1; echo 1; echo 1;\n                    echo 1; echo 1; echo 1; echo 1; echo 1; echo 1; echo 1;\n                    echo 1; echo 1; echo 1; echo 1; echo 1; echo 1; echo 1;\n                    echo 1; echo 1; echo 1; echo 1; echo 1; echo 1; echo 1;\n                    $a = isset($a) && isset($b);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $d = isset($z[1], $z[2], $z[3])     || false;",
+                        "<?php $d = isset($z[1]) && isset($z[2]) && isset($z[3]) || false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                    $a = isset($a, $b)   && isset($c) === false;\n                    $a = isset($a, $b)   && isset($c) | false;\n                    $a = isset($a, $b)   && isset($c) ^ false;\n                ",
+                        "<?php\n                    $a = isset($a) && isset($b) && isset($c) === false;\n                    $a = isset($a) && isset($b) && isset($c) | false;\n                    $a = isset($a) && isset($b) && isset($c) ^ false;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $a = isset($a) && $a->isset(); $b=isset($d);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                    $a = !isset($a) && isset($b);\n                    $a = !isset($a) && !isset($b);\n                    $a = isset($a) && !isset($b);\n                    //\n                    $a = isset($b) && isset($c) === false;\n                    $a = isset($b) && isset($c) | false;\n                    $a = isset($b) && isset($c) ^ false;\n                    //\n                    $a = false === isset($b) && isset($c);\n                    $a = false | isset($b) && isset($c);\n                    $a = false ^ isset($b) && isset($c);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $a = !isset($container[$a]) && isset($container[$b]) && !isset($container[$c]) && isset($container[$d]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class",
+                    "args": [
+                        "<?php\n                class A {function isset(){}} // isset($b) && isset($c)\n                $a = new A(); /** isset($b) && isset($c) */\n                if (isset($b) && $a->isset()) {}\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "switch_continue_to_break",
+        "input": "<?php\nswitch ($a) {\n    case 1:\n        continue 0x1;\n    case 2:\n        continue 0b1;\n    case 3:\n        continue 01;\n    case 4:\n        continue 0X1;\n    case 5:\n        while (true) { continue 0b10; }\n    case 6:\n        while (true) { continue 0o2; }\n    case 7:\n        while (true) { continue 1_0; }\n    case 8:\n        continue 0;\n}\n",
+        "expected": "<?php\nswitch ($a) {\n    case 1:\n        break 0x1;\n    case 2:\n        break 0b1;\n    case 3:\n        break 01;\n    case 4:\n        break 0X1;\n    case 5:\n        while (true) { break 0b10; }\n    case 6:\n        while (true) { break 0o2; }\n    case 7:\n        while (true) { continue 1_0; }\n    case 8:\n        break 0;\n}\n"
+    }
+]

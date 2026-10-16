@@ -1,0 +1,242 @@
+{
+    "fixer": "phpdoc_return_self_reference",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocReturnSelfReferenceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocReturnSelfReferenceFixerTest.php",
+    "case_count": 16,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocReturnSelfReferenceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php interface A{/** @return    $this */public function test();}",
+                        "<?php interface A{/** @return    this */public function test();}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php interface B{/** @return self|int */function test();}",
+                        "<?php interface B{/** @return $SELF|int */function test();}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php class D {} /** @return {@this} */ require_once($a);echo 1;echo 1;echo 1;echo 1;echo 1;echo 1;echo 1;echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** @return this */ require_once($a);echo 1;echo 1;echo 1;echo 1;echo 1;echo 1;echo 1;echo 1; class E {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\ntrait SomeTrait\n{\n    /** @return $this */\n    public function someTest(): self\n    {\n        return $this;\n    }\n}\n// class Foo { use Bla; } $a = (new Foo())->someTest();",
+                        "<?php\n\ntrait SomeTrait\n{\n    /** @return this */\n    public function someTest(): self\n    {\n        return $this;\n    }\n}\n// class Foo { use Bla; } $a = (new Foo())->someTest();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php interface C{/** @return $self|int */function test();}",
+                        null,
+                        {
+                            "replacements": {
+                                "$static": "static"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n/**\n * Please do not use @return this|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param this\n     *\n     * @return $this\n     */\n     public function AB($self)\n     {\n        return $this; // this\n     }\n}\n",
+                        "<?php\n/**\n * Please do not use @return this|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param this\n     *\n     * @return this\n     */\n     public function AB($self)\n     {\n        return $this; // this\n     }\n}\n",
+                        {
+                            "replacements": {
+                                "this": "$this"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n/**\n * Please do not use @return @this|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param @this\n     *\n     * @return $this\n     */\n     public function AB($self)\n     {\n        return $this; // @this\n     }\n}\n",
+                        "<?php\n/**\n * Please do not use @return @this|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param @this\n     *\n     * @return @this\n     */\n     public function AB($self)\n     {\n        return $this; // @this\n     }\n}\n",
+                        {
+                            "replacements": {
+                                "@this": "$this"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n/**\n * Please do not use @return $self|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param $self\n     *\n     * @return self\n     */\n     public function AB($self)\n     {\n        return $this; // $self\n     }\n}\n",
+                        "<?php\n/**\n * Please do not use @return $self|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param $self\n     *\n     * @return $self\n     */\n     public function AB($self)\n     {\n        return $this; // $self\n     }\n}\n",
+                        {
+                            "replacements": {
+                                "$self": "self"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n/**\n * Please do not use @return @self|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param @self\n     *\n     * @return self\n     */\n     public function AB($self)\n     {\n        return $this; // @self\n     }\n}\n",
+                        "<?php\n/**\n * Please do not use @return @self|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param @self\n     *\n     * @return @self\n     */\n     public function AB($self)\n     {\n        return $this; // @self\n     }\n}\n",
+                        {
+                            "replacements": {
+                                "@self": "self"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n/**\n * Please do not use @return $static|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param $static\n     *\n     * @return static\n     */\n     public function AB($self)\n     {\n        return $this; // $static\n     }\n}\n",
+                        "<?php\n/**\n * Please do not use @return $static|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param $static\n     *\n     * @return $static\n     */\n     public function AB($self)\n     {\n        return $this; // $static\n     }\n}\n",
+                        {
+                            "replacements": {
+                                "$static": "static"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n/**\n * Please do not use @return @STATIC|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param @STATIC\n     *\n     * @return static\n     */\n     public function AB($self)\n     {\n        return $this; // @STATIC\n     }\n}\n",
+                        "<?php\n/**\n * Please do not use @return @STATIC|static|self|this|$static|$self|@static|@self|@this as return type declaration\n */\nclass F\n{\n    /**\n     * @param @STATIC\n     *\n     * @return @STATIC\n     */\n     public function AB($self)\n     {\n        return $this; // @STATIC\n     }\n}\n",
+                        {
+                            "replacements": {
+                                "@STATIC": "static"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class",
+                    "args": [
+                        "<?php\n                $a = new class() {\n\n                    /** @return $this */\n                    public function a() {\n                    }\n                };\n\n                class C\n                {\n                    public function A()\n                    {\n                        $a = new class() {\n                            /** @return $this */\n                            public function a() {}\n                        };\n                    }\n                }\n            ",
+                        "<?php\n                $a = new class() {\n\n                    /** @return @this */\n                    public function a() {\n                    }\n                };\n\n                class C\n                {\n                    public function A()\n                    {\n                        $a = new class() {\n                            /** @return @this */\n                            public function a() {}\n                        };\n                    }\n                }\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "message",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocReturnSelfReferenceFixerTest",
+            "body": "    public function testInvalidConfiguration(array $configuration, string $message): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches(\\sprintf('/^\\[phpdoc_return_self_reference\\] %s$/', preg_quote($message, '/')));\n\n        $this->fixer->configure($configuration); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 0,
+                    "args": [
+                        {
+                            "replacements": {
+                                "1": "a"
+                            }
+                        },
+                        "Invalid configuration: Unknown key \"integer#1\", expected any of \"this\", \"@this\", \"$self\", \"@self\", \"$static\" and \"@static\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "replacements": {
+                                "this": "foo"
+                            }
+                        },
+                        "Invalid configuration: Unknown value \"string#foo\", expected any of \"$this\", \"static\" and \"self\"."
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocReturnSelfReferenceFixerTest",
+            "body": "    public function testFix81(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nenum Foo {\n    case CAT;\n\n    /** @return $this */\n    public function test(): self {\n        return $this;\n    }\n}\n\nvar_dump(Foo::CAT->test());\n",
+                        "<?php\nenum Foo {\n    case CAT;\n\n    /** @return this */\n    public function test(): self {\n        return $this;\n    }\n}\n\nvar_dump(Foo::CAT->test());\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}
