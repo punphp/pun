@@ -6,11 +6,13 @@ mod cache;
 mod console;
 mod fix_report;
 mod highlight;
+mod lsp;
 mod php_diff;
 mod pint_error;
 mod report;
 #[cfg(feature = "pprof")]
 mod sampler;
+mod watch;
 
 use anyhow::{Context, Result};
 use clap::{Args, Parser, Subcommand};
@@ -36,6 +38,8 @@ enum Cmd {
     /// Report Mago's lint-only rules (`--mago`); never edits files. Needs the `mago-lint` build feature.
     #[cfg(feature = "mago-lint")]
     Lint(lint::LintArgs),
+    /// Formatting-only language server on stdio (textDocument/formatting).
+    Lsp,
     /// Inspect configuration.
     Config {
         /// Print the resolved configuration after imports.
@@ -55,7 +59,7 @@ enum Cmd {
 }
 
 /// Pint's DefaultCommand flags plus Pun's own.
-#[derive(Args, Default)]
+#[derive(Args, Default, Clone)]
 #[command(about = "Fix the coding style of the given path")]
 pub struct FormatArgs {
     /// The path to fix (`-` reads stdin).
@@ -129,6 +133,9 @@ pub struct FormatArgs {
     /// Accepted for Pint compatibility, unparsed (Pint's intval() takes any value).
     #[arg(long)]
     max_processes: Option<String>,
+    /// Keep running and re-format files as they change (Pun).
+    #[arg(long, conflicts_with_all = ["stdin", "stdin_filename"])]
+    watch: bool,
     /// Print the discovered files and exit (debugging finder parity).
     #[arg(long, hide = true)]
     list_files: bool,
@@ -162,7 +169,9 @@ fn main() -> ExitCode {
         }
     } else {
         match Cli::parse().cmd {
+            Cmd::Format(a) if a.watch => watch::run(a),
             Cmd::Format(a) => format(a, false),
+            Cmd::Lsp => lsp::run(),
             #[cfg(feature = "mago-lint")]
             Cmd::Lint(a) => lint::run(a),
             Cmd::Config { init: true, .. } => init_config(),
@@ -252,44 +261,22 @@ impl Engine2 {
     }
 }
 
-fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
-    let root = root()?;
+fn load_config(a: &FormatArgs, pint_mode: bool, root: &Path) -> Result<Config> {
     let engine = a.engine.as_deref().map(|e| if e == "pun" { Engine::Pun } else { Engine::Compat });
     let opts = Options { config: a.config.clone(), no_config: a.no_config, preset: a.preset.clone(), engine, blade: a.blade, pint_mode };
-    let cfg = pun_config::load(&root, &opts)?;
+    pun_config::load(root, &opts)
+}
+
+fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
+    let root = root()?;
+    let cfg = load_config(&a, pint_mode, &root)?;
     // EnsurePrettierIsConfigured: `"Pint/laravel_blade": true` (or --blade) needs Node and prettier in the project.
     let blade_on = cfg.rules.iter().any(|r| r.name == "Pint/laravel_blade" && r.options.is_null());
     if let Some(out) = report::ensure_prettier(&root, blade_on, a.ansi, a.no_ansi) {
         print!("{out}");
         return Ok(1);
     }
-    pun_fixers::analyzers::active_preset::set(&cfg.preset);
-
-    let engine = match cfg.engine {
-        Engine::Compat => {
-            let mut p = Pipeline::new(&cfg.rules, &pun_fixers::all)?;
-            // PUN_PROFILE=1: per-stage timings on stderr after the run.
-            if std::env::var_os("PUN_PROFILE").is_some() {
-                p.enable_profile();
-            }
-            let source = match &cfg.php_cs_fixer {
-                Some(f) => Some(pun_delegate::Source::Config(f.clone())),
-                None => (!p.not_ported.is_empty()).then(|| pun_delegate::Source::Rules(cfg.configured_rules.clone().into())),
-            };
-            match source {
-                Some(_) if a.native_only && cfg.php_cs_fixer.is_some() => {
-                    anyhow::bail!("--native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead.")
-                }
-                Some(s) if !a.native_only => {
-                    // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
-                    let d = pun_delegate::Delegate::start(&root, s, std::env::var_os("PUN_PINT").map(PathBuf::from))?;
-                    Engine2::Delegate(d, p.not_ported)
-                }
-                _ => Engine2::Compat(p),
-            }
-        }
-        Engine::Pun => Engine2::Pun(cfg.php.clone()),
-    };
+    let engine = engine(&a, &cfg, &root)?;
     if a.explain || (a.verbose > 0 && !pint_mode) {
         explain(&cfg, &engine, a.explain);
     }
@@ -422,6 +409,36 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     Ok(code.max(u8::from(failed)))
 }
 
+/// The formatter for this config: native, delegated to PHP-CS-Fixer, or mago-formatter.
+fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine2> {
+    pun_fixers::analyzers::active_preset::set(&cfg.preset);
+    Ok(match cfg.engine {
+        Engine::Compat => {
+            let mut p = Pipeline::new(&cfg.rules, &pun_fixers::all)?;
+            // PUN_PROFILE=1: per-stage timings on stderr after the run.
+            if std::env::var_os("PUN_PROFILE").is_some() {
+                p.enable_profile();
+            }
+            let source = match &cfg.php_cs_fixer {
+                Some(f) => Some(pun_delegate::Source::Config(f.clone())),
+                None => (!p.not_ported.is_empty()).then(|| pun_delegate::Source::Rules(cfg.configured_rules.clone().into())),
+            };
+            match source {
+                Some(_) if a.native_only && cfg.php_cs_fixer.is_some() => {
+                    anyhow::bail!("--native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead.")
+                }
+                Some(s) if !a.native_only => {
+                    // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
+                    let d = pun_delegate::Delegate::start(root, s, std::env::var_os("PUN_PINT").map(PathBuf::from))?;
+                    Engine2::Delegate(d, p.not_ported)
+                }
+                _ => Engine2::Compat(p),
+            }
+        }
+        Engine::Pun => Engine2::Pun(cfg.php.clone()),
+    })
+}
+
 /// `full` (--explain): the rule list too; `-v` prints only why a run is delegated.
 fn explain(cfg: &Config, engine: &Engine2, full: bool) {
     let mut err = std::io::stderr().lock();
@@ -459,14 +476,16 @@ fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine2) -> Result<u8> {
     let mut out = std::io::stdout().lock();
     let ctx = a.stdin_filename.clone().unwrap_or_else(|| "stdin.php".into());
     // --test/--bail: the dry run leaves Pint's temp file untouched, so the input comes back as is.
-    if a.test || a.bail || (a.stdin_filename.is_some() && pun_workspace::is_path_excluded(cfg, &ctx)) {
-        out.write_all(&code)?;
-        return Ok(0);
-    }
-    match engine.run(&ctx, &code)? {
-        Ok(Some((new, _))) => out.write_all(&new)?,
-        // Pint reports syntax errors through its (unshown) JSON report and echoes the file unchanged.
-        Ok(None) | Err(_) => out.write_all(&code)?,
-    }
+    let fixed = if a.test || a.bail { None } else { fix_text(cfg, engine, &ctx, a.stdin_filename.is_some(), &code)? };
+    out.write_all(fixed.as_deref().unwrap_or(&code))?;
     Ok(0)
+}
+
+/// Stdin / LSP formatting of `code` as `path`: the fixed code, or `None` when excluded, clean or invalid (Pint
+/// reports syntax errors through its unshown JSON report and echoes the input).
+fn fix_text(cfg: &Config, engine: &Engine2, path: &Path, check_excluded: bool, code: &[u8]) -> Result<Option<Vec<u8>>> {
+    if check_excluded && pun_workspace::is_path_excluded(cfg, path) {
+        return Ok(None);
+    }
+    Ok(engine.run(path, code)?.ok().flatten().map(|(new, _)| new))
 }

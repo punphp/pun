@@ -1,0 +1,119 @@
+//! `pun format --watch` on a live directory: the first run and every re-run print what the real Pint prints for
+//! the same files (`php .oracle/pint/builds/pint <files>` on a copy), files end up as Pint leaves them, excluded
+//! files are left alone, Pun's own writes don't trigger runs, errors don't stop the watch, and removing the
+//! project ends it with exit 0. Skipped without the oracle.
+use std::io::Read;
+use std::path::{Path, PathBuf};
+use std::process::{Command, Stdio};
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+
+fn oracle() -> Option<PathBuf> {
+    let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle/pint/builds/pint");
+    p.exists().then(|| p.canonicalize().unwrap())
+}
+
+fn fresh(name: &str) -> PathBuf {
+    let d = std::env::temp_dir().join(format!("pun-watch-{name}-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&d);
+    std::fs::create_dir_all(&d).unwrap();
+    d.canonicalize().unwrap()
+}
+
+fn write(dir: &Path, files: &[(&str, &str)]) {
+    for (f, c) in files {
+        let p = dir.join(f);
+        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+        std::fs::write(p, c).unwrap();
+    }
+}
+
+/// Pint's stdout on `files` (on top of `before`, all fresh in a scratch copy; the whole project unless `explicit`),
+/// and the resulting `files`' contents.
+fn pint(before: &[(&str, &str)], files: &[(&str, &str)], explicit: bool) -> (String, Vec<String>) {
+    let dir = fresh("oracle");
+    write(&dir, before);
+    write(&dir, files);
+    let mut args = vec![oracle().unwrap().to_str().unwrap().to_string()];
+    args.extend(files.iter().filter(|_| explicit).map(|f| f.0.to_string()));
+    let out = Command::new("php").args(&args).current_dir(&dir).env_clear().env("PATH", std::env::var("PATH").unwrap()).env("HOME", &dir).env("COLUMNS", "80").output().unwrap();
+    let after = files.iter().map(|f| std::fs::read_to_string(dir.join(f.0)).unwrap()).collect();
+    (String::from_utf8(out.stdout).unwrap(), after)
+}
+
+fn wait_for(what: &str, buf: &Mutex<String>, cond: impl Fn(&str) -> bool) {
+    let start = Instant::now();
+    while !cond(&buf.lock().unwrap()) {
+        assert!(start.elapsed() < Duration::from_secs(60), "timed out waiting for {what}; got {:?}", buf.lock().unwrap());
+        std::thread::sleep(Duration::from_millis(20));
+    }
+}
+
+#[test]
+fn watch_reformats_like_pint() {
+    if oracle().is_none() {
+        return;
+    }
+    const CFG: &str = r#"{"preset":"laravel","notName":["Skip.php"]}"#;
+    let start = [("pint.json", CFG), ("app/A.php", "<?php\n$a = array(1,2);\n"), ("app/Clean.php", "<?php\n\n$c = 1;\n")];
+    let dir = fresh("live");
+    write(&dir, &start);
+    let home = fresh("home");
+    let mut c = Command::new(env!("CARGO_BIN_EXE_pun"));
+    c.args(["format", "--watch"]).current_dir(&dir).env_clear().env("PATH", std::env::var("PATH").unwrap()).env("HOME", &home).env("COLUMNS", "80");
+    if let Ok(v) = std::env::var("LLVM_PROFILE_FILE") {
+        c.env("LLVM_PROFILE_FILE", v);
+    }
+    let mut child = c.stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped()).spawn().unwrap();
+    let collect = |mut r: Box<dyn Read + Send>| {
+        let buf = Arc::new(Mutex::new(String::new()));
+        let b = buf.clone();
+        std::thread::spawn(move || {
+            let mut chunk = [0; 4096];
+            while let Ok(n @ 1..) = r.read(&mut chunk) {
+                b.lock().unwrap().push_str(&String::from_utf8_lossy(&chunk[..n]));
+            }
+        });
+        buf
+    };
+    let out = collect(Box::new(child.stdout.take().unwrap()));
+    let err = collect(Box::new(child.stderr.take().unwrap()));
+
+    // The first run is a normal run.
+    let (first, _) = pint(&[("pint.json", CFG)], &start[1..], false);
+    wait_for("the first run", &out, |o| o.len() >= first.len());
+    assert_eq!(*out.lock().unwrap(), first);
+    std::thread::sleep(Duration::from_millis(500));
+
+    // A new file and an edited one are re-run together; excluded files (notName, vendor) are not touched.
+    let fixed = [("pint.json", CFG), ("app/A.php", "<?php\n\n$a = [1, 2];\n"), ("app/Clean.php", "<?php\n\n$c = 1;\n")];
+    let edits = [("app/A.php", "<?php\n\n$a = [1, 2];\n$b = array( 3 );\n"), ("app/B.php", "<?php\nif($x){echo 1;}\n")];
+    let excluded = [("app/Skip.php", "<?php\n$s = array(1);\n"), ("vendor/V.php", "<?php\n$v = array(1);\n")];
+    write(&dir, &excluded);
+    write(&dir, &edits);
+    let (second, after) = pint(&fixed, &edits, true);
+    assert!(second.contains("2 files"), "{second}");
+    wait_for("the re-run", &out, |o| o.len() >= first.len() + second.len());
+    assert_eq!(out.lock().unwrap()[first.len()..], second);
+    for ((f, _), want) in edits.iter().zip(&after) {
+        assert_eq!(std::fs::read_to_string(dir.join(f)).unwrap(), *want, "{f}");
+    }
+    for (f, c) in excluded {
+        assert_eq!(std::fs::read_to_string(dir.join(f)).unwrap(), c, "{f}");
+    }
+    // Pun's own writes are not changes: nothing more runs.
+    std::thread::sleep(Duration::from_millis(1500));
+    assert_eq!(out.lock().unwrap().len(), first.len() + second.len());
+
+    // A broken pint.json, then an unreadable file: reported on stderr, and the watch goes on.
+    write(&dir, &[("pint.json", "{bad")]);
+    wait_for("the config error", &err, |e| e.contains("is not valid JSON."));
+    write(&dir, &[("pint.json", CFG), ("app/U.php", "<?php\n")]);
+    std::fs::set_permissions(dir.join("app/U.php"), std::os::unix::fs::PermissionsExt::from_mode(0o000)).unwrap();
+    wait_for("the read error", &err, |e| e.contains(&format!("Failed to read content from \"{}/app/U.php\".", dir.display())));
+    assert_eq!(out.lock().unwrap().len(), first.len() + second.len());
+
+    // Removing the project ends the watch.
+    std::fs::remove_dir_all(&dir).unwrap();
+    assert_eq!(child.wait().unwrap().code(), Some(0));
+}
