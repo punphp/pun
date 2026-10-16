@@ -5,3 +5,7 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+anyhow.workspace = true
+pcre2.workspace = true
+walkdir.workspace = true
+pun-config.workspace = true
