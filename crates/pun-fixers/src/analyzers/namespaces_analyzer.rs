@@ -3,11 +3,21 @@ use crate::analyzers::analysis::NamespaceAnalysis;
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
 use pun_tokens::php_compat::trim;
+use std::sync::Arc;
 
 pub struct NamespacesAnalyzer;
 
 impl NamespacesAnalyzer {
     pub fn get_declarations(&self, tokens: &Tokens) -> Vec<NamespaceAnalysis> {
+        self.declarations(tokens).to_vec()
+    }
+
+    /// `Tokens::getNamespaceDeclarations()`: computed once per token-list version (see `Tokens::namespace_declarations`).
+    pub fn declarations(&self, tokens: &Tokens) -> Arc<Vec<NamespaceAnalysis>> {
+        tokens.namespace_declarations(Self::compute)
+    }
+
+    fn compute(tokens: &Tokens) -> Vec<NamespaceAnalysis> {
         let mut namespaces = Vec::new();
         let count = tokens.count();
         let mut index = 1;

@@ -3,7 +3,10 @@
 use anyhow::{Result, bail};
 use pun_config::Rule;
 use serde_json::Value;
+use std::collections::BTreeMap;
 use std::path::Path;
+use std::sync::Mutex;
+use std::time::{Duration, Instant};
 
 pub use pun_tokens::Tokens;
 
@@ -118,6 +121,8 @@ pub struct Pipeline {
     fixers: Vec<Box<dyn Fixer>>,
     /// Enabled rules with no native implementation, in config order.
     pub not_ported: Vec<String>,
+    /// Per-stage wall time and call count, only when profiling (`PUN_PROFILE=1` in the CLI).
+    profile: Option<Mutex<BTreeMap<&'static str, (Duration, u64)>>>,
 }
 
 #[derive(Debug)]
@@ -159,7 +164,32 @@ impl Pipeline {
             }
         }
         fixers.sort_by(|a, b| b.priority().cmp(&a.priority()).then_with(|| a.name().as_bytes().cmp(b.name().as_bytes())));
-        Ok(Pipeline { fixers, not_ported })
+        Ok(Pipeline { fixers, not_ported, profile: None })
+    }
+
+    /// Turn on per-stage timing (lint, tokenize, each fixer, generate); see `profile_report`.
+    pub fn enable_profile(&mut self) {
+        self.profile = Some(Mutex::default());
+    }
+
+    /// One line per stage, slowest first: `seconds  calls  stage`. Empty when profiling is off.
+    pub fn profile_report(&self) -> String {
+        let Some(p) = &self.profile else { return String::new() };
+        let mut rows: Vec<_> = p.lock().unwrap().iter().map(|(k, v)| (*k, *v)).collect();
+        rows.sort_by(|a, b| b.1.0.cmp(&a.1.0).then(a.0.cmp(b.0)));
+        rows.iter().map(|(k, (d, n))| format!("{:9.3}s {n:7} {k}\n", d.as_secs_f64())).collect()
+    }
+
+    fn timed<T>(&self, stage: &'static str, f: impl FnOnce() -> T) -> T {
+        let Some(p) = &self.profile else { return f() };
+        let t = Instant::now();
+        let out = f();
+        let e = t.elapsed();
+        let mut m = p.lock().unwrap();
+        let slot = m.entry(stage).or_default();
+        slot.0 += e;
+        slot.1 += 1;
+        out
     }
 
     pub fn fixers(&self) -> impl Iterator<Item = &dyn Fixer> {
@@ -168,17 +198,17 @@ impl Pipeline {
 
     /// Runner::fixFile: lint, run each fixer once, return `None` when the code did not change.
     pub fn run(&self, file: &Path, code: &[u8]) -> Result<Option<Fixed>, LintError> {
-        lint(code)?;
-        let mut tokens = Tokens::from_code(code);
+        self.timed("(lint)", || lint(code))?;
+        let mut tokens = self.timed("(tokenize)", || Tokens::from_code(code));
         let mut applied = Vec::new();
         for f in &self.fixers {
             // AbstractFixer::fix: `0 < $tokens->count() && isCandidate && supports` (Pint/laravel_blade can empty the list).
-            if tokens.count() == 0 || !f.supports(file) || !f.is_candidate(&tokens) {
+            if tokens.count() == 0 || !f.supports(file) || !self.timed("(is_candidate)", || f.is_candidate(&tokens)) {
                 continue;
             }
-            f.fix(file, &mut tokens);
+            self.timed(f.name(), || f.fix(file, &mut tokens));
             if tokens.is_changed() {
-                tokens.clear_empty_tokens();
+                self.timed("(clear_empty_tokens)", || tokens.clear_empty_tokens());
                 tokens.clear_changed();
                 applied.push(f.name());
             }
@@ -186,11 +216,11 @@ impl Pipeline {
         if applied.is_empty() {
             return Ok(None);
         }
-        let new = tokens.generate_code();
+        let new = self.timed("(generate_code)", || tokens.generate_code());
         if new == code {
             return Ok(None);
         }
-        lint(&new).map_err(|e| LintError { after_fix: true, ..e })?;
+        self.timed("(lint after fix)", || lint(&new)).map_err(|e| LintError { after_fix: true, ..e })?;
         Ok(Some(Fixed { code: new, applied }))
     }
 }
@@ -334,6 +364,28 @@ mod tests {
         let only_drop = Pipeline::new(&[rule("drop_space")], &factory).unwrap();
         let e = only_drop.run(Path::new("a.php"), b"<?php\nfunction a() {}").unwrap_err();
         assert!(e.after_fix && e.message.starts_with("Parse error: "), "{}", e.message);
+    }
+
+    #[test]
+    fn profile_counts_stages() {
+        let mut p = Pipeline::new(&[rule("upper"), rule("drop_space")], &factory).unwrap();
+        assert_eq!(p.profile_report(), "");
+        p.enable_profile();
+        p.run(Path::new("a.php"), b"<?php foo (bar);").unwrap();
+        p.run(Path::new("b.php"), b"<?php $a;").unwrap();
+        // Two files linted and tokenized; is_candidate ran 2x per file; only the first had T_STRING (one call per
+        // fixer), changed by both, so two clear_empty_tokens, one generate and one lint of the result.
+        let calls: BTreeMap<String, u64> = p
+            .profile_report()
+            .lines()
+            .map(|l| {
+                let (_secs, rest) = l.split_once("s ").unwrap();
+                let (n, stage) = rest.trim_start().split_once(' ').unwrap();
+                (stage.to_string(), n.parse().unwrap())
+            })
+            .collect();
+        let expected = [("(clear_empty_tokens)", 2), ("(generate_code)", 1), ("(is_candidate)", 4), ("(lint after fix)", 1), ("(lint)", 2), ("(tokenize)", 2), ("drop_space", 1), ("upper", 1)];
+        assert_eq!(calls, expected.iter().map(|(k, v)| (k.to_string(), *v)).collect());
     }
 
     #[test]

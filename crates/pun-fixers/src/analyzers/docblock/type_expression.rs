@@ -4,10 +4,14 @@ use super::preg;
 use pun_tokens::php_compat::{strnatcasecmp, strtolower};
 use std::cmp::Ordering;
 use std::rc::Rc;
+use std::sync::LazyLock;
 
 pub const REGEX_IDENTIFIER: &str = crate::__regex_identifier!();
 pub const REGEX_TYPES: &str = crate::__regex_types!();
 const REGEX_TYPE: &str = crate::__regex_type!();
+/// parse()'s and parseCommaSeparatedInnerTypes()'s patterns, built once (they run for every type in every docblock).
+static PARSE_PATTERN: LazyLock<String> = LazyLock::new(|| format!(r"{{\G{REGEX_TYPE}(?<glue_raw>\h*(?<glue>[|&])\h*(?!$)|$)}}"));
+static COMMA_SEPARATED_PATTERN: LazyLock<String> = LazyLock::new(|| format!(r"{{\G{REGEX_TYPES}(?:\h*,[\h\v*]*|$)}}"));
 
 const ALIASES: &[(&[u8], &[u8])] = &[
     (b"boolean", b"bool"),
@@ -187,7 +191,7 @@ impl TypeExpression {
             next_glue: Option<Vec<u8>>,
             next_glue_raw: Option<Vec<u8>>,
         }
-        let pattern = format!(r"{{\G{REGEX_TYPE}(?<glue_raw>\h*(?<glue>[|&])\h*(?!$)|$)}}");
+        let pattern: &str = &PARSE_PATTERN;
         let mut seen_glues: Option<[bool; 2]> = None; // ['|', '&'] in insertion order
         let mut inner_values: Vec<InnerValue> = vec![];
         let value = self.value.clone();
@@ -305,7 +309,7 @@ impl TypeExpression {
     }
 
     fn parse_comma_separated_inner_types(&mut self, start_index: usize, value: &[u8]) -> Result<(), ParseError> {
-        let pattern = format!(r"{{\G{REGEX_TYPES}(?:\h*,[\h\v*]*|$)}}");
+        let pattern: &str = &COMMA_SEPARATED_PATTERN;
         let mut index = 0;
         while value.len() != index {
             let m = preg::match_at(&pattern, value, index).ok_or_else(|| ParseError(value.to_vec()))?;

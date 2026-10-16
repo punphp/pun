@@ -16,6 +16,7 @@
 use pcre2_sys::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::hash::{BuildHasherDefault, Hasher};
 use std::rc::Rc;
 
 pub const PREG_PATTERN_ORDER: u32 = 1;
@@ -35,7 +36,9 @@ struct Regex {
     utf: bool,
     capture_count: usize,
     /// (name, group number) in PCRE2 name-table order (sorted by name), like PHP's subpat_names.
-    names: Vec<(Vec<u8>, usize)>,
+    names: Rc<[(Vec<u8>, usize)]>,
+    /// Match data + context, allocated once per compiled pattern (matches never nest on one thread).
+    matcher: Matcher,
 }
 
 impl Drop for Regex {
@@ -58,8 +61,35 @@ impl Drop for Matcher {
     }
 }
 
+/// Pattern-cache hasher: patterns run to kilobytes (TypeExpression's is ~6 KB) and are looked up on every call, so
+/// only the length and three 8-byte words (start, middle, end) are hashed; key equality still compares every byte.
+#[derive(Default)]
+struct EndsHasher(u64);
+
+impl Hasher for EndsHasher {
+    fn finish(&self) -> u64 {
+        self.0
+    }
+    fn write(&mut self, b: &[u8]) {
+        let word = |at: usize| {
+            let mut w = [0u8; 8];
+            let end = b.len().min(at + 8);
+            w[..end - at].copy_from_slice(&b[at..end]);
+            u64::from_le_bytes(w)
+        };
+        let n = b.len();
+        for x in [n as u64, word(0), word(n / 2), word(n.saturating_sub(8))] {
+            self.0 = (self.0.rotate_left(5) ^ x).wrapping_mul(0x517c_c1b7_2722_0a95);
+        }
+    }
+}
+
+type PatternMap<V> = HashMap<Vec<u8>, V, BuildHasherDefault<EndsHasher>>;
+
 thread_local! {
-    static CACHE: RefCell<HashMap<Vec<u8>, Option<Rc<Regex>>>> = RefCell::new(HashMap::new());
+    static CACHE: RefCell<PatternMap<Option<Rc<Regex>>>> = RefCell::default();
+    /// with_fallback's two compiled variants (`u` added, `u` removed) per pattern as given.
+    static VARIANTS: RefCell<PatternMap<[Option<Rc<Regex>>; 2]>> = RefCell::default();
     static JIT_STACK: *mut pcre2_jit_stack_8 = unsafe { pcre2_jit_stack_create_8(32 * 1024, 192 * 1024, std::ptr::null_mut()) };
 }
 
@@ -172,20 +202,27 @@ fn compile_uncached(pattern: &[u8]) -> Option<Regex> {
             let name = &name[..name.iter().position(|&b| b == 0).unwrap_or(name.len())];
             names.push((name.to_vec(), group));
         }
-        Some(Regex { code, utf, capture_count: capture_count as usize, names })
+        let matcher = Matcher::new(code);
+        Some(Regex { code, utf, capture_count: capture_count as usize, names: names.into(), matcher })
     }
 }
 
-impl Regex {
-    fn matcher(&self) -> Matcher {
+impl Matcher {
+    fn new(code: *const pcre2_code_8) -> Matcher {
         unsafe {
-            let md = pcre2_match_data_create_from_pattern_8(self.code, std::ptr::null_mut());
+            let md = pcre2_match_data_create_from_pattern_8(code, std::ptr::null_mut());
             let mctx = pcre2_match_context_create_8(std::ptr::null_mut());
             pcre2_set_match_limit_8(mctx, BACKTRACK_LIMIT);
             pcre2_set_depth_limit_8(mctx, RECURSION_LIMIT);
             JIT_STACK.with(|s| pcre2_jit_stack_assign_8(mctx, None, *s as *mut libc::c_void));
             Matcher { md, mctx }
         }
+    }
+}
+
+impl Regex {
+    fn matcher(&self) -> &Matcher {
+        &self.matcher
     }
 
     /// One pcre2_match call. Ok(None) = no match, Err = PHP's preg_last_error() != PREG_NO_ERROR.
@@ -256,7 +293,7 @@ pub struct Captures<'s> {
     groups: Vec<Option<(usize, usize)>>,
     /// Number of numeric entries PHP puts in `$matches` (`count` from pcre2_match: trailing unmatched groups omitted).
     len: usize,
-    names: Vec<(Vec<u8>, usize)>,
+    names: Rc<[(Vec<u8>, usize)]>,
 }
 
 impl<'s> Captures<'s> {
@@ -346,8 +383,13 @@ fn remove_utf8_modifier(pattern: &[u8]) -> Vec<u8> {
 /// PHP fails the `u` attempt when the pattern does not compile (e.g. invalid UTF-8 in it), the
 /// subject is not valid UTF-8, or the offset is not on a character boundary.
 fn with_fallback<T>(pattern: &[u8], subject: &[u8], offset: usize, method: &str, f: impl Fn(&Regex) -> Result<T, i32>) -> T {
-    for p in [add_utf8_modifier(pattern), remove_utf8_modifier(pattern)] {
-        let Some(re) = compile(&p) else { continue };
+    let variants = VARIANTS.with(|v| v.borrow().get(pattern).cloned()).unwrap_or_else(|| {
+        let v = [compile(&add_utf8_modifier(pattern)), compile(&remove_utf8_modifier(pattern))];
+        VARIANTS.with(|m| m.borrow_mut().insert(pattern.to_vec(), v.clone()));
+        v
+    });
+    for re in variants {
+        let Some(re) = re else { continue };
         if re.utf && (std::str::from_utf8(subject).is_err() || (offset < subject.len() && (subject[offset] & 0xC0) == 0x80)) {
             continue;
         }

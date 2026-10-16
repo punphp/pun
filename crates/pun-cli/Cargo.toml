@@ -19,6 +19,7 @@ name = "pun"
 path = "src/main.rs"
 
 [dependencies]
+pprof = { version = "0.15", optional = true, default-features = false }
 anyhow.workspace = true
 clap.workspace = true
 rayon.workspace = true
@@ -39,5 +40,6 @@ mago-reporting = { workspace = true, optional = true }
 mago-syntax = { workspace = true, optional = true }
 
 [features]
+pprof = ["dep:pprof"]
 # `pun lint --mago`: Mago's lint-only Laravel rules. Off by default (mago-linter is ~65k lines to compile).
 mago-lint = ["dep:mago-allocator", "dep:mago-database", "dep:mago-linter", "dep:mago-names", "dep:mago-reporting", "dep:mago-syntax"]
