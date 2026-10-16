@@ -42,7 +42,7 @@ fn root(name: &str) -> PathBuf {
     let b = r.join("corpus/b");
     fs::create_dir_all(b.join(".git")).unwrap();
     write(&b.join("b.php"), "<?php\n\n$x = array();\n");
-    write(&r.join("docs/scoreboard.md"), "| project | x |\n|---|---|\n| a | stale |\n| zz | 1 | 1 | 1 | 0 | 0 | 0 |\n");
+    write(&r.join("docs/scoreboard.md"), "| project | x |\n|---|---|\n| a | stale |\n| zz | 1 | 1 | 1 | 0 | 0 | 0 |\n\n## Benchmarks\n\n| zz | kept |\n");
     r
 }
 
@@ -76,7 +76,7 @@ fn full_run_with_failing_pun() {
     let board = fs::read_to_string(r.join("docs/scoreboard.md")).unwrap();
     assert!(board.ends_with(
         "| project | files | identical | differing | pint changed | pun changed |\n|---|---|---|---|---|---|\n\
-         | a | 6 | 4 | 2 | 1 | 1 |\n| b | 2 | 0 | 2 | 1 | 1 |\n| zz | 1 | 1 | 1 | 0 | 0 | 0 |\n"
+         | a | 6 | 4 | 2 | 1 | 1 |\n| b | 2 | 0 | 2 | 1 | 1 |\n| zz | 1 | 1 | 1 | 0 | 0 | 0 |\n\n## Benchmarks\n\n| zz | kept |\n"
     ), "{board}");
     fs::remove_dir_all(&r).unwrap();
 }
