@@ -1,0 +1,637 @@
+[
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), nullable())\nparameters:\n\ta: null\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), nullable())\nparameters:\n\ta: 1\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), nullable())\nparameters:\n\ta: x\n",
+        "messages": [
+            "The item 'parameters › a' expects to be null or int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int())\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(5)\nparameters: []\n",
+        "exception": "schema() should contain another statement()."
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema()\nparameters: []\n",
+        "exception": "schema() should have at least one argument."
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\t?a: int()\nparameters: []\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\t?a: int()\nparameters:\n\ta: x\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf(1, 2, string())\nparameters:\n\ta: 3\n",
+        "messages": [
+            "The item 'parameters › a' expects to be 1|2|string, 3 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf(1, 2, string())\nparameters:\n\ta: x\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf(1, 2, string())\nparameters:\n\ta: 2\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf(1, 2)\nparameters:\n\ta: 3\n",
+        "messages": [
+            "The item 'parameters › a' expects to be 1|2, 3 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf(1, 2)\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(anyOf(1, 2), firstIsDefault())\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(anyOf(string(), int()), firstIsDefault())\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(anyOf(1, 2), nullable())\nparameters:\n\ta: null\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(anyOf(1, 2), nullable())\nparameters:\n\ta: 5\n",
+        "messages": [
+            "The item 'parameters › a' expects to be 1|2|null, 5 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf(listOf(int()), string())\nparameters:\n\ta: [x]\n",
+        "messages": [
+            "The item 'parameters › a › 0' expects to be int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf(listOf(int()), string())\nparameters:\n\ta: 1.5\n",
+        "messages": [
+            "The item 'parameters › a' expects to be list|string, 1.5 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf(structure([b: int()]), int())\nparameters:\n\ta: {b: x}\n",
+        "messages": [
+            "The item 'parameters › a › b' expects to be int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf(structure([b: int()]), int())\nparameters:\n\ta: {c: 1}\n",
+        "messages": [
+            "Unexpected item 'parameters › a › c', did you mean 'b'?",
+            "The mandatory item 'parameters › a › b' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: int(), ?c: string()])\nparameters:\n\ta: {b: 1}\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: int(), ?c: string()])\nparameters:\n\ta: {b: x, c: 5}\n",
+        "messages": [
+            "The item 'parameters › a › b' expects to be int, 'x' given.",
+            "The item 'parameters › a › c' expects to be string, 5 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: int(), ?c: string()])\nparameters:\n\ta: {b: 1, d: 2}\n",
+        "messages": [
+            "Unexpected item 'parameters › a › d', did you mean 'b'?"
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: int(), ?c: string()])\nparameters:\n\ta: {b: 1, bb: 2}\n",
+        "messages": [
+            "Unexpected item 'parameters › a › bb', did you mean 'b'?"
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: int(), ?c: string()])\nparameters:\n\ta: 5\n",
+        "messages": [
+            "The item 'parameters › a' expects to be array, 5 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: int(), ?c: string()])\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a › b' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(structure([b: int()]), otherItems(string()))\nparameters:\n\ta: {b: 1, c: x}\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(structure([b: int()]), otherItems(string()))\nparameters:\n\ta: {b: 1, c: 1}\n",
+        "messages": [
+            "The item 'parameters › a › c' expects to be string, 1 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(structure([b: int()]), otherItems())\nparameters:\n\ta: {b: 1, c: [1]}\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(structure([b: int()]), min(2))\nparameters:\n\ta: {b: 1}\n",
+        "messages": [
+            "The length of item 'parameters › a' expects to be in range 2.., 1 items given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: structure([c: int()])])\nparameters:\n\ta: {b: {c: x}}\n",
+        "messages": [
+            "The item 'parameters › a › b › c' expects to be int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: structure([c: int()])])\nparameters:\n\ta: {}\n",
+        "messages": [
+            "The mandatory item 'parameters › a › b › c' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure(5)\nparameters: []\n",
+        "exception": "_PHPStan_88a9c7bcc\\Nette\\Schema\\Expect::structure(): Argument #1 ($items) must be of type array, int given, called in phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 276"
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(string())\nparameters:\n\ta: [x, 1]\n",
+        "messages": [
+            "The item 'parameters › a › 1' expects to be string, 1 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(string())\nparameters:\n\ta: {k: x}\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(string())\nparameters:\n\ta: x\n",
+        "messages": [
+            "The item 'parameters › a' expects to be array, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(int(), string())\nparameters:\n\ta: {k: 1}\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(int(), string())\nparameters:\n\ta: [1]\n",
+        "messages": [
+            "The key of item 'parameters › a › 0' expects to be string, 0 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: listOf(int())\nparameters:\n\ta: [1, x]\n",
+        "messages": [
+            "The item 'parameters › a › 1' expects to be int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: listOf(int())\nparameters:\n\ta: {k: 1}\n",
+        "messages": [
+            "The item 'parameters › a' expects to be list, array given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: listOf(structure([b: int()]))\nparameters:\n\ta: [{b: x}]\n",
+        "messages": [
+            "The item 'parameters › a › 0 › b' expects to be int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(listOf(string()))\nparameters:\n\ta: {k: [x, 1]}\n",
+        "messages": [
+            "The item 'parameters › a › k › 1' expects to be string, 1 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf()\nparameters: []\n",
+        "exception": "Too few arguments to function _PHPStan_88a9c7bcc\\Nette\\Schema\\Expect::arrayOf(), 0 passed in phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 276 and at least 1 expected"
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type(\"int|string\")\nparameters:\n\ta: x\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type(\"int|string\")\nparameters:\n\ta: 1.5\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int or string, 1.5 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type()\nparameters:\n\ta: 1\n",
+        "exception": "Too few arguments to function _PHPStan_88a9c7bcc\\Nette\\Schema\\Expect::type(), 0 passed in phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 276 and exactly 1 expected"
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int(5)\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int(5)\nparameters:\n\ta: 1\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: string(\"x\")\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: string(\"x\")\nparameters:\n\ta: 1\n",
+        "messages": [
+            "The item 'parameters › a' expects to be string, 1 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), min(1), max(3))\nparameters:\n\ta: 0\n",
+        "messages": [
+            "The item 'parameters › a' expects to be in range 1..3, 0 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), min(1), max(3))\nparameters:\n\ta: 2\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), min(1), max(3))\nparameters:\n\ta: 4\n",
+        "messages": [
+            "The item 'parameters › a' expects to be in range 1..3, 4 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(float(), min(1.5))\nparameters:\n\ta: 1.0\n",
+        "messages": [
+            "The item 'parameters › a' expects to be in range 1.5.., 1.0 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(float(), min(1.5))\nparameters:\n\ta: 2.5\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), max(3))\nparameters:\n\ta: 4\n",
+        "messages": [
+            "The item 'parameters › a' expects to be in range ..3, 4 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(string(), min(2), max(3))\nparameters:\n\ta: x\n",
+        "messages": [
+            "The length of item 'parameters › a' expects to be in range 2..3, 1 bytes given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(string(), min(2), max(3))\nparameters:\n\ta: xyzw\n",
+        "messages": [
+            "The length of item 'parameters › a' expects to be in range 2..3, 4 bytes given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(string(), min(2), max(3))\nparameters:\n\ta: xy\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(unicode(), max(2))\nparameters:\n\ta: ééé\n",
+        "messages": [
+            "The length of item 'parameters › a' expects to be in range ..2, 3 characters given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(unicode(), max(2))\nparameters:\n\ta: éé\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(listOf(int()), min(1))\nparameters:\n\ta: []\n",
+        "messages": [
+            "The length of item 'parameters › a' expects to be in range 1.., 0 items given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(string(), pattern(\"\\\\d+\"))\nparameters:\n\ta: \"12\"\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(string(), pattern(\"\\\\d+\"))\nparameters:\n\ta: \"12a\"\n",
+        "messages": [
+            "The item 'parameters › a' expects to match pattern '\\d+', '12a' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(string(), pattern(\"\\\\d+\"))\nparameters:\n\ta: \"12\\n\"\n",
+        "messages": [
+            "The item 'parameters › a' expects to match pattern '\\d+', '12\n' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(arrayOf(int()), mergeDefaults(false))\nparameters:\n\ta: [1]\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(arrayOf(int()), mergeDefaults())\nparameters:\n\ta: [1]\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(listOf(int()), default([1, 2]))\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(listOf(int()), default([1, 2]))\nparameters:\n\ta: [3]\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(listOf(int()), default([1, 2]))\nparameters:\n\ta!: [3]\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(listOf(int()), default([1]), mergeDefaults(false))\nparameters:\n\ta: [3]\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), required())\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), required())\nparameters:\n\ta: 1\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), required(false))\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), default(3))\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), default())\nparameters: []\n",
+        "exception": "Too few arguments to function _PHPStan_88a9c7bcc\\Nette\\Schema\\Elements\\Type::default(), 0 passed in phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/src/DependencyInjection/ContainerFactory.php on line 278 and exactly 1 expected"
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), deprecated(\"old\"))\nparameters:\n\ta: 1\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(int(), fooBar())\nparameters: []\n",
+        "exception": "Call to undefined method _PHPStan_88a9c7bcc\\Nette\\Schema\\Elements\\Type::fooBar()."
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(anyOf(1), pattern(\"x\"))\nparameters: []\n",
+        "exception": "Call to undefined method _PHPStan_88a9c7bcc\\Nette\\Schema\\Elements\\AnyOf::pattern()."
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: bool()\nparameters:\n\ta: yes\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: bool()\nparameters:\n\ta: 1\n",
+        "messages": [
+            "The item 'parameters › a' expects to be bool, 1 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: boolean()\nparameters:\n\ta: true\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: integer()\nparameters:\n\ta: 1.0\n",
+        "messages": [
+            "The item 'parameters › a' expects to be integer, 1.0 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: number()\nparameters:\n\ta: 1.5\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: number()\nparameters:\n\ta: x\n",
+        "messages": [
+            "The item 'parameters › a' expects to be number, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: scalar()\nparameters:\n\ta: [1]\n",
+        "messages": [
+            "The item 'parameters › a' expects to be scalar, array given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: scalar()\nparameters:\n\ta: x\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: null()\nparameters:\n\ta: null\n",
+        "exception": "Method name must be a string"
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: null()\nparameters:\n\ta: 0\n",
+        "exception": "Method name must be a string"
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: mixed()\nparameters:\n\ta: Foo(1)\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: list()\nparameters:\n\ta: {k: 1}\n",
+        "messages": [
+            "The item 'parameters › a' expects to be list, array given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: list()\nparameters:\n\ta: [1]\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: array()\nparameters:\n\ta: 1\n",
+        "messages": [
+            "The item 'parameters › a' expects to be array, 1 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: object()\nparameters:\n\ta: Foo(1)\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: object()\nparameters:\n\ta: 1\n",
+        "messages": [
+            "The item 'parameters › a' expects to be object, 1 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type(\"?int\")\nparameters:\n\ta: null\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type(\"?int\")\nparameters:\n\ta: x\n",
+        "messages": [
+            "The item 'parameters › a' expects to be ?int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type(\"Nette\\\\DI\\\\Definitions\\\\Statement\")\nparameters:\n\ta: Foo(1)\n",
+        "messages": [
+            "The item 'parameters › a' expects to be Nette\\DI\\Definitions\\Statement, object _PHPStan_88a9c7bcc\\Nette\\DI\\Definitions\\Statement given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: type(\"Nette\\\\DI\\\\Definitions\\\\Statement\")\nparameters:\n\ta: x\n",
+        "messages": [
+            "The item 'parameters › a' expects to be Nette\\DI\\Definitions\\Statement, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: \"a very long string value that will be truncated\"\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, 'a very long...' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: \"averyveryverylongstringwithoutspaces\"\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, 'averyveryver...' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: [1, 2]\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, array given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: Foo(1)\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, object _PHPStan_88a9c7bcc\\Nette\\DI\\Definitions\\Statement given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: 2024-01-02\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, object DateTimeImmutable given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: 1.5\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, 1.5 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: false\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, false given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: null\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, null given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: 1e100\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, 1.0E+100 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\nparameters:\n\ta: -0.0\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, -0.0 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: int()\n\tb: string()\n\tc: bool()\nparameters:\n\ta: x\n\tb: 1\n\tc: 2\n",
+        "messages": [
+            "The item 'parameters › a' expects to be int, 'x' given.",
+            "The item 'parameters › b' expects to be string, 1 given.",
+            "The item 'parameters › c' expects to be bool, 2 given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: listOf(int())\nparameters:\n\ta: {k: x}\n",
+        "messages": [
+            "The item 'parameters › a' expects to be list, array given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\tgetFoo: int()\n\tisBar: int()\nparameters:\n\tfoo: 1\n",
+        "messages": [
+            "Unexpected item 'parameters › foo'.",
+            "The mandatory item 'parameters › getFoo' is missing.",
+            "The mandatory item 'parameters › isBar' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\tgetFoo: int()\n\tisBar: int()\nparameters:\n\tsetFoo: 1\n",
+        "messages": [
+            "Unexpected item 'parameters › setFoo', did you mean 'getFoo'?",
+            "The mandatory item 'parameters › getFoo' is missing.",
+            "The mandatory item 'parameters › isBar' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\tgetFoo: int()\n\tisBar: int()\nparameters:\n\tbar: 1\n",
+        "messages": [
+            "Unexpected item 'parameters › bar'.",
+            "The mandatory item 'parameters › getFoo' is missing.",
+            "The mandatory item 'parameters › isBar' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\tabc: int()\nparameters:\n\tab: 1\n",
+        "messages": [
+            "Unexpected item 'parameters › ab', did you mean 'abc'?",
+            "The mandatory item 'parameters › abc' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\tabc: int()\nparameters:\n\tabcdefghijk: 1\n",
+        "messages": [
+            "Unexpected item 'parameters › abcdefghijk'.",
+            "The mandatory item 'parameters › abc' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\tabc: int()\nparameters:\n\tx: 1\n",
+        "messages": [
+            "Unexpected item 'parameters › x'.",
+            "The mandatory item 'parameters › abc' is missing."
+        ]
+    }
+]

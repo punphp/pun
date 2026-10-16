@@ -55,16 +55,18 @@ fn type_schema(ty: &str) -> Schema {
     s
 }
 
-fn entity_name(v: &Value) -> String {
-    v.to_php_string().unwrap_or_default()
+/// `Expect::{$statement->getEntity()}()` needs a method name (a chain or `null()` gives none).
+fn entity_name(v: &Value) -> Result<&str, String> {
+    v.as_str()
+        .ok_or_else(|| "Method name must be a string".to_string())
 }
 
 /// `ContainerFactory::processArgument()`.
 fn argument(arg: &Value, required: bool) -> Result<Arg, String> {
     match arg {
-        Value::Entity(e) if entity_name(&e.value) == "schema" => {
+        Value::Entity(e) if e.value == Value::str("schema") => {
             let statements: Vec<&Value> = e.attributes.values().collect();
-            if statements.is_empty() || statements.iter().any(|s| !matches!(s, Value::Entity(_))) {
+            if statements.iter().any(|s| !matches!(s, Value::Entity(_))) {
                 return Err("schema() should contain another statement().".into());
             }
             Ok(Arg::Schema(process_schema(&statements, required)?))
@@ -122,14 +124,14 @@ fn process_schema(statements: &[&Value], required: bool) -> Result<Schema, Strin
     let mut schema: Option<Schema> = None;
     for st in statements {
         let Value::Entity(e) = st else { unreachable!() };
-        let name = entity_name(&e.value);
+        let name = entity_name(&e.value)?;
         let mut args = Vec::new();
         for a in e.attributes.values() {
             args.push(argument(a, true)?);
         }
         schema = Some(match schema {
-            None => expect(&name, args)?,
-            Some(s) => call(s, &name, args)?,
+            None => expect(name, args)?,
+            Some(s) => call(s, name, args)?,
         });
     }
     let mut schema = schema.ok_or("schema() should have at least one argument.")?;
@@ -175,8 +177,9 @@ fn expect(name: &str, args: Vec<Arg>) -> Result<Schema, String> {
             &args
                 .into_iter()
                 .next()
-                .map(Arg::value)
-                .and_then(|v| v.to_php_string())
+                .ok_or(TOO_FEW)?
+                .value()
+                .to_php_string()
                 .unwrap_or_default(),
         ),
         ty => {
@@ -188,6 +191,9 @@ fn expect(name: &str, args: Vec<Arg>) -> Result<Schema, String> {
         }
     })
 }
+
+/// PHP's ArgumentCountError (its text names the phar's path).
+const TOO_FEW: &str = "Too few arguments";
 
 fn call(mut s: Schema, name: &str, args: Vec<Arg>) -> Result<Schema, String> {
     let first_number = args.first().and_then(Arg::number);
@@ -222,13 +228,7 @@ fn call(mut s: Schema, name: &str, args: Vec<Arg>) -> Result<Schema, String> {
                     .map_or_else(|| Ok(type_schema("mixed")), Arg::schema)?,
             ))
         }
-        ("default", _) => {
-            s.default = args
-                .into_iter()
-                .next()
-                .map(Arg::value)
-                .unwrap_or(Value::Null)
-        }
+        ("default", _) => s.default = args.into_iter().next().ok_or(TOO_FEW)?.value(),
         ("required", _) => {
             s.required = args
                 .into_iter()
@@ -237,9 +237,14 @@ fn call(mut s: Schema, name: &str, args: Vec<Arg>) -> Result<Schema, String> {
         }
         // Deprecations are warnings (E_USER_DEPRECATED), which PHPStan's Configurator swallows.
         ("deprecated", _) => {}
-        (m, _) => {
+        (m, kind) => {
+            let class = match kind {
+                Kind::Type { .. } => "Type",
+                Kind::Structure { .. } => "Structure",
+                Kind::AnyOf(_) => "AnyOf",
+            };
             return Err(format!(
-                "Call to undefined method {m}() on a parametersSchema schema."
+                "Call to undefined method _PHPStan_88a9c7bcc\\Nette\\Schema\\Elements\\{class}::{m}()."
             ));
         }
     }
@@ -361,7 +366,7 @@ fn object_class(v: &Value) -> &'static str {
     match v {
         Value::OptionalPath(_) => "PHPStan\\DependencyInjection\\Neon\\OptionalPath",
         Value::DateTime(_) => "DateTimeImmutable",
-        _ => "Nette\\DI\\Definitions\\Statement",
+        _ => "_PHPStan_88a9c7bcc\\Nette\\DI\\Definitions\\Statement",
     }
 }
 
@@ -406,7 +411,13 @@ fn is_type(v: &Value, expected: &str) -> bool {
                 v,
                 Value::Entity(_) | Value::OptionalPath(_) | Value::DateTime(_)
             ),
-            class => matches!(v, Value::Entity(_)) && class.ends_with("Statement"),
+            // ponytail: `instanceof` of the exact class only (no parents/interfaces).
+            class => {
+                matches!(
+                    v,
+                    Value::Entity(_) | Value::OptionalPath(_) | Value::DateTime(_)
+                ) && class.eq_ignore_ascii_case(object_class(v))
+            }
         }
     })
 }
