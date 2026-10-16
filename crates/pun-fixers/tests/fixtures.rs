@@ -1,5 +1,6 @@
 //! Runs PHP-CS-Fixer's own test cases (exported to crates/pun-harness/fixtures/<name>.json) against each ported fixer.
 //! `PUN_FIXERS_ONLY=name cargo test -p punphp-fixers --test fixtures -- --nocapture`
+extern crate punphp_fixers as pun_fixers;
 use serde_json::Value;
 use std::path::Path;
 
