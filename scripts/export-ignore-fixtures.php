@@ -213,13 +213,16 @@ namespace {
     $localCases = [
         ["<?php\na(); // @phpstan-ignore x.a, x.b\nb(); // @phpstan-ignore-line\nc(); // @phpstan-ignore x.c (why)\n", [[2, 'x.a'], [2, null], [2, 'x.b'], [2, 'x.b'], [3, null], [3, 'q.q'], [4, 'x.c', false], [4, 'x.c', true, 'other.php'], [4, 'x.c'], [5, 'x.c'], [null, 'x.c']]],
         ["<?php\na(); // @phpstan-ignore x.a, x.a, x.b\n", [[2, 'x.a'], [2, 'x.a'], [2, 'x.a']]],
+        ["<?php\na(); // @phpstan-ignore x.a\n", [[2, 'x.a']], true], // unmatchedLineIgnores already without the line
     ];
-    foreach ($localCases as [$code, $errs]) {
+    foreach ($localCases as $localCase) {
+        [$code, $errs, $noUnmatched] = $localCase + [2 => false];
         ['lines' => $lines] = $linesToIgnore->invoke($parser, $lexer->tokenize($code));
         $errors = array_map(fn (array $x) => new Error('E', $x[3] ?? 'f.php', $x[0], $x[2] ?? true, identifier: $x[1]), $errs);
-        $r = $processor->process($errors, ['f.php' => $lines], ['f.php' => $lines]);
+        $r = $processor->process($errors, ['f.php' => $lines], ['f.php' => $noUnmatched ? [] : $lines]);
         $local[] = [
             'code' => $code,
+            'noUnmatched' => $noUnmatched,
             'errors' => array_map($dump, $errors),
             'kept' => array_map($dump, $r->getFileErrors()),
             'ignored' => array_map($dump, $r->getLocallyIgnoredErrors()),

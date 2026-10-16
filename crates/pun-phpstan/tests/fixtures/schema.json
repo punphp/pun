@@ -677,6 +677,10 @@
         ]
     },
     {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\t?a: schema(structure([b: int()]), required(false))\nparameters: []\n",
+        "messages": []
+    },
+    {
         "neon": "parametersSchema:\n\t__validate: bool()\n\t\"\": int()\n\tb: int()\nparameters:\n\tb: 1\n\t\"\": x\n",
         "messages": [
             "The item 'parameters › ' expects to be int, 'x' given."

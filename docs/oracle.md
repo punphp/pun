@@ -118,3 +118,35 @@ Intentional differences:
   takes the non-interactive answer (no) and aborts with Pint's message.
 - Exceptions other than Pint's `abort()` (unreadable path, bad config) are rendered by Symfony with an
   "In File.php line N:" header naming PHP source; Pun prints the message without that box.
+
+## PHPStan (Phase 2, crate `pun-phpstan`)
+
+| component | version | ref |
+|---|---|---|
+| phpstan/phpstan | 2.2.7 (what Pinkary's composer.lock pins; PHAR, vendor prefixed `_PHPStan_88a9c7bcc\`) | phpstan-src `88a9c7bcc61b7e8c2d95ef94427c8c34b9c8789f` |
+| larastan/larastan | v3.10.0 (Pinkary's composer.lock) | |
+| phpstan/phpstan-deprecation-rules | ^2.0 (Pinkary requires it) | |
+| nette/neon | v3.3.4 (bundled in the PHAR) | `bb88bf3a54dd21bf4dbddb5cd525d7b0c61b7cda` |
+| nette/di / nette/schema | 3.1.10 / 1.2.5 (bundled in the PHAR) | |
+
+- `.oracle/phpstan`: `composer.json` requiring exactly `phpstan/phpstan: 2.2.7`, `larastan/larastan: 3.10.0`,
+  `phpstan/phpstan-deprecation-rules: ^2.0`; `composer install` there. Oracle binary:
+  `php .oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar`. Its `vendor/` also serves the corpus parity
+  tests (symlinked into a farm, so `%rootDir%` and `includes: vendor/...` resolve as in a real project).
+- `.oracle/neon`: nette/neon source + tests at the bundled tag (`git fetch --depth 1 https://github.com/nette/neon.git v3.3.4`).
+- `.oracle/phpstan-src`: phpstan-src at the tag 2.2.7 (only its `tests/` are used, for data providers).
+- `.oracle/phpstan-phar`: an extracted copy of the PHAR, for reading only (nothing runs it).
+
+All exporters run the PHAR's real classes (private methods through reflection, test data providers with stub
+parents); expected values are never written by hand. Re-run one after touching its cases, then the tests.
+
+| script | writes (under `crates/pun-phpstan/tests/fixtures/`) |
+|---|---|
+| `php scripts/export-neon-fixtures.php .oracle/neon > neon.json` | every Neon decode/encode nette/neon's `.phpt` tests make; with `neon-extra-inputs.json` as 2nd arg, decodes those strings (`neon-extra.json`) |
+| `php scripts/phpstan-config.php <phar> <cwd> [-c f] [-l n] [--generated-config f] [--generate-baseline f] [path...]` | (stdout) resolved parameters + allConfigFiles, or PHPStan's stderr error, as `phpstan analyse` gets them |
+| `php scripts/export-phpstan-config-fixtures.php [case...]` | `config/<case>/expected.json` from `case.json`, and `config-corpus/<name>.json` (pinkary, larastan, laravel-pint, laravel-framework-src/-types) |
+| `php scripts/export-schema-fixtures.php` | `schema.json`: parametersSchema validation (ContainerFactory::validateParameters) |
+| `php scripts/export-baseline-fixtures.php` | `baseline.json`: BaselineNeon/PhpErrorFormatter output and what PHPStan reads back |
+| `php scripts/export-ignore-fixtures.php` | `comments.json` (RichParser::getLinesToIgnore), `local-processor.json` (LocalIgnoresProcessor), `ignore.json` (IgnoredErrorHelper + result processing) |
+| `php scripts/export-local-ignore-fixtures.php` | `local.json`: real `phpstan analyse` on `local/*.php`, comments blanked vs. kept |
+| `php scripts/export-php-helpers-fixtures.php` | `php.json`: regex (Nette Strings::match), preg_quote, FileHelper, relative paths, fnmatch, (string) casts, `phpfile/ok-*.php` |
