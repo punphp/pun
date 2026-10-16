@@ -26,6 +26,15 @@ pub fn fixer() -> Box<dyn Fixer> {
 }
 
 impl PhpdocTypesFixer {
+    /// normalize() only lowercases a type whose lowercase form is in the set, so a docblock where every
+    /// case-insensitive occurrence of those names is already lowercase comes out unchanged.
+    fn may_change(&self, doc: &[u8]) -> bool {
+        let lower = doc.to_ascii_lowercase();
+        self.types_set_to_fix.iter().any(|t| {
+            let t = t.as_bytes();
+            lower.windows(t.len()).enumerate().any(|(i, w)| w == t && &doc[i..i + t.len()] != t)
+        })
+    }
     fn normalize(&self, t: &[u8]) -> Vec<u8> {
         let e = TypeExpression::plain(t);
         e.map_types(&mut |t| {
@@ -72,6 +81,6 @@ impl Fixer for PhpdocTypesFixer {
         base::is_candidate(tokens)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        base::apply_fix(tokens, &format!("phpdoc_types {:?}", self.types_set_to_fix), &|t| self.normalize(t));
+        base::apply_fix(tokens, &format!("phpdoc_types {:?}", self.types_set_to_fix), &|doc| self.may_change(doc), &|t| self.normalize(t));
     }
 }

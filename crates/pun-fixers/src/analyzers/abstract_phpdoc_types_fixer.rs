@@ -16,9 +16,11 @@ thread_local! {
 }
 
 /// `memo_key` names the fixer and its configuration: two fixers (or configurations) never share results.
-pub fn apply_fix(tokens: &mut Tokens, memo_key: &str, normalize: &dyn Fn(&[u8]) -> Vec<u8>) {
+/// `may_change(docblock)` is false only when `normalize` provably leaves every type in it as it is (the docblock is
+/// then not parsed at all).
+pub fn apply_fix(tokens: &mut Tokens, memo_key: &str, may_change: &dyn Fn(&[u8]) -> bool, normalize: &dyn Fn(&[u8]) -> Vec<u8>) {
     for index in 0..tokens.count() {
-        if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
+        if !tokens[index].is_kind(Kind::T_DOC_COMMENT) || !may_change(&tokens[index].content) {
             continue;
         }
         let doc = DocBlock::new(&tokens[index].content);

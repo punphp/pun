@@ -91,8 +91,13 @@ impl Fixer for IndentationTypeFixer {
         self.whitespaces_config = config.clone();
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
+        // With a spaces indent only tabs are rewritten, so tab-free tokens come out unchanged.
+        let spaces = self.whitespaces_config.get_indent() != "\t";
         for index in 0..tokens.count() {
             let token = &tokens[index];
+            if spaces && !token.content.contains(&b'\t') {
+                continue;
+            }
             if token.is_comment() {
                 let t = self.fix_indent_in_comment(tokens, index);
                 tokens.set(index, t);

@@ -30,7 +30,7 @@ impl Fixer for NoWhitespaceInBlankLineFixer {
         // skip first as it cannot be a white space token
         let count = tokens.count();
         for i in 1..count {
-            if tokens[i].is_whitespace(None) {
+            if tokens[i].is_whitespace(None) && self.may_change(tokens, i) {
                 self.fix_whitespace_token(tokens, i);
             }
         }
@@ -38,6 +38,25 @@ impl Fixer for NoWhitespaceInBlankLineFixer {
 }
 
 impl NoWhitespaceInBlankLineFixer {
+    /// Whether fix_whitespace_token can change the token, mirroring its line selection without allocating: only a
+    /// "\r" (a "\r\n" is rejoined with "\n") or a selected line made only of spaces and tabs (`^\h+$`). Otherwise
+    /// the lines rejoin to the same content, and setting an identical token is a no-op.
+    fn may_change(&self, tokens: &Tokens, index: usize) -> bool {
+        let c = &tokens[index].content;
+        if self.whitespaces_config.get_line_ending() != "\n" || c.contains(&b'\r') {
+            return true;
+        }
+        let line_count = c.iter().filter(|&&b| b == b'\n').count() + 1;
+        let has_next = index + 1 < tokens.count();
+        let prev = &tokens[index - 1];
+        if !(line_count > 2 || !has_next || prev.is_kind(T_OPEN_TAG)) {
+            return false;
+        }
+        let l_max = if has_next { line_count - 1 } else { line_count };
+        let l_start = usize::from(!(prev.is_kind(T_OPEN_TAG) && prev.content.ends_with(b"\n")));
+        c.split(|&b| b == b'\n').take(l_max).skip(l_start).any(|l| !l.is_empty() && l.iter().all(|b| matches!(b, b' ' | b'\t')))
+    }
+
     fn fix_whitespace_token(&self, tokens: &mut Tokens, index: usize) {
         let content = tokens[index].content.clone();
         let mut lines = Preg::split_str("/(\r\n|\n)/", &content);
