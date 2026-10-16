@@ -731,6 +731,7 @@ dependencies = [
  "libc",
  "pcre2",
  "pcre2-sys",
+ "punphp-config",
  "punphp-format",
  "punphp-tokens",
  "serde_json",
