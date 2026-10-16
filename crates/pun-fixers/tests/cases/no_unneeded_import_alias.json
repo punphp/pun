@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_unneeded_import_alias",
+        "input": "<?php\nuse X;\nclass C { use T { foo as protected; T::bar as bar; } }\n",
+        "expected": "<?php\nuse X;\nclass C { use T { foo as protected; T::bar as bar; } }\n"
+    }
+]

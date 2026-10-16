@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "lambda_not_used_import",
+        "input": "<?php\n$f = function () use ($a) { if (1) { echo 1; } return 2; };\n",
+        "expected": "<?php\n$f = function () { if (1) { echo 1; } return 2; };\n"
+    },
+    {
+        "fixer": "lambda_not_used_import",
+        "input": "<?php\n$f = function () use ($this, $b) { return 1; };\n",
+        "expected": "<?php\n$f = function () use ($this ) { return 1; };\n"
+    },
+    {
+        "fixer": "lambda_not_used_import",
+        "input": "<?php\n$f = function () use ($b, $b, $c) { return $b; };\n",
+        "expected": "<?php\n$f = function () use ($b, $b ) { return $b; };\n"
+    }
+]

@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_unused_imports",
+        "input": "<?php\nuse /* c */\n    Foo;\n$a = 1;\n",
+        "expected": "<?php\n/* c */\n    $a = 1;\n"
+    }
+]

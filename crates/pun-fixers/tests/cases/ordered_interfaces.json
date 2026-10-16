@@ -1,0 +1,12 @@
+[
+    {
+        "fixer": "ordered_interfaces",
+        "input": "<?php\ninterface I extends B, A {}\nclass C extends D {}\n",
+        "expected": "<?php\ninterface I extends A, B {}\nclass C extends D {}\n"
+    },
+    {
+        "fixer": "ordered_interfaces",
+        "input": "<?php\nclass C implements Z /* c */, A {}\n",
+        "expected": "<?php\nclass C implements A, Z /* c */ {}\n"
+    }
+]
