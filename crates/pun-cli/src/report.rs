@@ -102,19 +102,24 @@ pub fn ensure_prettier(root: &Path, enabled: bool) -> Option<String> {
     if !enabled {
         return None;
     }
-    let node_ok = Command::new("node").arg("-v").stdout(Stdio::null()).stderr(Stdio::null()).status().is_ok_and(|s| s.success());
-    if !node_ok {
-        return Some(pint_error::render("The rules enabled in your pint configuration require Node.js to be installed."));
-    }
-    // resources/js/version-probe.cjs (argv shifted by one for `node -e`).
-    const PROBE: &str = r#"const path = require('path'); const fs = require('fs'); const pkg = process.argv[1]; let entry;
-try { entry = require.resolve(pkg, { paths: [process.cwd()] }); } catch (e) { process.exit(1); }
-let dir = path.dirname(entry);
-while (dir !== path.dirname(dir)) { const manifest = path.join(dir, 'package.json');
-  if (fs.existsSync(manifest)) { try { const json = JSON.parse(fs.readFileSync(manifest, 'utf8'));
-    if (json.name === pkg && json.version) { process.stdout.write(String(json.version)); break; } } catch (e) {} }
-  dir = path.dirname(dir); }"#;
     const REQUIRED: [(&str, &str); 3] = [("prettier", "^3.8.4"), ("prettier-plugin-blade", "^3.2.2"), ("prettier-plugin-tailwindcss", "^0.8.0")];
+    // Pint's `node -v` plus resources/js/version-probe.cjs per package, in one Node start: a JSON list with, per
+    // package, null when it doesn't resolve, else its version ("" when no manifest names it).
+    const PROBE: &str = r#"const path = require('path'); const fs = require('fs');
+const probe = (pkg) => { let entry;
+  try { entry = require.resolve(pkg, { paths: [process.cwd()] }); } catch (e) { return null; }
+  let dir = path.dirname(entry);
+  while (dir !== path.dirname(dir)) { const manifest = path.join(dir, 'package.json');
+    if (fs.existsSync(manifest)) { try { const json = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+      if (json.name === pkg && json.version) { return String(json.version).trim(); } } catch (e) {} }
+    dir = path.dirname(dir); }
+  return ''; };
+process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
+    let out = Command::new("node").args(["-e", PROBE]).args(REQUIRED.map(|r| r.0)).current_dir(root).stderr(Stdio::null()).output();
+    let probes = out.ok().filter(|o| o.status.success()).and_then(|o| serde_json::from_slice::<Vec<Option<String>>>(&o.stdout).ok());
+    let Some(probes) = probes else {
+        return Some(pint_error::render("The rules enabled in your pint configuration require Node.js to be installed."));
+    };
     let manager = if root.join("bun.lock").exists() || root.join("bun.lockb").exists() {
         ("bun", "add -d")
     } else if root.join("pnpm-lock.yaml").exists() {
@@ -126,9 +131,8 @@ while (dir !== path.dirname(dir)) { const manifest = path.join(dir, 'package.jso
     };
     let mut missing = vec![];
     let mut outdated = vec![];
-    for (pkg, constraint) in REQUIRED {
-        let out = Command::new("node").args(["-e", PROBE, pkg]).current_dir(root).stderr(Stdio::null()).output().ok().filter(|o| o.status.success());
-        match out.map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string()) {
+    for ((pkg, constraint), probe) in REQUIRED.into_iter().zip(probes) {
+        match probe {
             None => missing.push(pkg),
             Some(v) if !v.is_empty() && !caret_satisfies(&v, &constraint[1..]) => outdated.push((pkg, v, constraint)),
             Some(_) => {}
