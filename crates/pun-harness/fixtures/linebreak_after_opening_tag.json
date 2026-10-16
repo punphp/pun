@@ -1,0 +1,122 @@
+{
+    "fixer": "linebreak_after_opening_tag",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpTag\\LinebreakAfterOpeningTagFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpTag/LinebreakAfterOpeningTagFixerTest.php",
+    "case_count": 10,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpTag\\LinebreakAfterOpeningTagFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$a = function(){\n                    echo 1;\n                };",
+                        "<?php $a = function(){\n                    echo 1;\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $foo = true; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $foo = true; ?>\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n\n$foo = true;\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n$foo = true;\n$bar = false;\n?>",
+                        "<?php $foo = true;\n$bar = false;\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $foo = true; ?>\nHtml here\n<?php $bar = false; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?= $bar;\n$foo = $bar;\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\r\n// linebreak already present in file with Windows line endings\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "file with shebang",
+                    "args": [
+                        "#!x\n<?php\necho 1;\necho 2;",
+                        "#!x\n<?php echo 1;\necho 2;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpTag\\LinebreakAfterOpeningTagFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\r\n$foo = true;\n",
+                        "<?php $foo = true;\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

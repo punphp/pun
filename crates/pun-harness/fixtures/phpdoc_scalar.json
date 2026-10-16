@@ -1,0 +1,253 @@
+{
+    "fixer": "phpdoc_scalar",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocScalarFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocScalarFixerTest.php",
+    "case_count": 25,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocScalarFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "basic fix",
+                    "args": [
+                        "<?php\n            /**\n             * @return int\n             */\n             ",
+                        "<?php\n            /**\n             * @return integer\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property fix",
+                    "args": [
+                        "<?php\n            /**\n             * @method int foo()\n             * @property int $foo\n             * @property callable $foo\n             * @property-read bool $bar\n             * @property-write float $baz\n             */\n             ",
+                        "<?php\n            /**\n             * @method integer foo()\n             * @property integer $foo\n             * @property callback $foo\n             * @property-read boolean $bar\n             * @property-write double $baz\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not modify variables",
+                    "args": [
+                        "<?php\n            /**\n             * @param int $integer\n             */\n             ",
+                        "<?php\n            /**\n             * @param integer $integer\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix with tabs on one line",
+                    "args": [
+                        "<?php /**\t@return\tbool\t*/",
+                        "<?php /**\t@return\tboolean\t*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix more things",
+                    "args": [
+                        "<?php\n            /**\n             * Hello there mr integer!\n             *\n             * @param int|float $integer\n             * @param int|int[] $foo\n             * @param string|null $bar\n             *\n             * @return string|bool\n             */\n             ",
+                        "<?php\n            /**\n             * Hello there mr integer!\n             *\n             * @param integer|real $integer\n             * @param int|integer[] $foo\n             * @param str|null $bar\n             *\n             * @return string|boolean\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix var",
+                    "args": [
+                        "<?php\n            /**\n             * @var int Some integer value.\n             */\n             ",
+                        "<?php\n            /**\n             * @var integer Some integer value.\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix var with more stuff",
+                    "args": [
+                        "<?php\n            /**\n             * @var bool|int|Double Booleans, integers and doubles.\n             */\n             ",
+                        "<?php\n            /**\n             * @var boolean|integer|Double Booleans, integers and doubles.\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix type",
+                    "args": [
+                        "<?php\n            /**\n             * @type float\n             */\n             ",
+                        "<?php\n            /**\n             * @type real\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix",
+                    "args": [
+                        "<?php\n            /**\n             * @var notaboolean\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complex mix",
+                    "args": [
+                        "<?php\n            /**\n             * @var notabooleanthistime|bool|integerr\n             */\n             ",
+                        "<?php\n            /**\n             * @var notabooleanthistime|boolean|integerr\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not modify complex tag",
+                    "args": [
+                        "<?php\n            /**\n             * @Type(\"boolean\")\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not modify strings",
+                    "args": [
+                        "<?php\n            $string = '\n                /**\n                 * @var boolean\n                 */\n            ';\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty DocBlock",
+                    "args": [
+                        "<?php\n            /**\n             *\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrong cased Phpdoc tag is not altered",
+                    "args": [
+                        "<?php\n            /**\n             * @Param boolean\n             *\n             * @Return int\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inline doc",
+                    "args": [
+                        "<?php\n            /**\n             * Does stuff with stuffs.\n             *\n             * @param array $stuffs {\n             *     @type bool $foo\n             *     @type int $bar\n             * }\n             */\n             ",
+                        "<?php\n            /**\n             * Does stuff with stuffs.\n             *\n             * @param array $stuffs {\n             *     @type boolean $foo\n             *     @type integer $bar\n             * }\n             */\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix callback",
+                    "args": [
+                        "<?php\n            /**\n             * @method int foo()\n             * @property int $foo\n             * @property callable $foo\n             * @property-read bool $bar\n             * @property-write float $baz\n             */\n             ",
+                        "<?php\n            /**\n             * @method integer foo()\n             * @property integer $foo\n             * @property callback $foo\n             * @property-read boolean $bar\n             * @property-write double $baz\n             */\n             ",
+                        {
+                            "types": [
+                                "boolean",
+                                "callback",
+                                "double",
+                                "integer",
+                                "real",
+                                "str"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix Windows line endings",
+                    "args": [
+                        "<?php\r\n            /**\r\n             * @return int\r\n             */\r\n             ",
+                        "<?php\r\n            /**\r\n             * @return integer\r\n             */\r\n             "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** @var array<int, bool> */",
+                        "<?php /** @var array<integer, boolean> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /** @var array{bool, int, string} */",
+                        "<?php /** @var array{boolean, integer, str} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php /** @var array{int, array{string, bool}} */",
+                        "<?php /** @var array{integer, array{str, boolean}} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** @var array{index: int, isRequired: bool} */",
+                        "<?php /** @var array{index: integer, isRequired: boolean} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php /** @return never */",
+                        "<?php /** @return no-return */",
+                        {
+                            "types": [
+                                "no-return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /** @return never */",
+                        "<?php /** @return never-return */",
+                        {
+                            "types": [
+                                "never-return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php /** @return never */",
+                        "<?php /** @return never-returns */",
+                        {
+                            "types": [
+                                "never-returns"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php /** @return Collection<int, covariant Foo> */",
+                        "<?php /** @return Collection<integer, covariant Foo> */"
+                    ]
+                }
+            ]
+        }
+    ]
+}

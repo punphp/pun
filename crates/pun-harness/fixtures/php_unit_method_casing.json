@@ -1,0 +1,446 @@
+{
+    "fixer": "php_unit_method_casing",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitMethodCasingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitMethodCasingFixerTest.php",
+    "case_count": 44,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitMethodCasingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "skip non phpunit methods",
+                    "args": [
+                        "<?php class MyClass {\n                    public function testMyApp() {}\n                    public function test_my_app() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "skip non test methods",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function not_a_test() {}\n                    public function notATestEither() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "default sample to camel case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { public function testMyApp() {} }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { public function test_my_app() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "default sample to snake case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { public function test_my_app() {} }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { public function testMyApp() {} }",
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "annotation to camel case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { /** @test */ public function myApp() {} }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { /** @test */ public function my_app() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "annotation to snake case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { /** @test */ public function my_app() {} }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { /** @test */ public function myApp() {} }",
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@depends annotation to camel case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function testMyApp () {}\n\n                    /**\n                     * @depends testMyApp\n                     */\n                    public function testMyAppToo() {}\n                }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function test_my_app () {}\n\n                    /**\n                     * @depends test_my_app\n                     */\n                    public function test_my_app_too() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@depends annotation to snake case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function test_my_app () {}\n\n                    /**\n                     * @depends test_my_app\n                     */\n                    public function test_my_app_too() {}\n                }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function testMyApp () {}\n\n                    /**\n                     * @depends testMyApp\n                     */\n                    public function testMyAppToo() {}\n                }",
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@depends annotation with class name in PascalCase to camel case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function testMyApp () {}\n\n                    /**\n                     * @depends FooBarTest::testMyApp\n                     */\n                    public function testMyAppToo() {}\n                }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function test_my_app () {}\n\n                    /**\n                     * @depends FooBarTest::test_my_app\n                     */\n                    public function test_my_app_too() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@depends annotation with class name in PascalCase to snake case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function test_my_app () {}\n\n                    /**\n                     * @depends FooBarTest::test_my_app\n                     */\n                    public function test_my_app_too() {}\n                }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function testMyApp () {}\n\n                    /**\n                     * @depends FooBarTest::testMyApp\n                     */\n                    public function testMyAppToo() {}\n                }",
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@depends annotation with class name in Snake_Case to camel case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function testMyApp () {}\n\n                    /**\n                     * @depends Foo_Bar_Test::testMyApp\n                     */\n                    public function testMyAppToo() {}\n                }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function test_my_app () {}\n\n                    /**\n                     * @depends Foo_Bar_Test::test_my_app\n                     */\n                    public function test_my_app_too() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@depends annotation with class name in Snake_Case to snake case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function test_my_app () {}\n\n                    /**\n                     * @depends Foo_Bar_Test::test_my_app\n                     */\n                    public function test_my_app_too() {}\n                }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    public function testMyApp () {}\n\n                    /**\n                     * @depends Foo_Bar_Test::testMyApp\n                     */\n                    public function testMyAppToo() {}\n                }",
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@depends and @test annotation to camel case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    /**\n                     * @test\n                     */\n                    public function myApp () {}\n\n                    /**\n                     * @test\n                     * @depends myApp\n                     */\n                    public function myAppToo() {}\n\n                    /** not a test method */\n                    public function my_app_not() {}\n\n                    public function my_app_not_2() {}\n                }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    /**\n                     * @test\n                     */\n                    public function my_app () {}\n\n                    /**\n                     * @test\n                     * @depends my_app\n                     */\n                    public function my_app_too() {}\n\n                    /** not a test method */\n                    public function my_app_not() {}\n\n                    public function my_app_not_2() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@depends and @test annotation to snake case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    /**\n                     * @test\n                     */\n                    public function my_app () {}\n\n                    /**\n                     * @test\n                     * @depends my_app\n                     */\n                    public function my_app_too() {}\n\n                    /** not a test method */\n                    public function my_app_not() {}\n\n                    public function my_app_not_2() {}\n                }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                    /**\n                     * @test\n                     */\n                    public function myApp () {}\n\n                    /**\n                     * @test\n                     * @depends myApp\n                     */\n                    public function myAppToo() {}\n\n                    /** not a test method */\n                    public function my_app_not() {}\n\n                    public function my_app_not_2() {}\n                }",
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixed case to camel case",
+                    "args": [
+                        "<?php class MyTest extends TestCase { function testShouldNotFooWhenBar() {} }",
+                        "<?php class MyTest extends TestCase { function test_should_notFoo_When_Bar() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixed case to snake case",
+                    "args": [
+                        "<?php class MyTest extends TestCase { function test_should_not_foo_when_bar() {} }",
+                        "<?php class MyTest extends TestCase { function test_should_notFoo_When_Bar() {} }",
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "does not fix if it would cause a duplicate method name",
+                    "args": [
+                        "<?php\nclass MyTest extends TestCase {\n    function test_Foo() {}\n    function testFoo() {}\n    function testBar() {}\n}",
+                        "<?php\nclass MyTest extends TestCase {\n    function test_Foo() {}\n    function testFoo() {}\n    function test_Bar() {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitMethodCasingFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "@depends annotation with class name in Snake_Case",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                public function testMyApp () {}\n\n                /**\n                 * @depends Foo_Bar_Test::testMyApp\n                 */\n                #[SimpleTest]\n                public function testMyAppToo() {}\n            }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                public function test_my_app () {}\n\n                /**\n                 * @depends Foo_Bar_Test::test_my_app\n                 */\n                #[SimpleTest]\n                public function test_my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "@depends annotation with class name in Snake_Case and attributes in between",
+                    "args": [
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                public function testMyApp () {}\n\n                /**\n                 * @depends Foo_Bar_Test::testMyApp\n                 */\n                #[SimpleTest]\n                #[Deprecated]\n                public function testMyAppToo() {}\n            }",
+                        "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                public function test_my_app () {}\n\n                /**\n                 * @depends Foo_Bar_Test::test_my_app\n                 */\n                #[SimpleTest]\n                #[Deprecated]\n                public function test_my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "test method with imported Test attribute",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "test method with fully qualified Test attribute",
+                    "args": [
+                        "<?php class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[\\PHPUnit\\Framework\\Attributes\\Test]\n            public function testMyApp() {}\n            }",
+                        "<?php class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[\\PHPUnit\\Framework\\Attributes\\Test]\n            public function test_my_app() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "test method with multiple attributes",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[\\PHPUnit\\Framework\\Attributes\\After, Test]\n            public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[\\PHPUnit\\Framework\\Attributes\\After, Test]\n            public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "test method with multiple custom attributes",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[SimpleTest, Test]\n            public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[SimpleTest, Test]\n            public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "mixed test methods with and without attributes",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            public function testMyApp() {}\n            #[Test]\n            public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            public function test_my_app() {}\n            #[Test]\n            public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "snake_case conversion with attribute",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[Test]\n            public function this_is_a_test_snake_case() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[Test]\n            public function this_is_a_Test_Snake_Case() {}\n            }",
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "camelCase to snake_case conversion with attribute",
+                    "args": [
+                        "<?php\n                use \\PHPUnit\\Framework\\Attributes\\Test;\n                class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                #[Test]\n                public function this_is_a_test_snake_case() {}\n            }",
+                        "<?php\n                use \\PHPUnit\\Framework\\Attributes\\Test;\n                class MyTest extends \\PhpUnit\\FrameWork\\TestCase {\n                #[Test]\n                public function this_is_a_TestSnakeCase() {}\n            }",
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "method with attribute and docblock",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[Test]\n            /** @return void */\n            public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[Test]\n            /** @return void */\n            public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "method with attribute and docblock and multiple lines",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[Test]\n\n\n\n            /** @return void */\n            public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n            #[Test]\n\n\n\n            /** @return void */\n            public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "method with multiple non-PHPUnit attributes",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Author(\"John\"), Test, Deprecated]\n                public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Author(\"John\"), Test, Deprecated]\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "test attribute with fully qualified namespace without import",
+                    "args": [
+                        "<?php\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[\\PHPUnit\\Framework\\Attributes\\Test]\n                public function myAppToo() {}\n            }",
+                        "<?php\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[\\PHPUnit\\Framework\\Attributes\\Test]\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "method with both attribute and @test annotation",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                /** @test */\n                public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                /** @test */\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "method with parameters and attribute",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                public function myAppToo(int $param): void {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                public function my_app_too(int $param): void {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "test attribute in namespaced class",
+                    "args": [
+                        "<?php\n            namespace App\\Tests;\n\n            use PHPUnit\\Framework\\Attributes\\Test;\n\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                public function myAppToo() {}\n            }",
+                        "<?php\n            namespace App\\Tests;\n\n            use PHPUnit\\Framework\\Attributes\\Test;\n\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "test attribute with alias",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test as CheckTest;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[CheckTest]\n                public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test as CheckTest;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[CheckTest]\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple attributes spanning multiple lines",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[\n                    Test,\n                    DataProvider(\"testData\"),\n                    Group(\"testData\")\n                ]\n                public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[\n                    Test,\n                    DataProvider(\"testData\"),\n                    Group(\"testData\")\n                ]\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple attributes in separate attribute blocks with comments",
+                    "args": [
+                        "<?php\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[FirstAttribute]\n                /* a comment */\n                #[PHPUnit\\Framework\\Attributes\\Test]\n                // another comment\n                #[LastAttribute]\n                public function myAppToo() {}\n            }",
+                        "<?php\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[FirstAttribute]\n                /* a comment */\n                #[PHPUnit\\Framework\\Attributes\\Test]\n                // another comment\n                #[LastAttribute]\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "test attribute with trailing comma",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test, ]\n                public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test, ]\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "method with both name prefix and attribute",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                public function testMyAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\Test;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[Test]\n                public function test_my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attribute with different casing",
+                    "args": [
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\TEST;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[TEST]\n                public function myAppToo() {}\n            }",
+                        "<?php\n            use PHPUnit\\Framework\\Attributes\\TEST;\n            class MyTest extends \\PHPUnit\\Framework\\TestCase {\n                #[TEST]\n                public function my_app_too() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "do not touch anonymous class",
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit\\Framework\\TestCase {\n    #[PHPUnit\\Framework\\Attributes\\Test]\n    public function methodFoo(): void\n    {\n        $class = new class () {\n            final public function method_bar(): void {}\n        };\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "do not touch setUp method (camel case)",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    #[\\Override]\n    protected function setUp(): void {}\n}",
+                        null,
+                        {
+                            "case": "camel_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "do not touch setUp method (snake case)",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    #[\\Override]\n    protected function setUp(): void {}\n}",
+                        null,
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "do not touch setUp method for custom test case (camel case)",
+                    "args": [
+                        "<?php\nclass FooTest extends YabbaDabbaDooTestCase\n{\n    #[\\Override]\n    protected function setUp(): void {}\n}",
+                        null,
+                        {
+                            "case": "camel_case"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "do not touch setUp method for custom test case (snake case)",
+                    "args": [
+                        "<?php\nclass FooTest extends YabbaDabbaDooTestCase\n{\n    #[\\Override]\n    protected function setUp(): void {}\n}",
+                        null,
+                        {
+                            "case": "snake_case"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

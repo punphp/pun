@@ -1,0 +1,837 @@
+{
+    "fixer": "type_declaration_spaces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypeDeclarationSpacesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/TypeDeclarationSpacesFixerTest.php",
+    "case_count": 90,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypeDeclarationSpacesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(bool /**bla bla*/$param) {}",
+                        "<?php function foo(bool/**bla bla*/$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(bool /**bla bla*/$param) {}",
+                        "<?php function foo(bool  /**bla bla*/$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo(callable $param) {}",
+                        "<?php function foo(callable$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(callable $param) {}",
+                        "<?php function foo(callable  $param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(array &$param) {}",
+                        "<?php function foo(array&$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(array &$param) {}",
+                        "<?php function foo(array  &$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo(array & $param) {}",
+                        "<?php function foo(array& $param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php function foo(array & $param) {}",
+                        "<?php function foo(array  & $param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function foo(Bar $param) {}",
+                        "<?php function foo(Bar$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php function foo(Bar $param) {}",
+                        "<?php function foo(Bar  $param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php function foo(Bar\\Baz $param) {}",
+                        "<?php function foo(Bar\\Baz$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php function foo(Bar\\Baz $param) {}",
+                        "<?php function foo(Bar\\Baz  $param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php function foo(Bar\\Baz &$param) {}",
+                        "<?php function foo(Bar\\Baz&$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php function foo(Bar\\Baz &$param) {}",
+                        "<?php function foo(Bar\\Baz  &$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php function foo(Bar\\Baz & $param) {}",
+                        "<?php function foo(Bar\\Baz& $param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php function foo(Bar\\Baz & $param) {}",
+                        "<?php function foo(Bar\\Baz  & $param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $foo = function(Bar\\Baz $param) {};",
+                        "<?php $foo = function(Bar\\Baz$param) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $foo = function(Bar\\Baz $param) {};",
+                        "<?php $foo = function(Bar\\Baz  $param) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $foo = function(Bar\\Baz &$param) {};",
+                        "<?php $foo = function(Bar\\Baz&$param) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $foo = function(Bar\\Baz &$param) {};",
+                        "<?php $foo = function(Bar\\Baz  &$param) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $foo = function(Bar\\Baz & $param) {};",
+                        "<?php $foo = function(Bar\\Baz& $param) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $foo = function(Bar\\Baz & $param) {};",
+                        "<?php $foo = function(Bar\\Baz  & $param) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php class Test { public function foo(Bar\\Baz $param) {} }",
+                        "<?php class Test { public function foo(Bar\\Baz$param) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php class Test { public function foo(Bar\\Baz $param) {} }",
+                        "<?php class Test { public function foo(Bar\\Baz  $param) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $foo = function(array $a,\n                    array $b, array $c, array $d) {};",
+                        "<?php $foo = function(array $a,\n                    array$b, array     $c, array\n                    $d) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $foo = fn(Bar\\Baz $param) => null;",
+                        "<?php $foo = fn(Bar\\Baz$param) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $foo = fn(Bar\\Baz $param) => null;",
+                        "<?php $foo = fn(Bar\\Baz  $param) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $foo = fn(Bar\\Baz &$param) => null;",
+                        "<?php $foo = fn(Bar\\Baz&$param) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $foo = fn(Bar\\Baz &$param) => null;",
+                        "<?php $foo = fn(Bar\\Baz  &$param) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $foo = fn(Bar\\Baz & $param) => null;",
+                        "<?php $foo = fn(Bar\\Baz& $param) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $foo = fn(Bar\\Baz & $param) => null;",
+                        "<?php $foo = fn(Bar\\Baz  & $param) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php $foo = fn(array $a,\n                    array $b, array $c, array $d) => null;",
+                        "<?php $foo = fn(array $a,\n                    array$b, array     $c, array\n                    $d) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php function foo(array ...$param) {}",
+                        "<?php function foo(array...$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php function foo(array & ...$param) {}",
+                        "<?php function foo(array& ...$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php class Foo { public int $x; }",
+                        "<?php class Foo { public int$x; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php class Foo { public bool $x; }",
+                        "<?php class Foo { public bool    $x; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php class Foo { protected \\Bar\\Baz $c; }",
+                        "<?php class Foo { protected \\Bar\\Baz$c; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php class Foo { protected \\Bar\\Baz $c; }",
+                        "<?php class Foo { protected \\Bar\\Baz   $c; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php class Foo { private array $x; }",
+                        "<?php class Foo { private array$x; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php class Foo { private array $x; }",
+                        "<?php class Foo { private array\n$x; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\nclass Point\n{\n    public \\DateTime $x;\n    protected bool $y = true;\n    private array $z = [];\n    public int $a = 0;\n    protected string $b = '';\n    private float $c = 0.0;\n}\n",
+                        "<?php\nclass Point\n{\n    public \\DateTime    $x;\n    protected bool      $y = true;\n    private array       $z = [];\n    public int          $a = 0;\n    protected string    $b = '';\n    private float       $c = 0.0;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php function foo($param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php function foo($param1,$param2) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php function foo(&$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php function foo(& $param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php function foo(/**int*/$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php function foo(bool /**bla bla*/ $param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php $foo = function(\n                    array $a,\n                    $b\n                ) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php $foo = function(\n                    $a,\n                    array $b\n                ) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php function foo(...$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php function foo(&...$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php use function some\\test\\{fn_a, fn_b, fn_c};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php use function some\\test\\{fn_a, fn_b, fn_c} ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php $foo = fn(\n                    array $a,\n                    $b\n                ) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php $foo = fn(\n                    $a,\n                    array $b\n                ) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php class Foo { public $p; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php class Foo { protected /* int */ $a; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php class Foo { private int $a; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php class Foo { public bool $x; }",
+                        "<?php class Foo { public bool    $x; }",
+                        {
+                            "elements": [
+                                "property",
+                                "constant",
+                                "function"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypeDeclarationSpacesFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(mixed $a) {}",
+                        "<?php function foo(mixed$a) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(mixed $a) {}",
+                        "<?php function foo(mixed    $a) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function __construct(\n        public int $a,\n        protected bool $b,\n        private Bar\\Baz $c,\n    ) {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function __construct(\n        public int  $a,\n        protected bool$b,\n        private Bar\\Baz     $c,\n    ) {}\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypeDeclarationSpacesFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo { private readonly int $bar; }",
+                        "<?php class Foo { private readonly int$bar; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo { private readonly int $bar; }",
+                        "<?php class Foo { private readonly int    $bar; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo { readonly int $i; }",
+                        "<?php class Foo { readonly int$i; }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypeDeclarationSpacesFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo { public (A&B)|C $bar; }",
+                        "<?php class Foo { public (A&B)|C$bar; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo { public (A&B)|C $bar; }",
+                        "<?php class Foo { public (A&B)|C    $bar; }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypeDeclarationSpacesFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null): void\n    {\n        $this->fixer->configure(['elements' => ['property', 'constant', 'function']]);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo {const   BAR = \"\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo {public const    BAR = 123; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo {const BAR = \"\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo {public const string BAR = \"\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php class Foo {public const stringBAR = \"\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php class Foo {public const BAR = 123; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php class Foo {public const array BAR = []; }",
+                        "<?php class Foo {public const array               BAR = []; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 7,
+                    "args": [
+                        "<?php class Foo {public const bool BAR = true; }",
+                        "<?php class Foo {public const bool               BAR = true; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 8,
+                    "args": [
+                        "<?php class Foo {public int $bar; public const string BAZ = \"\"; }",
+                        "<?php class Foo {public int   $bar; public const string               BAZ = \"\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 9,
+                    "args": [
+                        "<?php class Foo {public const string BAR = \"\"; }",
+                        "<?php class Foo {public const string\tBAR = \"\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 10,
+                    "args": [
+                        "<?php class Foo {public const string BAR = \"\"; }",
+                        "<?php class Foo {public const string\t \t  BAR = \"\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 11,
+                    "args": [
+                        "<?php class Foo {public const int BAR = 0; }",
+                        "<?php class Foo {public const int    BAR = 0; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 12,
+                    "args": [
+                        "<?php class Bar {public const bool BAR = true; }",
+                        "<?php class Bar {public const bool    BAR = true; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 13,
+                    "args": [
+                        "<?php interface Bar {public const string BAR = \"value\"; }",
+                        "<?php interface Bar {public const string    BAR = \"value\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 14,
+                    "args": [
+                        "<?php trait Bar {public const string FOO = \"\"; }",
+                        "<?php trait Bar {public const string    FOO = \"\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 15,
+                    "args": [
+                        "<?php class Baz {\n                public const string FIRST = \"1\";\n                protected const int SECOND = 2;\n                private const array THIRD = [];\n            }",
+                        "<?php class Baz {\n                public const string  FIRST = \"1\";\n                protected const int   SECOND = 2;\n                private const array    THIRD = [];\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 16,
+                    "args": [
+                        "<?php class Test {\n                public function foo(): void {}\n                public const string BAR = \"bar\";\n                private $baz = 1;\n            }",
+                        "<?php class Test {\n                public function foo(): void {}\n                public const string   BAR = \"bar\";\n                private $baz = 1;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 17,
+                    "args": [
+                        "<?php class Foo {public const ?string BAR = null; }",
+                        "<?php class Foo {public const ?string   BAR = null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 18,
+                    "args": [
+                        "<?php class Foo {public const int|string BAR = 0; }",
+                        "<?php class Foo {public const int|string    BAR = 0; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 19,
+                    "args": [
+                        "<?php class Foo {public const int /**bla bla*/VALUE = 0; }",
+                        "<?php class Foo {public const int/**bla bla*/VALUE = 0; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 20,
+                    "args": [
+                        "<?php class Foo {public const int /**bla bla*/ VALUE = 0; }",
+                        "<?php class Foo {public const int  /**bla bla*/ VALUE = 0; }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypeDeclarationSpacesFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->fixer->configure(['elements' => ['property', 'constant', 'function']]);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public(set) bool $a;\n    protected(set) int $i;\n    private(set) string $s;\n}",
+                        "<?php\nclass Foo\n{\n    public(set) bool$a;\n    protected(set) int$i;\n    private(set) string$s;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "final property",
+                    "args": [
+                        "<?php class Foo { final int $i; }",
+                        "<?php class Foo { final int$i; }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

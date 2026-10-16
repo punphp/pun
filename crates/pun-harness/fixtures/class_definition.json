@@ -1,0 +1,1337 @@
+{
+    "fixer": "class_definition",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/ClassDefinitionFixerTest.php",
+    "case_count": 120,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "exceptionExpression",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $exceptionExpression): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($exceptionExpression);\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid configuration key",
+                    "args": [
+                        {
+                            "a": false
+                        },
+                        "/^\\[class_definition\\] Invalid configuration: The option \"a\" does not exist\\. Defined options are: \"inline_constructor_arguments\", \"multi_line_extends_each_single_line\", \"single_item_single_line\", \"single_line\", \"space_before_parenthesis\"\\.$/"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid configuration value",
+                    "args": [
+                        {
+                            "single_line": "z"
+                        },
+                        "/^\\[class_definition\\] Invalid configuration: The option \"single_line\" with value \"z\" is expected to be of type \"bool\", but is of type \"string\"\\.$/"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = new class(0) extends SomeClass implements SomeInterface, D {};",
+                        "<?php $a = new    class(0)     extends\nSomeClass\timplements    SomeInterface, D {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = new class(1) extends SomeClass implements SomeInterface, D {};",
+                        "<?php $a = new    class(1)     extends\nSomeClass\timplements    SomeInterface, D {};",
+                        {
+                            "single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = new class('1a') implements\nA\n{};",
+                        "<?php $a = new class('1a')   implements\nA{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a = new class('1a') implements A {};",
+                        "<?php $a = new class('1a')   implements\nA{};",
+                        {
+                            "single_item_single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $a = new class {};",
+                        "<?php $a = new class{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $a = new class {};",
+                        "<?php $a = new class\n{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $a = new class() {};",
+                        "<?php $a = new\n class  (  ){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a = new class(  ) {};",
+                        "<?php $a = new\n class  (  ){};",
+                        {
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $a = new class implements Foo {};",
+                        "<?php $a = new\n class    implements Foo {};",
+                        {
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $a = new class( $this->foo() , bar ( $a) ) {};",
+                        "<?php $a = new\n class  ( $this->foo() , bar ( $a) ){};",
+                        {
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $a = new class(10, 1, /**/ 2) {};",
+                        "<?php $a = new class(  10, 1,/**/2  ){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $a = new class(  10, 1,/**/2  ) {};",
+                        "<?php $a = new class(  10, 1,/**/2  ){};",
+                        {
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $a = new class(2) {};",
+                        "<?php $a = new    class(2){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $a = new class($this->prop) {};",
+                        "<?php $a = new class(   $this->prop   ){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $a = new class(   $this->prop   ) {};",
+                        "<?php $a = new class(   $this->prop   ){};",
+                        {
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $a = new class(\n\t$a,\n\t$b,\n\t$c,\n\t$d) implements A, B {};",
+                        "<?php $a = new class(\n\t$a,\n\t$b,\n\t$c,\n\t$d) implements  A, \t B{};",
+                        {
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $a = new class(\n\t$a,\n\t$b,\n\t$c,\n\t$d) implements A, B {};",
+                        "<?php $a = new   class  (\n\t$a,\n\t$b,\n\t$c,\n\t$d)    implements  A, \t B{};",
+                        {
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $a = new class($this->prop, $v[3], 4) {};",
+                        "<?php $a = new class(   $this->prop,$v[3],   4)         {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PSR-12 Extends/Implements Parenthesis on the next line.",
+                    "args": [
+                        "<?php\n$instance = new class extends \\Foo implements\n\\ArrayAccess,\n    \\Countable,\n    \\Serializable\n{};",
+                        "<?php\n$instance = new class   extends \\Foo  implements\n\\ArrayAccess,\\Countable,\\Serializable{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PSR-12 Implements Parenthesis on the next line.",
+                    "args": [
+                        "<?php\n$instance = new class implements\n\\ArrayAccess,\n    \\Countable,\n    \\Serializable\n{};",
+                        "<?php\n$instance = new class implements\n\\ArrayAccess,\\Countable,\\Serializable{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PSR-12 Extends Parenthesis on the next line.",
+                    "args": [
+                        "<?php\n$instance = new class extends\nArrayAccess\n{};",
+                        "<?php\n$instance = new class\nextends\nArrayAccess\n{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $a = new #\nclass #\n( #\n'1a', #\n1 #\n) #\nimplements#\nA, #\nB,\n    C #\n{#\n#\n}#\n;",
+                        "<?php $a = new#\nclass#\n(#\n'1a',#\n1 #\n)#\nimplements#\nA, #\nB,C#\n{#\n#\n}#\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $a = new #\nclass #\n( #\n'1a', #\n1 #\n) #\nimplements #\nA #\n{#\n#\n}#\n;",
+                        "<?php $a = new#\nclass#\n(#\n'1a',#\n1 #\n)#\nimplements#\nA#\n{#\n#\n}#\n;",
+                        {
+                            "single_item_single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $a = new class() #\n{};",
+                        "<?php $a = new class()#\n{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "space_before_parenthesis 1",
+                    "args": [
+                        "<?php $z = new class () {};",
+                        "<?php $z = new class()  {};",
+                        {
+                            "space_before_parenthesis": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "space_before_parenthesis 2",
+                    "args": [
+                        "<?php $z = new class () {};",
+                        "<?php $z = new class   ()  {};",
+                        {
+                            "space_before_parenthesis": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "space_before_parenthesis and inline_constructor_arguments",
+                    "args": [
+                        "<?php $z = new class ( static::foo($this->bar())  ,baz() ) {};",
+                        "<?php $z = new class   ( static::foo($this->bar())  ,baz() )  {};",
+                        {
+                            "space_before_parenthesis": true,
+                            "inline_constructor_arguments": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single attribute on separate line",
+                    "args": [
+                        "<?php\n$a = new\n#[FOO]\nclass() {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple attributes on separate line",
+                    "args": [
+                        "<?php\n$a = new\n#[FOO]\n#[\\Ns\\Bar]\nclass() {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single line phpdoc on separate line",
+                    "args": [
+                        "<?php\n$a = new\n/** @property string $x */\nclass() {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multi line phpdoc on separate line",
+                    "args": [
+                        "<?php\n$a = new\n/**\n @property string $x\n */\nclass() {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "phpdoc and single attribute on separate line",
+                    "args": [
+                        "<?php\n$a = new\n/**\n @property string $x\n */\n#[FOO]\nclass() {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "phpdoc and multiple attributes on separate line",
+                    "args": [
+                        "<?php\n$a = new\n/** @property string $x */\n#[FOO] #[\\Ns\\Bar]\nclass() {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php class A\n{}",
+                        "<?php class    A   {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class B\n{}",
+                        "<?php class    B{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php class C\n{}",
+                        "<?php class\n\tC{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php class D //\n{}",
+                        "<?php class    D//\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php class /**/ E //\n{}",
+                        "<?php class/**/E//\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nclass A\n{}\n\nclass /**/ B //\n/**/\n{}",
+                        "<?php\nclass\n   A\n{}\n\nclass/**/B //\n/**/ {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nnamespace {\n    class IndentedNameSpacedClass\n{\n    }\n}",
+                        "<?php\nnamespace {\n    class IndentedNameSpacedClass    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php class AE0 extends B\n{}",
+                        "<?php class    AE0    extends B    {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class /**/ AE1 /**/ extends /**/ B /**/\n{}",
+                        "<?php class/**/AE1/**/extends/**/B/**/{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php class /*class*/ AE2 extends\nB\n{}",
+                        "<?php class /*class*/ AE2 extends\nB{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Test124 extends\n\\Exception\n{}",
+                        "<?php\nclass\nTest124\n\nextends\n\\Exception {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php class LotOfImplements implements A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q\n{}",
+                        "<?php class LotOfImplements implements A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class E implements B\n{}",
+                        "<?php class    E   \nimplements     B       \t{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php abstract class F extends B implements C\n{}",
+                        "<?php abstract    class    F    extends     B    implements C {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline abstract extends implements with comments",
+                    "args": [
+                        "<?php abstract class G extends       //\nB /*  */ implements C\n{}",
+                        "<?php abstract    class     G     extends       //\nB/*  */implements C{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final extends implement",
+                    "args": [
+                        "<?php final class G extends       //\nB /*  */ implements C\n{}",
+                        "<?php final    class     G     extends       //\nB/*  */implements C{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final",
+                    "args": [
+                        "<?php final class G        //\n/*  */\n{}",
+                        "<?php final    class     G        //\n/*  */{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Aaa IMPLEMENTS\n    \\RFb,\n    \\Fcc,\n    \\GFddZz\n{\n}",
+                        "<?php\nclass Aaa IMPLEMENTS\n    \\RFb,\n    \\Fcc, \\GFddZz\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass        //\nX            //\nextends      //\nY            //\nimplements   //\nZ,       //\nU            //\n{}           //",
+                        "<?php\nclass        //\nX            //\nextends      //\nY            //\nimplements   //\nZ    ,       //\nU            //\n{}           //"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nclass Aaa implements\n    PhpCsFixer\\Tests\\Fixer,\n    \\RFb,\n    \\Fcc1,\n    \\GFdd\n{\n}",
+                        "<?php\nclass Aaa implements\n    PhpCsFixer\\Tests\\Fixer,\\RFb,\n    \\Fcc1, \\GFdd\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nclass /**/ Test123 EXtends /**/ \\RuntimeException implements\nTestZ\n{\n}",
+                        "<?php\nclass/**/Test123\nEXtends  /**/        \\RuntimeException    implements\nTestZ\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n    class Aaa implements Ebb, \\Ccc\n    {\n    }",
+                        "<?php\n    class Aaa    implements    Ebb,    \\Ccc\n    {\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nclass X2 IMPLEMENTS\nZ, //\nU,\n    D\n{\n}",
+                        "<?php\nclass X2 IMPLEMENTS\nZ    , //\nU, D\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                    class VeryLongClassNameWithLotsOfLetters extends AnotherVeryLongClassName implements\n    VeryLongInterfaceNameThatIDontWantOnTheSameLine\n{\n}",
+                        "<?php\n                    class      VeryLongClassNameWithLotsOfLetters    extends AnotherVeryLongClassName implements\n    VeryLongInterfaceNameThatIDontWantOnTheSameLine\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nclass /**/ Test125 //aaa\nextends  /*\n\n*/\n//\n\\Exception        //\n{}",
+                        "<?php\nclass/**/Test125 //aaa\nextends  /*\n\n*/\n//\n\\Exception        //\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nclass Test extends TestInterface8 implements      /*a*/      /*b*/\n    TestInterface1,  /* test */\n    TestInterface2,   // test\n    \n\n// test\nTestInterface3, /**/\n    TestInterface4,\n      TestInterface5,    \n        /**/TestInterface6c\n{\n}",
+                        "<?php\nclass Test\nextends\n    TestInterface8\n  implements      /*a*/      /*b*/TestInterface1   ,  /* test */\n    TestInterface2   ,   // test\n    \n\n// test\nTestInterface3, /**/     TestInterface4   ,\n      TestInterface5    ,    \n        /**/TestInterface6c\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php class configA implements B, C\n{}",
+                        "<?php class configA implements\nB, C{}",
+                        {
+                            "single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php class configA1 extends B\n{}",
+                        "<?php class configA1\n extends\nB{}",
+                        {
+                            "single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php class configA1a extends B\n{}",
+                        "<?php class configA1a\n extends\nB{}",
+                        {
+                            "single_line": false,
+                            "single_item_single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php class configA2 extends D implements B, C\n{}",
+                        "<?php class configA2 extends D implements\nB,\nC{}",
+                        {
+                            "single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php class configA3 extends D implements B, C\n{}",
+                        "<?php class configA3\n extends\nD\n\t implements\nB,\nC{}",
+                        {
+                            "single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php class configA4 extends D implements B, #\nC\n{}",
+                        "<?php class configA4\n extends\nD\n\t implements\nB,#\nC{}",
+                        {
+                            "single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php class configA5 implements A\n{}",
+                        "<?php class configA5 implements\nA{}",
+                        {
+                            "single_line": false,
+                            "single_item_single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php interface TestWithMultiExtendsMultiLine extends\n    A,\nAb,\n    C,\n    D\n{}",
+                        "<?php interface TestWithMultiExtendsMultiLine extends A,\nAb,C,D\n{}",
+                        {
+                            "single_line": false,
+                            "single_item_single_line": false,
+                            "multi_line_extends_each_single_line": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php interface A\n{}",
+                        "<?php interface    A   {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php interface B\n{}",
+                        "<?php interface    B{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php interface C\n{}",
+                        "<?php interface\n\tC{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php interface D //\n{}",
+                        "<?php interface    D//\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php interface /**/ E //\n{}",
+                        "<?php interface/**/E//\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\ninterface A\n{}\n\ninterface /**/ B //\n/**/\n{}",
+                        "<?php\ninterface\n   A\n{}\n\ninterface/**/B //\n/**/ {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nnamespace {\n    interface IndentedNameSpacedClass\n{\n    }\n}",
+                        "<?php\nnamespace {\n    interface IndentedNameSpacedClass    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php interface AE0 extends B\n{}",
+                        "<?php interface    AE0    extends B    {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php interface /**/ AE1 /**/ extends /**/ B /**/\n{}",
+                        "<?php interface/**/AE1/**/extends/**/B/**/{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php interface /*interface*/ AE2 extends\nB\n{}",
+                        "<?php interface /*interface*/ AE2 extends\nB{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\ninterface Test124 extends\n\\Exception\n{}",
+                        "<?php\ninterface\nTest124\n\nextends\n\\Exception {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\ninterface Test extends\n  /*a*/    /*b*/TestInterface1   , \\A\\B\\C  ,  /* test */\n    TestInterface2   ,   // test\n    \n\n// Note: PSR does not have a rule for multiple extends\nTestInterface3, /**/     TestInterface4   ,\n      TestInterface5    ,     \n        /**/TestInterface65\n{}\n            ",
+                        "<?php\ninterface Test\nextends\n  /*a*/    /*b*/TestInterface1   , \\A\\B\\C  ,  /* test */\n    TestInterface2   ,   // test\n    \n\n// Note: PSR does not have a rule for multiple extends\nTestInterface3, /**/     TestInterface4   ,\n      TestInterface5    ,     \n        /**/TestInterface65    {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php trait A\n{}",
+                        "<?php trait    A   {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php trait B\n{}",
+                        "<?php trait    B{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php trait C\n{}",
+                        "<?php trait\n\tC{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php trait D //\n{}",
+                        "<?php trait    D//\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php trait /**/ E //\n{}",
+                        "<?php trait/**/E//\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\ntrait A\n{}\n\ntrait /**/ B //\n/**/\n{}",
+                        "<?php\ntrait\n   A\n{}\n\ntrait/**/B //\n/**/ {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nnamespace {\n    trait IndentedNameSpacedClass\n{\n    }\n}",
+                        "<?php\nnamespace {\n    trait IndentedNameSpacedClass    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n$a = new class implements\n    \\RFb,\n    \\Fcc,\n    \\GFddZz\n{\n};",
+                        "<?php\n$a = new class implements\n    \\RFb,\n    \\Fcc, \\GFddZz\n{\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n$a = new class implements\n    \\RFb,\n    \\Fcc,\n    \\GFddZz\n{\n}?>",
+                        "<?php\n$a = new class implements\n    \\RFb,\n    \\Fcc, \\GFddZz\n{\n}?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php new class(1, 2, 3, ) {};",
+                        "<?php new class(1, 2, 3,) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php new class(1, 2, 3, ) {};",
+                        "<?php new class(\n                    1,\n                    2,\n                    3,\n                ) {};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testClassyDefinitionInfo",
+            "params": [
+                {
+                    "name": "source",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "expected",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testClassyDefinitionInfo(string $source, array $expected): void\n    {\n        Tokens::clearCache();\n        $tokens = Tokens::fromCode($source);\n\n        $result = \\Closure::bind(static fn (ClassDefinitionFixer $fixer): array => $fixer->getClassyDefinitionInfo($tokens, $expected['classy']), null, ClassDefinitionFixer::class)($this->fixer);\n\n        ksort($expected);\n        ksort($result);\n\n        self::assertSame($expected, $result);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideClassyDefinitionInfoCases",
+                    "key": 0,
+                    "args": [
+                        "<?php class A{}",
+                        {
+                            "start": 1,
+                            "classy": 1,
+                            "open": 4,
+                            "extends": false,
+                            "implements": false,
+                            "anonymousClass": false,
+                            "final": false,
+                            "abstract": false,
+                            "readonly": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyDefinitionInfoCases",
+                    "key": 1,
+                    "args": [
+                        "<?php final class A{}",
+                        {
+                            "start": 1,
+                            "classy": 3,
+                            "open": 6,
+                            "extends": false,
+                            "implements": false,
+                            "anonymousClass": false,
+                            "final": 1,
+                            "abstract": false,
+                            "readonly": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyDefinitionInfoCases",
+                    "key": 2,
+                    "args": [
+                        "<?php abstract /**/ class A{}",
+                        {
+                            "start": 1,
+                            "classy": 5,
+                            "open": 8,
+                            "extends": false,
+                            "implements": false,
+                            "anonymousClass": false,
+                            "final": false,
+                            "abstract": 1,
+                            "readonly": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyDefinitionInfoCases",
+                    "key": 3,
+                    "args": [
+                        "<?php class A extends B {}",
+                        {
+                            "start": 1,
+                            "classy": 1,
+                            "open": 9,
+                            "extends": {
+                                "start": 5,
+                                "count": 1,
+                                "multiLine": false
+                            },
+                            "implements": false,
+                            "anonymousClass": false,
+                            "final": false,
+                            "abstract": false,
+                            "readonly": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyDefinitionInfoCases",
+                    "key": 4,
+                    "args": [
+                        "<?php interface A extends B,C,D {}",
+                        {
+                            "start": 1,
+                            "classy": 1,
+                            "open": 13,
+                            "extends": {
+                                "start": 5,
+                                "count": 3,
+                                "multiLine": false
+                            },
+                            "implements": false,
+                            "anonymousClass": false,
+                            "final": false,
+                            "abstract": false,
+                            "readonly": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testClassyInheritanceInfo",
+            "params": [
+                {
+                    "name": "source",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "expected",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testClassyInheritanceInfo(string $source, array $expected): void\n    {\n        $this->doTestClassyInheritanceInfo($source, $expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideClassyInheritanceInfoCases",
+                    "key": "1",
+                    "args": [
+                        "<?php\nclass X11 implements    Z   , T,R\n{\n}",
+                        {
+                            "start": 5,
+                            "count": 3,
+                            "multiLine": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyInheritanceInfoCases",
+                    "key": "2",
+                    "args": [
+                        "<?php\nclass X10 implements    Z   , T,R    //\n{\n}",
+                        {
+                            "start": 5,
+                            "count": 3,
+                            "multiLine": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyInheritanceInfoCases",
+                    "key": "3",
+                    "args": [
+                        "<?php class A implements B {}",
+                        {
+                            "start": 5,
+                            "count": 1,
+                            "multiLine": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyInheritanceInfoCases",
+                    "key": "4",
+                    "args": [
+                        "<?php class A implements B,\n I{}",
+                        {
+                            "start": 5,
+                            "count": 2,
+                            "multiLine": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyInheritanceInfoCases",
+                    "key": "5",
+                    "args": [
+                        "<?php class A implements Z\\C\\B,C,D  {\n\n\n}",
+                        {
+                            "start": 5,
+                            "count": 3,
+                            "multiLine": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyInheritanceInfoCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nnamespace A {\n    interface X {}\n}\n\nnamespace {\n    class B{}\n\n    class A extends //\n        B     implements /*  */ \\A\\C, Z{\n        public function test()\n        {\n            echo 1;\n        }\n    }\n\n    $a = new A();\n    $a->test();\n}",
+                        {
+                            "start": 36,
+                            "count": 2,
+                            "multiLine": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyInheritanceInfoCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = new    class(3)     extends\nSomeClass\timplements    SomeInterface, D {};",
+                        {
+                            "start": 12,
+                            "count": 1,
+                            "multiLine": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyInheritanceInfoCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = new class(4) extends\nSomeClass\timplements SomeInterface, D\n\n{};",
+                        {
+                            "start": 16,
+                            "count": 2,
+                            "multiLine": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideClassyInheritanceInfoCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a = new class(5) extends SomeClass\nimplements    SomeInterface, D {};",
+                        {
+                            "start": 12,
+                            "count": 1,
+                            "multiLine": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testClassyInheritanceInfoPre80",
+            "params": [
+                {
+                    "name": "source",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "expected",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testClassyInheritanceInfoPre80(string $source, array $expected): void\n    {\n        $this->doTestClassyInheritanceInfo($source, $expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideClassyInheritanceInfoPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nnamespace A {\n    interface X {}\n}\n\nnamespace {\n    class B{}\n\n    class A extends //\n        B     implements /*  */ \\A\n        \\C, Z{\n        public function test()\n        {\n            echo 1;\n        }\n    }\n\n    $a = new A();\n    $a->test();\n}",
+                        {
+                            "start": 36,
+                            "count": 2,
+                            "multiLine": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\r\nclass Aaa implements\r\n\tBbb,\r\n\tCcc,\r\n\tDdd\r\n\t{\r\n\t}",
+                        "<?php\r\nclass Aaa implements\r\n\tBbb, Ccc,\r\n\tDdd\r\n\t{\r\n\t}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "anonymous class, single attribute",
+                    "args": [
+                        "<?php $a = new #[FOO] class(2) {};",
+                        "<?php $a = new    #[FOO]   class(2){};"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "anonymous class, multiple attributes",
+                    "args": [
+                        "<?php $a = new #[FOO] #[BAR] class {};",
+                        "<?php $a = new    #[FOO]    #[BAR]  class  {};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php enum SomeEnum implements SomeInterface, D\n{};",
+                        "<?php enum SomeEnum \timplements    SomeInterface, D {};"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php enum SomeEnum : int\n{}",
+                        "<?php enum   SomeEnum  :  int   {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php enum SomeEnum\n{}",
+                        "<?php enum\tSomeEnum{}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testFix82(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "final readonly works",
+                    "args": [
+                        "<?php final readonly class a\n{}",
+                        "<?php final           readonly      class a\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "final - readonly modifiers get sorted",
+                    "args": [
+                        "<?php final readonly class a\n{}",
+                        "<?php readonly final class a\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "abstract - readonly modifiers get sorted",
+                    "args": [
+                        "<?php abstract readonly class a\n{}",
+                        "<?php readonly abstract class a\n{}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassDefinitionFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "anonymous class, readonly, missing spacing",
+                    "args": [
+                        "<?php $a = new readonly class {};",
+                        "<?php $a = new readonly class{};"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "anonymous class, readonly, to much spacing",
+                    "args": [
+                        "<?php $a = new readonly class {};",
+                        "<?php $a = new      readonly   class  {};"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "anonymous class, single attribute",
+                    "args": [
+                        "<?php $a = new #[BAR] readonly class {};",
+                        "<?php $a = new        #[BAR]   readonly class{};"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "anonymous class, multiple attributes",
+                    "args": [
+                        "<?php $a = new #[FOO] #[BAR] readonly class {};",
+                        "<?php $a = new    #[FOO]    #[BAR]   readonly class   {};"
+                    ]
+                }
+            ]
+        }
+    ]
+}

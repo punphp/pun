@@ -1,0 +1,370 @@
+{
+    "fixer": "modernize_types_casting",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\ModernizeTypesCastingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/CastNotation/ModernizeTypesCastingFixerTest.php",
+    "case_count": 40,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\ModernizeTypesCastingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = \"intval\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $x = ClassA::intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $x = ScopeA\\intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $x = namespace\\intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $x = $object->intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $x = new \\intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $x = new intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $x = new ScopeB\\intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php intvalSmth(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php smth_intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php \"SELECT ... intval(mt_rand(0, 100)) ...\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php \"test\" . \"intval\" . \"in concatenation\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $x = intval($x, 16);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $x = intval($x, $options[\"base\"]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $x = intval($x, $options->get(\"base\", 16));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $x = (int) $x;",
+                        "<?php $x = intval($x);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $x = (float) $x;",
+                        "<?php $x = floatval($x);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $x = (float) $x;",
+                        "<?php $x = doubleval($x);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $x = (string) $x;",
+                        "<?php $x = strval($x);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $x = (bool) $x;",
+                        "<?php $x = boolval   (  $x  );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $x = (int) (mt_rand(0, 100));",
+                        "<?php $x = intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $x = (int) (mt_rand(0, 100));",
+                        "<?php $x = \\intval(mt_rand(0, 100));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $x = (int) (mt_rand(0, 100)).\".dist\";",
+                        "<?php $x = intval(mt_rand(0, 100)).\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $x = (int) (mt_rand(0, 100)).\".dist\";",
+                        "<?php $x = \\intval(mt_rand(0, 100)).\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $x =\n(int) (\n    mt_rand\n    (\n        0, 100\n    )\n\n)\n\n;",
+                        "<?php $x =\nintval\n\n(\n    mt_rand\n    (\n        0, 100\n    )\n\n)\n\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n\nclass overridesIntval\n{\n    public function intval($x)\n    {\n        return (int) $x;\n    }\n\n    public function usesInval()\n    {\n        // that's why it is risky\n        return (int) (mt_rand(0, 100));\n    }\n}",
+                        "<?php\n\nclass overridesIntval\n{\n    public function intval($x)\n    {\n        return \\intval($x);\n    }\n\n    public function usesInval()\n    {\n        // that's why it is risky\n        return intval(mt_rand(0, 100));\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $a = (string) ($b . $c);",
+                        "<?php $a = strval($b . $c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $x = /**/(int) /**/ /** x*/(/**//** */mt_rand(0, 100)/***/)/*xx*/;",
+                        "<?php $x = /**/intval/**/ /** x*/(/**//** */mt_rand(0, 100)/***/)/*xx*/;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $x = (string) ((int) ((int) $x + (float) $x));",
+                        "<?php $x = strval(intval(intval($x) + floatval($x)));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php intval();intval(1,2,3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n                interface Test\n                {\n                    public function floatval($a);\n                    public function &doubleval($a);\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php $foo = ((int) $x)**2;",
+                        "<?php $foo = intval($x)**2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php $foo = ((string) $x)[0];",
+                        "<?php $foo = strval($x)[0];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php $foo = ((string) ($x + $y))[0];",
+                        "<?php $foo = strval($x + $y)[0];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $a = (int) $b;",
+                        "<?php $a = intval($b, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $a = (int) $b;",
+                        "<?php $a = intval($b , );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php $a = (string) ($b . $c);",
+                        "<?php $a = strval($b . $c, );"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\ModernizeTypesCastingFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $foo = ((string) ($x + $y)){0};",
+                        "<?php $foo = strval($x + $y){0};"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = #\n#\n#\n(int) #\n (\n#\n $b#\n )#\n ;#",
+                        "<?php $a = #\n#\n\\\n#\nintval#\n (\n#\n $b#\n )#\n ;#"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\ModernizeTypesCastingFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = intval(...);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

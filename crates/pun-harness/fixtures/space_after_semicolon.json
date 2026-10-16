@@ -1,0 +1,566 @@
+{
+    "fixer": "space_after_semicolon",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\SpaceAfterSemicolonFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Semicolon/SpaceAfterSemicolonFixerTest.php",
+    "case_count": 57,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\SpaceAfterSemicolonFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                    test1();\n                    $a; // test\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php test2();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php test3(); "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php test4();   "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                    test5();     // test\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php test6();       /* */ //"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php test7a(); /* */",
+                        "<?php test7a();/* */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php test7b(); /* *//**/",
+                        "<?php test7b();/* *//**/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                    test8(); $a = 4;\n                ",
+                        "<?php\n                    test8();     $a = 4;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                    test9(); $b = 7;\n                ",
+                        "<?php\n                    test9();$b = 7;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                    for (; ;) {\n                    }\n                ",
+                        "<?php\n                    for (;;) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                    for (; ; ++$u1) {\n                    }\n                ",
+                        "<?php\n                    for (;;++$u1) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                    for (; $u2 < 0;) {\n                    }\n                ",
+                        "<?php\n                    for (;$u2 < 0;) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                    for (; $u3 < 3; ++$u3) {\n                    }\n                ",
+                        "<?php\n                    for (;$u3 < 3;++$u3) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                    for ($u4 = 0; ;) {\n                    }\n                ",
+                        "<?php\n                    for ($u4 = 0;;) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                    for ($u5 = 0; ; ++$u5) {\n                    }\n                ",
+                        "<?php\n                    for ($u5 = 0;;++$u5) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                    for ($u6 = 0; $u6 < 6;) {\n                    }\n                ",
+                        "<?php\n                    for ($u6 = 0;$u6 < 6;) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n                    for ($u7 = 0; $u7 < 7; ++$u7) {\n                    }\n                ",
+                        "<?php\n                    for ($u7 = 0;$u7 < 7;++$u7) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n                    for (; ;    ) {\n                    }\n                ",
+                        "<?php\n                    for (;    ;    ) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n                    for (; ; ++$u1) {\n                    }\n                ",
+                        "<?php\n                    for (;    ;    ++$u1) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n                    for (; $u2 < 0;    ) {\n                    }\n                ",
+                        "<?php\n                    for (;    $u2 < 0;    ) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n                    for (; $u3 < 3; ++$u3) {\n                    }\n                ",
+                        "<?php\n                    for (;    $u3 < 3;    ++$u3) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                    for ($ui4 = 0; ;    ) {\n                    }\n                ",
+                        "<?php\n                    for ($ui4 = 0;    ;    ) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n                    for ($u5 = 0; ; ++$u5) {\n                    }\n                ",
+                        "<?php\n                    for ($u5 = 0;    ;    ++$u5) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n                    for ($u6 = 0; $u6 < 6;    ) {\n                    }\n                ",
+                        "<?php\n                    for ($u6 = 0;    $u6 < 6;    ) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                    for ($u7 = 0; $u7 < 7; ++$u7) {\n                    }\n                ",
+                        "<?php\n                    for ($u7 = 0;    $u7 < 7;    ++$u7) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php if ($a):?>\n                    1\n                <?php endif; ?>\n                <?php if ($b):?>\n                    2\n                <?php endif; ?>\n                <?php if ($c):?>\n                    3\n                <?php endif; ?>",
+                        "<?php if ($a):?>\n                    1\n                <?php endif;?>\n                <?php if ($b):?>\n                    2\n                <?php endif;?>\n                <?php if ($c):?>\n                    3\n                <?php endif;?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php echo 1; ; ; ; ; ; ; ; ;",
+                        "<?php echo 1;;;;;;;;;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n                    test1();\n                    $a; // test\n                ",
+                        null,
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php test2();",
+                        null,
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php test3(); ",
+                        null,
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php test4();   ",
+                        null,
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n                    test5();     // test\n                ",
+                        null,
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php test6();       /* */ //",
+                        null,
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php test7a(); /* */",
+                        "<?php test7a();/* */",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php test7b(); /* *//**/",
+                        "<?php test7b();/* *//**/",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n                    test8(); $a = 4;\n                ",
+                        "<?php\n                    test8();     $a = 4;\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\n                    test9(); $b = 7;\n                ",
+                        "<?php\n                    test9();$b = 7;\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n                    for (;;) {\n                    }\n                ",
+                        "<?php\n                    for (; ;) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\n                    for (;; ++$u1) {\n                    }\n                ",
+                        "<?php\n                    for (;;++$u1) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n                    for (; $u2 < 0;) {\n                    }\n                ",
+                        "<?php\n                    for (;$u2 < 0;) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n                    for (; $u3 < 3; ++$u3) {\n                    }\n                ",
+                        "<?php\n                    for (;$u3 < 3;++$u3) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n                    for ($u4 = 0;;) {\n                    }\n                ",
+                        "<?php\n                    for ($u4 = 0; ;) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n                    for ($u5 = 0;; ++$u5) {\n                    }\n                ",
+                        "<?php\n                    for ($u5 = 0;;++$u5) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\n                    for ($u6 = 0; $u6 < 6;) {\n                    }\n                ",
+                        "<?php\n                    for ($u6 = 0;$u6 < 6;) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n                    for ($u7 = 0; $u7 < 7; ++$u7) {\n                    }\n                ",
+                        "<?php\n                    for ($u7 = 0;$u7 < 7;++$u7) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\n                    for (;;) {\n                    }\n                ",
+                        "<?php\n                    for (;    ;    ) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n                    for (;; ++$u1) {\n                    }\n                ",
+                        "<?php\n                    for (;    ;    ++$u1) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\n                    for (; $u2 < 0;) {\n                    }\n                ",
+                        "<?php\n                    for (;    $u2 < 0;    ) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n                    for (; $u3 < 3; ++$u3) {\n                    }\n                ",
+                        "<?php\n                    for (;    $u3 < 3;    ++$u3) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\n                    for ($ui4 = 0;;) {\n                    }\n                ",
+                        "<?php\n                    for ($ui4 = 0;    ;    ) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\n                    for ($u5 = 0;; ++$u5) {\n                    }\n                ",
+                        "<?php\n                    for ($u5 = 0;    ;    ++$u5) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\n                    for ($u6 = 0; $u6 < 6;) {\n                    }\n                ",
+                        "<?php\n                    for ($u6 = 0;    $u6 < 6;    ) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php\n                    for ($u7 = 0; $u7 < 7; ++$u7) {\n                    }\n                ",
+                        "<?php\n                    for ($u7 = 0;    $u7 < 7;    ++$u7) {\n                    }\n                ",
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php\n                    for (\n                        $u7 = 0;\n                        ;\n                        ++$u7\n                    ) {\n                    }\n                ",
+                        null,
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php for ( /* foo */ ; /* bar */ ; /* baz */ ) { }",
+                        null,
+                        {
+                            "remove_in_empty_for_expressions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php\n            __HALT_COMPILER();\n        "
+                    ]
+                }
+            ]
+        }
+    ]
+}

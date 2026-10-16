@@ -1,0 +1,108 @@
+{
+    "fixer": "no_empty_phpdoc",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\NoEmptyPhpdocFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/NoEmptyPhpdocFixerTest.php",
+    "case_count": 10,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\NoEmptyPhpdocFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple PHPdocs",
+                    "args": [
+                        "<?php\n                    /** a */\n\n                    \n\n                    \n\n                    \n\n                    \n                    /**\n                     * test\n                     */\n\n                     /** *test* */\n                ",
+                        "<?php\n                    /**  *//** a *//**  */\n\n                    /**\n                    */\n\n                    /**\n                     *\n                     */\n\n                    /** ***\n                     *\n                     ******/\n\n                    /**\n**/\n                    /**\n                     * test\n                     */\n\n                     /** *test* */\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc on its own line",
+                    "args": [
+                        "<?php\necho $a;\necho $b;",
+                        "<?php\necho $a;\n/** */\necho $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc on its own line with empty line before",
+                    "args": [
+                        "<?php\nfunction f() {\n    echo $a;\n\n    echo $b;\n}",
+                        "<?php\nfunction f() {\n    echo $a;\n\n    /** */\n    echo $b;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc on its own line with empty line after",
+                    "args": [
+                        "<?php\necho $a;\n\necho $b;",
+                        "<?php\necho $a;\n/** */\n\necho $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc on its own line with empty line before and after",
+                    "args": [
+                        "<?php\necho $a;\n\n\necho $b;",
+                        "<?php\necho $a;\n\n/** */\n\necho $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc with empty line before and content after",
+                    "args": [
+                        "<?php\nfunction f() {\n    echo $a;\n    echo $b;\n}",
+                        "<?php\nfunction f() {\n    echo $a;\n    /** */echo $b;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc with content before and empty line after",
+                    "args": [
+                        "<?php\nfunction f() {\n    echo $a;\n    echo $b;\n}",
+                        "<?php\nfunction f() {\n    echo $a;/** */\n    echo $b;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc after open tag - the same line",
+                    "args": [
+                        "<?php \n                foo();\n                ",
+                        "<?php /** */\n                foo();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc after open tag - next line",
+                    "args": [
+                        "<?php\nfoo();",
+                        "<?php\n/** */\nfoo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc after open tag - next next next line",
+                    "args": [
+                        "<?php\n\n\nfoo();",
+                        "<?php\n\n\n/** */\nfoo();"
+                    ]
+                }
+            ]
+        }
+    ]
+}

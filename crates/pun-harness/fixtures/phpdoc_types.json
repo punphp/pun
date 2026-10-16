@@ -1,0 +1,301 @@
+{
+    "fixer": "phpdoc_types",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTypesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocTypesFixerTest.php",
+    "case_count": 28,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTypesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "windows line breaks",
+                    "args": [
+                        "<?php /**\r\n * @param string|string[] $bar\r\n *\r\n * @return int[]\r\n */\r\n",
+                        "<?php /**\r\n * @param STRING|String[] $bar\r\n *\r\n * @return inT[]\r\n */\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "conversion",
+                    "args": [
+                        "<?php\n    /**\n     * @param boolean|array|Foo $bar\n     *\n     * @return int|float\n     */\n\n",
+                        "<?php\n    /**\n     * @param Boolean|Array|Foo $bar\n     *\n     * @return inT|Float\n     */\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nullable",
+                    "args": [
+                        "<?php\n    /** @return ?int */",
+                        "<?php\n    /** @return ?inT */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array stuff",
+                    "args": [
+                        "<?php\n    /**\n     * @param string|string[] $bar\n     *\n     * @return int[]\n     */\n\n",
+                        "<?php\n    /**\n     * @param STRING|String[] $bar\n     *\n     * @return inT[]\n     */\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested array stuff",
+                    "args": [
+                        "<?php\n    /**\n     * @return int[][][]\n     */\n",
+                        "<?php\n    /**\n     * @return INT[][][]\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixed and void",
+                    "args": [
+                        "<?php\n    /**\n     * @param mixed $foo\n     *\n     * @return void\n     */\n\n",
+                        "<?php\n    /**\n     * @param Mixed $foo\n     *\n     * @return Void\n     */\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "iterable",
+                    "args": [
+                        "<?php\n    /**\n     * @param iterable $foo\n     *\n     * @return Itter\n     */\n\n",
+                        "<?php\n    /**\n     * @param Iterable $foo\n     *\n     * @return Itter\n     */\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method and property",
+                    "args": [
+                        "<?php\n/**\n * @method self foo()\n * @property int $foo\n * @property-read boolean $bar\n * @property-write mixed $baz\n */\n\n",
+                        "<?php\n/**\n * @method Self foo()\n * @property Int $foo\n * @property-read Boolean $bar\n * @property-write MIXED $baz\n */\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throws",
+                    "args": [
+                        "<?php\n/**\n * @throws static\n */\n\n",
+                        "<?php\n/**\n * @throws STATIC\n */\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inline doc",
+                    "args": [
+                        "<?php\n    /**\n     * Does stuff with stuffs.\n     *\n     * @param array $stuffs {\n     *     @var bool $foo\n     *     @var int  $bar\n     * }\n     */\n\n",
+                        "<?php\n    /**\n     * Does stuff with stuffs.\n     *\n     * @param array $stuffs {\n     *     @var Bool $foo\n     *     @var INT  $bar\n     * }\n     */\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with config",
+                    "args": [
+                        "<?php\n    /**\n     * @param self|array|Foo $bar\n     *\n     * @return int|float|boolean|Double\n     */\n\n",
+                        "<?php\n    /**\n     * @param SELF|Array|Foo $bar\n     *\n     * @return inT|Float|boolean|Double\n     */\n\n",
+                        {
+                            "groups": [
+                                "simple",
+                                "meta"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "generics",
+                    "args": [
+                        "<?php\n            /**\n             * @param array<int, object> $a\n             * @param array<iterable> $b\n             * @param array<parent|$this|self> $c\n             * @param iterable<Foo\\Int\\Bar|Foo\\Int|Int\\Bar> $thisShouldNotBeChanged\n             * @param iterable<BOOLBOOLBOOL|INTINTINT|ARRAY_BOOL_INT_STRING_> $thisShouldNotBeChangedNeither\n             *\n             * @return array<int, array<string, array<int, DoNotChangeThisAsThisIsAClass>>>\n             */",
+                        "<?php\n            /**\n             * @param ARRAY<INT, OBJECT> $a\n             * @param ARRAY<ITERABLE> $b\n             * @param array<Parent|$This|Self> $c\n             * @param iterable<Foo\\Int\\Bar|Foo\\Int|Int\\Bar> $thisShouldNotBeChanged\n             * @param iterable<BOOLBOOLBOOL|INTINTINT|ARRAY_BOOL_INT_STRING_> $thisShouldNotBeChangedNeither\n             *\n             * @return ARRAY<INT, ARRAY<STRING, ARRAY<INT, DoNotChangeThisAsThisIsAClass>>>\n             */",
+                        {
+                            "groups": [
+                                "simple",
+                                "meta"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "callable",
+                    "args": [
+                        "<?php /**\n                    * @param callable() $a\n                    * @param callable(): void $b\n                    * @param callable(bool, int, string): float $c\n                    */",
+                        "<?php /**\n                    * @param CALLABLE() $a\n                    * @param Callable(): VOID $b\n                    * @param CALLABLE(BOOL, INT, STRING): FLOAT $c\n                    */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array shape with key name being also type name",
+                    "args": [
+                        "<?php /**\n                    * @return array{FOO: bool, NULL: null|int, BAR: string|BAZ}\n                    */",
+                        "<?php /**\n                    * @return ARRAY{FOO: BOOL, NULL: NULL|INT, BAR: STRING|BAZ}\n                    */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "union with 'NULL'",
+                    "args": [
+                        "<?php /**\n                    * @return 'NULL'|null|false\n                    */",
+                        "<?php /**\n                    * @return 'NULL'|NULL|false\n                    */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "union with \"NULL\"",
+                    "args": [
+                        "<?php /**\n                    * @return null|\"NULL\"|false\n                    */",
+                        "<?php /**\n                    * @return NULL|\"NULL\"|false\n                    */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method with reserved identifier",
+                    "args": [
+                        "<?php /**\n                    * @method bool BOOL(): void\n                    */",
+                        "<?php /**\n                    * @method BOOL BOOL(): void\n                    */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no space between type and variable",
+                    "args": [
+                        "<?php /** @param null|string$foo */",
+                        "<?php /** @param NULL|STRING$foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "\"Callback\" class in phpdoc must not be lowered",
+                    "args": [
+                        "<?php\n    /**\n     * @param Callback $foo\n     *\n     * @return Callback\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "param with extra chevrons",
+                    "args": [
+                        "<?php /** @param array <3> $value */",
+                        "<?php /** @param ARRAY <3> $value */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "param with extra parentheses",
+                    "args": [
+                        "<?php /** @param \\Closure (int) $value */",
+                        "<?php /** @param \\Closure (INT) $value */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "param with union type and extra parentheses",
+                    "args": [
+                        "<?php /** @param \\Closure (float|int) $value */",
+                        "<?php /** @param \\Closure (FLOAT|INT) $value */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return with union type and extra parentheses",
+                    "args": [
+                        "<?php /** @return float|int (number) count of something */",
+                        "<?php /** @return FLOAT|INT (number) count of something */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline array",
+                    "args": [
+                        " <?php /**\n        * @param array<\n        *     int,\n        *     string\n        * > $x\n        *\n        * @param array<\n        *     bool\n        * > $y\n        */",
+                        " <?php /**\n        * @param array<\n        *     INT,\n        *     STRING\n        * > $x\n        *\n        * @param array<\n        *     BOOL\n        * > $y\n        */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "exclude resource preserves Resource casing",
+                    "args": [
+                        "<?php\n/**\n * @param Resource $foo\n *\n * @return RESOURCE\n */\n",
+                        null,
+                        {
+                            "exclude": [
+                                "resource"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline array shape",
+                    "args": [
+                        " <?php /**\n        * @param array{\n        *     foo: bool,\n        *     bar: int,\n        *     withoutTrailingComma: string\n        * } $x\n        *\n        * @param array{\n        *     withTrailingComma: bool,\n        * } $y\n        */",
+                        " <?php /**\n        * @param array{\n        *     foo: BOOL,\n        *     bar: INT,\n        *     withoutTrailingComma: STRING\n        * } $x\n        *\n        * @param array{\n        *     withTrailingComma: BOOL,\n        * } $y\n        */"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTypesFixerTest",
+            "body": "    public function testInvalidConfiguration(string $expectedMessage, array $configuration): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($expectedMessage);\n\n        $this->fixer->configure($configuration); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid group",
+                    "args": [
+                        "/^\\[phpdoc_types\\] Invalid configuration: The option \"groups\" .*\\.$/",
+                        {
+                            "groups": [
+                                "__TEST__"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid exclude type",
+                    "args": [
+                        "/^\\[phpdoc_types\\] Invalid configuration: The option \"exclude\" .*\\.$/",
+                        {
+                            "exclude": [
+                                "__INVALID__"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

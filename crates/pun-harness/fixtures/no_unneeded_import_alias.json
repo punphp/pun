@@ -1,0 +1,91 @@
+{
+    "fixer": "no_unneeded_import_alias",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\NoUnneededImportAliasFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Import/NoUnneededImportAliasFixerTest.php",
+    "case_count": 8,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\NoUnneededImportAliasFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php use some\\ns\\{ClassA, ClassB, ClassC  };",
+                        "<?php use some\\ns\\{ClassA, ClassB, ClassC as ClassC};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                use A\\B\\C  , D\\E\\F as G;\n                use const X\\Y\\Z as Z1, U\\V\\W  ;\n                use function U\\V\\W\\FX  , U\\V\\W\\FY  ;\n            ",
+                        "<?php\n                use A\\B\\C as C, D\\E\\F as G;\n                use const X\\Y\\Z as Z1, U\\V\\W as W;\n                use function U\\V\\W\\FX as FX, U\\V\\W\\FY as FY;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nuse F  ;\nuse X as x;\nuse const CA  ;\nuse function FW  ;\n            ",
+                        "<?php\nuse F as F;\nuse X as x;\nuse const CA as CA;\nuse function FW as FW;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nuse /* 1 */\\F  ;\nuse const \\CA/* 2 */  /* 3 */;\nuse /* 4 */ function/* 5 */  \\FW /* 6 */  /* 7 */ ;\n            ",
+                        "<?php\nuse /* 1 */\\F as F;\nuse const \\CA/* 2 */ as CA/* 3 */;\nuse /* 4 */ function/* 5 */  \\FW /* 6 */ as /* 7 */ FW;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nuse \\F\\B\\C  ;\nuse const \\X\\Y\\CA  ;\nuse function \\U\\V\\FW  ;\n            ",
+                        "<?php\nuse \\F\\B\\C as C;\nuse const \\X\\Y\\CA as CA;\nuse function \\U\\V\\FW as FW;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php use A\\B   ?> X <?php use C\\D; use E\\F   ?>",
+                        "<?php use A\\B as B ?> X <?php use C\\D; use E\\F as F ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php use A\\B   ?>",
+                        "<?php use A\\B as B ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php foreach ($a as $a) {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

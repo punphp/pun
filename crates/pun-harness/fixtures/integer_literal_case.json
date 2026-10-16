@@ -1,0 +1,143 @@
+{
+    "fixer": "integer_literal_case",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Casing\\IntegerLiteralCaseFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Casing/IntegerLiteralCaseFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\IntegerLiteralCaseFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $foo1 = 0xFF; $foo2 = 0xDEFA; $foo3 = 0xFA; $foo4 = 0xFA;",
+                        "<?php $foo1 = 0XFF; $foo2 = 0xdefa; $foo3 = 0Xfa; $foo4 = 0xFA;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $foo = 0xA1FB20;",
+                        "<?php $foo = 0xa1fb20;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $foo = -0xA1FB20;",
+                        "<?php $foo = -0xa1fb20;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $foo = 0b1101;",
+                        "<?php $foo = 0B1101;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $A = 1_234_567;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $A = +0xAA_FF_00;",
+                        "<?php $A = +0Xaa_ff_00;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $A = -0x00_AA_FF_00;",
+                        "<?php $A = -0X00_aa_ff_00;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin_PHP_INT_MAX",
+                    "args": [
+                        "<?php $foo = 0b111111111111111111111111111111111111111111111111111111111111111;",
+                        "<?php $foo = 0B111111111111111111111111111111111111111111111111111111111111111;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "hex_plus_PHP_INT_MAX",
+                    "args": [
+                        "<?php $foo = +0x7FFFFFFFFFFFFFFF;",
+                        "<?php $foo = +0X7fffffffffffffff;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "hex_minus_PHP_INT_MAX",
+                    "args": [
+                        "<?php $foo = -0x7FFFFFFFFFFFFFFF;",
+                        "<?php $foo = -0X7fffffffffffffff;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\IntegerLiteralCaseFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $foo = 0o123;",
+                        "<?php $foo = 0O123;"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $foo = -0o123;",
+                        "<?php $foo = -0O123;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

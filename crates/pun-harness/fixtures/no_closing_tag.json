@@ -1,0 +1,210 @@
+{
+    "fixer": "no_closing_tag",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpTag\\NoClosingTagFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpTag/NoClosingTagFixerTest.php",
+    "case_count": 21,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpTag\\NoClosingTagFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo 'Foo';",
+                        "<?php echo 'Foo'; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo 'Foo';",
+                        "<?php echo 'Foo';?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php echo 'Foo'; ?> PLAIN TEXT"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "PLAIN TEXT<?php echo 'Foo'; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\necho 'Foo';",
+                        "<?php\n\necho 'Foo';\n\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php echo 'Foo'; ?>\n<p><?php echo 'this is a template'; ?></p>\n<?php echo 'Foo'; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php echo \"foo\";",
+                        "<?php echo \"foo\" ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nclass foo\n{\n    public function bar()\n    {\n        echo \"Here I am!\";\n    }\n}",
+                        "<?php\nclass foo\n{\n    public function bar()\n    {\n        echo \"Here I am!\";\n    }\n}?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nfunction bar()\n{\n    echo \"Here I am!\";\n}",
+                        "<?php\nfunction bar()\n{\n    echo \"Here I am!\";\n}?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nif (true) {\n    echo \"Here I am!\";\n}",
+                        "<?php\nif (true) {\n    echo \"Here I am!\";\n}?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Trailing linebreak, priority issue with SingleBlankLineAtEofFixer.",
+                    "args": [
+                        "<?php echo 1;",
+                        "<?php echo 1;\n?>\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Trailing comment.",
+                    "args": [
+                        "<?php echo 1;// test",
+                        "<?php echo 1;// test\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "No code",
+                    "args": [
+                        "<?php ",
+                        "<?php ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "No code, only comment",
+                    "args": [
+                        "<?php /* license */",
+                        "<?php /* license */ ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php ?>aa"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithShortOpenTag",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpTag\\NoClosingTagFixerTest",
+            "body": "    public function testWithShortOpenTag(string $expected, ?string $input = null): void\n    {\n        if ('1' !== \\ini_get('short_open_tag')) {\n            self::markTestSkipped('The short_open_tag option is required to be enabled.');\n        }\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithShortOpenTagCases",
+                    "key": 0,
+                    "args": [
+                        "<? echo 'Foo';",
+                        "<? echo 'Foo'; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideWithShortOpenTagCases",
+                    "key": 1,
+                    "args": [
+                        "<? echo 'Foo';",
+                        "<? echo 'Foo';?>"
+                    ]
+                },
+                {
+                    "provider": "provideWithShortOpenTagCases",
+                    "key": 2,
+                    "args": [
+                        "<? echo 'Foo'; ?>\n<p><? echo 'this is a template'; ?></p>\n<? echo 'Foo'; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideWithShortOpenTagCases",
+                    "key": 3,
+                    "args": [
+                        "<? /**/",
+                        "<? /**/?>"
+                    ]
+                },
+                {
+                    "provider": "provideWithShortOpenTagCases",
+                    "key": 4,
+                    "args": [
+                        "<?= \"somestring\"; ?> <?= \"anotherstring\"; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideWithShortOpenTagCases",
+                    "key": 5,
+                    "args": [
+                        "<?= 1;",
+                        "<?= 1; ?>"
+                    ]
+                }
+            ]
+        }
+    ]
+}

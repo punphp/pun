@@ -1,0 +1,52 @@
+{
+    "fixer": "no_short_bool_cast",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\NoShortBoolCastFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/CastNotation/NoShortBoolCastFixerTest.php",
+    "case_count": 3,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\NoShortBoolCastFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n            $c = // lala\n                // cc\n            (bool)$content;",
+                        "<?php\n            $c = ! // lala\n                // cc\n            !$content;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$a = '0';\n$b = /*\n\n    */(bool)$a;",
+                        "<?php\n$a = '0';\n$b = !/*\n\n    */!$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nfunction foo($a, $b) {\n    $c = (bool)$a;\n    $d = !$a;\n    $d1 = !  $a;\n    $d2 =    !$a;\n    $b = !(!$foo);\n    echo '!!'; // !! ! !\n    $c = (bool) $b;\n    $e = (bool) $d1;\n    return (bool) $a;\n}\n                ",
+                        "<?php\nfunction foo($a, $b) {\n    $c = !!$a;\n    $d = !$a;\n    $d1 = !  $a;\n    $d2 =    !$a;\n    $b = !(!$foo);\n    echo '!!'; // !! ! !\n    $c = ! ! $b;\n    $e = !\n\n\n    ! $d1;\n    return !! $a;\n}\n                "
+                    ]
+                }
+            ]
+        }
+    ]
+}

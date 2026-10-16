@@ -1,0 +1,97 @@
+{
+    "fixer": "elseif",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\ElseifFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/ElseifFixerTest.php",
+    "case_count": 9,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\ElseifFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php if ($some) { $test = true; } else { $test = false; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php if ($some) { $test = true; } elseif ($some !== \"test\") { $test = false; }",
+                        "<?php if ($some) { $test = true; } else if ($some !== \"test\") { $test = false; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php if ($some) { $test = true; } elseif ($some !== \"test\") { $test = false; }",
+                        "<?php if ($some) { $test = true; } else  if ($some !== \"test\") { $test = false; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $js = 'if (foo.a) { foo.a = \"OK\"; } else if (foo.b) { foo.b = \"OK\"; }';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                    if ($a) {\n                        $x = 1;\n                    } elseif ($b) {\n                        $x = 2;\n                    }",
+                        "<?php\n                    if ($a) {\n                        $x = 1;\n                    } else\n                    if ($b) {\n                        $x = 2;\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                    if ($a) {\n                    } elseif/**/ ($b) {\n                    }\n                ",
+                        "<?php\n                    if ($a) {\n                    } else /**/ if ($b) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                    if ($a) {\n                    } elseif//\n                        ($b) {\n                    }\n                ",
+                        "<?php\n                    if ($a) {\n                    } else //\n                        if ($b) {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php if ($a) {} /**/elseif ($b){}",
+                        "<?php if ($a) {} /**/else if ($b){}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php if ($x) { foo(); } else if ($y): bar(); endif;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

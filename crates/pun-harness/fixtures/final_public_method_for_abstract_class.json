@@ -1,0 +1,157 @@
+{
+    "fixer": "final_public_method_for_abstract_class",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalPublicMethodForAbstractClassFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/FinalPublicMethodForAbstractClassFixerTest.php",
+    "case_count": 15,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalPublicMethodForAbstractClassFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "regular-class",
+                    "args": [
+                        "<?php class MyClass { \n            public $a1;\n            protected $a2;\n            private $a3;\n            public static $a4;\n            protected static $a5;\n            private static $a6;\n            public function f1(){}\n            protected function f2(){}\n            private function f3(){}\n            public static function f4(){}\n            protected static function f5(){}\n            private static function f6(){}\n            static public function f7(){}\n            static protected function f8(){}\n            static private function f9(){}\n         }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final-class",
+                    "args": [
+                        "<?php final class MyClass { \n            public $a1;\n            protected $a2;\n            private $a3;\n            public static $a4;\n            protected static $a5;\n            private static $a6;\n            public function f1(){}\n            protected function f2(){}\n            private function f3(){}\n            public static function f4(){}\n            protected static function f5(){}\n            private static function f6(){}\n            static public function f7(){}\n            static protected function f8(){}\n            static private function f9(){}\n         }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait",
+                    "args": [
+                        "<?php trait MyClass { \n            public $a1;\n            protected $a2;\n            private $a3;\n            public static $a4;\n            protected static $a5;\n            private static $a6;\n            public function f1(){}\n            protected function f2(){}\n            private function f3(){}\n            public static function f4(){}\n            protected static function f5(){}\n            private static function f6(){}\n            static public function f7(){}\n            static protected function f8(){}\n            static private function f9(){}\n         }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interface",
+                    "args": [
+                        "<?php interface MyClass {\n                    public function f1();\n                    public static function f4();\n                    static public function f7();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "magic-methods",
+                    "args": [
+                        "<?php abstract class MyClass {\n                    public function __construct() {}\n                    public function __destruct() {}\n                    public function __call($a, $b) {}\n                    public static function __callStatic($a, $b) {}\n                    public function __get($a) {}\n                    public function __set($a, $b) {}\n                    public function __isset($a) {}\n                    public function __unset($a) {}\n                    public function __sleep() {}\n                    public function __wakeup() {}\n                    public function __toString() {}\n                    public function __invoke() {}\n                    public function __clone() {}\n                    public function __debugInfo() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "magic-methods-casing",
+                    "args": [
+                        "<?php abstract class MyClass {\n                    public function __Construct() {}\n                    public function __SET($a, $b) {}\n                    public function __ToString() {}\n                    public function __DeBuGiNfO() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non magic-methods",
+                    "args": [
+                        "<?php abstract class MyClass {\n                    final public function __foo() {}\n                    final public static function __bar($a, $b) {}\n                }",
+                        "<?php abstract class MyClass {\n                    public function __foo() {}\n                    public static function __bar($a, $b) {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "abstract-class",
+                    "args": [
+                        "<?php abstract class MyClass { \n            public $a1;\n            protected $a2;\n            private $a3;\n            public static $a4;\n            protected static $a5;\n            private static $a6;\n            final public function f1(){}\n            protected function f2(){}\n            private function f3(){}\n            final public static function f4(){}\n            protected static function f5(){}\n            private static function f6(){}\n            final static public function f7(){}\n            static protected function f8(){}\n            static private function f9(){}\n         }",
+                        "<?php abstract class MyClass { \n            public $a1;\n            protected $a2;\n            private $a3;\n            public static $a4;\n            protected static $a5;\n            private static $a6;\n            public function f1(){}\n            protected function f2(){}\n            private function f3(){}\n            public static function f4(){}\n            protected static function f5(){}\n            private static function f6(){}\n            static public function f7(){}\n            static protected function f8(){}\n            static private function f9(){}\n         }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "abstract-class-with-abstract-public-methods",
+                    "args": [
+                        "<?php abstract class MyClass {\n                    abstract public function foo();\n                    abstract public static function bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous-class",
+                    "args": [
+                        "<?php abstract class MyClass { private function test() { $a = new class { \n            public $a1;\n            protected $a2;\n            private $a3;\n            public static $a4;\n            protected static $a5;\n            private static $a6;\n            public function f1(){}\n            protected function f2(){}\n            private function f3(){}\n            public static function f4(){}\n            protected static function f5(){}\n            private static function f6(){}\n            static public function f7(){}\n            static protected function f8(){}\n            static private function f9(){}\n         }; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "constant visibility",
+                    "args": [
+                        "<?php abstract class MyClass {\n                    public const A = 1;\n                    protected const B = 2;\n                    private const C = 3;\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalPublicMethodForAbstractClassFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "abstract keyword after readonly/public keywords",
+                    "args": [
+                        "<?php readonly abstract class Foo {\n                public abstract function bar();\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "abstract keyword before readonly/public keywords",
+                    "args": [
+                        "<?php abstract readonly class Foo {\n                abstract public function bar();\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "abstract readonly class",
+                    "args": [
+                        "<?php abstract readonly class Foo {\n                final public function bar() {}\n            }",
+                        "<?php abstract readonly class Foo {\n                public function bar() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "readonly abstract class",
+                    "args": [
+                        "<?php readonly abstract class Foo {\n                final public function bar() {}\n            }",
+                        "<?php readonly abstract class Foo {\n                public function bar() {}\n            }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

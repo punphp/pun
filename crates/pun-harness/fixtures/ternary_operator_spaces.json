@@ -1,0 +1,237 @@
+{
+    "fixer": "ternary_operator_spaces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryOperatorSpacesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/TernaryOperatorSpacesFixerTest.php",
+    "case_count": 22,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryOperatorSpacesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle goto labels 1",
+                    "args": [
+                        "<?php\nbeginning:\necho $guard ? 1 : 2;",
+                        "<?php\nbeginning:\necho $guard?1:2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle goto labels 2",
+                    "args": [
+                        "<?php\nfunction A(){}\nbeginning:\necho $guard ? 1 : 2;",
+                        "<?php\nfunction A(){}\nbeginning:\necho $guard?1:2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle goto labels 3",
+                    "args": [
+                        "<?php\n;\nbeginning:\necho $guard ? 1 : 2;",
+                        "<?php\n;\nbeginning:\necho $guard?1:2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle goto labels 4",
+                    "args": [
+                        "<?php\n{\nbeginning:\necho $guard ? 1 : 2;}",
+                        "<?php\n{\nbeginning:\necho $guard?1:2;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle instanceof static",
+                    "args": [
+                        "<?php $a instanceof static ? $b : $c;",
+                        "<?php $a instanceof static?$b:$c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = $a ? 1 : 0;",
+                        "<?php $a = $a  ? 1 : 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = $a ?\n#\n: $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = $a#\n ? \n#\n1 : 0;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $val = (1===1) ? true : false;",
+                        "<?php $val = (1===1)?true:false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $val = 1===1 ? true : false;",
+                        "<?php $val = 1===1?true:false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n$a = $b ? 2 : ($bc ? 2 : 3);\n$a = $bc ? 2 : 3;",
+                        "<?php\n$a = $b   ?   2  :    ($bc?2:3);\n$a = $bc?2:3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $config = $config ?: new Config();",
+                        "<?php $config = $config ? : new Config();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$a = $b ? (\n        $c + 1\n    ) : (\n        $d + 1\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$a = $b\n    ? $c\n    : $d;",
+                        "<?php\n$a = $b\n    ?$c\n    :$d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n$a = $b  //\n    ? $c  /**/\n    : $d;",
+                        "<?php\n$a = $b  //\n    ?$c  /**/\n    :$d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n$a = ($b\n    ? $c\n    : ($d\n        ? $e\n        : $f\n    )\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n$a = ($b\n    ? ($c1 ? $c2 : ($c3a ?: $c3b))\n    : ($d1 ? $d2 : $d3)\n);",
+                        "<?php\n$a = ($b\n    ? ($c1?$c2:($c3a? :$c3b))\n    : ($d1?$d2:$d3)\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                $foo = $isBar ? 1 : 2;\n                switch ($foo) {\n                    case 1: return 3;\n                    case 2: return 4;\n                }\n                ",
+                        "<?php\n                $foo = $isBar? 1 : 2;\n                switch ($foo) {\n                    case 1: return 3;\n                    case 2: return 4;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                return $isBar ? array_sum(array_map(function ($x) { switch ($x) { case 1: return $y ? 2 : 3; case 4: return 5; } }, [1, 2, 3])) : 128;\n                ",
+                        "<?php\n                return $isBar?array_sum(array_map(function ($x) { switch ($x) { case 1: return $y? 2 : 3; case 4: return 5; } }, [1, 2, 3])):128;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                declare(ticks=1):enddeclare;\n                for ($i = 0; $i < 100; $i++): echo \".\"; endfor;\n                foreach ($foo as $bar): $i++; endforeach;\n                if ($x === 1): echo \"One\"; elseif ($x === 2): echo \"Two\"; else: echo \"Three\"; endif;\n                switch (true): default: return 0; endswitch;\n                while ($i > 10): $i--; endwhile;\n                /* ternary operator to make the file a candidate for fixing */ true ? 1 : 0;\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryOperatorSpacesFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "nullable types in constructor property promotion",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function __construct(\n        private ?string $foo = null,\n        protected ?string $bar = null,\n        public ?string $xyz = null,\n    ) {\n        /* ternary operator to make the file a candidate for fixing */ true ? 1 : 0;\n    }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryOperatorSpacesFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\nenum TaskType: int\n{\n    public function foo(bool $value): string\n    {\n        return $value ? 'foo' : 'bar';\n    }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

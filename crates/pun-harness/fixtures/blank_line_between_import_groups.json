@@ -1,0 +1,167 @@
+{
+    "fixer": "blank_line_between_import_groups",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\BlankLineBetweenImportGroupsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/BlankLineBetweenImportGroupsFixerTest.php",
+    "case_count": 15,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\BlankLineBetweenImportGroupsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse Some\\Cloz;\nuse Aaa\\Bbb;\n\nuse const some\\a\\{ConstD};\nuse const some\\a\\{ConstA};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse const some\\b\\{ConstE};\n\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse function some\\c\\{fn_f};\nuse function some\\a\\{fn_x};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse function some\\a\\{fn_a, fn_b};\n",
+                        "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse Some\\Cloz;\nuse Aaa\\Bbb;\nuse const some\\a\\{ConstD};\nuse const some\\a\\{ConstA};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse const some\\b\\{ConstE};\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse function some\\c\\{fn_f};\nuse function some\\a\\{fn_x};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse function some\\a\\{fn_a, fn_b};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\n\nuse function some\\f\\{fn_g, fn_h, fn_i};\n\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\n\nuse function some\\c\\{fn_f};\n\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\n\nuse const some\\a\\{ConstD};\n\nuse Some\\Cloz;\n\nuse function some\\a\\{fn_x};\n\nuse const some\\a\\{ConstA};\n\nuse function some\\b\\{fn_c, fn_d, fn_e};\n\nuse const some\\a\\{ConstB, ConstC as CC};\n\nuse Aaa\\Bbb;\n\nuse const some\\b\\{ConstE};\n\nuse function some\\a\\{fn_a, fn_b};\n",
+                        "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse function some\\c\\{fn_f};\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse const some\\a\\{ConstD};\nuse Some\\Cloz;\nuse function some\\a\\{fn_x};\nuse const some\\a\\{ConstA};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse Aaa\\Bbb;\nuse const some\\b\\{ConstE};\nuse function some\\a\\{fn_a, fn_b};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\n#use function some\\f\\{fn_g, fn_h, fn_i};\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\n\nuse function some\\c\\{fn_f};\n\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\n\nuse const some\\a\\{ConstD};\n\nuse Some\\Cloz;\n\nuse function some\\a\\{fn_x};\n\n/** Import ConstA to do some nice magic */\nuse const some\\a\\{ConstA};\n\nuse function some\\b\\{fn_c, fn_d, fn_e};\n\nuse const some\\a\\{ConstB, ConstC as CC};\n\nuse Aaa\\Bbb;\n\nuse const some\\b\\{ConstE};\n\nuse function some\\a\\{fn_a, fn_b};\n",
+                        "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\n#use function some\\f\\{fn_g, fn_h, fn_i};\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse function some\\c\\{fn_f};\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse const some\\a\\{ConstD};\nuse Some\\Cloz;\nuse function some\\a\\{fn_x};\n/** Import ConstA to do some nice magic */\nuse const some\\a\\{ConstA};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse Aaa\\Bbb;\nuse const some\\b\\{ConstE};\nuse function some\\a\\{fn_a, fn_b};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n/**\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\n */\nuse function some\\f\\{fn_g, fn_h, fn_i};\n\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\n\nuse function some\\c\\{fn_f};\n\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\n\nuse const some\\a\\{ConstD};\n\nuse Some\\Cloz;\n\n// Ignore the following content\n// use function some\\a\\{fn_x};\n// use const some\\a\\{ConstA};\n\nuse function some\\b\\{fn_c, fn_d, fn_e};\n\nuse const some\\a\\{ConstB, ConstC as CC};\n\nuse Aaa\\Bbb;\n\nuse const some\\b\\{ConstE};\n\nuse function some\\a\\{fn_a, fn_b};\n",
+                        "<?php\n/**\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\n */\nuse function some\\f\\{fn_g, fn_h, fn_i};\n\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\n\nuse function some\\c\\{fn_f};\n\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\n\nuse const some\\a\\{ConstD};\n\nuse Some\\Cloz;\n// Ignore the following content\n// use function some\\a\\{fn_x};\n// use const some\\a\\{ConstA};\n\nuse function some\\b\\{fn_c, fn_d, fn_e};\n\nuse const some\\a\\{ConstB, ConstC as CC};\n\nuse Aaa\\Bbb;\n\nuse const some\\b\\{ConstE};\n\nuse function some\\a\\{fn_a, fn_b};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nuse Aaa\\Ccc;\n\n/*use Foo\\Zar\\Baz;\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse function some\\c\\{fn_f};\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse const some\\a\\{ConstD};\nuse Some\\Cloz;\nuse function some\\a\\{fn_x};\nuse const some\\a\\{ConstA};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse Aaa\\Bbb;\nuse const some\\b\\{ConstE};\n*/\nuse function some\\a\\{fn_a, fn_b};\n",
+                        "<?php\nuse Aaa\\Ccc;\n/*use Foo\\Zar\\Baz;\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse function some\\c\\{fn_f};\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse const some\\a\\{ConstD};\nuse Some\\Cloz;\nuse function some\\a\\{fn_x};\nuse const some\\a\\{ConstA};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse Aaa\\Bbb;\nuse const some\\b\\{ConstE};\n*/\nuse function some\\a\\{fn_a, fn_b};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nuse Aaa\\Ccc;\n\nuse function some\\a\\{fn_a, fn_b};\nuse function some\\b\\{\n    fn_c,\n    fn_d\n};\n",
+                        "<?php\nuse Aaa\\Ccc;\n\n\n\nuse function some\\a\\{fn_a, fn_b};\nuse function some\\b\\{\n    fn_c,\n    fn_d\n};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nuse Aaa\\Ccc;\n\nuse function some\\a\\{fn_a, fn_b}; // Do this because of reasons\nuse function some\\b\\{\n    fn_c,\n    fn_d\n};\n",
+                        "<?php\nuse Aaa\\Ccc;\n\n\n\nuse function some\\a\\{fn_a, fn_b}; // Do this because of reasons\nuse function some\\b\\{\n    fn_c,\n    fn_d\n};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nuse Aaa\\Ccc;\n\n/** Beginning of line comment as well */use function some\\a\\{fn_a, fn_b};\nuse function some\\b\\{\n    fn_c,\n    fn_d\n};\n",
+                        "<?php\nuse Aaa\\Ccc;\n\n\n\n/** Beginning of line comment as well */use function some\\a\\{fn_a, fn_b};\nuse function some\\b\\{\n    fn_c,\n    fn_d\n};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\nuse /* x */ function /* x */ Psl\\Str\\trim;\n\nuse /* x */ Psl\\Str /* x */;\n\nuse /* x */ const /* x */ Psl\\Str\\OTHER_ALPHABET;\nuse /* x */ const /* x */ Psl\\Str\\ALPHABET;\n\nuse /* x */ function /* x */ Psl\\Str\\ /* x */ {\n    /* x */ trim_left /* x */,\n    /* x */ trim_right /* x */,\n};\n",
+                        "<?php\n\nuse /* x */ function /* x */ Psl\\Str\\trim;\nuse /* x */ Psl\\Str /* x */;\nuse /* x */ const /* x */ Psl\\Str\\OTHER_ALPHABET;\nuse /* x */ const /* x */ Psl\\Str\\ALPHABET;\nuse /* x */ function /* x */ Psl\\Str\\ /* x */ {\n    /* x */ trim_left /* x */,\n    /* x */ trim_right /* x */,\n};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "lots of inserts in same namespace",
+                    "args": [
+                        "<?php\nnamespace A\\B6 {\n    use C1\\B1;\n\n    use const C6\\Z1;\n\n    use C2\\B2;\n\n    use const C7\\Z2;\n\n    use C3\\B3;\n\n    use const C8\\Z3;\n\n    use C4\\B4;\n\n    use const C9\\Z4;\n\n    use C5\\B5;\n\n    use const C0\\Z5;\n}\n            ",
+                        "<?php\nnamespace A\\B6 {\n    use C1\\B1;use const C6\\Z1;\n    use C2\\B2;use const C7\\Z2;\n    use C3\\B3;use const C8\\Z3;\n    use C4\\B4;use const C9\\Z4;\n    use C5\\B5;use const C0\\Z5;\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "lots of inserts in multiple namespaces",
+                    "args": [
+                        "<?php\nnamespace A\\B1 {\n    use C\\B;\n\n    use const C\\Z;\n}\nnamespace A\\B2 {\n    use C\\B;\n\n    use const C\\Z;\n}\nnamespace A\\B3 {\n    use C\\B;\n\n    use const C\\Z;\n}\nnamespace A\\B4 {\n    use C\\B;\n\n    use const C\\Z;\n}\nnamespace A\\B5 {\n    use C\\B;\n\n    use const C\\Z;\n}\n            ",
+                        "<?php\nnamespace A\\B1 {\n    use C\\B;use const C\\Z;\n}\nnamespace A\\B2 {\n    use C\\B;use const C\\Z;\n}\nnamespace A\\B3 {\n    use C\\B;use const C\\Z;\n}\nnamespace A\\B4 {\n    use C\\B;use const C\\Z;\n}\nnamespace A\\B5 {\n    use C\\B;use const C\\Z;\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php use A\\B;    /*1*/\n\nuse const C\\D;",
+                        "<?php use A\\B;    /*1*/      use const C\\D;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse A\\B; /* foo */  /* A */ /* B */  # X\n\nuse const C\\D; // bar\n",
+                        "<?php\nnamespace Foo;\nuse A\\B; /* foo */  /* A */ /* B */  # X\nuse const C\\D; // bar\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "one use statement",
+                    "args": [
+                        "<?php use A;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\BlankLineBetweenImportGroupsFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\nuse Some\\/**Namespace*/Weird\\Be/**ha*/;\n\nuse function Other\\/**Namespace*/Weird\\/**Comments*/have;\n",
+                        "<?php\n\nuse Some\\/**Namespace*/Weird\\Be/**ha*/;\nuse function Other\\/**Namespace*/Weird\\/**Comments*/have;\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

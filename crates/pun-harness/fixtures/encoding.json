@@ -1,0 +1,64 @@
+{
+    "fixer": "encoding",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Basic\\EncodingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Basic/EncodingFixerTest.php",
+    "case_count": 3,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "file",
+                    "type": "?SplFileInfo",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\EncodingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, ?\\SplFileInfo $file = null): void\n    {\n        $this->doTest($expected, $input, $file);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\necho 'ą';\n",
+                        "﻿<?php\n\necho 'ą';\n",
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/home/forge/projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../Fixtures/FixerTest/encoding/test-utf8.case1-bom.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "abc\n<?php\n\necho 'ą';\n",
+                        "﻿abc\n<?php\n\necho 'ą';\n",
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/home/forge/projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../Fixtures/FixerTest/encoding/test-utf8.case2-bom.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php "
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,924 @@
+{
+    "fixer": "multiline_whitespace_before_semicolons",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\MultilineWhitespaceBeforeSemicolonsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Semicolon/MultilineWhitespaceBeforeSemicolonsFixerTest.php",
+    "case_count": 87,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\MultilineWhitespaceBeforeSemicolonsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                    $foo->bar(); // test",
+                        "<?php\n                    $foo->bar() // test\n                    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo(1); // test",
+                        "<?php echo(1) // test\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php echo(1); // test\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                    $foo->bar(); # test",
+                        "<?php\n                    $foo->bar() # test\n\n\n                ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                    $foo->bar();// test",
+                        "<?php\n                    $foo->bar()// test\n\n\n                ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?= $a; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$this\n    ->setName('readme1')\n    ->setDescription('Generates the README');\n",
+                        "<?php\n$this\n    ->setName('readme1')\n    ->setDescription('Generates the README')\n;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$this\n    ->setName('readme2')\n    ->setDescription('Generates the README');\n",
+                        "<?php\n$this\n    ->setName('readme2')\n    ->setDescription('Generates the README')\n    ;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php echo \"$this->foo('with param containing ;') ;\" ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $this->foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $this->foo() ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $this->foo('with param containing ;') ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $this->foo('with param containing ) ; ') ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $this->foo(\"with param containing ) ; \")  ; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $this->foo(\"with semicolon in string) ; \"); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n$this\n    ->example();",
+                        "<?php\n$this\n    ->example()\n\n    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n                    Foo::bar(); // test",
+                        "<?php\n                    Foo::bar() // test\n                    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n                    Foo::bar(); # test",
+                        "<?php\n                    Foo::bar() # test\n\n\n                ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\nself\n    ::setName('readme1')\n    ->setDescription('Generates the README');\n",
+                        "<?php\nself\n    ::setName('readme1')\n    ->setDescription('Generates the README')\n;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\nself\n    ::setName('readme2')\n    ->setDescription('Generates the README');\n",
+                        "<?php\nself\n    ::setName('readme2')\n    ->setDescription('Generates the README')\n    ;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php echo \"self::foo('with param containing ;') ;\" ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php self::foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php self::foo() ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php self::foo('with param containing ;') ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php self::foo('with param containing ) ; ') ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php self::foo(\"with param containing ) ; \")  ; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php self::foo(\"with semicolon in string) ; \"); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\nself\n    ::example();",
+                        "<?php\nself\n    ::example()\n\n    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n$seconds = $minutes\n    * 60; // seconds in a minute",
+                        "<?php\n$seconds = $minutes\n    * 60 // seconds in a minute\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n$seconds = $minutes\n    * (int) '60'; // seconds in a minute",
+                        "<?php\n$seconds = $minutes\n    * (int) '60' // seconds in a minute\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n$secondsPerMinute = 60;\n$seconds = $minutes\n    * $secondsPerMinute; // seconds in a minute",
+                        "<?php\n$secondsPerMinute = 60;\n$seconds = $minutes\n    * $secondsPerMinute // seconds in a minute\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n$secondsPerMinute = 60;\n$seconds = $minutes\n    * 60 * (int) true; // seconds in a minute",
+                        "<?php\n$secondsPerMinute = 60;\n$seconds = $minutes\n    * 60 * (int) true // seconds in a minute\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php echo(1); // test",
+                        "<?php echo(1) // test\r\n;",
+                        {
+                            "strategy": "no_multi_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n\n                    $this\n                        ->method1()\n                        ->method2()\n                    ;\n                ?>",
+                        "<?php\n\n                    $this\n                        ->method1()\n                        ->method2();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\n\n                    $this\n                        ->method1()\n                        ->method2() // comment\n                    ;\n\n\n",
+                        "<?php\n\n                    $this\n                        ->method1()\n                        ->method2(); // comment\n\n\n",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n\n                    $service->method1()\n                        ->method2()\n                    ;\n\n                    $service->method3();\n                    $this\n                        ->method1()\n                        ->method2()\n                    ;",
+                        "<?php\n\n                    $service->method1()\n                        ->method2()\n                    ;\n\n                    $service->method3();\n                    $this\n                        ->method1()\n                        ->method2();",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\n\n                    $service\n                        ->method2()\n                    ;\n                ?>",
+                        "<?php\n\n                    $service\n                        ->method2();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n\n                    $service->method1()\n                        ->method2()\n                        ->method3()\n                        ->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    $service->method1()\n                        ->method2()\n                        ->method3()\n                        ->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\n\n                    $this->service->method1()\n                        ->method2([1, 2])\n                        ->method3(\n                            \"2\",\n                            2,\n                            [1, 2]\n                        )\n                        ->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    $this->service->method1()\n                        ->method2([1, 2])\n                        ->method3(\n                            \"2\",\n                            2,\n                            [1, 2]\n                        )\n                        ->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n\n                    $service\n                        ->method1()\n                            ->method2()\n                        ->method3()\n                            ->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    $service\n                        ->method1()\n                            ->method2()\n                        ->method3()\n                            ->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n                    $f = \"g\";\n\n                    $service\n                        ->method1(\"a\", true)\n                        ->method2(true, false)\n                        ->method3([1, 2, 3], [\"a\" => \"b\", \"c\" => 1, \"d\" => true])\n                        ->method4(1, \"a\", $f)\n                    ;\n                ?>",
+                        "<?php\n                    $f = \"g\";\n\n                    $service\n                        ->method1(\"a\", true)\n                        ->method2(true, false)\n                        ->method3([1, 2, 3], [\"a\" => \"b\", \"c\" => 1, \"d\" => true])\n                        ->method4(1, \"a\", $f);\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n                    $f = \"g\";\n\n                    $service\n                        ->method1(\"a\", true) // this is a comment\n                        /* ->method2(true, false) */\n                        ->method3([1, 2, 3], [\"a\" => \"b\", \"c\" => 1, \"d\" => true])\n                        ->method4(1, \"a\", $f) /* this is a comment */\n                    ;\n                ?>",
+                        "<?php\n                    $f = \"g\";\n\n                    $service\n                        ->method1(\"a\", true) // this is a comment\n                        /* ->method2(true, false) */\n                        ->method3([1, 2, 3], [\"a\" => \"b\", \"c\" => 1, \"d\" => true])\n                        ->method4(1, \"a\", $f); /* this is a comment */\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n                    $service->method1();\n                    $service->method2()->method3();\n                ?>",
+                        null,
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\n                    $service->method1() ;\n                    $service->method2()->method3() ;\n                ?>",
+                        null,
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n\n                    $service\n                        ->method2(function ($a) {\n                            $a->otherCall()\n                                ->a()\n                                ->b()\n                            ;\n                        })\n                    ;\n                ?>",
+                        "<?php\n\n                    $service\n                        ->method2(function ($a) {\n                            $a->otherCall()\n                                ->a()\n                                ->b()\n                            ;\n                        });\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\n\n                    $data = $service\n                        ->method2(function ($a) {\n                            $a->otherCall()\n                                ->a()\n                                ->b(array_merge([\n                                        1 => 1,\n                                        2 => 2,\n                                    ], $this->getOtherArray()\n                                ))\n                            ;\n                        })\n                    ;\n                ?>",
+                        "<?php\n\n                    $data = $service\n                        ->method2(function ($a) {\n                            $a->otherCall()\n                                ->a()\n                                ->b(array_merge([\n                                        1 => 1,\n                                        2 => 2,\n                                    ], $this->getOtherArray()\n                                ));\n                        });\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n\n                    $service\n                        ->method1(null, null, [\n                            null => null,\n                            1 => $data->getId() > 0,\n                        ])\n                        ->method2(4, Type::class)\n                    ;\n",
+                        "<?php\n\n                    $service\n                        ->method1(null, null, [\n                            null => null,\n                            1 => $data->getId() > 0,\n                        ])\n                        ->method2(4, Type::class);\n",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\n$this\n                        ->method1()\n                        ->method2()\n;\n                ?>",
+                        "<?php\n$this\n                        ->method1()\n                        ->method2();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n\n                    self\n                        ::method1()\n                        ->method2()\n                    ;\n                ?>",
+                        "<?php\n\n                    self\n                        ::method1()\n                        ->method2();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\n\n                    self\n                        ::method1()\n                        ->method2() // comment\n                    ;\n\n\n",
+                        "<?php\n\n                    self\n                        ::method1()\n                        ->method2(); // comment\n\n\n",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\n\n                    Service::method1()\n                        ->method2()\n                    ;\n\n                    Service::method3();\n                    $this\n                        ->method1()\n                        ->method2()\n                    ;",
+                        "<?php\n\n                    Service::method1()\n                        ->method2()\n                    ;\n\n                    Service::method3();\n                    $this\n                        ->method1()\n                        ->method2();",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\n\n                    Service\n                        ::method2()\n                    ;\n                ?>",
+                        "<?php\n\n                    Service\n                        ::method2();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php\n\n                    Service::method1()\n                        ->method2()\n                        ->method3()\n                        ->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    Service::method1()\n                        ->method2()\n                        ->method3()\n                        ->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php\n\n                    self::method1()\n                        ->method2([1, 2])\n                        ->method3(\n                            \"2\",\n                            2,\n                            [1, 2]\n                        )\n                        ->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    self::method1()\n                        ->method2([1, 2])\n                        ->method3(\n                            \"2\",\n                            2,\n                            [1, 2]\n                        )\n                        ->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php\n\n                    Service\n                        ::method1()\n                            ->method2()\n                        ->method3()\n                            ->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    Service\n                        ::method1()\n                            ->method2()\n                        ->method3()\n                            ->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php\n                    $f = \"g\";\n\n                    Service\n                        ::method1(\"a\", true)\n                        ->method2(true, false)\n                        ->method3([1, 2, 3], [\"a\" => \"b\", \"c\" => 1, \"d\" => true])\n                        ->method4(1, \"a\", $f)\n                    ;\n                ?>",
+                        "<?php\n                    $f = \"g\";\n\n                    Service\n                        ::method1(\"a\", true)\n                        ->method2(true, false)\n                        ->method3([1, 2, 3], [\"a\" => \"b\", \"c\" => 1, \"d\" => true])\n                        ->method4(1, \"a\", $f);\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php\n                    $f = \"g\";\n\n                    Service\n                        ::method1(\"a\", true) // this is a comment\n                        /* ->method2(true, false) */\n                        ->method3([1, 2, 3], [\"a\" => \"b\", \"c\" => 1, \"d\" => true])\n                        ->method4(1, \"a\", $f) /* this is a comment */\n                    ;\n                ?>",
+                        "<?php\n                    $f = \"g\";\n\n                    Service\n                        ::method1(\"a\", true) // this is a comment\n                        /* ->method2(true, false) */\n                        ->method3([1, 2, 3], [\"a\" => \"b\", \"c\" => 1, \"d\" => true])\n                        ->method4(1, \"a\", $f); /* this is a comment */\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php\n                    Service::method1();\n                    Service::method2()->method3();\n                ?>",
+                        null,
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php\n                    Service::method1() ;\n                    Service::method2()->method3() ;\n                ?>",
+                        null,
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php\n\n                    Service\n                        ::method2(function ($a) {\n                            $a->otherCall()\n                                ->a()\n                                ->b()\n                            ;\n                        })\n                    ;\n                ?>",
+                        "<?php\n\n                    Service\n                        ::method2(function ($a) {\n                            $a->otherCall()\n                                ->a()\n                                ->b()\n                            ;\n                        });\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php\n\n                    $data = Service\n                        ::method2(function () {\n                            Foo::otherCall()\n                                ->a()\n                                ->b(array_merge([\n                                        1 => 1,\n                                        2 => 2,\n                                    ], $this->getOtherArray()\n                                ))\n                            ;\n                        })\n                    ;\n                ?>",
+                        "<?php\n\n                    $data = Service\n                        ::method2(function () {\n                            Foo::otherCall()\n                                ->a()\n                                ->b(array_merge([\n                                        1 => 1,\n                                        2 => 2,\n                                    ], $this->getOtherArray()\n                                ));\n                        });\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php\n\n                    Service\n                        ::method1(null, null, [\n                            null => null,\n                            1 => $data->getId() > 0,\n                        ])\n                        ->method2(4, Type::class)\n                    ;\n",
+                        "<?php\n\n                    Service\n                        ::method1(null, null, [\n                            null => null,\n                            1 => $data->getId() > 0,\n                        ])\n                        ->method2(4, Type::class);\n",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php\nService\n                        ::method1()\n                        ->method2()\n;\n                ?>",
+                        "<?php\nService\n                        ::method1()\n                        ->method2();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php\n\n                    function foo($bar)\n                    {\n                        if ($bar === 1) {\n                            $baz\n                                ->bar()\n                            ;\n                        }\n\n                        return (new Foo($bar))\n                            ->baz()\n                        ;\n                    }\n                ?>",
+                        "<?php\n\n                    function foo($bar)\n                    {\n                        if ($bar === 1) {\n                            $baz\n                                ->bar();\n                        }\n\n                        return (new Foo($bar))\n                            ->baz();\n                    }\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php\n\n                    $foo = (new Foo($bar))\n                        ->baz()\n                    ;\n\n                    function foo($bar)\n                    {\n                        $foo = (new Foo($bar))\n                            ->baz()\n                        ;\n                    }\n                ?>",
+                        "<?php\n\n                    $foo = (new Foo($bar))\n                        ->baz();\n\n                    function foo($bar)\n                    {\n                        $foo = (new Foo($bar))\n                            ->baz();\n                    }\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php\n$object\n    ->methodA()\n    ->methodB()\n;\n",
+                        "<?php\n$object\n    ->methodA()\n    ->methodB();\n",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php $object\n    ->methodA()\n    ->methodB()\n;\n",
+                        "<?php $object\n    ->methodA()\n    ->methodB();\n",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php\n$this\n    ->one()\n    ->two(2, )\n;",
+                        "<?php\n$this\n    ->one()\n    ->two(2, );",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php\n$this\n    ->one(1, )\n    ->two()\n;",
+                        "<?php\n$this\n    ->one(1, )\n    ->two();",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php\n\n                    $foo->bar();\n\n                    Service::method1()\n                        ->method2()\n                        ->method3()->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    $foo->bar()\n                    ;\n\n                    Service::method1()\n                        ->method2()\n                        ->method3()->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php\n\n                    $foo->bar();\n\n                    \\Service::method1()\n                        ->method2()\n                        ->method3()->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    $foo->bar()\n                    ;\n\n                    \\Service::method1()\n                        ->method2()\n                        ->method3()->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php\n\n                    $foo->bar();\n\n                    Ns\\Service::method1()\n                        ->method2()\n                        ->method3()->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    $foo->bar()\n                    ;\n\n                    Ns\\Service::method1()\n                        ->method2()\n                        ->method3()->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php\n\n                    $foo->bar();\n\n                    \\Ns\\Service::method1()\n                        ->method2()\n                        ->method3()->method4()\n                    ;\n                ?>",
+                        "<?php\n\n                    $foo->bar()\n                    ;\n\n                    \\Ns\\Service::method1()\n                        ->method2()\n                        ->method3()->method4();\n                ?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php\n$this\n    ->setName('readme2')\n    ->setDescription('Generates the README')\n;\n",
+                        "<?php\n$this\n    ->setName('readme2')\n    ->setDescription('Generates the README')\n    ;\n",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php\n$this\n    ->foo()\n    ->{$bar ? 'bar' : 'baz'}()\n;\n",
+                        null,
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php\n                    foo(\"bar\")\n                        ->method1()\n                        ->method2()\n                    ;\n                ",
+                        "<?php\n                    foo(\"bar\")\n                        ->method1()\n                        ->method2();\n                ",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php\n                    $result = $arrayOfAwesomeObjects[\"most awesome object\"]\n                        ->method1()\n                        ->method2()\n                    ;\n                ",
+                        "<?php\n                    $result = $arrayOfAwesomeObjects[\"most awesome object\"]\n                        ->method1()\n                        ->method2();\n                ",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php\n                    $foo;\n                    $bar = [\n                        1 => 2,\n                        3 => $baz->method(),\n                    ];\n                ",
+                        null,
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        $bar\n            ->baz()\n        ;\n}\n",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        $bar\n            ->baz()\n              ;\n}\n",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php\n$x->foo()\n    ->bar()\n;$y = 42;",
+                        "<?php\n$x->foo()\n    ->bar();$y = 42;",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php\r\n\r\n   $this\r\n\t->method1()\r\n\t\t->method2()\r\n   ;",
+                        "<?php\r\n\r\n   $this\r\n\t->method1()\r\n\t\t->method2();",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php\r\n\r\n\t$this->method1()\r\n\t\t->method2()\r\n\t\t->method(3)\r\n\t;",
+                        "<?php\r\n\r\n\t$this->method1()\r\n\t\t->method2()\r\n\t\t->method(3);",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php\r\n\r\n\t$data   =  $service\r\n\t ->method2(function ($a) {\r\n\t\t\t$a->otherCall()\r\n\t\t\t\t->a()\r\n\t\t\t\t->b(array_merge([\r\n\t\t\t\t\t\t1 => 1,\r\n\t\t\t\t\t\t2 => 2,\r\n\t\t\t\t\t], $this->getOtherArray()\r\n\t\t\t\t))\r\n\t\t\t;\r\n\t\t})\r\n\t;\r\n?>",
+                        "<?php\r\n\r\n\t$data   =  $service\r\n\t ->method2(function ($a) {\r\n\t\t\t$a->otherCall()\r\n\t\t\t\t->a()\r\n\t\t\t\t->b(array_merge([\r\n\t\t\t\t\t\t1 => 1,\r\n\t\t\t\t\t\t2 => 2,\r\n\t\t\t\t\t], $this->getOtherArray()\r\n\t\t\t\t));\r\n\t\t});\r\n?>",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not touch multiline constants definitions when no multiline",
+                    "args": [
+                        "<?php\nconst\n    GLOBAL1 = '1',\n    GLOBAL2 = '2'\n;\nconst\n    GLOBAL3 = '3',\n    GLOBAL4 = '4';\nclass Foo\n{\n    protected const\n        CLASS1 = '1',\n        CLASS2 = '2';\n    private const\n        CLASS3 = '3',\n        CLASS4 = '4'\n    ;\n}",
+                        null,
+                        {
+                            "strategy": "no_multi_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not touch multiline constants definitions when multiline",
+                    "args": [
+                        "<?php\nconst\n    GLOBAL1 = '1',\n    GLOBAL2 = '2'\n;\nconst\n    GLOBAL3 = '3',\n    GLOBAL4 = '4';\nclass Foo\n{\n    protected const\n        CLASS1 = '1',\n        CLASS2 = '2';\n    private const\n        CLASS3 = '3',\n        CLASS4 = '4'\n    ;\n}",
+                        null,
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\MultilineWhitespaceBeforeSemicolonsFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n                $foo?->method1()\n                    ?->method2()\n                    ?->method3()\n                ;\n                ",
+                        "<?php\n\n                $foo?->method1()\n                    ?->method2()\n                    ?->method3();\n                ",
+                        {
+                            "strategy": "new_line_for_chained_calls"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

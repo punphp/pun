@@ -1,0 +1,821 @@
+{
+    "fixer": "no_unused_imports",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\NoUnusedImportsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Import/NoUnusedImportsFixerTest.php",
+    "case_count": 95,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\NoUnusedImportsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\FooBar as FooBaz;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new SomeClass();\n\nuse Symfony\\Annotation\\Template;\nuse Symfony\\Doctrine\\Entities\\Entity;\nuse Symfony\\Array123\\ArrayInterface;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n    }\n}",
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Foo\\Bar\\Foo as Fooo;\nuse Foo\\Bar\\Baar\\Baar;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new SomeClass();\n\nuse Symfony\\Annotation\\Template;\nuse Symfony\\Doctrine\\Entities\\Entity;\nuse Symfony\\Array123\\ArrayInterface;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_indents",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar;\n    $foo = 1;\nuse Foo\\Bar\\FooBar as FooBaz;\n    use SomeClassIndented;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new SomeClassIndented();\n",
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\n    $foo = 1;\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Foo\\Bar\\Foo as Fooo;\nuse Foo\\Bar\\Baar\\Baar;\n    use SomeClassIndented;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new SomeClassIndented();\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "in_same_namespace_1",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar\\FooBar;\n\nuse Foo\\Bar\\FooBar\\Foo as Fooz;\nuse Foo\\Bar\\FooBar\\Aaa\\Bbb;\nuse XYZ\\FQCN_XYZ;\n\n$a = new Baz();\n$b = new Fooz();\n$c = new Bar\\Fooz();\n$d = new Bbb();\n$e = new FQCN_Babo();\n$f = new FQCN_XYZ();",
+                        "<?php\n\nnamespace Foo\\Bar\\FooBar;\n\nuse Foo\\Bar\\FooBar\\Baz;\nuse Foo\\Bar\\FooBar\\Foo as Fooz;\nuse Foo\\Bar\\FooBar\\Bar;\nuse Foo\\Bar\\FooBar\\Aaa\\Bbb;\nuse \\Foo\\Bar\\FooBar\\FQCN_Babo;\nuse XYZ\\FQCN_XYZ;\n\n$a = new Baz();\n$b = new Fooz();\n$c = new Bar\\Fooz();\n$d = new Bbb();\n$e = new FQCN_Babo();\n$f = new FQCN_XYZ();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "in_same_namespace_2",
+                    "args": [
+                        "<?php namespace App\\Http\\Controllers;\n",
+                        "<?php namespace App\\Http\\Controllers;\n\nuse Illuminate\\Http\\Request;\nuse App\\Http\\Controllers\\Controller;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "in_same_namespace_multiple_1",
+                    "args": [
+                        "<?php\n\nnamespace Foooooooo;\nnamespace Foo;\n\nuse Foooooooo\\Baaaaz;\n\n$a = new Bar();\n$b = new Baz();\n$c = new Baaaaz();",
+                        "<?php\n\nnamespace Foooooooo;\nnamespace Foo;\n\nuse Foo\\Bar;\nuse Foo\\Baz;\nuse Foooooooo\\Baaaar;\nuse Foooooooo\\Baaaaz;\n\n$a = new Bar();\n$b = new Baz();\n$c = new Baaaaz();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "in_same_namespace_multiple_2",
+                    "args": [
+                        "<?php\n\nnamespace Foooooooo;\n\nuse Foo\\Bar;\n\n$a = new Baaaar();\n$b = new Baaaaz();\n$c = new Bar();\n\nnamespace Foo;\n\nuse Foooooooo\\Baaaaz;\n\n$a = new Bar();\n$b = new Baz();\n$c = new Baaaaz();",
+                        "<?php\n\nnamespace Foooooooo;\n\nuse Foo\\Bar;\nuse Foo\\Baz;\nuse Foooooooo\\Baaaar;\nuse Foooooooo\\Baaaaz;\n\n$a = new Baaaar();\n$b = new Baaaaz();\n$c = new Bar();\n\nnamespace Foo;\n\nuse Foo\\Bar;\nuse Foo\\Baz;\nuse Foooooooo\\Baaaar;\nuse Foooooooo\\Baaaaz;\n\n$a = new Bar();\n$b = new Baz();\n$c = new Baaaaz();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "in_same_namespace_multiple_braces",
+                    "args": [
+                        "<?php\n\nnamespace Foooooooo\n{\n    use Foo\\Bar;\n\n    $a = new Baaaar();\n    $b = new Baaaaz();\n    $c = new Bar();\n}\n\nnamespace Foo\n{\n    use Foooooooo\\Baaaaz;\n\n    $a = new Bar();\n    $b = new Baz();\n    $c = new Baaaaz();\n}",
+                        "<?php\n\nnamespace Foooooooo\n{\n    use Foo\\Bar;\n    use Foo\\Baz;\n    use Foooooooo\\Baaaar;\n    use Foooooooo\\Baaaaz;\n\n    $a = new Baaaar();\n    $b = new Baaaaz();\n    $c = new Bar();\n}\n\nnamespace Foo\n{\n    use Foo\\Bar;\n    use Foo\\Baz;\n    use Foooooooo\\Baaaar;\n    use Foooooooo\\Baaaaz;\n\n    $a = new Bar();\n    $b = new Baz();\n    $c = new Baaaaz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple_use",
+                    "args": [
+                        "<?php\n\nnamespace Foo;\n\nuse BarE;\n\n$c = new D();\n$e = new BarE();",
+                        "<?php\n\nnamespace Foo;\n\nuse Bar;\nuse BarA;\nuse BarB, BarC as C, BarD;\nuse BarB2;\nuse BarB\\B2;\nuse BarE;\nuse function fun_a, fun_b, fun_c;\nuse const CONST_A, CONST_B, CONST_C;\n\n$c = new D();\n$e = new BarE();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_braces",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar\\FooBar {\n    use Foo\\Bar\\FooBar\\Foo as Fooz;\n    use Foo\\Bar\\FooBar\\Aaa\\Bbb;\n\n    $a = new Baz();\n    $b = new Fooz();\n    $c = new Bar\\Fooz();\n    $d = new Bbb();\n}",
+                        "<?php\n\nnamespace Foo\\Bar\\FooBar {\n    use Foo\\Bar\\FooBar\\Baz;\n    use Foo\\Bar\\FooBar\\Foo as Fooz;\n    use Foo\\Bar\\FooBar\\Bar;\n    use Foo\\Bar\\FooBar\\Aaa\\Bbb;\n\n    $a = new Baz();\n    $b = new Fooz();\n    $c = new Bar\\Fooz();\n    $d = new Bbb();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trailing_spaces",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar ;\nuse Foo\\Bar\\FooBar as FooBaz ;\n\n$a = new Bar();\n$a = new FooBaz();",
+                        "<?php\n\nuse Foo\\Bar ;\nuse Foo\\Bar\\FooBar as FooBaz ;\nuse Foo\\Bar\\Foo as Fooo ;\nuse SomeClass ;\n\n$a = new Bar();\n$a = new FooBaz();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "traits",
+                    "args": [
+                        "<?php\n\nuse Foo as Bar;\nuse A\\MyTrait1;\n\nclass MyParent\n{\n    use MyTrait1;\nuse MyTrait2;\n    use Bar;\n}",
+                        "<?php\n\nuse Foo;\nuse Foo as Bar;\nuse A\\MyTrait1;\n\nclass MyParent\n{\n    use MyTrait1;\nuse MyTrait2;\n    use Bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function_use",
+                    "args": [
+                        "<?php\n\nuse Foo;\n\n$f = new Foo();\n$a = function ($item) use ($f) {\n    return !in_array($item, $f);\n};",
+                        "<?php\n\nuse Foo;\nuse Bar;\n\n$f = new Foo();\n$a = function ($item) use ($f) {\n    return !in_array($item, $f);\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "similar_names",
+                    "args": [
+                        "<?php\n\nuse SomeEntityRepository;\n\nclass SomeService\n{\n    public function __construct(SomeEntityRepository $repo)\n    {\n        $this->repo = $repo;\n    }\n}",
+                        "<?php\n\nuse SomeEntityRepository;\nuse SomeEntity;\n\nclass SomeService\n{\n    public function __construct(SomeEntityRepository $repo)\n    {\n        $this->repo = $repo;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variable_name",
+                    "args": [
+                        "<?php\n\n\n$bar = null;",
+                        "<?php\n\nuse Foo\\Bar;\n\n$bar = null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property name, method name, static method call, static property",
+                    "args": [
+                        "<?php\n\n\n$foo->bar = null;\n$foo->bar();\n$foo::bar();\n$foo::bar;",
+                        "<?php\n\nuse Foo\\Bar;\n\n$foo->bar = null;\n$foo->bar();\n$foo::bar();\n$foo::bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "constant_name",
+                    "args": [
+                        "<?php\n\n\nclass Baz\n{\n    const BAR = 0;\n}",
+                        "<?php\n\nuse Foo\\Bar;\n\nclass Baz\n{\n    const BAR = 0;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace_part",
+                    "args": [
+                        "<?php\n\n\nnew \\Baz\\Bar();",
+                        "<?php\n\nuse Foo\\Bar;\n\nnew \\Baz\\Bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use_in_string_1",
+                    "args": [
+                        "<?php\n$x=<<<'EOA'\nuse a;\nuse b;\nEOA;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use_in_string_2",
+                    "args": [
+                        "<?php\n$x='\nuse a;\nuse b;\n';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use_in_string_3",
+                    "args": [
+                        "<?php\n$x=\"\nuse a;\nuse b;\n\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_in_global_namespace",
+                    "args": [
+                        "<?php\nnamespace A;\nuse \\SplFileInfo;\nnew SplFileInfo(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no_import_in_global_namespace",
+                    "args": [
+                        "<?php\nnamespace A;\nnew \\SplFileInfo(__FILE__);",
+                        "<?php\nnamespace A;\nuse SplFileInfo;\nnew \\SplFileInfo(__FILE__);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no_import_attribute_in_global_namespace",
+                    "args": [
+                        "<?php\nnamespace A;\n#[\\Attribute(\\Attribute::TARGET_PROPERTY)]\nfinal class B {}",
+                        "<?php\nnamespace A;\nuse Attribute;\n#[\\Attribute(\\Attribute::TARGET_PROPERTY)]\nfinal class B {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use_as_last_statement",
+                    "args": [
+                        "<?php\n",
+                        "<?php\nuse Bar\\Finder;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use_with_same_last_part_that_is_in_namespace",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Finder;\n\n",
+                        "<?php\n\nnamespace Foo\\Finder;\n\nuse Bar\\Finder;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "used_use_with_same_last_part_that_is_in_namespace",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Finder;\n\nuse Bar\\Finder;\n\nclass Baz extends Finder\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "foo",
+                    "args": [
+                        "<?php\nnamespace Aaa;\n\nclass Ddd\n{\n}\n",
+                        "<?php\nnamespace Aaa;\n\nuse Aaa\\Bbb;\nuse Ccc;\n\nclass Ddd\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "close_tag_1",
+                    "args": [
+                        "<?php\n?>inline content<?php ?>",
+                        "<?php\n     use A\\AA;\n     use B\\C?>inline content<?php use A\\D; use E\\F ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "close_tag_2",
+                    "args": [
+                        "<?php ?>",
+                        "<?php use A\\B;?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "close_tag_3",
+                    "args": [
+                        "<?php ?>",
+                        "<?php use A\\B?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case_mismatch_typo",
+                    "args": [
+                        "<?php\nuse Foo\\exception; // must be kept by non-risky fixer\n\ntry {\n    x();\n} catch (Exception $e) {\n    echo 'Foo\\Exception caught';\n} catch (\\Exception $e) {\n    echo 'Exception caught';\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_matches_in_comments",
+                    "args": [
+                        "<?php\nuse Foo;\nuse Bar;\nuse Baz;\n\n//Foo\n#Bar\n/*Baz*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_case_insensitive_matches_in_comments",
+                    "args": [
+                        "<?php\nuse Foo;\nuse Bar;\nuse Baz;\n\n//foo\n#bar\n/*baz*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_same_namespace_import_and_unused_import",
+                    "args": [
+                        "<?php\n\nnamespace Foo;\n\nuse Bar\\C;\n/* test */\n\nabstract class D extends A implements C\n{\n}\n",
+                        "<?php\n\nnamespace Foo;\n\nuse Bar\\C;\nuse Foo\\A;\nuse Foo\\Bar\\B /* test */ ;\n\nabstract class D extends A implements C\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with_same_namespace_import_and_unused_import_after_namespace_statement",
+                    "args": [
+                        "<?php\n\nnamespace Foo;\n\nuse Foo\\Bar\\C;\n\nabstract class D extends A implements C\n{\n}\n",
+                        "<?php\n\nnamespace Foo;\n\nuse Foo\\A;\nuse Foo\\Bar\\B;\nuse Foo\\Bar\\C;\n\nabstract class D extends A implements C\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrong_casing",
+                    "args": [
+                        "<?php\n\nuse Foo\\Foo;\nuse Bar\\Bar;\n\n$a = new FOO();\n$b = new bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "phpdoc_unused",
+                    "args": [
+                        "<?php\n\nclass Foo extends \\PHPUnit_Framework_TestCase\n{\n    /**\n     * @expectedException \\Exception\n     */\n    public function testBar()\n    { }\n}",
+                        "<?php\nuse Some\\Exception;\n\nclass Foo extends \\PHPUnit_Framework_TestCase\n{\n    /**\n     * @expectedException \\Exception\n     */\n    public function testBar()\n    { }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_class_is_used_for_constants_1",
+                    "args": [
+                        "<?php\nuse A\\ABC;\n$a = 5-ABC::Test;\n$a = 5-ABC::Test-5;\n$a = ABC::Test-5;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_class_is_used_for_constants_2",
+                    "args": [
+                        "<?php\nuse A\\ABC;\n$a = 5-ABC::Test;\n$a = 5-ABC::Test-5;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_class_is_used_for_constants_3",
+                    "args": [
+                        "<?php\nuse A\\ABC;\n$a = 5-ABC::Test;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_class_is_used_for_constants_4",
+                    "args": [
+                        "<?php\nuse A\\ABC;\n$a = ABC::Test-5;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_class_is_used_for_constants_5",
+                    "args": [
+                        "<?php\nuse A\\ABC;\n$a = 5-ABC::Test-5;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_class_is_used_for_constants_6",
+                    "args": [
+                        "<?php\nuse A\\ABC;\n$b = $a-->ABC::Test;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_class_name_is_prefix_with_dash_of_constant",
+                    "args": [
+                        "<?php\n\n\nclass Dummy\n{\nconst C = 'bar-bados';\n}",
+                        "<?php\n\nuse Foo\\Bar;\n\nclass Dummy\n{\nconst C = 'bar-bados';\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_class_name_is_suffix_with_dash_of_constant",
+                    "args": [
+                        "<?php\n\n\nclass Dummy\n{\n    const C = 'tool-bar';\n}",
+                        "<?php\n\nuse Foo\\Bar;\n\nclass Dummy\n{\n    const C = 'tool-bar';\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_class_name_is_inside_with_dash_of_constant",
+                    "args": [
+                        "<?php\n\n\nclass Dummy\n{\n    const C = 'tool-bar-bados';\n}",
+                        "<?php\n\nuse Foo\\Bar;\n\nclass Dummy\n{\n    const C = 'tool-bar-bados';\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "functions_in_the_global_namespace_should_not_be_removed_even_when_declaration_has_new_lines_and_is_uppercase",
+                    "args": [
+                        "<?php\n\nnamespace Foo;\n\nuse function is_int;\n\nis_int(1);\n",
+                        "<?php\n\nnamespace Foo;\n\nuse function is_int;\nuse function is_float;\n\nis_int(1);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "constants_in_the_global_namespace_should_not_be_removed",
+                    "args": [
+                        "<?php\n\nnamespace Foo;\n\nuse const PHP_INT_MAX;\n\necho PHP_INT_MAX;\n",
+                        "<?php\n\nnamespace Foo;\n\nuse const PHP_INT_MAX;\nuse const PHP_INT_MIN;\n\necho PHP_INT_MAX;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "functions_in_the_global_namespace_should_not_be_removed_even_when_declaration_has_ne_lines_and_is_uppercase",
+                    "args": [
+                        "<?php\n\nnamespace Foo;use/**/FUNCTION#1\nis_int;#2\n\nis_int(1);\n",
+                        "<?php\n\nnamespace Foo;use/**/FUNCTION#1\nis_int;#2\nuse function\n    is_float;\nuse\n    const\n        PHP_INT_MIN;\n\nis_int(1);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use_trait should never be removed",
+                    "args": [
+                        "<?php\n\nclass UsesTraits\n{\n    /**\n     * @see #4086\n     */\n    private function withComplexStringVariable()\n    {\n        $name = 'World';\n\n        return \"Hello, {$name}!\";\n    }\n\n    use MyTrait;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_name_is_part_of_namespace",
+                    "args": [
+                        "<?php\n\nnamespace App\\Foo;\n\n\nclass Baz\n{\n}\n",
+                        "<?php\n\nnamespace App\\Foo;\n\nuse Foo\\Bar\\App;\n\nclass Baz\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported_name_is_part_of_namespace with closing tag",
+                    "args": [
+                        "<?php\n    namespace A\\B {?>\n<?php\n    require_once __DIR__.'/test2.php' ?>\n<?php\n    use X\\Z\\Y\n?>\n<?php\n    $y = new Y() ?>\n<?php\n    var_dump($y);}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nuse App\\Http\\Requests\\StoreRequest;\n\nclass StoreController\n{\n    /**\n     * @param \\App\\Http\\Requests\\StoreRequest $request\n     */\n    public function __invoke(StoreRequest $request)\n    {}\n}",
+                        "<?php\nuse App\\Http\\Requests\\StoreRequest;\nuse Illuminate\\Http\\Request;\n\nclass StoreController\n{\n    /**\n     * @param \\App\\Http\\Requests\\StoreRequest $request\n     */\n    public function __invoke(StoreRequest $request)\n    {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused import matching function call",
+                    "args": [
+                        "<?php\nnamespace Foo;\nbar();",
+                        "<?php\nnamespace Foo;\nuse Bar;\nbar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused import matching function declaration",
+                    "args": [
+                        "<?php\nnamespace Foo;\nfunction bar () {}",
+                        "<?php\nnamespace Foo;\nuse Bar;\nfunction bar () {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused import matching method declaration",
+                    "args": [
+                        "<?php\nnamespace Foo;\nclass Foo {\n    public function bar () {}\n}",
+                        "<?php\nnamespace Foo;\nuse Bar;\nclass Foo {\n    public function bar () {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused import matching constant usage",
+                    "args": [
+                        "<?php\nnamespace Foo;\necho BAR;",
+                        "<?php\nnamespace Foo;\nuse Bar;\necho BAR;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused import matching class constant",
+                    "args": [
+                        "<?php\nnamespace Foo;\nclass Foo {\n    const BAR = 1;\n}",
+                        "<?php\nnamespace Foo;\nuse Bar;\nclass Foo {\n    const BAR = 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused function import matching class usage",
+                    "args": [
+                        "<?php\nnamespace Foo;\nnew Bar();\nBaz::method();",
+                        "<?php\nnamespace Foo;\nuse function bar;\nuse function baz;\nnew Bar();\nBaz::method();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused function import matching method call",
+                    "args": [
+                        "<?php\nnamespace Foo;\nFoo::bar();",
+                        "<?php\nnamespace Foo;\nuse function bar;\nFoo::bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused function import matching method declaration",
+                    "args": [
+                        "<?php\nnamespace Foo;\nclass Foo {\n    public function bar () {}\n}",
+                        "<?php\nnamespace Foo;\nuse function bar;\nclass Foo {\n    public function bar () {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused function import matching constant usage",
+                    "args": [
+                        "<?php\nnamespace Foo;\necho BAR;",
+                        "<?php\nnamespace Foo;\nuse function bar;\necho BAR;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused function import matching class constant",
+                    "args": [
+                        "<?php\nnamespace Foo;\nclass Foo {\n    const BAR = 1;\n}",
+                        "<?php\nnamespace Foo;\nuse function bar;\nclass Foo {\n    const BAR = 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused constant import matching function call",
+                    "args": [
+                        "<?php\nnamespace Foo;\nbar();",
+                        "<?php\nnamespace Foo;\nuse const BAR;\nbar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused constant import matching function declaration",
+                    "args": [
+                        "<?php\nnamespace Foo;\nfunction bar () {}",
+                        "<?php\nnamespace Foo;\nuse const BAR;\nfunction bar () {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused constant import matching method declaration",
+                    "args": [
+                        "<?php\nnamespace Foo;\nclass Foo {\n    public function bar () {}\n}",
+                        "<?php\nnamespace Foo;\nuse const BAR;\nclass Foo {\n    public function bar () {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused constant import matching class constant",
+                    "args": [
+                        "<?php\nnamespace Foo;\nclass Foo {\n    const BAR = 1;\n}",
+                        "<?php\nnamespace Foo;\nuse const BAR;\nclass Foo {\n    const BAR = 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "attribute without braces",
+                    "args": [
+                        "<?php\nuse Foo;\nclass Controller\n{\n    #[Foo]\n    public function foo() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "attribute with braces",
+                    "args": [
+                        "<?php\nuse Foo;\nclass Controller\n{\n    #[Foo()]\n    public function foo() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "go to",
+                    "args": [
+                        "<?php\nBar1:\nBar2:\nBar3:\n",
+                        "<?php\nuse Bar1;\nuse const Bar2;\nuse function Bar3;\nBar1:\nBar2:\nBar3:\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nuse some\\a\\{ClassD};\nuse function some\\c\\{fn_a};\nuse const some\\d\\{ConstB};\n\nnew CLassD();\necho fn_a(ConstB);",
+                        "<?php\nuse some\\a\\{ClassD};\nuse some\\b\\{ClassA, ClassB, ClassC as C};\nuse function some\\c\\{fn_a, fn_b, fn_c};\nuse const some\\d\\{ConstA, ConstB, ConstC};\n\nnew CLassD();\necho fn_a(ConstB);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "grouped imports",
+                    "args": [
+                        "<?php\nuse some\\y\\{ClassA, ClassC as C,};\nuse function some\\a\\{\n    fn_b,\n};\nuse const some\\Z\\{ConstA,ConstC,};\n\necho ConstA.ConstC;\nfn_b(ClassA::test, new C());",
+                        "<?php\nuse A\\{B,};\nuse some\\y\\{ClassA, ClassB, ClassC as C,};\nuse function some\\a\\{\n    fn_a,\n    fn_b,\n    fn_c,\n};\nuse function some\\b\\{fn_x, fn_y, fn_z,};\nuse const some\\Z\\{ConstA,ConstB,ConstC,};\nuse const some\\X\\{ConstX,ConstY,ConstZ};\nuse C\\{D,E,};\nuse Z;\n\necho ConstA.ConstC;\nfn_b(ClassA::test, new C());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline grouped imports with comments",
+                    "args": [
+                        "<?php\nuse function some\\a\\{\n     // Foo\n    fn_b,\n    /* Bar *//** Baz */\n     # Buzz\n};\n\nfn_b();",
+                        "<?php\nuse function some\\a\\{\n    fn_a, // Foo\n    fn_b,\n    /* Bar */ fn_c, /** Baz */\n    fn_d, # Buzz\n};\n\nfn_b();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comma-separated imports",
+                    "args": [
+                        "<?php\nuse A;\nuse function fn_b;\nuse const ConstC;\n\nfn_b(new A(), ConstC);",
+                        "<?php\nuse A, B, C;\nuse function fn_a, fn_b, fn_c;\nuse const ConstA, ConstB, ConstC;\n\nfn_b(new A(), ConstC);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only unused comma-separated imports in single line",
+                    "args": [
+                        "<?php ",
+                        "<?php use A, B, C;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only unused grouped imports in single line",
+                    "args": [
+                        "<?php ",
+                        "<?php use A\\{B, C};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused comma-separated imports right after open tag, with consecutive lines",
+                    "args": [
+                        "<?php \n# Comment",
+                        "<?php use A, B, C;\n\n# Comment"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused grouped imports right after open tag, with consecutive lines",
+                    "args": [
+                        "<?php \n# Comment",
+                        "<?php use A\\{B, C};\n\n# Comment"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused comma-separated imports right after open tag with a non-empty token after it, and with consecutive lines",
+                    "args": [
+                        "<?php # Comment\n\n# Another comment",
+                        "<?php use A, B, C; # Comment\n\n# Another comment"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unused grouped imports right after open tag with a non-empty token after it, and with consecutive lines",
+                    "args": [
+                        "<?php # Comment\n\n# Another comment",
+                        "<?php use A\\{B, C}; # Comment\n\n# Another comment"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only unused comma-separated imports in the last line, with whitespace after",
+                    "args": [
+                        "<?php \n",
+                        "<?php \nuse A, B, C;     \t\t"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only unused grouped imports in the last line, with whitespace after",
+                    "args": [
+                        "<?php \n",
+                        "<?php \nuse A\\{B, C};     \t\t"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imported class name with underscore before or after it in PHPDoc",
+                    "args": [
+                        "<?php\n/** @var _UnusedImport1 */\n$foo = 1;\n/** @var UnusedImport2_ */\n$bar = 2;\n/** @var _UnusedImport3_ */\n$baz = 3;",
+                        "<?php\nuse Vendor\\UnusedImport1;\nuse Vendor\\UnusedImport2;\nuse Vendor\\UnusedImport3;\n/** @var _UnusedImport1 */\n$foo = 1;\n/** @var UnusedImport2_ */\n$bar = 2;\n/** @var _UnusedImport3_ */\n$baz = 3;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\NoUnusedImportsFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n\n$x = $foo?->bar;\n$y = foo?->bar();\n",
+                        "<?php\n\nuse Foo\\Bar;\n\n$x = $foo?->bar;\n$y = foo?->bar();\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with union type in non-capturing catch",
+                    "args": [
+                        "<?php\nuse Foo;\nuse Bar;\ntry {} catch (Foo | Bar) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "union return",
+                    "args": [
+                        "<?php\n\nuse Foo;\nuse Bar;\n\nabstract class Baz\n{\n    abstract public function test(): Foo|Bar;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attribute",
+                    "args": [
+                        "<?php\nuse Acme\\JsonSchemaValidationBundle\\Annotation\\JsonSchema;\nuse Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\IsGranted;\nuse Symfony\\Component\\Routing\\Annotation\\Route;\n\n#[\n  Route('/basket/{uuid}/item', name: 'addBasketItem', requirements: ['uuid' => '%regex.uuid%'], methods: ['POST']),\n  IsGranted('ROLE_USER'),\n  JsonSchema('Public/Basket/addItem.json'),\n]\nclass Foo {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attribute 2",
+                    "args": [
+                        "<?php\n\nuse Psr\\Log\\LoggerInterface;\nfunction f( #[Target('xxx')] LoggerInterface|null $logger) {}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\NoUnusedImportsFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "final const",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    final public const B1 = \"2\";\n}\n",
+                        "<?php\nuse A\\B1;\n\nclass Foo\n{\n    final public const B1 = \"2\";\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "first callable class",
+                    "args": [
+                        "<?php\nuse Foo;\nFoo::method(...);",
+                        "<?php\nuse Foo;\nuse Bar;\nFoo::method(...);"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "New in initializers",
+                    "args": [
+                        "<?php\nnamespace A\\B\\C;\n\nuse Foo1;\nuse Foo2;\nuse Foo3;\nuse Foo4;\nuse Foo5;\nuse Foo6;\nuse Foo7;\n\nclass Test {\n    public function __construct(\n        public $prop = (new Foo1),\n    ) {}\n}\n\nfunction test(\n    $foo = (new Foo2),\n    $baz = (new Foo3(x: 2)),\n) {\n}\n\nstatic $x = new Foo4();\n\nconst C = (new Foo5);\n\nfunction test2($param = (new Foo6)) {}\n\nconst D = new Foo7(1,2);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                enum Foo: string\n                {\n                    use Bar;\n\n                    case Test1 = \"a\";\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                use Foo\\Class1;\n                use Foo\\Class2;\n                class C\n                {\n                   public function t(Class1 | Class2 $fields) {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                use Foo\\Class1;\n                use Foo\\Class2;\n                class C\n                {\n                   public function t(Class1 | Class2 ...$fields) {}\n                }\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\NoUnusedImportsFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "typed class constants",
+                    "args": [
+                        "<?php\nuse Vendor\\Type02;\nuse Vendor\\Type04;\nuse Vendor\\Type06;\nuse Vendor\\Type08;\nuse Vendor\\Type10;\nuse Vendor\\Type12;\nuse Vendor\\Type14;\nuse Vendor\\Type16;\nuse Vendor\\Type18;\nuse Vendor\\Type20;\nuse Vendor\\Type22;\nuse Vendor\\Type24;\nuse Vendor\\Type26;\nuse Vendor\\Type28;\nuse Vendor\\Type30;\nuse Vendor\\Type32;\nuse Vendor\\Type34;\nuse Vendor\\Type36;\nclass C\n{\n    public const bool BOOLEAN_TYPE = true;\n    public const Type02 REGULAR_TYPE = TheParentType::Foo;\n    public const ?Type04 NULLABLE_TYPE = TheParentType::Foo;\n    public const Type06|Type08|Type10 UNION_TYPE = TheParentType::Foo;\n    public const int INTEGER_TYPE = 42;\n    public const Type12&Type14&Type16 INTERSECTION_TYPE = TheParentType::Foo;\n    public const Type18|(Type20&Type22) UNION_AND_INTERSECTION_TYPE = TheParentType::Foo;\n    public const (Type24&Type26)|Type28 INTERSECTION_AND_UNION_TYPE = TheParentType::Foo;\n    public const string STRING_TYPE = 'Forty two';\n    public const (Type30&Type32)|(Type34&Type36) INTERSECTION_AND_UNION_AND_INTERSECTION_TYPE = TheParentType::Foo;\n}",
+                        "<?php\nuse Vendor\\Type01;\nuse Vendor\\Type02;\nuse Vendor\\Type03;\nuse Vendor\\Type04;\nuse Vendor\\Type05;\nuse Vendor\\Type06;\nuse Vendor\\Type07;\nuse Vendor\\Type08;\nuse Vendor\\Type09;\nuse Vendor\\Type10;\nuse Vendor\\Type11;\nuse Vendor\\Type12;\nuse Vendor\\Type13;\nuse Vendor\\Type14;\nuse Vendor\\Type15;\nuse Vendor\\Type16;\nuse Vendor\\Type17;\nuse Vendor\\Type18;\nuse Vendor\\Type19;\nuse Vendor\\Type20;\nuse Vendor\\Type21;\nuse Vendor\\Type22;\nuse Vendor\\Type23;\nuse Vendor\\Type24;\nuse Vendor\\Type25;\nuse Vendor\\Type26;\nuse Vendor\\Type27;\nuse Vendor\\Type28;\nuse Vendor\\Type29;\nuse Vendor\\Type30;\nuse Vendor\\Type31;\nuse Vendor\\Type32;\nuse Vendor\\Type33;\nuse Vendor\\Type34;\nuse Vendor\\Type35;\nuse Vendor\\Type36;\nuse Vendor\\Type37;\nclass C\n{\n    public const bool BOOLEAN_TYPE = true;\n    public const Type02 REGULAR_TYPE = TheParentType::Foo;\n    public const ?Type04 NULLABLE_TYPE = TheParentType::Foo;\n    public const Type06|Type08|Type10 UNION_TYPE = TheParentType::Foo;\n    public const int INTEGER_TYPE = 42;\n    public const Type12&Type14&Type16 INTERSECTION_TYPE = TheParentType::Foo;\n    public const Type18|(Type20&Type22) UNION_AND_INTERSECTION_TYPE = TheParentType::Foo;\n    public const (Type24&Type26)|Type28 INTERSECTION_AND_UNION_TYPE = TheParentType::Foo;\n    public const string STRING_TYPE = 'Forty two';\n    public const (Type30&Type32)|(Type34&Type36) INTERSECTION_AND_UNION_AND_INTERSECTION_TYPE = TheParentType::Foo;\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

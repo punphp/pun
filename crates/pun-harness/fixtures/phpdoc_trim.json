@@ -1,0 +1,105 @@
+{
+    "fixer": "phpdoc_trim",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTrimFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocTrimFixerTest.php",
+    "case_count": 10,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTrimFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "                <?php\n    /**\n     * @param EngineInterface $templating\n     *\n     * @return void\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n/**\n * @return int количество деактивированных\n */\nfunction deactivateCompleted()\n{\n    return 0;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        {
+                            "__base64": "Cjw/cGhwCi8qKgogKiBUZXN0IOAKICovCmZ1bmN0aW9uIGZvbygpe30K"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n    /**\n     * Hello there!\n     * @internal\n     *@param string $foo\n     *@throws Exception\n     *\n    *\n     *\n     *  @return bool\n     */\n",
+                        "<?php\n    /**\n     *\n  *\n     * Hello there!\n     * @internal\n     *@param string $foo\n     *@throws Exception\n     *\n    *\n     *\n     *  @return bool\n     *\n     *\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\nnamespace Foo;\n\n  /**\n * This is a class that does classy things.\n *\n * @internal\n *\n * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>\n * @author Graham Campbell <hello@gjcampbell.co.uk>\n   */\nclass Bar {}\n",
+                        "<?php\n\nnamespace Foo;\n\n  /**\n   *\n *\n * This is a class that does classy things.\n *\n * @internal\n *\n * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>\n * @author Graham Campbell <hello@gjcampbell.co.uk>\n *\n    *\n  *\n   */\nclass Bar {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty doc block",
+                    "args": [
+                        "<?php\n    /**\n     *\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty larger doc block",
+                    "args": [
+                        "<?php\n    /**\n     *\n     */\n",
+                        "<?php\n    /**\n     *\n     *\n     *\n     *\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "super simple doc block start",
+                    "args": [
+                        "<?php\n    /**\n     * Test.\n     */\n",
+                        "<?php\n    /**\n     *\n     * Test.\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "super simple doc block end",
+                    "args": [
+                        "<?php\n    /**\n     * Test.\n     */\n",
+                        "<?php\n    /**\n     * Test.\n     *\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with lines without asterisk",
+                    "args": [
+                        "<?php\n\n/**\n * Foo\n      Baz\n */\nclass Foo\n{\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

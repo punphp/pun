@@ -1,0 +1,1044 @@
+{
+    "fixer": "no_extra_blank_lines",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoExtraBlankLinesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/NoExtraBlankLinesFixerTest.php",
+    "case_count": 79,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoExtraBlankLinesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n                continue;\n            }\n\n            return $b;\n        }\n\n        return $a;\n    }\n\n    private function test(){\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        {
+                            "tokens": [
+                                "curly_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nuse \\DateTime;\nuse \\stdClass;\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        {
+                            "tokens": [
+                                "extra"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n        }\n\n        return $a;\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        {
+                            "tokens": [
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        {
+                            "tokens": [
+                                "continue"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        {
+                            "tokens": [
+                                "break"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        {
+                            "tokens": [
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nuse \\DateTime;\nuse \\stdClass;\nuse \\InvalidArgumentException;\n\nclass Test {\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n    }\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n                continue;\n            }\n\n            return $b;\n        }\n\n        return $a;\n    }\n\n    private function test(){\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+                        {
+                            "tokens": [
+                                "throw",
+                                "break",
+                                "continue",
+                                "return",
+                                "extra",
+                                "use",
+                                "curly_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$a = new Bar();\n\n$a = new FooBaz();",
+                        "<?php\n$a = new Bar();\n\n\n$a = new FooBaz();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "many empty lines",
+                    "args": [
+                        "<?php\n$a = new Bar();\n\n$a = new FooBaz();",
+                        "<?php\n$a = new Bar();\n\n\n\n\n\n\n$a = new FooBaz();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc",
+                    "args": [
+                        "\n<?php\n$b = <<<TEXT\nFoo TEXT\nBar\n\n\nFooFoo\nTEXT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nowdoc",
+                    "args": [
+                        "\n<?php\n$b = <<<'TEXT'\nFoo TEXT;\nBar1}\n\n\nFooFoo\nTEXT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "encapsulated nowdoc",
+                    "args": [
+                        "\n<?php\n$b = <<<'TEXT'\nFoo TEXT\nBar\n\n<<<'TEMPLATE'\nBarFooBar TEMPLATE\n\n\nTEMPLATE;\n\n\nFooFoo\nTEXT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline string",
+                    "args": [
+                        "<?php\n$a = 'Foo\n\n\nBar';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tricky multiline strings",
+                    "args": [
+                        "<?php\n$a = 'Foo';\n\n$b = 'Bar\n\n\nHere\\'s an escaped quote '\n\n.\n\n'\n\n\nFooFoo';",
+                        "<?php\n$a = 'Foo';\n\n\n$b = 'Bar\n\n\nHere\\'s an escaped quote '\n\n\n.\n\n\n'\n\n\nFooFoo';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment with quote",
+                    "args": [
+                        "<?php\n$a = 'foo';\n\n// my comment's must have a quote\n$b = 'foobar';\n\n$c = 'bar';",
+                        "<?php\n$a = 'foo';\n\n\n// my comment's must have a quote\n$b = 'foobar';\n\n\n$c = 'bar';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trailing inline block",
+                    "args": [
+                        "\n<?php\n    echo 'hello';\n?>\n\n$a = 0;\n\n\n\n//a\n\n<?php\n\n$a = 0;\n\n$b = 1;\n\n//a\n?>\n\n\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n//class Test\n$a; //\n\n$b;\n/***/\n\n$c;\n//\n\n$d;",
+                        "<?php\n//class Test\n$a; //\n\n\n\n\n$b;\n/***/\n\n\n\n$c;\n//\n\n\n\n$d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n//a\n\n$a =1;",
+                        "<?php\n//a\n\n\n\n$a =1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\r\n//a\r\n\r\n$a =1;",
+                        "<?php\r\n//a\r\n\r\n\r\n\r\n$a =1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php //\n\n$a = 1;\n\n$b = 1;\n",
+                        "<?php //\n\n\n$a = 1;\n\n\n$b = 1;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php //\r\n\r\n$a = 1;\r\n\r\n$b = 1;\r\n",
+                        "<?php //\r\n\r\n\r\n$a = 1;\r\n\r\n\r\n$b = 1;\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php //\r\r\r$a = 1;\r\r\r$b = 1;\r"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php //\r\r$a = 1;\r\r$b = 1;\r"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php use A\\B;",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php use A\\B?>",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php use A\\B;use A\\D; return 1;",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php use A\\B?>\n\n<?php use D\\E\\F?>",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php use Y\\B;use A\\D; return 1;",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n                    use A\\B;\n                    use A\\C;",
+                        "<?php\n                    use A\\B;\n\n                    use A\\C;",
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php use A\\E;use A\\Z;\n                    use C;\n                return 1;\n                ",
+                        "<?php use A\\E;use A\\Z;\n\n                    use C;\n                return 1;\n                ",
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n                class Test {\n                    use A;\n\n                    use B;\n                }",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n                    $example = function () use ($message) { var_dump($message); };\n\n                    $example = function () use ($message) { var_dump($message); };\n                ",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\nuse function A; use function B;\n\necho 1;",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C,};\nuse function some\\a\\{fn_a, fn_b, fn_c,};\nuse const some\\a\\{ConstA,ConstB,ConstC\n,\n};\nuse const some\\Z\\{ConstX,ConstY,ConstZ,};\n",
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C,};\n\n\nuse function some\\a\\{fn_a, fn_b, fn_c,};\n\nuse const some\\a\\{ConstA,ConstB,ConstC\n,\n};\n  \nuse const some\\Z\\{ConstX,ConstY,ConstZ,};\n",
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n\nuse Zxy\\Qux;\nuse Zoo\\Bar as Bar2;\nuse Foo\\Bar as Bar1;\nuse Foo\\Zar\\Baz;\n\n$c = 1;\n\nuse Foo\\Quxx as Quxx1;\nuse Foo\\Zar\\Quxx;\n\n$a = new Bar1();\n$a = new Bar2();\n$a = new Baz();\n$a = new Qux();",
+                        "<?php\n\nuse Zxy\\Qux;\n\nuse Zoo\\Bar as Bar2;\n\nuse Foo\\Bar as Bar1;\nuse Foo\\Zar\\Baz;\n\n$c = 1;\n\nuse Foo\\Quxx as Quxx1;\n\nuse Foo\\Zar\\Quxx;\n\n$a = new Bar1();\n$a = new Bar2();\n$a = new Baz();\n$a = new Qux();",
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C};\nuse function some\\a\\{fn_a, fn_b, fn_c};\nuse const some\\a\\{ConstA, ConstB, ConstC};\n",
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C};\n\nuse function some\\a\\{fn_a, fn_b, fn_c};\n\nuse const some\\a\\{ConstA, ConstB, ConstC};\n",
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n\n$c = 1;\n\n$a = new Baz();\n$a = new Qux();",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php use A\\B;?>",
+                        null,
+                        {
+                            "tokens": [
+                                "use"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n\n$a = function() use ($b) { while(3<1)break; $c = $b[1]; while($b<1)continue; if (true) throw $e; return 1; };\n\n",
+                        null,
+                        {
+                            "tokens": [
+                                "break",
+                                "continue",
+                                "return",
+                                "throw",
+                                "curly_brace_block",
+                                "square_brace_block",
+                                "parenthesis_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php throw new \\Exception('do not import.');\n",
+                        "<?php throw new \\Exception('do not import.');\n\n",
+                        {
+                            "tokens": [
+                                "break",
+                                "continue",
+                                "return",
+                                "throw",
+                                "curly_brace_block",
+                                "square_brace_block",
+                                "parenthesis_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n\n$a = $b[0];\n\n",
+                        null,
+                        {
+                            "tokens": [
+                                "break",
+                                "continue",
+                                "return",
+                                "throw",
+                                "curly_brace_block",
+                                "square_brace_block",
+                                "parenthesis_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n\n$a->{'Test'};\nfunction test(){}\n",
+                        null,
+                        {
+                            "tokens": [
+                                "break",
+                                "continue",
+                                "return",
+                                "throw",
+                                "curly_brace_block",
+                                "square_brace_block",
+                                "parenthesis_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\n\n$a = new class { public function a () { while(4<1)break; while(3<1)continue; if (true) throw $e; return 1; }};\n\n",
+                        null,
+                        {
+                            "tokens": [
+                                "break",
+                                "continue",
+                                "return",
+                                "throw",
+                                "curly_brace_block",
+                                "square_brace_block",
+                                "parenthesis_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php function test()\n\n{}\n\necho 789;",
+                        null,
+                        {
+                            "tokens": [
+                                "curly_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php switch($a){\ncase 1:echo 789;}",
+                        "<?php switch($a){\n   \ncase 1:echo 789;}",
+                        {
+                            "tokens": [
+                                "curly_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\nis_int(\n1);\nfunction test(\n$a,\n$b,\n$c\n)\n{\n\n\n}",
+                        "<?php\nis_int(\n\n1);\nfunction test(\n\n$a,\n$b,\n$c\n\n\n)\n{\n\n\n}",
+                        {
+                            "tokens": [
+                                "parenthesis_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php array(\n1,\n2,\n3,\n);",
+                        "<?php array(\n  \n1,\n2,\n3,\n\n\n);",
+                        {
+                            "tokens": [
+                                "parenthesis_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n    function a()\n    {\n        $b->d(e(\n        ));\n\n        foreach ($a as $x) {\n        }\n    }",
+                        null,
+                        {
+                            "tokens": [
+                                "parenthesis_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar() {return 1;}\n\n    public function baz() {return 2;\n    }\n}",
+                        "<?php\nclass Foo\n{\n    public function bar() {return 1;}\n\n    public function baz() {return 2;\n\n    }\n}",
+                        {
+                            "tokens": [
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php $c = $b[0];\n\n\n$a = [\n   1,\n2];\necho 1;\n$b = [];\n\n\n//a\n",
+                        "<?php $c = $b[0];\n\n\n$a = [\n\n   1,\n2];\necho 1;\n$b = [];\n\n\n//a\n",
+                        {
+                            "tokens": [
+                                "square_brace_block"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n                    /** a  */\n                    switch ($a) {\n                        case 1:\n                            break;\n                        case 2:\n                            continue;\n                        case 3:\n                            return 1;\n                        case 4:\n                            throw $e;\n                        case 5:\n                            throw new \\Exception();\n                        case Token::STRING_TYPE:\n                            echo 123;\n\n                            return new ConstantNode($token->getValue());\n                        case 7:\n                            return new ConstantNode($token->getValue());\n                        case 8:\n                            return 8;\n                        default:\n                            echo 1;\n                    }",
+                        "<?php\n                    /** a  */\n                    switch ($a) {\n                        case 1:\n                            break;\n\n                        case 2:\n                            continue;\n\n                        case 3:\n                            return 1;\n\n                        case 4:\n                            throw $e;\n\n                        case 5:\n                            throw new \\Exception();\n\n                        case Token::STRING_TYPE:\n                            echo 123;\n\n                            return new ConstantNode($token->getValue());\n\n                        case 7:\n                            return new ConstantNode($token->getValue());\n        \n                        case 8:\n                            return 8;\n                        \n                        default:\n                            echo 1;\n                    }",
+                        {
+                            "tokens": [
+                                "break",
+                                "continue",
+                                "extra",
+                                "return",
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\n                    switch($a) {\n                        case 0:\n                        case 1:\n                        default:\n                            return 1;\n                    }",
+                        "<?php\n                    switch($a) {\n\n                        case 0:\n\n                        case 1:\n\n                        default:\n\n                            return 1;\n                    }",
+                        {
+                            "tokens": [
+                                "switch",
+                                "case",
+                                "default"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n                    switch($a) { case 2: echo 3;\n                    default: return 1;}\n\n\n                    // above stays empty",
+                        "<?php\n                    switch($a) { case 2: echo 3;\n\n                    default: return 1;}\n\n\n                    // above stays empty",
+                        {
+                            "tokens": [
+                                "switch",
+                                "case",
+                                "default"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty lines after open tag",
+                    "args": [
+                        "<?php\n\nclass Foo {}",
+                        "<?php\n\n\nclass Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comma",
+                    "args": [
+                        "<?php\nfoo(\n    0,\n    'arg1'\n);\nreturn [\n    'a',\n    'b',\n    'c'\n];",
+                        "<?php\nfoo(\n    0,\n\n    'arg1'\n);\nreturn [\n    'a',\n\n    'b',\n\n\n\n\n    'c'\n];",
+                        {
+                            "tokens": [
+                                "comma"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comma - do not change outside of element",
+                    "args": [
+                        "<?php\n$foo = [1, 2];\n\n$bar = array(3, 4);\n\n[$x, $y] = getXY();\n\nbaz();",
+                        null,
+                        {
+                            "tokens": [
+                                "comma"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoExtraBlankLinesFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n$a = $b{0};\n\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoExtraBlankLinesFixerTest",
+            "body": "    public function testWithWhitespacesConfig(array $config, string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n        $this->fixer->configure($config);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        [],
+                        "<?php\r\nuse AAA;\r\n\r\nuse BBB;\r\n\r\n",
+                        "<?php\r\nuse AAA;\r\n\r\n\r\n\r\nuse BBB;\r\n\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "tokens": [
+                                "parenthesis_brace_block"
+                            ]
+                        },
+                        "<?php is_int(\r\n1);",
+                        "<?php is_int(\r\n\r\n\r\n\r\n1);"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 2,
+                    "args": [
+                        {
+                            "tokens": [
+                                "square_brace_block"
+                            ]
+                        },
+                        "<?php $c = $b[0];\r\n\r\n\r\n$a = [\r\n   1,\r\n2];\r\necho 1;\r\n$b = [];\r\n\r\n\r\n//a\r\n",
+                        "<?php $c = $b[0];\r\n\r\n\r\n$a = [\r\n\r\n   1,\r\n2];\r\necho 1;\r\n$b = [];\r\n\r\n\r\n//a\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 3,
+                    "args": [
+                        {
+                            "tokens": [
+                                "square_brace_block"
+                            ]
+                        },
+                        "<?php $c = $b[0];\r\n\r\n\r\n$a = [\r\n\t1,\r\n2];",
+                        "<?php $c = $b[0];\r\n\r\n\r\n$a = [\r\n\r\n\t1,\r\n2];"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoExtraBlankLinesFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input, array $configuration): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                $nullCoalescingOperator1 = $bar ?? throw new \\Exception();\n\n                $nullCoalescingOperator2 = $bar ?? throw new \\Exception();\n\n                $nullCoalescingOperator3 = $bar ?? throw new \\Exception();\n\n                $ternaryOperator1 = $bar ? 42 : throw new \\Exception();\n\n                $ternaryOperator2 = $bar ? 42 : throw new \\Exception();\n\n                $ternaryOperator3 = $bar ? 42 : throw new \\Exception();\n\n                $orOperator1 = $bar || throw new \\Exception();\n\n                $orOperator2 = $bar || throw new \\Exception();\n\n                $orOperator3 = $bar || throw new \\Exception();\n            ",
+                        null,
+                        {
+                            "tokens": [
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                $a = $bar ?? throw new \\Exception();\n\n                // Now, we are going to use it!\n                var_dump($a);\n            ",
+                        null,
+                        {
+                            "tokens": [
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n#[Attr]\n#[AttrFoo1]\n#[AttrFoo2]\nfunction foo(){}\n            ",
+                        "<?php\n#[Attr]\n\n\n\n#[AttrFoo1]\n\n\n#[AttrFoo2]\n\nfunction foo(){}\n            ",
+                        {
+                            "tokens": [
+                                "attribute"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo\n            {\n                protected function f1(string $x): string { return \"r1\"; }\n\n                protected function f2(string $x): string { return \"r1\"; }\n\n                protected function f3(#[Attr] string $x): string { return \"r1\"; }\n\n                protected function f4(string $x): string { return \"r1\"; }\n            }",
+                        null,
+                        {
+                            "tokens": [
+                                "attribute"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php abstract class Foo\n            {\n                abstract protected function f1(string $x): string;\n\n                abstract protected function f2(string $x): string;\n\n                abstract protected function f3(#[Attr] string $x): string;\n\n                abstract protected function f4(string $x): string;\n            }",
+                        null,
+                        {
+                            "tokens": [
+                                "attribute"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoExtraBlankLinesFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->fixer->configure(['tokens' => ['case']]);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nenum test\n{\n    case Baz;\n\n    public function foo() {\n        switch (bar()) {\n            case 1: echo 1; break;\n            case 2: echo 2; break;\n        }\n    }\n\n    case Bad;\n}\n",
+                        "<?php\nenum test\n{\n    case Baz;\n\n    public function foo() {\n        switch (bar()) {\n            case 1: echo 1; break;\n\n\n            case 2: echo 2; break;\n        }\n    }\n\n    case Bad;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case CASE_1;\n\n    case CASE_2;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case CASE_1;\n\n    const CONST_1 = self::CASE_1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case CASE_1;\n\n    private const CONST_1 = self::CASE_1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case CASE_1;\n\n    public function bar(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case CASE_1;\n\n    protected function bar(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case CASE_1;\n\n    private function bar(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case CASE_1;\n\n    static function bar(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case CASE_1;\n\n    final function bar(): void {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixDeprecated",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoExtraBlankLinesFixerTest",
+            "body": "    public function testFixDeprecated(string $expected, string $input): void\n    {\n        $this->expectDeprecation('Option \"tokens: use_trait\" used in `no_extra_blank_lines` rule is deprecated, use the rule `class_attributes_separation` with `elements: trait_import` instead.');\n\n        $this->fixer->configure(['tokens' => ['use_trait']]);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixDeprecatedCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    use Z; // 123\n    use Bar;/* */use Baz;\n\n    public function baz() {}\n\n    use Bar1; use Baz1;\n\n    public function baz1() {}\n}\n",
+                        "<?php\nclass Foo\n{\n    use Z; // 123\n\n    use Bar;/* */use Baz;\n\n    public function baz() {}\n\n    use Bar1; use Baz1;\n\n    public function baz1() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixDeprecatedCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    use Bar;use Baz;\n    use Bar1;use Baz1;\n\n    public function baz() {}\n}\n",
+                        "<?php\nclass Foo\n{\n    use Bar;use Baz;\n\n    use Bar1;use Baz1;\n\n    public function baz() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixDeprecatedCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n            namespace T\\A;\n            use V;\n\n\n            use W;\n\n            class Test {\n                use A;\n                use B;\n\n                private function test($b) {\n\n                    $a = function() use ($b) { echo $b;};\n\n                    $b = function() use ($b) { echo $b;};\n\n                }\n            }",
+                        "<?php\n            namespace T\\A;\n            use V;\n\n\n            use W;\n\n            class Test {\n                use A;\n\n                use B;\n\n                private function test($b) {\n\n                    $a = function() use ($b) { echo $b;};\n\n                    $b = function() use ($b) { echo $b;};\n\n                }\n            }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

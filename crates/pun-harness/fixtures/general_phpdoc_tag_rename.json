@@ -1,0 +1,292 @@
+{
+    "fixer": "general_phpdoc_tag_rename",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\GeneralPhpdocTagRenameFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/GeneralPhpdocTagRenameFixerTest.php",
+    "case_count": 18,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\GeneralPhpdocTagRenameFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    /**\n     * @inheritdocs\n     * @inheritDocs\n     * {@inheritdocs}\n     * {@inheritDocs}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    /**\n     * @inheritDoc\n     * @inheritDoc\n     * {@inheritDoc}\n     * {@inheritDoc}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        "<?php\n    /**\n     * @inheritdocs\n     * @inheritDocs\n     * {@inheritdocs}\n     * {@inheritDocs}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        {
+                            "replacements": {
+                                "inheritDocs": "inheritDoc"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    /**\n     * @inheritdoc\n     * @inheritdoc\n     * {@inheritdoc}\n     * {@inheritdoc}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        "<?php\n    /**\n     * @inheritdocs\n     * @inheritDocs\n     * {@inheritdocs}\n     * {@inheritDocs}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        {
+                            "fix_annotation": true,
+                            "fix_inline": true,
+                            "replacements": {
+                                "inheritdocs": "inheritdoc"
+                            },
+                            "case_sensitive": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n    /**\n     * @inheritDoc\n     * @inheritDoc\n     * {@inheritdocs}\n     * {@inheritDocs}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        "<?php\n    /**\n     * @inheritdocs\n     * @inheritDocs\n     * {@inheritdocs}\n     * {@inheritDocs}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        {
+                            "fix_inline": false,
+                            "replacements": {
+                                "inheritDocs": "inheritDoc"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n    /**\n     * @inheritdocs\n     * @inheritDocs\n     * {@inheritDoc}\n     * {@inheritDoc}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        "<?php\n    /**\n     * @inheritdocs\n     * @inheritDocs\n     * {@inheritdocs}\n     * {@inheritDocs}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        {
+                            "fix_annotation": false,
+                            "replacements": {
+                                "inheritDocs": "inheritDoc"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    /**\n     * @inheritdocs\n     * @inheritDoc\n     * {@inheritdocs}\n     * {@inheritDoc}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        "<?php\n    /**\n     * @inheritdocs\n     * @inheritDocs\n     * {@inheritdocs}\n     * {@inheritDocs}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        {
+                            "case_sensitive": true,
+                            "replacements": {
+                                "inheritDocs": "inheritDoc"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n    /**\n     * @inheritdoc\n     * @inheritdoc\n     * {@inheritdoc}\n     * {@inheritdoc}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+                        "<?php\n    /**\n     * @inheritdocs\n     * @inheritDocs\n     * {@inheritdocs}\n     * {@inheritDocs}\n     * @link Foo::bar()\n     * {@link Foo::bar()}\n     */",
+                        {
+                            "replacements": {
+                                "inheritdocs": "inheritdoc",
+                                "link": "see"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n    /**\n     * @var int $foo\n     * @Annotation(\"@type\")\n     */",
+                        "<?php\n    /**\n     * @type int $foo\n     * @Annotation(\"@type\")\n     */",
+                        {
+                            "fix_annotation": true,
+                            "fix_inline": true,
+                            "replacements": {
+                                "type": "var"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    /**\n     * @var int $foo\n     * @Annotation('@type')\n     * @Annotation(\"@type\")\n     */",
+                        "<?php\n    /**\n     * @type int $foo\n     * @Annotation('@type')\n     * @Annotation(\"@type\")\n     */",
+                        {
+                            "fix_annotation": true,
+                            "fix_inline": false,
+                            "replacements": {
+                                "type": "var"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "message",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\GeneralPhpdocTagRenameFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $message): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessage($message);\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid option",
+                    "args": [
+                        {
+                            "replacements": true
+                        },
+                        "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value true is expected to be of type \"string[]\", but is of type \"bool\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "unknown option",
+                    "args": [
+                        {
+                            "foo": true
+                        },
+                        "[general_phpdoc_tag_rename] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"case_sensitive\", \"fix_annotation\", \"fix_inline\", \"replacements\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 0,
+                    "args": [
+                        {
+                            "replacements": {
+                                "1": "abc"
+                            },
+                            "case_sensitive": true
+                        },
+                        "[general_phpdoc_tag_rename] Invalid configuration: Tag to replace must be a string."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "replacements": {
+                                "a": null
+                            },
+                            "case_sensitive": true
+                        },
+                        "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"null\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 2,
+                    "args": [
+                        {
+                            "replacements": {
+                                "see": "link*/"
+                            },
+                            "case_sensitive": true
+                        },
+                        "[general_phpdoc_tag_rename] Invalid configuration: Tag \"see\" cannot be replaced by invalid tag \"link*/\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 3,
+                    "args": [
+                        {
+                            "replacements": {
+                                "link": "see",
+                                "a": "b",
+                                "see": "link"
+                            },
+                            "case_sensitive": true
+                        },
+                        "[general_phpdoc_tag_rename] Invalid configuration: Cannot change tag \"link\" to tag \"see\", as the tag \"see\" is configured to be replaced to \"link\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 4,
+                    "args": [
+                        {
+                            "replacements": {
+                                "b": "see",
+                                "see": "link",
+                                "link": "b"
+                            },
+                            "case_sensitive": true
+                        },
+                        "[general_phpdoc_tag_rename] Invalid configuration: Cannot change tag \"b\" to tag \"see\", as the tag \"see\" is configured to be replaced to \"link\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 5,
+                    "args": [
+                        {
+                            "replacements": {
+                                "see": "link",
+                                "link": "b"
+                            },
+                            "case_sensitive": true
+                        },
+                        "[general_phpdoc_tag_rename] Invalid configuration: Cannot change tag \"see\" to tag \"link\", as the tag \"link\" is configured to be replaced to \"b\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 6,
+                    "args": [
+                        {
+                            "replacements": {
+                                "Foo": "bar",
+                                "foo": "baz"
+                            },
+                            "case_sensitive": false
+                        },
+                        "[general_phpdoc_tag_rename] Invalid configuration: Tag \"foo\" cannot be configured to be replaced with several different tags when case sensitivity is off."
+                    ]
+                }
+            ]
+        }
+    ]
+}

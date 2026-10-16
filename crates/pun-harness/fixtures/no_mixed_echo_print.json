@@ -1,0 +1,457 @@
+{
+    "fixer": "no_mixed_echo_print",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Alias\\NoMixedEchoPrintFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Alias/NoMixedEchoPrintFixerTest.php",
+    "case_count": 37,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\NoMixedEchoPrintFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                print \"test\";\n                ",
+                        null,
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                print (\"test\");\n                ",
+                        null,
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                print(\"test\");\n                ",
+                        null,
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                echo \"This \", \"string \", \"was \", \"made \", \"with multiple parameters.\";\n                ",
+                        null,
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                print \"test\";\n                ",
+                        "<?php\n                echo \"test\";\n                ",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                print (\"test\");\n                ",
+                        "<?php\n                echo (\"test\");\n                ",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                print(\"test\");\n                ",
+                        "<?php\n                echo(\"test\");\n                ",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                print foo(1, 2);\n                ",
+                        "<?php\n                echo foo(1, 2);\n                ",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                print [\"foo\", \"bar\", \"baz\"][$x];\n                ",
+                        "<?php\n                echo [\"foo\", \"bar\", \"baz\"][$x];\n                ",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                print $foo ? \"foo\" : \"bar\";\n                ",
+                        "<?php\n                echo $foo ? \"foo\" : \"bar\";\n                ",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php print 'foo' ?>...<?php echo 'bar', 'baz' ?>",
+                        "<?php echo 'foo' ?>...<?php echo 'bar', 'baz' ?>",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    print \"foo\";\n                }\n                print \"bar\";\n                ",
+                        "<?php\n                if ($foo) {\n                    echo \"foo\";\n                }\n                echo \"bar\";\n                ",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?=$foo?>",
+                        null,
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<div><?php print \"foo\" ?></div>",
+                        "<div><?php echo \"foo\" ?></div>",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n            print \"There will be foos: \";\n            foreach ($foos as $foo)\n                print $foo;\n            print \"End of foos\";\n        ",
+                        "<?php\n            echo \"There will be foos: \";\n            foreach ($foos as $foo)\n                echo $foo;\n            echo \"End of foos\";\n        ",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n            if ($foo)\n                print \"One\";\n            elseif ($bar)\n                print \"Two\";\n            else\n                print \"Three\";\n        ",
+                        "<?php\n            if ($foo)\n                echo \"One\";\n            elseif ($bar)\n                echo \"Two\";\n            else\n                echo \"Three\";\n        ",
+                        {
+                            "use": "print"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                echo \"test\";\n                ",
+                        null,
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n                echo (\"test\");\n                ",
+                        null,
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n                echo(\"test\");\n                ",
+                        null,
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n                ($some_var) ? print \"true\" : print \"false\";\n                ",
+                        null,
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n                $ret = print \"test\";\n                ",
+                        null,
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n                @print foo();\n                ",
+                        null,
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                function testFunction() {\n                    return print(\"test\");\n                }\n\n                $a = testFunction();\n                $b += print($a);\n                $c='';\n                $c .= $b.print($a);\n                $d = print($c) > 0 ? 'a' : 'b';\n                switch(print('a')) {}\n                if (1 === print($a)) {}\n                ",
+                        null,
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n                some_function_call();\n                echo \"test\";\n                ",
+                        "<?php\n                some_function_call();\n                print \"test\";\n                ",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n                echo \"test\";\n                ",
+                        "<?php\n                print \"test\";\n                ",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                echo (\"test\");\n                ",
+                        "<?php\n                print (\"test\");\n                ",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n                echo(\"test\");\n                ",
+                        "<?php\n                print(\"test\");\n                ",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n                echo foo(1, 2);\n                ",
+                        "<?php\n                print foo(1, 2);\n                ",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n                echo $foo ? \"foo\" : \"bar\";\n                ",
+                        "<?php\n                print $foo ? \"foo\" : \"bar\";\n                ",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    echo \"foo\";\n                }\n                echo \"bar\";\n                ",
+                        "<?php\n                if ($foo) {\n                    print \"foo\";\n                }\n                print \"bar\";\n                ",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<div><?php echo \"foo\" ?></div>",
+                        "<div><?php print \"foo\" ?></div>",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n            echo \"There will be foos: \";\n            foreach ($foos as $foo)\n                echo $foo;\n            echo \"End of foos\";\n        ",
+                        "<?php\n            print \"There will be foos: \";\n            foreach ($foos as $foo)\n                print $foo;\n            print \"End of foos\";\n        ",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n            if ($foo)\n                echo \"One\";\n            elseif ($bar)\n                echo \"Two\";\n            else\n                echo \"Three\";\n        ",
+                        "<?php\n            if ($foo)\n                print \"One\";\n            elseif ($bar)\n                print \"Two\";\n            else\n                print \"Three\";\n        ",
+                        {
+                            "use": "echo"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "wrongConfig",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\NoMixedEchoPrintFixerTest",
+            "body": "    public function testInvalidConfiguration(array $wrongConfig, string $expectedMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($expectedMessage);\n\n        $this->fixer->configure($wrongConfig); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 0,
+                    "args": [
+                        {
+                            "a": "b"
+                        },
+                        "#^\\[no_mixed_echo_print\\] Invalid configuration: The option \"a\" does not exist\\. (Known|Defined) options are: \"use\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "a": "b",
+                            "b": "c"
+                        },
+                        "#^\\[no_mixed_echo_print\\] Invalid configuration: The options \"a\", \"b\" do not exist\\. (Known|Defined) options are: \"use\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 2,
+                    "args": [
+                        [
+                            1
+                        ],
+                        "#^\\[no_mixed_echo_print\\] Invalid configuration: The option \"0\" does not exist\\. (Known|Defined) options are: \"use\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 3,
+                    "args": [
+                        {
+                            "use": "_invalid_"
+                        },
+                        "#^\\[no_mixed_echo_print\\] Invalid configuration: The option \"use\" with value \"_invalid_\" is invalid\\. Accepted values are: \"print\", \"echo\"\\.$#"
+                    ]
+                }
+            ]
+        }
+    ]
+}

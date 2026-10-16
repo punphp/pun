@@ -1,0 +1,227 @@
+{
+    "fixer": "control_structure_braces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\ControlStructureBracesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/ControlStructureBracesFixerTest.php",
+    "case_count": 26,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\ControlStructureBracesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "if",
+                    "args": [
+                        "<?php if ($foo) { foo(); }",
+                        "<?php if ($foo) foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else",
+                    "args": [
+                        "<?php\n                if ($foo) { foo(); }\n                else { bar(); }",
+                        "<?php\n                if ($foo) { foo(); }\n                else bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif",
+                    "args": [
+                        "<?php\n                if ($foo) { foo(); }\n                elseif ($bar) { bar(); }",
+                        "<?php\n                if ($foo) { foo(); }\n                elseif ($bar) bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else if",
+                    "args": [
+                        "<?php\n                if ($foo) { foo(); }\n                else if ($bar) { bar(); }",
+                        "<?php\n                if ($foo) { foo(); }\n                else if ($bar) bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "for",
+                    "args": [
+                        "<?php for (;;) { foo(); }",
+                        "<?php for (;;) foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "foreach",
+                    "args": [
+                        "<?php foreach ($foo as $bar) { foo(); }",
+                        "<?php foreach ($foo as $bar) foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "while",
+                    "args": [
+                        "<?php while ($foo) { foo(); }",
+                        "<?php while ($foo) foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do while",
+                    "args": [
+                        "<?php\n                do { foo(); }\n                while ($foo);",
+                        "<?php\n                do foo();\n                while ($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty if",
+                    "args": [
+                        "<?php if ($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty else",
+                    "args": [
+                        "<?php\n                if ($foo) { foo(); }\n                else;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty elseif",
+                    "args": [
+                        "<?php\n                if ($foo) { foo(); }\n                elseif ($bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty else if",
+                    "args": [
+                        "<?php\n                if ($foo) { foo(); }\n                else if ($bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty for",
+                    "args": [
+                        "<?php for (;;);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty foreach",
+                    "args": [
+                        "<?php foreach ($foo as $bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty while",
+                    "args": [
+                        "<?php while ($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty do while",
+                    "args": [
+                        "<?php do; while ($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested if using alternative syntax",
+                    "args": [
+                        "<?php if ($foo) { if ($bar): ?> foo <?php endif; } ?>",
+                        "<?php if ($foo) if ($bar): ?> foo <?php endif; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested for using alternative syntax",
+                    "args": [
+                        "<?php if ($foo) { for (;;): ?> foo <?php endfor; } ?>",
+                        "<?php if ($foo) for (;;): ?> foo <?php endfor; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested foreach using alternative syntax",
+                    "args": [
+                        "<?php if ($foo) { foreach ($foo as $bar): ?> foo <?php endforeach; } ?>",
+                        "<?php if ($foo) foreach ($foo as $bar): ?> foo <?php endforeach; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested while using alternative syntax",
+                    "args": [
+                        "<?php if ($foo) { while ($foo): ?> foo <?php endwhile; } ?>",
+                        "<?php if ($foo) while ($foo): ?> foo <?php endwhile; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested switch using alternative syntax",
+                    "args": [
+                        "<?php if ($foo) { switch ($foo): case 1: ?> foo <?php endswitch; } ?>",
+                        "<?php if ($foo) switch ($foo): case 1: ?> foo <?php endswitch; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "declare followed by closing tag",
+                    "args": [
+                        "<?php declare(strict_types=1) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if with do-while inside",
+                    "args": [
+                        "<?php if ($a) { do { foo(); } while ($b); }",
+                        "<?php if ($a) do foo(); while ($b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if with try-catch-finally inside",
+                    "args": [
+                        "<?php if ($a) { try { foo(); } catch (\\Exception $e) { bar(); } finally { baz(); } }",
+                        "<?php if ($a) try { foo(); } catch (\\Exception $e) { bar(); } finally { baz(); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if with lambda function inside",
+                    "args": [
+                        "<?php if ($a) { $f = function () { return 1; }; }",
+                        "<?php if ($a) $f = function () { return 1; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if with echo having closing tag and no semicolon",
+                    "args": [
+                        "<?php if ($a) { echo 1; } ?>",
+                        "<?php if ($a) echo 1 ?>"
+                    ]
+                }
+            ]
+        }
+    ]
+}

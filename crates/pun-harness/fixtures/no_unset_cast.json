@@ -1,0 +1,117 @@
+{
+    "fixer": "no_unset_cast",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\NoUnsetCastFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/CastNotation/NoUnsetCastFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\NoUnsetCastFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple form I",
+                    "args": [
+                        "<?php\n$a = null;",
+                        "<?php\n$a =(unset)$z;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple form II",
+                    "args": [
+                        "<?php\n$b = null;",
+                        "<?php\n$b = (unset)$z;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple form III",
+                    "args": [
+                        "<?php\n$c = null?>",
+                        "<?php\n$c = (unset)$z?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "lot of spaces",
+                    "args": [
+                        "<?php\n$d = \t \t \t null;",
+                        "<?php\n$d = \t (unset)$z\t \t ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments",
+                    "args": [
+                        "<?php\n#0\n$a#1\n#2\n= null#3\n#4\n#5\n#6\n#7\n#8\n;\n",
+                        "<?php\n#0\n$a#1\n#2\n=#3\n#4\n(unset)#5\n#6\n$b#7\n#8\n;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n(unset) $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $r = (unset) f(1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $r = (unset) (new C())->mf(3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $r = (unset) $f(1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $r = (unset) $c::sf(2) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $r = (unset) $a[0];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $r = (unset) $n**f($n);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

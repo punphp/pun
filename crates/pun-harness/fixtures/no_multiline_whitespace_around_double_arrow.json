@@ -1,0 +1,75 @@
+{
+    "fixer": "no_multiline_whitespace_around_double_arrow",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\NoMultilineWhitespaceAroundDoubleArrowFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ArrayNotation/NoMultilineWhitespaceAroundDoubleArrowFixerTest.php",
+    "case_count": 6,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\NoMultilineWhitespaceAroundDoubleArrowFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    $arr = array(\n        $a => array(1),\n        $a => array(0 => array())\n    );",
+                        "<?php\n    $arr = array(\n        $a =>\n            array(1),\n        $a =>\n            array(0 =>\n            array())\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    $a = array(\n        \"aaaaaa\"    =>    \"b\",\n        \"c\" => \"d\",\n        \"eeeeee\" =>    array(),\n        \"ggg\" => array(),\n        \"hh\"      => [],\n    );",
+                        "<?php\n    $a = array(\n        \"aaaaaa\"    =>    \"b\",\n        \"c\"\n            =>\n                \"d\",\n        \"eeeeee\" =>    array(),\n        \"ggg\" =>\n            array(),\n        \"hh\"      =>\n            [],\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    $hello = array(\n        \"foo\" =>\n        // hello there\n        \"value\",\n        \"hi\"  =>\n        /*\n         * Description.\n         */1,\n        \"ha\"  =>\n        /**\n         * Description.\n         */\n        array()\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                    $fn = fn() => null;",
+                        "<?php\n                    $fn = fn()\n                        =>\n                            null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                    $foo = [\n                        1 /* foo */ => $one,\n                        2 => $two\n                    ];",
+                        "<?php\n                    $foo = [\n                        1 /* foo */\n                            =>\n                                $one,\n                        2\n                            =>\n                                $two\n                    ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                    $foo = [\n                        1 // foo\n                            => $one,\n                        2 => $two,\n                    ];",
+                        "<?php\n                    $foo = [\n                        1 // foo\n                            =>\n                                $one,\n                        2\n                            =>\n                                $two,\n                    ];"
+                    ]
+                }
+            ]
+        }
+    ]
+}

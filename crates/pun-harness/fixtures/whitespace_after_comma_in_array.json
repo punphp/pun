@@ -1,0 +1,202 @@
+{
+    "fixer": "whitespace_after_comma_in_array",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\WhitespaceAfterCommaInArrayFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ArrayNotation/WhitespaceAfterCommaInArrayFixerTest.php",
+    "case_count": 20,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\WhitespaceAfterCommaInArrayFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, ?array $configuration = null): void\n    {\n        if (null !== $configuration) {\n            $this->fixer->configure($configuration);\n        }\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = array( 1 , \"2\", 3);",
+                        "<?php $x = array( 1 ,\"2\",3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $x = array /* comment */ ( 1 ,  \"2\", 3);",
+                        "<?php $x = array /* comment */ ( 1 ,  \"2\",3);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $x = [ 1 ,  \"2\", 3 , $y];",
+                        "<?php $x = [ 1 ,  \"2\",3 ,$y];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $x = [1, \"2\", getValue(1,2  ,3 ) , $y];",
+                        "<?php $x = [1, \"2\",getValue(1,2  ,3 ) ,$y];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $x = [1,  \"2\", function( $x ,$y) { return $x + $y; }, $y];",
+                        "<?php $x = [1,  \"2\",function( $x ,$y) { return $x + $y; },$y];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $x = [1,  \"2\", \"c\" => function( $x ,$y) { return [$x , $y]; }, $y ];",
+                        "<?php $x = [1,  \"2\",\"c\" => function( $x ,$y) { return [$x ,$y]; },$y ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $x = [1,  \"2\", \"c\" => new class implements Foo ,Bar { const FOO = [\"x\", \"y\"]; }, $y ];",
+                        "<?php $x = [1,  \"2\",\"c\" => new class implements Foo ,Bar { const FOO = [\"x\",\"y\"]; },$y ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $x = array(\"a\" => $a , \"b\" =>  \"b\", 3=>$this->foo(),  \"d\" => 30  );",
+                        "<?php $x = array(\"a\" => $a , \"b\" =>  \"b\",3=>$this->foo(),  \"d\" => 30  );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $x = [  \"a\" => $a ,  \"b\"=>\"b\", 3 => $this->foo(), \"d\" =>30];",
+                        "<?php $x = [  \"a\" => $a ,  \"b\"=>\"b\",3 => $this->foo(), \"d\" =>30];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $x = [\"a\" => $a, \"b\" => \"b\", 3=> [5, 6,  7] , \"d\" => array(1,  2, 3 , 4)];",
+                        "<?php $x = [\"a\" => $a, \"b\" => \"b\",3=> [5,6,  7] , \"d\" => array(1,  2,3 ,4)];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $x = [\"a\" =>$a,\n                    \"b\"=> \"b\",\n                    3 => $this->foo(),\n                    \"d\" => 30];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $a = [\n                            \"foo\" ,\n                            \"bar\",\n                        ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $a = array(array(\n                                    array(T_OPEN_TAG),\n                                    array(T_VARIABLE, \"$x\"),\n                        ), 1, );",
+                        "<?php $a = array(array(\n                                    array(T_OPEN_TAG),\n                                    array(T_VARIABLE,\"$x\"),\n                        ),1,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $a = array( // comment\n                    123,\n                );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $x = array(...$foo, ...$bar);",
+                        "<?php $x = array(...$foo,...$bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $x = [...$foo, ...$bar];",
+                        "<?php $x = [...$foo,...$bar];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php [0, 1, 2, 3, 4, 5, 6];",
+                        "<?php [0,1, 2,  3,   4,    5,     6];",
+                        {
+                            "ensure_single_space": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php [0, 1, 2, 3, 4, 5];",
+                        "<?php [0,\t1,\t\t\t2,\t 3, \t4,    \t    5];",
+                        {
+                            "ensure_single_space": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php [\n                    0,                    # less than one\n                    1,                    // one\n                    42,                   /* more than one */\n                    1000500100900,        /** much more than one */\n                ];",
+                        null,
+                        {
+                            "ensure_single_space": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php [0, /* comment */ 1, /** PHPDoc */ 2];",
+                        "<?php [0,    /* comment */ 1,    /** PHPDoc */ 2];",
+                        {
+                            "ensure_single_space": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

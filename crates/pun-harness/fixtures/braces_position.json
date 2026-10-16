@@ -1,0 +1,698 @@
+{
+    "fixer": "braces_position",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Basic\\BracesPositionFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Basic/BracesPositionFixerTest.php",
+    "case_count": 63,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\BracesPositionFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "if (default)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                }",
+                        "<?php\n                if ($foo)\n                {\n                    foo();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if (next line)",
+                    "args": [
+                        "<?php\n                if ($foo)\n                {\n                    foo();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else (default)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                else {\n                    bar();\n                }",
+                        "<?php\n                if ($foo)\n                {\n                    foo();\n                }\n                else\n                {\n                    bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else (next line)",
+                    "args": [
+                        "<?php\n                if ($foo)\n                {\n                    foo();\n                }\n                else\n                {\n                    bar();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                else {\n                    bar();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif (default)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                elseif ($bar) {\n                    bar();\n                }",
+                        "<?php\n                if ($foo)\n                {\n                    foo();\n                }\n                elseif ($bar)\n                {\n                    bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif (next line)",
+                    "args": [
+                        "<?php\n                if ($foo)\n                {\n                    foo();\n                }\n                elseif ($bar)\n                {\n                    bar();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                elseif ($bar) {\n                    bar();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else if (default)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                else if ($bar) {\n                    bar();\n                }",
+                        "<?php\n                if ($foo)\n                {\n                    foo();\n                }\n                else if ($bar)\n                {\n                    bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else if (next line)",
+                    "args": [
+                        "<?php\n                if ($foo)\n                {\n                    foo();\n                }\n                else if ($bar)\n                {\n                    bar();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                else if ($bar) {\n                    bar();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "for (default)",
+                    "args": [
+                        "<?php\n                for (;;) {\n                    foo();\n                }",
+                        "<?php\n                for (;;)\n                {\n                    foo();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "for (next line)",
+                    "args": [
+                        "<?php\n                for (;;)\n                {\n                    foo();\n                }",
+                        "<?php\n                for (;;) {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "foreach (default)",
+                    "args": [
+                        "<?php\n                foreach ($foo as $bar) {\n                    foo();\n                }",
+                        "<?php\n                foreach ($foo as $bar)\n                {\n                    foo();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "foreach (next line)",
+                    "args": [
+                        "<?php\n                foreach ($foo as $bar)\n                {\n                    foo();\n                }",
+                        "<?php\n                foreach ($foo as $bar) {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "while (default)",
+                    "args": [
+                        "<?php\n                while ($foo) {\n                    foo();\n                }",
+                        "<?php\n                while ($foo)\n                {\n                    foo();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "while (next line)",
+                    "args": [
+                        "<?php\n                while ($foo)\n                {\n                    foo();\n                }",
+                        "<?php\n                while ($foo) {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do while (default)",
+                    "args": [
+                        "<?php\n                do {\n                    foo();\n                } while ($foo);",
+                        "<?php\n                do\n                {\n                    foo();\n                } while ($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do while (next line)",
+                    "args": [
+                        "<?php\n                do\n                {\n                    foo();\n                } while ($foo);",
+                        "<?php\n                do {\n                    foo();\n                } while ($foo);",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch (default)",
+                    "args": [
+                        "<?php\n                switch ($foo) {\n                    case 1:\n                        foo();\n                }",
+                        "<?php\n                switch ($foo)\n                {\n                    case 1:\n                        foo();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch (next line)",
+                    "args": [
+                        "<?php\n                switch ($foo)\n                {\n                    case 1:\n                        foo();\n                }",
+                        "<?php\n                switch ($foo) {\n                    case 1:\n                        foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try catch finally (open brace on the same line)",
+                    "args": [
+                        "<?php\n\t                try {\n\t                    foo();\n\t                }\n\t                catch (Exception $e) {\n\t                    bar();\n\t                }\n\t                finally {\n\t                    baz();\n\t                }",
+                        "<?php\n\t                try\n\t                {\n\t                    foo();\n\t                }\n\t                catch (Exception $e)\n\t                {\n\t                    bar();\n\t                }\n\t                finally\n\t                {\n\t                    baz();\n\t                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try catch finally (open brace on the next line)",
+                    "args": [
+                        "<?php\n\t                try\n\t                {\n\t                    foo();\n\t                }\n\t                catch (Exception $e)\n\t                {\n\t                    bar();\n\t                }\n\t                finally\n\t                {\n\t                    baz();\n\t                }",
+                        "<?php\n\t                try {\n\t                    foo();\n\t                }\n\t                catch (Exception $e) {\n\t                    bar();\n\t                }\n\t                finally {\n\t                    baz();\n\t                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class (default)",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                }",
+                        "<?php\n                class Foo {\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class (same line)",
+                    "args": [
+                        "<?php\n                class Foo {\n                }",
+                        "<?php\n                class Foo\n                {\n                }",
+                        {
+                            "classes_opening_brace": "same_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function (default)",
+                    "args": [
+                        "<?php\n                function foo()\n                {\n                }",
+                        "<?php\n                function foo() {\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function (same line)",
+                    "args": [
+                        "<?php\n                function foo() {\n                }",
+                        "<?php\n                function foo()\n                {\n                }",
+                        {
+                            "functions_opening_brace": "same_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous function (default)",
+                    "args": [
+                        "<?php\n                $foo = function () {\n                };",
+                        "<?php\n                $foo = function ()\n                {\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous function (next line)",
+                    "args": [
+                        "<?php\n                $foo = function ()\n                {\n                };",
+                        "<?php\n                $foo = function () {\n                };",
+                        {
+                            "anonymous_functions_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with blank lines inside braces",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n\n                    public function foo()\n                    {\n\n                        if (true) {\n\n                            echo \"foo\";\n\n                        }\n\n                    }\n\n                }",
+                        "<?php\n                class Foo {\n\n                    public function foo() {\n\n                        if (true)\n                        {\n\n                            echo \"foo\";\n\n                        }\n\n                    }\n\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with comment after opening brace (default)",
+                    "args": [
+                        "<?php\n                function foo() /* foo */ // foo\n                {\n                }",
+                        "<?php\n                function foo() /* foo */ { // foo\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with comment after opening brace (same line)",
+                    "args": [
+                        "<?php\n                function foo() { // foo\n                /* foo */\n                }",
+                        "<?php\n                function foo() // foo\n                { /* foo */\n                }",
+                        {
+                            "functions_opening_brace": "same_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with multiline signature",
+                    "args": [
+                        "<?php\n                if (\n                    $foo\n                ) {\n                    foo();\n                }",
+                        "<?php\n                if (\n                    $foo\n                )\n                {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with newline before closing parenthesis",
+                    "args": [
+                        "<?php\n                if ($foo\n                ) {\n                    foo();\n                }",
+                        "<?php\n                if ($foo\n                )\n                {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with newline in signature but not before closing parenthesis",
+                    "args": [
+                        "<?php\n                if (\n                    $foo)\n                {\n                    foo();\n                }",
+                        "<?php\n                if (\n                    $foo) {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class (same line)",
+                    "args": [
+                        "<?php\n                $foo = new class() {\n                };",
+                        "<?php\n                $foo = new class()\n                {\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class (next line)",
+                    "args": [
+                        "<?php\n                $foo = new class()\n                {\n                };",
+                        "<?php\n                $foo = new class() {\n                };",
+                        {
+                            "anonymous_classes_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with multiline signature and return type",
+                    "args": [
+                        "<?php\n                function foo(\n                    $foo\n                ): int {\n                    foo();\n                }",
+                        "<?php\n                function foo(\n                    $foo\n                ): int\n                {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with multiline signature and return type (nullable)",
+                    "args": [
+                        "<?php\n                function foo(\n                    $foo\n                ): ?int {\n                    foo();\n                }",
+                        "<?php\n                function foo(\n                    $foo\n                ): ?int\n                {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with multiline signature and return type (array)",
+                    "args": [
+                        "<?php\n                function foo(\n                    $foo\n                ): array {\n                    foo();\n                }",
+                        "<?php\n                function foo(\n                    $foo\n                ): array\n                {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with multiline signature and return type (class name)",
+                    "args": [
+                        "<?php\n                function foo(\n                    $foo\n                ): \\Foo\\Bar {\n                    foo();\n                }",
+                        "<?php\n                function foo(\n                    $foo\n                ): \\Foo\\Bar\n                {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with newline before closing parenthesis and return type",
+                    "args": [
+                        "<?php\n                function foo($foo\n                ): int {\n                    foo();\n                }",
+                        "<?php\n                function foo($foo\n                ): int\n                {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with newline before closing parenthesis and callable type",
+                    "args": [
+                        "<?php\n                function foo($foo\n                ): callable {\n                    return function (): void {};\n                }",
+                        "<?php\n                function foo($foo\n                ): callable\n                {\n                    return function (): void {};\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "next line with newline in signature but not before closing parenthesis and return type",
+                    "args": [
+                        "<?php\n                function foo(\n                    $foo): int\n                {\n                    foo();\n                }",
+                        "<?php\n                function foo(\n                    $foo): int {\n                    foo();\n                }",
+                        {
+                            "control_structures_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple elseifs",
+                    "args": [
+                        "<?php if ($foo) {\n                } elseif ($foo) {\n                } elseif ($foo) {\n                } elseif ($foo) {\n                } elseif ($foo) {\n                } elseif ($foo) {\n                } elseif ($foo) {\n                } elseif ($foo) {\n                } elseif ($foo) {\n                }",
+                        "<?php if ($foo){\n                } elseif ($foo){\n                } elseif ($foo){\n                } elseif ($foo){\n                } elseif ($foo){\n                } elseif ($foo){\n                } elseif ($foo){\n                } elseif ($foo){\n                } elseif ($foo){\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open brace preceded by comment and whitespace",
+                    "args": [
+                        "<?php\n                if (true) { /* foo */\n                    foo();\n                }",
+                        "<?php\n                if (true) /* foo */ {\n                    foo();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open brace surrounded by comment and whitespace",
+                    "args": [
+                        "<?php\n                if (true) { /* foo */ /* bar */\n                    foo();\n                }",
+                        "<?php\n                if (true) /* foo */ { /* bar */\n                    foo();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open brace not preceded by space and followed by a comment",
+                    "args": [
+                        "<?php class test\n{\n    public function example()// example\n    {\n    }\n}\n",
+                        "<?php class test\n{\n    public function example(){// example\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open brace not preceded by space and followed by a space and comment",
+                    "args": [
+                        "<?php class test\n{\n    public function example() // example\n    {\n    }\n}\n",
+                        "<?php class test\n{\n    public function example(){ // example\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nif ($x) {//\n\n    f();\n}",
+                        "<?php\nif ($x)//\n{\n\n    f();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variable terminated by close tag",
+                    "args": [
+                        "<?php\n\n$pager = new class {\npublic function bar()\n{\nreturn 'baz';\n}\n};\n\necho $pager->bar()\n?>",
+                        "<?php\n\n$pager = new class { public function bar() { return 'baz'; } };\n\necho $pager->bar()\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "confirm {$foo} does not cause harm",
+                    "args": [
+                        "<?php\n$foo = \"foo\";\nif($foo) {\n    echo \"\n/* some sql */ {$foo} /* some sql */;\n    \";\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "newline after opening brace",
+                    "args": [
+                        "<?php if (true) {\n}",
+                        "<?php if (true) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "newline before closing comment and parenthesis",
+                    "args": [
+                        "<?php\nfunction foo($foo\n/* comment */) {\n}",
+                        null,
+                        {
+                            "functions_opening_brace": "next_line_unless_newline_at_signature_end"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous function",
+                    "args": [
+                        "<?php $f = function() {};",
+                        "<?php $f = function(){};",
+                        {
+                            "anonymous_functions_opening_brace": "same_line",
+                            "allow_single_line_anonymous_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment between closing parenthesis and opening brace",
+                    "args": [
+                        "<?php if ($a) { /* comment */\n}",
+                        "<?php if ($a) /* comment */ {}",
+                        {
+                            "control_structures_opening_brace": "same_line"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\BracesPositionFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "function (multiline + union return)",
+                    "args": [
+                        "<?php\n                function sum(\n                    int|float $first,\n                    int|float $second,\n                ): int|float {\n                }",
+                        "<?php\n                function sum(\n                    int|float $first,\n                    int|float $second,\n                ): int|float\n                {\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "function (multiline + union return with whitespace)",
+                    "args": [
+                        "<?php\n                function sum(\n                    int|float $first,\n                    int|float $second,\n                ): int | float {\n                }",
+                        "<?php\n                function sum(\n                    int|float $first,\n                    int|float $second,\n                ): int | float\n                {\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "method with static return type",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    function sum(\n                        $foo\n                    ): static {\n                    }\n                }",
+                        "<?php\n                class Foo\n                {\n                    function sum(\n                        $foo\n                    ): static\n                    {\n                    }\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\BracesPositionFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "function (multiline + intersection return)",
+                    "args": [
+                        "<?php\n                function foo(\n                    mixed $bar,\n                    mixed $baz,\n                ): Foo&Bar {\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\BracesPositionFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "function (multiline + DNF return)",
+                    "args": [
+                        "<?php\n                function foo(\n                    mixed $bar,\n                    mixed $baz,\n                ): (Foo&Bar)|int|null {\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\BracesPositionFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hook one-liners",
+                    "args": [
+                        "<?php abstract class Foo\n{\n    abstract public bool $b { get; set; }\n\n    abstract public int $i { set(int $i) { $this->i = $i + 10; } get; }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hook",
+                    "args": [
+                        "<?php class C\n{\n    private int $i {\n        get => 2;\n    }\n}",
+                        "<?php class C\n{\n    private int $i    {\n        get => 2;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hook with default",
+                    "args": [
+                        "<?php class C\n{\n    private mixed $wat = [-7, \"a\" . 'b', null, array(), 1/3, self::FOO, ] {\n        set(mixed $wat) {\n            $this->wat = $wat;\n        }\n    }\n\n    private mixed $wat2 = array(-7, \"a\" . 'b', null, array(), 1/3, self::FOO, ) {\n        set(mixed $wat2) {\n            $this->wat2 = $wat2;\n        }\n    }\n}",
+                        "<?php class C\n{\n    private mixed $wat = [-7, \"a\" . 'b', null, array(), 1/3, self::FOO, ]        {\n        set(mixed $wat) {\n            $this->wat = $wat;\n        }\n    }\n\n    private mixed $wat2 = array(-7, \"a\" . 'b', null, array(), 1/3, self::FOO, )        {\n        set(mixed $wat2) {\n            $this->wat2 = $wat2;\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hook in promoted property",
+                    "args": [
+                        "<?php class CarPark\n{\n    public function __construct(\n        public Car $car {\n            set(Car $car) {\n                $this->car = $car;\n                $this->car->parked();\n            }\n        },\n    ) {}\n}",
+                        "<?php class CarPark\n{\n    public function __construct(\n        public Car $car {\n            set(Car $car)\n            {\n                $this->car = $car;\n                $this->car->parked();\n            }\n        },\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hook in promoted property with default",
+                    "args": [
+                        "<?php class IntVal\n{\n    public function __construct(\n        public int $int = 5 {\n            set(int $int) {\n                $this->int = $int;\n            }\n        },\n    ) {}\n}",
+                        "<?php class IntVal\n{\n    public function __construct(\n        public int $int = 5 {\n            set(int $int)\n                                    {\n                $this->int = $int;\n            }\n        },\n    ) {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

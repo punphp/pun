@@ -1,0 +1,593 @@
+{
+    "fixer": "trim_array_spaces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\TrimArraySpacesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ArrayNotation/TrimArraySpacesFixerTest.php",
+    "case_count": 72,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\TrimArraySpacesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $foo = array(\"foo\");",
+                        "<?php $foo = array( \"foo\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $foo = [\"foo\"];",
+                        "<?php $foo = [ \"foo\" ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $foo = array();",
+                        "<?php $foo = array( );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $foo = [];",
+                        "<?php $foo = [ ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $foo = array(\"foo\", \"bar\");",
+                        "<?php $foo = array( \"foo\", \"bar\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $foo = array(\"foo\", \"bar\", );",
+                        "<?php $foo = array( \"foo\", \"bar\", );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $foo = [\"foo\", \"bar\", ];",
+                        "<?php $foo = [ \"foo\", \"bar\", ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $foo = array('foo', 'bar');",
+                        "<?php $foo = array(\t'foo', 'bar'\t);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $foo = array('foo', 'bar');",
+                        "<?php $foo = array(  \t 'foo', 'bar'\t   );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $foo = array(\"foo\", \"bar\");",
+                        "<?php $foo = array(    \"foo\", \"bar\"   );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $foo = [\"foo\", \"bar\"];",
+                        "<?php $foo = [ \"foo\", \"bar\" ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $foo = [\"foo\", \"bar\"];",
+                        "<?php $foo = [     \"foo\", \"bar\"   ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $foo = ['foo', 'bar'];",
+                        "<?php $foo = [\t'foo', 'bar'\t];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $foo = ['foo', 'bar'];",
+                        "<?php $foo = [ \t \t 'foo', 'bar'\t \t ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $foo = array(\"foo\", \"bar\"); $bar = array(\"foo\", \"bar\");",
+                        "<?php $foo = array( \"foo\", \"bar\" ); $bar = array( \"foo\", \"bar\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $foo = [\"foo\", \"bar\"]; $bar = [\"foo\", \"bar\"];",
+                        "<?php $foo = [ \"foo\", \"bar\" ]; $bar = [ \"foo\", \"bar\" ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $foo = array(\"foo\" => \"bar\");",
+                        "<?php $foo = array( \"foo\" => \"bar\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $foo = [\"foo\" => \"bar\"];",
+                        "<?php $foo = [ \"foo\" => \"bar\" ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $foo = array($y ? true : false);",
+                        "<?php $foo = array( $y ? true : false );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $foo = [$y ? true : false];",
+                        "<?php $foo = [ $y ? true : false ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $foo = array(array(\"foo\"), array(\"bar\"));",
+                        "<?php $foo = array( array( \"foo\" ), array( \"bar\" ) );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $foo = [[\"foo\"], [\"bar\"]];",
+                        "<?php $foo = [ [ \"foo\" ], [ \"bar\" ] ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php function(array $foo = array(\"bar\")) {};",
+                        "<?php function(array $foo = array( \"bar\" )) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php function(array $foo = [\"bar\"]) {};",
+                        "<?php function(array $foo = [ \"bar\" ]) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $foo = array(function() {return \"foo\";});",
+                        "<?php $foo = array( function() {return \"foo\";} );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $foo = [function() {return \"foo\";}];",
+                        "<?php $foo = [ function() {return \"foo\";} ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $foo = [function( $a =    \tarray('foo')  )  { return       'foo'   ;}];",
+                        "<?php $foo = [ function( $a =    \tarray( 'foo' )  )  { return       'foo'   ;} ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $foo = array(function(  )  {\treturn     'foo'    \t;\t});",
+                        "<?php $foo = array( function(  )  {\treturn     'foo'    \t;\t} );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $foo = [function()\t{\t  \treturn 'foo';\t}];",
+                        "<?php $foo = [ function()\t{\t  \treturn 'foo';\t} ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $foo \t   = array(function($a,$b,$c=array(3, 4))\t{\t  \treturn 'foo';\t});",
+                        "<?php $foo \t   = array( function($a,$b,$c=array( 3, 4 ))\t{\t  \treturn 'foo';\t} );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $foo = array($bar->method(), Foo::doSomething());",
+                        "<?php $foo = array( $bar->method(), Foo::doSomething() );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php $foo = [$bar->method(), Foo::doSomething()];",
+                        "<?php $foo = [ $bar->method(), Foo::doSomething() ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php $foo = [$bar->method( $a,$b,    $c,\t\t $d  ), Foo::doSomething()];",
+                        "<?php $foo = [ $bar->method( $a,$b,    $c,\t\t $d  ), Foo::doSomething() ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php $foo   =\t array($bar->method( $a,$b,    $c,\t\t $d  ), $bar -> doSomething(  ['baz']));",
+                        "<?php $foo   =\t array( $bar->method( $a,$b,    $c,\t\t $d  ), $bar -> doSomething(  [ 'baz']) );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $foo = array(array(\"foo\"), array(\"bar\"));",
+                        "<?php $foo = array( array(\"foo\"), array(\"bar\") );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $foo = [[\"foo\"], [\"bar\"]];",
+                        "<?php $foo = [ [\"foo\"], [\"bar\"] ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php $foo = array(array(\"foo\"), array(\"bar\"));",
+                        "<?php $foo = array(array( \"foo\" ), array( \"bar\" ));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $foo = [[\"foo\"], [\"bar\"]];",
+                        "<?php $foo = [[ \"foo\" ], [ \"bar\" ]];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php $foo = array(/* empty array */);",
+                        "<?php $foo = array( /* empty array */ );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $foo = [/* empty array */];",
+                        "<?php $foo = [ /* empty array */ ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php someFunc(array(/* empty array */));",
+                        "<?php someFunc(array( /* empty array */ ));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php someFunc([/* empty array */]);",
+                        "<?php someFunc([ /* empty array */ ]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n    someFunc(array(\n        /* empty array */\n    ));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n    someFunc([\n        /* empty array */\n    ]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\n    someFunc(array(\n        /* empty\n        array */));",
+                        "<?php\n    someFunc(array(\n        /* empty\n        array */ ));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n    someFunc([\n        /* empty\n        array */]);",
+                        "<?php\n    someFunc([\n        /* empty\n        array */ ]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\n    $a = array( // My array of:\n        1,      // - first item\n        2,      // - second item\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n    $a = [  // My array of:\n        1,  // - first item\n        2,  // - second item\n    ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\n    $a = array(\n            // My array of:\n        1,  // - first item\n        2,  // - second item\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n    $a = [\n            // My array of:\n        1,  // - first item\n        2,  // - second item\n    ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\n    $foo = array(/* comment */\n        1\n    );",
+                        "<?php\n    $foo = array( /* comment */\n        1\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\n    $foo = [/* comment */\n        1\n    ];",
+                        "<?php\n    $foo = [ /* comment */\n        1\n    ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php someFunc([/* array( \"foo\", \"bar\", [ \"foo\" ] ) */]);",
+                        "<?php someFunc([ /* array( \"foo\", \"bar\", [ \"foo\" ] ) */ ]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php $foo = array($bar[  4 ]);",
+                        "<?php $foo = array( $bar[  4 ] );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php $foo = [$bar[  4 ]];",
+                        "<?php $foo = [ $bar[  4 ] ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php // array( \"foo\", \"bar\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php $foo = array(\"foo\", \"bar\", [1, 2, array(3)]); $baz = [\"hash\", 1, array(\"test\")];",
+                        "<?php $foo = array( \"foo\", \"bar\", [ 1, 2, array( 3 )] ); $baz = [ \"hash\", 1, array( \"test\") ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php $foo = array( \n'bar'\n );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php $foo = [ \n'bar'\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php $foo = array( \n'a', 'b',\n'c');",
+                        "<?php $foo = array( \n'a', 'b',\n'c' );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php $foo = [ \n'a', 'b',\n'c'];",
+                        "<?php $foo = [ \n'a', 'b',\n'c' ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php $foo = array('a', 'b',\n'c'\n);",
+                        "<?php $foo = array( 'a', 'b',\n'c'\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php $foo = ['a', 'b',\n'c'\n];",
+                        "<?php $foo = [ 'a', 'b',\n'c'\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php $foo = ['$bar = array( \"foo\" );', array(1, 5)];",
+                        "<?php $foo = [ '$bar = array( \"foo\" );', array(1, 5 ) ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php $foo = array(/* comment $bar = array([ ], array( 'foo' ) ), */ function($a = array('foo'), $b = [/* comment [] */]) {}, array('foo' => 'bar', 'baz' => $x[  4], 'hash' => array(1,2,3)));",
+                        "<?php $foo = array( /* comment $bar = array([ ], array( 'foo' ) ), */ function($a = array( 'foo' ), $b = [ /* comment [] */ ]) {}, array( 'foo' => 'bar', 'baz' => $x[  4], 'hash' => array(1,2,3 )) );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php $a = [array(\"foo\", \"bar \", [1, 4, function($x = [\"foobar\", 2]) {}, [/* array( 1) */]]), array(\"foo\", [$y[ 3]()], 'bar')];",
+                        "<?php $a = [ array(\"foo\", \"bar \", [ 1, 4, function($x = [ \"foobar\", 2 ]) {}, [/* array( 1) */] ] ), array(\"foo\", [ $y[ 3]() ], 'bar') ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php\n    $foo = array(\n        1 => 2, // comment\n    );\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php\nfunction a()\n{\n    yield array(\"a\" => 1, \"b\" => 2);\n}",
+                        "<?php\nfunction a()\n{\n    yield array( \"a\" => 1, \"b\" => 2 );\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php\nfunction a()\n{\n    yield [\"a\" => 1, \"b\" => 2];\n}",
+                        "<?php\nfunction a()\n{\n    yield [ \"a\" => 1, \"b\" => 2 ];\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array destructuring",
+                    "args": [
+                        "<?php ['url' => $url] = $data;",
+                        "<?php [                  'url' => $url                         ] = $data;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array destructuring with comments",
+                    "args": [
+                        "<?php [/* foo */ 'url' => $url /* bar */] = $data;",
+                        "<?php [     /* foo */ 'url' => $url /* bar */     ] = $data;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline array destructuring",
+                    "args": [
+                        "<?php\n    [\n        'url' => $url,\n        'token' => $token,\n    ] = $data;\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

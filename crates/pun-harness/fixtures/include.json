@@ -1,0 +1,1288 @@
+{
+    "fixer": "include",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\IncludeFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/IncludeFixerTest.php",
+    "case_count": 162,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\IncludeFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php include # A\n# B\n# C\n\"a\"# D\n# E\n# F\n;# G\n# H",
+                        "<?php include# A\n(# B\n# C\n\"a\"# D\n# E\n)# F\n;# G\n# H"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php include $a;",
+                        "<?php include  (  $a  )  ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nrequire_once \"test1.php\";\ninclude_once \"test2.php\";\nrequire \"test3.php\";\ninclude \"test4.php\";",
+                        "<?php\nrequire_once(\"test1.php\");\ninclude_once(\"test2.php\");\nrequire(\"test3.php\");\ninclude(\"test4.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nrequire_once #1\n#2\n#3\n\"test1.php\"#4\n#5\n#6\n;",
+                        "<?php\nrequire_once #1\n(#2\n#3\n\"test1.php\"#4\n)#5\n#6\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php foo(require \"foo.php\");",
+                        "<?php foo(require(\"foo.php\"));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $foo[include \"foo.php\"];",
+                        "<?php $foo[include(\"foo.php\")];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php require \"foo.php\"?>",
+                        "<?php require (\"foo.php\") ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php require /**/\"foo.php\"// test\n                    ?>",
+                        "<?php require/**/ (\"foo.php\") // test\n                    ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php require $a;",
+                        "<?php require$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php require $a;",
+                        "<?php require            $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php require $a; ",
+                        "<?php require            $a   ; "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php require /**/'foo.php';",
+                        "<?php require/**/'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php require 'foo.php';",
+                        "<?php require'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php require 'foo.php';",
+                        "<?php require           'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php require 'foo.php';",
+                        "<?php require('foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php require 'foo.php';",
+                        "<?php require(           'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php require 'foo.php';",
+                        "<?php require          ( 'foo.php' );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php require '\".__DIR__.\"/../bootstrap.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php // require foo"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php /* require foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php /** require foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php require($a ? $b : $c) . $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php require ($a ? $b : $c) . $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php exit(\"POST must require \\\"file\\\"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php ClassCollectionLoader::load(require($this->getCacheDir().'classes.map'), $this->getCacheDir(), $name, $this->debug, false, $extension);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $foo = (false === require($zfLibraryPath.\"/Zend/Loader/StandardAutoloader.php\"));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php require \"Buzz/foo-Bar.php\";",
+                        "<?php require (  \"Buzz/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php require \"$buzz/foo-Bar.php\";",
+                        "<?php require (  \"$buzz/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php require \"{$buzz}/foo-Bar.php\";",
+                        "<?php require (  \"{$buzz}/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php require $foo ? \"foo.php\" : \"bar.php\";",
+                        "<?php require($foo ? \"foo.php\" : \"bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php require $foo  ?  \"foo.php\"  :  \"bar.php\";",
+                        "<?php require($foo  ?  \"foo.php\"  :  \"bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php return require __DIR__.'foo.php';",
+                        "<?php return require  __DIR__.'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php $foo = require __DIR__.('foo.php');",
+                        "<?php $foo = require  __DIR__.('foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php     require __DIR__.('foo.php');",
+                        "<?php     require  (__DIR__.('foo.php'));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php     require __DIR__ . ('foo.php');",
+                        "<?php     require  (__DIR__ . ('foo.php'));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php require dirname(__FILE__).'foo.php';",
+                        "<?php require (dirname(__FILE__).'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php require \"foo/\".CONSTANT.\"/bar.php\";",
+                        "<?php require(\"foo/\".CONSTANT.\"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php require \"foo/\".CONSTANT.\"/bar.php\"; require \"foo/\".CONSTANT.\"/bar.php\";",
+                        "<?php require(\"foo/\".CONSTANT.\"/bar.php\"); require(\"foo/\".CONSTANT.\"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php require \"foo/\".CONSTANT.\"/bar.php\"; $foo = \"bar\";",
+                        "<?php require(\"foo/\".CONSTANT.\"/bar.php\"); $foo = \"bar\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php require \"foo/\".CONSTANT.\"/bar.php\"; foo();",
+                        "<?php require(\"foo/\".CONSTANT.\"/bar.php\"); foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php require \"foo/\" . CONSTANT . \"/bar.php\";",
+                        "<?php require(\"foo/\" . CONSTANT . \"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php require SOME_CONST . \"file.php\"; require Foo::Bar($baz);",
+                        "<?php require( SOME_CONST . \"file.php\" ); require Foo::Bar($baz);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php require SOME_CONST . \"file1.php\"; require Foo::Bar($baz);",
+                        "<?php require          SOME_CONST . \"file1.php\"; require Foo::Bar($baz);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "require: binary string lower case",
+                    "args": [
+                        "<?php require b'foo.php';",
+                        "<?php require(b'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "require: binary string upper case",
+                    "args": [
+                        "<?php require B'foo.php';",
+                        "<?php require(B'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php require_once \"foo.php\"?>",
+                        "<?php require_once (\"foo.php\") ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php require_once /**/\"foo.php\"// test\n                    ?>",
+                        "<?php require_once/**/ (\"foo.php\") // test\n                    ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php require_once $a;",
+                        "<?php require_once$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php require_once $a;",
+                        "<?php require_once            $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php require_once $a; ",
+                        "<?php require_once            $a   ; "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php require_once /**/'foo.php';",
+                        "<?php require_once/**/'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php require_once 'foo.php';",
+                        "<?php require_once'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php require_once 'foo.php';",
+                        "<?php require_once           'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php require_once 'foo.php';",
+                        "<?php require_once('foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php require_once 'foo.php';",
+                        "<?php require_once(           'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php require_once 'foo.php';",
+                        "<?php require_once          ( 'foo.php' );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php require_once '\".__DIR__.\"/../bootstrap.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php // require_once foo"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php /* require_once foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php /** require_once foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php require_once($a ? $b : $c) . $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php require_once ($a ? $b : $c) . $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php exit(\"POST must require_once \\\"file\\\"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php ClassCollectionLoader::load(require_once($this->getCacheDir().'classes.map'), $this->getCacheDir(), $name, $this->debug, false, $extension);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php $foo = (false === require_once($zfLibraryPath.\"/Zend/Loader/StandardAutoloader.php\"));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php require_once \"Buzz/foo-Bar.php\";",
+                        "<?php require_once (  \"Buzz/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php require_once \"$buzz/foo-Bar.php\";",
+                        "<?php require_once (  \"$buzz/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php require_once \"{$buzz}/foo-Bar.php\";",
+                        "<?php require_once (  \"{$buzz}/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php require_once $foo ? \"foo.php\" : \"bar.php\";",
+                        "<?php require_once($foo ? \"foo.php\" : \"bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php require_once $foo  ?  \"foo.php\"  :  \"bar.php\";",
+                        "<?php require_once($foo  ?  \"foo.php\"  :  \"bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php return require_once __DIR__.'foo.php';",
+                        "<?php return require_once  __DIR__.'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php $foo = require_once __DIR__.('foo.php');",
+                        "<?php $foo = require_once  __DIR__.('foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php     require_once __DIR__.('foo.php');",
+                        "<?php     require_once  (__DIR__.('foo.php'));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php     require_once __DIR__ . ('foo.php');",
+                        "<?php     require_once  (__DIR__ . ('foo.php'));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php require_once dirname(__FILE__).'foo.php';",
+                        "<?php require_once (dirname(__FILE__).'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php require_once \"foo/\".CONSTANT.\"/bar.php\";",
+                        "<?php require_once(\"foo/\".CONSTANT.\"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php require_once \"foo/\".CONSTANT.\"/bar.php\"; require_once \"foo/\".CONSTANT.\"/bar.php\";",
+                        "<?php require_once(\"foo/\".CONSTANT.\"/bar.php\"); require_once(\"foo/\".CONSTANT.\"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php require_once \"foo/\".CONSTANT.\"/bar.php\"; $foo = \"bar\";",
+                        "<?php require_once(\"foo/\".CONSTANT.\"/bar.php\"); $foo = \"bar\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php require_once \"foo/\".CONSTANT.\"/bar.php\"; foo();",
+                        "<?php require_once(\"foo/\".CONSTANT.\"/bar.php\"); foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php require_once \"foo/\" . CONSTANT . \"/bar.php\";",
+                        "<?php require_once(\"foo/\" . CONSTANT . \"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php require_once SOME_CONST . \"file.php\"; require_once Foo::Bar($baz);",
+                        "<?php require_once( SOME_CONST . \"file.php\" ); require_once Foo::Bar($baz);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php require_once SOME_CONST . \"file1.php\"; require_once Foo::Bar($baz);",
+                        "<?php require_once          SOME_CONST . \"file1.php\"; require_once Foo::Bar($baz);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "require_once: binary string lower case",
+                    "args": [
+                        "<?php require_once b'foo.php';",
+                        "<?php require_once(b'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "require_once: binary string upper case",
+                    "args": [
+                        "<?php require_once B'foo.php';",
+                        "<?php require_once(B'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php include \"foo.php\"?>",
+                        "<?php include (\"foo.php\") ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php include /**/\"foo.php\"// test\n                    ?>",
+                        "<?php include/**/ (\"foo.php\") // test\n                    ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php include $a;",
+                        "<?php include$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php include $a;",
+                        "<?php include            $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php include $a; ",
+                        "<?php include            $a   ; "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php include /**/'foo.php';",
+                        "<?php include/**/'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php include 'foo.php';",
+                        "<?php include'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php include 'foo.php';",
+                        "<?php include           'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 88,
+                    "args": [
+                        "<?php include 'foo.php';",
+                        "<?php include('foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 89,
+                    "args": [
+                        "<?php include 'foo.php';",
+                        "<?php include(           'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 90,
+                    "args": [
+                        "<?php include 'foo.php';",
+                        "<?php include          ( 'foo.php' );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 91,
+                    "args": [
+                        "<?php include '\".__DIR__.\"/../bootstrap.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 92,
+                    "args": [
+                        "<?php // include foo"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 93,
+                    "args": [
+                        "<?php /* include foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 94,
+                    "args": [
+                        "<?php /** include foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 95,
+                    "args": [
+                        "<?php include($a ? $b : $c) . $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 96,
+                    "args": [
+                        "<?php include ($a ? $b : $c) . $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 97,
+                    "args": [
+                        "<?php exit(\"POST must include \\\"file\\\"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 98,
+                    "args": [
+                        "<?php ClassCollectionLoader::load(include($this->getCacheDir().'classes.map'), $this->getCacheDir(), $name, $this->debug, false, $extension);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 99,
+                    "args": [
+                        "<?php $foo = (false === include($zfLibraryPath.\"/Zend/Loader/StandardAutoloader.php\"));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 100,
+                    "args": [
+                        "<?php include \"Buzz/foo-Bar.php\";",
+                        "<?php include (  \"Buzz/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 101,
+                    "args": [
+                        "<?php include \"$buzz/foo-Bar.php\";",
+                        "<?php include (  \"$buzz/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 102,
+                    "args": [
+                        "<?php include \"{$buzz}/foo-Bar.php\";",
+                        "<?php include (  \"{$buzz}/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 103,
+                    "args": [
+                        "<?php include $foo ? \"foo.php\" : \"bar.php\";",
+                        "<?php include($foo ? \"foo.php\" : \"bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 104,
+                    "args": [
+                        "<?php include $foo  ?  \"foo.php\"  :  \"bar.php\";",
+                        "<?php include($foo  ?  \"foo.php\"  :  \"bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 105,
+                    "args": [
+                        "<?php return include __DIR__.'foo.php';",
+                        "<?php return include  __DIR__.'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 106,
+                    "args": [
+                        "<?php $foo = include __DIR__.('foo.php');",
+                        "<?php $foo = include  __DIR__.('foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 107,
+                    "args": [
+                        "<?php     include __DIR__.('foo.php');",
+                        "<?php     include  (__DIR__.('foo.php'));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 108,
+                    "args": [
+                        "<?php     include __DIR__ . ('foo.php');",
+                        "<?php     include  (__DIR__ . ('foo.php'));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 109,
+                    "args": [
+                        "<?php include dirname(__FILE__).'foo.php';",
+                        "<?php include (dirname(__FILE__).'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 110,
+                    "args": [
+                        "<?php include \"foo/\".CONSTANT.\"/bar.php\";",
+                        "<?php include(\"foo/\".CONSTANT.\"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 111,
+                    "args": [
+                        "<?php include \"foo/\".CONSTANT.\"/bar.php\"; include \"foo/\".CONSTANT.\"/bar.php\";",
+                        "<?php include(\"foo/\".CONSTANT.\"/bar.php\"); include(\"foo/\".CONSTANT.\"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 112,
+                    "args": [
+                        "<?php include \"foo/\".CONSTANT.\"/bar.php\"; $foo = \"bar\";",
+                        "<?php include(\"foo/\".CONSTANT.\"/bar.php\"); $foo = \"bar\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 113,
+                    "args": [
+                        "<?php include \"foo/\".CONSTANT.\"/bar.php\"; foo();",
+                        "<?php include(\"foo/\".CONSTANT.\"/bar.php\"); foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 114,
+                    "args": [
+                        "<?php include \"foo/\" . CONSTANT . \"/bar.php\";",
+                        "<?php include(\"foo/\" . CONSTANT . \"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 115,
+                    "args": [
+                        "<?php include SOME_CONST . \"file.php\"; include Foo::Bar($baz);",
+                        "<?php include( SOME_CONST . \"file.php\" ); include Foo::Bar($baz);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 116,
+                    "args": [
+                        "<?php include SOME_CONST . \"file1.php\"; include Foo::Bar($baz);",
+                        "<?php include          SOME_CONST . \"file1.php\"; include Foo::Bar($baz);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "include: binary string lower case",
+                    "args": [
+                        "<?php include b'foo.php';",
+                        "<?php include(b'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "include: binary string upper case",
+                    "args": [
+                        "<?php include B'foo.php';",
+                        "<?php include(B'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 117,
+                    "args": [
+                        "<?php include_once \"foo.php\"?>",
+                        "<?php include_once (\"foo.php\") ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 118,
+                    "args": [
+                        "<?php include_once /**/\"foo.php\"// test\n                    ?>",
+                        "<?php include_once/**/ (\"foo.php\") // test\n                    ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 119,
+                    "args": [
+                        "<?php include_once $a;",
+                        "<?php include_once$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 120,
+                    "args": [
+                        "<?php include_once $a;",
+                        "<?php include_once            $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 121,
+                    "args": [
+                        "<?php include_once $a; ",
+                        "<?php include_once            $a   ; "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 122,
+                    "args": [
+                        "<?php include_once /**/'foo.php';",
+                        "<?php include_once/**/'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 123,
+                    "args": [
+                        "<?php include_once 'foo.php';",
+                        "<?php include_once'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 124,
+                    "args": [
+                        "<?php include_once 'foo.php';",
+                        "<?php include_once           'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 125,
+                    "args": [
+                        "<?php include_once 'foo.php';",
+                        "<?php include_once('foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 126,
+                    "args": [
+                        "<?php include_once 'foo.php';",
+                        "<?php include_once(           'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 127,
+                    "args": [
+                        "<?php include_once 'foo.php';",
+                        "<?php include_once          ( 'foo.php' );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 128,
+                    "args": [
+                        "<?php include_once '\".__DIR__.\"/../bootstrap.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 129,
+                    "args": [
+                        "<?php // include_once foo"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 130,
+                    "args": [
+                        "<?php /* include_once foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 131,
+                    "args": [
+                        "<?php /** include_once foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 132,
+                    "args": [
+                        "<?php include_once($a ? $b : $c) . $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 133,
+                    "args": [
+                        "<?php include_once ($a ? $b : $c) . $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 134,
+                    "args": [
+                        "<?php exit(\"POST must include_once \\\"file\\\"\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 135,
+                    "args": [
+                        "<?php ClassCollectionLoader::load(include_once($this->getCacheDir().'classes.map'), $this->getCacheDir(), $name, $this->debug, false, $extension);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 136,
+                    "args": [
+                        "<?php $foo = (false === include_once($zfLibraryPath.\"/Zend/Loader/StandardAutoloader.php\"));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 137,
+                    "args": [
+                        "<?php include_once \"Buzz/foo-Bar.php\";",
+                        "<?php include_once (  \"Buzz/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 138,
+                    "args": [
+                        "<?php include_once \"$buzz/foo-Bar.php\";",
+                        "<?php include_once (  \"$buzz/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 139,
+                    "args": [
+                        "<?php include_once \"{$buzz}/foo-Bar.php\";",
+                        "<?php include_once (  \"{$buzz}/foo-Bar.php\" );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 140,
+                    "args": [
+                        "<?php include_once $foo ? \"foo.php\" : \"bar.php\";",
+                        "<?php include_once($foo ? \"foo.php\" : \"bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 141,
+                    "args": [
+                        "<?php include_once $foo  ?  \"foo.php\"  :  \"bar.php\";",
+                        "<?php include_once($foo  ?  \"foo.php\"  :  \"bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 142,
+                    "args": [
+                        "<?php return include_once __DIR__.'foo.php';",
+                        "<?php return include_once  __DIR__.'foo.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 143,
+                    "args": [
+                        "<?php $foo = include_once __DIR__.('foo.php');",
+                        "<?php $foo = include_once  __DIR__.('foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 144,
+                    "args": [
+                        "<?php     include_once __DIR__.('foo.php');",
+                        "<?php     include_once  (__DIR__.('foo.php'));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 145,
+                    "args": [
+                        "<?php     include_once __DIR__ . ('foo.php');",
+                        "<?php     include_once  (__DIR__ . ('foo.php'));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 146,
+                    "args": [
+                        "<?php include_once dirname(__FILE__).'foo.php';",
+                        "<?php include_once (dirname(__FILE__).'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 147,
+                    "args": [
+                        "<?php include_once \"foo/\".CONSTANT.\"/bar.php\";",
+                        "<?php include_once(\"foo/\".CONSTANT.\"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 148,
+                    "args": [
+                        "<?php include_once \"foo/\".CONSTANT.\"/bar.php\"; include_once \"foo/\".CONSTANT.\"/bar.php\";",
+                        "<?php include_once(\"foo/\".CONSTANT.\"/bar.php\"); include_once(\"foo/\".CONSTANT.\"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 149,
+                    "args": [
+                        "<?php include_once \"foo/\".CONSTANT.\"/bar.php\"; $foo = \"bar\";",
+                        "<?php include_once(\"foo/\".CONSTANT.\"/bar.php\"); $foo = \"bar\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 150,
+                    "args": [
+                        "<?php include_once \"foo/\".CONSTANT.\"/bar.php\"; foo();",
+                        "<?php include_once(\"foo/\".CONSTANT.\"/bar.php\"); foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 151,
+                    "args": [
+                        "<?php include_once \"foo/\" . CONSTANT . \"/bar.php\";",
+                        "<?php include_once(\"foo/\" . CONSTANT . \"/bar.php\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 152,
+                    "args": [
+                        "<?php include_once SOME_CONST . \"file.php\"; include_once Foo::Bar($baz);",
+                        "<?php include_once( SOME_CONST . \"file.php\" ); include_once Foo::Bar($baz);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 153,
+                    "args": [
+                        "<?php include_once SOME_CONST . \"file1.php\"; include_once Foo::Bar($baz);",
+                        "<?php include_once          SOME_CONST . \"file1.php\"; include_once Foo::Bar($baz);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "include_once: binary string lower case",
+                    "args": [
+                        "<?php include_once b'foo.php';",
+                        "<?php include_once(b'foo.php');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "include_once: binary string upper case",
+                    "args": [
+                        "<?php include_once B'foo.php';",
+                        "<?php include_once(B'foo.php');"
+                    ]
+                }
+            ]
+        }
+    ]
+}

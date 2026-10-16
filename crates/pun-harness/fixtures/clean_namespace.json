@@ -1,0 +1,140 @@
+{
+    "fixer": "clean_namespace",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\NamespaceNotation\\CleanNamespaceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/NamespaceNotation/CleanNamespaceFixerTest.php",
+    "case_count": 14,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\NamespaceNotation\\CleanNamespaceFixerTest",
+            "body": "    public function testFix(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php use function FooLibrary\\Bar\\Baz\\ClassA as Foo ?>",
+                        "<?php use function FooLibrary \\ Bar \\ Baz \\ /* A */ ClassA as Foo ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php use function FooLibrary\\Bar\\Baz\\ClassA as Foo;",
+                        "<?php use function FooLibrary \\ Bar \\ Baz \\ /* A */ ClassA as Foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php namespace AT\\B # foo 3\n;",
+                        "<?php namespace AT # foo 1\n\\ /**\n2\n*/\nB # foo 3\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php namespace AX\\B;",
+                        "<?php namespace AX /* foo */ \\ B;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php namespace A1\\B\\C  ; // foo",
+                        "<?php namespace A1    \\   B   \\   C  ; // foo"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php echo A\\B();A\\B();A\\B();A\\B();",
+                        "<?php echo A \\ B();A \\ B();A \\ B();A \\ B();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php namespace A\\B ?>",
+                        "<?php namespace A \\ B ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php echo /* */ x\\y() ?>",
+                        "<?php echo /* */ x \\ y() ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php namespace A\\B\\C\\D;?>",
+                        "<?php namespace A\\/* 1 */B/* 2 */\\C/* 3 *//* 4 */\\/* 5 */D;?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php namespace A\\B ?>",
+                        "<?php namespace A \\/* 1 */ B ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php echo A\\B(1, 2, 3) ?>",
+                        "<?php echo A \\ /* 1 */ B(1, 2, 3) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                namespace A\\B\\C\\D\\E /* 5.1 */{ }\n                namespace B\\B\\C\\D\\E /* 5.2 */{ }\n                namespace C\\B\\C\\D\\E /* 5.3 */{ }\n                namespace D\\B\\C\\D\\E /* 5.4 */{ }\n                namespace E\\B\\C\\D\\E /* 5.5 */{ }\n            ",
+                        "<?php\n                namespace A /* 1 */ \\ B \\   /** 2 */ C \\ /* 3 */ D   /* 4 */ \\ E /* 5.1 */{ }\n                namespace B /* 1 */ \\ B \\      /* 2 */ C \\ /** 3 */ D /* 4 */ \\ E /* 5.2 */{ }\n                namespace C /* 1 */ \\ B \\  /* 2 */ C \\ /* 3 */ D /** 4 */ \\ E /* 5.3 */{ }\n                namespace D /* 1 */ \\ B \\ /* 2 */ C \\    /* 3 */ D /* 4 */ \\ E /* 5.4 */{ }\n                namespace E /* 1 */ \\ B \\ /* 2 */ C \\ /* 3 */ D /* 4 */ \\ E /* 5.5 */{ }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\nnamespace A\\B;\n\ntry {\n    foo();\n} catch ( \\ParseError\\A\\B      $e) {\n}\n\nif (\n    !a instanceof \\EventDispatcher\\EventDispatcherInterface\n) {\n    foo();\n}\n            ",
+                        "<?php\nnamespace A \\ B;\n\ntry {\n    foo();\n} catch ( \\ ParseError\\ A \\ B      $e) {\n}\n\nif (\n    !a instanceof \\EventDispatcher\\/* 1 */EventDispatcherInterface\n) {\n    foo();\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php use function Foo\\iter\\ { range, map, filter, apply, reduce, foo\\operator };\nclass Foo\n{\n    private function foo1(): \\Exception\\A /** 2 */   // trailing comment\n    {\n    }\n\n    private function foo2(): \\Exception // trailing comment\n    {\n    }\n}",
+                        "<?php use function Foo \\ iter /* A */ \\ { range, map, filter, apply, reduce, foo \\ operator };\nclass Foo\n{\n    private function foo1(): \\Exception   \\ /* 1 */  A /** 2 */   // trailing comment\n    {\n    }\n\n    private function foo2(): \\Exception // trailing comment\n    {\n    }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

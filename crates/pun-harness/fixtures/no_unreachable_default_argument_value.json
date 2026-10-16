@@ -1,0 +1,423 @@
+{
+    "fixer": "no_unreachable_default_argument_value",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUnreachableDefaultArgumentValueFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/NoUnreachableDefaultArgumentValueFixerTest.php",
+    "case_count": 41,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUnreachableDefaultArgumentValueFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php function bFunction($foo, $bar) {}",
+                        "<?php function bFunction($foo = null, $bar) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php function bFunction($foo, $bar) {}",
+                        "<?php function bFunction($foo = \"two words\", $bar) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php function cFunction($foo, $bar, $baz) {}",
+                        "<?php function cFunction($foo = false, $bar = \"bar\", $baz) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php function dFunction($foo, $bar, $baz) {}",
+                        "<?php function dFunction($foo = false, $bar, $baz) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo (Foo $bar = null, $baz) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php function eFunction($foo, $bar, \\SplFileInfo $baz, $x = \"default\") {}",
+                        "<?php function eFunction($foo, $bar = \"removedDefault\", \\SplFileInfo $baz, $x = \"default\") {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "                    <?php\n                        function eFunction($foo, $bar, \\SplFileInfo $baz, $x = 'default') {};\n\n                        function fFunction($foo, $bar, \\SplFileInfo $baz, $x = 'default') {};",
+                        "                    <?php\n                        function eFunction($foo, $bar, \\SplFileInfo $baz, $x = 'default') {};\n\n                        function fFunction($foo, $bar = 'removedValue', \\SplFileInfo $baz, $x = 'default') {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php function foo ($bar /* a */  /* b */ , $c) {}",
+                        "<?php function foo ($bar /* a */ = /* b */ 1, $c) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function hFunction($foo,$bar,\\SplFileInfo $baz,$x = 5) {};",
+                        "<?php function hFunction($foo,$bar=\"removedValue\",\\SplFileInfo $baz,$x = 5) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php function eFunction($foo, $bar, \\SplFileInfo $baz = null, $x) {}",
+                        "<?php function eFunction($foo = PHP_EOL, $bar, \\SplFileInfo $baz = null, $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php function eFunction($foo, $bar) {}",
+                        "<?php function eFunction($foo       = null, $bar) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "                    <?php\n                        function foo(\n                            $a, // test\n                            $b, /* test */\n                            $c, // abc\n                            $d\n                        ) {}",
+                        "                    <?php\n                        function foo(\n                            $a = 1, // test\n                            $b = 2, /* test */\n                            $c = null, // abc\n                            $d\n                        ) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php function foo($foo, $bar) {}",
+                        "<?php function foo($foo = array(array(1)), $bar) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php function a($a, $b) {}",
+                        "<?php function a($a = array(\"a\" => \"b\", \"c\" => \"d\"), $b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php function a($a, $b) {}",
+                        "<?php function a($a = [\"a\" => \"b\", \"c\" => \"d\"], $b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php function a($a, $b) {}",
+                        "<?php function a($a = NULL, $b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php function a(\\SplFileInfo $a = Null, $b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php function a(array $a = null, $b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php function a(callable $a = null, $b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php function a(\\SplFileInfo &$a = Null, $b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php function a(&$a, $b) {}",
+                        "<?php function a(&$a = null, $b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $fnc = function ($a, $b = 1) use ($c) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $fnc = function ($a, $b) use ($c) {};",
+                        "<?php $fnc = function ($a = 1, $b) use ($c) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php function bFunction($foo#\n #\n #\n ,#\n$bar) {}",
+                        "<?php function bFunction($foo#\n =#\n null#\n ,#\n$bar) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php function a($a = 1, ...$b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php function a($a = 1, \\SplFileInfo ...$b) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php function foo (?Foo $bar, $baz) {}",
+                        "<?php function foo (?Foo $bar = null, $baz) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php function foo (?Foo $bar = null, ?Baz $baz = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $fn = fn ($a, $b) => null;",
+                        "<?php $fn = fn ($a = 1, $b) => null;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUnreachableDefaultArgumentValueFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "handle trailing comma",
+                    "args": [
+                        "<?php function foo($x, $y = 42, $z = 42 ) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "handle attributes without arguments",
+                    "args": [
+                        "<?php function foo(\n                #[Attribute1] $x,\n                #[Attribute2] $y,\n                #[Attribute3] $z\n            ) {}",
+                        "<?php function foo(\n                #[Attribute1] $x,\n                #[Attribute2] $y = 42,\n                #[Attribute3] $z\n            ) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "handle attributes with arguments",
+                    "args": [
+                        "<?php function foo(\n                #[Attribute1(1, 2)] $x,\n                #[Attribute2(3, 4)] $y,\n                #[Attribute3(5, 6)] $z\n            ) {}",
+                        "<?php function foo(\n                #[Attribute1(1, 2)] $x,\n                #[Attribute2(3, 4)] $y = 42,\n                #[Attribute3(5, 6)] $z\n            ) {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUnreachableDefaultArgumentValueFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "do not crash",
+                    "args": [
+                        "<?php strlen( ... );"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUnreachableDefaultArgumentValueFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->testFix($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hooks",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        private int $a { set(int $x) { $this->a = $x; } },\n        private int $b { set(int $x) { $this->b = $x; } },\n        private int $c { set(int $x) { $this->c = $x; } },\n        private int $d { set(int $x) { $this->d = $x; } },\n        private int $e = 3 { set(int $x) { $this->e = $x; } },\n    ) {}\n}",
+                        "<?php class Foo\n{\n    public function __construct(\n        private int $a { set(int $x) { $this->a = $x; } },\n        private int $b = 1 { set(int $x) { $this->b = $x; } },\n        private int $c = 2 { set(int $x) { $this->c = $x; } },\n        private int $d { set(int $x) { $this->d = $x; } },\n        private int $e = 3 { set(int $x) { $this->e = $x; } },\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "do not crash",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        public string $myVar {\n            set(string $value) {\n                $this->myVar = $value;\n            }\n        },\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "do not crash 2",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        public string $key {\n            set(string $key) => $this->key = mb_strtolower($key);\n        },\n        public int $value,\n    ) {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoUnreachableDefaultArgumentValueFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closure",
+                    "args": [
+                        "<?php function foo(Closure $x, int $y) {}",
+                        "<?php function foo(Closure $x = static function ($a, $b): void {}, int $y) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closure with default",
+                    "args": [
+                        "<?php function foo(int $x = 1, Closure $y = static function ($a, $b, $c): void {}, int $z = 3) {}",
+                        "<?php function foo(int $x = 1, Closure $y = static function ($a, $b = 2, $c): void {}, int $z = 3) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closures",
+                    "args": [
+                        "<?php function foo(\n    Closure $a,\n    Closure $b,\n    Closure $c,\n    Closure $d,\n    Closure $e = static function ($a, $b, $c, $d = 'd'): void {},\n) {}",
+                        "<?php function foo(\n    Closure $a,\n    Closure $b = static function ($a, $b = 'b', $c, $d = 'd'): void {},\n    Closure $c = static function ($a, $b = 'b', $c, $d = 'd'): void {},\n    Closure $d,\n    Closure $e = static function ($a, $b = 'b', $c, $d = 'd'): void {},\n) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closures for promoted properties",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        private Closure $a,\n        private Closure $b,\n        private Closure $c,\n        private Closure $d,\n        private Closure $e = static function ($a, $b, $c, $d = 'd'): void {},\n    ) {}\n}",
+                        "<?php class Foo\n{\n    public function __construct(\n        private Closure $a,\n        private Closure $b = static function ($a, $b = 'b', $c, $d = 'd'): void {},\n        private Closure $c = static function ($a, $b = 'b', $c, $d = 'd'): void {},\n        private Closure $d,\n        private Closure $e = static function ($a, $b = 'b', $c, $d = 'd'): void {},\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closure and property hooks",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        private Closure $a { set(Closure $x) { $this->a = $x; } },\n        private Closure $b { set(Closure $x) { $this->b = $x; } },\n        private Closure $c { set(Closure $x) { $this->c = $x; } },\n        private Closure $d { set(Closure $x) { $this->d = $x; } },\n        private Closure $e = static function ($a, $b): void {} { set(Closure $x) { $this->e = $x; } },\n    ) {}\n}",
+                        "<?php class Foo\n{\n    public function __construct(\n        private Closure $a { set(Closure $x) { $this->a = $x; } },\n        private Closure $b = static function ($a = 1, $b): void {} { set(Closure $x) { $this->b = $x; } },\n        private Closure $c = static function ($a = 2, $b): void {} { set(Closure $x) { $this->c = $x; } },\n        private Closure $d { set(Closure $x) { $this->d = $x; } },\n        private Closure $e = static function ($a = 3, $b): void {} { set(Closure $x) { $this->e = $x; } },\n    ) {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

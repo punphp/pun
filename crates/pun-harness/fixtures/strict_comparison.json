@@ -1,0 +1,59 @@
+{
+    "fixer": "strict_comparison",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Strict\\StrictComparisonFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Strict/StrictComparisonFixerTest.php",
+    "case_count": 4,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Strict\\StrictComparisonFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a === $b;",
+                        "<?php $a == $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a !== $b;",
+                        "<?php $a != $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a !== $b;",
+                        "<?php $a <> $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php echo \"$a === $b\";"
+                    ]
+                }
+            ]
+        }
+    ]
+}

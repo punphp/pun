@@ -1,0 +1,181 @@
+{
+    "fixer": "no_blank_lines_after_phpdoc",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\NoBlankLinesAfterPhpdocFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/NoBlankLinesAfterPhpdocFixerTest.php",
+    "case_count": 21,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\NoBlankLinesAfterPhpdocFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple example is not changed",
+                    "args": [
+                        "<?php\n\n/**\n * This is the bar class.\n */\nclass Bar\n{\n    /**\n     * @return void\n     */\n    public function foo()\n    {\n        //\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complex example is not changed",
+                    "args": [
+                        "<?php\n/**\n * This is the hello function.\n * Yeh, this layout should be allowed.\n * We're fixing lines following a docblock.\n */\nfunction hello($foo) {}\n/**\n * This is the bar class.\n */\nfinal class Bar\n{\n    /**\n     * @return void\n     */\n    public static function foo()\n    {\n        //\n    }\n\n    /**\n     * @return void\n     */\n    static private function bar123() {}\n\n    /*\n     * This T_COMMENT should not be moved\n     *\n     * Only T_DOC_COMMENT should be moved\n     */\n    final protected\n    // mixin' it up a bit\n    function baz() {\n    }\n\n\n    /*\n     * This T_COMMENT should not be moved\n     *\n     * Only T_DOC_COMMENT should be moved\n     */\n\n    public function cool() {}\n\n    /**\n     * This is the first docblock\n     *\n     * Not removing blank line here.\n     * No element is being documented\n     */\n\n    /**\n     * Another docblock\n     */\n    public function silly() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments are not changed",
+                    "args": [
+                        "<?php\n\n/*\n * This file is part of xyz.\n *\n * License etc...\n */\n\nnamespace Foo\\Bar;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "line before declare is not removed",
+                    "args": [
+                        "<?php\n/**\n * This is some license header.\n */\n\ndeclare(strict_types=1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "line before use statement is not removed",
+                    "args": [
+                        "<?php\n/**\n * This is some license header.\n */\n\nuse Foo\\Bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "line before include is not removed",
+                    "args": [
+                        "<?php\n/**\n * This describes what my script does.\n */\n\ninclude 'vendor/autoload.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "line before include_once is not removed",
+                    "args": [
+                        "<?php\n/**\n * This describes what my script does.\n */\n\ninclude_once 'vendor/autoload.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "line before require is not removed",
+                    "args": [
+                        "<?php\n/**\n * This describes what my script does.\n */\n\nrequire 'vendor/autoload.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "line before require_once is not removed",
+                    "args": [
+                        "<?php\n/**\n * This describes what my script does.\n */\n\nrequire_once 'vendor/autoload.php';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "line with spaces is removed When next token is indented",
+                    "args": [
+                        "<?php\n                /**\n                 * PHPDoc with a line with space\n                 */\n                class Foo {}",
+                        "<?php\n                /**\n                 * PHPDoc with a line with space\n                 */\n                \n                class Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "line With spaces is removed when next token is not indented",
+                    "args": [
+                        "<?php\n    /**\n     * PHPDoc with a line with space\n     */\nclass Foo {}",
+                        "<?php\n    /**\n     * PHPDoc with a line with space\n     */\n    \nclass Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple class",
+                    "args": [
+                        "<?php\n\n/**\n * This is the bar class.\n */\nclass Bar {}\n",
+                        "<?php\n\n/**\n * This is the bar class.\n */\n\n\nclass Bar {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "indented class",
+                    "args": [
+                        "<?php\n\n    /**\n     *\n     */\n    class Foo {\n        private $a;\n    }\n",
+                        "<?php\n\n    /**\n     *\n     */\n\n    class Foo {\n        private $a;\n    }\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "others",
+                    "args": [
+                        "<?php\n\n    /**\n     * Constant!\n     */\n    const test = 'constant';\n\n    /**\n     * Foo!\n     */\n    $foo = 123;\n",
+                        "<?php\n\n    /**\n     * Constant!\n     */\n\n\n    const test = 'constant';\n\n    /**\n     * Foo!\n     */\n\n    $foo = 123;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "whitespace in docblock above namespace is not touched",
+                    "args": [
+                        "<?php\n\n/**\n * This is a file-level docblock.\n */\n\nnamespace Foo\\Bar\\Baz;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "windows style",
+                    "args": [
+                        "<?php\r\n    /**     * Constant!     */\n    $foo = 123;",
+                        "<?php\r\n    /**     * Constant!     */\r\n\r\n\r\n    $foo = 123;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inline typehinting docs before flow break 1",
+                    "args": [
+                        "<?php\nfunction parseTag($tag)\n{\n    $tagClass = get_class($tag);\n\n    if ('phpDocumentor\\Reflection\\DocBlock\\Tag\\VarTag' === $tagClass) {\n        /** @var DocBlock\\Tag\\VarTag $tag */\n\n        return $tag->getDescription();\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inline typehinting docs before flow break 2",
+                    "args": [
+                        "<?php\nfunction parseTag($tag)\n{\n    $tagClass = get_class($tag);\n\n    if ('phpDocumentor\\Reflection\\DocBlock\\Tag\\VarTag' === $tagClass) {\n        /** @var DocBlock\\Tag\\VarTag $tag */\n\n        throw new Exception($tag->getDescription());\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inline typehinting docs before flow break 3",
+                    "args": [
+                        "<?php\nfunction parseTag($tag)\n{\n    $tagClass = get_class($tag);\n\n    if ('phpDocumentor\\Reflection\\DocBlock\\Tag\\VarTag' === $tagClass) {\n        /** @var DocBlock\\Tag\\VarTag $tag */\n\n        goto FOO;\n    }\n\nFOO:\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inline typehinting docs before flow break 4",
+                    "args": [
+                        "<?php\nfunction parseTag($tag)\n{\n    while (true) {\n        $tagClass = get_class($tag);\n\n        if ('phpDocumentor\\Reflection\\DocBlock\\Tag\\VarTag' === $tagClass) {\n            /** @var DocBlock\\Tag\\VarTag $tag */\n\n            continue;\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inline typehinting docs before flow break 5",
+                    "args": [
+                        "<?php\nfunction parseTag($tag)\n{\n    while (true) {\n        $tagClass = get_class($tag);\n\n        if ('phpDocumentor\\Reflection\\DocBlock\\Tag\\VarTag' === $tagClass) {\n            /** @var DocBlock\\Tag\\VarTag $tag */\n\n            break;\n        }\n    }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

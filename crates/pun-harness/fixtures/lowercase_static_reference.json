@@ -1,0 +1,488 @@
+{
+    "fixer": "lowercase_static_reference",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseStaticReferenceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Casing/LowercaseStaticReferenceFixerTest.php",
+    "case_count": 54,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseStaticReferenceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() { self::qux(); } }",
+                        "<?php class Foo extends Bar { public function baz() { SELF::qux(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() { static::qux(); } }",
+                        "<?php class Foo extends Bar { public function baz() { STATIC::qux(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() { parent::baz(); } }",
+                        "<?php class Foo extends Bar { public function baz() { PARENT::baz(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() { parent::baz(); } }",
+                        "<?php class Foo extends Bar { public function baz() { Parent::baz(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() { return new self(); } }",
+                        "<?php class Foo extends Bar { public function baz() { return new Self(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() { return SelfFoo::FOO; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() { return FooSelf::FOO; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php class Foo extends Bar { private STATIC $baz; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php class Foo extends Bar { STATIC private $baz; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php class Foo extends Bar { public function paRent() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $foo->Self();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php Foo::Self();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php if ($foo instanceof self) { return true; }",
+                        "<?php if ($foo instanceof Self) { return true; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php if ($foo instanceof static) { return true; }",
+                        "<?php if ($foo instanceof Static) { return true; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php if ($foo instanceof parent) { return true; }",
+                        "<?php if ($foo instanceof Parent) { return true; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php if ($foo instanceof Self\\Bar) { return true; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php if ($foo instanceof MySelf) { return true; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz(self $x) {} }",
+                        "<?php class Foo extends Bar { public function baz(Self $x) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz(parent $x) {} }",
+                        "<?php class Foo extends Bar { public function baz(Parent $x) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz(MySelf $x) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz(Self\\Qux $x) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $a = STATIC function() {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php class A { public function B() { STATIC $a; echo $a; }}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php class A { public function B() { $collection = $static ? new static($b) : new self(); } }",
+                        "<?php class A { public function B() { $collection = $static ? new STATIC($b) : new self(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php class A { STATIC public function B() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                    $a = function () {\n                        STATIC $B = false;\n                        if ($B) {\n                            echo 1;\n                        }\n                        $B = true;\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php class A { const PARENT = 42; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php namespace Foo\\Parent;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php namespace Parent\\Foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() : self {} }",
+                        "<?php class Foo extends Bar { public function baz() : Self {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() : parent {} }",
+                        "<?php class Foo extends Bar { public function baz() : Parent {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() : MySelf {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() : Self\\Qux {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz(?self $x) {} }",
+                        "<?php class Foo extends Bar { public function baz(?Self $x) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz(?parent $x) {} }",
+                        "<?php class Foo extends Bar { public function baz(?Parent $x) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() : ?self {} }",
+                        "<?php class Foo extends Bar { public function baz() : ?Self {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() : ?parent {} }",
+                        "<?php class Foo extends Bar { public function baz() : ?Parent {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() : ?MySelf {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php class Foo extends Bar { public function baz() : ?Self\\Qux {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php class Foo {\n                private STATIC int $baz1;\n                private STATIC ?int $baz2;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n                class Foo { public function bar() {} }\n                class FooChild extends Foo\n                {\n                    public function bar()\n                    {\n                        switch (true) {\n                            case parent::bar():\n                        }\n                    }\n                }",
+                        "<?php\n                class Foo { public function bar() {} }\n                class FooChild extends Foo\n                {\n                    public function bar()\n                    {\n                        switch (true) {\n                            case PARENT::bar():\n                        }\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\nclass Foo {\n    public    self $a;\n    protected self $b;\n    private   self $c;\n}",
+                        "<?php\nclass Foo {\n    public    SELF $a;\n    protected SELF $b;\n    private   SELF $c;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\ndefine(\"SELF\", \"foo\");\ndefine(\"PARENT\", \"bar\");\nbar(SELF);\necho PARENT;\nclass Foo {\n    public static function f()\n    {\n        return SELF;\n    }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseStaticReferenceFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $foo?->Self();"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo extends A {\n                public function baz1() : int|parent {}\n                public function baz2() : parent|int {}\n                public function baz3() : ?parent {}\n            }",
+                        "<?php class Foo extends A {\n                public function baz1() : int|Parent {}\n                public function baz2() : Parent|int {}\n                public function baz3() : ?Parent {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo extends A {\n                public function baz1() : int|static {}\n                public function baz2() : static|int {}\n                public function baz3() : ?static {}\n            }",
+                        "<?php class Foo extends A {\n                public function baz1() : int|STATIC {}\n                public function baz2() : STATIC|int {}\n                public function baz3() : ?STATIC {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private int|self $prop1, $prop2;\n    private self|int $prop3, $prop4;\n}\n",
+                        "<?php\nclass Foo\n{\n    private int|SELF $prop1, $prop2;\n    private SELF|int $prop3, $prop4;\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseStaticReferenceFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class A { final const PARENT = 42; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php enum Foo: string\n{\n    case SELF = 'self';\n    case STATIC = 'static';\n    case PARENT = 'parent';\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php enum Foo\n{\n    case SELF;\n    case STATIC;\n    case PARENT;\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseStaticReferenceFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo {\n    private const array PARENT = ['parent'];\n    private const array SELF = ['self'];\n    private const array STATIC = ['static'];\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo {\n    private const int PARENT = 1;\n    private const int SELF = 2;\n    private const int STATIC = 3;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nclass Foo {\n    private const int|static PARENT = 1;\n    private const int|static SELF = 2;\n    private const int|static STATIC = 3;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Foo {\n    private const string|(Bar&Baz) PARENT = 'parent';\n    private const string|(Bar&Baz) SELF = 'self';\n    private const string|(Bar&Baz) STATIC = 'static';\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

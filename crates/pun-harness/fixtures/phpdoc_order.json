@@ -1,0 +1,541 @@
+{
+    "fixer": "phpdoc_order",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocOrderFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocOrderFixerTest.php",
+    "case_count": 34,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedExceptionMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocOrderFixerTest",
+            "body": "    public function testInvalidConfiguration(array $configuration, string $expectedExceptionMessage): void\n    {\n        self::expectException(InvalidFixerConfigurationException::class);\n        self::expectExceptionMessage($expectedExceptionMessage);\n\n        $this->fixer->configure($configuration); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "empty order",
+                    "args": [
+                        {
+                            "order": []
+                        },
+                        "The option \"order\" value is invalid. Minimum two tags are required."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid order",
+                    "args": [
+                        {
+                            "order": [
+                                "param"
+                            ]
+                        },
+                        "The option \"order\" value is invalid. Minimum two tags are required."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "duplicated tag",
+                    "args": [
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throws",
+                                "return"
+                            ]
+                        },
+                        "The option \"order\" value is invalid. Tag \"return\" is duplicated."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "duplicated tags",
+                    "args": [
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throws",
+                                "param",
+                                "return",
+                                "throws"
+                            ]
+                        },
+                        "The option \"order\" value is invalid. Tags \"param\", \"return\" and \"throws\" are duplicated."
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocOrderFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "no changes",
+                    "args": [
+                        "<?php\n    /**\n     * Do some cool stuff.\n     *\n     * @param EngineInterface $templating\n     * @param string          $name\n     *\n     * @throws Exception\n     *\n     * @return void|bar\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only params 1",
+                    "args": [
+                        "<?php\n    /**\n     * @param EngineInterface $templating\n     * @param string          $name\n     */\n",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "throw",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only params 2",
+                    "args": [
+                        "<?php\n    /**\n     * @param EngineInterface $templating\n     * @param string          $name\n     */\n",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only return 1",
+                    "args": [
+                        "<?php\n    /**\n     *\n     * @return void|bar\n     *\n     */\n",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "throw",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only return 2",
+                    "args": [
+                        "<?php\n    /**\n     *\n     * @return void|bar\n     *\n     */\n",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty 1",
+                    "args": [
+                        "/***/",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "throw",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty 2",
+                    "args": [
+                        "/***/",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no annotations 1",
+                    "args": [
+                        "<?php\n    /**\n     *\n     *\n     *\n     */\n",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "throw",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no annotations 2",
+                    "args": [
+                        "<?php\n    /**\n     *\n     *\n     *\n     */\n",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "basic case",
+                    "args": [
+                        "<?php\n    /**\n     * @param string $foo\n     * @throws Exception\n     * @return bool\n     */\n",
+                        "<?php\n    /**\n     * @throws Exception\n     * @return bool\n     * @param string $foo\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complete case",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there!\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     *\n     *\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     *\n     *\n     *\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     * @return bool Return false on failure.\n     * @return int  Return the number of changes.\n     */\n",
+                        "<?php\n    /**\n     * Hello there!\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     *\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     *\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     *\n     *\n     * @return bool Return false on failure.\n     * @return int  Return the number of changes.\n     *\n     * @param string $foo\n     * @param bool   $bar Bar\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "example from Symfony",
+                    "args": [
+                        "<?php\n    /**\n     * Renders a template.\n     *\n     * @param mixed $name       A template name\n     * @param array $parameters An array of parameters to pass to the template\n     *\n     *\n     * @throws \\InvalidArgumentException if the template does not exist\n     * @throws \\RuntimeException         if the template cannot be rendered\n     * @return string The evaluated template as a string\n     */\n",
+                        "<?php\n    /**\n     * Renders a template.\n     *\n     * @param mixed $name       A template name\n     * @param array $parameters An array of parameters to pass to the template\n     *\n     * @return string The evaluated template as a string\n     *\n     * @throws \\InvalidArgumentException if the template does not exist\n     * @throws \\RuntimeException         if the template cannot be rendered\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no changes with Laravel style",
+                    "args": [
+                        "<?php\n    /**\n     * Do some cool stuff.\n     *\n     * @param EngineInterface $templating\n     * @param string          $name\n     *\n     * @return void|bar\n     *\n     * @throws Exception\n     */\n",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "basic case with Laravel style",
+                    "args": [
+                        "<?php\n    /**\n     * @param string $foo\n     * @return bool\n     * @throws Exception\n     */\n",
+                        "<?php\n    /**\n     * @throws Exception\n     * @return bool\n     * @param string $foo\n     */\n",
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complete case with Laravel style",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there!\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     *\n     *\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     *\n     *\n     *\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @return bool Return false on failure.\n     * @return int  Return the number of changes.\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     */\n",
+                        "<?php\n    /**\n     * Hello there!\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     *\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     *\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     *\n     *\n     * @return bool Return false on failure.\n     * @return int  Return the number of changes.\n     *\n     * @param string $foo\n     * @param bool   $bar Bar\n     */\n",
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "example from Symfony with Laravel style",
+                    "args": [
+                        "<?php\n    /**\n     * Renders a template.\n     *\n     * @param mixed $name       A template name\n     * @param array $parameters An array of parameters to pass to the template\n     *\n     * @return string The evaluated template as a string\n     *\n     * @throws \\InvalidArgumentException if the template does not exist\n     * @throws \\RuntimeException         if the template cannot be rendered\n     */\n",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "basic case with different order 1",
+                    "args": [
+                        "<?php\n    /**\n     * @return bool\n     * @throws Exception\n     * @param string $foo\n     */\n",
+                        "<?php\n    /**\n     * @throws Exception\n     * @return bool\n     * @param string $foo\n     */\n",
+                        {
+                            "order": [
+                                "return",
+                                "throws",
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "basic case with different order 2",
+                    "args": [
+                        "<?php\n    /**\n     * @throws Exception\n     * @return bool\n     * @param string $foo\n     */\n",
+                        null,
+                        {
+                            "order": [
+                                "throws",
+                                "return",
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complete case with custom order",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there!\n     *\n     * Long description\n     * goes here.\n     *\n     *\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     *\n     *\n     *\n     * @return bool Return false on failure.\n     * @return int  Return the number of changes.\n     *\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @internal\n     */\n",
+                        "<?php\n    /**\n     * Hello there!\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     *\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     *\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     *\n     *\n     * @return bool Return false on failure.\n     * @return int  Return the number of changes.\n     *\n     * @param string $foo\n     * @param bool   $bar Bar\n     */\n",
+                        {
+                            "order": [
+                                "throws",
+                                "return",
+                                "param",
+                                "custom",
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "intepacuthre",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     **/\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @template T of Extension\\Extension\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     **/\n",
+                        {
+                            "order": [
+                                "internal",
+                                "template",
+                                "param",
+                                "custom",
+                                "throws",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "pare",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     **/\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     **/\n",
+                        {
+                            "order": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "pareth",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     **/\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     **/\n",
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "pathre",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     **/\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     **/\n",
+                        {
+                            "order": [
+                                "param",
+                                "throws",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tepathre",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     **/\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @template T of Extension\\Extension\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     **/\n",
+                        {
+                            "order": [
+                                "template",
+                                "param",
+                                "throws",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tepathre2",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     **/\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param class-string<T> $id\n     * @return bool Return false on failure\n     * @return int  Return the number of changes.\n     * @template T of Extension\\Extension\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     **/\n",
+                        {
+                            "order": [
+                                "template",
+                                "param",
+                                "throws",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline phpstan-return when phpstan order specified",
+                    "args": [
+                        "    <?php\n        /**\n         * Returns next token if it's type equals to expected.\n         *\n         * @return array\n         * @phpstan-param TTokenType $type\n         * @phpstan-return (\n         *     $type is 'TableRow'\n         *         ? TTableRowToken\n         *         : TOtherToken\n         * )\n         * @throws ParserException\n         **/",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "phpstan-param",
+                                "phpstan-return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple phpstan-param when phpstan order specified",
+                    "args": [
+                        "    <?php\n        /**\n         * @phpstan-param non-empty-list<TGitHubReleaseArray> $releases\n         * @phpstan-param TCurrentVersionArray $currentVersion\n         * @phpstan-return TGitHubReleaseArray|false\n         */",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "return",
+                                "phpstan-param",
+                                "phpstan-return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixed param, phpstan-param and psalm-param with order specified",
+                    "args": [
+                        "    <?php\n        /**\n         * @param array $releases\n         * @param array $currentVersion\n         * @psalm-param list<array> $releases\n         * @psalm-param array<string> $releases\n         * @phpstan-param non-empty-list<TGitHubReleaseArray> $releases\n         * @phpstan-param TCurrentVersionArray $currentVersion\n         * @return array|false\n         * @phpstan-return TGitHubReleaseArray|false\n         */",
+                        null,
+                        {
+                            "order": [
+                                "param",
+                                "psalm-param",
+                                "phpstan-param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "phpstan- / psalm- annotations follow specified order for non-prefixed version by default",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @phpstan-template T of Extension\\Extension\n     * @param string $foo\n     * @param bool   $bar Bar\n     * @param string $id\n     * @phpstan-param TFooType $foo\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @phpstan-param class-string<T> $id\n     * @psalm-param 'foo'|'bar' $foo\n     * @psalm-param class-string<T> $id\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     * @return array Some array of results\n     * @phpstan-return TSomeResultArray\n     * @psalm-return array{\n     *    foo: string,\n     *    bar: ?int\n     * } Some array of results\n     **/\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @param string $foo\n     * @phpstan-return TSomeResultArray\n     * @return array Some array of results\n     * @param bool   $bar Bar\n     * @psalm-return array{\n     *    foo: string,\n     *    bar: ?int\n     * } Some array of results\n     * @param string $id\n     * @phpstan-template T of Extension\\Extension\n     * @psalm-param 'foo'|'bar' $foo\n     * @phpstan-param TFooType $foo\n     * @psalm-param class-string<T> $id\n     * @custom Test!\n     *         asldnaksdkjasdasd\n     * @phpstan-param class-string<T> $id\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     **/\n",
+                        {
+                            "order": [
+                                "template",
+                                "param",
+                                "throws",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "retains phpstan- / psalm- annotations that are not prefixed versions of configured order",
+                    "args": [
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @psalm-ignore-nullable-return\n     * @param string $id\n     * @phpstan-param class-string<T> $id\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     * @return array Some array of results\n     * @psalm-return TSomeResultArray\n     * @phpstan-pure\n     **/\n",
+                        "<?php\n    /**\n     * Hello there\n     *\n     * Long description\n     * goes here.\n     *\n     * @internal\n     * @psalm-ignore-nullable-return\n     * @return array Some array of results\n     * @phpstan-param class-string<T> $id\n     * @param string $id\n     * @psalm-return TSomeResultArray\n     * @throws Exception|RuntimeException dfsdf\n     *         jkaskdnaksdnkasndansdnansdajsdnkasd\n     * @phpstan-pure\n     **/\n",
+                        {
+                            "order": [
+                                "template",
+                                "param",
+                                "throws",
+                                "return"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

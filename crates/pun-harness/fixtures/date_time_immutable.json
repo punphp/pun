@@ -1,0 +1,317 @@
+{
+    "fixer": "date_time_immutable",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassUsage\\DateTimeImmutableFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassUsage/DateTimeImmutableFixerTest.php",
+    "case_count": 37,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassUsage\\DateTimeImmutableFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php new DateTimeImmutable();",
+                        "<?php new DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php new DateTimeImmutable();",
+                        "<?php new DATETIME();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php new \\DateTimeImmutable();",
+                        "<?php new \\DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php new Foo\\DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php namespace Foo; new DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php namespace Foo; new \\DateTimeImmutable();",
+                        "<?php namespace Foo; new \\DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php namespace Foo; use DateTime; new \\DateTimeImmutable();",
+                        "<?php namespace Foo; use DateTime; new DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php namespace Foo; use DateTime; new Bar\\DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php namespace Foo; use DateTime\\Bar; new DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php namespace Foo; use Bar\\DateTime; new DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php namespace Foo; use DateTime\\Bar; use DateTime; use Baz\\DateTime as BazDateTime; new \\DateTimeImmutable();",
+                        "<?php namespace Foo; use DateTime\\Bar; use DateTime; use Baz\\DateTime as BazDateTime; new DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $foo = DateTime::ISO8601;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $foo = \\datetime::ISO8601 + 24;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php DateTimeImmutable::createFromFormat('j-M-Y', '15-Feb-2009');",
+                        "<?php DateTime::createFromFormat('j-M-Y', '15-Feb-2009');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php \\DateTimeImmutable::getLastErrors();",
+                        "<?php \\DateTime::getLastErrors();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php Foo\\DateTime::createFromFormat();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $foo->DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php Foo::DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php Foo\\DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php date_create_immutable(\"now\");",
+                        "<?php date_create(\"now\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php date_create_immutable();",
+                        "<?php Date_Create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php \\date_create_immutable();",
+                        "<?php \\date_create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php namespace Foo; date_create_immutable();",
+                        "<?php namespace Foo; date_create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php namespace Foo; \\date_create_immutable();",
+                        "<?php namespace Foo; \\date_create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php date_create_immutable_from_format('j-M-Y', '15-Feb-2009');",
+                        "<?php date_create_from_format('j-M-Y', '15-Feb-2009');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php Foo\\date_create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $foo->date_create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php Foo::date_create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php new date_create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php new \\date_create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php new Foo\\date_create();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php class Foo { public function datetime() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php class Foo { public function date_create() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php namespace Foo; use DateTime; class Bar { public function datetime() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n                namespace Foo;\n                use DateTime\\Bar;\n                use DateTime;\n                use Baz\\DateTime as BazDateTime;\n                new \\DateTimeImmutable();\n                new \\DateTimeImmutable();\n                new \\DateTimeImmutable();\n                new \\DateTimeImmutable();\n                ",
+                        "<?php\n                namespace Foo;\n                use DateTime\\Bar;\n                use DateTime;\n                use Baz\\DateTime as BazDateTime;\n                new DateTime();\n                new DateTime();\n                new DateTime();\n                new DateTime();\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassUsage\\DateTimeImmutableFixerTest",
+            "body": "    public function testFix80(string $expected): void\n    {\n        $this->doTest($expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $foo?->DateTime();"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $foo?->date_create();"
+                    ]
+                }
+            ]
+        }
+    ]
+}

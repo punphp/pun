@@ -1,0 +1,840 @@
+{
+    "fixer": "statement_indentation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\StatementIndentationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/StatementIndentationFixerTest.php",
+    "case_count": 91,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\StatementIndentationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "no brace block",
+                    "args": [
+                        "<?php\nfoo();\nbar();",
+                        "<?php\n  foo();\n       bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php\nif ($foo) {\n    foo();\n    bar();\n}",
+                        "<?php\nif ($foo) {\n  foo();\n       bar();\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "braces on same line as code",
+                    "args": [
+                        "<?php\nif ($foo) {\n    foo();\n    if ($bar) { bar(); }\n}",
+                        "<?php\nif ($foo) {\n foo();\n       if ($bar) { bar(); }\n  }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with several closing braces on same line",
+                    "args": [
+                        "<?php\nif ($foo) { foo();\n    if ($bar) { bar();\n        if ($baz) { baz(); }}\n    foo();\n}\nfoo();",
+                        "<?php\nif ($foo) { foo();\n if ($bar) { bar();\n  if ($baz) { baz(); }}\n   foo();\n   }\n  foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with meaningful content on closing line",
+                    "args": [
+                        "<?php\nif ($foo) {\n    foo(); }\nfoo();",
+                        "<?php\nif ($foo) {\n    foo(); }\n    foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with several opening braces on same line",
+                    "args": [
+                        "<?php\nif ($foo) { if ($foo) { foo();\n    if ($bar) { if ($bar) { bar(); }\n        baz();\n    }\n}\n    baz();\n}\nbaz();",
+                        "<?php\nif ($foo) { if ($foo) { foo();\n  if ($bar) { if ($bar) { bar(); }\n   baz();\n  }\n  }\n   baz();\n   }\n  baz();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function definition arguments",
+                    "args": [
+                        "<?php\nfunction foo(\n    $bar,\n    $baz\n) {\n}",
+                        "<?php\n   function foo(\n     $bar,\n      $baz\n ) {\n  }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous function definition arguments",
+                    "args": [
+                        "<?php\n$foo = function(\n    $bar,\n    $baz\n) {\n};",
+                        "<?php\n   $foo = function(\n     $bar,\n      $baz\n ) {\n  };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interface method definition arguments",
+                    "args": [
+                        "<?php\ninterface Foo {\n    public function foo(\n        $bar,\n        $baz\n    );\n}",
+                        "<?php\ninterface Foo {\n   public function foo(\n     $bar,\n      $baz\n );\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class method definition arguments",
+                    "args": [
+                        "<?php\nclass Foo {\n    public function foo(\n        $bar,\n        $baz\n    ) {\n    }\n}",
+                        "<?php\nclass Foo {\n   public function foo(\n     $bar,\n      $baz\n ) {\n  }\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple class methods with many permutations of visibility modifiers",
+                    "args": [
+                        "<?php\nabstract class Test {\n    final protected function test_final_protected() {}\n    static private function test_static_private() {}\n    private function test_private() {}\n    private static function test_private_static() {}\n    abstract public static function test_abstract_public_static();\n    abstract static public function test_abstract_static_public();\n    abstract public function test_abstract_public();\n    protected abstract function test_protected_abstract();\n    public abstract function test_public_abstract();\n    final static protected function test_final_static_protected() {}\n    final private static function test_final_private_static() {}\n    public final function test_public_final() {}\n    final private function test_final_private() {}\n    static final public function test_static_final_public() {}\n    protected abstract static function test_protected_abstract_static();\n    public static abstract function test_public_static_abstract();\n    protected static abstract function test_protected_static_abstract();\n    static final function test_static_final() {}\n    final static private function test_final_static_private() {}\n    static protected abstract function test_static_protected_abstract();\n    public abstract static function test_public_abstract_static();\n    static final protected function test_static_final_protected() {}\n    final public static function test_final_public_static() {}\n    static final private function test_static_final_private() {}\n    abstract protected function test_abstract_protected();\n    abstract static protected function test_abstract_static_protected();\n    private static final function test_private_static_final() {}\n    final static function test_final_static() {}\n    protected static function test_protected_static() {}\n    protected function test_protected() {}\n    public static function test_public_static() {}\n    final function test_final() {}\n    abstract protected static function test_abstract_protected_static();\n    static protected function test_static_protected() {}\n    static abstract function test_static_abstract();\n    static abstract protected function test_static_abstract_protected();\n    protected final static function test_protected_final_static() {}\n    static public final function test_static_public_final() {}\n    public final static function test_public_final_static() {}\n    abstract static function test_abstract_static();\n    public static final function test_public_static_final() {}\n    static function test_static() {}\n    abstract function test_abstract();\n    static protected final function test_static_protected_final() {}\n    static private final function test_static_private_final() {}\n    private final function test_private_final() {}\n    static public abstract function test_static_public_abstract();\n    protected static final function test_protected_static_final() {}\n    final protected static function test_final_protected_static() {}\n    final static public function test_final_static_public() {}\n    static public function test_static_public() {}\n    function test_() {}\n    static abstract public function test_static_abstract_public();\n    final public function test_final_public() {}\n    private final static function test_private_final_static() {}\n    protected final function test_protected_final() {}\n    public function test_public() {}\n}",
+                        "<?php\nabstract class Test {\n                      final protected function test_final_protected() {}\n                 static private function test_static_private() {}\n                    private function test_private() {}\n             private static function test_private_static() {}\n        abstract public static function test_abstract_public_static();\n                 abstract static public function test_abstract_static_public();\nabstract public function test_abstract_public();\nprotected abstract function test_protected_abstract();\n       public abstract function test_public_abstract();\n       final static protected function test_final_static_protected() {}\n                     final private static function test_final_private_static() {}\n           public final function test_public_final() {}\n                      final private function test_final_private() {}\n            static final public function test_static_final_public() {}\n           protected abstract static function test_protected_abstract_static();\n                 public static abstract function test_public_static_abstract();\n                       protected static abstract function test_protected_static_abstract();\n                      static final function test_static_final() {}\n                final static private function test_final_static_private() {}\n             static protected abstract function test_static_protected_abstract();\n public abstract static function test_public_abstract_static();\n     static final protected function test_static_final_protected() {}\n      final public static function test_final_public_static() {}\n     static final private function test_static_final_private() {}\n  abstract protected function test_abstract_protected();\n      abstract static protected function test_abstract_static_protected();\n                    private static final function test_private_static_final() {}\n               final static function test_final_static() {}\n           protected static function test_protected_static() {}\n        protected function test_protected() {}\n   public static function test_public_static() {}\n         final function test_final() {}\n                   abstract protected static function test_abstract_protected_static();\n     static protected function test_static_protected() {}\n      static abstract function test_static_abstract();\n        static abstract protected function test_static_abstract_protected();\n               protected final static function test_protected_final_static() {}\nstatic public final function test_static_public_final() {}\n       public final static function test_public_final_static() {}\n                    abstract static function test_abstract_static();\n                    public static final function test_public_static_final() {}\n   static function test_static() {}\n          abstract function test_abstract();\n                      static protected final function test_static_protected_final() {}\n                       static private final function test_static_private_final() {}\n        private final function test_private_final() {}\n                  static public abstract function test_static_public_abstract();\n                     protected static final function test_protected_static_final() {}\n                  final protected static function test_final_protected_static() {}\n               final static public function test_final_static_public() {}\n                  static public function test_static_public() {}\n                    function test_() {}\n                       static abstract public function test_static_abstract_public();\n          final public function test_final_public() {}\n                 private final static function test_private_final_static() {}\n                protected final function test_protected_final() {}\n  public function test_public() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait method definition arguments",
+                    "args": [
+                        "<?php\ntrait Foo {\n    public function foo(\n        $bar,\n        $baz\n    ) {\n    }\n}",
+                        "<?php\ntrait Foo {\n   public function foo(\n     $bar,\n      $baz\n ) {\n  }\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function call arguments",
+                    "args": [
+                        "<?php\nfoo(\n    $bar,\n    $baz\n);",
+                        "<?php\nfoo(\n  $bar,\n   $baz\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variable function call arguments",
+                    "args": [
+                        "<?php\n$foo(\n    $bar,\n    $baz\n);",
+                        "<?php\n$foo(\n  $bar,\n   $baz\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "chained method calls",
+                    "args": [
+                        "<?php\nif ($foo) {\n    $foo\n               ->bar()\n                 ->baz()\n    ;\n}",
+                        "<?php\n  if ($foo) {\n         $foo\n                    ->bar()\n                      ->baz()\n                        ;\n      }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested arrays (long syntax)",
+                    "args": [
+                        "<?php\nif ($foo) {\n    $foo = array(\n             $foo,\n               $bar\n                   ->bar()\n                  ,\n                   array($baz)\n            )\n    ;\n}",
+                        "<?php\n  if ($foo) {\n         $foo = array(\n                  $foo,\n                    $bar\n                        ->bar()\n                       ,\n                        array($baz)\n                 )\n                 ;\n      }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested arrays (short syntax)",
+                    "args": [
+                        "<?php\nif ($foo) {\n    $foo = [\n             $foo,\n               $bar\n                   ->bar()\n                  ,\n                   [$baz]\n            ]\n    ;\n}",
+                        "<?php\n  if ($foo) {\n         $foo = [\n                  $foo,\n                    $bar\n                        ->bar()\n                       ,\n                        [$baz]\n                 ]\n                 ;\n      }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array (long syntax) with function call",
+                    "args": [
+                        "<?php\nif ($foo) {\n    $foo = array(\n             foo(\n                 $bar,\n                 $baz\n             )\n             )\n    ;\n}",
+                        "<?php\n  if ($foo) {\n         $foo = array(\n                  foo(\n                   $bar,\n                     $baz\n                     )\n                  )\n                 ;\n      }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array (short syntax) with function call",
+                    "args": [
+                        "<?php\nif ($foo) {\n    $foo = [\n             foo(\n                 $bar,\n                 $baz\n             )\n             ]\n    ;\n}",
+                        "<?php\n  if ($foo) {\n         $foo = [\n                  foo(\n                   $bar,\n                     $baz\n                     )\n                  ]\n                 ;\n      }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array (long syntax) with class instantiation",
+                    "args": [
+                        "<?php\nif ($foo) {\n    $foo = array(\n             new Foo(\n                 $bar,\n                 $baz\n             )\n             )\n    ;\n}",
+                        "<?php\n  if ($foo) {\n         $foo = array(\n                  new Foo(\n                   $bar,\n                     $baz\n                     )\n                  )\n                 ;\n      }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array (short syntax) with class instantiation",
+                    "args": [
+                        "<?php\nif ($foo) {\n    $foo = [\n             new Foo(\n                 $bar,\n                 $baz\n             )\n             ]\n    ;\n}",
+                        "<?php\n  if ($foo) {\n         $foo = [\n                  new Foo(\n                   $bar,\n                     $baz\n                     )\n                  ]\n                 ;\n      }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "implements list",
+                    "args": [
+                        "<?php\nclass Foo implements\n    Bar,\n    Baz\n{}",
+                        "<?php\n  class Foo implements\n   Bar,\n    Baz\n     {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "extends list",
+                    "args": [
+                        "<?php\ninterface Foo extends\n    Bar,\n    Baz\n{}",
+                        "<?php\n  interface Foo extends\n   Bar,\n    Baz\n     {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use list",
+                    "args": [
+                        "<?php\nclass Foo {\n    use Bar,\n        Baz;\n}",
+                        "<?php\n  class Foo {\n       use Bar,\n              Baz;\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "chained method call with argument",
+                    "args": [
+                        "<?php\n$foo\n ->bar(\n     $baz\n );",
+                        "<?php\n$foo\n ->bar(\n  $baz\n );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "argument separator on its own line",
+                    "args": [
+                        "<?php\nfoo(\n    1\n    ,\n    2\n);",
+                        "<?php\nfoo(\n 1\n,\n 2\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "statement end on its own line",
+                    "args": [
+                        "<?php\nif (true) {\n    $foo =\n         $a\n             && $b\n    ;\n}",
+                        "<?php\nif (true) {\n  $foo =\n       $a\n           && $b\n             ;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline control structure conditions",
+                    "args": [
+                        "<?php\nif ($a\n       && $b) {\n    foo();\n}",
+                        "<?php\nif ($a\n       && $b) {\n     foo();\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        echo \"foo\";\n        break;\n    case 2:\n        echo \"bar\";\n        break;\n    case 3:\n    default:\n        echo \"baz\";\n}",
+                        "<?php\nswitch ($foo) {\n  case 1:\n     echo \"foo\";\n  break;\n  case 2:\n     echo \"bar\";\n break;\n  case 3:\n   default:\n    echo \"baz\";\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array (long syntax) with anonymous class",
+                    "args": [
+                        "<?php\nif ($foo) {\n    $foo = array(\n             new class (\n                 $bar,\n                 $baz\n             ) {\n                 private $foo;\n\n                 public function foo(\n                     $foo\n                 ) {\n                     return $foo;\n                 }\n             }\n             )\n    ;\n}",
+                        "<?php\n  if ($foo) {\n         $foo = array(\n                  new class (\n                   $bar,\n                     $baz\n                      ) {\n                        private $foo;\n\n                       public function foo(\n                       $foo\n                        ) {\n                             return $foo;\n                            }\n                     }\n                  )\n                 ;\n      }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array (short syntax) with anonymous class",
+                    "args": [
+                        "<?php\nif ($foo) {\n    $foo = [\n             new class (\n                 $bar,\n                 $baz\n             ) {\n                 private $foo;\n\n                 public function foo(\n                     $foo\n                 ) {\n                     return $foo;\n                 }\n             }\n             ]\n    ;\n}",
+                        "<?php\n  if ($foo) {\n         $foo = [\n                  new class (\n                   $bar,\n                     $baz\n                      ) {\n                        private $foo;\n\n                       public function foo(\n                       $foo\n                        ) {\n                             return $foo;\n                            }\n                     }\n                  ]\n                 ;\n      }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expression function call arguments",
+                    "args": [
+                        "<?php\n('foo')(\n    $bar,\n    $baz\n);",
+                        "<?php\n('foo')(\n  $bar,\n   $baz\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "arrow function definition arguments",
+                    "args": [
+                        "<?php\n$foo = fn(\n    $bar,\n    $baz\n) => null;",
+                        "<?php\n   $foo = fn(\n     $bar,\n      $baz\n ) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline list in foreach",
+                    "args": [
+                        "<?php\nforeach ($array as [\n    \"foo\" => $foo,\n    \"bar\" => $bar,\n]) {\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch case with control structure",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case true:\n        if ($bar) {\n            bar();\n        }\n        return true;\n}",
+                        "<?php\nswitch ($foo) {\n    case true:\n    if ($bar) {\n      bar();\n    }\nreturn true;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment in method calls chain",
+                    "args": [
+                        "<?php\n$foo\n    ->baz()\n    /* ->baz() */\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple anonymous functions as function arguments",
+                    "args": [
+                        "<?php\nfoo(function () {\n    bar();\n}, function () {\n    baz();\n});"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple anonymous functions as method arguments",
+                    "args": [
+                        "<?php\n$this\n    ->bar(function ($a) {\n        echo $a;\n    }, function ($b) {\n        echo $b;\n    })\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "semicolon on a newline inside a switch case without break statement",
+                    "args": [
+                        "<?php\nswitch (true) {\n    case $foo:\n        $foo\n            ->baz()\n        ;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alternative syntax",
+                    "args": [
+                        "<?php if (1): ?>\n    <div></div>\n<?php else: ?>\n    <?php if (2): ?>\n        <div></div>\n    <?php else: ?>\n        <div></div>\n    <?php endif; ?>\n<?php endif; ?>\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait import with conflict resolution",
+                    "args": [
+                        "<?php\nclass Foo {\n    use Bar,\n        Baz {\n            Baz::baz insteadof Bar;\n        }\n}",
+                        "<?php\nclass Foo {\n    use Bar,\n      Baz {\n       Baz::baz insteadof Bar;\n       }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class definition",
+                    "args": [
+                        "<?php\nclass Foo\nextends\n    BaseFoo\nimplements Bar,\n    Baz {\n    public function foo() {\n    }\n}",
+                        "<?php\nclass Foo\n  extends\n    BaseFoo\n   implements Bar,\n  Baz {\n    public function foo() {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment at end of switch case",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // Nothing to do\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment at end of switch default",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        break;\n    case 2:\n        break;\n    default:\n        // Nothing to do\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch ending with empty case",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch ending with empty default",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    default:\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function ending with a comment and followed by a comma",
+                    "args": [
+                        "<?php\nfoo(function () {\n    bar();\n    // comment\n}, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline arguments starting with \"new\" keyword",
+                    "args": [
+                        "<?php\n$result1 = foo(\n    new Bar1(),\n    1\n);\n$result2 = ($function)(\n    new Bar2(),\n    2\n);\n$result3 = (new Argument())(\n    new Bar3(),\n    3\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if with only a comment and followed by else",
+                    "args": [
+                        "<?php\nif (true) {\n    // foo\n} else {\n    // bar\n}",
+                        "<?php\nif (true) {\n// foo\n} else {\n        // bar\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment before else blocks WITHOUT stick_comment_to_next_continuous_control_statement",
+                    "args": [
+                        "<?php\n// foo\nif ($foo) {\n    echo \"foo\";\n    // bar\n} else {\n    $aaa = 1;\n}",
+                        "<?php\n        // foo\nif ($foo) {\n    echo \"foo\";\n        // bar\n} else {\n    $aaa = 1;\n}",
+                        {
+                            "stick_comment_to_next_continuous_control_statement": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment before else blocks WITH stick_comment_to_next_continuous_control_statement",
+                    "args": [
+                        "<?php\n// foo\nif ($foo) {\n    echo \"foo\";\n// bar\n} else {\n    $aaa = 1;\n}",
+                        "<?php\n        // foo\nif ($foo) {\n    echo \"foo\";\n        // bar\n} else {\n    $aaa = 1;\n}",
+                        {
+                            "stick_comment_to_next_continuous_control_statement": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline comment in block - describing next block",
+                    "args": [
+                        "<?php\nif (1) {\n    $b = \"a\";\n// multiline comment line 1\n// multiline comment line 2\n// multiline comment line 3\n} else {\n    $c = \"b\";\n}",
+                        "<?php\nif (1) {\n    $b = \"a\";\n    // multiline comment line 1\n    // multiline comment line 2\n    // multiline comment line 3\n} else {\n    $c = \"b\";\n}",
+                        {
+                            "stick_comment_to_next_continuous_control_statement": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline comment in block - the only content in block",
+                    "args": [
+                        "<?php\nif (1) {\n    // multiline comment line 1\n    // multiline comment line 2\n    // multiline comment line 3\n} else {\n    $c = \"b\";\n}",
+                        "<?php\nif (1) {\n // multiline comment line 1\n  // multiline comment line 2\n// multiline comment line 3\n} else {\n    $c = \"b\";\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment before elseif blocks",
+                    "args": [
+                        "<?php\n// foo\nif ($foo) {\n    echo \"foo\";\n// bar\n} elseif(1) {\n    echo \"bar\";\n} elseif(2) {\n    // do nothing\n} elseif(3) {\n    $aaa = 1;\n    // end comment in final block\n}",
+                        "<?php\n    // foo\nif ($foo) {\n    echo \"foo\";\n    // bar\n} elseif(1) {\n    echo \"bar\";\n} elseif(2) {\n// do nothing\n} elseif(3) {\n    $aaa = 1;\n    // end comment in final block\n}",
+                        {
+                            "stick_comment_to_next_continuous_control_statement": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments at the end of if/elseif/else blocks",
+                    "args": [
+                        "<?php\nif ($foo) {\n    echo \"foo\";\n// foo\n} elseif ($bar) {\n    echo \"bar\";\n// bar\n} else {\n    echo \"baz\";\n    // baz\n}",
+                        "<?php\nif ($foo) {\n    echo \"foo\";\n    // foo\n} elseif ($bar) {\n    echo \"bar\";\n    // bar\n} else {\n    echo \"baz\";\n    // baz\n}",
+                        {
+                            "stick_comment_to_next_continuous_control_statement": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if-elseif-else without braces",
+                    "args": [
+                        "<?php\nif ($foo)\n    foo();\nelseif ($bar)\n    bar();\nelse\n    baz();",
+                        "<?php\nif ($foo)\nfoo();\nelseif ($bar)\n  bar();\nelse\n        baz();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "for without braces",
+                    "args": [
+                        "<?php\nfor (;;)\n    foo();",
+                        "<?php\nfor (;;)\n  foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "foreach without braces",
+                    "args": [
+                        "<?php\nforeach ($foo as $bar)\n    foo();",
+                        "<?php\nforeach ($foo as $bar)\n  foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "while without braces",
+                    "args": [
+                        "<?php\nwhile (true)\n    foo();",
+                        "<?php\nwhile (true)\n  foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do-while without braces",
+                    "args": [
+                        "<?php\ndo\n    foo();\nwhile (true);",
+                        "<?php\ndo\n  foo();\n while (true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested control structures without braces",
+                    "args": [
+                        "<?php\nif (true)\n    if (true)\n        if (true)\n            for ($i = 0; $i < 1; ++$i)\n                echo 1;\n        elseif (true)\n            foreach ([] as $foo)\n                echo 2;\n        else if (true)\n            while (true)\n                echo 3;\n        else\n            do\n                echo 4;\n            while (true);\n    else\n        echo 5;",
+                        "<?php\nif (true)\nif (true)\n if (true)\n    for ($i = 0; $i < 1; ++$i)\n  echo 1;\nelseif (true)\n  foreach ([] as $foo)\n   echo 2;\nelse if (true)\n  while (true)\n   echo 3;\n  else\n  do\n      echo 4;\n      while (true);\n    else\n     echo 5;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixex if-else with and without braces",
+                    "args": [
+                        "<?php\nif (true)\n    if (true) {\n        if (true)\n            echo 1;\n        else\n            echo 2;\n    }\n    else {\n        echo 3;\n    }\nelse\n    echo 4;",
+                        "<?php\nif (true)\n  if (true) {\n          if (true)\n               echo 1;\n  else\n        echo 2;\n   }\n else {\n    echo 3;\n }\n    else\n     echo 4;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty if and else without braces",
+                    "args": [
+                        "<?php\nif (true) {\n    if (false);\n    elseif (false);\n    else if (false);\n    else\n        echo 1;\n}",
+                        "<?php\n  if (true) {\n   if (false);\n  elseif (false);\n else if (false);\nelse\necho 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class constant",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    const\n        FOO = 1;\n    const BAR\n        = 2;\n}",
+                        "<?php\nclass Foo\n{\n  const\n     FOO = 1;\n  const BAR\n  = 2;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class constant with visibility",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public const\n        FOO = 1;\n    protected const\n        BAR = 1;\n    private const\n        BAZ = 1;\n}",
+                        "<?php\nclass Foo\n{\n  public const\n     FOO = 1;\n  protected const\n         BAR = 1;\n  private const\n                BAZ = 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline comma-separated class constants",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    const\n        FOO = 1,\n        BAR = 2;\n}",
+                        "<?php\nclass Foo\n{\n  const\n     FOO = 1,\n      BAR = 2;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class constant with array value",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    const\n        FOO = [\n                  1\n                             ];\n}",
+                        "<?php\nclass Foo\n{\n  const\n     FOO = [\n               1\n                          ];\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class constants with array key/value",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    const\n        READY = \"GO\",\n        FOO = [\n            \"foo\" => \"bar\",\n        ],\n        BAR = \"Foo\",\n        STOP = \"STOP\";\n}",
+                        "<?php\nclass Foo\n{\n  const\n        READY = \"GO\",\n    FOO = [\n        \"foo\" => \"bar\",\n    ],\n        BAR = \"Foo\",\n      STOP = \"STOP\";\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class constant with semicolon on next line",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public const\n        FOO = 1\n    ;\n}",
+                        "<?php\nclass Foo\n{\n  public const\n     FOO = 1\n      ;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class property",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public\n        $foo;\n    protected\n        $bar;\n    private\n        $baz;\n}",
+                        "<?php\nclass Foo\n{\n  public\n     $foo;\n  protected\n         $bar;\n  private\n                $baz;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class property with default value",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public\n        $foo = 1;\n}",
+                        "<?php\nclass Foo\n{\n  public\n     $foo = 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class typed property",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public\n        int $foo;\n}",
+                        "<?php\nclass Foo\n{\n  public\n     int $foo;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class static property",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public static\n        $foo;\n    static public\n        $bar;\n}",
+                        "<?php\nclass Foo\n{\n  public static\n     $foo;\n  static public\n       $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline comma-separated class properties",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public\n        $foo,\n        $bar;\n}",
+                        "<?php\nclass Foo\n{\n  public\n     $foo,\n      $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class property with array value",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public\n        $foo = [\n                  1\n                             ];\n}",
+                        "<?php\nclass Foo\n{\n  public\n     $foo = [\n               1\n                          ];\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class property with semicolon on next line",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public\n        $foo\n    ;\n}",
+                        "<?php\nclass Foo\n{\n  public\n     $foo\n      ;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline class property with var",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    var\n        $foo;\n}",
+                        "<?php\nclass Foo\n{\n  var\n     $foo;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "property with multiline array containing explicit keys",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private $foo = [\n        'a' => 1,\n        'b' => 2,\n    ];\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array with static method call",
+                    "args": [
+                        "<?php\n$foo = [\n    static::createNoErrorReport(),\n    1,\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ternary operator in property",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public int $bar = BAZ ? -1 : 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "braceless if with return",
+                    "args": [
+                        "<?php\nif (1 == 2)\n    return;\n\nif (1 == 2)\n    return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "functions \"set\" and \"get\" (like property hooks, but not)",
+                    "args": [
+                        "<?php if ($x) {\n    set();\n} elseif ($y) {\n    SET();\n} else {\n    get();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with tabs",
+                    "args": [
+                        "<?php\nif ($foo) {\n\tfoo();\n\tbar();\n}",
+                        "<?php\nif ($foo) {\n  foo();\n       bar();\n }",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\StatementIndentationFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "match expression",
+                    "args": [
+                        "<?php\nreturn match ($bool) {\n    0 => false,\n    1 => true,\n    default => throw new Exception(),\n};",
+                        "<?php\nreturn match ($bool) {\n 0 => false,\n      1 => true,\n   default => throw new Exception(),\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attribute",
+                    "args": [
+                        "<?php\nclass Foo {\n    #[SimpleAttribute]\n    #[\n        MultilineAttribute\n    ]\n    #[ComplexAttribute(\n        foo: true,\n        bar: [\n                    1,\n                        2,\n                  3,\n         ]\n    )]\n    public function bar()\n    {\n    }\n}",
+                        "<?php\nclass Foo {\n #[SimpleAttribute]\n #[\n MultilineAttribute\n ]\n#[ComplexAttribute(\n foo: true,\n    bar: [\n                1,\n                    2,\n              3,\n     ]\n )]\n  public function bar()\n     {\n     }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\StatementIndentationFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "simple enum",
+                    "args": [
+                        "<?php\nenum Color {\n    case Red;\n    case Green;\n    case Blue;\n}",
+                        "<?php\nenum Color {\n case Red;\n      case Green;\n  case Blue;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "backed enum",
+                    "args": [
+                        "<?php\nenum Color: string {\n    case Red = \"R\";\n    case Green = \"G\";\n    case Blue = \"B\";\n}",
+                        "<?php\nenum Color: string {\n case Red = \"R\";\n      case Green = \"G\";\n  case Blue = \"B\";\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "backed enum with multiline assignment",
+                    "args": [
+                        "<?php\nenum Color: string {\n    case REALLY_LONG_ENUM_NAME_BLA_BLA_BLA\n        = \"REALLY_LONG_ENUM_VALUE_BLA_BLA_BLA\";\n}",
+                        "<?php\nenum Color: string {\n    case REALLY_LONG_ENUM_NAME_BLA_BLA_BLA\n    = \"REALLY_LONG_ENUM_VALUE_BLA_BLA_BLA\";\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with method",
+                    "args": [
+                        "<?php\nenum Color {\n    case Red;\n    case Green;\n    case Blue;\n\n    public function foo() {\n        return true;\n    }\n}",
+                        "<?php\nenum Color {\n case Red;\n      case Green;\n  case Blue;\n\n      public function foo() {\n            return true;\n        }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "multiline class readonly property",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public readonly\n        int $foo;\n    readonly public\n        int $bar;\n}",
+                        "<?php\nclass Foo\n{\n  public readonly\n     int $foo;\n  readonly public\n       int $bar;\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\StatementIndentationFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hooks",
+                    "args": [
+                        "<?php class Foo\n{\n    public int $i {\n        set {\n            $this->i = max($value, 0);\n        }\n    }\n}",
+                        "<?php class Foo\n{\n    public int $i {\n        set {\n            $this->i = max($value, 0);\n            }\n    }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

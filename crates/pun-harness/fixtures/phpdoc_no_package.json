@@ -1,0 +1,59 @@
+{
+    "fixer": "phpdoc_no_package",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoPackageFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocNoPackageFixerTest.php",
+    "case_count": 4,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoPackageFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "package",
+                    "args": [
+                        "<?php\n    /**\n     */\n",
+                        "<?php\n    /**\n     * @package Foo\\Bar\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "subpackage",
+                    "args": [
+                        "<?php\n    /**\n     */\n",
+                        "<?php\n    /**\n     * @subpackage Foo\\Bar\\Baz\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "many",
+                    "args": [
+                        "<?php\n/**\n * Hello!\n */\n",
+                        "<?php\n/**\n * Hello!\n * @package\n * @subpackage\n */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do nothing",
+                    "args": [
+                        "<?php\n    /**\n     * @var package\n     */\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

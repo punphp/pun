@@ -1,0 +1,866 @@
+{
+    "fixer": "global_namespace_import",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\GlobalNamespaceImportFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Import/GlobalNamespaceImportFixerTest.php",
+    "case_count": 71,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\GlobalNamespaceImportFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - non-global names",
+                    "args": [
+                        "<?php\nnamespace Test;\necho FOO, \\Bar\\BAZ, namespace\\FOO2;",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - name already used [1]",
+                    "args": [
+                        "<?php\nnamespace Test;\necho \\FOO, FOO, \\FOO;",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - name already used [2]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse const Bar\\FOO;\necho \\FOO;",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - name already used [3]",
+                    "args": [
+                        "<?php\nnamespace Test;\nconst FOO = 1;\necho \\FOO;",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - without namespace / do not import",
+                    "args": [
+                        "<?php\necho \\FOO, \\BAR, \\FOO;",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - with namespace",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse const BAR;\nuse const FOO;\necho FOO, BAR;",
+                        "<?php\nnamespace Test;\necho \\FOO, \\BAR;",
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - with namespace with {} syntax",
+                    "args": [
+                        "<?php\nnamespace Test {\nuse const BAR;\nuse const FOO;\n    echo FOO, BAR;\n}",
+                        "<?php\nnamespace Test {\n    echo \\FOO, \\BAR;\n}",
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - ignore other imported types",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse BAR;\nuse const BAR;\nuse const FOO;\necho FOO, BAR;",
+                        "<?php\nnamespace Test;\nuse BAR;\necho \\FOO, \\BAR;",
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - respect already imported names [1]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse const BAR;\nuse const FOO;\necho FOO, BAR;",
+                        "<?php\nnamespace Test;\nuse const BAR;\necho \\FOO, \\BAR;",
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - respect already imported names [2]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse const \\BAR;\nuse const FOO;\necho FOO, BAR, BAR;",
+                        "<?php\nnamespace Test;\nuse const \\BAR;\necho \\FOO, \\BAR, BAR;",
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - handle case sensitivity",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse const fOO;\nuse const FOO;\nuse const Foo;\nconst foO = 1;\necho FOO, Foo;",
+                        "<?php\nnamespace Test;\nuse const fOO;\nconst foO = 1;\necho \\FOO, \\Foo;",
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - handle aliased imports",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse const BAR as BAZ;\nuse const FOO;\necho FOO, BAZ;",
+                        "<?php\nnamespace Test;\nuse const BAR as BAZ;\necho \\FOO, \\BAR;",
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - ignore class constants",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse const FOO;\nclass Bar {\n    const FOO = 1;\n}\necho FOO;",
+                        "<?php\nnamespace Test;\nclass Bar {\n    const FOO = 1;\n}\necho \\FOO;",
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (true) - global namespace",
+                    "args": [
+                        "<?php\necho \\FOO, \\BAR;",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nnamespace {\n    echo \\FOO, \\BAR;\n}",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - non-global names",
+                    "args": [
+                        "<?php\nnamespace Test;\nfoo();\nBar\\baz();\nnamespace\\foo2();",
+                        null,
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - name already used [1]",
+                    "args": [
+                        "<?php\nnamespace Test;\n\\foo();\nFoo();\n\\foo();",
+                        null,
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - name already used [2]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse function Bar\\foo;\n\\Foo();",
+                        null,
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - name already used [3]",
+                    "args": [
+                        "<?php\nnamespace Test;\nfunction foo() {}\n\\Foo();",
+                        null,
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - without namespace / do not import",
+                    "args": [
+                        "<?php\n\\foo();\n\\bar();\n\\Foo();",
+                        null,
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - with namespace",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse function bar;\nuse function foo;\nfoo();\nbar();",
+                        "<?php\nnamespace Test;\n\\foo();\n\\bar();",
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - with namespace with {} syntax",
+                    "args": [
+                        "<?php\nnamespace Test {\nuse function bar;\nuse function foo;\n    foo();\n    bar();\n}",
+                        "<?php\nnamespace Test {\n    \\foo();\n    \\bar();\n}",
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - ignore other imported types",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse bar;\nuse function bar;\nuse function foo;\nfoo();\nbar();",
+                        "<?php\nnamespace Test;\nuse bar;\n\\foo();\n\\bar();",
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - respect already imported names [1]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse function bar;\nuse function foo;\nfoo();\nBar();",
+                        "<?php\nnamespace Test;\nuse function bar;\n\\foo();\n\\Bar();",
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - respect already imported names [2]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse function \\bar;\nuse function foo;\nfoo();\nBar();\nbar();",
+                        "<?php\nnamespace Test;\nuse function \\bar;\n\\foo();\n\\Bar();\nbar();",
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - handle aliased imports",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse function bar as baz;\nuse function foo;\nfoo();\nbaz();",
+                        "<?php\nnamespace Test;\nuse function bar as baz;\n\\foo();\n\\Bar();",
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - ignore class methods",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse function foo;\nclass Bar {\n    function foo() {}\n}\nfoo();",
+                        "<?php\nnamespace Test;\nclass Bar {\n    function foo() {}\n}\n\\foo();",
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (true) - name already used",
+                    "args": [
+                        "<?php\nnamespace Test;\nclass Bar {\n    function baz() {\n        new class() {\n            function baz() {\n                function foo() {}\n            }\n        };\n    }\n}\n\\foo();",
+                        null,
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - non-global names",
+                    "args": [
+                        "<?php\nnamespace Test;\nnew Foo();\nnew Bar\\Baz();\nnew namespace\\Foo2();\n\n/** @var Foo|Bar\\Baz $x */\n$x = x();",
+                        null,
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - name already used [1]",
+                    "args": [
+                        "<?php\nnamespace Test;\nnew \\Foo();\nnew foo();\n\n/** @var \\Foo $foo */\n$foo = new \\Foo();",
+                        null,
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - name already used [2]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Bar\\foo;\n\n/** @var \\Foo $foo */\n$foo = new \\Foo();",
+                        null,
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - name already used [3]",
+                    "args": [
+                        "<?php\nnamespace Test;\nclass foo {}\n\n/** @var \\Foo $foo */\n$foo = new \\Foo();",
+                        null,
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - name already used [4]",
+                    "args": [
+                        "<?php\nnamespace Test;\n\n/** @return array<string, foo> */\nfunction x() {}\n\n/** @var \\Foo $foo */\n$foo = new \\Foo();",
+                        null,
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - without namespace / do not import",
+                    "args": [
+                        "<?php\n/** @var \\Foo $foo */\n$foo = new \\foo();\nnew \\Bar();\n\\FOO::baz();",
+                        null,
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - with namespace",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Bar;\nuse Baz;\nuse Foo;\n\nnew Foo();\nBar::baz();\n\n/** @return Baz<string, foo> */\nfunction x() {}",
+                        "<?php\nnamespace Test;\n\nnew \\Foo();\n\\Bar::baz();\n\n/** @return \\Baz<string, \\foo> */\nfunction x() {}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - with namespace with {} syntax",
+                    "args": [
+                        "<?php\nnamespace Test {\nuse Bar;\nuse Foo;\n    new Foo();\n    Bar::baz();\n}",
+                        "<?php\nnamespace Test {\n    new \\Foo();\n    \\Bar::baz();\n}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - phpdoc only",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Throwable;\n\n/** @throws Throwable */\nfunction x() {}",
+                        "<?php\nnamespace Test;\n\n/** @throws \\Throwable */\nfunction x() {}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - ignore other imported types",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse function Bar;\nuse Bar;\nuse Foo;\nnew Foo();\nBar::baz();",
+                        "<?php\nnamespace Test;\nuse function Bar;\nnew \\Foo();\n\\Bar::baz();",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - respect already imported names [1]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Bar;\nuse Foo;\nnew Foo();\nbar::baz();",
+                        "<?php\nnamespace Test;\nuse Bar;\nnew \\Foo();\n\\bar::baz();",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - respect already imported names [2]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse \\Bar;\nuse Foo;\nnew Foo();\nnew bar();\nnew Bar();",
+                        "<?php\nnamespace Test;\nuse \\Bar;\nnew \\Foo();\nnew \\bar();\nnew Bar();",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - respect already imported names [3]",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Throwable;\n\n/** @throws Throwable */\nfunction x() {}\n\n/** @throws Throwable */\nfunction y() {}",
+                        "<?php\nnamespace Test;\nuse Throwable;\n\n/** @throws Throwable */\nfunction x() {}\n\n/** @throws \\Throwable */\nfunction y() {}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - handle aliased imports",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Bar as Baz;\nuse Foo;\n\nnew Foo();\n\n/** @var Baz $bar */\n$bar = new Baz();",
+                        "<?php\nnamespace Test;\nuse Bar as Baz;\n\nnew \\Foo();\n\n/** @var \\bar $bar */\n$bar = new \\bar();",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - handle typehints",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Bar;\nuse Baz;\nuse Foo;\nclass Abc {\n    function bar(Foo $a, Bar $b, foo &$c, Baz ...$d) {}\n}",
+                        "<?php\nnamespace Test;\nclass Abc {\n    function bar(\\Foo $a, \\Bar $b, \\foo &$c, \\Baz ...$d) {}\n}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - handle typehints 2",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Bar;\nuse Foo;\nclass Abc {\n    function bar(?Foo $a): ?Bar {}\n}",
+                        "<?php\nnamespace Test;\nclass Abc {\n    function bar(?\\Foo $a): ?\\Bar {}\n}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - try catch",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (Exception $e) {\n}",
+                        "<?php\nnamespace Test;\ntry {\n} catch (\\Exception $e) {\n}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (true) - try catch with comments",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (/* ... */ Exception $e /* ... */) {\n}",
+                        "<?php\nnamespace Test;\ntry {\n} catch (/* ... */ \\Exception $e /* ... */) {\n}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (false) - already fqn or sub namespace",
+                    "args": [
+                        "<?php\nuse const FOO;\nuse const BAR;\necho \\FOO, Baz\\BAR;",
+                        null,
+                        {
+                            "import_constants": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (false) - handle all occurrences",
+                    "args": [
+                        "<?php\nnamespace X;\nuse const FOO;\nuse const BAR;\necho \\FOO, \\BAR, \\FOO;",
+                        "<?php\nnamespace X;\nuse const FOO;\nuse const BAR;\necho FOO, BAR, FOO;",
+                        {
+                            "import_constants": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_constants (false) - ignore other imports and non-imported names",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse FOO;\nuse const BAR;\nuse const Baz;\necho FOO, \\BAR, BAZ, QUX;",
+                        "<?php\nnamespace Test;\nuse FOO;\nuse const BAR;\nuse const Baz;\necho FOO, BAR, BAZ, QUX;",
+                        {
+                            "import_constants": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (false) - already fqn or sub namespace",
+                    "args": [
+                        "<?php\nuse function foo;\nuse function bar;\n\\foo();\nBaz\\bar();",
+                        null,
+                        {
+                            "import_functions": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (false) - handle all occurrences",
+                    "args": [
+                        "<?php\nnamespace X;\nuse function foo;\nuse function bar;\n\\foo();\n\\bar();\n\\Foo();",
+                        "<?php\nnamespace X;\nuse function foo;\nuse function bar;\nfoo();\nbar();\nFoo();",
+                        {
+                            "import_functions": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_functions (false) - ignore other imports and non-imported names",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse foo;\nuse function bar;\nfoo();\n\\bar();\nbaz();",
+                        "<?php\nnamespace Test;\nuse foo;\nuse function bar;\nfoo();\nbar();\nbaz();",
+                        {
+                            "import_functions": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (false) - already fqn or sub namespace",
+                    "args": [
+                        "<?php\nuse Foo;\nuse Bar;\n\nnew \\Foo();\nBaz\\Bar::baz();\n\n/**\n * @param \\Foo $foo\n * @param Baz\\Bar $bar\n */\nfunction abc(\\Foo $foo, Baz\\Bar $bar = null) {}",
+                        null,
+                        {
+                            "import_classes": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (false) - handle all occurrences",
+                    "args": [
+                        "<?php\nnamespace X;\nuse Foo;\nuse Bar;\nuse IteratorAggregate;\n\nnew \\Foo();\nnew \\Bar();\n\\foo::baz();\n\n/**\n * @param \\Foo|string $foo\n * @param null|\\Bar[] $bar\n * @param-out \\Foo $foo\n * @return array<string, ?\\Bar<int, \\foo>>|null\n */\nfunction abc($foo, \\Bar $bar = null) {}\n\n/**\n * @extends \\Foo<\\Bar>\n * @implements \\IteratorAggregate<\\Foo>\n */\nclass Qux implements \\IteratorAggregate {}",
+                        "<?php\nnamespace X;\nuse Foo;\nuse Bar;\nuse IteratorAggregate;\n\nnew Foo();\nnew Bar();\nfoo::baz();\n\n/**\n * @param Foo|string $foo\n * @param null|Bar[] $bar\n * @param-out Foo $foo\n * @return array<string, ?Bar<int, foo>>|null\n */\nfunction abc($foo, Bar $bar = null) {}\n\n/**\n * @extends Foo<Bar>\n * @implements IteratorAggregate<Foo>\n */\nclass Qux implements IteratorAggregate {}",
+                        {
+                            "import_classes": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (false) - ignore other imports and non-imported names",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse function Foo;\nuse Bar;\nnew Foo();\nnew \\Bar();\nnew Baz();",
+                        "<?php\nnamespace Test;\nuse function Foo;\nuse Bar;\nnew Foo();\nnew Bar();\nnew Baz();",
+                        {
+                            "import_classes": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (false) - try catch",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (\\Exception $e) {\n}",
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (Exception $e) {\n}",
+                        {
+                            "import_classes": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (false) - try catch with comments",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (/* ... */ \\Exception $e /* ... */) {\n}",
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (/* ... */ Exception $e /* ... */) {\n}",
+                        {
+                            "import_classes": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import_classes (false) - key in PHPDoc's array shape matching class name",
+                    "args": [
+                        "<?php\n                namespace Foo;\n                use Exception;\n                class Bar {\n                    /**\n                     * @return array{code: int, exception: \\Exception}\n                     */\n                    public function f1(): array {}\n                    /**\n                     * @return array{exception: \\Exception}\n                     */\n                    public function f2(): array {}\n                    /**\n                     * @return array{exceptions: array<\\Exception>}\n                     */\n                    public function f3(): array {}\n                }",
+                        "<?php\n                namespace Foo;\n                use Exception;\n                class Bar {\n                    /**\n                     * @return array{code: int, exception: Exception}\n                     */\n                    public function f1(): array {}\n                    /**\n                     * @return array{exception: Exception}\n                     */\n                    public function f2(): array {}\n                    /**\n                     * @return array{exceptions: array<Exception>}\n                     */\n                    public function f3(): array {}\n                }",
+                        {
+                            "import_classes": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\GlobalNamespaceImportFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "import_classes (true) - try catch without variable",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (Exception) {\n}",
+                        "<?php\nnamespace Test;\ntry {\n} catch (\\Exception) {\n}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "import_classes (true) - try catch without variable and comments",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (/* non-capturing catch */ Exception /* just because! */) {\n}",
+                        "<?php\nnamespace Test;\ntry {\n} catch (/* non-capturing catch */ \\Exception /* just because! */) {\n}",
+                        {
+                            "import_classes": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "import_classes (false) - try catch without variable",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (\\Exception) {\n}",
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (Exception) {\n}",
+                        {
+                            "import_classes": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "import_classes (false) - try catch without variable and comments",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (/* non-capturing catch */ \\Exception /* just because! */) {\n}",
+                        "<?php\nnamespace Test;\nuse Exception;\ntry {\n} catch (/* non-capturing catch */ Exception /* just because! */) {\n}",
+                        {
+                            "import_classes": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nnamespace Test;\necho \\FOO, \\BAR;\n\nnamespace OtherTest;\necho \\FOO, \\BAR;",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nnamespace Test {\n    echo \\FOO, \\BAR;\n\n}\n\nnamespace OtherTest {\n    echo \\FOO, \\BAR;\n}",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nnamespace {\n    echo \\FOO, \\BAR;\n\n}\n\nnamespace OtherTest {\n    echo \\FOO, \\BAR;\n}",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nnamespace Test {\n    echo \\FOO, \\BAR;\n\n}\n\nnamespace {\n    echo \\FOO, \\BAR;\n}",
+                        null,
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attributes",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse AnAttribute1;\nuse AnAttribute2;\nuse AnAttribute3;\nclass Bar\n{\n    #[AnAttribute1]\n    public function f1() {}\n    #[AnAttribute2, AnAttribute3]\n    public function f2() {}\n}",
+                        "<?php\nnamespace Foo;\nclass Bar\n{\n    #[\\AnAttribute1]\n    public function f1() {}\n    #[\\AnAttribute2, \\AnAttribute3]\n    public function f2() {}\n}",
+                        {
+                            "import_classes": true,
+                            "import_constants": true,
+                            "import_functions": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\GlobalNamespaceImportFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "ignore enum methods",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse function foo;\nenum Bar {\n    function foo() {}\n}\nfoo();",
+                        "<?php\nnamespace Test;\nenum Bar {\n    function foo() {}\n}\n\\foo();",
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "ignore enum constants",
+                    "args": [
+                        "<?php\nnamespace Test;\nuse const FOO;\nenum Bar {\n    const FOO = 1;\n}\necho FOO;",
+                        "<?php\nnamespace Test;\nenum Bar {\n    const FOO = 1;\n}\necho \\FOO;",
+                        {
+                            "import_constants": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "import first-class callable",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse function a;\nuse function b;\nuse function c;\nuse function d;\n$a = a();\n$b = b(...);\n$c = c(...);\n$c = d();",
+                        "<?php\nnamespace Foo;\nuse function a;\nuse function b;\n$a = a();\n$b = b(...);\n$c = \\c(...);\n$c = \\d();",
+                        {
+                            "import_functions": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "fully quantify first-class callable",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse function a;\nuse function b;\nuse function c;\nuse function d;\n$a = \\a();\n$b = \\b(...);\n$c = \\c(...);\n$c = \\d();",
+                        "<?php\nnamespace Foo;\nuse function a;\nuse function b;\nuse function c;\nuse function d;\n$a = a();\n$b = b(...);\n$c = \\c(...);\n$c = \\d();",
+                        {
+                            "import_functions": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

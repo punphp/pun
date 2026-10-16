@@ -1,0 +1,111 @@
+{
+    "fixer": "no_singleline_whitespace_before_semicolons",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\NoSinglelineWhitespaceBeforeSemicolonsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Semicolon/NoSinglelineWhitespaceBeforeSemicolonsFixerTest.php",
+    "case_count": 11,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\NoSinglelineWhitespaceBeforeSemicolonsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php for ($uu = 0; ; ++$uu) {}",
+                        "<?php for ($uu = 0    ;    ; ++$uu) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$this\n    ->setName('readme1')\n    ->setDescription('Generates the README content, based on the fix command help')\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n$this\n    ->setName('readme2')\n    ->setDescription('Generates the README content, based on the fix command help')\n    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php echo \"$this->foo('with param containing ;') ;\";",
+                        "<?php echo \"$this->foo('with param containing ;') ;\" ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $this->foo();",
+                        "<?php $this->foo() ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $this->foo('with param containing ;');",
+                        "<?php $this->foo('with param containing ;') ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $this->foo('with param containing ) ; ');",
+                        "<?php $this->foo('with param containing ) ; ') ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $this->foo(\"with param containing ) ; \");",
+                        "<?php $this->foo(\"with param containing ) ; \")  ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    $foo\n        ->bar(1)\n        ->baz(2)\n    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n    $foo\n        ->bar(1)\n        //->baz(2)\n    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $this->foo(\"with semicolon in string) ; \");"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,3286 @@
+{
+    "fixer": "method_argument_space",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\MethodArgumentSpaceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/MethodArgumentSpaceFixerTest.php",
+    "case_count": 221,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\MethodArgumentSpaceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n// space \n$var1 = $a->some_method(\n    $var2\n);\n\n// space \n$var2 = some_function(\n    $var2\n);\n\n    // space     \n    $var2a = $z[1](\n        $var2a\n    );\n    \n    $var3 = function(  $a, $b  ) { };\n",
+                        "<?php\n// space \n$var1 = $a->some_method(\n    $var2);\n\n// space \n$var2 = some_function(\n    $var2);\n\n    // space     \n    $var2a = $z[1](\n        $var2a\n    );\n    \n    $var3 = function(  $a , $b  ) { };\n",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nfoo(\n    $x,\n    bar(\n        $foo,\n        $bar\n    )\n);\n",
+                        "<?php\nfoo($x,\nbar($foo,\n$bar));\n",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nfoo(\n    $x,\n    bar(\n        $foo,\n        baz(\n            $bar,\n            $baz\n        )\n    )\n);\n",
+                        "<?php\nfoo($x,\nbar($foo,\nbaz($bar,\n$baz)));\n",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php xyz(\"\", \"\", \"\", \"\");",
+                        "<?php xyz(\"\",\"\",\"\",\"\");",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php function xyz($a=10, $b=20, $c=30) {}",
+                        "<?php function xyz($a=10,$b=20,$c=30) {}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php function xyz($a=10, $b=20, $c=30) {}",
+                        "<?php function xyz($a=10,         $b=20 , $c=30) {}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php function xyz($a=10,         $b=20, $c=30) {}",
+                        "<?php function xyz($a=10,         $b=20 , $c=30) {}",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $c=30);",
+                        "<?php xyz($a=10 ,$b=20,$c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $this->foo(), $c=30);",
+                        "<?php xyz($a=10,$b=20 ,$this->foo() ,$c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $c=30);",
+                        "<?php xyz($a=10 , $b=20 ,          $c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php xyz($a=10, $b=20,          $c=30);",
+                        "<?php xyz($a=10 , $b=20 ,          $c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $c=30);",
+                        "<?php xyz($a=10 , $b=20 ,\t $c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php xyz($a=10, $b=20,\t $c=30);",
+                        "<?php xyz($a=10 , $b=20 ,\t $c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $this->foo(), $c=30);",
+                        "<?php xyz($a=10,$b=20 ,         $this->foo() ,$c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php xyz($a=10, $b=20,         $this->foo(), $c=30);",
+                        "<?php xyz($a=10,$b=20 ,         $this->foo() ,$c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php new Foo($a=10, $b=20, $this->foo(), $c=30);",
+                        "<?php new Foo($a=10,$b=20 ,$this->foo() ,$c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php new Foo($a=10, $b=20, $c=30);",
+                        "<?php new Foo($a=10 , $b=20 ,          $c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php new Foo($a=10, $b=20,          $c=30);",
+                        "<?php new Foo($a=10 , $b=20 ,          $c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php new class ($a=10, $b=20, $this->foo(), $c=30) {};",
+                        "<?php new class ($a=10,$b=20 ,$this->foo() ,$c=30) {};",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php new class ($a=10, $b=20, $c=30) extends Foo {};",
+                        "<?php new class ($a=10 , $b=20 ,          $c=30) extends Foo {};",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php new class ($a=10, $b=20,          $c=30) {};",
+                        "<?php new class ($a=10 , $b=20 ,          $c=30) {};",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php list($a, $b, , , $c) = foo();",
+                        "<?php list($a, $b,, ,$c) = foo();",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php list($a, $b, , , $c) = foo();",
+                        "<?php list($a, $b,,    ,$c) = foo();",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php list($a, $b, ,    , $c) = foo();",
+                        "<?php list($a, $b,,    ,$c) = foo();",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php array(10 , 20 ,30); $foo = [ 10,50 , 60 ] ?>",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php list($path, $mode, ) = foo();",
+                        "<?php list($path, $mode,) = foo();",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\nlist(\n    $a,\n    $b,\n) = foo();\n",
+                        "<?php\nlist(\n    $a   ,\n    $b  ,\n) = foo();\n",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php xyz($a=10, /*comment1*/ $b=2000, /*comment2*/ $c=30);",
+                        "<?php xyz($a=10,    /*comment1*/ $b=2000,/*comment2*/ $c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php xyz($a=10,    /*comment1*/ $b=2000, /*comment2*/ $c=30);",
+                        "<?php xyz($a=10,    /*comment1*/ $b=2000,/*comment2*/ $c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php if (1) {\n                xyz(\n                    $a=10,\n                    $b=20,\n                    $c=30\n                );\n                }",
+                        "<?php if (1) {\n                xyz(\n                    $a=10 ,\n                    $b=20,\n                    $c=30\n                );\n                }",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php if (1) {\n                new class (\n                    $a=10,\n                    $b=20,\n                    $c=30\n                ) {};\n                }",
+                        "<?php if (1) {\n                new class (\n                    $a=10 ,\n                $b=20,$c=30) {};\n                }",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php fnc(1, array(2, func2(6, 7) ,4), 5);",
+                        "<?php fnc(1,array(2, func2(6,    7) ,4),    5);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php fnc(1, array(2, func2(6,    7) ,4),    5);",
+                        "<?php fnc(1,array(2, func2(6,    7) ,4),    5);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php fnc(1, array(2, 3 ,4), 5);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n                    array(\n                        10 ,\n                        20,\n                        30\n                    );",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\n    $foo = [\"a\"=>\"apple\", \"b\"=>\"bed\" ,\"c\"=>\"car\"];\n    $bar = [\"a\" ,\"b\" ,\"c\"];\n    ",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php if (1) {\n    $this->foo(\n        <<<EOTXTa\n    heredoc\nEOTXTa\n        ,\n        <<<'EOTXTb'\n    nowdoc\nEOTXTb\n        ,\n        'foo'\n    );\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php xyz#\n (#\n\"\"#\n,#\n$a#\n);",
+                        null,
+                        {
+                            "on_multiline": "ignore"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php xyz#\n (#\n\"\"#\n,#\n$a#\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php xyz#\n (#\n\"\"#\n,#\n$a#\n );",
+                        "<?php xyz#\n (#\n\"\"#\n,#\n$a#\n);",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\nfunctionCall(\n    'a',\n    'b',\n    'c'\n);",
+                        "<?php\nfunctionCall(\n    'a', 'b',\n    'c'\n);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\nf(\n    1,\n    2,\n    3\n);",
+                        "<?php\nf(1,2,\n3);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\nstr_replace(\n    \"\\n\",\n    PHP_EOL,\n    <<<'TEXT'\n   1) someFile.php\n\nTEXT\n);",
+                        "<?php\nstr_replace(\"\\n\", PHP_EOL, <<<'TEXT'\n   1) someFile.php\n\nTEXT\n);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\nfunctionCall(\n    'a',\n    'b',\n    'c'\n);",
+                        "<?php\nfunctionCall('a', 'b',\n\n    'c');",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\nif (true) {\n    functionCall(\n        'a',\n        'b',\n        'c'\n    );\n}",
+                        "<?php\nif (true) {\n    functionCall(\n        'a', 'b',\n        'c'\n    );\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\ndefraculate(1, array(\n    'a',\n    'b',\n    'c',\n), 42);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\ndefraculate(1, function () {\n    $a = 42;\n}, 42);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\ndefraculate(\n    1,\n    2,\n    3\n);",
+                        "<?php\ndefraculate(\n    1, 2, 3);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\ndefraculate(\n  1,\n  2,\n  3\n);",
+                        "<?php\ndefraculate(\n  1, 2, 3);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "  ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\ndefraculate(\n\t1,\n\t2,\n\t3\n);",
+                        "<?php\ndefraculate(\n\t1, 2, 3);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\ndefraculate(\n    1,\n    2,\n    3\n);",
+                        "<?php\ndefraculate(1, 2, 3\n);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\ngetSchwifty('rick', defraculate(\n    1,\n    2,\n    3\n), 'morty');",
+                        "<?php\ngetSchwifty('rick', defraculate(1, 2, 3\n), 'morty');",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\nfunctionCall(\n    'a', /* comment */\n    'b',\n    'c'\n);",
+                        "<?php\nfunctionCall(\n    'a',/* comment */'b',\n    'c'\n);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php\nfoo(\n    'a',\n    'b',\n    [\n        'c',\n        'd', bar('e', 'f'),\n        baz(\n            'g',\n            ['h',\n                'i',\n            ]\n        ),\n    ]\n);",
+                        "<?php\nfoo('a',\n    'b',\n    [\n        'c',\n        'd', bar('e', 'f'),\n        baz('g',\n            ['h',\n                'i',\n            ]),\n    ]);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php\n$this->with('<?php\n%s\nclass FooClass\n{\n}', $comment, false);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php\n$a = array/**/(  1);\n$a = array/**/( 12,\n7);\n$a = array/***/(123,  7);\n$a = array (        1,\n2);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php\nif (true &&\n    true\n    ) {\n    // do whatever\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php\n$a = function#\n(#\n#\n$a#\n#\n,#\n#\n$b,\n    $c#\n#\n)#\nuse (\n    $b1,\n    $c1,\n    $d1\n) {\n};",
+                        "<?php\n$a = function#\n(#\n#\n$a#\n#\n,#\n#\n$b,$c#\n#\n)#\nuse ($b1,\n$c1,$d1) {\n};",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php\n// no fix\nlist($a,\n    $b, $c) = $a;\nisset($a,\n$b, $c);\nunset($a,\n$b, $c);\narray(1,\n    2,3\n);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php\ncall_user_func(function ($arguments) {\n    echo 'a',\n      'b';\n}, $argv);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php\ncall_user_func(\n    function ($arguments) {\n    echo 'a', 'b';\n},\n    $argv\n);",
+                        "<?php\ncall_user_func(function ($arguments) {\n    echo 'a', 'b';\n},\n$argv);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php\nfunction foo($a, $b) {\n    // foo\n}\nfoo($a, $b);",
+                        "<?php\nfunction foo(\n    $a,\n    $b\n) {\n    // foo\n}\nfoo(\n    $a,\n    $b\n);",
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php\nfunction foo(/* foo */// bar\n    $a, /* foo */// bar\n    $b#foo\n) {\n    // foo\n}\nfoo(/* foo */// bar\n    $a, /* foo */// bar\n    $b#foo\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php\nfunction foo($a, $b) {\n    // foo\n}\nfoo($a, $b);",
+                        "<?php\nfunction foo(\n\n\n    $a,\n\n\n    $b\n\n\n) {\n    // foo\n}\nfoo(\n\n\n    $a,\n\n\n    $b\n\n\n);",
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php\nclass Foo {\n    public static function foo1($a, $b, $c) {}\n    private function foo2($a, $b, $c) {}\n}",
+                        "<?php\nclass Foo {\n    public static function foo1(\n        $a,\n        $b,\n        $c\n    ) {}\n    private function foo2(\n        $a,\n        $b,\n        $c\n    ) {}\n}",
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php\nnew class {\n    public static function foo1($a, $b, $c) {}\n    private function foo2($a, $b, $c) {}\n};",
+                        "<?php\nnew class {\n    public static function foo1(\n        $a,\n        $b,\n        $c\n    ) {}\n    private function foo2(\n        $a,\n        $b,\n        $c\n    ) {}\n};",
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php\nfunction foo($a,    $b) {\n    // foo\n}\nfoo($a,    $b);",
+                        "<?php\nfunction foo(\n    $a,\n    $b\n) {\n    // foo\n}\nfoo(\n    $a,\n    $b\n);",
+                        {
+                            "on_multiline": "ensure_single_line",
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php\nfunction foo($a) {\n    // foo\n}\nfoo($a);",
+                        "<?php\nfunction foo(\n    $a\n) {\n    // foo\n}\nfoo(\n    $a\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php\nfunction foo(\n    $a,\n    $b,\n    $c\n) {\n    // foo\n}\nfoo(\n    $a,\n    $b,\n    $c\n);",
+                        "<?php\nfunction foo(\n    $a, $b,\n    $c\n) {\n    // foo\n}\nfoo(\n    $a, $b,\n    $c\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php\nfoo($a);\nfoo($a, $b);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php\nfoo();",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php\nfoo(bar($a, $b));",
+                        "<?php\nfoo(\n    bar($a, $b)\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php\nfoo(bar(\n    $a,\n    $b\n));",
+                        "<?php\nfoo(\n    bar(\n        $a,\n        $b\n    )\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php\nfoo([\n        'a',\n        'b',\n        'c',\n    ]);",
+                        "<?php\nfoo(\n    [\n        'a',\n        'b',\n        'c',\n    ]\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php\nfoo(Foo::bar()->baz($quz));",
+                        "<?php\nfoo(\n    Foo::bar()->baz($quz)\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php\nfoo(\n    Foo::bar()\n        ->baz($quz)\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php\nfoo(\n    Foo::bar()\n        ->baz($quz)\n        ->qux(\n            $foo,\n            $bar\n        )\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php\nfoo('hello ' . 'world');",
+                        "<?php\nfoo(\n    'hello ' . 'world'\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php\nfoo(\n    'hello '\n        . 'world'\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php\nfoo(\n    /* hello */ $a\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php\nfoo(\n    $a /* hello */\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php\nfoo(\n    /* hello */\n    $a\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php\nfoo(\n    /**\n     * hello\n     */\n    $a\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php\nfoo(\n    $a // hello\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php\nfoo(\n    $a # hello\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php\nfoo(function () {\n        return true;\n    });",
+                        "<?php\nfoo(\n    function () {\n        return true;\n    }\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php\nfoo(['a', 'b', 'c']);",
+                        "<?php\nfoo(\n    ['a', 'b', 'c']\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php\n$foo->bar($baz);",
+                        "<?php\n$foo->bar(\n    $baz\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 88,
+                    "args": [
+                        "<?php\n$foo->bar(\n    $baz,\n    $qux\n);",
+                        "<?php\n$foo->bar(\n    $baz, $qux\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 89,
+                    "args": [
+                        "<?php\nFoo::bar($baz);",
+                        "<?php\nFoo::bar(\n    $baz\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 90,
+                    "args": [
+                        "<?php\nFoo::bar(\n    $baz,\n    $qux\n);",
+                        "<?php\nFoo::bar(\n    $baz, $qux\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 91,
+                    "args": [
+                        "<?php\nclass Foo {\n    public function foo1($a) {}\n    private function foo2(\n        $a,\n        $b,\n        $c\n    ) {}\n}",
+                        "<?php\nclass Foo {\n    public function foo1(\n        $a\n    ) {}\n    private function foo2(\n        $a, $b,\n        $c\n    ) {}\n}",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 92,
+                    "args": [
+                        "<?php\nif (true) {\n    execute(\n        $foo,\n        $bar\n    );\n}",
+                        "<?php\nif (true) {\n    execute(\n        $foo,\n        $bar\n        );\n}",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 93,
+                    "args": [
+                        "<?php\n$example = function () use ($message1, $message2) {\n};",
+                        "<?php\n$example = function () use ($message1,$message2) {\n};",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 94,
+                    "args": [
+                        "<?php foo(\n    \"aaa\n    bbb\",\n    $c,\n    $d,\n    $e,\n    $f\n);\n",
+                        "<?php foo(\"aaa\n    bbb\",\n    $c, $d ,\n        $e,\n        $f);\n",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 95,
+                    "args": [
+                        "<?php foo(\n    \"aaa\n    bbb\", // comment1\n    $c, /** comment2 */\n    $d,\n    $e/* comment3 */,\n    $f\n);# comment4\n",
+                        "<?php foo(\"aaa\n    bbb\", // comment1\n    $c, /** comment2 */$d ,\n        $e/* comment3 */,\n        $f);# comment4\n",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 96,
+                    "args": [
+                        "<?php\nfoo(\n    /* bar */\n    \"baz\"\n);\n            ",
+                        "<?php\nfoo(\n    /* bar */ \"baz\"\n);\n            ",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 97,
+                    "args": [
+                        "<?php\nfunction f()\n{\n    echo <<<TEXT\n        some text\n        {$object->method(\n            42\n        )}\n        some text\n    TEXT;\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 98,
+                    "args": [
+                        "<?php\nfunction f()\n{\n    echo <<<'TEXT'\n        some text\n        {$object->method(\n            42\n        )}\n        some text\n    TEXT;\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 99,
+                    "args": [
+                        "<?php\nfunction f()\n{\n    echo <<<TEXT\n        some text\n        some value: {$object->method(\n            42\n        )}\n        some text\n    TEXT;\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 100,
+                    "args": [
+                        "<div>\n    <?php echo in_array(\n        24,\n        $elements\n    ) ? 'yes' : 'no';\n    ?>\n</div>",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 101,
+                    "args": [
+                        "<?php\r\n// space \r\n$var1 = $a->some_method(\r\n    $var2\r\n);\r\n\r\n// space \r\n$var2 = some_function(\r\n    $var2\r\n);\r\n\r\n    // space     \r\n    $var2a = $z[1](\r\n        $var2a\r\n    );\r\n    \r\n    $var3 = function(  $a, $b  ) { };\r\n",
+                        "<?php\r\n// space \r\n$var1 = $a->some_method(\r\n    $var2);\r\n\r\n// space \r\n$var2 = some_function(\r\n    $var2);\r\n\r\n    // space     \r\n    $var2a = $z[1](\r\n        $var2a\r\n    );\r\n    \r\n    $var3 = function(  $a , $b  ) { };\r\n",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 102,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    $x,\r\n    bar(\r\n        $foo,\r\n        $bar\r\n    )\r\n);\r\n",
+                        "<?php\r\nfoo($x,\r\nbar($foo,\r\n$bar));\r\n",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 103,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    $x,\r\n    bar(\r\n        $foo,\r\n        baz(\r\n            $bar,\r\n            $baz\r\n        )\r\n    )\r\n);\r\n",
+                        "<?php\r\nfoo($x,\r\nbar($foo,\r\nbaz($bar,\r\n$baz)));\r\n",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 104,
+                    "args": [
+                        "<?php xyz(\"\", \"\", \"\", \"\");",
+                        "<?php xyz(\"\",\"\",\"\",\"\");",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 105,
+                    "args": [
+                        "<?php function xyz($a=10, $b=20, $c=30) {}",
+                        "<?php function xyz($a=10,$b=20,$c=30) {}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 106,
+                    "args": [
+                        "<?php function xyz($a=10, $b=20, $c=30) {}",
+                        "<?php function xyz($a=10,         $b=20 , $c=30) {}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 107,
+                    "args": [
+                        "<?php function xyz($a=10,         $b=20, $c=30) {}",
+                        "<?php function xyz($a=10,         $b=20 , $c=30) {}",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 108,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $c=30);",
+                        "<?php xyz($a=10 ,$b=20,$c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 109,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $this->foo(), $c=30);",
+                        "<?php xyz($a=10,$b=20 ,$this->foo() ,$c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 110,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $c=30);",
+                        "<?php xyz($a=10 , $b=20 ,          $c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 111,
+                    "args": [
+                        "<?php xyz($a=10, $b=20,          $c=30);",
+                        "<?php xyz($a=10 , $b=20 ,          $c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 112,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $c=30);",
+                        "<?php xyz($a=10 , $b=20 ,\t $c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 113,
+                    "args": [
+                        "<?php xyz($a=10, $b=20,\t $c=30);",
+                        "<?php xyz($a=10 , $b=20 ,\t $c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 114,
+                    "args": [
+                        "<?php xyz($a=10, $b=20, $this->foo(), $c=30);",
+                        "<?php xyz($a=10,$b=20 ,         $this->foo() ,$c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 115,
+                    "args": [
+                        "<?php xyz($a=10, $b=20,         $this->foo(), $c=30);",
+                        "<?php xyz($a=10,$b=20 ,         $this->foo() ,$c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 116,
+                    "args": [
+                        "<?php new Foo($a=10, $b=20, $this->foo(), $c=30);",
+                        "<?php new Foo($a=10,$b=20 ,$this->foo() ,$c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 117,
+                    "args": [
+                        "<?php new Foo($a=10, $b=20, $c=30);",
+                        "<?php new Foo($a=10 , $b=20 ,          $c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 118,
+                    "args": [
+                        "<?php new Foo($a=10, $b=20,          $c=30);",
+                        "<?php new Foo($a=10 , $b=20 ,          $c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 119,
+                    "args": [
+                        "<?php new class ($a=10, $b=20, $this->foo(), $c=30) {};",
+                        "<?php new class ($a=10,$b=20 ,$this->foo() ,$c=30) {};",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 120,
+                    "args": [
+                        "<?php new class ($a=10, $b=20, $c=30) extends Foo {};",
+                        "<?php new class ($a=10 , $b=20 ,          $c=30) extends Foo {};",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 121,
+                    "args": [
+                        "<?php new class ($a=10, $b=20,          $c=30) {};",
+                        "<?php new class ($a=10 , $b=20 ,          $c=30) {};",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 122,
+                    "args": [
+                        "<?php list($a, $b, , , $c) = foo();",
+                        "<?php list($a, $b,, ,$c) = foo();",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 123,
+                    "args": [
+                        "<?php list($a, $b, , , $c) = foo();",
+                        "<?php list($a, $b,,    ,$c) = foo();",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 124,
+                    "args": [
+                        "<?php list($a, $b, ,    , $c) = foo();",
+                        "<?php list($a, $b,,    ,$c) = foo();",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 125,
+                    "args": [
+                        "<?php array(10 , 20 ,30); $foo = [ 10,50 , 60 ] ?>",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 126,
+                    "args": [
+                        "<?php list($path, $mode, ) = foo();",
+                        "<?php list($path, $mode,) = foo();",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 127,
+                    "args": [
+                        "<?php\r\nlist(\r\n    $a,\r\n    $b,\r\n) = foo();\r\n",
+                        "<?php\r\nlist(\r\n    $a   ,\r\n    $b  ,\r\n) = foo();\r\n",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 128,
+                    "args": [
+                        "<?php xyz($a=10, /*comment1*/ $b=2000, /*comment2*/ $c=30);",
+                        "<?php xyz($a=10,    /*comment1*/ $b=2000,/*comment2*/ $c=30);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 129,
+                    "args": [
+                        "<?php xyz($a=10,    /*comment1*/ $b=2000, /*comment2*/ $c=30);",
+                        "<?php xyz($a=10,    /*comment1*/ $b=2000,/*comment2*/ $c=30);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 130,
+                    "args": [
+                        "<?php if (1) {\r\n                xyz(\r\n                    $a=10,\r\n                    $b=20,\r\n                    $c=30\r\n                );\r\n                }",
+                        "<?php if (1) {\r\n                xyz(\r\n                    $a=10 ,\r\n                    $b=20,\r\n                    $c=30\r\n                );\r\n                }",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 131,
+                    "args": [
+                        "<?php if (1) {\r\n                new class (\r\n                    $a=10,\r\n                    $b=20,\r\n                    $c=30\r\n                ) {};\r\n                }",
+                        "<?php if (1) {\r\n                new class (\r\n                    $a=10 ,\r\n                $b=20,$c=30) {};\r\n                }",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 132,
+                    "args": [
+                        "<?php fnc(1, array(2, func2(6, 7) ,4), 5);",
+                        "<?php fnc(1,array(2, func2(6,    7) ,4),    5);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 133,
+                    "args": [
+                        "<?php fnc(1, array(2, func2(6,    7) ,4),    5);",
+                        "<?php fnc(1,array(2, func2(6,    7) ,4),    5);",
+                        {
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 134,
+                    "args": [
+                        "<?php fnc(1, array(2, 3 ,4), 5);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 135,
+                    "args": [
+                        "<?php\r\n                    array(\r\n                        10 ,\r\n                        20,\r\n                        30\r\n                    );",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 136,
+                    "args": [
+                        "<?php\r\n    $foo = [\"a\"=>\"apple\", \"b\"=>\"bed\" ,\"c\"=>\"car\"];\r\n    $bar = [\"a\" ,\"b\" ,\"c\"];\r\n    ",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 137,
+                    "args": [
+                        "<?php if (1) {\r\n    $this->foo(\r\n        <<<EOTXTa\r\n    heredoc\r\nEOTXTa\r\n        ,\r\n        <<<'EOTXTb'\r\n    nowdoc\r\nEOTXTb\r\n        ,\r\n        'foo'\r\n    );\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 138,
+                    "args": [
+                        "<?php xyz#\r\n (#\r\n\"\"#\r\n,#\r\n$a#\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ignore"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 139,
+                    "args": [
+                        "<?php xyz#\r\n (#\r\n\"\"#\r\n,#\r\n$a#\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 140,
+                    "args": [
+                        "<?php xyz#\r\n (#\r\n\"\"#\r\n,#\r\n$a#\r\n );",
+                        "<?php xyz#\r\n (#\r\n\"\"#\r\n,#\r\n$a#\r\n);",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 141,
+                    "args": [
+                        "<?php\r\nfunctionCall(\r\n    'a',\r\n    'b',\r\n    'c'\r\n);",
+                        "<?php\r\nfunctionCall(\r\n    'a', 'b',\r\n    'c'\r\n);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 142,
+                    "args": [
+                        "<?php\r\nf(\r\n    1,\r\n    2,\r\n    3\r\n);",
+                        "<?php\r\nf(1,2,\r\n3);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 143,
+                    "args": [
+                        "<?php\r\nstr_replace(\r\n    \"\\n\",\r\n    PHP_EOL,\r\n    <<<'TEXT'\r\n   1) someFile.php\r\n\r\nTEXT\r\n);",
+                        "<?php\r\nstr_replace(\"\\n\", PHP_EOL, <<<'TEXT'\r\n   1) someFile.php\r\n\r\nTEXT\r\n);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 144,
+                    "args": [
+                        "<?php\r\nfunctionCall(\r\n    'a',\r\n    'b',\r\n    'c'\r\n);",
+                        "<?php\r\nfunctionCall('a', 'b',\r\n\r\n    'c');",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 145,
+                    "args": [
+                        "<?php\r\nif (true) {\r\n    functionCall(\r\n        'a',\r\n        'b',\r\n        'c'\r\n    );\r\n}",
+                        "<?php\r\nif (true) {\r\n    functionCall(\r\n        'a', 'b',\r\n        'c'\r\n    );\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 146,
+                    "args": [
+                        "<?php\r\ndefraculate(1, array(\r\n    'a',\r\n    'b',\r\n    'c',\r\n), 42);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 147,
+                    "args": [
+                        "<?php\r\ndefraculate(1, function () {\r\n    $a = 42;\r\n}, 42);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 148,
+                    "args": [
+                        "<?php\r\ndefraculate(\r\n    1,\r\n    2,\r\n    3\r\n);",
+                        "<?php\r\ndefraculate(\r\n    1, 2, 3);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 149,
+                    "args": [
+                        "<?php\r\ndefraculate(\r\n  1,\r\n  2,\r\n  3\r\n);",
+                        "<?php\r\ndefraculate(\r\n  1, 2, 3);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "  ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 150,
+                    "args": [
+                        "<?php\r\ndefraculate(\r\n\t1,\r\n\t2,\r\n\t3\r\n);",
+                        "<?php\r\ndefraculate(\r\n\t1, 2, 3);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 151,
+                    "args": [
+                        "<?php\r\ndefraculate(\r\n    1,\r\n    2,\r\n    3\r\n);",
+                        "<?php\r\ndefraculate(1, 2, 3\r\n);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 152,
+                    "args": [
+                        "<?php\r\ngetSchwifty('rick', defraculate(\r\n    1,\r\n    2,\r\n    3\r\n), 'morty');",
+                        "<?php\r\ngetSchwifty('rick', defraculate(1, 2, 3\r\n), 'morty');",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 153,
+                    "args": [
+                        "<?php\r\nfunctionCall(\r\n    'a', /* comment */\r\n    'b',\r\n    'c'\r\n);",
+                        "<?php\r\nfunctionCall(\r\n    'a',/* comment */'b',\r\n    'c'\r\n);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 154,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    'a',\r\n    'b',\r\n    [\r\n        'c',\r\n        'd', bar('e', 'f'),\r\n        baz(\r\n            'g',\r\n            ['h',\r\n                'i',\r\n            ]\r\n        ),\r\n    ]\r\n);",
+                        "<?php\r\nfoo('a',\r\n    'b',\r\n    [\r\n        'c',\r\n        'd', bar('e', 'f'),\r\n        baz('g',\r\n            ['h',\r\n                'i',\r\n            ]),\r\n    ]);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 155,
+                    "args": [
+                        "<?php\r\n$this->with('<?php\r\n%s\r\nclass FooClass\r\n{\r\n}', $comment, false);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 156,
+                    "args": [
+                        "<?php\r\n$a = array/**/(  1);\r\n$a = array/**/( 12,\r\n7);\r\n$a = array/***/(123,  7);\r\n$a = array (        1,\r\n2);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 157,
+                    "args": [
+                        "<?php\r\nif (true &&\r\n    true\r\n    ) {\r\n    // do whatever\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 158,
+                    "args": [
+                        "<?php\r\n$a = function#\r\n(#\r\n#\r\n$a#\r\n#\r\n,#\r\n#\r\n$b,\r\n    $c#\r\n#\r\n)#\r\nuse (\r\n    $b1,\r\n    $c1,\r\n    $d1\r\n) {\r\n};",
+                        "<?php\r\n$a = function#\r\n(#\r\n#\r\n$a#\r\n#\r\n,#\r\n#\r\n$b,$c#\r\n#\r\n)#\r\nuse ($b1,\r\n$c1,$d1) {\r\n};",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 159,
+                    "args": [
+                        "<?php\r\n// no fix\r\nlist($a,\r\n    $b, $c) = $a;\r\nisset($a,\r\n$b, $c);\r\nunset($a,\r\n$b, $c);\r\narray(1,\r\n    2,3\r\n);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 160,
+                    "args": [
+                        "<?php\r\ncall_user_func(function ($arguments) {\r\n    echo 'a',\r\n      'b';\r\n}, $argv);",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 161,
+                    "args": [
+                        "<?php\r\ncall_user_func(\r\n    function ($arguments) {\r\n    echo 'a', 'b';\r\n},\r\n    $argv\r\n);",
+                        "<?php\r\ncall_user_func(function ($arguments) {\r\n    echo 'a', 'b';\r\n},\r\n$argv);",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 162,
+                    "args": [
+                        "<?php\r\nfunction foo($a, $b) {\r\n    // foo\r\n}\r\nfoo($a, $b);",
+                        "<?php\r\nfunction foo(\r\n    $a,\r\n    $b\r\n) {\r\n    // foo\r\n}\r\nfoo(\r\n    $a,\r\n    $b\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 163,
+                    "args": [
+                        "<?php\r\nfunction foo(/* foo */// bar\r\n    $a, /* foo */// bar\r\n    $b#foo\r\n) {\r\n    // foo\r\n}\r\nfoo(/* foo */// bar\r\n    $a, /* foo */// bar\r\n    $b#foo\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 164,
+                    "args": [
+                        "<?php\r\nfunction foo($a, $b) {\r\n    // foo\r\n}\r\nfoo($a, $b);",
+                        "<?php\r\nfunction foo(\r\n\r\n\r\n    $a,\r\n\r\n\r\n    $b\r\n\r\n\r\n) {\r\n    // foo\r\n}\r\nfoo(\r\n\r\n\r\n    $a,\r\n\r\n\r\n    $b\r\n\r\n\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 165,
+                    "args": [
+                        "<?php\r\nclass Foo {\r\n    public static function foo1($a, $b, $c) {}\r\n    private function foo2($a, $b, $c) {}\r\n}",
+                        "<?php\r\nclass Foo {\r\n    public static function foo1(\r\n        $a,\r\n        $b,\r\n        $c\r\n    ) {}\r\n    private function foo2(\r\n        $a,\r\n        $b,\r\n        $c\r\n    ) {}\r\n}",
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 166,
+                    "args": [
+                        "<?php\r\nnew class {\r\n    public static function foo1($a, $b, $c) {}\r\n    private function foo2($a, $b, $c) {}\r\n};",
+                        "<?php\r\nnew class {\r\n    public static function foo1(\r\n        $a,\r\n        $b,\r\n        $c\r\n    ) {}\r\n    private function foo2(\r\n        $a,\r\n        $b,\r\n        $c\r\n    ) {}\r\n};",
+                        {
+                            "on_multiline": "ensure_single_line"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 167,
+                    "args": [
+                        "<?php\r\nfunction foo($a,    $b) {\r\n    // foo\r\n}\r\nfoo($a,    $b);",
+                        "<?php\r\nfunction foo(\r\n    $a,\r\n    $b\r\n) {\r\n    // foo\r\n}\r\nfoo(\r\n    $a,\r\n    $b\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line",
+                            "keep_multiple_spaces_after_comma": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 168,
+                    "args": [
+                        "<?php\r\nfunction foo($a) {\r\n    // foo\r\n}\r\nfoo($a);",
+                        "<?php\r\nfunction foo(\r\n    $a\r\n) {\r\n    // foo\r\n}\r\nfoo(\r\n    $a\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 169,
+                    "args": [
+                        "<?php\r\nfunction foo(\r\n    $a,\r\n    $b,\r\n    $c\r\n) {\r\n    // foo\r\n}\r\nfoo(\r\n    $a,\r\n    $b,\r\n    $c\r\n);",
+                        "<?php\r\nfunction foo(\r\n    $a, $b,\r\n    $c\r\n) {\r\n    // foo\r\n}\r\nfoo(\r\n    $a, $b,\r\n    $c\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 170,
+                    "args": [
+                        "<?php\r\nfoo($a);\r\nfoo($a, $b);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 171,
+                    "args": [
+                        "<?php\r\nfoo();",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 172,
+                    "args": [
+                        "<?php\r\nfoo(bar($a, $b));",
+                        "<?php\r\nfoo(\r\n    bar($a, $b)\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 173,
+                    "args": [
+                        "<?php\r\nfoo(bar(\r\n    $a,\r\n    $b\r\n));",
+                        "<?php\r\nfoo(\r\n    bar(\r\n        $a,\r\n        $b\r\n    )\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 174,
+                    "args": [
+                        "<?php\r\nfoo([\r\n        'a',\r\n        'b',\r\n        'c',\r\n    ]);",
+                        "<?php\r\nfoo(\r\n    [\r\n        'a',\r\n        'b',\r\n        'c',\r\n    ]\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 175,
+                    "args": [
+                        "<?php\r\nfoo(Foo::bar()->baz($quz));",
+                        "<?php\r\nfoo(\r\n    Foo::bar()->baz($quz)\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 176,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    Foo::bar()\r\n        ->baz($quz)\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 177,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    Foo::bar()\r\n        ->baz($quz)\r\n        ->qux(\r\n            $foo,\r\n            $bar\r\n        )\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 178,
+                    "args": [
+                        "<?php\r\nfoo('hello ' . 'world');",
+                        "<?php\r\nfoo(\r\n    'hello ' . 'world'\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 179,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    'hello '\r\n        . 'world'\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 180,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    /* hello */ $a\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 181,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    $a /* hello */\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 182,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    /* hello */\r\n    $a\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 183,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    /**\r\n     * hello\r\n     */\r\n    $a\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 184,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    $a // hello\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 185,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    $a # hello\r\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 186,
+                    "args": [
+                        "<?php\r\nfoo(function () {\r\n        return true;\r\n    });",
+                        "<?php\r\nfoo(\r\n    function () {\r\n        return true;\r\n    }\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 187,
+                    "args": [
+                        "<?php\r\nfoo(['a', 'b', 'c']);",
+                        "<?php\r\nfoo(\r\n    ['a', 'b', 'c']\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 188,
+                    "args": [
+                        "<?php\r\n$foo->bar($baz);",
+                        "<?php\r\n$foo->bar(\r\n    $baz\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 189,
+                    "args": [
+                        "<?php\r\n$foo->bar(\r\n    $baz,\r\n    $qux\r\n);",
+                        "<?php\r\n$foo->bar(\r\n    $baz, $qux\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 190,
+                    "args": [
+                        "<?php\r\nFoo::bar($baz);",
+                        "<?php\r\nFoo::bar(\r\n    $baz\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 191,
+                    "args": [
+                        "<?php\r\nFoo::bar(\r\n    $baz,\r\n    $qux\r\n);",
+                        "<?php\r\nFoo::bar(\r\n    $baz, $qux\r\n);",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 192,
+                    "args": [
+                        "<?php\r\nclass Foo {\r\n    public function foo1($a) {}\r\n    private function foo2(\r\n        $a,\r\n        $b,\r\n        $c\r\n    ) {}\r\n}",
+                        "<?php\r\nclass Foo {\r\n    public function foo1(\r\n        $a\r\n    ) {}\r\n    private function foo2(\r\n        $a, $b,\r\n        $c\r\n    ) {}\r\n}",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 193,
+                    "args": [
+                        "<?php\r\nif (true) {\r\n    execute(\r\n        $foo,\r\n        $bar\r\n    );\r\n}",
+                        "<?php\r\nif (true) {\r\n    execute(\r\n        $foo,\r\n        $bar\r\n        );\r\n}",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 194,
+                    "args": [
+                        "<?php\r\n$example = function () use ($message1, $message2) {\r\n};",
+                        "<?php\r\n$example = function () use ($message1,$message2) {\r\n};",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 195,
+                    "args": [
+                        "<?php foo(\r\n    \"aaa\r\n    bbb\",\r\n    $c,\r\n    $d,\r\n    $e,\r\n    $f\r\n);\r\n",
+                        "<?php foo(\"aaa\r\n    bbb\",\r\n    $c, $d ,\r\n        $e,\r\n        $f);\r\n",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 196,
+                    "args": [
+                        "<?php foo(\r\n    \"aaa\r\n    bbb\", // comment1\r\n    $c, /** comment2 */\r\n    $d,\r\n    $e/* comment3 */,\r\n    $f\r\n);# comment4\r\n",
+                        "<?php foo(\"aaa\r\n    bbb\", // comment1\r\n    $c, /** comment2 */$d ,\r\n        $e/* comment3 */,\r\n        $f);# comment4\r\n",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 197,
+                    "args": [
+                        "<?php\r\nfoo(\r\n    /* bar */\r\n    \"baz\"\r\n);\r\n            ",
+                        "<?php\r\nfoo(\r\n    /* bar */ \"baz\"\r\n);\r\n            ",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 198,
+                    "args": [
+                        "<?php\r\nfunction f()\r\n{\r\n    echo <<<TEXT\r\n        some text\r\n        {$object->method(\r\n            42\r\n        )}\r\n        some text\r\n    TEXT;\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 199,
+                    "args": [
+                        "<?php\r\nfunction f()\r\n{\r\n    echo <<<'TEXT'\r\n        some text\r\n        {$object->method(\r\n            42\r\n        )}\r\n        some text\r\n    TEXT;\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 200,
+                    "args": [
+                        "<?php\r\nfunction f()\r\n{\r\n    echo <<<TEXT\r\n        some text\r\n        some value: {$object->method(\r\n            42\r\n        )}\r\n        some text\r\n    TEXT;\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 201,
+                    "args": [
+                        "<div>\r\n    <?php echo in_array(\r\n        24,\r\n        $elements\r\n    ) ? 'yes' : 'no';\r\n    ?>\r\n</div>",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 202,
+                    "args": [
+                        "<?php function A($c, ...$a){}",
+                        "<?php function A($c ,...$a){}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 203,
+                    "args": [
+                        "<?php\nfoo(\n    <<<'EOD'\n        bar\n        EOD,\n    'baz'\n);",
+                        "<?php\nfoo(\n    <<<'EOD'\n        bar\n        EOD\n    ,\n    'baz'\n);",
+                        {
+                            "after_heredoc": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 204,
+                    "args": [
+                        "<?php\nfoo(\n    $bar,\n    $baz,\n);",
+                        null,
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 205,
+                    "args": [
+                        "<?php\nfunctionCall(\n    1,\n    2,\n    3,\n);",
+                        "<?php\nfunctionCall(\n    1, 2,\n    3,\n);",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 206,
+                    "args": [
+                        "<?php foo(1, 2, 3, );",
+                        "<?php foo(1,2,3,);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 207,
+                    "args": [
+                        "<?php\n$fn = fn(\n    $test1,\n    $test2\n) => null;",
+                        "<?php\n$fn = fn(\n    $test1, $test2\n) => null;",
+                        {
+                            "on_multiline": "ensure_fully_multiline"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\MethodArgumentSpaceFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple attributes",
+                    "args": [
+                        "<?php\nclass MyClass\n{\n    public function __construct(\n        private string $id,\n        #[Foo]\n        #[Bar]\n        private ?string $name = null,\n    ) {}\n}",
+                        "<?php\nclass MyClass\n{\n    public function __construct(\n        private string $id,\n        #[Foo] #[Bar] private ?string $name = null,\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "keep attributes as-is",
+                    "args": [
+                        "<?php\nclass MyClass\n{\n    public function __construct(\n        private string $id,\n        #[Foo] #[Bar] private ?string $name = null,\n    ) {}\n}",
+                        null,
+                        {
+                            "attribute_placement": "ignore"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple attributes on the same line as argument",
+                    "args": [
+                        "<?php\nclass MyClass\n{\n    public function __construct(\n        private string $id,\n        #[Foo] #[Bar] private ?string $name = null,\n    ) {}\n}",
+                        "<?php\nclass MyClass\n{\n    public function __construct(\n        private string $id,\n        #[Foo]\n        #[Bar]\n        private ?string $name = null,\n    ) {}\n}",
+                        {
+                            "attribute_placement": "same_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "single attribute markup with comma separated list",
+                    "args": [
+                        "<?php\nclass MyClass\n{\n    public function __construct(\n        private string $id,\n        #[Foo, Bar]\n        private ?string $name = null,\n    ) {}\n}",
+                        "<?php\nclass MyClass\n{\n    public function __construct(\n        private string $id,\n        #[Foo, Bar] private ?string $name = null,\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attributes with arguments",
+                    "args": [
+                        "<?php\nclass MyClass\n{\n    public function __construct(\n        private string $id,\n        #[Foo(value: 1234, otherValue: [1, 2, 3])]\n        #[Bar(Bar::BAZ, array('[',']'))]\n        private ?string $name = null,\n    ) {}\n}",
+                        "<?php\nclass MyClass\n{\n    public function __construct(\n        private string $id,\n        #[Foo(value: 1234, otherValue: [1, 2, 3])] #[Bar(Bar::BAZ, array('[',']'))] private ?string $name = null,\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "fully qualified attributes",
+                    "args": [
+                        "<?php\nfunction foo(\n    #[\\Foo\\Bar]\n    $bar,\n    #[\\Foo\\Baz]\n    $baz,\n    #[\\Foo\\Buzz]\n    $buzz\n) {}",
+                        "<?php\nfunction foo(\n    #[\\Foo\\Bar] $bar, #[\\Foo\\Baz] $baz, #[\\Foo\\Buzz] $buzz\n) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiline attributes",
+                    "args": [
+                        "<?php\nfunction foo(\n    $foo,\n    #[\n    Foo\\Bar,\n    Foo\\Baz,\n    Foo\\Buzz(a: 'astral', b: 1234),\n]\n    $bar\n) {}",
+                        "<?php\nfunction foo($foo, #[\n    Foo\\Bar,\n    Foo\\Baz,\n    Foo\\Buzz(a: 'astral', b: 1234),\n] $bar) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "ensure_single_line_for_single_argument: collapses when parameter has inline attribute",
+                    "args": [
+                        "<?php\nfunction foo(#[Attr] $x) {}",
+                        "<?php\nfunction foo(\n    #[Attr] $x\n) {}",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "ensure_single_line_for_single_argument: collapses single-argument attribute invocation on function",
+                    "args": [
+                        "<?php\n#[Attr('foo')]\nfunction foo() {}",
+                        "<?php\n#[Attr(\n    'foo'\n)]\nfunction foo() {}",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "ensure_single_line_for_single_argument: collapses single-argument attribute invocation with named argument on function",
+                    "args": [
+                        "<?php\n#[Attr(value: 'foo')]\nfunction foo() {}",
+                        "<?php\n#[Attr(\n    value: 'foo'\n)]\nfunction foo() {}",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "ensure_single_line_for_single_argument: collapses inner multiline single-argument attribute when parameter has attribute on previous line",
+                    "args": [
+                        "<?php\nfunction foo(\n    #[Attr(value: 'something')]\n    $x\n) {}",
+                        "<?php\nfunction foo(\n    #[Attr(\n        value: 'something'\n    )]\n    $x\n) {}",
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "ensure_single_line_for_single_argument: does not collapse when parameter has attribute on previous line",
+                    "args": [
+                        "<?php\nfunction foo(\n    #[Attr]\n    $x\n) {}",
+                        null,
+                        {
+                            "on_multiline": "ensure_single_line_for_single_argument"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\MethodArgumentSpaceFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n[Foo::class, 'method'](\n    ...\n) ?>",
+                        "<?php\n[Foo::class, 'method']( ...\n) ?>"
+                    ]
+                }
+            ]
+        }
+    ]
+}

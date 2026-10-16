@@ -1,0 +1,76 @@
+{
+    "fixer": "not_operator_with_successor_space",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\NotOperatorWithSuccessorSpaceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/NotOperatorWithSuccessorSpaceFixerTest.php",
+    "case_count": 6,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NotOperatorWithSuccessorSpaceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $i = 0; $i++; $foo = ! false || (! true || ! ! false && (2 === (7 -5)));",
+                        "<?php $i = 0; $i++; $foo = !false || (!true || !!false && (2 === (7 -5)));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $i = 0; $i--; $foo = ! false || ($i && ! true);",
+                        "<?php $i = 0; $i--; $foo = !false || ($i && !true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $i = 0; $i--; $foo = ! false || ($i && ! /* some comment */true);",
+                        "<?php $i = 0; $i--; $foo = !false || ($i && !/* some comment */true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $i = 0; $i--; $foo = ! false || ($i && ! true);",
+                        "<?php $i = 0; $i--; $foo = !false || ($i && !    true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $i = 0; $i--; $foo = ! false || ($i && ! /* some comment */ true);",
+                        "<?php $i = 0; $i--; $foo = !false || ($i && !  /* some comment */ true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment case",
+                    "args": [
+                        "<?php\n                $a=#\n! #\n$b;\n                ",
+                        "<?php\n                $a=#\n!\n#\n$b;\n                "
+                    ]
+                }
+            ]
+        }
+    ]
+}

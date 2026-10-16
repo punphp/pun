@@ -1,0 +1,190 @@
+{
+    "fixer": "no_binary_string",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\NoBinaryStringFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/NoBinaryStringFixerTest.php",
+    "case_count": 21,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\NoBinaryStringFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo 'hello world';",
+                        "<?php echo b'hello world';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a='hello world';",
+                        "<?php $a=b'hello world';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php echo ('hello world');",
+                        "<?php echo (b'hello world');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php echo \"hi\".'hello world';",
+                        "<?php echo \"hi\".b'hello world';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php echo \"hello world\";",
+                        "<?php echo b\"hello world\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php echo 'hello world';",
+                        "<?php echo B'hello world';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php echo \"hello world\";",
+                        "<?php echo B\"hello world\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php echo /* foo */\"hello world\";",
+                        "<?php echo /* foo */B\"hello world\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php echo <<<EOT\nfoo\nEOT;\n",
+                        "<?php echo b<<<EOT\nfoo\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php echo <<<EOT\nfoo\nEOT;\n",
+                        "<?php echo B<<<EOT\nfoo\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php echo <<<'EOT'\nfoo\nEOT;\n",
+                        "<?php echo b<<<'EOT'\nfoo\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php echo <<<'EOT'\nfoo\nEOT;\n",
+                        "<?php echo B<<<'EOT'\nfoo\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php echo <<<\"EOT\"\nfoo\nEOT;\n",
+                        "<?php echo b<<<\"EOT\"\nfoo\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php echo <<<\"EOT\"\nfoo\nEOT;\n",
+                        "<?php echo B<<<\"EOT\"\nfoo\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                    echo \"{$fruit}\";\n                    echo \" {$fruit}\";\n                ",
+                        "<?php\n                    echo b\"{$fruit}\";\n                    echo b\" {$fruit}\";\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php echo Bar::foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php echo bar::foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php echo \"b\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php echo b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php echo b.\"a\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php echo b(\"a\");"
+                    ]
+                }
+            ]
+        }
+    ]
+}

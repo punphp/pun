@@ -1,0 +1,194 @@
+{
+    "fixer": "full_opening_tag",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpTag\\FullOpeningTagFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpTag/FullOpeningTagFixerTest.php",
+    "case_count": 22,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpTag\\FullOpeningTagFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo 'Foo';",
+                        "<? echo 'Foo';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo 'Foo';",
+                        "<?pHp echo 'Foo';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?= 'Foo';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php echo 'Foo'; ?> PLAIN TEXT"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "PLAIN TEXT<?php echo 'Foo'; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $query = \"SELECT .... FROM my_table WHERE id <? LIMIT 1\";",
+                        "<? $query = \"SELECT .... FROM my_table WHERE id <? LIMIT 1\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\necho 'Foo';\n\n",
+                        "<?\n\necho 'Foo';\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php if ('<?php' === '<?') { }",
+                        "<? if ('<?php' === '<?') { }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php // <?php",
+                        "<?pHP // <?php"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n'<?\n';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n// Replace all <? with <?php !"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n// Replace all <? with <?pHp !"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n/**\n * Convert <?= ?> to long-form <?php echo ?> and <?php ?> to <?php ?>\n *\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $this->data = preg_replace('/<\\?(?!xml|php)/s', '<?php ',       $this->data);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "foo <?php  echo \"-\"; echo \"aaa <?php bbb <? ccc\"; echo '<? '; /* <? */ /** <? */ ?> bar <?php echo \"<? \";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n$a = <<<           \"TEST\"\n<?Php <?\nTEST;?>\nTEST;\n\n?>\n<?php $a = <<<           'TEST'\n<?PHP <?\nTEST;?>\nTEST;\n\n?>\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "binary string",
+                    "args": [
+                        "<?php echo b'Foo';",
+                        "<? echo b'Foo';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php",
+                        "<?"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n",
+                        "<?\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php    \n",
+                        "<?    \n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php    \n?><?= 1?>",
+                        "<?    \n?><?= 1?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "foo <?php  echo \"-\"; echo \"aaa <? bbb <? ccc\"; echo '<? '; /* <? */ /** <? */ ?> bar <?php echo \"<? \";",
+                        "foo <?  echo \"-\"; echo \"aaa <? bbb <? ccc\"; echo '<? '; /* <? */ /** <? */ ?> bar <? echo \"<? \";"
+                    ]
+                }
+            ]
+        }
+    ]
+}

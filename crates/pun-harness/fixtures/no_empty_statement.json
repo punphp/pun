@@ -1,0 +1,558 @@
+{
+    "fixer": "no_empty_statement",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\NoEmptyStatementFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Semicolon/NoEmptyStatementFixerTest.php",
+    "case_count": 60,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\NoEmptyStatementFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                abstract class TestClass0 extends Test IMPLEMENTS TestInterface, TestInterface2\n                {\n                }\n                ",
+                        "<?php\n                abstract class TestClass0 extends Test IMPLEMENTS TestInterface, TestInterface2\n                {\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                abstract class TestClass1 EXTENDS Test implements TestInterface\n                {\n                }\n                ",
+                        "<?php\n                abstract class TestClass1 EXTENDS Test implements TestInterface\n                {\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                CLASS TestClass2 extends Test\n                {\n                }\n                ",
+                        "<?php\n                CLASS TestClass2 extends Test\n                {\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                class TestClass3 implements TestInterface1\n                {\n                }\n                ",
+                        "<?php\n                class TestClass3 implements TestInterface1\n                {\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                class TestClass4\n                {\n                }\n                ",
+                        "<?php\n                class TestClass4\n                {\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                interface TestInterface1\n                {\n                }\n                ",
+                        "<?php\n                interface TestInterface1\n                {\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                interface TestExtendingInterface extends TestInterface2, TestInterface3 {\n                }\n                ",
+                        "<?php\n                interface TestExtendingInterface extends TestInterface2, TestInterface3 {\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                namespace Two {\n                    $a = 1; {\n                    }\n                }\n                ",
+                        "<?php\n                namespace Two {;;\n                    $a = 1; {\n                    };\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                {\n                    \n                }\n                echo 1;\n                ",
+                        "<?php\n                {\n                    ;\n                };\n                echo 1;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                while($time < $a)\n                    ;\n                echo \"done waiting.\";\n                $b = \\Test;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                    if($a>1){\n\n                    }\n                ",
+                        "<?php\n                    if($a>1){\n\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                    if($a>1) {\n\n                    } else {\n\n                    }\n                ",
+                        "<?php\n                    if($a>1) {\n\n                    } else {\n\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                    try{\n\n                    }catch (\\Exception $e) {\n\n                    }\n                ",
+                        "<?php\n                    try{\n\n                    }catch (\\Exception $e) {\n\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php ",
+                        "<?php ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                    function foo()\n                    {\n                         // a\n                    }\n                ",
+                        "<?php\n                    function foo()\n                    {\n                        ; // a\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php function foo(){}",
+                        "<?php function foo(){;;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php class Test{}",
+                        "<?php class Test{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n                    for(;;) {\n                    }\n                ",
+                        "<?php\n                    for(;;) {\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n                    foreach($a as $b) {\n                    }\n                    foreach($a as $b => $c) {\n                    }\n                ",
+                        "<?php\n                    foreach($a as $b) {\n                    };\n                    foreach($a as $b => $c) {\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n                    while($a > 1){\n                    }\n                    do {\n                    } while($a>1);  // 1\n                ",
+                        "<?php\n                    while($a > 1){\n                    };\n                    do {\n                    } while($a>1); 1; // 1\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n                    switch($a) {\n                        default : {echo 1;}\n                    }\n                ",
+                        "<?php\n                    switch($a) {\n                        default : {echo 1;}\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n                function test($a, $b) {\n                }\n                ",
+                        "<?php\n                function test($a, $b) {\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                function foo($n)\n                {\n                    \n                    $a = function(){};\n                    $b = function() use ($a) {};\n                    ++${\"a\"};\n                    switch(fooBar()) {\n                        case 5;{\n                        }\n                    }\n                    return $n->{$o};\n                }\n                ",
+                        "<?php\n                function foo($n)\n                {\n                    ;\n                    $a = function(){};\n                    $b = function() use ($a) {};\n                    ++${\"a\"};\n                    switch(fooBar()) {\n                        case 5;{\n                        }\n                    };\n                    return $n->{$o};\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n                declare(ticks=1) {\n                // entire script here\n                }\n                declare(ticks=1);\n                ",
+                        "<?php\n                declare(ticks=1) {\n                // entire script here\n                };\n                declare(ticks=1);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n                    namespace A\\B\\C;\n                    use D;\n                ",
+                        "<?php\n                    namespace A\\B\\C;;;;\n                    use D;;;;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                    namespace A\\B\\C;\n                    use D;\n                ",
+                        "<?php\n                    namespace A\\B\\C;\n                    use D;;;;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n                    namespace A\\B\\C;use D;\n                ",
+                        "<?php\n                    namespace A\\B\\C;;use D;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n                    trait TestTrait\n                    {\n                    }\n                ",
+                        "<?php\n                    trait TestTrait\n                    {\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n                    try {\n                        throw new \\Exception(\"Foo.\");\n                    } catch (\\Exception $e){\n                        //\n                    } finally {\n                    }  \n                ",
+                        "<?php\n                    try {\n                        throw new \\Exception(\"Foo.\");\n                    } catch (\\Exception $e){\n                        //\n                    } finally {\n                    }  ;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php while(true) {break ;}",
+                        "<?php while(true) {break 1;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php while(true) {continue ;}",
+                        "<?php while(true) {continue 1;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php echo \"foo\";  ",
+                        "<?php echo \"foo\"; 1 ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php echo \"foo\";  ",
+                        "<?php echo \"foo\"; 1.0 ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php echo \"foo\";  ",
+                        "<?php echo \"foo\"; \"foo\" ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php echo \"foo\";  ",
+                        "<?php echo \"foo\"; $foo ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php /* 1 */   /* 2 */  /* 3 */ ",
+                        "<?php /* 1 */ ;  /* 2 */ 1 /* 3 */ ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n                while(true) {while(true) {break 2;}}\n                while(true) {continue;}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php if ($foo1) {} ",
+                        "<?php if ($foo1) {} 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php if ($foo2) {}",
+                        "<?php if ($foo2) {1;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\n                    use function Functional\\map;\n                    $a = new class {\n                        public function log($msg)\n                        {\n                        }\n                    };\n                    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n                    use function Functional\\map;\n                    $a = new class extends A {\n                    };\n                    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n                    use function Functional\\map;\n                    $a = new class implements B {\n                    };\n                    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n                    use function Functional\\map;\n                    $a = new class extends A implements B {\n                    };\n                    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n                    $a = new class extends \\A implements B\\C {\n                    };\n                    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php {{}}",
+                        "<?php {{}};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n                    namespace A\\B\\C {\n\n                    }\n                ",
+                        "<?php\n                    namespace A\\B\\C {\n\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\n                    namespace A{\n\n                    }\n                ",
+                        "<?php\n                    namespace A{\n\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n                    namespace{\n\n                    }\n                ",
+                        "<?php\n                    namespace{\n\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php $foo = 2 ; //\n                    \n\n                ",
+                        "<?php $foo = 2 ; //\n                    ;\n\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php $foo = 3; /**/ ",
+                        "<?php $foo = 3; /**/; ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php $foo = 1;",
+                        "<?php $foo = 1;;;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php $foo = 4; ",
+                        "<?php $foo = 4;; ;;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php $foo = 5;\n\n    ",
+                        "<?php $foo = 5;;\n;\n    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php $foo = 6; ",
+                        "<?php $foo = 6;; "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php for ($i = 7; ; ++$i) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php\n                    switch($a){\n                        case 8;\n                            echo 9;\n                    }\n                ",
+                        "<?php\n                    switch($a){\n                        case 8;;\n                            echo 9;\n                    }\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithShortOpenTag",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\NoEmptyStatementFixerTest",
+            "body": "    public function testWithShortOpenTag(string $expected, ?string $input = null): void\n    {\n        if ('1' !== \\ini_get('short_open_tag')) {\n            self::markTestSkipped('No short tag tests possible.');\n        }\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithShortOpenTagCases",
+                    "key": 0,
+                    "args": [
+                        "<? ",
+                        "<? ;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\NoEmptyStatementFixerTest",
+            "body": "    public function testFix81(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php enum Foo{}",
+                        "<?php enum Foo{};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Semicolon\\NoEmptyStatementFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "interface with property hooks",
+                    "args": [
+                        "<?php interface I\n{\n    public bool $a { get; }\n    public bool $b { get; set; }\n    public bool $c { set; }\n    public bool $d { set; get; }\n    public bool $e {/* hello1 */set/* hello2 */;/* hello3 */get/* hello4 */;/* hello5 */}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "abstract class with property hooks",
+                    "args": [
+                        "<?php abstract class A\n{\n    abstract public bool $a { get; set; }\n    abstract public bool $b { get{} set; }\n    abstract public bool $c { get; set{} }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

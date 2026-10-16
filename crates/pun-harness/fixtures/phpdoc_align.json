@@ -1,0 +1,1043 @@
+{
+    "fixer": "phpdoc_align",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAlignFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocAlignFixerTest.php",
+    "case_count": 73,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAlignFixerTest",
+            "body": "    public function testFix(\n        string $expected,\n        ?string $input,\n        array $configuration,\n        ?WhitespacesFixerConfig $whitespacesConfig = null\n    ): void {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "none, one and four spaces between type and variable",
+                    "args": [
+                        "<?php\n                    /**\n                     * @param int $a\n                     * @param int $b\n                     * @param int $c\n                     */",
+                        "<?php\n                    /**\n                     * @param int    $a\n                     * @param int $b\n                     * @param int$c\n                     */",
+                        {
+                            "tags": [
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligning params",
+                    "args": [
+                        "<?php\n    /**\n     * @param EngineInterface $templating\n     * @param string          $format\n     * @param int             $code       An HTTP response status code\n     * @param bool            $debug\n     * @param mixed           &$reference A parameter passed by reference\n     */\n\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     * @param    bool         $debug\n     * @param  mixed    &$reference     A parameter passed by reference\n     */\n\n",
+                        {
+                            "tags": [
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "left align",
+                    "args": [
+                        "<?php\n    /**\n     * @param EngineInterface $templating\n     * @param string $format\n     * @param int $code An HTTP response status code\n     * @param bool $debug\n     * @param mixed &$reference A parameter passed by reference\n     */\n\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     * @param    bool         $debug\n     * @param  mixed    &$reference     A parameter passed by reference\n     */\n\n",
+                        {
+                            "tags": [
+                                "param"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "partially untyped",
+                    "args": [
+                        "<?php\n    /**\n     * @param         $id\n     * @param         $parentId\n     * @param int     $websiteId\n     * @param         $position\n     * @param int[][] $siblings\n     */\n\n",
+                        "<?php\n    /**\n     * @param      $id\n     * @param    $parentId\n     * @param int $websiteId\n     * @param        $position\n     * @param int[][]  $siblings\n     */\n\n",
+                        {
+                            "tags": [
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "partially untyped left align",
+                    "args": [
+                        "<?php\n    /**\n     * @param $id\n     * @param $parentId\n     * @param int $websiteId\n     * @param $position\n     * @param int[][] $siblings\n     */\n\n",
+                        "<?php\n    /**\n     * @param      $id\n     * @param    $parentId\n     * @param int $websiteId\n     * @param        $position\n     * @param int[][]  $siblings\n     */\n\n",
+                        {
+                            "tags": [
+                                "param"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline description",
+                    "args": [
+                        "<?php\n    /**\n     * @param    EngineInterface $templating\n     * @param    string          $format\n     * @param    int             $code       An HTTP response status code\n     *                                       See constants\n     * @param    bool            $debug\n     * @param    bool            $debug      See constants\n     *                                       See constants\n     * @param    mixed           &$reference A parameter passed by reference\n     * @property mixed           $foo        A foo\n     *                                       See constants\n     * @method   static          baz($bop)   A method that does a thing\n     *                                       It does it well\n     */\n\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     *                              See constants\n     * @param    bool         $debug\n     * @param    bool         $debug See constants\n     * See constants\n     * @param  mixed    &$reference     A parameter passed by reference\n     * @property   mixed   $foo     A foo\n     *                               See constants\n     * @method static   baz($bop)   A method that does a thing\n     *                          It does it well\n     */\n\n",
+                        {
+                            "tags": [
+                                "param",
+                                "property",
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline description left align",
+                    "args": [
+                        "<?php\n    /**\n     * @param EngineInterface $templating\n     * @param string $format\n     * @param int $code An HTTP response status code\n     *                  See constants\n     * @param bool $debug\n     * @param bool $debug See constants\n     *                    See constants\n     * @param mixed &$reference A parameter passed by reference\n     * @property mixed $foo A foo\n     *                      See constants\n     * @method static baz($bop) A method that does a thing\n     *                          It does it well\n     */\n\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     *                              See constants\n     * @param    bool         $debug\n     * @param    bool         $debug See constants\n     * See constants\n     * @param  mixed    &$reference     A parameter passed by reference\n     * @property   mixed   $foo     A foo\n     *                               See constants\n     * @method static   baz($bop)   A method that does a thing\n     *                          It does it well\n     */\n\n",
+                        {
+                            "tags": [
+                                "param",
+                                "property",
+                                "method"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline description with throws",
+                    "args": [
+                        "<?php\n    /**\n     * @param EngineInterface $templating\n     * @param string          $format\n     * @param int             $code       An HTTP response status code\n     *                                    See constants\n     * @param bool            $debug\n     * @param bool            $debug      See constants\n     *                                    See constants\n     * @param mixed           &$reference A parameter passed by reference\n     *\n     * @return Foo description foo\n     *\n     * @throws Foo description foo\n     *             description foo\n     */\n\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     *                              See constants\n     * @param    bool         $debug\n     * @param    bool         $debug See constants\n     * See constants\n     * @param  mixed    &$reference     A parameter passed by reference\n     *\n     * @return Foo description foo\n     *\n     * @throws Foo             description foo\n     * description foo\n     */\n\n",
+                        {
+                            "tags": [
+                                "param",
+                                "return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline description with throws left align",
+                    "args": [
+                        "<?php\n    /**\n     * @param EngineInterface $templating\n     * @param string $format\n     * @param int $code An HTTP response status code\n     *                  See constants\n     * @param bool $debug\n     * @param bool $debug See constants\n     *                    See constants\n     * @param mixed &$reference A parameter passed by reference\n     *\n     * @return Foo description foo\n     *\n     * @throws Foo description foo\n     *             description foo\n     */\n\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     *                              See constants\n     * @param    bool         $debug\n     * @param    bool         $debug See constants\n     * See constants\n     * @param  mixed    &$reference     A parameter passed by reference\n     *\n     * @return Foo description foo\n     *\n     * @throws Foo             description foo\n     * description foo\n     */\n\n",
+                        {
+                            "tags": [
+                                "param",
+                                "return",
+                                "throws"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return and throws",
+                    "args": [
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param  mixed           &$reference A parameter passed by reference\n     *                                     Multiline description\n     * @throws Bar             description bar\n     * @return Foo             description foo\n     *                         multiline description\n     */\n\n",
+                        "<?php\n    /**\n     * @param EngineInterface       $templating\n     * @param  mixed    &$reference     A parameter passed by reference\n     *                                  Multiline description\n     * @throws   Bar description bar\n     * @return  Foo     description foo\n     *                  multiline description\n     */\n\n",
+                        {
+                            "tags": [
+                                "param",
+                                "throws",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "three params with return",
+                    "args": [
+                        "<?php\n    /**\n     * @param  string $param1\n     * @param  bool   $param2 lorem ipsum\n     * @param  string $param3 lorem ipsum\n     * @return int    lorem ipsum\n     */\n\n",
+                        "<?php\n    /**\n     * @param   string $param1\n     * @param bool   $param2 lorem ipsum\n     * @param    string $param3 lorem ipsum\n     * @return int lorem ipsum\n     */\n\n",
+                        {
+                            "tags": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only return",
+                    "args": [
+                        "<?php\n    /**\n     * @return Foo description foo\n     */\n\n",
+                        "<?php\n    /**\n     * @return   Foo             description foo\n     */\n\n",
+                        {
+                            "tags": [
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return with $this",
+                    "args": [
+                        "<?php\n    /**\n     * @param  Foo   $foo\n     * @return $this\n     */\n\n",
+                        "<?php\n    /**\n     * @param Foo $foo\n     * @return $this\n     */\n\n",
+                        {
+                            "tags": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "custom annotations stay untouched",
+                    "args": [
+                        "<?php\n    /**\n     * @return string\n     * @SuppressWarnings(PHPMD.UnusedLocalVariable)\n     */\n\n",
+                        "<?php\n    /**\n     * @return string\n     *  @SuppressWarnings(PHPMD.UnusedLocalVariable)\n     */\n\n",
+                        {
+                            "tags": [
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "custom annotations stay untouched 2",
+                    "args": [
+                        "<?php\n\nclass X\n{\n    /**\n     * @var Collection<Value>|Value[]\n     * @ORM\\ManyToMany(\n     *  targetEntity=\"\\Dl\\Component\\DomainModel\\Product\\Value\\AbstractValue\",\n     *  inversedBy=\"externalAliases\"\n     * )\n     */\n    private $values;\n}\n\n",
+                        null,
+                        {
+                            "tags": [
+                                "var"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "left align 2",
+                    "args": [
+                        "<?php\n    /**\n     * @param int $a\n     * @param string $b\n     *\n     * @dataProvider     dataJobCreation\n     */\n\n",
+                        "<?php\n    /**\n     * @param     int       $a\n     * @param     string    $b\n     *\n     * @dataProvider     dataJobCreation\n     */\n\n",
+                        {
+                            "tags": [
+                                "param"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "params and data provider",
+                    "args": [
+                        "<?php\n    /**\n     * @param int         $a\n     * @param string|null $b\n     *\n     * @dataProvider   dataJobCreation\n     */\n\n",
+                        "<?php\n    /**\n     * @param     int       $a\n     * @param     string|null    $b\n     *\n     * @dataProvider   dataJobCreation\n     */\n\n",
+                        {
+                            "tags": [
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "var",
+                    "args": [
+                        "<?php\n    /**\n     * @var Type\n     */\n\n",
+                        "<?php\n    /**\n     * @var   Type\n     */\n\n",
+                        {
+                            "tags": [
+                                "var"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "type",
+                    "args": [
+                        "<?php\n    /**\n     * @type Type\n     */\n\n",
+                        "<?php\n    /**\n     * @type   Type\n     */\n\n",
+                        {
+                            "tags": [
+                                "type"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "var and description",
+                    "args": [
+                        "<?php\n    /**\n     * This is a variable.\n     *\n     * @var Type\n     */\n\n",
+                        "<?php\n    /**\n     * This is a variable.\n     *\n     * @var   Type\n     */\n\n",
+                        {
+                            "tags": [
+                                "var"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "var and inline description",
+                    "args": [
+                        "<?php\n    /**\n     * @var Type This is a variable.\n     */\n\n",
+                        "<?php\n    /**\n     * @var   Type   This is a variable.\n     */\n\n",
+                        {
+                            "tags": [
+                                "var"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "type and inline description",
+                    "args": [
+                        "<?php\n    /**\n     * @type Type This is a variable.\n     */\n\n",
+                        "<?php\n    /**\n     * @type   Type   This is a variable.\n     */\n\n",
+                        {
+                            "tags": [
+                                "type"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "when we are not modifying a docblock, then line endings should not change",
+                    "args": [
+                        "<?php\r    /**\r     * @param Example Hello there!\r     */\r",
+                        null,
+                        {
+                            "tags": [
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "malformed doc block",
+                    "args": [
+                        "<?php\n    /**\n     * @return string\n     * */\n\n",
+                        null,
+                        {
+                            "tags": [
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "different indentation",
+                    "args": [
+                        "<?php\n/**\n * @param int    $limit\n * @param string $more\n *\n * @return array\n */\n\n        /**\n         * @param int    $limit\n         * @param string $more\n         *\n         * @return array\n         */\n",
+                        "<?php\n/**\n * @param   int       $limit\n * @param   string       $more\n *\n * @return array\n */\n\n        /**\n         * @param   int       $limit\n         * @param   string       $more\n         *\n         * @return array\n         */\n",
+                        {
+                            "tags": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "different indentation left align",
+                    "args": [
+                        "<?php\n/**\n * @param int $limit\n * @param string $more\n *\n * @return array\n */\n\n        /**\n         * @param int $limit\n         * @param string $more\n         *\n         * @return array\n         */\n",
+                        "<?php\n/**\n * @param   int       $limit\n * @param   string       $more\n *\n * @return array\n */\n\n        /**\n         * @param   int       $limit\n         * @param   string       $more\n         *\n         * @return array\n         */\n",
+                        {
+                            "tags": [
+                                "param",
+                                "return"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "messy whitespaces 1",
+                    "args": [
+                        "<?php\r\n\t/**\r\n\t * @type Type This is a variable.\r\n\t */",
+                        "<?php\r\n\t/**\r\n\t * @type   Type   This is a variable.\r\n\t */",
+                        {
+                            "tags": [
+                                "type"
+                            ]
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "messy whitespaces 2",
+                    "args": [
+                        "<?php\r\n/**\r\n * @param int    $limit\r\n * @param string $more\r\n *\r\n * @return array\r\n */",
+                        "<?php\r\n/**\r\n * @param   int       $limit\r\n * @param   string       $more\r\n *\r\n * @return array\r\n */",
+                        {
+                            "tags": [
+                                "param",
+                                "return"
+                            ]
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "messy whitespaces 3",
+                    "args": [
+                        "<?php\r\n/**\r\n * @param int    $limit\r\n * @param string $more\r\n *\r\n * @return array\r\n */",
+                        "<?php\r\n/**\r\n * @param   int       $limit\r\n * @param   string       $more\r\n *\r\n * @return array\r\n */",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "messy whitespaces 4",
+                    "args": [
+                        "<?php\n/**\n * @param int $a\n * @param int $b\n *               ABC\n */",
+                        "<?php\n/**\n * @param    int $a\n * @param    int   $b\n * ABC\n */",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "messy whitespaces 5",
+                    "args": [
+                        "<?php\r\n/**\r\n * @param int $z\r\n * @param int $b\r\n *               XYZ\r\n */",
+                        "<?php\r\n/**\r\n * @param    int $z\r\n * @param    int   $b\r\n * XYZ\r\n */",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "badly formatted",
+                    "args": [
+                        "<?php\n    /**\n     * @var Foo */\n",
+                        null,
+                        {
+                            "tags": [
+                                "var"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "unicode",
+                    "args": [
+                        "<?php\n    /**\n     * Method test.\n     *\n     * @param int      $foobar Description\n     * @param string   $foo    Description\n     * @param mixed    $bar    Description word_with_ą\n     * @param int|null $test   Description\n     */\n    $a = 1;\n\n    /**\n     * @return string\n     * @SuppressWarnings(PHPMD.UnusedLocalVariable) word_with_ą\n     */\n    $b = 1;\n",
+                        "<?php\n    /**\n     * Method test.\n     *\n     * @param int    $foobar Description\n     * @param string $foo    Description\n     * @param mixed $bar Description word_with_ą\n     * @param int|null $test Description\n     */\n    $a = 1;\n\n    /**\n     * @return string\n     *   @SuppressWarnings(PHPMD.UnusedLocalVariable) word_with_ą\n     */\n    $b = 1;\n",
+                        {
+                            "tags": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "does align property by default",
+                    "args": [
+                        "<?php\n    /**\n     * @param    int       $foobar Description\n     * @return   int\n     * @throws   Exception\n     * @var      FooBar\n     * @type     BarFoo\n     * @property string    $foo    Hello World\n     */\n",
+                        "<?php\n    /**\n     * @param    int   $foobar   Description\n     * @return  int\n     * @throws Exception\n     * @var       FooBar\n     * @type      BarFoo\n     * @property     string    $foo   Hello World\n     */\n",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns property",
+                    "args": [
+                        "<?php\n    /**\n     * @param    int       $foobar Description\n     * @return   int\n     * @throws   Exception\n     * @var      FooBar\n     * @type     BarFoo\n     * @property string    $foo    Hello World\n     */\n",
+                        "<?php\n    /**\n     * @param    int   $foobar   Description\n     * @return  int\n     * @throws Exception\n     * @var       FooBar\n     * @type      BarFoo\n     * @property     string    $foo   Hello World\n     */\n",
+                        {
+                            "tags": [
+                                "param",
+                                "property",
+                                "return",
+                                "throws",
+                                "type",
+                                "var"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "does align method by default",
+                    "args": [
+                        "<?php\n    /**\n     * @param  int       $foobar          Description\n     * @return int\n     * @throws Exception\n     * @var    FooBar\n     * @type   BarFoo\n     * @method string    foo(string $bar) Hello World\n     */\n",
+                        "<?php\n    /**\n     * @param    int   $foobar   Description\n     * @return  int\n     * @throws Exception\n     * @var       FooBar\n     * @type      BarFoo\n     * @method     string    foo(string $bar)   Hello World\n     */\n",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns method",
+                    "args": [
+                        "<?php\n    /**\n     * @param  int       $foobar                                        Description\n     * @return int\n     * @throws Exception\n     * @var    FooBar\n     * @type   BarFoo\n     * @method int       foo(string $bar, string ...$things, int &$baz) Description\n     */\n",
+                        "<?php\n    /**\n     * @param    int   $foobar     Description\n     * @return  int\n     * @throws Exception\n     * @var       FooBar\n     * @type      BarFoo\n     * @method        int    foo(string $bar, string ...$things, int &$baz)   Description\n     */\n",
+                        {
+                            "tags": [
+                                "param",
+                                "method",
+                                "return",
+                                "throws",
+                                "type",
+                                "var"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns method without parameters",
+                    "args": [
+                        "<?php\n    /**\n     * @property string $foo  Desc\n     * @method   int    foo() Description\n     */\n",
+                        "<?php\n    /**\n     * @property    string   $foo     Desc\n     * @method int      foo()          Description\n     */\n",
+                        {
+                            "tags": [
+                                "method",
+                                "property"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns method without parameters left align",
+                    "args": [
+                        "<?php\n    /**\n     * @property string $foo Desc\n     * @method int foo() Description\n     */\n",
+                        "<?php\n    /**\n     * @property    string   $foo     Desc\n     * @method int      foo()          Description\n     */\n",
+                        {
+                            "tags": [
+                                "method",
+                                "property"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "does not format method",
+                    "args": [
+                        "<?php\n    /**\n     * @method int foo( string  $bar ) Description\n     */\n",
+                        null,
+                        {
+                            "tags": [
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns method without return type",
+                    "args": [
+                        "<?php\n    /**\n     * @property string $foo  Desc\n     * @method   int    foo() Description\n     * @method          bar() Descrip\n     */\n",
+                        "<?php\n    /**\n     * @property    string   $foo     Desc\n     * @method int      foo()          Description\n     * @method    bar()   Descrip\n     */\n",
+                        {
+                            "tags": [
+                                "method",
+                                "property"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns methods without return type",
+                    "args": [
+                        "<?php\n    /**\n     * @method fooBaz()         Description\n     * @method bar(string $foo) Descrip\n     */\n",
+                        "<?php\n    /**\n     * @method         fooBaz()  Description\n     * @method    bar(string $foo)   Descrip\n     */\n",
+                        {
+                            "tags": [
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns static and non-static methods",
+                    "args": [
+                        "<?php\n    /**\n     * @property        string      $foo             Desc1\n     * @property        int         $bar             Desc2\n     * @method                      foo(string $foo) DescriptionFoo\n     * @method          static      bar(string $foo) DescriptionBar\n     * @method          string|null baz(bool $baz)   DescriptionBaz\n     * @method   static int|false   qux(float $qux)  DescriptionQux\n     * @method   static static      quux(int $quux)  DescriptionQuux\n     * @method   static $this       quuz(bool $quuz) DescriptionQuuz\n     */\n",
+                        "<?php\n    /**\n     * @property    string   $foo     Desc1\n     * @property  int   $bar   Desc2\n     * @method     foo(string $foo)    DescriptionFoo\n     * @method  static     bar(string $foo) DescriptionBar\n     * @method    string|null    baz(bool $baz)  DescriptionBaz\n     * @method static     int|false qux(float $qux) DescriptionQux\n     * @method static   static    quux(int $quux) DescriptionQuux\n     * @method static  $this     quuz(bool $quuz) DescriptionQuuz\n     */\n",
+                        {
+                            "tags": [
+                                "method",
+                                "property"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns static and non-static methods left align",
+                    "args": [
+                        "<?php\n    /**\n     * @property string $foo Desc1\n     * @property int $bar Desc2\n     * @method foo(string $foo) DescriptionFoo\n     * @method static bar(string $foo) DescriptionBar\n     * @method string|null baz(bool $baz) DescriptionBaz\n     * @method static int|false qux(float $qux) DescriptionQux\n     * @method static static quux(int $quux) DescriptionQuux\n     * @method static $this quuz(bool $quuz) DescriptionQuuz\n     */\n",
+                        "<?php\n    /**\n     * @property    string   $foo     Desc1\n     * @property  int   $bar   Desc2\n     * @method     foo(string $foo)    DescriptionFoo\n     * @method  static     bar(string $foo) DescriptionBar\n     * @method    string|null    baz(bool $baz)  DescriptionBaz\n     * @method static     int|false qux(float $qux) DescriptionQux\n     * @method static   static    quux(int $quux) DescriptionQuux\n     * @method static  $this     quuz(bool $quuz) DescriptionQuuz\n     */\n",
+                        {
+                            "tags": [
+                                "method",
+                                "property"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns return static",
+                    "args": [
+                        "<?php\n    /**\n     * @param  string    $foobar Desc1\n     * @param  int       &$baz   Desc2\n     * @param  ?Qux      $qux    Desc3\n     * @param  int|float $quux   Desc4\n     * @return static    DescriptionReturn\n     * @throws Exception DescriptionException\n     */\n",
+                        "<?php\n    /**\n     * @param    string   $foobar     Desc1\n     * @param  int   &$baz   Desc2\n     * @param ?Qux       $qux   Desc3\n     * @param    int|float $quux   Desc4\n     * @return  static     DescriptionReturn\n     * @throws   Exception       DescriptionException\n     */\n",
+                        {
+                            "tags": [
+                                "param",
+                                "return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "aligns return static left align",
+                    "args": [
+                        "<?php\n    /**\n     * @param string $foobar Desc1\n     * @param int &$baz Desc2\n     * @param ?Qux $qux Desc3\n     * @param int|float $quux Desc4\n     * @return static DescriptionReturn\n     * @throws Exception DescriptionException\n     */\n",
+                        "<?php\n    /**\n     * @param    string   $foobar     Desc1\n     * @param  int   &$baz   Desc2\n     * @param ?Qux       $qux   Desc3\n     * @param    int|float $quux   Desc4\n     * @return  static     DescriptionReturn\n     * @throws   Exception       DescriptionException\n     */\n",
+                        {
+                            "tags": [
+                                "param",
+                                "return",
+                                "throws"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "does not align with empty config",
+                    "args": [
+                        "<?php\n    /**\n     * @param    int   $foobar   Description\n     * @return  int\n     * @throws Exception\n     * @var       FooBar\n     * @type      BarFoo\n     * @property     string    $foo   Hello World\n     * @method    int    bar() Description\n     */\n",
+                        null,
+                        {
+                            "tags": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variadic params 1",
+                    "args": [
+                        "<?php\nfinal class Sample\n{\n    /**\n     * @param int[] $a    A\n     * @param int   &$b   B\n     * @param array ...$c C\n     */\n    public function sample2($a, &$b, ...$c)\n    {\n    }\n}\n",
+                        "<?php\nfinal class Sample\n{\n    /**\n     * @param int[]       $a  A\n     * @param int          &$b B\n     * @param array ...$c    C\n     */\n    public function sample2($a, &$b, ...$c)\n    {\n    }\n}\n",
+                        {
+                            "tags": [
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variadic params 2",
+                    "args": [
+                        "<?php\nfinal class Sample\n{\n    /**\n     * @param int     $a\n     * @param int     $b\n     * @param array[] ...$c\n     */\n    public function sample2($a, $b, ...$c)\n    {\n    }\n}\n",
+                        "<?php\nfinal class Sample\n{\n    /**\n     * @param int       $a\n     * @param int    $b\n     * @param array[]      ...$c\n     */\n    public function sample2($a, $b, ...$c)\n    {\n    }\n}\n",
+                        {
+                            "tags": [
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variadic params 3",
+                    "args": [
+                        "<?php\nfinal class Sample\n{\n    /**\n     * @param int $a\n     * @param int $b\n     * @param array[] ...$c\n     */\n    public function sample2($a, $b, ...$c)\n    {\n    }\n}\n",
+                        "<?php\nfinal class Sample\n{\n    /**\n     * @param int       $a\n     * @param int    $b\n     * @param array[]      ...$c\n     */\n    public function sample2($a, $b, ...$c)\n    {\n    }\n}\n",
+                        {
+                            "tags": [
+                                "param"
+                            ],
+                            "align": "left"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "variadic params 4",
+                    "args": [
+                        "<?php\n/**\n * @property       string $myMagicProperty      magic property\n * @property-read  string $myMagicReadProperty  magic read-only property\n * @property-write string $myMagicWriteProperty magic write-only property\n */\nclass Foo {}\n",
+                        "<?php\n/**\n * @property string $myMagicProperty magic property\n * @property-read string $myMagicReadProperty magic read-only property\n * @property-write string $myMagicWriteProperty magic write-only property\n */\nclass Foo {}\n",
+                        {
+                            "tags": [
+                                "property",
+                                "property-read",
+                                "property-write"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid PHPDoc 1",
+                    "args": [
+                        "<?php\n/**\n * @ Security(\"is_granted('CANCEL', giftCard)\")\n */\n ",
+                        null,
+                        {
+                            "tags": [
+                                "param",
+                                "return",
+                                "throws",
+                                "type",
+                                "var"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid PHPDoc 2",
+                    "args": [
+                        "<?php\n/**\n * @ Security(\"is_granted('CANCEL', giftCard)\")\n */\n ",
+                        null,
+                        {
+                            "tags": [
+                                "param",
+                                "return",
+                                "throws",
+                                "type",
+                                "var",
+                                "method"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid PHPDoc 3",
+                    "args": [
+                        "<?php\n/**\n * @ Security(\"is_granted('CANCEL', giftCard)\")\n * @     foo   bar\n *   @ foo\n */\n ",
+                        null,
+                        {
+                            "tags": [
+                                "param",
+                                "return",
+                                "throws",
+                                "type",
+                                "var"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types containing callables",
+                    "args": [
+                        "<?php\n            /**\n             * @param callable(Foo): Bar       $x  Description\n             * @param callable(FooFoo): BarBar $yy Description\n             */\n            ",
+                        "<?php\n            /**\n             * @param callable(Foo): Bar $x Description\n             * @param callable(FooFoo): BarBar $yy Description\n             */\n            ",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types containing whitespace",
+                    "args": [
+                        "<?php\n            /**\n             * @var int                   $key\n             * @var iterable<int, string> $value\n             */\n            /**\n             * @param array<int, $this>    $arrayOfIntegers\n             * @param array<string, $this> $arrayOfStrings\n             */\n        ",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "closure types containing backslash",
+                    "args": [
+                        "<?php\n            /**\n             * @var string                              $input\n             * @var \\Closure                            $fn\n             * @var \\Closure(bool):int                  $fn2\n             * @var Closure                             $fn3\n             * @var Closure(string):string              $fn4\n             * @var array<string, array<string, mixed>> $data\n             */\n            /**\n             * @param string                              $input\n             * @param \\Closure                            $fn\n             * @param \\Closure(bool):int                  $fn2\n             * @param Closure                             $fn3\n             * @param Closure(string):string              $fn4\n             * @param array<string, array<string, mixed>> $data\n             */\n            /**\n             * @var string                   $value\n             * @var \\Closure(string): string $callback\n             * @var Closure(int): bool       $callback2\n             */\n            /**\n             * @param string                   $value\n             * @param \\Closure(string): string $callback\n             * @param Closure(int): bool       $callback2\n             */\n            /**\n             * @var Closure(array<int, bool>): bool $callback1\n             * @var \\Closure(string): string        $callback2\n             */\n            /**\n             * @param Closure(array<int, bool>): bool $callback1\n             * @param \\Closure(string): string        $callback2\n             */\n        ",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types parenthesized",
+                    "args": [
+                        "<?php\n            /**\n             * @param list<string>                                   $allowedTypes\n             * @param null|list<\\Closure(mixed): (bool|null|scalar)> $allowedValues\n             */\n            ",
+                        "<?php\n            /**\n             * @param list<string> $allowedTypes\n             * @param null|list<\\Closure(mixed): (bool|null|scalar)> $allowedValues\n             */\n            ",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "callable types with ugly code 1",
+                    "args": [
+                        "<?php\n        /**\n         * @var callable                      $fn\n         * @var callable(bool): int           $fn2\n         * @var Closure                       $fn3\n         * @var Closure(string|object):string $fn4\n         * @var \\Closure                      $fn5\n         * @var \\Closure(int, bool): bool     $fn6\n         */\n        ",
+                        "<?php\n        /**\n         * @var callable $fn\n         * @var callable(bool): int $fn2\n         * @var Closure $fn3\n         * @var Closure(string|object):string $fn4\n         * @var \\Closure $fn5\n         * @var \\Closure(int, bool): bool $fn6\n         */\n        ",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "callable types with ugly code 2",
+                    "args": [
+                        "<?php\n        /**\n         * @var callable                      $fn\n         * @var callable(bool): int           $fn2\n         * @var Closure                       $fn3\n         * @var Closure(string|object):string $fn4\n         * @var \\Closure                      $fn5\n         * @var \\Closure(int, bool): bool     $fn6\n         */\n        ",
+                        "<?php\n        /**\n         * @var          callable           $fn\n         * @var   callable(bool): int     $fn2\n         * @var   Closure          $fn3\n         * @var Closure(string|object):string                  $fn4\n         * @var      \\Closure             $fn5\n         * @var            \\Closure(int, bool): bool       $fn6\n         */\n        ",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "CUSTOM tags",
+                    "args": [
+                        "<?php\n    /**\n     * @param         EngineInterface $templating\n     * @param         string          $format\n     * @xxx-xxxxxxxxx int             $code       An HTTP response status code\n     * @param         bool            $debug\n     * @param         mixed           &$reference A parameter passed by reference\n     */\n\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @xxx-xxxxxxxxx  int  $code       An HTTP response status code\n     * @param    bool         $debug\n     * @param  mixed    &$reference     A parameter passed by reference\n     */\n\n",
+                        {
+                            "tags": [
+                                "param",
+                                "xxx-xxxxxxxxx"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no/2+ spaces after comment star",
+                    "args": [
+                        "<?php\n/**\n * @property string $age  @Atk4\\Field()\n * @property string $city @Atk4\\Field()\n */\n",
+                        "<?php\n/**\n *  @property string $age           @Atk4\\Field()\n*@property    string $city          @Atk4\\Field()\n */\n",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "untyped param with multiline desc",
+                    "args": [
+                        "<?php\n/**\n * @param $typeless Foo.\n *                  Bar.\n */\nfunction foo($typeless): void {}",
+                        "<?php\n/**\n * @param $typeless    Foo.\n *                     Bar.\n */\nfunction foo($typeless): void {}",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "left align and @param with 2 spaces",
+                    "args": [
+                        "<?php\n    /**\n     * @param  EngineInterface  $templating\n     * @param  string  $format\n     * @param  int  $code  An HTTP response status code\n     *                     See constants\n     * @param  bool  $debug\n     * @param  bool  $debug  See constants\n     *                       See constants\n     * @param  mixed  &$reference  A parameter passed by reference\n     *\n     * @return Foo description foo\n     *\n     * @throws Foo description foo\n     *             description foo\n     *\n     */\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     *                              See constants\n     * @param    bool         $debug\n     * @param    bool         $debug See constants\n     * See constants\n     * @param  mixed    &$reference     A parameter passed by reference\n     *\n     * @return Foo description foo\n     *\n     * @throws Foo             description foo\n     *             description foo\n     *\n     */\n",
+                        {
+                            "align": "left",
+                            "spacing": {
+                                "param": 2
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "vertical align with various spacing",
+                    "args": [
+                        "<?php\n    /**\n     * @param  EngineInterface  $templating\n     * @param  string           $format\n     * @param  int              $code        An HTTP response status code\n     *                                       See constants\n     * @param  bool             $debug\n     * @param  bool             $debug       See constants\n     *                                       See constants\n     * @param  mixed            &$reference  A parameter passed by reference\n     *\n     * @return    Foo    description foo bar hello world!\n     *                   return description continuation\n     *\n     * @throws Foo description foo\n     *             description foo\n     *\n     */\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     *                              See constants\n     * @param    bool         $debug\n     * @param    bool         $debug See constants\n     * See constants\n     * @param  mixed    &$reference     A parameter passed by reference\n     *\n     * @return Foo description foo bar hello world!\n    *        return description continuation\n     *\n     * @throws Foo             description foo\n     *             description foo\n     *\n     */\n",
+                        {
+                            "align": "vertical",
+                            "spacing": {
+                                "param": 2,
+                                "return": 4
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "left align with various spacing",
+                    "args": [
+                        "<?php\n    /**\n     * @param  EngineInterface  $templating\n     * @param  string  $format\n     * @param  int  $code  An HTTP response status code\n     *                     See constants\n     * @param  bool  $debug\n     * @param  bool  $debug  See constants\n     *                       See constants\n     * @param  mixed  &$reference  A parameter passed by reference\n     *\n     * @return    Foo    description foo\n     *\n     * @throws Foo description foo\n     *             description foo\n     *\n     */\n",
+                        "<?php\n    /**\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     *                              See constants\n     * @param    bool         $debug\n     * @param    bool         $debug See constants\n     * See constants\n     * @param  mixed    &$reference     A parameter passed by reference\n     *\n     * @return Foo description foo\n     *\n     * @throws Foo             description foo\n     *             description foo\n     *\n     */\n",
+                        {
+                            "align": "left",
+                            "spacing": {
+                                "param": 2,
+                                "return": 4
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "left align with changed default spacing",
+                    "args": [
+                        "<?php\n    /**\n     * @property  string  $bar  Foo-Bar lorem ipsum\n     * @param  EngineInterface  $templating\n     * @param  string  $format\n     * @param  int  $code  An HTTP response status code\n     *                     See constants\n     * @param  bool  $debug\n     * @param  bool  $debug  See constants\n     *                       See constants\n     * @param  mixed  &$reference  A parameter passed by reference\n     *\n     * @return    Foo    description foo\n     *\n     * @throws  Foo  description foo\n     *               description foo\n     *\n     */\n",
+                        "<?php\n    /**\n     * @property string $bar                    Foo-Bar lorem ipsum\n     * @param  EngineInterface $templating\n     * @param string      $format\n     * @param  int  $code       An HTTP response status code\n     *                              See constants\n     * @param    bool         $debug\n     * @param    bool         $debug See constants\n     * See constants\n     * @param  mixed    &$reference     A parameter passed by reference\n     *\n     * @return Foo description foo\n     *\n     * @throws Foo             description foo\n     *             description foo\n     *\n     */\n",
+                        {
+                            "align": "left",
+                            "spacing": {
+                                "_default": 2,
+                                "return": 4
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "type with UTF8 characters",
+                    "args": [
+                        "<?php\n/**\n * @param Foooooooooooooooo $x\n * @param Bar‹Baz›          $y\n */",
+                        "<?php\n/**\n * @param Foooooooooooooooo $x\n * @param Bar‹Baz› $y\n */",
+                        {
+                            "tags": [
+                                "param"
+                            ],
+                            "align": "vertical"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "call-site generic variance",
+                    "args": [
+                        "<?php\n/**\n * @param Foo                                   $a\n * @param Bar<covariant A, covariant B>         $b\n * @param Foo                                   $c\n * @param Bar<contravariant C, contravariant D> $d\n * @param Foo                                   $e\n */",
+                        "<?php\n/**\n * @param Foo $a\n * @param Bar<covariant A, covariant B> $b\n * @param Foo $c\n * @param Bar<contravariant C, contravariant D> $d\n * @param Foo $e\n */",
+                        {
+                            "tags": [
+                                "param"
+                            ],
+                            "align": "vertical"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAlignFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $expectedMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessage($expectedMessage);\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "zero",
+                    "args": [
+                        {
+                            "spacing": 0
+                        },
+                        "The option \"spacing\" is invalid. All spacings must be greater than zero."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "negative",
+                    "args": [
+                        {
+                            "spacing": -2
+                        },
+                        "The option \"spacing\" is invalid. All spacings must be greater than zero."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "zeroInArray",
+                    "args": [
+                        {
+                            "spacing": {
+                                "param": 1,
+                                "return": 0
+                            }
+                        },
+                        "The option \"spacing\" is invalid. All spacings must be greater than zero."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "negativeInArray",
+                    "args": [
+                        {
+                            "align": "left",
+                            "spacing": {
+                                "return": 2,
+                                "param": -1
+                            }
+                        },
+                        "The option \"spacing\" is invalid. All spacings must be greater than zero."
+                    ]
+                }
+            ]
+        }
+    ]
+}

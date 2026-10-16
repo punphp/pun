@@ -1,0 +1,133 @@
+{
+    "fixer": "no_superfluous_elseif",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoSuperfluousElseifFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/NoSuperfluousElseifFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoSuperfluousElseifFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nif ($some) { return 1; } if ($a == 6){ $test = false; } //",
+                        "<?php\nif ($some) { return 1; } elseif ($a == 6){ $test = false; } //"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n                if ($foo) {\n                    return 1;\n                }\n                if ($bar) {\n                    return 2;\n                }\n                if ($baz) {\n                    return 3;\n                } else {\n                    return 4;\n                }",
+                        "<?php\n\n                if ($foo) {\n                    return 1;\n                } elseif ($bar) {\n                    return 2;\n                } else if ($baz) {\n                    return 3;\n                } else {\n                    return 4;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\n                if ($foo)\n                    return 1;\n                if ($bar)\n                    echo 'bar';\n                else {\n                    return 3;\n                }",
+                        "<?php\n\n                if ($foo)\n                    return 1;\n                elseif ($bar)\n                    echo 'bar';\n                else {\n                    return 3;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n                if ($foo)\n                    ?><?php\n                elseif ($bar)\n                    ?><?php\n                else {\n                    ?><?php\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\n                if ($foo) {\n                    ?><?php\n                    return;\n                }\n                if ($bar)\n                    ?><?php\n                else {\n                    ?><?php\n                }",
+                        "<?php\n\n                if ($foo) {\n                    ?><?php\n                    return;\n                } elseif ($bar)\n                    ?><?php\n                else {\n                    ?><?php\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\n                while (1) {\n                    if (2) {\n                        if (3) {\n                            if (4) {\n                                die;\n                            }\n                            if (5) {\n                                exit;\n                            } else {#foo\n                                throw new \\Exception();\n                            }\n                            \n                            continue;\n\n\n\n                        }\n                        if (6) {\n                            return null;\n                        } else {\n                            return 1;\n                        }\n                        \n                        break;\n                    }\n                    /* bar */if (7)\n                        return 2 + 3;\n                    else {# baz\n                        die('foo');\n                    }\n                }",
+                        "<?php\n\n                while (1) {\n                    if (2) {\n                        if (3) {\n                            if (4) {\n                                die;\n                            } elseif (5) {\n                                exit;\n                            } else {#foo\n                                throw new \\Exception();\n                            }\n                            \n                            continue;\n\n\n\n                        } else if (6) {\n                            return null;\n                        } else {\n                            return 1;\n                        }\n                        \n                        break;\n                    } else/* bar */if (7)\n                        return 2 + 3;\n                    else {# baz\n                        die('foo');\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n                if ($a === false)\n                {\n                    if ($v) { $ret = \"foo\"; }\n                    elseif($a)\n                        die;\n                }\n                elseif($a)\n                    $ret .= $value;\n\n                return $ret;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\n                if ($a)\n                    echo 1;\n                else if ($b)\n                    die;\n                else {\n                    echo 2;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\n                if ($a) {\n                    echo 1;\n                } else if ($b)\n                    die;\n                else {\n                    echo 2;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\n                if ($a) {\n                    echo 1;\n                } else if ($b) {\n                    die;\n                } else {\n                    echo 2;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\n                if ($foo) {\n                    return 1;\n                }\n                if ($bar) {\n                    return 2;\n                }\n                if ($baz) {\n                    throw new class extends Exception{};\n                } else {\n                    return 4;\n                }",
+                        "<?php\n\n                if ($foo) {\n                    return 1;\n                } elseif ($bar) {\n                    return 2;\n                } else if ($baz) {\n                    throw new class extends Exception{};\n                } else {\n                    return 4;\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoSuperfluousElseifFixerTest",
+            "body": "    public function testFix80(string $expected): void\n    {\n        $this->doTest($expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n            if ($foo) {\n                $a = $bar ?? throw new \\Exception();\n            } elseif ($bar) {\n                echo 1;\n            }\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}

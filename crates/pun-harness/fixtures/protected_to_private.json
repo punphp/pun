@@ -1,0 +1,346 @@
+{
+    "fixer": "protected_to_private",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ProtectedToPrivateFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/ProtectedToPrivateFixerTest.php",
+    "case_count": 31,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ProtectedToPrivateFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "final-extends",
+                    "args": [
+                        "<?php final class MyClass extends MyAbstractClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "normal-extends",
+                    "args": [
+                        "<?php class MyClass extends MyAbstractClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "abstract",
+                    "args": [
+                        "<?php abstract class MyAbstractClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "normal",
+                    "args": [
+                        "<?php class MyClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait",
+                    "args": [
+                        "<?php trait MyTrait { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final-with-trait",
+                    "args": [
+                        "<?php final class MyClass { use MyTrait; \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiline-comment",
+                    "args": [
+                        "<?php final class MyClass { /* public protected private */ }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inline-comment",
+                    "args": [
+                        "<?php final class MyClass { \n // public protected private \n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final",
+                    "args": [
+                        "<?php final class MyClass { \npublic $v1;\nprivate $v2;\nprivate $v3;\npublic static $v4;\nprivate static $v5;\nprivate static $v6;\npublic function f1(){}\nprivate function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprivate static function f5(){}\nprivate static function f6(){}\n } class B {use C;}",
+                        "<?php final class MyClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n } class B {use C;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final-implements",
+                    "args": [
+                        "<?php final class MyClass implements MyInterface { \npublic $v1;\nprivate $v2;\nprivate $v3;\npublic static $v4;\nprivate static $v5;\nprivate static $v6;\npublic function f1(){}\nprivate function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprivate static function f5(){}\nprivate static function f6(){}\n }",
+                        "<?php final class MyClass implements MyInterface { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final-with-use-before",
+                    "args": [
+                        "<?php use stdClass; final class MyClass { \npublic $v1;\nprivate $v2;\nprivate $v3;\npublic static $v4;\nprivate static $v5;\nprivate static $v6;\npublic function f1(){}\nprivate function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprivate static function f5(){}\nprivate static function f6(){}\n }",
+                        "<?php use stdClass; final class MyClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final-with-use-after",
+                    "args": [
+                        "<?php final class MyClass { \npublic $v1;\nprivate $v2;\nprivate $v3;\npublic static $v4;\nprivate static $v5;\nprivate static $v6;\npublic function f1(){}\nprivate function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprivate static function f5(){}\nprivate static function f6(){}\n } use stdClass;",
+                        "<?php final class MyClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n } use stdClass;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple-classes",
+                    "args": [
+                        "<?php final class MyFirstClass { \npublic $v1;\nprivate $v2;\nprivate $v3;\npublic static $v4;\nprivate static $v5;\nprivate static $v6;\npublic function f1(){}\nprivate function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprivate static function f5(){}\nprivate static function f6(){}\n } class MySecondClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n } final class MyThirdClass { \npublic $v1;\nprivate $v2;\nprivate $v3;\npublic static $v4;\nprivate static $v5;\nprivate static $v6;\npublic function f1(){}\nprivate function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprivate static function f5(){}\nprivate static function f6(){}\n } ",
+                        "<?php final class MyFirstClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n } class MySecondClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n } final class MyThirdClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n } "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal-set",
+                    "args": [
+                        "<?php final class MyClass { private $v1; }",
+                        "<?php final class MyClass { protected $v1; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous-class-inside",
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    \npublic $v1;\nprivate $v2;\nprivate $v3;\npublic static $v4;\nprivate static $v5;\nprivate static $v6;\npublic function f1(){}\nprivate function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprivate static function f5(){}\nprivate static function f6(){}\n\n\n    private function bar()\n    {\n        new class {\n            \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n\n        };\n    }\n}\n",
+                        "<?php\nfinal class Foo\n{\n    \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n\n\n    protected function bar()\n    {\n        new class {\n            \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n\n        };\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = new class{protected function A(){ echo 123; }};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php final class Foo { private int $foo; }",
+                        "<?php final class Foo { protected int $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php final class Foo { private ?string $foo; }",
+                        "<?php final class Foo { protected ?string $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php final class Foo { private array $foo; }",
+                        "<?php final class Foo { protected array $foo; }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ProtectedToPrivateFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "type union",
+                    "args": [
+                        "<?php\nfinal class Foo2 {\n    private int|float $a;\n}\n",
+                        "<?php\nfinal class Foo2 {\n    protected int|float $a;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "promoted properties",
+                    "args": [
+                        "<?php final class Foo {\n    public function __construct(\n        private null|Bar $x,\n        private ?Bar $u,\n    ) {}\n}",
+                        "<?php final class Foo {\n    public function __construct(\n        protected null|Bar $x,\n        protected ?Bar $u,\n    ) {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ProtectedToPrivateFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                final class Foo { private readonly int $d; }\n            ",
+                        "<?php\n                final class Foo { protected readonly int $d; }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "protected final const",
+                    "args": [
+                        "<?php\n                final class Foo1 { final protected const Y = \"abc\"; }\n                final class Foo2 { protected final const Y = \"def\"; }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php final class Foo2 { private const X = \"tty\"; }",
+                        "<?php final class Foo2 { protected const X = \"tty\"; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php final class Foo { private Foo1&Bar $foo; }",
+                        "<?php final class Foo { protected Foo1&Bar $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum",
+                    "args": [
+                        "<?php\nenum Foo: string\n{\n    private const Spades = 123;\n\n    case Hearts = \"H\";\n\n    private function test() {\n        echo 123;\n    }\n}\n\nFoo::Hearts->test();\n            ",
+                        "<?php\nenum Foo: string\n{\n    protected const Spades = 123;\n\n    case Hearts = \"H\";\n\n    protected function test() {\n        echo 123;\n    }\n}\n\nFoo::Hearts->test();\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with trait",
+                    "args": [
+                        "<?php\n\ntrait NamedDocumentStatus\n{\n    public function getStatusName(): string\n    {\n        return $this->getFoo();\n    }\n}\n\nenum DocumentStats {\n    use NamedDocumentStatus;\n\n    case DRAFT;\n\n    private function getFoo(): string {\n        return \"X\";\n    }\n}\n\necho DocumentStats::DRAFT->getStatusName();\n",
+                        "<?php\n\ntrait NamedDocumentStatus\n{\n    public function getStatusName(): string\n    {\n        return $this->getFoo();\n    }\n}\n\nenum DocumentStats {\n    use NamedDocumentStatus;\n\n    case DRAFT;\n\n    protected function getFoo(): string {\n        return \"X\";\n    }\n}\n\necho DocumentStats::DRAFT->getStatusName();\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ProtectedToPrivateFixerTest",
+            "body": "    public function testFix82(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "final readonly",
+                    "args": [
+                        "<?php\n            final readonly class Foo {\n                private function noop(): void{}\n            }",
+                        "<?php\n            final readonly class Foo {\n                protected function noop(): void{}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "final readonly reversed",
+                    "args": [
+                        "<?php\n            readonly final class Foo {\n                private function noop(): void{}\n            }",
+                        "<?php\n            readonly final class Foo {\n                protected function noop(): void{}\n            }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ProtectedToPrivateFixerTest",
+            "body": "    public function testFix84(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility with only set visibility",
+                    "args": [
+                        "<?php\n            final class Foo {\n                private(set) int $a;\n            }",
+                        "<?php\n            final class Foo {\n                protected(set) int $a;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility with both visibilities",
+                    "args": [
+                        "<?php\n            final class Foo {\n                public private(set) int $a;\n                private private(set) int $b;\n                private private(set) int $c;\n            }",
+                        "<?php\n            final class Foo {\n                public protected(set) int $a;\n                protected protected(set) int $b;\n                protected private(set) int $c;\n            }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,2023 @@
+{
+    "fixer": "nullable_type_declaration_for_default_null_value",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/NullableTypeDeclarationForDefaultNullValueFixerTest.php",
+    "case_count": 205,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo($param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo($param1 = null, $param2 = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo(&$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(& $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(/**int*/ $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(/**int*/ &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $foo = function ($param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $foo = function (&$param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function foo(?string $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php function foo(?string $param= null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php function foo(?string $param =null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php function foo(?string $param=null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php function foo(?string $param1 = null, ?string $param2 = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php function foo(?string &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php function foo(?string & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php function foo(?string /*comment*/$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php function foo(?string /*comment*/&$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php function foo(? string $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php function foo(?/*comment*/string $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php function foo(? /*comment*/ string $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $foo = function (?string $param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $foo = function (?string &$param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php function foo(?Baz $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php function foo(?\\Baz $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php function foo(?Bar\\Baz $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php function foo(?\\Bar\\Baz $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php function foo(?Baz &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php function foo(?\\Baz &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php function foo(?Bar\\Baz &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php function foo(?\\Bar\\Baz &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php function foo(?Baz & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php function foo(?\\Baz & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php function foo(?Bar\\Baz & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php function foo(?\\Bar\\Baz & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php function foo(?array &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php function foo(?array & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php function foo(?callable &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php function foo(?callable & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php $foo = function (?Baz $param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $foo = function (?Baz &$param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php $foo = function (?Baz & $param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php class Test { public function foo(?Bar\\Baz $param = null) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php class Test { public function foo(?self $param = null) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php function foo(...$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php function foo(array ...$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php function foo(?array ...$param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php function foo(mixed $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(?string $param = null) {}",
+                        "<?php function foo(string $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 0",
+                    "args": [
+                        "<?php function foo(string $param = null) {}",
+                        "<?php function foo(?string $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(?string $param= null) {}",
+                        "<?php function foo(string $param= null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 1",
+                    "args": [
+                        "<?php function foo(string $param= null) {}",
+                        "<?php function foo(?string $param= null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo(?string $param =null) {}",
+                        "<?php function foo(string $param =null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 2",
+                    "args": [
+                        "<?php function foo(string $param =null) {}",
+                        "<?php function foo(?string $param =null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(?string $param=null) {}",
+                        "<?php function foo(string $param=null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 3",
+                    "args": [
+                        "<?php function foo(string $param=null) {}",
+                        "<?php function foo(?string $param=null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(?string $param1 = null, ?string $param2 = null) {}",
+                        "<?php function foo(string $param1 = null, string $param2 = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 4",
+                    "args": [
+                        "<?php function foo(string $param1 = null, string $param2 = null) {}",
+                        "<?php function foo(?string $param1 = null, ?string $param2 = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(?string &$param = null) {}",
+                        "<?php function foo(string &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 5",
+                    "args": [
+                        "<?php function foo(string &$param = null) {}",
+                        "<?php function foo(?string &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo(?string & $param = null) {}",
+                        "<?php function foo(string & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 6",
+                    "args": [
+                        "<?php function foo(string & $param = null) {}",
+                        "<?php function foo(?string & $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php function foo(?string /*comment*/$param = null) {}",
+                        "<?php function foo(string /*comment*/$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 7",
+                    "args": [
+                        "<?php function foo(string /*comment*/$param = null) {}",
+                        "<?php function foo(?string /*comment*/$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function foo(?string /*comment*/&$param = null) {}",
+                        "<?php function foo(string /*comment*/&$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 8",
+                    "args": [
+                        "<?php function foo(string /*comment*/&$param = null) {}",
+                        "<?php function foo(?string /*comment*/&$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $foo = function (?string $param = null) {};",
+                        "<?php $foo = function (string $param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 9",
+                    "args": [
+                        "<?php $foo = function (string $param = null) {};",
+                        "<?php $foo = function (?string $param = null) {};",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $foo = function (?string &$param = null) {};",
+                        "<?php $foo = function (string &$param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 10",
+                    "args": [
+                        "<?php $foo = function (string &$param = null) {};",
+                        "<?php $foo = function (?string &$param = null) {};",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php function foo(?Baz $param = null) {}",
+                        "<?php function foo(Baz $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 11",
+                    "args": [
+                        "<?php function foo(Baz $param = null) {}",
+                        "<?php function foo(?Baz $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php function foo(?\\Baz $param = null) {}",
+                        "<?php function foo(\\Baz $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 12",
+                    "args": [
+                        "<?php function foo(\\Baz $param = null) {}",
+                        "<?php function foo(?\\Baz $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php function foo(?Bar\\Baz $param = null) {}",
+                        "<?php function foo(Bar\\Baz $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 13",
+                    "args": [
+                        "<?php function foo(Bar\\Baz $param = null) {}",
+                        "<?php function foo(?Bar\\Baz $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php function foo(?\\Bar\\Baz $param = null) {}",
+                        "<?php function foo(\\Bar\\Baz $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 14",
+                    "args": [
+                        "<?php function foo(\\Bar\\Baz $param = null) {}",
+                        "<?php function foo(?\\Bar\\Baz $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php function foo(?Baz &$param = null) {}",
+                        "<?php function foo(Baz &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 15",
+                    "args": [
+                        "<?php function foo(Baz &$param = null) {}",
+                        "<?php function foo(?Baz &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php function foo(?\\Baz &$param = null) {}",
+                        "<?php function foo(\\Baz &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 16",
+                    "args": [
+                        "<?php function foo(\\Baz &$param = null) {}",
+                        "<?php function foo(?\\Baz &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php function foo(?Bar\\Baz &$param = null) {}",
+                        "<?php function foo(Bar\\Baz &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 17",
+                    "args": [
+                        "<?php function foo(Bar\\Baz &$param = null) {}",
+                        "<?php function foo(?Bar\\Baz &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php function foo(?\\Bar\\Baz &$param = null) {}",
+                        "<?php function foo(\\Bar\\Baz &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 18",
+                    "args": [
+                        "<?php function foo(\\Bar\\Baz &$param = null) {}",
+                        "<?php function foo(?\\Bar\\Baz &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php function foo(?Baz & $param = null) {}",
+                        "<?php function foo(Baz & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 19",
+                    "args": [
+                        "<?php function foo(Baz & $param = null) {}",
+                        "<?php function foo(?Baz & $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php function foo(?\\Baz & $param = null) {}",
+                        "<?php function foo(\\Baz & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 20",
+                    "args": [
+                        "<?php function foo(\\Baz & $param = null) {}",
+                        "<?php function foo(?\\Baz & $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php function foo(?Bar\\Baz & $param = null) {}",
+                        "<?php function foo(Bar\\Baz & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 21",
+                    "args": [
+                        "<?php function foo(Bar\\Baz & $param = null) {}",
+                        "<?php function foo(?Bar\\Baz & $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php function foo(?\\Bar\\Baz & $param = null) {}",
+                        "<?php function foo(\\Bar\\Baz & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 22",
+                    "args": [
+                        "<?php function foo(\\Bar\\Baz & $param = null) {}",
+                        "<?php function foo(?\\Bar\\Baz & $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php function foo(?array &$param = null) {}",
+                        "<?php function foo(array &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 23",
+                    "args": [
+                        "<?php function foo(array &$param = null) {}",
+                        "<?php function foo(?array &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php function foo(?array & $param = null) {}",
+                        "<?php function foo(array & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 24",
+                    "args": [
+                        "<?php function foo(array & $param = null) {}",
+                        "<?php function foo(?array & $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php function foo(?callable $param = null) {}",
+                        "<?php function foo(callable $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 25",
+                    "args": [
+                        "<?php function foo(callable $param = null) {}",
+                        "<?php function foo(?callable $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $foo = function (?Baz $param = null) {};",
+                        "<?php $foo = function (Baz $param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 26",
+                    "args": [
+                        "<?php $foo = function (Baz $param = null) {};",
+                        "<?php $foo = function (?Baz $param = null) {};",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $foo = function (?Baz &$param = null) {};",
+                        "<?php $foo = function (Baz &$param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 27",
+                    "args": [
+                        "<?php $foo = function (Baz &$param = null) {};",
+                        "<?php $foo = function (?Baz &$param = null) {};",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $foo = function (?Baz & $param = null) {};",
+                        "<?php $foo = function (Baz & $param = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 28",
+                    "args": [
+                        "<?php $foo = function (Baz & $param = null) {};",
+                        "<?php $foo = function (?Baz & $param = null) {};",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php class Test { public function foo(?Bar\\Baz $param = null) {} }",
+                        "<?php class Test { public function foo(Bar\\Baz $param = null) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 29",
+                    "args": [
+                        "<?php class Test { public function foo(Bar\\Baz $param = null) {} }",
+                        "<?php class Test { public function foo(?Bar\\Baz $param = null) {} }",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php class Test { public function foo(?self $param = null) {} }",
+                        "<?php class Test { public function foo(self $param = null) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 30",
+                    "args": [
+                        "<?php class Test { public function foo(self $param = null) {} }",
+                        "<?php class Test { public function foo(?self $param = null) {} }",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php function foo(?iterable $param = null) {}",
+                        "<?php function foo(iterable $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 31",
+                    "args": [
+                        "<?php function foo(iterable $param = null) {}",
+                        "<?php function foo(?iterable $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php $foo = function(?array $a = null,\n                    ?array $b = null, ?array     $c = null, ?array\n                    $d = null) {};",
+                        "<?php $foo = function(array $a = null,\n                    array $b = null, array     $c = null, array\n                    $d = null) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 32",
+                    "args": [
+                        "<?php $foo = function(array $a = null,\n                    array $b = null, array     $c = null, array\n                    $d = null) {};",
+                        "<?php $foo = function(?array $a = null,\n                    ?array $b = null, ?array     $c = null, ?array\n                    $d = null) {};",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php function foo(?string $param = NULL) {}",
+                        "<?php function foo(string $param = NULL) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 33",
+                    "args": [
+                        "<?php function foo(string $param = NULL) {}",
+                        "<?php function foo(?string $param = NULL) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $foo = fn (?string $param = null) => null;",
+                        "<?php $foo = fn (string $param = null) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 34",
+                    "args": [
+                        "<?php $foo = fn (string $param = null) => null;",
+                        "<?php $foo = fn (?string $param = null) => null;",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $foo = fn (?string &$param = null) => null;",
+                        "<?php $foo = fn (string &$param = null) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 35",
+                    "args": [
+                        "<?php $foo = fn (string &$param = null) => null;",
+                        "<?php $foo = fn (?string &$param = null) => null;",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php $foo = fn (?Baz $param = null) => null;",
+                        "<?php $foo = fn (Baz $param = null) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 36",
+                    "args": [
+                        "<?php $foo = fn (Baz $param = null) => null;",
+                        "<?php $foo = fn (?Baz $param = null) => null;",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $foo = fn (?Baz &$param = null) => null;",
+                        "<?php $foo = fn (Baz &$param = null) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 37",
+                    "args": [
+                        "<?php $foo = fn (Baz &$param = null) => null;",
+                        "<?php $foo = fn (?Baz &$param = null) => null;",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php $foo = fn (?Baz & $param = null) => null;",
+                        "<?php $foo = fn (Baz & $param = null) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 38",
+                    "args": [
+                        "<?php $foo = fn (Baz & $param = null) => null;",
+                        "<?php $foo = fn (?Baz & $param = null) => null;",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $foo = fn(?array $a = null,\n                    ?array $b = null, ?array     $c = null, ?array\n                    $d = null) => null;",
+                        "<?php $foo = fn(array $a = null,\n                    array $b = null, array     $c = null, array\n                    $d = null) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Inversed 39",
+                    "args": [
+                        "<?php $foo = fn(array $a = null,\n                    array $b = null, array     $c = null, array\n                    $d = null) => null;",
+                        "<?php $foo = fn(?array $a = null,\n                    ?array $b = null, ?array     $c = null, ?array\n                    $d = null) => null;",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php function foo( ?string $param = null) {}",
+                        "<?php function foo( string $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php function foo(/*comment*/?string $param = null) {}",
+                        "<?php function foo(/*comment*/string $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php function foo( /*comment*/ ?string $param = null) {}",
+                        "<?php function foo( /*comment*/ string $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php function foo(string $param = null) {}",
+                        "<?php function foo(? string $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php function foo(/*comment*/string $param = null) {}",
+                        "<?php function foo(?/*comment*/string $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php function foo(/*comment*/ string $param = null) {}",
+                        "<?php function foo(? /*comment*/ string $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(string|int|null $param = null) {}",
+                        "<?php function foo(string|int $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed 0",
+                    "args": [
+                        "<?php function foo(string|int $param = null) {}",
+                        "<?php function foo(string|int|null $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(string|int|null $param = NULL) {}",
+                        "<?php function foo(string|int $param = NULL) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed 1",
+                    "args": [
+                        "<?php function foo(string|int $param = NULL) {}",
+                        "<?php function foo(string|int|null $param = NULL) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo(string|int|null /*comment*/$param = null) {}",
+                        "<?php function foo(string|int /*comment*/$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed 2",
+                    "args": [
+                        "<?php function foo(string|int /*comment*/$param = null) {}",
+                        "<?php function foo(string|int|null /*comment*/$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(string | int|null &$param = null) {}",
+                        "<?php function foo(string | int &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed 3",
+                    "args": [
+                        "<?php function foo(string | int &$param = null) {}",
+                        "<?php function foo(string | int|null &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(string | int|null & $param = null) {}",
+                        "<?php function foo(string | int & $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed 4",
+                    "args": [
+                        "<?php function foo(string | int & $param = null) {}",
+                        "<?php function foo(string | int|null & $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(string | int|null /*comment*/&$param = null) {}",
+                        "<?php function foo(string | int /*comment*/&$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed 5",
+                    "args": [
+                        "<?php function foo(string | int /*comment*/&$param = null) {}",
+                        "<?php function foo(string | int|null /*comment*/&$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo(string|int|null $param1 = null, string | int|null /*comment*/&$param2 = null) {}",
+                        "<?php function foo(string|int $param1 = null, string | int /*comment*/&$param2 = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed 6",
+                    "args": [
+                        "<?php function foo(string|int $param1 = null, string | int /*comment*/&$param2 = null) {}",
+                        "<?php function foo(string|int|null $param1 = null, string | int|null /*comment*/&$param2 = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "trailing comma",
+                    "args": [
+                        "<?php function foo(?string $param = null,) {}",
+                        "<?php function foo(string $param = null,) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed trailing comma",
+                    "args": [
+                        "<?php function foo(string $param = null,) {}",
+                        "<?php function foo(?string $param = null,) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "property promotion",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    public ?string $paramA = null,\n                    protected ?string $paramB = null,\n                    private ?string $paramC = null,\n                    ?string $paramD = null,\n                    $a = []\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    public ?string $paramA = null,\n                    protected ?string $paramB = null,\n                    private ?string $paramC = null,\n                    string $paramD = null,\n                    $a = []\n                ) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed property promotion",
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    public ?string $paramA = null,\n                    protected ?string $paramB = null,\n                    private ?string $paramC = null,\n                    string $paramD = null,\n                    $a = []\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    public ?string $paramA = null,\n                    protected ?string $paramB = null,\n                    private ?string $paramC = null,\n                    ?string $paramD = null,\n                    $a = []\n                ) {}\n            }",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attribute",
+                    "args": [
+                        "<?php function foo(#[AnAttribute] ?string $param = null) {}",
+                        "<?php function foo(#[AnAttribute] string $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed attribute",
+                    "args": [
+                        "<?php function foo(#[AnAttribute] string $param = null) {}",
+                        "<?php function foo(#[AnAttribute] ?string $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attributes",
+                    "args": [
+                        "<?php function foo(\n                #[AnAttribute] ?string $a = null,\n                #[AnAttribute] ?string $b = null,\n                #[AnAttribute] ?string $c = null\n            ) {}",
+                        "<?php function foo(\n                #[AnAttribute] string $a = null,\n                #[AnAttribute] string $b = null,\n                #[AnAttribute] string $c = null\n            ) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Inversed attributes",
+                    "args": [
+                        "<?php function foo(\n                #[AnAttribute] string $a = null,\n                #[AnAttribute] string $b = null,\n                #[AnAttribute] string $c = null\n            ) {}",
+                        "<?php function foo(\n                #[AnAttribute] ?string $a = null,\n                #[AnAttribute] ?string $b = null,\n                #[AnAttribute] ?string $c = null\n            ) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(string $param = null) {}",
+                        "<?php function foo(string|null $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(string $param= null) {}",
+                        "<?php function foo(string | null $param= null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo(string $param =null) {}",
+                        "<?php function foo(string| null $param =null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(string $param=null) {}",
+                        "<?php function foo(string |null $param=null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(string $param1 = null, string $param2 = null) {}",
+                        "<?php function foo(null|string $param1 = null, null | string $param2 = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(string &$param = null) {}",
+                        "<?php function foo(null| string &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo(string & $param = null) {}",
+                        "<?php function foo(null |string & $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 7,
+                    "args": [
+                        "<?php function foo(string|int /*comment*/$param = null) {}",
+                        "<?php function foo(string|null|int /*comment*/$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 8,
+                    "args": [
+                        "<?php function foo(string | int /*comment*/&$param = null) {}",
+                        "<?php function foo(string | null | int /*comment*/&$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 9,
+                    "args": [
+                        "<?php $foo = function (string $param = null) {};",
+                        "<?php $foo = function (NULL | string $param = null) {};",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 10,
+                    "args": [
+                        "<?php $foo = function (string|int &$param = null) {};",
+                        "<?php $foo = function (string|NULL|int &$param = null) {};",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 11,
+                    "args": [
+                        "<?php function foo(Bar\\Baz $param = null) {}",
+                        "<?php function foo(Bar\\Baz|null $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 12,
+                    "args": [
+                        "<?php function foo(\\Bar\\Baz $param = null) {}",
+                        "<?php function foo(null | \\Bar\\Baz $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 13,
+                    "args": [
+                        "<?php function foo(Bar\\Baz &$param = null) {}",
+                        "<?php function foo(Bar\\Baz | NULL &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 14,
+                    "args": [
+                        "<?php function foo(\\Bar\\Baz &$param = null) {}",
+                        "<?php function foo(NULL|\\Bar\\Baz &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 15,
+                    "args": [
+                        "<?php $foo = function(array $a = null,\n                    array $b = null, array     $c = null, array\n                    $d = null) {};",
+                        "<?php $foo = function(array|null $a = null,\n                    array | null $b = null, array | NULL     $c = null, NULL|array\n                    $d = null) {};",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixerTest",
+            "body": "    public function testFixPre81(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": "do not fix pre PHP 8.1",
+                    "args": [
+                        "<?php\n                function foo1(&/*comment*/$param = null) {}\n                function foo2(?string &/*comment*/$param2 = null) {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(?string &/* comment */$param = null) {}",
+                        "<?php function foo(string &/* comment */$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(string &/* comment */$param = null) {}",
+                        "<?php function foo(?string &/* comment */$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function __construct(\n        protected readonly ?bool $nullable = null,\n    ) {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n            class Foo {\n                public function __construct(\n                   public readonly ?string $readonlyString = null,\n                   readonly public ?int $readonlyInt = null,\n                ) {}\n            }",
+                        null,
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Skip standalone null types",
+                    "args": [
+                        "<?php function foo(null $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Inversed Skip standalone null types",
+                    "args": [
+                        "<?php function foo(null $param = null) {}",
+                        null,
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Skip standalone NULL types",
+                    "args": [
+                        "<?php function foo(NULL $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Inversed Skip standalone NULL types",
+                    "args": [
+                        "<?php function foo(NULL $param = null) {}",
+                        null,
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|null $param = null) {}",
+                        "<?php function foo(\\Bar\\Baz&\\Bar\\Qux $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Inversed 0",
+                    "args": [
+                        "<?php function foo(\\Bar\\Baz&\\Bar\\Qux $param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|null $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux|null $param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Inversed 1",
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux $param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux|null $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|(\\Bar\\Quux&\\Bar\\Corge)|null $param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|(\\Bar\\Quux&\\Bar\\Corge) $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Inversed 2",
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|(\\Bar\\Quux&\\Bar\\Corge) $param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|(\\Bar\\Quux&\\Bar\\Corge)|null $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(    (\\Bar\\Baz&\\Bar\\Qux)|null    $param = null) {}",
+                        "<?php function foo(    \\Bar\\Baz&\\Bar\\Qux    $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Inversed 3",
+                    "args": [
+                        "<?php function foo(    \\Bar\\Baz&\\Bar\\Qux    $param = null) {}",
+                        "<?php function foo(    (\\Bar\\Baz&\\Bar\\Qux)|null    $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux|null &$param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux &$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Inversed 4",
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux &$param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux|null &$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(    (\\Bar\\Baz&\\Bar\\Qux)|null    &  $param = null) {}",
+                        "<?php function foo(    \\Bar\\Baz&\\Bar\\Qux    &  $param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Inversed 5",
+                    "args": [
+                        "<?php function foo(    \\Bar\\Baz&\\Bar\\Qux    &  $param = null) {}",
+                        "<?php function foo(    (\\Bar\\Baz&\\Bar\\Qux)|null    &  $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo(    (\\Bar\\Baz&\\Bar\\Qux)|null/*comment*/&$param = null) {}",
+                        "<?php function foo(    \\Bar\\Baz&\\Bar\\Qux/*comment*/&$param = null) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "Inversed 6",
+                    "args": [
+                        "<?php function foo(    \\Bar\\Baz&\\Bar\\Qux/*comment*/&$param = null) {}",
+                        "<?php function foo(    (\\Bar\\Baz&\\Bar\\Qux)|null/*comment*/&$param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(\\Bar\\Baz&\\Bar\\Qux $param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|NULL $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(\\Bar\\Baz&\\Bar\\Qux $param = null) {}",
+                        "<?php function foo(null|(\\Bar\\Baz&\\Bar\\Qux) $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|(\\Bar\\Quux&\\Bar\\Corge) $param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|null|(\\Bar\\Quux&\\Bar\\Corge) $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux $param = null) {}",
+                        "<?php function foo(null|(\\Bar\\Baz&\\Bar\\Qux)|\\Bar\\Quux $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(    \\Bar\\Baz&\\Bar\\Qux     $param = null) {}",
+                        "<?php function foo(    (    \\Bar\\Baz&\\Bar\\Qux    )   |   null     $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(\\Bar\\Baz&\\Bar\\Qux    $param = null) {}",
+                        "<?php function foo(null    |    (    \\Bar\\Baz&\\Bar\\Qux    )    $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo((    \\Bar\\Baz&\\Bar\\Qux    )|\\Bar\\Quux     $param = null) {}",
+                        "<?php function foo(null    |    (    \\Bar\\Baz&\\Bar\\Qux    )|\\Bar\\Quux     $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 7,
+                    "args": [
+                        "<?php function foo((    \\Bar\\Baz  &   \\Bar\\Qux    )|\\Bar\\Quux     & $param = null) {}",
+                        "<?php function foo(null    |    (    \\Bar\\Baz  &   \\Bar\\Qux    )|\\Bar\\Quux     & $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 8,
+                    "args": [
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)    |  (\\Bar\\Quux&\\Bar\\Corge) $param = null) {}",
+                        "<?php function foo((\\Bar\\Baz&\\Bar\\Qux)  |   null    |  (\\Bar\\Quux&\\Bar\\Corge) $param = null) {}",
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NullableTypeDeclarationForDefaultNullValueFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility - use_nullable_type_declaration: true",
+                    "args": [
+                        "<?php\nclass Foo {\n    public function __construct(\n        public protected(set) ?int $a = null,\n        protected protected(set) ?int $b = null,\n        protected private(set) ?int $c = null,\n        public(set) ?int $d = null,\n        protected(set) ?int $e = null,\n        private(set) ?int $f = null,\n    ) {}\n}",
+                        null,
+                        {
+                            "use_nullable_type_declaration": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility - use_nullable_type_declaration: false",
+                    "args": [
+                        "<?php\nclass Foo {\n    public function __construct(\n        public protected(set) ?int $a = null,\n        protected protected(set) ?int $b = null,\n        protected private(set) ?int $c = null,\n        public(set) ?int $d = null,\n        protected(set) ?int $e = null,\n        private(set) ?int $f = null,\n    ) {}\n}",
+                        null,
+                        {
+                            "use_nullable_type_declaration": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

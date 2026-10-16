@@ -1,0 +1,215 @@
+{
+    "fixer": "blank_line_after_namespace",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\NamespaceNotation\\BlankLineAfterNamespaceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/NamespaceNotation/BlankLineAfterNamespaceFixerTest.php",
+    "case_count": 22,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\NamespaceNotation\\BlankLineAfterNamespaceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php namespace A\\B?>\n                <?php\n                    for($i=0; $i<10; ++$i) {echo $i;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php namespace A\\B?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nnamespace A\\B;\n\nclass C {}\n",
+                        "<?php\nnamespace A\\B;\n\n\n\nclass C {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nnamespace A\\B;\n\nclass C {}\n",
+                        "<?php\nnamespace A\\B;\nclass C {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nnamespace A\\B;\n\nclass C {}\n",
+                        "<?php\nnamespace A\\B;  class C {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nnamespace A\\B;\n\nclass C {}\n",
+                        "<?php\nnamespace A\\B;class C {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nnamespace A\\B {\n    class C {\n        public $foo;\n        private $bar;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\rnamespace A\\B;\n\nclass C {}\r",
+                        "<?php\rnamespace A\\B;\r\r\r\r\r\rclass C {}\r"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nnamespace A\\B;\n\nnamespace\\C\\func();\nfoo();\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nnamespace Foo;\n",
+                        "<?php\nnamespace Foo;\n\n\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nnamespace Foo;\n",
+                        "<?php\nnamespace Foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nnamespace Foo;\n\n?>",
+                        "<?php\nnamespace Foo;\n\n\n\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n    namespace Foo;\n\n    class Bar {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n  namespace Foo;\n\n      class Bar {}",
+                        "<?php\n  namespace Foo;\n      class Bar {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n    namespace My\\NS;\n\n    class X extends Y {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nnamespace My\\NS; // comment\n\nclass X extends Y {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nnamespace My\\NS; /* comment */\n\nclass X extends Y {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nnamespace My\\NS; /*\ncomment 1\ncomment 2\n*/\n\nclass X extends Y {}",
+                        "<?php\nnamespace My\\NS; /*\ncomment 1\ncomment 2\n*/\nclass X extends Y {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\nnamespace My\\NS; /** comment */\n\nclass X extends Y {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\nnamespace My\\NS; /**\ncomment 1\ncomment 2\n*/\n\nclass X extends Y {}",
+                        "<?php\nnamespace My\\NS; /**\ncomment 1\ncomment 2\n*/\nclass X extends Y {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\NamespaceNotation\\BlankLineAfterNamespaceFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php namespace A\\B;\r\n\r\nclass C {}",
+                        "<?php namespace A\\B;  class C {}"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php namespace A\\B;\r\n\r\nclass C {}",
+                        "<?php namespace A\\B;\r\n\r\n\r\n\r\n\r\n\r\nclass C {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

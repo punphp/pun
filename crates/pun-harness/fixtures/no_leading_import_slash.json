@@ -1,0 +1,165 @@
+{
+    "fixer": "no_leading_import_slash",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\NoLeadingImportSlashFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Import/NoLeadingImportSlashFixerTest.php",
+    "case_count": 15,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\NoLeadingImportSlashFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                use A\\B;\n                ",
+                        "<?php\n                use \\A\\B;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                use/*1*/A\\C;\n                ",
+                        "<?php\n                use/*1*/\\A\\C;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                $a = function(\\B\\C $a) use ($b){\n\n                };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                namespace NS;\n                use A\\B;\n                ",
+                        "<?php\n                namespace NS;\n                use \\A\\B;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                namespace NS{\n                    use A\\B;\n                }\n                namespace NS2{\n                    use C\\D;\n                }\n                ",
+                        "<?php\n                namespace NS{\n                    use \\A\\B;\n                }\n                namespace NS2{\n                    use \\C\\D;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                namespace Foo {\n                    use A;\n                    use A\\X;\n\n                    new X();\n                }\n\n                namespace Bar {\n                    use B;\n                    use B\\X;\n\n                    new X();\n                }\n                ",
+                        "<?php\n                namespace Foo {\n                    use \\A;\n                    use \\A\\X;\n\n                    new X();\n                }\n\n                namespace Bar {\n                    use \\B;\n                    use \\B\\X;\n\n                    new X();\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                namespace Foo\\Bar;\n                use Baz;\n                class Foo implements Baz {}\n                ",
+                        "<?php\n                namespace Foo\\Bar;\n                use \\Baz;\n                class Foo implements Baz {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                trait SomeTrait {\n                    use \\A;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                namespace NS{\n                    use A\\B;\n                    trait Tr8A{\n                        use \\B, \\C;\n                    }\n                }\n                namespace NS2{\n                    use C\\D;\n                }\n                ",
+                        "<?php\n                namespace NS{\n                    use \\A\\B;\n                    trait Tr8A{\n                        use \\B, \\C;\n                    }\n                }\n                namespace NS2{\n                    use \\C\\D;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                trait Foo {}\n                class Bar {\n                    use \\Foo;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                    use function a\\b;\n                    use const d\\e;\n                ",
+                        "<?php\n                    use function \\a\\b;\n                    use const \\d\\e;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nnamespace AAA;\nuse some\\a\\{ClassA, ClassB, ClassC as C,};\nuse function some\\a\\{fn_a, fn_b, fn_c,};\nuse const some\\a\\{ConstA,ConstB,ConstC\n,\n};\nuse const some\\Z\\{ConstX,ConstY,ConstZ,};\n",
+                        "<?php\nnamespace AAA;\nuse \\some\\a\\{ClassA, ClassB, ClassC as C,};\nuse function \\some\\a\\{fn_a, fn_b, fn_c,};\nuse const \\some\\a\\{ConstA,ConstB,ConstC\n,\n};\nuse const \\some\\Z\\{ConstX,ConstY,ConstZ,};\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\NoLeadingImportSlashFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php use /*1*/A\\D;",
+                        "<?php use\\/*1*/A\\D;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "no space case",
+                    "args": [
+                        "<?php\n                use Events\\Payment\\Base as PaymentEvent;\n                use const d\\e;\n            ",
+                        "<?php\n                use\\Events\\Payment\\Base as PaymentEvent;\n                use const\\d\\e;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n            use C;\n            use C\\X;\n\n            namespace Foo {\n                use A;\n                use A\\X;\n\n                new X();\n            }\n\n            namespace Bar {\n                use B;\n                use B\\X;\n\n                new X();\n            }\n            ",
+                        "<?php\n            use \\C;\n            use \\C\\X;\n\n            namespace Foo {\n                use \\A;\n                use \\A\\X;\n\n                new X();\n            }\n\n            namespace Bar {\n                use \\B;\n                use \\B\\X;\n\n                new X();\n            }\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}

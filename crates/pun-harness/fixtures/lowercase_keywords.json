@@ -1,0 +1,182 @@
+{
+    "fixer": "lowercase_keywords",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseKeywordsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Casing/LowercaseKeywordsFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseKeywordsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = (1 and 2);",
+                        "<?php $x = (1 AND 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php foreach(array(1, 2, 3) as $val) {}",
+                        "<?php FOREACH(array(1, 2, 3) AS $val) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php echo \"GOOD AS NEW\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php echo X::class ?>",
+                        "<?php echo X::ClASs ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $fn = fn() => true;",
+                        "<?php $fn = FN() => true;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php __HALT_COMPILER();"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseKeywordsFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\necho match (1) {\n    1 => 9,\n    2 => 7,\n};",
+                        "<?php\necho MATCH (1) {\n    1 => 9,\n    2 => 7,\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Point {\n    public function __construct(\n        public float $x = 0.0,\n        protected float $y = 0.0,\n        private float $z = 0.0,\n    ) {}\n}\n",
+                        "<?php\nclass Point {\n    public function __construct(\n        PUBLIC float $x = 0.0,\n        Protected float $y = 0.0,\n        privatE float $z = 0.0,\n    ) {}\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseKeywordsFixerTest",
+            "body": "    public function testFix81(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public readonly string $prop;\n}\n            ",
+                        "<?php\nfinal class Foo\n{\n    public READONLY string $prop;\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Point {\n    public function __construct(\n        public readonly float $x = 0.0,\n        readonly protected float $y = 0.0,\n        private readonly float $z = 0.0,\n    ) {}\n}\n",
+                        "<?php\nclass Point {\n    public function __construct(\n        PUBLIC rEADONLY float $x = 0.0,\n        READonly Protected float $y = 0.0,\n        privatE READONLY float $z = 0.0,\n    ) {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum full caps",
+                    "args": [
+                        "<?php\nenum Suit {\n    case Hearts;\n}\n",
+                        "<?php\nENUM Suit {\n    case Hearts;\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\LowercaseKeywordsFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility",
+                    "args": [
+                        "<?php class Foo\n{\n    public(set) Bar $a;\n    protected(set) Bar $b;\n    private(set) Baz $c;\n}",
+                        "<?php class Foo\n{\n    PUBLIC(SET) Bar $a;\n    PROTECTED(SET) Bar $b;\n    PRIVATE(SET) Baz $c;\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

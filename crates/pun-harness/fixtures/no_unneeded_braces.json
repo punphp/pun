@@ -1,0 +1,193 @@
+{
+    "fixer": "no_unneeded_braces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededBracesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/NoUnneededBracesFixerTest.php",
+    "case_count": 16,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededBracesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple sample, last token candidate",
+                    "args": [
+                        "<?php  echo 1;",
+                        "<?php { echo 1;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal sample, first token candidate",
+                    "args": [
+                        "<?php  // {}",
+                        "<?php {} // {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                      echo 0;   //\n                    echo 1;\n                    switch($a) {\n                        case 2: echo 3; break;\n                    }\n                    echo 4;  echo 5; //\n                ",
+                        "<?php\n                    { { echo 0; } } //\n                    {echo 1;}\n                    switch($a) {\n                        case 2: {echo 3; break;}\n                    }\n                    echo 4; { echo 5; }//\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no fixes",
+                    "args": [
+                        "<?php\n                    foreach($a as $b){}\n                    while($a){}\n                    do {} while($a);\n\n                    if ($c){}\n                    if ($c){}else{}\n                    if ($c){}elseif($d){}\n                    if ($c) {}elseif($d)/**  */{ } else/**/{  }\n\n                    try {} catch(\\Exception $e) {}\n\n                    function test(){}\n                    $a = function() use ($c){};\n\n                    class A extends B {}\n                    interface D {}\n                    trait E {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no fixes II",
+                    "args": [
+                        "<?php\n                declare(ticks=1) {\n                // entire script here\n                }\n                #"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no fix catch/try/finally",
+                    "args": [
+                        "<?php\n                    try {\n\n                    } catch(\\Exception $e) {\n\n                    } finally {\n\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no fix namespace block",
+                    "args": [
+                        "<?php\n                    namespace {\n                    }\n                    namespace A {\n                    }\n                    namespace A\\B {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "provideNoFix7Cases",
+                    "args": [
+                        "<?php\n                    use some\\a\\{ClassA, ClassB, ClassC as C};\n                    use function some\\a\\{fn_a, fn_b, fn_c};\n                    use const some\\a\\{ConstA, ConstB, ConstC};\n                    use some\\x\\{ClassD, function CC as C, function D, const E, function A\\B};\n                    class Foo\n                    {\n                        public function getBar(): array\n                        {\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nnamespace Foo;\n    function Bar(){}\n\n",
+                        "<?php\nnamespace Foo {\n    function Bar(){}\n}\n",
+                        {
+                            "namespaces": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n            namespace A5 {\n                function AA(){}\n            }\n            namespace B6 {\n                function BB(){}\n            }",
+                        null,
+                        {
+                            "namespaces": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n            namespace Foo7;\n                function Bar(){}\n            ",
+                        "<?php\n            namespace Foo7 {\n                function Bar(){}\n            }",
+                        {
+                            "namespaces": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n            namespace Foo8\\A;\n                function Bar(){}\n             ?>",
+                        "<?php\n            namespace Foo8\\A\t \t {\n                function Bar(){}\n            } ?>",
+                        {
+                            "namespaces": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n            namespace A;\n                class X {}\n            ",
+                        "<?php\n            namespace A {\n                class X {}\n            }",
+                        {
+                            "namespaces": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n            namespace {\n                class X {}\n            }",
+                        null,
+                        {
+                            "namespaces": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "imports with single class in braces",
+                    "args": [
+                        "<?php\nuse Foo1\\Bar1;\nuse Foo2\\Bar2\\Baz2;\nuse NotFoo3\\{Bar3, Baz3};\nuse NotFoo4\\{Bar4\\Baz4, Qux4};\nuse NotFoo5\\{\n    Baz5\n};",
+                        "<?php\nuse Foo1\\{Bar1};\nuse Foo2\\{Bar2\\Baz2};\nuse NotFoo3\\{Bar3, Baz3};\nuse NotFoo4\\{Bar4\\Baz4, Qux4};\nuse NotFoo5\\{\n    Baz5\n};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededBracesFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "no fixes, offset access syntax with curly braces",
+                    "args": [
+                        "<?php\n                    echo ${$a};\n                    echo $a{1};\n                "
+                    ]
+                }
+            ]
+        }
+    ]
+}

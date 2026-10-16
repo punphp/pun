@@ -2,3 +2,4 @@
 /corpus/*
 !/corpus/README.md
 /.oracle
+!/corpus/manifest.toml

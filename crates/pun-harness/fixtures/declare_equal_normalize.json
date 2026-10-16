@@ -1,0 +1,178 @@
+{
+    "fixer": "declare_equal_normalize",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\DeclareEqualNormalizeFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/DeclareEqualNormalizeFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\DeclareEqualNormalizeFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input, array $configuration): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal case remove whitespace (default config)",
+                    "args": [
+                        "<?php declare(ticks=1);",
+                        "<?php declare(ticks= 1);",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal case remove whitespace (no space config)",
+                    "args": [
+                        "<?php declare(ticks=1);",
+                        "<?php declare(ticks  =  1);",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal case add whitespace",
+                    "args": [
+                        "<?php declare(ticks = 1);",
+                        "<?php declare(ticks=1);",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "to much whitespace case add whitespace",
+                    "args": [
+                        "<?php declare(ticks = 1);",
+                        "<?php declare(ticks\n\t =   1);",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "repeating case remove whitespace (default config)",
+                    "args": [
+                        "<?php declare(ticks=1);declare(ticks=1)?>",
+                        "<?php declare(ticks= 1);declare(ticks= 1)?>",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "repeating case add whitespace",
+                    "args": [
+                        "<?php declare ( ticks = 1 );declare( ticks = 1)  ?>",
+                        "<?php declare ( ticks=1 );declare( ticks =1)  ?>",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal case add whitespace comments, single",
+                    "args": [
+                        "<?php declare(ticks#\n= #\n1#\n);",
+                        "<?php declare(ticks#\n=#\n1#\n);",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal case add whitespace comments, none",
+                    "args": [
+                        "<?php declare(ticks#\n=#\n1#\n);",
+                        null,
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "declare having multiple directives, single",
+                    "args": [
+                        "<?php declare(strict_types=1, ticks=1);",
+                        "<?php declare(strict_types = 1, ticks = 1);",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "declare having multiple directives, none",
+                    "args": [
+                        "<?php declare(strict_types = 1, ticks = 1);",
+                        "<?php declare(strict_types=1, ticks=1);",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\DeclareEqualNormalizeFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $expectedMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessage(\\sprintf('[declare_equal_normalize] Invalid configuration: %s', $expectedMessage));\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 0,
+                    "args": [
+                        [
+                            1,
+                            2
+                        ],
+                        "The options \"0\", \"1\" do not exist."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "space": "tab"
+                        },
+                        "The option \"space\" with value \"tab\" is invalid."
+                    ]
+                }
+            ]
+        }
+    ]
+}

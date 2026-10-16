@@ -1,0 +1,490 @@
+{
+    "fixer": "single_line_comment_style",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Comment\\SingleLineCommentStyleFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Comment/SingleLineCommentStyleFixerTest.php",
+    "case_count": 36,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Comment\\SingleLineCommentStyleFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n// lonely line\n",
+                        "<?php\n/* lonely line */\n",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n   // indented line\n",
+                        "<?php\n   /* indented line */\n",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n   // weird-spaced line\n",
+                        "<?php\n   /*   weird-spaced line*/\n",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php // start-end",
+                        "<?php /* start-end */",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n \t \n \t // weird indent\n",
+                        "<?php\n \t \n \t /* weird indent */\n",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n// with spaces after\n \t ",
+                        "<?php\n/* with spaces after */ \t \n \t ",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n$a = 1; // after code\n",
+                        "<?php\n$a = 1; /* after code */\n",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n   /* first */ // second\n",
+                        "<?php\n   /* first */ /* second */\n",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n   /* first */// second",
+                        "<?php\n   /* first *//*\n   second\n   */",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n    // one line",
+                        "<?php\n    /*one line\n\n     */",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n    // one line",
+                        "<?php\n    /*\n\n    one line*/",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n    // one line",
+                        "<?php\n    /* \t \n \t   * one line \n     *\n     */",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n//",
+                        "<?php\n/***\n *\n */",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\n    // s",
+                        "<?php\n\n    /***\ns    *\n     */",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty comment",
+                    "args": [
+                        "<?php\n//\n",
+                        "<?php\n/**/\n",
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n$a = 1; /* in code */ $b = 2;\n",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n    /*\n     * in code 2\n     */ $a = 1;\n",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n/***\n *\n */ $a = 1;",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n    /***\ns    *\n     */ $a = 1;",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n    /*\n     * first line\n     * second line\n     */",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n    /*\n     * first line\n     *\n     * second line\n     */",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n    /*first line\nsecond line*/",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php /** inline doc comment */",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n    /**\n     * Doc comment\n     */",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php # test",
+                        null,
+                        {
+                            "comment_types": [
+                                "asterisk"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<h1>This is an <?php //echo 123;?> example</h1>",
+                        "<h1>This is an <?php #echo 123;?> example</h1>",
+                        {
+                            "comment_types": [
+                                "hash"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                    // test\n                ",
+                        "<?php\n                    # test\n                ",
+                        {
+                            "comment_types": [
+                                "hash"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n                    // test1\n                    //test2\n                    // test3\n                    // test 4\n                ",
+                        "<?php\n                    # test1\n                    #test2\n                    # test3\n                    # test 4\n                ",
+                        {
+                            "comment_types": [
+                                "hash"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php //",
+                        "<?php #",
+                        {
+                            "comment_types": [
+                                "hash"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n                    //#test\n                ",
+                        null,
+                        {
+                            "comment_types": [
+                                "hash"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n                    /*\n                        #test\n                    */\n                ",
+                        null,
+                        {
+                            "comment_types": [
+                                "hash"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php // a",
+                        "<?php # a",
+                        {
+                            "comment_types": [
+                                "hash"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php /* start-end */",
+                        null,
+                        {
+                            "comment_types": [
+                                "hash"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php function foo(\n    #[MyAttr([1, 2])] Type $myParam,\n) {} // foo",
+                        null,
+                        {
+                            "comment_types": [
+                                "hash"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n    // 1\n    // 2\n    /*\n     * 3.a\n     * 3.b\n     */\n    /**\n     * 4\n     */\n    // 5\n",
+                        "<?php\n    /* 1 */\n    /*\n     * 2\n     */\n    /*\n     * 3.a\n     * 3.b\n     */\n    /**\n     * 4\n     */\n    # 5\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n                function foo() {\n                    /* ?> */\n                    return \"bar\";\n                }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

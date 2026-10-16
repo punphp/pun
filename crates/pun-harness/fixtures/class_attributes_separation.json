@@ -1,0 +1,1237 @@
+{
+    "fixer": "class_attributes_separation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/ClassAttributesSeparationFixerTest.php",
+    "case_count": 109,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Sample\n{\nprivate $a; // foo\n\n    /** second in a hour */\n    private $b;\n}\n",
+                        "<?php\nclass Sample\n{private $a; // foo\n    /** second in a hour */\n    private $b;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty class",
+                    "args": [
+                        "<?php class Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple top class",
+                    "args": [
+                        "<?php class A {\npublic function Foo(){}\n}",
+                        "<?php class A {public function Foo(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment",
+                    "args": [
+                        "<?php class A {/* function comment */\npublic function Bar(){}\n}",
+                        "<?php class A {/* function comment */public function Bar(){}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment, multiple lines",
+                    "args": [
+                        "<?php class A {\n/* some comment */\n\npublic function Bar(){}\n}",
+                        "<?php class A {\n/* some comment */\n\n\n\npublic function Bar(){}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple PHPDoc case",
+                    "args": [
+                        "<?php class Foo\n{\n/** Doc 1 */\npublic function A(){}\n\n    /** Doc 2 */\n    public function B(){}\n}",
+                        "<?php class Foo\n{/** Doc 1 */public function A(){}\n\n    /** Doc 2 */\n\n    public function B(){}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add a newline at the end of a class with trait group",
+                    "args": [
+                        "<?php class A\n{\n    use Bar {\n        __construct as barConstruct;\n        baz as barBaz;\n    }\n}",
+                        "<?php class A\n{\n    use Bar {\n        __construct as barConstruct;\n        baz as barBaz;\n    }}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add a newline at the end of a class with trait",
+                    "args": [
+                        "<?php class A\n{\n    use A\\B\\C;\n}",
+                        "<?php class A\n{\n    use A\\B\\C;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "removes extra lines at the end of an interface",
+                    "args": [
+                        "<?php interface F\n{\n    public function A();\n}",
+                        "<?php interface F\n{\n    public function A();\n\n\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "removes extra lines at the end of an abstract class",
+                    "args": [
+                        "<?php abstract class F\n{\n    public abstract function A();\n}",
+                        "<?php abstract class F\n{\n    public abstract function A();\n\n\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add a newline at the end of a class",
+                    "args": [
+                        "<?php class A\n{\n    public function A(){}\n}",
+                        "<?php class A\n{\n    public function A(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add a newline at the end of a class: with comments",
+                    "args": [
+                        "<?php class A\n{\n    public const A = 1; /* foo */ /* bar */\n}",
+                        "<?php class A\n{\n    public const A = 1; /* foo */ /* bar */}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add a newline at the end of a class: with comments with trailing space",
+                    "args": [
+                        "<?php class A\n{\n    public const A = 1; /* foo */ /* bar */\n   }",
+                        "<?php class A\n{\n    public const A = 1; /* foo */ /* bar */   }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class A0{\npublic function GA0(){return new class {\npublic function B6B0(){}\n};}\n\npublic function otherFunction0(){}\n}class A1{\npublic function GA1(){return new class {\npublic function B6B1(){}\n};}\n\npublic function otherFunction1(){}\n}class A2{\npublic function GA2(){return new class {\npublic function B6B2(){}\n};}\n\npublic function otherFunction2(){}\n}class A3{\npublic function GA3(){return new class {\npublic function B6B3(){}\n};}\n\npublic function otherFunction3(){}\n}class A4{\npublic function GA4(){return new class {\npublic function B6B4(){}\n};}\n\npublic function otherFunction4(){}\n}class A5{\npublic function GA5(){return new class {\npublic function B6B5(){}\n};}\n\npublic function otherFunction5(){}\n}class A6{\npublic function GA6(){return new class {\npublic function B6B6(){}\n};}\n\npublic function otherFunction6(){}\n}class A7{\npublic function GA7(){return new class {\npublic function B6B7(){}\n};}\n\npublic function otherFunction7(){}\n}class A8{\npublic function GA8(){return new class {\npublic function B6B8(){}\n};}\n\npublic function otherFunction8(){}\n}class A9{\npublic function GA9(){return new class {\npublic function B6B9(){}\n};}\n\npublic function otherFunction9(){}\n}class A10{\npublic function GA10(){return new class {\npublic function B6B10(){}\n};}\n\npublic function otherFunction10(){}\n}class A11{\npublic function GA11(){return new class {\npublic function B6B11(){}\n};}\n\npublic function otherFunction11(){}\n}class A12{\npublic function GA12(){return new class {\npublic function B6B12(){}\n};}\n\npublic function otherFunction12(){}\n}class A13{\npublic function GA13(){return new class {\npublic function B6B13(){}\n};}\n\npublic function otherFunction13(){}\n}class A14{\npublic function GA14(){return new class {\npublic function B6B14(){}\n};}\n\npublic function otherFunction14(){}\n}",
+                        "<?php class A0{public function GA0(){return new class {public function B6B0(){}};}public function otherFunction0(){}}class A1{public function GA1(){return new class {public function B6B1(){}};}public function otherFunction1(){}}class A2{public function GA2(){return new class {public function B6B2(){}};}public function otherFunction2(){}}class A3{public function GA3(){return new class {public function B6B3(){}};}public function otherFunction3(){}}class A4{public function GA4(){return new class {public function B6B4(){}};}public function otherFunction4(){}}class A5{public function GA5(){return new class {public function B6B5(){}};}public function otherFunction5(){}}class A6{public function GA6(){return new class {public function B6B6(){}};}public function otherFunction6(){}}class A7{public function GA7(){return new class {public function B6B7(){}};}public function otherFunction7(){}}class A8{public function GA8(){return new class {public function B6B8(){}};}public function otherFunction8(){}}class A9{public function GA9(){return new class {public function B6B9(){}};}public function otherFunction9(){}}class A10{public function GA10(){return new class {public function B6B10(){}};}public function otherFunction10(){}}class A11{public function GA11(){return new class {public function B6B11(){}};}public function otherFunction11(){}}class A12{public function GA12(){return new class {public function B6B12(){}};}public function otherFunction12(){}}class A13{public function GA13(){return new class {public function B6B13(){}};}public function otherFunction13(){}}class A14{public function GA14(){return new class {public function B6B14(){}};}public function otherFunction14(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = new class {\n                public function H(){}\n\n                public function B7(){}\n\n                private function C(){}\n                };",
+                        "<?php $a = new class {\n                public function H(){}\n                public function B7(){}\n                private function C(){}\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo extends X\\Y { // @phpstan-ignore method.internal\n                // regular comment\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php class Foo extends X\\Y { // @phpstan-ignore method.internal\n                public $p;\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $a = new class extends X\\Y { // @phpstan-ignore method.internal\n                public function m(){}\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php class Foo extends X\\Y\n                {\n // @phpstan-ignore method.internal\n                public $p;\n                };",
+                        "<?php class Foo extends X\\Y\n                { // @phpstan-ignore method.internal\n                public $p;\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                    class A\n                    {\npublic function getFilter()\n                        {\n                            return new class () implements FilterInterface {\nprivate $d = 123;\n\n                                public function pass($a, $b) {\n                                    echo $a;\n                                }\n\n                                public $e = 5;\n};}\n                    }\n                ",
+                        "<?php\n                    class A\n                    {public function getFilter()\n                        {\n                            return new class () implements FilterInterface {private $d = 123;\n                                public function pass($a, $b) {\n                                    echo $a;\n                                }\n                                public $e = 5;};}\n\n\n\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nclass SomeClass1\n{\n    // This comment\n    // is multiline.\n    public function echoA()\n    {\n        echo \"a\";\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nclass SomeClass2\n{\n    // This comment\n    /* is multiline. */\npublic function echoA()\n    {\n        echo \"a\";\n    }\n}\n            ",
+                        "<?php\nclass SomeClass2\n{\n    // This comment\n    /* is multiline. */public function echoA()\n    {\n        echo \"a\";\n    }\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nclass SomeClass3\n{\n    // This comment\n    // is multiline.\n\n    public function echoA()\n    {\n        echo \"a\";\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nclass SomeClass1\n{\n    private $a; //\n\n    public function methodA()\n    {\n    }\n\n    private $b;\n\n    //\n    public function methodB()\n    {\n    }\n\n    // C\n    public function methodC()\n    {\n    }\n\n    // D\n\n    public function methodD()\n    {\n    }\n\n    /* E */\n\n    public function methodE()\n    {\n    }\n\n    /* F */\n    public function methodF()\n    {\n    }\n}\n",
+                        "<?php\nclass SomeClass1\n{\n    private $a; //\n    public function methodA()\n    {\n    }\n\n    private $b;\n    //\n    public function methodB()\n    {\n    }\n    // C\n    public function methodC()\n    {\n    }\n\n    // D\n\n    public function methodD()\n    {\n    }\n\n    /* E */\n\n    public function methodE()\n    {\n    }\n\n    /* F */\n    public function methodF()\n    {\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\nclass SomeClass\n{\n    // comment\n    public function echoA()\n    {\n        echo \"a\";\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nclass SomeClass\n{\n    // This comment\n    // is multiline.\n    public function echoA()\n    {\n        echo \"a\";\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nclass SomeClass\n{\n    // comment\n\n    public function echoA()\n    {\n        echo \"a\";\n    }\n}\n",
+                        "<?php\nclass SomeClass\n{\n    // comment\n\n\n    public function echoA()\n    {\n        echo \"a\";\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nclass SomeClass\n{\n    /* comment */\npublic function echoB()\n    {\n        echo \"a\";\n    }\n}\n",
+                        "<?php\nclass SomeClass\n{\n    /* comment */public function echoB()\n    {\n        echo \"a\";\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nclass SomeClass\n{\n    /* comment */\n public function echoC()\n    {\n        echo \"a\";\n    }\n}\n",
+                        "<?php\nclass SomeClass\n{\n    /* comment */ public function echoC()\n    {\n        echo \"a\";\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nabstract class MethodTest2\n{\n    public function method045()\n    {\n        $files = null;\n            if (!empty($files)) {\n            $this->filter(\n                function (\\SplFileInfo $file) use ($files) {\n                    return !in_array($file->getRelativePathname(), $files, true);\n                }\n            );\n        }\n    }\n\n     private $a;\n\n     public static function method145()\n     {\n     }\n\n       abstract protected function method245();\n    // comment\n\n    final private function method345()\n    {\n    }\n}\nfunction some1(){ echo 1;}\nfunction some2(){ echo 2;}",
+                        "<?php\nabstract class MethodTest2\n{\n    public function method045()\n    {\n        $files = null;\n            if (!empty($files)) {\n            $this->filter(\n                function (\\SplFileInfo $file) use ($files) {\n                    return !in_array($file->getRelativePathname(), $files, true);\n                }\n            );\n        }\n    }\n     private $a;\n\n     public static function method145()\n     {\n     }\n       abstract protected function method245();\n    // comment\n\n    final private function method345()\n    {\n    }\n}\nfunction some1(){ echo 1;}\nfunction some2(){ echo 2;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n\n/*\n * This file is part of the PHP CS utility.\n *\n * (c) Fabien Potencier <fabien@symfony.com>\n *\n * This source file is subject to the MIT license that is bundled\n * with this source code in the file LICENSE.\n */\n\nnamespace PhpCsFixer\\Linter;\n\n/**\n * Dummy linter. No linting is performed. No error is raised.\n *\n * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>\n *\n * @internal\n */\nfinal class NullLinter implements LinterInterface\n{\n    /**\n     * {@inheritdoc}\n     */\n    public function lintFile($path)\n    {\n        unset($path);\n    }\n\n    /**\n     * {@inheritdoc}\n     */\n    public function lintSource($source)\n    {\n        unset($source);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\nclass MethodTestAnonymous\n{\n    public function method444a()\n    {\n        $text = \"hello\";\n        $example = function ($arg) use ($message) {\n            var_dump($arg . \" \" . $message);\n        };\n        $example($text);\n        $example = function($arg) use ($message) {\n            var_dump($arg . \" \" . $message);\n        };\n        $example = function /*test*/ ($arg) use ($message) {\n            var_dump($arg . \" \" . $message);\n        };\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\nclass MethodTest1\n{\n    private $c; //\n\n    public function method444a()\n    {\n    }\n\n    /**\n     *\n     */\n    public function method444b()\n    {\n    }\n\n    //\n\n    public function method444c()\n    {\n    }\n\n    private $a;\n\n    public function method444d()\n    {\n    }\n\n    private $b;\n\n    //\n    public function method444e()\n    {\n    }\n\n    public function method444f()\n    {\n    }\n\n    private $d; //\n\n    public function method444f1()\n    {\n    }\n\n    /**/\n    public function method444g()\n    {\n    }\n}",
+                        "<?php\nclass MethodTest1\n{\n    private $c; //\n    public function method444a()\n    {\n    }\n    /**\n     *\n     */\n    public function method444b()\n    {\n    }\n\n    //\n\n\n    public function method444c()\n    {\n    }\n\n    private $a;\n    public function method444d()\n    {\n    }\n    private $b;\n    //\n    public function method444e()\n    {\n    }\n\n    public function method444f()\n    {\n    }\n\n    private $d; //\n    public function method444f1()\n    {\n    }\n\n    /**/\n    public function method444g()\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\nabstract class MethodTest3\n{\n    public function method021()\n    {\n    }\n\n    public static function method121()\n    {\n    }\n\n    abstract protected function method221();\t\n\n    final private function method321a()\n    {\n    }\n}",
+                        "<?php\nabstract class MethodTest3\n{\n    public function method021()\n    {\n    }\n\n    public static function method121()\n    {\n    }\n\n\n    abstract protected function method221();\n\n\n\n\t\n\n\n\n\n    final private function method321a()\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\nclass SmallHelperException extends \\Exception\n{\n    public function getId111()\n    {\n        return 1;\n    }\n\n    public function getMessage111()\n    {\n        return 'message';\n    }\n}\n\nclass MethodTest123124124\n{\n    public function method111a(){}\n\n    public function method211a(){}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\nfunction some0() {\n\n}\nclass MethodTest4\n{\n    public function method122b()\n    {\n    }\n\n    public function method222b()\n    {\n    }\n}\nfunction some() {\n\n}\nfunction some2() {\n\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php interface A {\npublic function B1(); // allowed comment\n\n                public function C(); // allowed comment\n            }",
+                        "<?php interface A {public function B1(); // allowed comment\n                public function C(); // allowed comment\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php class Foo {\n                var $a;\n\n                var $b;\n            }",
+                        "<?php class Foo {\n                var $a;\n                var $b;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n                class A\n                {\n                    /**  1 */\n                    function A2() {}\n\n                    /**  2 */\n                    function B2() {}\n                }\n            ",
+                        "<?php\n                class A\n                {\n\n                    /**  1 */\n                    function A2() {}\n                    /**  2 */\n                    function B2() {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\ntrait OkTrait\n{\n    function getReturnTypeOk()\n    {\n    }\n\n    /**\n     *\n     */\n    function getReturnDescriptionOk()\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\ntrait ezcReflectionReturnInfo {\n    public $x = 1;\n\n    protected function getA(){echo 1;}\n\nfunction getB(){echo 2;}\n\n    protected function getC(){echo 3;}\n\n/** Description */\nfunction getD(){echo 4;}\n\n    protected function getE(){echo 3;}\n\nprivate $a;\n\nfunction getF(){echo 4;}\n}",
+                        "<?php\ntrait ezcReflectionReturnInfo {\n    public $x = 1;\n    protected function getA(){echo 1;}function getB(){echo 2;}\n    protected function getC(){echo 3;}/** Description */function getD(){echo 4;}\n    protected function getE(){echo 3;}private $a;function getF(){echo 4;}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\ntrait SomeReturnInfo {\n    function getReturnType()\n    {\n    }\n\n    function getReturnDescription()\n    {\n    }\n\n function getReturnDescription2()\n    {\n    }\n\n    abstract public function getWorld();\n}",
+                        "<?php\ntrait SomeReturnInfo {\n    function getReturnType()\n    {\n    }\n    function getReturnDescription()\n    {\n    } function getReturnDescription2()\n    {\n    }\n\n    abstract public function getWorld();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\ninterface TestInterface\n{\n    public function someInterfaceMethod4();\n\n    public function someInterfaceMethod5();\n\n    /**\n     * {@link}\n     */           \n    public function someInterfaceMethod6();\n\n    public function someInterfaceMethod7();\n\n public function someInterfaceMethod8();\n}",
+                        "<?php\ninterface TestInterface\n{    public function someInterfaceMethod4();\n    public function someInterfaceMethod5();\n\n\n    /**\n     * {@link}\n     */           \n    public function someInterfaceMethod6();\n\n\n    public function someInterfaceMethod7(); public function someInterfaceMethod8();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\ninterface TestInterfaceOK\n{\n    public function someMethod1();\n\n    public function someMethod2();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\ntrait ezcReflectionReturnInfo {\n    function getReturnDescription() {}\n}\nclass ezcReflectionMethod extends ReflectionMethod {\n    use ezcReflectionReturnInfo;\n\nfunction afterUseTrait(){}\n\nfunction afterUseTrait2(){}\n}",
+                        "<?php\ntrait ezcReflectionReturnInfo {\n    function getReturnDescription() {}\n}\nclass ezcReflectionMethod extends ReflectionMethod {\n    use ezcReflectionReturnInfo;function afterUseTrait(){}function afterUseTrait2(){}\n\n\n\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multi line property",
+                    "args": [
+                        "<?php class Foo\n{\n     private $prop = [\n         1 => true,\n         2 => false,\n     ];\n\n // comment2\n     private $bar = 1;\n}",
+                        "<?php class Foo\n{\n     private $prop = [\n         1 => true,\n         2 => false,\n     ]; // comment2\n     private $bar = 1;\n}",
+                        {
+                            "elements": {
+                                "property": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait group import none",
+                    "args": [
+                        "<?php class Foo\n{\n    use Ao;\n    use B0 { X0 as Y0;} // test\n    use A;\n    use B { X as Y;} // test\n    use Char;\n    use Bar {\n        __construct as barConstruct;\n        baz as barBaz;\n    }\n    use Dua;\n}",
+                        "<?php class Foo\n{\n    use Ao;\n\n    use B0 { X0 as Y0;} // test\n\n\n    use A;\n    use B { X as Y;} // test\n    use Char;\n\n    use Bar {\n        __construct as barConstruct;\n        baz as barBaz;\n    }\n    use Dua;\n}",
+                        {
+                            "elements": {
+                                "trait_import": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment after brace, before element",
+                    "args": [
+                        "<?php\nclass Foo { /* comment */\n\n public $a;\n }\n",
+                        "<?php\nclass Foo { /* comment */ public $a; }\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    /** A */\n    private $email;\n\n    private $foo0; #0 /* test */\n    private $foo1; #1\n    private $foo2; /* @2 */\n}",
+                        "<?php\nclass Foo\n{\n    /** A */\n\n    private $email;\n\n    private $foo0; #0 /* test */\n\n    private $foo1; #1\n\n    private $foo2; /* @2 */\n}",
+                        {
+                            "elements": {
+                                "property": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n class Sample\n{\n    /** @var int */\n    const FOO = 1;\n\n    /** @var int */\n    const BAR = 2;\n\n    const BAZ = 3;\n    const OTHER = 4;\n    const OTHER2 = 5;\n}",
+                        "<?php\n class Sample\n{\n    /** @var int */\n    const FOO = 1;\n\n    /** @var int */\n    const BAR = 2;\n\n\n    const BAZ = 3;\n    const OTHER = 4;\n\n    const OTHER2 = 5;\n}",
+                        {
+                            "elements": {
+                                "const": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple trait import 5954",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    use Bar, Baz;\n}",
+                        null,
+                        {
+                            "elements": {
+                                "method": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple trait import with method 5954",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    use Bar, Baz;\n\n    public function f() {}\n}",
+                        "<?php\nclass Foo\n{\n    use Bar, Baz;\n\n\n    public function f() {}\n}",
+                        {
+                            "elements": {
+                                "method": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait group import 5843",
+                    "args": [
+                        "<?php\n            class Foo\n{\n    use Ao;\n\n    use B0 { X0 as Y0;} // test\n\n    use A;\n\n    use B { X as Y;} // test\n\n    use Char;\n\n    use Bar {\n        __construct as barConstruct;\n        baz as barBaz;\n    }\n\n    use Dua;\n\n    public function aaa()\n    {\n    }\n}",
+                        "<?php\n            class Foo\n{\n    use Ao;\n    use B0 { X0 as Y0;} // test\n    use A;\n    use B { X as Y;} // test\n\n\n    use Char;\n    use Bar {\n        __construct as barConstruct;\n        baz as barBaz;\n    }\n    use Dua;\n    public function aaa()\n    {\n    }\n}",
+                        {
+                            "elements": {
+                                "method": "one",
+                                "trait_import": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    use SomeTrait1;\n\n    use SomeTrait2;\n\n    public function Bar(){}\n}\n",
+                        "<?php\nclass Foo\n{\n    use SomeTrait1;\n    use SomeTrait2;\n    public function Bar(){}\n}\n",
+                        {
+                            "elements": {
+                                "method": "one",
+                                "trait_import": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait group import 5852",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    use A;\n    use B;\n\n    /**\n     *\n     */\n     public function A(){}\n}",
+                        "<?php\nclass Foo\n{\n    use A;\n\n    use B;\n\n    /**\n     *\n     */\n\n     public function A(){}\n}",
+                        {
+                            "elements": {
+                                "const": "one",
+                                "method": "one",
+                                "property": "one",
+                                "trait_import": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\nabstract class Example\n{\n    use SomeTrait;\n    use AnotherTrait;\n\n    public $property;\n\n    abstract public function method(): void;\n}",
+                        "<?php\nabstract class Example\n{\n    use SomeTrait;\n    use AnotherTrait;\n    public $property;\n    abstract public function method(): void;\n}",
+                        {
+                            "elements": {
+                                "const": "one",
+                                "method": "one",
+                                "property": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        private $a = null;\n\n                        public $b = 1;\n\n\n\n                        function A() {}\n                     }\n                ",
+                        "<?php\n                    class A\n                    {\n                        private $a = null;\n                        public $b = 1;\n\n\n\n                        function A() {}\n                     }\n                ",
+                        {
+                            "elements": {
+                                "property": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        private $a = null;\n                        public $b = 1;\n\n                        function A() {}\n                    }\n                ",
+                        "<?php\n                    class A\n                    {\n                        private $a = null;\n\n                        public $b = 1;\n\n                        function A() {}\n                    }\n                ",
+                        {
+                            "elements": {
+                                "property": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        const A = 1;\n\n                        const THREE = ONE + self::TWO; /* test */ # test\n\n                        const B = 2;\n                    }\n                ",
+                        "<?php\n                    class A\n                    {\n\n                        const A = 1;\n                        const THREE = ONE + self::TWO; /* test */ # test\n                        const B = 2;\n                    }\n                ",
+                        {
+                            "elements": {
+                                "const": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        const A = 1;\n                        const THREE = ONE + self::TWO;\n                        const B = 2;\n                    }\n                ",
+                        "<?php\n                    class A\n                    {\n                        const A = 1;\n\n                        const THREE = ONE + self::TWO;\n\n                        const B = 2;\n                    }\n                ",
+                        {
+                            "elements": {
+                                "const": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        function D() {}\n\n                        function B4() {}\n                    }\n                ",
+                        "<?php\n                    class A\n                    {\n                        function D() {}\n                        function B4() {}\n                    }\n                ",
+                        {
+                            "elements": {
+                                "method": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        function A() {}\n                        function B() {}\n                    }\n                ",
+                        "<?php\n                    class A\n                    {\n                        function A() {}\n\n                        function B() {}\n                    }\n                ",
+                        {
+                            "elements": {
+                                "method": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        private $x;\n                        private $y;\n\n                        final function f1() {}\n\n                        final function f2() {}\n                     }\n                ",
+                        "<?php\n                    class A\n                    {\n                        private $x;\n                        private $y;\n                        final function f1() {}\n                        final function f2() {}\n                     }\n                ",
+                        {
+                            "elements": {
+                                "property": "none",
+                                "method": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        const FOO = 1;\n                        const BAR = 2;\n\n                        function f1() {}\n\n                        function f2() {}\n                     }\n                ",
+                        "<?php\n                    class A\n                    {\n                        const FOO = 1;\n                        const BAR = 2;\n                        function f1() {}\n                        function f2() {}\n                     }\n                ",
+                        {
+                            "elements": {
+                                "const": "none",
+                                "method": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        const FOO = 1;\n                        const BAR = 2;\n\n                        public function f1() {}\n\n                        public function f2() {}\n                     }\n                ",
+                        "<?php\n                    class A\n                    {\n                        const FOO = 1;\n                        const BAR = 2;\n                        public function f1() {}\n                        public function f2() {}\n                     }\n                ",
+                        {
+                            "elements": {
+                                "const": "none",
+                                "method": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        const B = 2;\n                        const FOO = 1;\n                        const BAR = 2;\n\n                        /** @var int */\n                        const BAZ = 3;\n\n                        /** @var int */\n                        const NEW = 4;\n\n                        /** @var int */\n                        const A = 5;\n                    }\n                ",
+                        "<?php\n                    class A\n                    {\n                        const B = 2;\n                        const FOO = 1;\n\n                        const BAR = 2;\n\n                        /** @var int */\n                        const BAZ = 3;\n                        /** @var int */\n                        const NEW = 4;\n                        /** @var int */\n                        const A = 5;\n                    }\n                ",
+                        {
+                            "elements": {
+                                "const": "only_if_meta"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n                    class B\n                    {\n                        public $foo;\n\n                        /** @var string */\n                        public $bar;\n                        public $baz;\n                    }\n                ",
+                        "<?php\n                    class B\n                    {\n                        public $foo;\n                        /** @var string */\n                        public $bar;\n\n                        public $baz;\n                    }\n                ",
+                        {
+                            "elements": {
+                                "property": "only_if_meta"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\n                    class C\n                    {\n                        public function f1() {}\n                        public function f2() {}\n                        public function f3() {}\n\n                        /** @return string */\n                        public function f4() {}\n                    }\n                ",
+                        "<?php\n                    class C\n                    {\n                        public function f1() {}\n\n                        public function f2() {}\n\n                        public function f3() {}\n                        /** @return string */\n                        public function f4() {}\n                    }\n                ",
+                        {
+                            "elements": {
+                                "method": "only_if_meta"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n                class Sample\n                {\n                    /** @var int */\n                    const ART = 1;\n                    const SCIENCE = 2;\n\n                    /** @var string */\n                    public $a;\n\n                    /** @var int */\n                    public $b;\n                    public $c;\n\n                    /**\n                     * @param string $a\n                     * @param int $b\n                     * @param int $c\n                     */\n                    public function __construct($a, $b, $c) {}\n                    public function __destruct() {}\n                }\n                ",
+                        "<?php\n                class Sample\n                {\n                    /** @var int */\n                    const ART = 1;\n\n                    const SCIENCE = 2;\n                    /** @var string */\n                    public $a;\n                    /** @var int */\n                    public $b;\n\n                    public $c;\n\n                    /**\n                     * @param string $a\n                     * @param int $b\n                     * @param int $c\n                     */\n                    public function __construct($a, $b, $c) {}\n\n                    public function __destruct() {}\n                }\n                ",
+                        {
+                            "elements": {
+                                "const": "only_if_meta",
+                                "property": "only_if_meta",
+                                "method": "only_if_meta"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        use A;\n                        use B;\n\n                        private $a = null;\n                        public $b = 1;\n                    }\n                ",
+                        "<?php\n                    class A\n                    {\n                        use A;\n\n                        use B;\n\n                        private $a = null;\n\n                        public $b = 1;\n                    }\n                ",
+                        {
+                            "elements": {
+                                "property": "none",
+                                "trait_import": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\n                class Foo {\n    public function H1(){}\n\n    /**  */\n    public const BAR = 123;\n\n    /**  */\n    private const BAZ = \"a\";\n                }",
+                        "<?php\n                class Foo {\n\n\n\n    public function H1(){}\n\n\n    /**  */\n    public const BAR = 123;\n    /**  */\n    private const BAZ = \"a\";\n\n\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\n            class Foo {\n                private ?int $foo;\n\n                protected string $bar;\n\n                public iterable $baz;\n\n                var ? Foo\\Bar $qux;\n            }",
+                        "<?php\n            class Foo {\n                private ?int $foo;\n                protected string $bar;\n                public iterable $baz;\n                var ? Foo\\Bar $qux;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php\n            class Foo {\n                private array $foo;\n\n                private array $bar;\n            }",
+                        "<?php\n            class Foo {\n                private array $foo;\n                private array $bar;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php\n            class Entity\n            {\n                /**\n                 * @ORM\\Column(name=\"one\", type=\"text\")\n                 */\n                private string $one;\n\n                /**\n                 * @ORM\\Column(name=\"two\", type=\"text\")\n                 */\n                private string $two;\n                private string $three;\n                private string $four;\n                private string $five;\n            }",
+                        "<?php\n            class Entity\n            {\n                /**\n                 * @ORM\\Column(name=\"one\", type=\"text\")\n                 */\n                private string $one;\n                /**\n                 * @ORM\\Column(name=\"two\", type=\"text\")\n                 */\n                private string $two;\n\n                private string $three;\n\n                private string $four;\n\n                private string $five;\n            }",
+                        {
+                            "elements": {
+                                "property": "only_if_meta"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    use SomeTrait1;\n    use SomeTrait2;\n\n    public function Bar(){}\n}\n",
+                        "<?php\nclass Foo\n{\n    use SomeTrait1;\n\n    use SomeTrait2;\n    public function Bar(){}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method \"get\" aliased in trait import",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    use Bar {\n        get as private otherGet;\n    }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attributes",
+                    "args": [
+                        "<?php\nclass User1\n{\n    #[ORM\\Id, ORM\\Column(\"integer\"), ORM\\GeneratedValue]\n    private $id;\n\n    #[ORM\\Column(\"string\", ORM\\Column::UNIQUE)]\n    #[Assert\\String()]\n    #[Assert\\Email([\"message\" => \"The email {{ value }} is not a valid email.\"])]\n    private $email;\n\n    #[Assert\\String()]\n    private $name;\n}",
+                        "<?php\nclass User1\n{\n\n    #[ORM\\Id, ORM\\Column(\"integer\"), ORM\\GeneratedValue]\n\n\n    private $id;\n    #[ORM\\Column(\"string\", ORM\\Column::UNIQUE)]\n    #[Assert\\String()]\n    #[Assert\\Email([\"message\" => \"The email {{ value }} is not a valid email.\"])]\n    private $email;\n\n\n    #[Assert\\String()]\n\n\n    private $name;\n\n\n\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attributes minimal",
+                    "args": [
+                        "<?php\nclass User2{\n#[ORM\\Id, ORM\\Column(\"integer\"), ORM\\GeneratedValue]\n private $id;\n}",
+                        "<?php\nclass User2{#[ORM\\Id, ORM\\Column(\"integer\"), ORM\\GeneratedValue] private $id;}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attribute block",
+                    "args": [
+                        "<?php\nclass User3\n{\n    private $id;\n\n    #[ORM\\Column(\"string\")]\n    #[Assert\\Email([\"message\" => \"Foo\"])]\n private $email;\n}",
+                        "<?php\nclass User3\n{\n    private $id;\n    #[ORM\\Column(\"string\")]\n    #[Assert\\Email([\"message\" => \"Foo\"])] private $email;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "constructor property promotion",
+                    "args": [
+                        "<?php\n            class Foo {\n                private array $foo;\n\n                private array $bar;\n\n                public function __construct(\n                    public float $x = 0.0,\n                    protected float $y = 0.0,\n                    private float $z = 0.0,\n                ) {}\n            }",
+                        "<?php\n            class Foo {\n                private array $foo;\n                private array $bar;\n                public function __construct(\n                    public float $x = 0.0,\n                    protected float $y = 0.0,\n                    private float $z = 0.0,\n                ) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "typed properties",
+                    "args": [
+                        "<?php\n            class Foo {\n                private static int | float | null $a;\n\n                private static int | float | null $b;\n\n                private int | float | null $c;\n\n                private int | float | null $d;\n            }",
+                        "<?php\n            class Foo {\n                private static int | float | null $a;\n                private static int | float | null $b;\n                private int | float | null $c;\n                private int | float | null $d;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attributes with conditional spacing",
+                    "args": [
+                        "<?php\nclass User\n{\n    private $id;\n\n    #[Assert\\String()]\n    private $name;\n    private $email;\n}\n",
+                        "<?php\nclass User\n{\n\n    private $id;\n    #[Assert\\String()]\n    private $name;\n\n    private $email;\n}\n",
+                        {
+                            "elements": {
+                                "property": "only_if_meta"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "mixed attributes and phpdoc with conditional spacing",
+                    "args": [
+                        "<?php\nclass User\n{\n    private $id;\n\n    /** @var string */\n    #[Assert\\Email([\"message\" => \"Foo\"])]\n    private $email;\n\n    #[Assert\\String()]\n    #[ORM\\Column()]\n    private $place;\n\n    #[ORM\\Column()]\n    /** @var string */\n    private $hash;\n\n    /** @var string **/\n    #[ORM\\Column()]\n    /** @internal */\n    private $updatedAt;\n}\n",
+                        "<?php\nclass User\n{\n\n    private $id;\n    /** @var string */\n    #[Assert\\Email([\"message\" => \"Foo\"])]\n    private $email;\n    #[Assert\\String()]\n    #[ORM\\Column()]\n    private $place;\n    #[ORM\\Column()]\n    /** @var string */\n    private $hash;\n\n\n    /** @var string **/\n    #[ORM\\Column()]\n    /** @internal */\n    private $updatedAt;\n}\n",
+                        {
+                            "elements": {
+                                "property": "only_if_meta"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    #[Assert\\Email([\"message\" => \"Foo\"])]\n    private $email;\n\n    private $foo1; #1\n    private $foo2; /* @2 */\n}",
+                        "<?php\nclass Foo\n{\n    #[Assert\\Email([\"message\" => \"Foo\"])]\n\n    private $email;\n\n    private $foo1; #1\n\n    private $foo2; /* @2 */\n}",
+                        {
+                            "elements": {
+                                "property": "none"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "promoted property as last class element",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public int $a = 1;\n\n    public function __construct(public int $x) {}\n}",
+                        "<?php\nclass Foo\n{\n    public int $a = 1;\n    public function __construct(public int $x) {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class A {\n    public int $a0;\n\n    public readonly int $a1;\n\n    readonly public int $a2;\n\n    readonly int $a3;\n\n    public int $a4;\n}",
+                        "<?php class A {\n    public int $a0;\n    public readonly int $a1;\n    readonly public int $a2;\n    readonly int $a3;\n    public int $a4;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    final public const B1 = \"1\";\n\n    public final const B2 = \"2\";\n\n    final const B3 = \"3\";\n}\n",
+                        "<?php\nclass Foo\n{\n    final public const B1 = \"1\";\n    public final const B2 = \"2\";\n\n\n    final const B3 = \"3\";\n\n\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "intersection properties",
+                    "args": [
+                        "<?php\n            class Foo {\n                private static Bar & Something & Baz $a;\n\n                private static Bar & Something & Baz $b;\n\n                private Bar & Something & Baz $c;\n\n                private Bar & Something & Baz $d;\n            }",
+                        "<?php\n            class Foo {\n                private static Bar & Something & Baz $a;\n                private static Bar & Something & Baz $b;\n                private Bar & Something & Baz $c;\n                private Bar & Something & Baz $d;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nenum Cards: string\n{\n    protected const Deck = \"d.d\";\n\n    protected const Pack = \"p.p\";\n\n    case Hearts = \"H\";\n\n    case Spades = \"S\";\n\n    case Diamonds = \"D\";\n\n    case Clubs = \"C\";\n\n    protected function test() {\n        echo 1;\n    }\n\n    protected function test2() {\n        echo 2;\n    }\n}\n            ",
+                        "<?php\nenum Cards: string\n{\n    protected const Deck = \"d.d\";\n\n\n\n    protected const Pack = \"p.p\";\n\n    case Hearts = \"H\";\n\n\n    case Spades = \"S\";\n\n\n\n\n    case Diamonds = \"D\";\n\n\n    case Clubs = \"C\";\n    protected function test() {\n        echo 1;\n    }\n\n\n    protected function test2() {\n        echo 2;\n    }\n}\n            ",
+                        {
+                            "elements": {
+                                "const": "one",
+                                "method": "one",
+                                "case": "one"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nenum Cards: string\n{\n    protected const Deck = \"d.d\";\n    protected const Pack = \"p.p\";\n\n    case Hearts = \"H\";\n    case Spades = \"S\";\n    case Diamonds = \"D\";\n    case Clubs = \"C\";\n\n    protected function test() {\n        echo 1;\n    }\n\n    protected function test2() {\n        echo 2;\n    }\n}\n            ",
+                        "<?php\nenum Cards: string\n{\n    protected const Deck = \"d.d\";\n\n\n\n    protected const Pack = \"p.p\";\n\n    case Hearts = \"H\";\n\n\n    case Spades = \"S\";\n\n\n\n\n    case Diamonds = \"D\";\n\n\n    case Clubs = \"C\";\n    protected function test() {\n        echo 1;\n    }\n\n\n    protected function test2() {\n        echo 2;\n    }\n}\n            ",
+                        {
+                            "elements": {
+                                "const": "none",
+                                "method": "one",
+                                "case": "none"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n            trait Foo {\n                const Bar = 1;\n\n                const Baz = 2;\n            }",
+                        "<?php\n            trait Foo {\n                const Bar = 1;\n                const Baz = 2;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n            class X\n            {\n                private A|(B&C) $propertyName;\n            }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->testFix($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility",
+                    "args": [
+                        "<?php class Foo {\n    public public(set) Bar $a;\n\n    public protected(set) Bar $b;\n\n    public private(set) Baz $c;\n}",
+                        "<?php class Foo {\n    public public(set) Bar $a;\n    public protected(set) Bar $b;\n    public private(set) Baz $c;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hooks",
+                    "args": [
+                        "<?php class Foo {\n    private int $a { set(int $a) {} }\n\n    private int $b { set(int $b) {} }\n}",
+                        "<?php class Foo {\n    private int $a { set(int $a) {} }\n    private int $b { set(int $b) {} }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "hooked property as last element before class closing brace",
+                    "args": [
+                        "<?php class Foo {\n    public string $bar { get => 'x'; }\n}",
+                        "<?php class Foo {\n    public string $bar { get => 'x'; }}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null): void\n    {\n        $this->testFix($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closure in constant",
+                    "args": [
+                        "<?php class SomeClass\n{\n    public const \\Closure NULL = static function (mixed $v): bool {\n        return null === $v;\n    };\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\r\nclass SomeClass\r\n{\r\n    // comment\n\n    public function echoA()\r\n    {\r\n        echo 'a';\r\n    }\r\n}\r\n",
+                        "<?php\r\nclass SomeClass\r\n{\r\n    // comment\n\n\n    public function echoA()\r\n    {\r\n        echo 'a';\r\n    }\r\n}\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\r\nclass SomeClass\r\n{\r\n    // comment\r\n\r\n    public function echoA()\r\n    {\r\n        echo 'a';\r\n    }\r\n}\r\n",
+                        "<?php\r\nclass SomeClass\r\n{\r\n    // comment\r\n\r\n\r\n    public function echoA()\r\n    {\r\n        echo 'a';\r\n    }\r\n}\r\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "elements",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+            "body": "    public function testInvalidConfiguration(array $elements): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->fixer->configure(['elements' => $elements]);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "numeric keys",
+                    "args": [
+                        [
+                            "method",
+                            "property"
+                        ]
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "wrong key name",
+                    "args": [
+                        {
+                            "methods": "one"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "wrong key value",
+                    "args": [
+                        {
+                            "method": "two"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testCommentBlockStartDetection",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "int",
+                    "default": null
+                },
+                {
+                    "name": "code",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "index",
+                    "type": "int",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ClassAttributesSeparationFixerTest",
+            "body": "    public function testCommentBlockStartDetection(int $expected, string $code, int $index): void\n    {\n        Tokens::clearCache();\n        $tokens = Tokens::fromCode($code);\n\n        $result = \\Closure::bind(static fn (ClassAttributesSeparationFixer $fixer): int => $fixer->findCommentBlockStart($tokens, $index, 0), null, ClassAttributesSeparationFixer::class)($this->fixer);\n        self::assertSame(\n            $expected,\n            $result,\n            \\sprintf('Expected index %d (%s) got index %d (%s).', $expected, $tokens[$expected]->toJson(), $result, $tokens[$result]->toJson()),\n        );\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideCommentBlockStartDetectionCases",
+                    "key": 0,
+                    "args": [
+                        4,
+                        "<?php\n                    //ui\n\n                    //j1\n                    //k2\n                ",
+                        6
+                    ]
+                },
+                {
+                    "provider": "provideCommentBlockStartDetectionCases",
+                    "key": 1,
+                    "args": [
+                        4,
+                        "<?php\n                    //ui\n\n                    //j1\n                    //k2\n                ",
+                        5
+                    ]
+                },
+                {
+                    "provider": "provideCommentBlockStartDetectionCases",
+                    "key": 2,
+                    "args": [
+                        4,
+                        "<?php\n                    /**/\n\n                    //j1\n                    //k2\n                ",
+                        6
+                    ]
+                },
+                {
+                    "provider": "provideCommentBlockStartDetectionCases",
+                    "key": 3,
+                    "args": [
+                        4,
+                        "<?php\n                    $a;//j\n                    //k\n                ",
+                        6
+                    ]
+                },
+                {
+                    "provider": "provideCommentBlockStartDetectionCases",
+                    "key": 4,
+                    "args": [
+                        2,
+                        "<?php\n                    //a\n                ",
+                        2
+                    ]
+                },
+                {
+                    "provider": "provideCommentBlockStartDetectionCases",
+                    "key": 5,
+                    "args": [
+                        2,
+                        "<?php\n                    //b\n                    //c\n                ",
+                        2
+                    ]
+                },
+                {
+                    "provider": "provideCommentBlockStartDetectionCases",
+                    "key": 6,
+                    "args": [
+                        2,
+                        "<?php\n                    //d\n                    //e\n                ",
+                        4
+                    ]
+                },
+                {
+                    "provider": "provideCommentBlockStartDetectionCases",
+                    "key": 7,
+                    "args": [
+                        2,
+                        "<?php\n                    /**/\n                    //f\n                    //g\n                    //h\n                ",
+                        8
+                    ]
+                }
+            ]
+        }
+    ]
+}

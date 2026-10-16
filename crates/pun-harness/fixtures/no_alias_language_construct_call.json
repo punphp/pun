@@ -1,0 +1,59 @@
+{
+    "fixer": "no_alias_language_construct_call",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Alias\\NoAliasLanguageConstructCallFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Alias/NoAliasLanguageConstructCallFixerTest.php",
+    "case_count": 4,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\NoAliasLanguageConstructCallFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php exit;",
+                        "<?php die;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php exit (\"foo\");",
+                        "<?php die (\"foo\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php exit (1); EXIT(1);",
+                        "<?php DIE (1); EXIT(1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                    echo \"die\";\n                    // die;\n                    /* die(1); */\n                    echo $die;\n                    echo $die(1);\n                    echo $$die;\n                "
+                    ]
+                }
+            ]
+        }
+    ]
+}

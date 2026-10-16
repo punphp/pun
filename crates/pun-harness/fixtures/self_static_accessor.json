@@ -1,0 +1,208 @@
+{
+    "fixer": "self_static_accessor",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfStaticAccessorFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/SelfStaticAccessorFixerTest.php",
+    "case_count": 18,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfStaticAccessorFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php\nfinal class Sample\n{\n    public function getBar()\n    {\n        return self::class.self::test();\n    }\n\n    private static function test()\n    {\n        return 'test';\n    }\n}\n",
+                        "<?php\nfinal class Sample\n{\n    public function getBar()\n    {\n        return static::class.static::test();\n    }\n\n    private static function test()\n    {\n        return 'test';\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple",
+                    "args": [
+                        "<?php\n                    final class Foo0 { public function A(){ return self::A; }}\n                    final class Foo1 { public function A(){ return self::A; }}\n                    final class Foo2 { public function A(){ return self::A; }}\n                    final class Foo3 { public function A(){ return self::A; }}\n                    final class Foo4{public function A(){return self::A;}}final class Foo5{public function A(){return self::A;}}\n                ",
+                        "<?php\n                    final class Foo0 { public function A(){ return static::A; }}\n                    final class Foo1 { public function A(){ return static::A; }}\n                    final class Foo2 { public function A(){ return static::A; }}\n                    final class Foo3 { public function A(){ return static::A; }}\n                    final class Foo4{public function A(){return static::A;}}final class Foo5{public function A(){return static::A;}}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments and casing",
+                    "args": [
+                        "<?php\nFINAL CLASS Sample\n{\n    public function getBar()\n    {\n        return/* 0 */self/* 1 */::/* 2 */CLASS/* 3 */;\n    }\n}\n",
+                        "<?php\nFINAL CLASS Sample\n{\n    public function getBar()\n    {\n        return/* 0 */STATIC/* 1 */::/* 2 */CLASS/* 3 */;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not final",
+                    "args": [
+                        "<?php\nclass Sample\n{\n    public function getBar()\n    {\n        return static::class;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "abstract",
+                    "args": [
+                        "<?php\nabstract class Sample\n{\n    public function getBar()\n    {\n        return static::class;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public function bar()\n    {\n        $a = new Foo();\n\n        return new self();\n    }\n}\n                ",
+                        "<?php\nfinal class Foo\n{\n    public function bar()\n    {\n        $a = new Foo();\n\n        return new static();\n    }\n}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "instance of",
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public function isBar($foo)\n    {\n        return $foo instanceof self;\n    }\n}\n                ",
+                        "<?php\nfinal class Foo\n{\n    public function isBar($foo)\n    {\n        return $foo instanceof static;\n    }\n}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "in method as new",
+                    "args": [
+                        "<?php final class A { public static function b() { return new self(); } }",
+                        "<?php final class A { public static function b() { return new static(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "in method as new with comments",
+                    "args": [
+                        "<?php final class A { public static function b() { return new /* hmm */ self(); } }",
+                        "<?php final class A { public static function b() { return new /* hmm */ static(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "in method as new without parentheses",
+                    "args": [
+                        "<?php final class A { public static function b() { return new self; } }",
+                        "<?php final class A { public static function b() { return new static; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple anonymous class",
+                    "args": [
+                        "<?php\n$a = new class {\n    public function getBar()\n    {\n        return self::class;\n    }\n};",
+                        "<?php\n$a = new class {\n    public function getBar()\n    {\n        return static::class;\n    }\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested anonymous class",
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public function Foo()\n    {\n        return self::class;\n    }\n\n    public function getClass()\n    {\n        $a = new class() {\n            public function getBar()\n            {\n                return self::class;\n            }\n        };\n    }\n\n    public function Foo2()\n    {\n        return self::class;\n    }\n}\n",
+                        "<?php\nfinal class Foo\n{\n    public function Foo()\n    {\n        return static::class;\n    }\n\n    public function getClass()\n    {\n        $a = new class() {\n            public function getBar()\n            {\n                return static::class;\n            }\n        };\n    }\n\n    public function Foo2()\n    {\n        return static::class;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous classes inside lambda",
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public function bar()\n    {\n        echo self::class; // do fix\n\n        return function () {\n            echo static::class; // do not fix\n\n            $a = new class {\n                public function bar2()\n                {\n                    echo self::class; // do fix\n\n                    return function () {\n                        echo static::class; // do not fix\n\n                        $a = new class {\n                            public function bar2()\n                            {\n                                echo self::class; // do fix\n                            }\n                        };\n                        echo static::class; // do not fix\n\n                        return $a;\n                    };\n                }\n            };\n            echo static::class; // do not fix\n\n            $b = new class {\n                public function test()\n                {\n                    echo self::class; // do fix\n                }\n            };\n\n            return $a;\n        };\n\n        echo self::class; // do fix\n    }\n}\n",
+                        "<?php\nfinal class Foo\n{\n    public function bar()\n    {\n        echo static::class; // do fix\n\n        return function () {\n            echo static::class; // do not fix\n\n            $a = new class {\n                public function bar2()\n                {\n                    echo static::class; // do fix\n\n                    return function () {\n                        echo static::class; // do not fix\n\n                        $a = new class {\n                            public function bar2()\n                            {\n                                echo static::class; // do fix\n                            }\n                        };\n                        echo static::class; // do not fix\n\n                        return $a;\n                    };\n                }\n            };\n            echo static::class; // do not fix\n\n            $b = new class {\n                public function test()\n                {\n                    echo static::class; // do fix\n                }\n            };\n\n            return $a;\n        };\n\n        echo static::class; // do fix\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no scope",
+                    "args": [
+                        "<?php echo static::class;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix inside lambda",
+                    "args": [
+                        "<?php\nfinal class Foo\n{\n    public function Bar()\n    {\n        return function() {\n            return static::class;\n        };\n    }\n}\n\n$a = static function() { return static::class; };\n$b = function() { return static::class; };\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfStaticAccessorFixerTest",
+            "body": "    public function testFix81(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enums",
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case Baz;\n\n    private const BAR = 'foo';\n\n    public static function bar(): Foo\n    {\n        return self::Baz;\n    }\n\n    public static function baz(mixed $other): void\n    {\n        if ($other instanceof self) {\n            echo self::BAR;\n        }\n    }\n}\n",
+                        "<?php\nenum Foo\n{\n    case Baz;\n\n    private const BAR = 'foo';\n\n    public static function bar(): Foo\n    {\n        return static::Baz;\n    }\n\n    public static function baz(mixed $other): void\n    {\n        if ($other instanceof static) {\n            echo static::BAR;\n        }\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with nested anonymous class",
+                    "args": [
+                        "<?php\n                enum Suit: int implements SomeIntInterface, Z\n                {\n                    case Hearts = 1;\n                    case Clubs = 3;\n                    public const HEARTS = self::Hearts;\n\n                    public function Foo(): string\n                    {\n                        return self::Hearts->Bar()->getBar() . self::class . self::Clubs->value;\n                    }\n\n                    public function Bar(): object\n                    {\n                        return new class {\n                            public function getBar()\n                            {\n                                return self::class;\n                            }\n                        };\n                    }\n                }\n            ",
+                        "<?php\n                enum Suit: int implements SomeIntInterface, Z\n                {\n                    case Hearts = 1;\n                    case Clubs = 3;\n                    public const HEARTS = self::Hearts;\n\n                    public function Foo(): string\n                    {\n                        return static::Hearts->Bar()->getBar() . static::class . static::Clubs->value;\n                    }\n\n                    public function Bar(): object\n                    {\n                        return new class {\n                            public function getBar()\n                            {\n                                return static::class;\n                            }\n                        };\n                    }\n                }\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfStaticAccessorFixerTest",
+            "body": "    public function testFix82(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "simple",
+                    "args": [
+                        "<?php\nfinal readonly class Sample\n{\n    public function getBar()\n    {\n        return self::class.self::test();\n    }\n\n    private static function test()\n    {\n        return 'test';\n    }\n}\n",
+                        "<?php\nfinal readonly class Sample\n{\n    public function getBar()\n    {\n        return static::class.static::test();\n    }\n\n    private static function test()\n    {\n        return 'test';\n    }\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

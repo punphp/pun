@@ -1,0 +1,725 @@
+{
+    "fixer": "visibility_required",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\VisibilityRequiredFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/VisibilityRequiredFixerTest.php",
+    "case_count": 71,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ModifierKeywordsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "properties",
+                    "args": [
+                        "<?php\nclass Foo {\n    public $var;\n    protected $var_foo;\n    private $FooBar;\n    public static $var1;\n    protected static $var_foo2;\n    private static $FooBar1;\n    public static $var2;\n    protected static $var_foo3;\n    private static $FooBar2;\n    private static $FooBar3;\n    public $old = 'foo';\n}",
+                        "<?php\nclass Foo {\n    public $var;\n    protected $var_foo;\n    private $FooBar;\n    static public $var1;\n    static protected $var_foo2;\n    static private $FooBar1;\n    public static $var2;\n    protected static $var_foo3;\n    private static $FooBar2;\n    private static\n    $FooBar3;\n    var $old = 'foo';\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "properties after method",
+                    "args": [
+                        "<?php\nclass Foo {\n    public function aaa() {}\n    public $bbb;\n}",
+                        "<?php\nclass Foo {\n    public function aaa() {}\n    var $bbb;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "methods",
+                    "args": [
+                        "<?php\nclass MyTestWithAnonymousClass extends TestCase\n{\n    public function setUp()\n    {\n        $provider = new class(function () {}) {};\n    }\n\n    public function testSomethingWithMoney(\n        Money $amount\n    ) {\n    }\n}",
+                        "<?php\nclass MyTestWithAnonymousClass extends TestCase\n{\n    function setUp()\n    {\n        $provider = new class(function () {}) {};\n    }\n\n    public function testSomethingWithMoney(\n        Money $amount\n    ) {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nabstract class Foo {\n    public function& foo0() {}\n    public function & foo1() {}\n    public function &foo2() {}\n    protected function foo3($b) {}\n    abstract protected function foo4();\n    private function foo5() {}\n    final public function foo6() {}\n    abstract public function foo7();\n    final public function foo8() {}\n    abstract public function foo9();\n    public static function fooA() {}\n    public static function fooD() {}\n    final public static function fooE() {}\n    abstract public function fooF();\n        public function fooG ($foo) {}\n        public function fooH() {\n            static $foo;\n            $bar = function($baz) {};\n        }\n}",
+                        "<?php\nabstract class Foo {\n    public function& foo0() {}\n    public function & foo1() {}\n    function &foo2() {}\n    protected function foo3($b) {}\n    protected\n    abstract function foo4();\n    private function foo5() {}\n    final public function foo6() {}\n    abstract public function foo7();\n    public final function foo8() {}\n    public abstract function foo9();\n    public static function fooA() {}\n    public static\n    function fooD() {}\n    final static function fooE() {}\n    abstract function fooF();\n        function fooG ($foo) {}\n        function fooH() {\n            static $foo;\n            $bar = function($baz) {};\n        }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nabstract class Foo1 {\n    public function& foo0($a) {}\n}",
+                        "<?php\nabstract class Foo1 {\n    function& foo0($a) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions alone",
+                    "args": [
+                        "<?php\nfunction foo() {\n    static $foo;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions alone with variables matching OOP words",
+                    "args": [
+                        "<?php\nfunction foo() {\n    static $class;\n    $interface = 'foo';\n    $trait = 'bar';\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions alone inside conditionals",
+                    "args": [
+                        "<?php\nif (!function_exists('foo')) {\n    function foo($arg)\n    {\n        return $arg;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions alone inside conditionals with OOP word in comment",
+                    "args": [
+                        "<?php\n/* class <= this is just a stop-word */\nif (!function_exists('foo')) {\n    function foo($arg)\n    {\n        return $arg;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions alone with OOP word in comment",
+                    "args": [
+                        "<?php\n/* class */\nfunction foo($arg)\n{\n    return $arg;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions alone outside classes with OOP word in inline HTML",
+                    "args": [
+                        "<?php\nif (!function_exists('foo')) {\n    function foo($arg)\n    {\n    ?>\n        <div class=\"test\"></div>\n    <?php\n        return $arg;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions alone outside classes with OOP word in string value",
+                    "args": [
+                        "<?php\nif (!function_exists('foo')) {\n    function foo($arg)\n    {\n        return 'she has class right?';\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions alone outside classes with OOP word in function name",
+                    "args": [
+                        "<?php\n\ncomment_class();\n\nif (!function_exists('foo')) {\n    function foo($arg)\n    {\n        return $arg;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions alone after class",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public $foo;\n}\n\nif (!function_exists('bar')) {\n    function bar()\n    {\n        return 'bar';\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "curly open syntax",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    private $bar;\n    public function foo()\n    {\n        $foo = \"foo\";\n        $fooA = \"ab{$foo}cd\";\n        $bar = \"bar\"; // test if variable after T_CURLY_OPEN is intact\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dollar open curly braces syntax",
+                    "args": [
+                        "<?php\n\nclass Foo {\n    public function bar()\n    {\n        $foo = \"foo${width}foo\";\n        $bar = \"bar\"; // test if variable after T_DOLLAR_OPEN_CURLY_BRACES is intact\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave JavaScript outside PHP alone",
+                    "args": [
+                        "<?php\nfunction foo()\n{\n    return \"foo\";\n}\n?>\n<script type=\"text/javascript\">\nfunction foo(bar) {\n    alert(bar);\n}\n</script>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave JavaScript in string alone",
+                    "args": [
+                        "<?php\nfunction registerJS()\n{\necho '<script type=\"text/javascript\">\nfunction foo(bar) {\n    alert(bar);\n}\n</script>';\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave JavaScript in variable alone",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar()\n    {\n        $script = <<<JAVASCRIPT\n<script type=\"text/javascript\">\nfunction foo(bar) {\n    alert(bar);\n}\n</script>\nJAVASCRIPT;\n\n        return $script;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comma separated properties",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public $foo1;\n    private $foo2;\n    protected $bar1, $bar2;\n    public $baz1 = null, $baz2, $baz3 = false;\n    public $foo, $bar;\n}",
+                        "<?php\nclass Foo\n{\n    var $foo1;\n    private $foo2;\n    protected $bar1, $bar2;\n    public $baz1 = null, $baz2, $baz3 = false;\n    var $foo, $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "var declarations with array value",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public $foo1 = 1;\n    public $foo2a = array('foo');\n    public $foo2b = ['foo'];\n    public $foo3a = array('foo', 'bar');\n    public $foo3b = ['foo', 'bar'];\n    public $foo4a = '1a', $foo5a = array(1, 2, 3), $foo6a = 10;\n    public $foo4b = '1b', $foo5b = array(1, 2, 3), $foo6b = 10;\n}",
+                        "<?php\nclass Foo\n{\n    var $foo1 = 1;\n    var $foo2a = array('foo');\n    var $foo2b = ['foo'];\n    var $foo3a = array('foo', 'bar');\n    var $foo3b = ['foo', 'bar'];\n    public $foo4a = '1a', $foo5a = array(1, 2, 3), $foo6a = 10;\n    public $foo4b = '1b', $foo5b = array(1, 2, 3), $foo6b = 10;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php class A { public const B=1; }",
+                        "<?php class A { const B=1; }",
+                        {
+                            "elements": [
+                                "const"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php class A { public const B=1;public const C=1;/**/public const#a\n                D=1;public const E=1;//\npublic const F=1; }",
+                        "<?php class A { const B=1;const C=1;/**/const#a\n                D=1;const E=1;//\nconst F=1; }",
+                        {
+                            "elements": [
+                                "const"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php class A { private const B=1; protected const C=2; public const D=4; public $a; function A(){} }",
+                        "<?php class A { private const B=1; protected const C=2; const D=4; public $a; function A(){} }",
+                        {
+                            "elements": [
+                                "const"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                    class foo\n                    {\n                        public const A = 1, B =2, C =3;\n                        public const TWO = ONE * 2;\n                        public const THREE = ONE + self::TWO;\n                        public const SENTENCE = \"The value of THREE is \".self::THREE;\n                    }\n                ",
+                        "<?php\n                    class foo\n                    {\n                        const A = 1, B =2, C =3;\n                        const TWO = ONE * 2;\n                        const THREE = ONE + self::TWO;\n                        const SENTENCE = \"The value of THREE is \".self::THREE;\n                    }\n                ",
+                        {
+                            "elements": [
+                                "const"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment",
+                    "args": [
+                        "<?php\nclass A\n{# We will have a function below\n# It will be static\n# and awesome\npublic static function# <- this is the function\nAB# <- this is the name\n(#\n)#\n{#\n}#\n}\n            ",
+                        "<?php\nclass A\n{# We will have a function below\nstatic# It will be static\n# and awesome\nfunction# <- this is the function\nAB# <- this is the name\n(#\n)#\n{#\n}#\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class",
+                    "args": [
+                        "<?php\n                $a = new class() {\n                    public function a() {\n                    }\n                };\n\n                class C\n                {\n                    public function A()\n                    {\n                        $a = new class() {public function a() {}};\n                    }\n                }\n            ",
+                        "<?php\n                $a = new class() {\n                    function a() {\n                    }\n                };\n\n                class C\n                {\n                    function A()\n                    {\n                        $a = new class() {function a() {}};\n                    }\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "removing newlines between keywords",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    public $bar;\n\n                    final public static function bar() {}\n\n                    final public static function baz() {}\n                }",
+                        "<?php\n                class Foo\n                {\n                    var\n                    $bar;\n\n                    final\n                    public\n                    static\n                    function bar() {}\n\n                    static\n                    final\n                    function baz() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "keeping comment",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    /* constant */ private const BAR = 3;\n                    /* variable */ private $bar;\n                    /* function */ private function bar() {}\n                }",
+                        "<?php\n                class Foo\n                {\n                    private /* constant */ const BAR = 3;\n                    private /* variable */ $bar;\n                    private /* function */ function bar() {}\n                }",
+                        {
+                            "elements": [
+                                "property",
+                                "method",
+                                "const"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fixing with all keywords",
+                    "args": [
+                        "<?php\n                abstract class Foo\n                {\n                    abstract protected static function fooA();\n                    abstract protected static function fooB();\n                    abstract protected static function fooC();\n                    abstract protected static function fooD();\n                    abstract protected static function fooE();\n                    abstract protected static function fooF();\n                    abstract public static function fooG();\n                    abstract public static function fooH();\n                }\n            ",
+                        "<?php\n                abstract class Foo\n                {\n                    abstract protected static function fooA();\n                    abstract static protected function fooB();\n                    protected abstract static function fooC();\n                    protected static abstract function fooD();\n                    static abstract protected function fooE();\n                    static protected abstract function fooF();\n                    abstract static function fooG();\n                    static abstract function fooH();\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php class Foo { private int $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php class Foo { protected ?string $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php class Foo { public ? string $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php class Foo { public ? string $foo; }",
+                        "<?php class Foo { var ? string $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php class Foo { public static Foo\\Bar $foo; }",
+                        "<?php class Foo { static public Foo\\Bar $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php class Foo { public array $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php class Foo { public ?array $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php class Foo { public static ?array $foo; }",
+                        "<?php class Foo { static public ?array $foo; }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ModifierKeywordsFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo { private int|float|null $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo { private int | /* or empty */ null $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo { private array|null $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo { private null|array $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php class Foo { public static null|array $foo; }",
+                        "<?php class Foo { static null|array $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "promoted properties",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        public string $a,\n        protected string $b,\n        private string $c,\n        private array &$withReference,\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "promoted property with visibility and reference, but without type",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        private &$bar,\n    ) {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ModifierKeywordsFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo { public Foo1&Bar $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public readonly string $prop2a;\n}\n            ",
+                        "<?php\nclass Foo\n{\n    readonly public string $prop2a;\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public readonly string $prop1;\n    public readonly string $prop2;\n}\n            ",
+                        "<?php\nclass Foo\n{\n    readonly string $prop1;\n    public readonly string $prop2;\n}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    final public const B = \"2\";\n}\n",
+                        "<?php\nclass Foo\n{\n    public final const B = \"2\";\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    final public const B = \"2\";\n}\n",
+                        "<?php\nclass Foo\n{\n    final const B = \"2\";\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nenum Foo {\n    case CAT;\n    public function test(): self { return $this; }\n}\n\nvar_dump(Foo::CAT->test());",
+                        "<?php\nenum Foo {\n    case CAT;\n    function test(): self { return $this; }\n}\n\nvar_dump(Foo::CAT->test());"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "promoted property without visibility",
+                    "args": [
+                        "<?php class Foo { public function __construct(public readonly string $bar) { } }",
+                        "<?php class Foo { public function __construct(readonly string $bar) { } }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "promoted property without visibility with reference",
+                    "args": [
+                        "<?php class Foo { public function __construct(public readonly string &$bar) { } }",
+                        "<?php class Foo { public function __construct(readonly string &$bar) { } }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "promoted readonly properties",
+                    "args": [
+                        "<?php class Foo {\n    public function __construct(\n        public readonly bool $one,\n        public readonly bool $two,\n        public readonly string $three\n    ) {}\n}",
+                        "<?php class Foo {\n    public function __construct(\n        readonly public bool $one,\n        readonly public bool $two,\n        readonly public string $three\n    ) {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ModifierKeywordsFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php trait Foo { public const Bar = 1; }",
+                        "<?php trait Foo { const Bar = 1; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo {\n                public (A&B)|C|D $x;\n                protected A|(B&C)|D $y;\n                private A|B|(C&D) $z;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "readonly class",
+                    "args": [
+                        "<?php readonly class Foo\n{\n    public function __construct() {}\n    public function bar(int $x): void {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ModifierKeywordsFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "fixing multiple keyword modifiers",
+                    "args": [
+                        "<?php\nabstract class ClassName\n{\n    abstract protected string $bar { get => \"a\"; set; }\n\n    final protected readonly string $foo;\n\n    final protected int $beep;\n\n    final public private(set) int $counter1;\n\n    public protected(set) int $counter2;\n\n    public public(set) int $counter3;\n\n    final public static function bar() {}\n\n    abstract protected function zim();\n}",
+                        "<?php\nabstract class ClassName\n{\n    protected abstract string $bar { get => \"a\"; set; }\n\n    readonly final protected string $foo;\n\n    protected final int $beep;\n\n    final public private(set) int $counter1;\n\n    public protected(set) int $counter2;\n\n    public public(set) int $counter3;\n\n    static public final function bar() {}\n\n    protected abstract function zim();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hooks",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    protected int $bar {\n        set => $this->bar = $value;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility with only set-visibility",
+                    "args": [
+                        "<?php class Foo\n{\n    public public(set) Bar $a;\n    public protected(set) Bar $b;\n    public private(set) Baz $c;\n}",
+                        "<?php class Foo\n{\n    public(set) Bar $a;\n    protected(set) Bar $b;\n    private(set) Baz $c;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility with set-visibility before general visibility",
+                    "args": [
+                        "<?php class Foo\n{\n    public public(set) Bar $a;\n    public protected(set) Bar $b;\n    public private(set) Baz $c;\n}",
+                        "<?php class Foo\n{\n    public(set) public Bar $a;\n    protected(set) public Bar $b;\n    private(set) public Baz $c;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility with readonly",
+                    "args": [
+                        "<?php class Foo\n{\n    protected private(set) readonly Bar $a;\n    public protected(set) readonly Bar $b;\n    public private(set) readonly Baz $c;\n}",
+                        "<?php class Foo\n{\n    readonly private(set) protected Bar $a;\n    protected(set) readonly public Bar $b;\n    private(set) public readonly Baz $c;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility with regular and readonly",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        public private(set) array $bare = [],\n        public private(set) readonly array $withReadonly = [],\n    ) {}\n}",
+                        "<?php class Foo\n{\n    public function __construct(\n        private(set) array $bare = [],\n        private(set) readonly array $withReadonly = [],\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "promoted property with visibility, set-visibility and reference",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        protected private(set) int &$bar,\n    ) {}\n}",
+                        "<?php class Foo\n{\n    public function __construct(\n        private(set) protected int &$bar,\n    ) {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ModifierKeywordsFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "promoted property without visibility",
+                    "args": [
+                        "<?php class Foo { public function __construct(final public string $bar) { } }",
+                        "<?php class Foo { public function __construct(final string $bar) { } }"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "promoted final properties",
+                    "args": [
+                        "<?php class Foo {\n    public function __construct(\n        final public bool $one,\n        final public bool $two,\n        final public string $three\n    ) {}\n}",
+                        "<?php class Foo {\n    public function __construct(\n        public final bool $one,\n        public final bool $two,\n        public final string $three\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closure in attribute",
+                    "args": [
+                        "<?php class Foo {\n    #[WithRegularAttribute(static function (): void {})]\n    #[WithNamedAttribute(foo: static function (): void {})]\n    public function yes() {}\n}",
+                        "<?php class Foo {\n    #[WithRegularAttribute(static function (): void {})]\n    #[WithNamedAttribute(foo: static function (): void {})]\n    function yes() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closure in constant",
+                    "args": [
+                        "<?php class SomeClass\n{\n    public const \\Closure NULL = static function (mixed $v): bool {\n        return null === $v;\n    };\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closure as default argument",
+                    "args": [
+                        "<?php class SomeClass\n{\n    public function foo(callable $callback = static function(): void{}): array {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\ModifierKeywordsFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $expectedMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($expectedMessage);\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid type",
+                    "args": [
+                        {
+                            "elements": [
+                                null
+                            ]
+                        },
+                        "/^\\[modifier_keywords\\] Invalid configuration: The option \"elements\" .*\\.$/"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid value",
+                    "args": [
+                        {
+                            "elements": [
+                                "_unknown_"
+                            ]
+                        },
+                        "/^\\[modifier_keywords\\] Invalid configuration: The option \"elements\" .*\\.$/"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,76 @@
+{
+    "fixer": "no_trailing_whitespace_in_comment",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Comment\\NoTrailingWhitespaceInCommentFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Comment/NoTrailingWhitespaceInCommentFixerTest.php",
+    "case_count": 6,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Comment\\NoTrailingWhitespaceInCommentFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n        /*\n                //\n                //\n\n                //\n                //\n                //\n\n                //\n                //\n\n                //\n        */\n                ",
+                        "<?php\n        /*\n                //\n                //\n                \n                //\n                //\n                //\n                \n                //\n                //\n                \n                //\n        */\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    // This is\n    //\n    //\n    // multiline comment.\n    //",
+                        "<?php\n    // This is \n    // \n    //    \n    // multiline comment. \n    // "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    /*\n     * This is another\n     *\n     *\n     * multiline comment.\n     */",
+                        "<?php\n    /* \n     * This is another \n     * \n     * \n     * multiline comment. \n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n    /**\n     * Summary\n     *\n     *\n     * Description.\n     *\n     * @annotation\n     *  Foo\n     */",
+                        "<?php\n    /** \n     * Summary \n     * \n     * \n     * Description. \n     * \n     * @annotation \n     *  Foo \n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\r\n    /**\r\n     * Summary\r\n     *\r\n     * Description\r\n    */",
+                        "<?php\r\n    /**\r\n     * Summary\r\n     * \r\n     * Description\r\n    */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\r    /**\r     * Summary\r     *\r     * Description\r    */",
+                        "<?php\r    /**\r     * Summary\r     * \r     * Description\r    */"
+                    ]
+                }
+            ]
+        }
+    ]
+}

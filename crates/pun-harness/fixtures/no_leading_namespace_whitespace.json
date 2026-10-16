@@ -1,0 +1,195 @@
+{
+    "fixer": "no_leading_namespace_whitespace",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\NamespaceNotation\\NoLeadingNamespaceWhitespaceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/NamespaceNotation/NoLeadingNamespaceWhitespaceFixerTest.php",
+    "case_count": 19,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\NamespaceNotation\\NoLeadingNamespaceWhitespaceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nnamespace Test1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nnamespace Test2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nnamespace Test3;",
+                        "<?php\n namespace Test3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php namespace Test4;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php namespace Test5;",
+                        "<?php  namespace Test5;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nnamespace Test6a;\nnamespace Test6b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nnamespace Test7a;\n/* abc */\nnamespace Test7b;",
+                        "<?php\nnamespace Test7a;\n/* abc */namespace Test7b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nnamespace Test8a;\nnamespace Test8b;",
+                        "<?php\n namespace Test8a;\n    namespace Test8b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nnamespace Test9a;\nclass Test {}\nnamespace Test9b;",
+                        "<?php\n namespace Test9a;\nclass Test {}\n   namespace Test9b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nnamespace Test10a;\nuse Exception;\nnamespace Test10b;",
+                        "<?php\n namespace Test10a;\nuse Exception;\n   namespace Test10b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php namespace Test11a; namespace Test11b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php namespace Test12a; namespace Test12b;",
+                        "<?php    namespace Test12a;  namespace Test12b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php namespace Test13a; namespace Test13b;",
+                        "<?php namespace Test13a;  namespace Test13b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nnamespace Test14a{}\nnamespace Test14b{}",
+                        "<?php\n     namespace Test14a{}namespace Test14b{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nnamespace Test15a;\nnamespace Test15b;",
+                        "<?php\nnamespace Test15a;namespace Test15b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nnamespace Test1;\nnamespace Test2;\nnamespace Test3;\nnamespace Test4;\nnamespace Test5;\nnamespace Test6;\nnamespace Test7;\nnamespace Test8;\nnamespace Test9;\nnamespace Test10;\nnamespace Test11;\nnamespace Test12;\nnamespace Test13;\nnamespace Test14;\nnamespace Test15;\nnamespace Test16;\nnamespace Test17;\nnamespace Test18;\nnamespace Test19;\nnamespace Test20;\nnamespace Test21;\nnamespace Test22;\nnamespace Test23;\nnamespace Test24;\nnamespace Test25;\nnamespace Test26;\nnamespace Test27;\nnamespace Test28;\nnamespace Test29;\nnamespace Test30;\nnamespace Test31;\nnamespace Test32;\nnamespace Test33;\nnamespace Test34;\nnamespace Test35;\nnamespace Test36;\nnamespace Test37;\nnamespace Test38;\nnamespace Test39;\nnamespace Test40;\nnamespace Test41;\nnamespace Test42;\nnamespace Test43;\nnamespace Test44;\nnamespace Test45;\nnamespace Test46;\nnamespace Test47;\nnamespace Test48;\nnamespace Test49;\nnamespace Test50;\nnamespace Test51;\nnamespace Test52;\nnamespace Test53;\nnamespace Test54;\nnamespace Test55;\nnamespace Test56;\nnamespace Test57;\nnamespace Test58;\nnamespace Test59;\nnamespace Test60;\nnamespace Test61;\nnamespace Test62;\nnamespace Test63;\nnamespace Test64;\nnamespace Test65;\nnamespace Test66;\nnamespace Test67;\nnamespace Test68;\nnamespace Test69;\nnamespace Test70;\nnamespace Test71;\nnamespace Test72;\nnamespace Test73;\nnamespace Test74;\nnamespace Test75;\nnamespace Test76;\nnamespace Test77;\nnamespace Test78;\nnamespace Test79;\nnamespace Test80;\nnamespace Test81;\nnamespace Test82;\nnamespace Test83;\nnamespace Test84;\nnamespace Test85;\nnamespace Test86;\nnamespace Test87;\nnamespace Test88;\nnamespace Test89;\nnamespace Test90;\nnamespace Test91;\nnamespace Test92;\nnamespace Test93;\nnamespace Test94;\nnamespace Test95;\nnamespace Test96;\nnamespace Test97;\nnamespace Test98;\nnamespace Test99;\nnamespace Test100;",
+                        "<?php\nnamespace Test1;namespace Test2;namespace Test3;namespace Test4;namespace Test5;namespace Test6;namespace Test7;namespace Test8;namespace Test9;namespace Test10;namespace Test11;namespace Test12;namespace Test13;namespace Test14;namespace Test15;namespace Test16;namespace Test17;namespace Test18;namespace Test19;namespace Test20;namespace Test21;namespace Test22;namespace Test23;namespace Test24;namespace Test25;namespace Test26;namespace Test27;namespace Test28;namespace Test29;namespace Test30;namespace Test31;namespace Test32;namespace Test33;namespace Test34;namespace Test35;namespace Test36;namespace Test37;namespace Test38;namespace Test39;namespace Test40;namespace Test41;namespace Test42;namespace Test43;namespace Test44;namespace Test45;namespace Test46;namespace Test47;namespace Test48;namespace Test49;namespace Test50;namespace Test51;namespace Test52;namespace Test53;namespace Test54;namespace Test55;namespace Test56;namespace Test57;namespace Test58;namespace Test59;namespace Test60;namespace Test61;namespace Test62;namespace Test63;namespace Test64;namespace Test65;namespace Test66;namespace Test67;namespace Test68;namespace Test69;namespace Test70;namespace Test71;namespace Test72;namespace Test73;namespace Test74;namespace Test75;namespace Test76;namespace Test77;namespace Test78;namespace Test79;namespace Test80;namespace Test81;namespace Test82;namespace Test83;namespace Test84;namespace Test85;namespace Test86;namespace Test87;namespace Test88;namespace Test89;namespace Test90;namespace Test91;namespace Test92;namespace Test93;namespace Test94;namespace Test95;namespace Test96;namespace Test97;namespace Test98;namespace Test99;namespace Test100;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n#\nnamespace TestComment;",
+                        "<?php\n#\n  namespace TestComment;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\NamespaceNotation\\NoLeadingNamespaceWhitespaceFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\r\nnamespace TestW1a{}\r\nnamespace TestW1b{}",
+                        "<?php\r\n     namespace TestW1a{}\r\nnamespace TestW1b{}"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\r\nnamespace Test14a{}\r\nnamespace Test14b{}",
+                        "<?php\r\n     namespace Test14a{}namespace Test14b{}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,2732 @@
+{
+    "fixer": "binary_operator_spaces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\BinaryOperatorSpacesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/BinaryOperatorSpacesFixerTest.php",
+    "case_count": 234,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "exceptionExpression",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\BinaryOperatorSpacesFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $exceptionExpression): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($exceptionExpression);\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid option",
+                    "args": [
+                        {
+                            "foo": true
+                        },
+                        "/^\\[binary_operator_spaces\\] Invalid configuration: The option \"foo\" does not exist\\. Defined options are: \"default\", \"operators\"\\.$/"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "wrong config type for operators",
+                    "args": [
+                        {
+                            "operators": true
+                        },
+                        "/^\\[binary_operator_spaces\\] Invalid configuration: The option \"operators\" with value true is expected to be of type \"array\", but is of type \"(bool|boolean)\"\\.$/"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "wrong config type for operators key",
+                    "args": [
+                        {
+                            "operators": {
+                                "123": 1
+                            }
+                        },
+                        "/^\\[binary_operator_spaces\\] Invalid configuration: Unexpected \"operators\" key, expected any of \".*\", got \"integer#123\"\\.$/"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "wrong config type for operators value",
+                    "args": [
+                        {
+                            "operators": {
+                                "+": "abc"
+                            }
+                        },
+                        "/^\\[binary_operator_spaces\\] Invalid configuration: Unexpected value for operator \"\\+\", expected any of \".*\", got \"string#abc\"\\.$/"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\BinaryOperatorSpacesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php function myFunction() {\n\t$foo         = 1;\n\t$looooongVar = 2;\n\t$middleVar   = 1;\n}",
+                        "<?php function myFunction() {\n\t$foo= \t1;\n\t$looooongVar\t  = 2;\n\t$middleVar\t= 1;\n}",
+                        {
+                            "operators": {
+                                "=": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class A{\npublic function myFunction() {\n\t $foo         = 1;\n\t $looooongVar = 2;\n\t $middleVar   = 1;\n}\n}",
+                        "<?php class A{\npublic function myFunction() {\n\t $foo = 1;\n\t $looooongVar = 2;\n\t $middleVar = 1;\n}\n}",
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n$this->a\n = $this->b\n = 1\n;",
+                        "<?php\n$this->a\n= $this->b\n= 1\n;",
+                        {
+                            "operators": {
+                                "=": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n        $this->newName\n                = $this->path\n                = $this->randomName\n                = $this->remoteFile\n                = $this->tmpContent\n                = null;",
+                        "<?php\n        $this->newName\n                =     $this->path\n               =    $this->randomName\n              =   $this->remoteFile\n             =  $this->tmpContent\n            = null;",
+                        {
+                            "operators": {
+                                "=": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n$a//\n     = 1;\n                ",
+                        "<?php\n$a//\n     =  1;\n                ",
+                        {
+                            "operators": {
+                                "=": "single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    $a =  1;\n    $b = 2;\n            ",
+                        "<?php\n    $a =  1;\n    $b=2;\n            ",
+                        {
+                            "operators": {
+                                "=": "at_least_single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n    $var = [1 => 2];\n    foreach ([\n                1 => 2,\n                2 => 3,\n            ] as $k => $v) {\n        $var[] = [$i => $bar];\n    }",
+                        "<?php\n    $var = [1=>2];\n    foreach ([\n                1=> 2,\n                2   =>3,\n            ] as $k => $v) {\n        $var[] = [$i => $bar];\n    }",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a = array(\n                    1 => 2, 4 => 5,\n                    5 => 2, 6 => 5, 7 => 8, 9 => 10, 11 => 1222,\n                );",
+                        "<?php $a = array(\n                    1=>2, 4=>5,\n                    5=>2, 6 =>   5, 7=>8, 9=>10, 11=>1222,\n                );",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $a = array(1 => 2, 4 => 5);",
+                        "<?php $a = array(1=>2, 4  =>  5);",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $a = array(1 => 2, 4 => 5 && $b, 5 => 5 && $b, 6 => 5 && $b, 7 => 5 && $b);",
+                        "<?php $a = array(1 => 2, 4 => 5&&$b, 5 => 5  &&  $b, 6 => 5&&  $b, 7 => 5  &&$b);",
+                        {
+                            "operators": {
+                                "&&": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                    [1 =>   \"foo\"];\n                    [2    => \"foo\"];\n                    [3 => \"foo\"];\n                ",
+                        "<?php\n                    [1 =>   \"foo\"];\n                    [2    =>\"foo\"];\n                    [3=>\"foo\"];\n                ",
+                        {
+                            "operators": {
+                                "=>": "align_single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                    [1 => \"foo\"];\n                    [2 => \"foo\"];\n                    [3 => \"foo\"];\n                ",
+                        "<?php\n                    [1 =>   \"foo\"];\n                    [2    =>\"foo\"];\n                    [3=>\"foo\"];\n                ",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $a += 1;",
+                        "<?php $a+=1;",
+                        {
+                            "operators": {
+                                "+=": "align_single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $a += 1;",
+                        "<?php $a+=1;",
+                        {
+                            "operators": {
+                                "+=": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $a+=1;",
+                        null,
+                        {
+                            "operators": {
+                                "+=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n    $ade = $b !==   $a;\n    $b = $b   !==   $a;\n    $c = $b   !== $a;\n                ",
+                        "<?php\n    $ade = $b!==   $a;\n    $b = $b!==   $a;\n    $c = $b!==$a;\n                ",
+                        {
+                            "operators": {
+                                "!==": "align_single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n    $aab = $b !== $e;\n    $b = $b   !== $c;\n    $c = $b   !== $d;\n                ",
+                        "<?php\n    $aab = $b         !==$e;\n    $b = $b     !==$c;\n    $c = $b             !==$d;\n                ",
+                        {
+                            "operators": {
+                                "!==": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n    $aaa*= 11;\n    $b  *= 21;\n    $c  *=31;\n\n    $d = $e and $f;\n    $d = $g   or    $h;\n                ",
+                        "<?php\n    $aaa*= 11;\n    $b *= 21;\n    $c*=31;\n\n    $d = $e   and    $f;\n    $d = $g   or    $h;\n                ",
+                        {
+                            "operators": {
+                                "and": "single_space",
+                                "*=": "align",
+                                "or": null
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n    $abc = $b !== $a;\n    $b = $b   !== $a;\n    $c = $b   !== $a;\n                ",
+                        "<?php\n    $abc = $b         !==    $a;\n    $b = $b     !==     $a;\n    $c = $b             !==    $a;\n                ",
+                        {
+                            "operators": {
+                                "!==": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $a = [\n                    1 => 2,\n                    2 => 3,\n                ];",
+                        "<?php $a = [\n                    1=>2,\n                    2  =>   3,\n                ];",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n                    [1 => \"foo\",\n                     2 => \"foo\"];\n                ",
+                        "<?php\n                    [1 =>   \"foo\",\n                     2   => \"foo\"];\n                ",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n                    [1 => \"foo\"];\n                    $i += 1;\n                ",
+                        "<?php\n                    [1 => \"foo\"];\n                    $i+= 1;\n                ",
+                        {
+                            "operators": {
+                                "+=": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $a    =   1   +    2; $b = array(\n                    13 =>3,\n                    4  =>  3,\n                    5=>2,\n                );",
+                        null,
+                        {
+                            "default": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $a = 1 + 2; $b = array(\n                    $øøø => $ø0ø0ø,\n                    $ø4  => $ø1ø1ø,\n                    $ø5  => $ø2ø2ø,\n                );\n                $a = 12 + 1;\n                $a = 13 + 41;\n                ",
+                        "<?php $a    =   1   +    2; $b = array(\n                    $øøø =>$ø0ø0ø,\n                    $ø4  =>  $ø1ø1ø,\n                    $ø5=>$ø2ø2ø,\n                );\n                $a = 12   +  1;\n                $a = 13+41;\n                ",
+                        {
+                            "default": "align_single_space_minimal"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not align with nor touch strings",
+                    "args": [
+                        "<?php\n                    \\putenv(\"{$name}= {$value}\");\n                $b                     = $c + 1;\n                                    $b = $c - 1;\n                ",
+                        "<?php\n                    \\putenv(\"{$name}= {$value}\");\n                $b =$c+1;\n                                    $b =$c  -  1;\n                ",
+                        {
+                            "operators": {
+                                "=": "align_single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not align with declare",
+                    "args": [
+                        "<?php\n                    declare(ticks=1);\n                    $a = 1;\n                    $b = 1;\n                ",
+                        "<?php\n                    declare(ticks=1);\n                    $a   = 1;\n                    $b              = 1;\n                ",
+                        {
+                            "operators": {
+                                "=": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not align with multibyte character in array key",
+                    "args": [
+                        "<?php\n                    $map = [\n                        \"ø\" => \"oe\",\n                    ];\n                ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "align correctly with multibyte characters in array key",
+                    "args": [
+                        "<?php\n                    $inflect_male = array(\n                        \"aitė\\b\" => \"øasø\",\n                        \"ytė\\b\"  => \"øisø\",\n                        \"iūtė\\b\" => \"øiusø\",\n                        \"utė\\b\"  => array(\n                            \"aitė\\b\" => \"øas\",\n                            \"ytė\\b\"  => \"øis\",\n                            \"iūtė\\b\" => $øøius,\n                            \"utė\\b\"  => \"us\",\n                        ),\n                    );",
+                        "<?php\n                    $inflect_male = array(\n                        \"aitė\\b\" => \"øasø\",\n                        \"ytė\\b\" => \"øisø\",\n                        \"iūtė\\b\" => \"øiusø\",\n                        \"utė\\b\" => array(\n                            \"aitė\\b\" => \"øas\",\n                            \"ytė\\b\" => \"øis\",\n                            \"iūtė\\b\" => $øøius,\n                            \"utė\\b\"  =>     \"us\",\n                        ),\n                    );",
+                        {
+                            "operators": {
+                                "=>": "align_single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n                    $foo = 1+$bar;\n                ",
+                        "<?php\n                    $foo  =  1 + $bar;\n                ",
+                        {
+                            "default": "no_space",
+                            "operators": {
+                                "=": "single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                    $foo = 1    +    $bar|$a;\n                ",
+                        "<?php\n                    $foo  =  1    +    $bar | $a;\n                ",
+                        {
+                            "default": null,
+                            "operators": {
+                                "=": "single_space",
+                                "|": "no_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n                    $foo = $d #\n  |\n #\n$a|         // foo\n$b#\n   |$d;\n                ",
+                        "<?php\n                    $foo           = $d #\n  |\n #\n$a |         // foo\n$b#\n   | $d;\n                ",
+                        {
+                            "operators": {
+                                "|": "no_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php declare(strict_types=1);\n$a = 1;\necho 1 <=> 1;\necho 1 <=> 2;\necho 2 <=> 1;\necho 2 <=> 1;\n\n$a = $a  ?? $b;\n$a = $ab ?? $b;\n$a = $ac ?? $b;\n$a = $ad ?? $b;\n$a = $ae ?? $b;\n",
+                        "<?php declare(strict_types=1);\n$a = 1;\necho 1<=>1;\necho 1 <=>2;\necho 2<=> 1;\necho 2  <=>   1;\n\n$a = $a ?? $b;\n$a = $ab   ?? $b;\n$a = $ac    ?? $b;\n$a = $ad  ?? $b;\n$a = $ae?? $b;\n",
+                        {
+                            "operators": {
+                                "=": "align_single_space",
+                                "??": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "align array destructuring",
+                    "args": [
+                        "<?php\n                    $c                 = [$d] = $e[1];\n                    function A(){}[$a] = $a[$c];\n                    $b                 = 1;\n                ",
+                        "<?php\n                    $c = [$d] = $e[1];\n                    function A(){}[$a] = $a[$c];\n                    $b = 1;\n                ",
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "align array destructuring with assignments",
+                    "args": [
+                        "<?php\n                    $d = [\n                        \"a\" => $a,\n                        \"b\" => $b,\n                        \"c\" => $c\n                    ] = $array;\n                ",
+                        "<?php\n                    $d = [\n                        \"a\"=>$a,\n                        \"b\"   => $b,\n                        \"c\" =>   $c\n                    ] = $array;\n                ",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple exceptions catch, default config",
+                    "args": [
+                        "<?php try {} catch (A   |     B $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple exceptions catch, no space config",
+                    "args": [
+                        "<?php try {} catch (A   |     B $e) {}",
+                        null,
+                        {
+                            "operators": {
+                                "|": "no_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n                    $a = fn() => null;\n                    $b = fn() => null;\n                ",
+                        "<?php\n                    $a = fn()    =>      null;\n                    $b = fn()      =>  null;\n                ",
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $a ??= 1;",
+                        "<?php $a??=1;",
+                        {
+                            "operators": {
+                                "??=": "align_single_space"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n$array1 = [\n    '0ｶｷ'   => 1,\n    '123ｶｷ' => 2,\n    'ｶｷ'    => 3,\n    '鍵'    => 4,\n];\n$array2 = [\n    'あいうえお' => 1,\n    '10かきくけ' => 2,\n];",
+                        "<?php\n$array1 = [\n    '0ｶｷ' => 1,\n    '123ｶｷ' => 2,\n    'ｶｷ' => 3,\n    '鍵' => 4,\n];\n$array2 = [\n    'あいうえお' => 1,\n    '10かきくけ' => 2,\n];",
+                        {
+                            "default": "align_single_space"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php $a +      /** */\n                $b;",
+                        "<?php $a    +      /** */\n                $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php \n                    $a\n                    + $b\n                    + $d;\n                ;",
+                        "<?php \n                    $a\n                    +$b\n                    +  $d;\n                ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n                    $a\n               /***/ + $b\n            /***/   + $d;\n                ;",
+                        "<?php\n                    $a\n               /***/+   $b\n            /***/   +$d;\n                ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $a + $b;",
+                        "<?php $a+$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php 1 + $b;",
+                        "<?php 1+$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php 0.2 + $b;",
+                        "<?php 0.2+$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $a[1] + $b;",
+                        "<?php $a[1]+$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php FOO + $b;",
+                        "<?php FOO+$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php foo() + $b;",
+                        "<?php foo()+$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php ${\"foo\"} + $b;",
+                        "<?php ${\"foo\"}+$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php $a & $b;",
+                        "<?php $a&$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php $a &= $b;",
+                        "<?php $a&=$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php $a &= $b;",
+                        "<?php $a &=$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php $a &= $b;",
+                        "<?php $a&= $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php $a &= $b;",
+                        "<?php $a  &=   $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php $a &=\n$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php $a\n&= $b;",
+                        "<?php $a\n&=$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php (1) and 2;",
+                        "<?php (1)and 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php 1 or ($b - $c);",
+                        "<?php 1 or($b-$c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php \"a\" xor (2);",
+                        "<?php \"a\"xor(2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php $a * -$b;",
+                        "<?php $a*-$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php $a = -2 / +5;",
+                        "<?php $a=-2/+5;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php $a = &$b;",
+                        "<?php $a=&$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php $a++ + $b;",
+                        "<?php $a+++$b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php __LINE__ - 1;",
+                        "<?php __LINE__-1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php `echo 1` + 1;",
+                        "<?php `echo 1`+1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php function foo(&$a, array &$b, Bar &$c) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php $a = 1 //\n                    || 2;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php $a =\n                    2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php declare(ticks=1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php declare(ticks =  1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php $a = 1;declare(ticks =  1);$b = 1;",
+                        "<?php $a=1;declare(ticks =  1);$b=1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php $a = array(\"b\" => \"c\", );",
+                        "<?php $a = array(\"b\"=>\"c\", );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php $a = array(\"b\" => \"c\", );",
+                        "<?php $a = array(\"b\" =>\"c\", );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php $a = array(\"b\" => \"c\", );",
+                        "<?php $a = array(\"b\"=> \"c\", );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php [1, 2] + [3, 4];",
+                        "<?php [1, 2]+[3, 4];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php [1, 2] + [3, 4];",
+                        "<?php [1, 2]   +   [3, 4];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php [1, 2] + //   \n                [3, 4];",
+                        "<?php [1, 2]   + //   \n                [3, 4];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php $a = $b + $c;$a = $b + $c;$a = $b + $c;$a = $b + $c;$a = $b + $c;$a = $b + $c;$a = $b + $c;$a = $b + $c;",
+                        "<?php $a=$b+$c;$a=$b+$c;$a=$b+$c;$a=$b+$c;$a=$b+$c;$a=$b+$c;$a=$b+$c;$a=$b+$c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php\n$c =\n$a\n+\n$b;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<a href=\"test-<?=$path?>-<?=$id?>.html\">Test</a>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "reference in functions declarations",
+                    "args": [
+                        "<?php\n                function a(string &$x) { return $x + 1; };\n                $b = function (string &$x) { return $x + 1; };\n                $c = fn (string &$x) => $x + 1;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php $a = \"c\"?>",
+                        "<?php $a=\"c\"?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php $a = \"c\";",
+                        "<?php $a =\"c\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php $a = \"c\";",
+                        "<?php $a= \"c\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php $d = $c + $a/**/ +     //\n                $b;",
+                        "<?php $d =    $c+$a/**/+     //\n                $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php\n    $a = 1;\n    $bbbb = '\n    $cccccccc = 3;\n    ';",
+                        "<?php\n    $a    = 1;\n    $bbbb = '\n    $cccccccc = 3;\n    ';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php\n    $ccc = 1;\n    $bb = 1;\n    $a = 1;\n\n    /*\n    Others alignments\n     */\n    $a[$b = 1] = 1;\n    $ab[$bc = 1] = 1;\n    $abc[$bcd = 1] = 1;\n    $a[$b] = 1;\n    $ab[$bc] = 1;\n    $abc[$bcd] = 1;\n\n    if ($a = 1) {\n        $ccc = 1;\n        $bb = 1;\n        $a = 1;\n    }\n\n    function a($a = 1, $b = 2, $c = 3)\n    {\n        $a[$b = 1] = 1;\n        $ab[$bc = 1] = 1;\n        $abc[$bcd = 1] = 1;\n    }\n\n    function b(\n        $a = 1,\n        $bbb = 2,\n        $c = 3\n    ) {\n        $a[$b = 1] = 1;\n        $ab[$bc = 1] = 1;\n        $abc[$bcd = 1] = 1;\n    }\n\n    while (false) {\n        $aa = 2;\n        $a[$b] = array();\n    }\n\n    for ($i = 0; $i < 10; $i++) {\n        $aa = 2;\n        $a[$b] = array(12);\n    }",
+                        "<?php\n    $ccc = 1;\n    $bb  = 1;\n    $a   = 1;\n\n    /*\n    Others alignments\n     */\n    $a[$b = 1]     = 1;\n    $ab[$bc = 1]   = 1;\n    $abc[$bcd = 1] = 1;\n    $a[$b]         = 1;\n    $ab[$bc]       = 1;\n    $abc[$bcd]     = 1;\n\n    if ($a = 1) {\n        $ccc = 1;\n        $bb  = 1;\n        $a   = 1;\n    }\n\n    function a($a = 1, $b = 2, $c = 3)\n    {\n        $a[$b = 1]     = 1;\n        $ab[$bc = 1]   = 1;\n        $abc[$bcd = 1] = 1;\n    }\n\n    function b(\n        $a = 1,\n        $bbb = 2,\n        $c = 3\n    ) {\n        $a[$b = 1]     = 1;\n        $ab[$bc = 1]   = 1;\n        $abc[$bcd = 1] = 1;\n    }\n\n    while (false) {\n        $aa    = 2;\n        $a[$b] = array();\n    }\n\n    for ($i = 0; $i < 10; $i++) {\n        $aa    = 2;\n        $a[$b] = array(12);\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\" => \"Bar\",\n        \"main\" => array(\n            [\n                \"baz\" => \"Test\",\n                \"bazaa\" => $a->{\"Test\"},\n                \"bazaa\" => $a[\"Test\"],\n                \"bazaaaa\" => b(\"Test\"),\n            ]\n        ),\n        \"bar\" => array(),\n    ];",
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\n            [\n                \"baz\"     => \"Test\",\n                \"bazaa\"   => $a->{\"Test\"},\n                \"bazaa\"   => $a[\"Test\"],\n                \"bazaaaa\" => b(\"Test\"),\n            ]\n        ),\n        \"bar\"  => array(),\n    ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\" => \"Bar\",\n        \"main\" => [array(\"baz\" => \"Test\")],\n        \"bar\" => array(),\n    ];\n    $data = array(\n        \"foo\" => \"Bar\",\n        \"main\" => array(\"baz\" => \"Test\"),\n        \"bar\" => array(),\n    );\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = /* Comment */ [$i => $bar];\n    }",
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [array(\"baz\" => \"Test\")],\n        \"bar\"  => array(),\n    ];\n    $data = array(\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\"baz\" => \"Test\"),\n        \"bar\"  => array(),\n    );\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = /* Comment */ [$i => $bar];\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\" => \"Bar\",\n        \"main\" => [array(\"baz\" => \"Test\")],\n        \"bar\" => array(),\n    ];",
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [array(\"baz\" => \"Test\")],\n        \"bar\"  => array(),\n    ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php\n    $data = array(\n        \"foo\" => \"Bar\",\n        \"main\" => array(\"baz\" => \"Test\"),\n        \"bar\" => array(),\n    );",
+                        "<?php\n    $data = array(\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\"baz\" => \"Test\"),\n        \"bar\"  => array(),\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php\n    $data = array(\n        \"foo\" => \"Bar\",\n        \"main\" => array(array(\"baz\" => \"Test\")),\n        \"bar\" => array(),\n    );",
+                        "<?php\n    $data = array(\n        \"foo\"  => \"Bar\",\n        \"main\" => array(array(\"baz\" => \"Test\")),\n        \"bar\"  => array(),\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = /* Comment */ [$i => $bar];\n    }",
+                        "<?php\n    $var = [];\n    foreach ($foo as $i  =>  $bar) {\n        $var[] = /* Comment */ [$i  =>  $bar];\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = [$i => $bar];\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ([1 => 2] as $k => $v) {\n        $var[] = [$i => $bar];\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach (fncCall() as $k => $v){\n        $var[] = [$i => $bar];\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ($foo as $bar) {\n        $var[] = [\n            $i => $bar,\n            $iaaa => $bar,\n        ];\n    }",
+                        "<?php\n    $var = [];\n    foreach ($foo as $bar) {\n        $var[] = [\n            $i    => $bar,\n            $iaaa => $bar,\n        ];\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 88,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\" => \"Bar\",\n        \"main\" => [[\"baz\" => \"Test\", \"bar\" => \"Test2\"]],\n        \"bar\" => [],\n    ];",
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [[\"baz\" => \"Test\", \"bar\" => \"Test2\"]],\n        \"bar\"  => [],\n    ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 89,
+                    "args": [
+                        "<?php\n    $a = [\n        0 => 1,\n        10 /*Comment*/ => [\n            1 => 2,\n            22 => 3,\n        ],\n        100 => [\n            1 => 2,\n            22 => 3,\n        ]\n    ];",
+                        "<?php\n    $a = [\n        0  => 1,\n        10 /*Comment*/ => [\n            1  => 2,\n            22 => 3,\n        ],\n        100 => [\n            1  => 2,\n            22 => 3,\n        ]\n    ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 90,
+                    "args": [
+                        "<?php\n    $a = array(\n        0 => 1,\n        10 => array(\n            1 => 2,\n            22 => 3,\n        ),\n        100 => array(\n            1 => 2,\n            22 => 3,\n        )\n    );",
+                        "<?php\n    $a = array(\n        0  => 1,\n        10 => array(\n            1  => 2,\n            22 => 3,\n        ),\n        100 => array(\n            1  => 2,\n            22 => 3,\n        )\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 91,
+                    "args": [
+                        "<?php\n    $arr = array(\n        $a => 1,\n        $bbbb => '\n        $cccccccc = 3;\n        ',\n    );",
+                        "<?php\n    $arr = array(\n        $a    => 1,\n        $bbbb => '\n        $cccccccc = 3;\n        ',\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 92,
+                    "args": [
+                        "<?php\n    $arr = [\n        $a => 1,\n        $bbbb => '\n        $cccccccc = 3;\n        ',\n    ];",
+                        "<?php\n    $arr = [\n        $a    => 1,\n        $bbbb => '\n        $cccccccc = 3;\n        ',\n    ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 93,
+                    "args": [
+                        "<?php\n    foreach($arr as $k => $v){\n        $arr = array($k => 1,\n            $a => 1,\n            $bbbb => '\n            $cccccccc = 3;\n            ',\n        );\n    }",
+                        "<?php\n    foreach($arr as $k => $v){\n        $arr = array($k => 1,\n            $a          => 1,\n            $bbbb       => '\n            $cccccccc = 3;\n            ',\n        );\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 94,
+                    "args": [
+                        "<?php\n    $a = array(\n        10 => 11,\n        20 => 22,\n        30 => 33,\n        40\n            =>\n                44,\n    );",
+                        "<?php\n    $a = array(\n        10    => 11,\n        20    => 22,\n        30=>33,\n        40\n            =>\n                44,\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 95,
+                    "args": [
+                        "<?php\n    return array(\n        \" \" => \"\",    \"\\t\" => \"\",\n        \"\\n\" => \"\", \"\\r\" => \"\",\n        \"\\0\" => \"\", \"\\x0B\" => \"\",\n    );",
+                        "<?php\n    return array(\n        \" \"   => \"\",    \"\\t\"    => \"\",\n        \"\\n\"   => \"\", \"\\r\"   => \"\",\n        \"\\0\"  => \"\", \"\\x0B\"    => \"\",\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 96,
+                    "args": [
+                        "<?php\n    return $this->grabAttribsBeforeToken(\n        $tokens,\n        $index,\n        $tokenAttribsMap,\n        array(\n            \"abstract\" => null,\n            \"final\" => null,\n            \"visibility\" => new Token(array(T_PUBLIC, \"public\")),\n            \"static\" => null,\n        )\n    );",
+                        "<?php\n    return $this->grabAttribsBeforeToken(\n        $tokens,\n        $index,\n        $tokenAttribsMap,\n        array(\n            \"abstract\"   => null,\n            \"final\"      => null,\n            \"visibility\" => new Token(array(T_PUBLIC, \"public\")),\n            \"static\"     => null,\n        )\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 97,
+                    "args": [
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_0 => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_0 => array(\"symbol\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_0 => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_0    => array(\"symbol\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 98,
+                    "args": [
+                        "<?php\n    $array = array(\n        \"bazab\" => b(array(\n            1 => 2,\n            5 => [\n                6 => 7,\n                8 => 9,\n            ],\n            3 => 4,\n            10 => 11,\n        )),\n    );",
+                        "<?php\n    $array = array(\n        \"bazab\" => b(array(\n            1 => 2,\n            5     => [\n                6 => 7,\n                8     => 9,\n            ],\n            3    => 4,\n            10      => 11,\n        )),\n    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 99,
+                    "args": [
+                        "<?php\n    Foo::test()->aaa(array(1 => 2))->bbb(\"a\", \"b\");\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 100,
+                    "args": [
+                        "<?php\n    function foo() {\n        yield 1 => 2;\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 101,
+                    "args": [
+                        "<?php\n    $a    = 1;\n    $bbbb = '\n    $ddcccccc1 = 3;\n    ';",
+                        "<?php\n    $a = 1;\n    $bbbb = '\n    $ddcccccc1 = 3;\n    ';",
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 102,
+                    "args": [
+                        "<?php\n    $ccc = 1;\n    $bb  = 1;\n    $a   = 1;\n\n    /*\n    Others alignments\n     */\n    $a[$b = 1]     = 1;\n    $ab[$bc = 1]   = 1;\n    $abc[$bcd = 1] = 1;\n    $a[$b]         = 1;\n    $ab[$bc]       = 1;\n    $abc[$bcd]     = 1;\n\n    if ($a = 1) {\n        $ccc = 1;\n        $bb  = 1;\n        $a   = 1;\n    }\n\n    function a($a = 1, $b = 2, $c = 3)\n    {\n        $a[$b = 1]     = 1;\n        $ab[$bc = 1]   = 1;\n        $abc[$bcd = 1] = 1;\n    }\n\n    function b(\n        $a = 1,\n        $bbb = 2,\n        $c = 3\n    ) {\n        $a[$b = 1]     = 1;\n        $ab[$bc = 1]   = 1;\n        $abc[$bcd = 1] = 1;\n    }\n\n    while ($i = 1) {\n        $aa    = 2;\n        $a[$b] = array();\n    }\n\n    for ($i = 0; $i < 10; $i++) {\n        $aa    = 2;\n        $a[$b] = array();\n    }\n\n    $z = 1;\n    switch($a = 0) {\n        case 1:\n            $b  = 1;\n            $cc = 3;\n        break;\n    }\n\n    foreach ($a as $b) {\n        $aa    = 2;\n        $a[$b] = array();\n    }\n\n    do {\n        $aa    = 23;\n        $a[$b] = array(66);\n    } while ($i = 1);\n    $a = 3;\n    ",
+                        "<?php\n    $ccc = 1;\n    $bb = 1;\n    $a = 1;\n\n    /*\n    Others alignments\n     */\n    $a[$b = 1] = 1;\n    $ab[$bc = 1] = 1;\n    $abc[$bcd = 1] = 1;\n    $a[$b] = 1;\n    $ab[$bc] = 1;\n    $abc[$bcd] = 1;\n\n    if ($a = 1) {\n        $ccc = 1;\n        $bb = 1;\n        $a = 1;\n    }\n\n    function a($a = 1, $b = 2, $c = 3)\n    {\n        $a[$b = 1] = 1;\n        $ab[$bc = 1] = 1;\n        $abc[$bcd = 1] = 1;\n    }\n\n    function b(\n        $a = 1,\n        $bbb = 2,\n        $c = 3\n    ) {\n        $a[$b = 1] = 1;\n        $ab[$bc = 1] = 1;\n        $abc[$bcd = 1] = 1;\n    }\n\n    while ($i = 1) {\n        $aa = 2;\n        $a[$b] = array();\n    }\n\n    for ($i = 0; $i < 10; $i++) {\n        $aa = 2;\n        $a[$b] = array();\n    }\n\n    $z = 1;\n    switch($a = 0) {\n        case 1:\n            $b = 1;\n            $cc = 3;\n        break;\n    }\n\n    foreach ($a as $b) {\n        $aa    = 2;\n        $a[$b] = array();\n    }\n\n    do {\n        $aa = 23;\n        $a[$b] = array(66);\n    } while ($i = 1);\n    $a = 3;\n    ",
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 103,
+                    "args": [
+                        "<?php\nm(\n    function ()\n    {\n        $d[\"a\"]   = 1;\n        $d[\"abc\"] = 2;\n    }\n);\n",
+                        "<?php\nm(\n    function ()\n    {\n        $d[\"a\"] = 1;\n        $d[\"abc\"] = 2;\n    }\n);\n",
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 104,
+                    "args": [
+                        "<?php\n\nclass TaskObjectType\n{\n    public function configureOptions(OptionsResolver $resolver): void\n    {\n        $resolver->setDefaults(\n            [\n                \"choices\" => function (Options $options) {\n                    $choices   = TaskService::getFormMapperObjectList();\n                    $element   = null;\n                    $elementId = null;\n\n                    if (isset($options[\"task\"]) && $options[\"task\"]->getElement() === 42) {\n                        $element   = $options[\"task\"]->getElement();\n                        $elementId = $options[\"task\"]->getElementId();\n                    } elseif (isset($options[\"elementId\"], $options[\"element\"]) && $options[\"element\"] === 42) {\n                        $element   = $options[\"element\"];\n                        $elementId = $options[\"elementId\"];\n                    };\n                },\n            ]\n        );\n    }\n}\n",
+                        "<?php\n\nclass TaskObjectType\n{\n    public function configureOptions(OptionsResolver $resolver): void\n    {\n        $resolver->setDefaults(\n            [\n                \"choices\" => function (Options $options) {\n                    $choices = TaskService::getFormMapperObjectList();\n                    $element = null;\n                    $elementId = null;\n\n                    if (isset($options[\"task\"]) && $options[\"task\"]->getElement() === 42) {\n                        $element = $options[\"task\"]->getElement();\n                        $elementId = $options[\"task\"]->getElementId();\n                    } elseif (isset($options[\"elementId\"], $options[\"element\"]) && $options[\"element\"] === 42) {\n                        $element = $options[\"element\"];\n                        $elementId = $options[\"elementId\"];\n                    };\n                },\n            ]\n        );\n    }\n}\n",
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 105,
+                    "args": [
+                        "<?php\nfn ($x = 1) => $x + 3;\n$f = 123;\n",
+                        null,
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 106,
+                    "args": [
+                        "<?php\nif (($c = count($array)) > 100) {\n    $_data = '100+';\n} elseif (($c = count($array)) > 0) {\n    $_data = '0+';\n}\n",
+                        null,
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 107,
+                    "args": [
+                        "<?php\nif (($c = count($array)) > 100) {\n    $closure = fn ($x = 1) => $x + 3;\n} elseif (($c = count($array)) > 0) {\n    $closure = fn ($x = 1) => $x ** 3;\n}\n",
+                        null,
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 108,
+                    "args": [
+                        "<?php\n$suppliersTitles          = $container->getContainerSuppliers()->map(fn (ContainerSupplier $containerSupplier) => $containerSupplier->getSupplier()->getTitle());\n$suppliersClassifications = $container->getContainerSuppliers()->map(fn (ContainerSupplier $containerSupplier) => $containerSupplier->getSupplier()->getClassification());\n",
+                        "<?php\n$suppliersTitles = $container->getContainerSuppliers()->map(fn (ContainerSupplier $containerSupplier) => $containerSupplier->getSupplier()->getTitle());\n$suppliersClassifications = $container->getContainerSuppliers()->map(fn (ContainerSupplier $containerSupplier) => $containerSupplier->getSupplier()->getClassification());\n",
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 109,
+                    "args": [
+                        "<?php\n$a              = [$s = 5, $d => 5, $c => 9,];\n$ab             = [$bc = 1];\n$someOtherArray = [$bcd = 1];\n$a              = [$b];\n$ab             = [$bc];\n$abc            = [$bcd];\n",
+                        "<?php\n$a = [$s = 5, $d => 5, $c => 9,];\n$ab = [$bc = 1];\n$someOtherArray = [$bcd = 1];\n$a = [$b];\n$ab = [$bc];\n$abc = [$bcd];\n",
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 110,
+                    "args": [
+                        "<?php\n$result = false;\n\n$callback = static function () use (&$result) {\n    $result = true;\n};\n\n$this->query = $this->db->prepare(static function ($db) {\n   $sql = \"INSERT INTO {$db->protectIdentifiers($db->DBPrefix)} (\"\n          . $db->protectIdentifiers(\"name\") . \", \"\n          . $db->protectIdentifiers(\"email\") . \", \"\n          . $db->protectIdentifiers(\"country\");\n});\n\n$classSet = Closure::bind(function ($key, $value) {\n    $this->{$key} = $value;\n}, $classObj, $className);\n",
+                        null,
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 111,
+                    "args": [
+                        "<?php\n$obj = new class() extends SomeClass {\n    public $someProperty = null;\n};\n",
+                        null,
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 112,
+                    "args": [
+                        "<?php\n$fabricator->setOverrides([\"first\" => \"Bobby\"], $persist = false);\n$bobbyUser = $fabricator->make();\n$bobbyUser = $fabricator->make();\n",
+                        null,
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 113,
+                    "args": [
+                        "<?php\n$a = 1; if (true) {\n$bbb = 1;\n}\n",
+                        null,
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 114,
+                    "args": [
+                        "<?php\n$fabricator->setOverrides(\n[\"first\" => \"Bobby\"], $persist = false);\n$fabricator->setOverrides([\"first\" => \"Bobby\"], $persist = false\n);\n",
+                        null,
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 115,
+                    "args": [
+                        "<?php\n$start = (\n    $input[\"start\"] !== \"\" && ($date = DateTime::parse($input[\"start\"]))\n        ? $date->setTimezone(\"UTC\")\n        : $date->setTimezone(\"Europe/London\")\n);\n",
+                        null,
+                        {
+                            "operators": {
+                                "=": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 116,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case \"prod\":\n                        break;\n                }\n                ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 117,
+                    "args": [
+                        "<?php\n    $array = array(\n        \"closure\" => function ($param1, $param2) {\n            return;\n        }\n    );",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 118,
+                    "args": [
+                        "<?php\n    return new JsonResponse(array(\n        \"result\" => \"OK\",\n        \"html\"   => 1, /**/array(\n            \"foo\"    => \"bar\",\n            \"foofoo\" => array(\n                \"a\"  => 1,\n                \"b\"  => 2\n            )\n        ),)\n    );",
+                        "<?php\n    return new JsonResponse(array(\n        \"result\" => \"OK\",\n        \"html\" => 1, /**/array(\n            \"foo\" => \"bar\",\n            \"foofoo\" => array(\n                \"a\" => 1,\n                \"b\"  =>  2\n            )\n        ),)\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 119,
+                    "args": [
+                        "<?php\n    return new JsonResponse([\n        \"result\" => \"OK\",\n        \"html\"   => renderView(\"views/my_view.html.twig\", array(\n            \"foo\"    => \"bar\",\n            \"foofoo\" => 43,\n        )),\n    ]);",
+                        "<?php\n    return new JsonResponse([\n        \"result\" => \"OK\",\n        \"html\" =>    renderView(\"views/my_view.html.twig\", array(\n            \"foo\" => \"bar\",\n            \"foofoo\" => 43,\n        )),\n    ]);",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 120,
+                    "args": [
+                        "<?php\n    return new JsonResponse([\n        \"result\" => \"OK\",\n        \"html\"   => renderView(\"views/my_view.html.twig\", [\n            \"foo\"    => \"bar\",\n            \"foofoo\" => 42,\n        ]),\n        \"baz\" => \"OK\",\n    ]);",
+                        "<?php\n    return new JsonResponse([\n        \"result\" => \"OK\",\n        \"html\" =>    renderView(\"views/my_view.html.twig\", [\n            \"foo\" =>   \"bar\",\n            \"foofoo\" =>    42,\n        ]),\n        \"baz\" => \"OK\",\n    ]);",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 121,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\n            [\n                \"baz\"     => \"Test\",\n                \"bazaa\"   => $a->{\"Test\"},\n                \"bazaa\"   => $a[\"Test\"],\n                \"bazaaaa\" => b(\"Test\"),\n            ]\n        ),\n        \"bar\"  => array(),\n    ];",
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\n            [\n                \"baz\" => \"Test\",\n                \"bazaa\" => $a->{\"Test\"},\n                \"bazaa\" => $a[\"Test\"],\n                \"bazaaaa\" => b(\"Test\"),\n            ]\n        ),\n        \"bar\"  => array(),\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 122,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [array(\"baz\" => \"Test\")],\n        \"bar\"  => array(),\n    ];\n    $data = array(\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\"baz\" => \"Test\"),\n        \"bar\"  => array(),\n    );\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = /* Comment */ [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 123,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [array(\"baz\" => \"Test\")],\n        \"bar\"  => array(),\n    ];",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 124,
+                    "args": [
+                        "<?php\n    $data = array(\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\"baz\" => \"Test\"),\n        \"bar\"  => array(),\n    );",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 125,
+                    "args": [
+                        "<?php\n    $data = array(\n        \"foo\"  => \"Bar\",\n        \"main\" => array(array(\"baz\" => \"Test\")),\n        \"bar\"  => array(),\n    );",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 126,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = /* Comment */ [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 127,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 128,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ([1 => 2] as $k => $v) {\n        $var[] = [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 129,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach (fncCall() as $k => $v){\n        $var[] = [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 130,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ($foo as $bar) {\n        $var[] = [\n            $i    => $bar,\n            $iaaa => $bar,\n        ];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 131,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [[\"baz\" => \"Test\", \"bar\" => \"Test2\"]],\n        \"bar\"  => [],\n    ];",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 132,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [\"baz\" => \"Test\"],\n        \"bar\"  => [],\n    ];",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 133,
+                    "args": [
+                        "<?php\n    $a = [\n        0              => 1,\n        10 /*Comment*/ => [\n            1  => 2,\n            22 => 3,\n        ],\n        100 => [\n            1  => 2,\n            22 => 3,\n        ]\n    ];",
+                        "<?php\n    $a = [\n        0  => 1,\n        10 /*Comment*/ => [\n            1  => 2,\n            22 => 3,\n        ],\n        100 => [\n            1  => 2,\n            22 => 3,\n        ]\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 134,
+                    "args": [
+                        "<?php\n    $a = array(\n        0   => 1,\n        10  => array(\n            1  => 2,\n            22 => 3,\n        ),\n        100 => array(\n            1  => 2,\n            22 => 3,\n        )\n    );",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 135,
+                    "args": [
+                        "<?php\n    $arr = array(\n        $a    => 1,\n        $bbbb => '\n        $cccccccc2 = 3;\n        ',\n    );",
+                        "<?php\n    $arr = array(\n        $a => 1,\n        $bbbb => '\n        $cccccccc2 = 3;\n        ',\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 136,
+                    "args": [
+                        "<?php\n    $arr = [\n        $a    => 1,\n        $bbbb => '\n        $cccccccc3 = 3;\n        ',\n    ];",
+                        "<?php\n    $arr = [\n        $a => 1,\n        $bbbb => '\n        $cccccccc3 = 3;\n        ',\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 137,
+                    "args": [
+                        "<?php\n    foreach($arr as $k => $v){\n        $arr = array($k => 1,\n            $a          => 1,\n            $bbbb       => '\n            $cccccccc4 = 3;\n            ',\n        );\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 138,
+                    "args": [
+                        "<?php\n    $a = array(\n        10    => 11,\n        20    => 22,\n        30    => 33,\n        40\n            =>\n                44,\n    );",
+                        "<?php\n    $a = array(\n        10    =>    11,\n        20  =>    22,\n        30=>33,\n        40\n            =>\n                44,\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 139,
+                    "args": [
+                        "<?php\n    return array(\n        \" \"    => \"\",    \"\\t\"    => \"\",\n        \"\\n\"   => \"\", \"\\r\"   => \"\",\n        \"\\0\"   => \"\", \"\\x0B\"    => \"\",\n    );",
+                        "<?php\n    return array(\n        \" \"   => \"\",    \"\\t\"    => \"\",\n        \"\\n\"   => \"\", \"\\r\"   => \"\",\n        \"\\0\"  => \"\", \"\\x0B\"    => \"\",\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 140,
+                    "args": [
+                        "<?php\n    return $this->grabAttribsBeforeToken(\n        $tokens,\n        $index,\n        $tokenAttribsMap,\n        array(\n            \"abstract\"   => null,\n            \"final\"      => null,\n            \"visibility\" => new Token(array(T_PUBLIC, \"public\")),\n            \"static\"     => null,\n        )\n    );",
+                        "<?php\n    return $this->grabAttribsBeforeToken(\n        $tokens,\n        $index,\n        $tokenAttribsMap,\n        array(\n            \"abstract\" => null,\n            \"final\" => null,\n            \"visibility\" => new Token(array(T_PUBLIC, \"public\")),\n            \"static\" => null,\n        )\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 141,
+                    "args": [
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_1    => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_1    => array(\"symbol\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_1 => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_1    => array(\"symbol\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 142,
+                    "args": [
+                        "<?php\n    $array = array(\n        \"bazab\" => b(array(\n            1     => 2,\n            5     => [\n                6     => 7,\n                8     => 9,\n            ],\n            3       => 4,\n            10      => 11,\n        )),\n    );",
+                        "<?php\n    $array = array(\n        \"bazab\" => b(array(\n            1 => 2,\n            5     => [\n                6 => 7,\n                8     => 9,\n            ],\n            3    => 4,\n            10      => 11,\n        )),\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 143,
+                    "args": [
+                        "<?php\n    Foo::test()->aaa(array(1 => 2))->bbb(\"a\", \"b\");\n",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 144,
+                    "args": [
+                        "<?php\n    $inflect_male = array(\n        \"aitė\\b\" => \"as\",\n        \"ytė\\b\"  => \"is\",\n        \"iūtė\\b\" => \"ius\",\n        \"utė\\b\"  => \"us\",\n    );",
+                        "<?php\n    $inflect_male = array(\n        \"aitė\\b\" => \"as\",\n        \"ytė\\b\" => \"is\",\n        \"iūtė\\b\" => \"ius\",\n        \"utė\\b\" => \"us\",\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 145,
+                    "args": [
+                        "<?php\n                $formMapper\n                    ->add('foo', null, ['required' => false])\n                    ->add('dummy_field', null, ['required' => false])\n                ;\n                ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 146,
+                    "args": [
+                        "<?php\n                $formMapper\n                    ->add('foo', null, array('required' => false))\n                    ->add('dummy_field', null, array('required' => false))\n                ;\n                ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 147,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy([\"server1\" => $object], [\"addedAt\" => \"DESC\"], 5);\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy([\"server2\" => $object], [\"checkedAt\" => \"desc\"], 50);\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 148,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy(array(\"server1\" => $object), array(\"addedAt\" => \"DESC\"), 5);\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy(array(\"server2\" => $object), array(\"checkedAt\" => \"desc\"), 50);\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 149,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy($foo[123]);\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy($foo[123]);\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 150,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy([1, 2, 3]);\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy([1, 2, 3]);\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 151,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy((1 + 2));\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy((1 + 2));\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 152,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy(array(1, 2));\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy(array(1, 2));\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 153,
+                    "args": [
+                        "<?php\n\n    function foo() {}\n\n    $bar = 42;\n\n    $foo = [\n        \"test123\" => \"foo\",\n        \"foo\"     => $bar[123],\n        \"a\"       => foo(),\n        \"b\"       => 1,\n    ];\n    ",
+                        "<?php\n\n    function foo() {}\n\n    $bar = 42;\n\n    $foo = [\n        \"test123\" => \"foo\",\n        \"foo\" => $bar[123],\n        \"a\" => foo(),\n        \"b\" => 1,\n    ];\n    ",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 154,
+                    "args": [
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_2    => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_2    => array(\"symbol123\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_2 => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_2    => array(\"symbol123\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 155,
+                    "args": [
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_3    => array((1 + 11)=> \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_3    => array((2 + 3)=> \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_3 => array((1+11)=> \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_3    => array((2+3)=> \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 156,
+                    "args": [
+                        "<?php\n    return [\n        self::STATUS_UNKNOWN_4    => [\"symbol\" => \"?\", \"description\" => \"unknown\"],\n        self::STATUS_INVALID_4    => [\"symbol123\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"],\n    ];",
+                        "<?php\n    return [\n        self::STATUS_UNKNOWN_4 => [\"symbol\" => \"?\", \"description\" => \"unknown\"],\n        self::STATUS_INVALID_4    => [\"symbol123\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"],\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 157,
+                    "args": [
+                        "<?php\n    return [\n        self::STATUS_UNKNOWN_7    => [(1 + 11)=> \"?\", \"description\" => \"unknown\"],\n        self::STATUS_INVALID_7    => [(2 + 3)=> \"III\", \"description\" => \"invalid file syntax, file ignored\"],\n    ];",
+                        "<?php\n    return [\n        self::STATUS_UNKNOWN_7 => [(1+11)=> \"?\", \"description\" => \"unknown\"],\n        self::STATUS_INVALID_7    => [(2+3)=> \"III\", \"description\" => \"invalid file syntax, file ignored\"],\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 158,
+                    "args": [
+                        "<?php\n$b = [1 => function() {\n    foreach([$a => 2] as $b) {\n        $bv = [\n            $b  => 2,\n            $cc => 3,\n        ];\n    }}, 2 => 3];\n",
+                        "<?php\n$b = [1 => function() {\n    foreach([$a => 2] as $b) {\n        $bv = [\n            $b => 2,\n            $cc => 3,\n        ];\n    }}, 2 => 3];\n",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 159,
+                    "args": [
+                        "<?php\nfunction asd() {\n      return [\n          \"this\"    => fn () => false,\n          \"is\"      => fn () => false,\n          \"an\"      => fn () => false,\n          \"example\" => fn () => false,\n          \"array\"   => fn () => false,\n      ];\n}\n",
+                        "<?php\nfunction asd() {\n      return [\n          \"this\" => fn () => false,\n          \"is\" => fn () => false,\n          \"an\" => fn () => false,\n          \"example\" => fn () => false,\n          \"array\" => fn () => false,\n      ];\n}\n",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 160,
+                    "args": [
+                        "<?php\ncollect()\n    ->map(fn ($arg) => [])\n    ->keyBy(fn ($arg) => []);\n",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 161,
+                    "args": [
+                        "<?php\nif ($this->save([\n    \"bar\"       => \"baz\",\n    \"barbarbar\" => \"baz\",\n])) {\n    // Do the work\n}\n",
+                        "<?php\nif ($this->save([\n    \"bar\" => \"baz\",\n    \"barbarbar\" => \"baz\",\n])) {\n    // Do the work\n}\n",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 162,
+                    "args": [
+                        "<?php\nclass test\n{\n    public function __construct()\n    {\n        $result = $this->test1(fn () => $this->test2($a));\n        foreach ($result as $k => $v)\n        {\n        }\n\n        $result = $this->test1(fn () => $this->test2($a, $b));\n        foreach ($result as $k => $v)\n        {\n        }\n    }\n}\n",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 163,
+                    "args": [
+                        "<?php\n$array = [\n    \"foo\"     => 123,\n    \"longkey\" => \"test\",\n    \"baz\"     => fn () => \"value\",\n];\n",
+                        "<?php\n$array = [\n    \"foo\" => 123,\n    \"longkey\" => \"test\",\n    \"baz\" => fn () => \"value\",\n];\n",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 164,
+                    "args": [
+                        "<?php\nfunction foo () {\n    $this->query = $this->db->prepare(static fn ($db) => $db->table(\"user\")->insert([\n        \"name\"    => \"a\",\n        \"email\"   => \"b@example.com\",\n        \"country\" => \"JP\",\n    ]));\n\n    foreach ($data as $name => $array) {\n        foreach ($array as $field => $value) {\n            yield $type => $case;\n        }\n    }\n}\n",
+                        "<?php\nfunction foo () {\n    $this->query = $this->db->prepare(static fn ($db) => $db->table(\"user\")->insert([\n        \"name\" => \"a\",\n        \"email\" => \"b@example.com\",\n        \"country\" => \"JP\",\n    ]));\n\n    foreach ($data as $name => $array) {\n        foreach ($array as $field => $value) {\n            yield $type => $case;\n        }\n    }\n}\n",
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 165,
+                    "args": [
+                        "<?php\nfunction test()\n{\n    yield \"null customer\" => [\n        \"expected\"    => null,\n        \"ourCustomer\" => null,\n    ];\n    yield \"no underlying user\" => [\n        \"expected\"    => null,\n        \"ourCustomer\" => Customer::seed(),\n    ];\n}\n                ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 166,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case \"prod\":\n                        break;\n                }\n                ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 167,
+                    "args": [
+                        "<?php\n    $array = array(\n        \"closure\" => function ($param1, $param2) {\n            return;\n        }\n    );",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 168,
+                    "args": [
+                        "<?php\n    return new JsonResponse(array(\n        \"result\" => \"OK\",\n        \"html\"   => 1, /**/array(\n            \"foo\"    => \"bar\",\n            \"foofoo\" => array(\n                \"a\"  => 1,\n                \"b\"  => 2\n            )\n        ),)\n    );",
+                        "<?php\n    return new JsonResponse(array(\n        \"result\" => \"OK\",\n        \"html\" => 1, /**/array(\n            \"foo\" => \"bar\",\n            \"foofoo\" => array(\n                \"a\" => 1,\n                \"b\"  =>  2\n            )\n        ),)\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 169,
+                    "args": [
+                        "<?php\n    return new JsonResponse([\n        \"result\" => \"OK\",\n        \"html\"   => renderView(\"views/my_view.html.twig\", array(\n            \"foo\"    => \"bar\",\n            \"foofoo\" => 43,\n        )),\n    ]);",
+                        "<?php\n    return new JsonResponse([\n        \"result\" => \"OK\",\n        \"html\" =>    renderView(\"views/my_view.html.twig\", array(\n            \"foo\" => \"bar\",\n            \"foofoo\" => 43,\n        )),\n    ]);",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 170,
+                    "args": [
+                        "<?php\n    return new JsonResponse([\n        \"result\" => \"OK\",\n        \"html\"   => renderView(\"views/my_view.html.twig\", [\n            \"foo\"    => \"bar\",\n            \"foofoo\" => 42,\n        ]),\n        \"baz\"    => \"OK\",\n    ]);",
+                        "<?php\n    return new JsonResponse([\n        \"result\" => \"OK\",\n        \"html\" =>    renderView(\"views/my_view.html.twig\", [\n            \"foo\" =>   \"bar\",\n            \"foofoo\" =>    42,\n        ]),\n        \"baz\" => \"OK\",\n    ]);",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 171,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\n            [\n                \"baz\"     => \"Test\",\n                \"bazaa\"   => $a->{\"Test\"},\n                \"bazaa\"   => $a[\"Test\"],\n                \"bazaaaa\" => b(\"Test\"),\n            ]\n        ),\n        \"bar\"  => array(),\n    ];",
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\n            [\n                \"baz\" => \"Test\",\n                \"bazaa\" => $a->{\"Test\"},\n                \"bazaa\" => $a[\"Test\"],\n                \"bazaaaa\" => b(\"Test\"),\n            ]\n        ),\n        \"bar\"  => array(),\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 172,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [array(\"baz\" => \"Test\")],\n        \"bar\"  => array(),\n    ];\n    $data = array(\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\"baz\" => \"Test\"),\n        \"bar\"  => array(),\n    );\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = /* Comment */ [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 173,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [array(\"baz\" => \"Test\")],\n        \"bar\"  => array(),\n    ];",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 174,
+                    "args": [
+                        "<?php\n    $data = array(\n        \"foo\"  => \"Bar\",\n        \"main\" => array(\"baz\" => \"Test\"),\n        \"bar\"  => array(),\n    );",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 175,
+                    "args": [
+                        "<?php\n    $data = array(\n        \"foo\"  => \"Bar\",\n        \"main\" => array(array(\"baz\" => \"Test\")),\n        \"bar\"  => array(),\n    );",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 176,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = /* Comment */ [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 177,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ($foo as $i => $bar) {\n        $var[] = [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 178,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ([1 => 2] as $k => $v) {\n        $var[] = [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 179,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach (fncCall() as $k => $v){\n        $var[] = [$i => $bar];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 180,
+                    "args": [
+                        "<?php\n    $var = [];\n    foreach ($foo as $bar) {\n        $var[] = [\n            $i    => $bar,\n            $iaaa => $bar,\n        ];\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 181,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [[\"baz\" => \"Test\", \"bar\" => \"Test2\"]],\n        \"bar\"  => [],\n    ];",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 182,
+                    "args": [
+                        "<?php\n    $data = [\n        \"foo\"  => \"Bar\",\n        \"main\" => [\"baz\" => \"Test\"],\n        \"bar\"  => [],\n    ];",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 183,
+                    "args": [
+                        "<?php\n    $a = [\n        0              => 1,\n        10 /*Comment*/ => [\n            1  => 2,\n            22 => 3,\n        ],\n        100            => [\n            1  => 2,\n            22 => 3,\n        ]\n    ];",
+                        "<?php\n    $a = [\n        0  => 1,\n        10 /*Comment*/ => [\n            1  => 2,\n            22 => 3,\n        ],\n        100 => [\n            1  => 2,\n            22 => 3,\n        ]\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 184,
+                    "args": [
+                        "<?php\n    $a = array(\n        0   => 1,\n        10  => array(\n            1  => 2,\n            22 => 3,\n        ),\n        100 => array(\n            1  => 2,\n            22 => 3,\n        )\n    );",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 185,
+                    "args": [
+                        "<?php\n    $arr = array(\n        $a    => 1,\n        $bbbb => '\n        $cccccccc2 = 3;\n        ',\n    );",
+                        "<?php\n    $arr = array(\n        $a => 1,\n        $bbbb => '\n        $cccccccc2 = 3;\n        ',\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 186,
+                    "args": [
+                        "<?php\n    $arr = [\n        $a    => 1,\n        $bbbb => '\n        $cccccccc3 = 3;\n        ',\n    ];",
+                        "<?php\n    $arr = [\n        $a => 1,\n        $bbbb => '\n        $cccccccc3 = 3;\n        ',\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 187,
+                    "args": [
+                        "<?php\n    foreach($arr as $k => $v){\n        $arr = array($k => 1,\n            $a          => 1,\n            $bbbb       => '\n            $cccccccc4 = 3;\n            ',\n        );\n    }",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 188,
+                    "args": [
+                        "<?php\n    $a = array(\n        10    => 11,\n        20    => 22,\n        30    => 33,\n        40\n              =>\n                44,\n    );",
+                        "<?php\n    $a = array(\n        10    =>    11,\n        20  =>    22,\n        30=>33,\n        40\n            =>\n                44,\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 189,
+                    "args": [
+                        "<?php\n    return array(\n        \" \"    => \"\",    \"\\t\"    => \"\",\n        \"\\n\"   => \"\", \"\\r\"   => \"\",\n        \"\\0\"   => \"\", \"\\x0B\"    => \"\",\n    );",
+                        "<?php\n    return array(\n        \" \"   => \"\",    \"\\t\"    => \"\",\n        \"\\n\"   => \"\", \"\\r\"   => \"\",\n        \"\\0\"  => \"\", \"\\x0B\"    => \"\",\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 190,
+                    "args": [
+                        "<?php\n    return $this->grabAttribsBeforeToken(\n        $tokens,\n        $index,\n        $tokenAttribsMap,\n        array(\n            \"abstract\"   => null,\n            \"final\"      => null,\n            \"visibility\" => new Token(array(T_PUBLIC, \"public\")),\n            \"static\"     => null,\n        )\n    );",
+                        "<?php\n    return $this->grabAttribsBeforeToken(\n        $tokens,\n        $index,\n        $tokenAttribsMap,\n        array(\n            \"abstract\" => null,\n            \"final\" => null,\n            \"visibility\" => new Token(array(T_PUBLIC, \"public\")),\n            \"static\" => null,\n        )\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 191,
+                    "args": [
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_1    => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_1    => array(\"symbol\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_1 => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_1    => array(\"symbol\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 192,
+                    "args": [
+                        "<?php\n    $array = array(\n        \"bazab\" => b(array(\n            1       => 2,\n            5       => [\n                6     => 7,\n                8     => 9,\n            ],\n            3       => 4,\n            10      => 11,\n        )),\n    );",
+                        "<?php\n    $array = array(\n        \"bazab\" => b(array(\n            1 => 2,\n            5     => [\n                6 => 7,\n                8     => 9,\n            ],\n            3    => 4,\n            10      => 11,\n        )),\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 193,
+                    "args": [
+                        "<?php\n    Foo::test()->aaa(array(1 => 2))->bbb(\"a\", \"b\");\n",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 194,
+                    "args": [
+                        "<?php\n    $inflect_male = array(\n        \"aitė\\b\" => \"as\",\n        \"ytė\\b\"  => \"is\",\n        \"iūtė\\b\" => \"ius\",\n        \"utė\\b\"  => \"us\",\n    );",
+                        "<?php\n    $inflect_male = array(\n        \"aitė\\b\" => \"as\",\n        \"ytė\\b\" => \"is\",\n        \"iūtė\\b\" => \"ius\",\n        \"utė\\b\" => \"us\",\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 195,
+                    "args": [
+                        "<?php\n                $formMapper\n                    ->add('foo', null, ['required' => false])\n                    ->add('dummy_field', null, ['required' => false])\n                ;\n                ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 196,
+                    "args": [
+                        "<?php\n                $formMapper\n                    ->add('foo', null, array('required' => false))\n                    ->add('dummy_field', null, array('required' => false))\n                ;\n                ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 197,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy([\"server1\" => $object], [\"addedAt\" => \"DESC\"], 5);\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy([\"server2\" => $object], [\"checkedAt\" => \"desc\"], 50);\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 198,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy(array(\"server1\" => $object), array(\"addedAt\" => \"DESC\"), 5);\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy(array(\"server2\" => $object), array(\"checkedAt\" => \"desc\"), 50);\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 199,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy($foo[123]);\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy($foo[123]);\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 200,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy([1, 2, 3]);\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy([1, 2, 3]);\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 201,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy((1 + 2));\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy((1 + 2));\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 202,
+                    "args": [
+                        "<?php\n    $dummy001 = $this->get(\"doctrine\")->getRepository(\"AppBundle:Entity\")->findBy(array(1, 2));\n    $foobar = $this->getDoctrine()->getRepository(\"AppBundle:Entity\")->findBy(array(1, 2));\n    ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 203,
+                    "args": [
+                        "<?php\n\n    function foo() {}\n\n    $bar = 42;\n\n    $foo = [\n        \"test123\" => \"foo\",\n        \"foo\"     => $bar[123],\n        \"a\"       => foo(),\n        \"b\"       => 1,\n    ];\n    ",
+                        "<?php\n\n    function foo() {}\n\n    $bar = 42;\n\n    $foo = [\n        \"test123\" => \"foo\",\n        \"foo\" => $bar[123],\n        \"a\" => foo(),\n        \"b\" => 1,\n    ];\n    ",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 204,
+                    "args": [
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_2    => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_2    => array(\"symbol123\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_2 => array(\"symbol\" => \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_2    => array(\"symbol123\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 205,
+                    "args": [
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_3    => array((1 + 11)=> \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_3    => array((2 + 3)=> \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        "<?php\n    return array(\n        self::STATUS_UNKNOWN_3 => array((1+11)=> \"?\", \"description\" => \"unknown\"),\n        self::STATUS_INVALID_3    => array((2+3)=> \"III\", \"description\" => \"invalid file syntax, file ignored\"),\n    );",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 206,
+                    "args": [
+                        "<?php\n    return [\n        self::STATUS_UNKNOWN_4    => [\"symbol\" => \"?\", \"description\" => \"unknown\"],\n        self::STATUS_INVALID_4    => [\"symbol123\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"],\n    ];",
+                        "<?php\n    return [\n        self::STATUS_UNKNOWN_4 => [\"symbol\" => \"?\", \"description\" => \"unknown\"],\n        self::STATUS_INVALID_4    => [\"symbol123\" => \"III\", \"description\" => \"invalid file syntax, file ignored\"],\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 207,
+                    "args": [
+                        "<?php\n    return [\n        self::STATUS_UNKNOWN_7    => [(1 + 11)=> \"?\", \"description\" => \"unknown\"],\n        self::STATUS_INVALID_7    => [(2 + 3)=> \"III\", \"description\" => \"invalid file syntax, file ignored\"],\n    ];",
+                        "<?php\n    return [\n        self::STATUS_UNKNOWN_7 => [(1+11)=> \"?\", \"description\" => \"unknown\"],\n        self::STATUS_INVALID_7    => [(2+3)=> \"III\", \"description\" => \"invalid file syntax, file ignored\"],\n    ];",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 208,
+                    "args": [
+                        "<?php\n$b = [1 => function() {\n    foreach([$a => 2] as $b) {\n        $bv = [\n            $b  => 2,\n            $cc => 3,\n        ];\n    }}, 2 => 3];\n",
+                        "<?php\n$b = [1 => function() {\n    foreach([$a => 2] as $b) {\n        $bv = [\n            $b => 2,\n            $cc => 3,\n        ];\n    }}, 2 => 3];\n",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 209,
+                    "args": [
+                        "<?php\nfunction asd() {\n      return [\n          \"this\"    => fn () => false,\n          \"is\"      => fn () => false,\n          \"an\"      => fn () => false,\n          \"example\" => fn () => false,\n          \"array\"   => fn () => false,\n      ];\n}\n",
+                        "<?php\nfunction asd() {\n      return [\n          \"this\" => fn () => false,\n          \"is\" => fn () => false,\n          \"an\" => fn () => false,\n          \"example\" => fn () => false,\n          \"array\" => fn () => false,\n      ];\n}\n",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 210,
+                    "args": [
+                        "<?php\ncollect()\n    ->map(fn ($arg) => [])\n    ->keyBy(fn ($arg) => []);\n",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 211,
+                    "args": [
+                        "<?php\nif ($this->save([\n    \"bar\"       => \"baz\",\n    \"barbarbar\" => \"baz\",\n])) {\n    // Do the work\n}\n",
+                        "<?php\nif ($this->save([\n    \"bar\" => \"baz\",\n    \"barbarbar\" => \"baz\",\n])) {\n    // Do the work\n}\n",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 212,
+                    "args": [
+                        "<?php\nclass test\n{\n    public function __construct()\n    {\n        $result = $this->test1(fn () => $this->test2($a));\n        foreach ($result as $k => $v)\n        {\n        }\n\n        $result = $this->test1(fn () => $this->test2($a, $b));\n        foreach ($result as $k => $v)\n        {\n        }\n    }\n}\n",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 213,
+                    "args": [
+                        "<?php\n$array = [\n    \"foo\"     => 123,\n    \"longkey\" => \"test\",\n    \"baz\"     => fn () => \"value\",\n];\n",
+                        "<?php\n$array = [\n    \"foo\" => 123,\n    \"longkey\" => \"test\",\n    \"baz\" => fn () => \"value\",\n];\n",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 214,
+                    "args": [
+                        "<?php\nfunction foo () {\n    $this->query = $this->db->prepare(static fn ($db) => $db->table(\"user\")->insert([\n        \"name\"    => \"a\",\n        \"email\"   => \"b@example.com\",\n        \"country\" => \"JP\",\n    ]));\n\n    foreach ($data as $name => $array) {\n        foreach ($array as $field => $value) {\n            yield $type => $case;\n        }\n    }\n}\n",
+                        "<?php\nfunction foo () {\n    $this->query = $this->db->prepare(static fn ($db) => $db->table(\"user\")->insert([\n        \"name\" => \"a\",\n        \"email\" => \"b@example.com\",\n        \"country\" => \"JP\",\n    ]));\n\n    foreach ($data as $name => $array) {\n        foreach ($array as $field => $value) {\n            yield $type => $case;\n        }\n    }\n}\n",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 215,
+                    "args": [
+                        "<?php\nfunction test()\n{\n    yield \"null customer\" => [\n        \"expected\"    => null,\n        \"ourCustomer\" => null,\n    ];\n    yield \"no underlying user\" => [\n        \"expected\"    => null,\n        \"ourCustomer\" => Customer::seed(),\n    ];\n}\n                ",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 216,
+                    "args": [
+                        "<?php\n                $a = 1;\n                $aa = 1;\n                $aaa   =  1;\n                $aaB  =  1;\n                array(\n                    1  => 5,\n                    2 => 4,\n                    3   => 3,\n                    4   =>   2,\n                    5 =>  1,\n                     6 => 7,\n                );\n            ",
+                        null,
+                        {
+                            "operators": {
+                                "=": null,
+                                "=>": null
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not align nested array in yield with following yields",
+                    "args": [
+                        "<?php\n\nfunction provide()\n{\n    yield 'aaa' => [\n        [\n            [\n                'attribute' => 1,\n                'message'   => 'x',\n            ],\n            [\n                'attribute' => 1,\n                'message'   => 'x',\n            ],\n            [\n                'attribute' => 1,\n                'message'   => 'x',\n            ],\n        ],\n    ];\n    yield 'bbbbbbbbbbbbbbbbbbbbbbbbbbbb' => [];\n    yield 'cccccccccccccccccccccccccccc' => [];\n}",
+                        null,
+                        {
+                            "operators": {
+                                "=>": "align_single_space_minimal_by_scope"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\BinaryOperatorSpacesFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "union types",
+                    "args": [
+                        "<?php\n            class Foo\n            {\n                private bool|int | string $prop;\n                public function bar(TypeA | TypeB|TypeC $x): TypeA|TypeB | TypeC|TypeD\n                {\n                }\n                public function baz(\n                    callable|array $a,\n                    array|callable $b,\n                ) {}\n                public function qux(\n                    bool|int | string &$reference\n                ) {}\n                public function quux(): static| TypeA {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "match",
+                    "args": [
+                        "<?php\necho match ($foo) {\n    0       => 'zero',\n    1, 2    => 'one two',\n    3       => 'three',\n    default => 'whatever',\n};",
+                        "<?php\necho match ($foo) {\n    0 => 'zero',\n    1, 2 => 'one two',\n    3 => 'three',\n    default => 'whatever',\n};",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "match with many values",
+                    "args": [
+                        "<?php\necho match ($foo) {\n    0, 1, 2, 3, 4                          => 'digit',\n    C1                                     => 'constant C1',\n    default                                => 'default or 0',\n    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' => 'letter',\n    C2                                     => 'constant C2',\n};",
+                        "<?php\necho match ($foo) {\n    0, 1, 2, 3, 4 => 'digit',\n    C1 => 'constant C1',\n    default => 'default or 0',\n    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' => 'letter',\n    C2 => 'constant C2',\n};",
+                        {
+                            "operators": {
+                                "=>": "align_by_scope"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

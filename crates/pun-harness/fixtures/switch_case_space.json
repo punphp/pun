@@ -1,0 +1,248 @@
+{
+    "fixer": "switch_case_space",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSpaceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/SwitchCaseSpaceFixerTest.php",
+    "case_count": 21,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSpaceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    switch (1) {\n        case (1 #\n)#\n :\n         echo 1;\n    }\n?>\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    switch (1) {\n        case 1 #\n            : echo 1;\n    }\n?>\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case 42:\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case false:\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case false:\n                        break;\n                    default:\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case \"prod\":\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case \"prod\" :\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case \"prod\":\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case \"prod\"       :\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case 42:\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case 42 :\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case false:\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case false :\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case false:\n                        break;\n                    default:\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case false :\n                        break;\n                    default :\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case 42:\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case 42    :\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"d\":\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"d\" :\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"d\": break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"d\" : break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case $b ?: $c:\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case $b ?: $c :\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                $a = 5.1;\n                $b = 1.0;\n                switch($a) {\n                    case (int) $a < 1: {\n                        echo \"leave alone\";\n                        break;\n                    }\n                    case ($a < 2)/* test */ : {\n                        echo \"fix 1\";\n                        break;\n                    }\n                    case (3): {\n                        echo \"fix 2\";\n                        break;\n                    }\n                    case /**/(/**/ // test\n                        4\n                        /**/)//\n                        /**/ : {\n                        echo \"fix 3\";\n                        break;\n                    }\n                    case (((int)$b) + 4.1): {\n                        echo \"fix 4\";\n                        break;\n                    }\n                    case ($b + 1) * 2: {\n                        echo \"leave alone\";\n                        break;\n                    }\n                }\n                ",
+                        "<?php\n                $a = 5.1;\n                $b = 1.0;\n                switch($a) {\n                    case (int) $a < 1 : {\n                        echo \"leave alone\";\n                        break;\n                    }\n                    case ($a < 2)/* test */ : {\n                        echo \"fix 1\";\n                        break;\n                    }\n                    case (3) : {\n                        echo \"fix 2\";\n                        break;\n                    }\n                    case /**/(/**/ // test\n                        4\n                        /**/)//\n                        /**/ : {\n                        echo \"fix 3\";\n                        break;\n                    }\n                    case (((int)$b) + 4.1) : {\n                        echo \"fix 4\";\n                        break;\n                    }\n                    case ($b + 1) * 2 : {\n                        echo \"leave alone\";\n                        break;\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                    switch ($a) {\n                        case 42:\n                            break;\n                        case 1:\n                            switch ($a) {\n                                case 42:\n                                    break;\n                                default:\n                                    echo 1   ;\n                            }\n                    }\n                    ",
+                        "<?php\n                    switch ($a) {\n                        case 42   :\n                            break;\n                        case 1    :\n                            switch ($a) {\n                                case 42   :\n                                    break;\n                                default :\n                                    echo 1   ;\n                            }\n                    }\n                    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                    switch($foo) {\n                        case 4:  ; ;\n                        case 31 + test(\";\");  ; ; ;;\n                        case 1 + test(\";\"); // ;\n                        case (1+2/*;*/);\n                        case 1;\n                        case 2;\n                            return 1;\n                        default;\n                            return 2;\n                }",
+                        "<?php\n                    switch($foo) {\n                        case 4  :  ; ;\n                        case 31 + test(\";\") ;  ; ; ;;\n                        case 1 + test(\";\") ; // ;\n                        case (1+2/*;*/) ;\n                        case 1  ;\n                        case 2 ;\n                            return 1;\n                        default ;\n                            return 2;\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSpaceFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"this\" ? \"is\" : \"ugly\":\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"this\" ? \"is\" : \"ugly\" :\n                        break;\n                }\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSpaceFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                match ($foo) {\n                    1 => \"a\",\n                    default => \"b\"\n                };\n                match ($bar) {\n                    2 => \"c\",\n                    default=> \"d\"\n                };\n                match ($baz) {\n                    3 => \"e\",\n                    default   => \"f\"\n                };\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$a = function (): ?string {\n    return $rank ? match (true) {\n      $rank <= 1000 => 'bronze',\n      default => null,\n  } : null;\n};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSpaceFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enums",
+                    "args": [
+                        "<?php\nenum Suit {\n    case Hearts;\n    case Diamonds  ;\n    case Clubs ;\n    case Spades   ;\n}\n\nenum UserStatus: string {\n  case    Pending = 'P';\n  case  Active = 'A';\n  case   Suspended = 'S';\n  case CanceledByUser = 'C'  ;\n}\n\nswitch ($a) {\n    default:\n        echo 1;\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

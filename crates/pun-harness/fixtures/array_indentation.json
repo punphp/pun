@@ -1,0 +1,662 @@
+{
+    "fixer": "array_indentation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\ArrayIndentationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/ArrayIndentationFixerTest.php",
+    "case_count": 72,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\ArrayIndentationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$foo = [\n    'foo',\n    'bar' => 'baz',\n];",
+                        "<?php\n$foo = [\n  'foo',\n        'bar' => 'baz',\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    $foo = [\n        'foo',\n        'bar' => 'baz',\n    ];",
+                        "<?php\n    $foo = [\n  'foo',\n        'bar' => 'baz',\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n$foo = [\n    ['bar', 'baz'],\n    [\n        'bar',\n        'baz'\n    ],\n];",
+                        "<?php\n$foo = [\n        ['bar', 'baz'],\n     [\n        'bar',\n         'baz'\n         ],\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n$foo = [\n    ['foo',\n        'bar',\n        ['foo',\n            'bar',\n            ['foo',\n                'bar',\n                'baz']],\n        'baz'],\n];",
+                        "<?php\n$foo = [\n ['foo',\n  'bar',\n  ['foo',\n   'bar',\n   ['foo',\n    'bar',\n    'baz']],\n  'baz'],\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public $foo = [\n        ['bar', 'baz'],\n        [\n            'bar',\n            'baz'\n        ],\n    ];\n\n    public function bar()\n    {\n        return [\n            ['bar', 'baz'],\n            [\n                'bar',\n                'baz'\n            ],\n        ];\n    }\n}",
+                        "<?php\nclass Foo\n{\n    public $foo = [\n        ['bar', 'baz'],\n     [\n        'bar',\n         'baz'\n         ],\n ];\n\n    public function bar()\n    {\n        return [\n                ['bar', 'baz'],\n             [\n                'bar',\n                 'baz'\n                 ],\n         ];\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n$foo = [\n    'foo' => foo(\n               1,\n                2\n             ),\n    'bar' => bar(\n               1,\n                2\n             ),\n    'baz' => baz(\n               1,\n                2\n             ),\n];",
+                        "<?php\n$foo = [\n   'foo' => foo(\n              1,\n               2\n            ),\n      'bar' => bar(\n                 1,\n                  2\n               ),\n         'baz' => baz(\n                    1,\n                     2\n                  ),\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n$foo = [\n    'foo' => ['bar' => [\n        'baz',\n    ]],\n    'qux',\n];",
+                        "<?php\n$foo = [\n  'foo' => ['bar' => [\n   'baz',\n  ]],\n  'qux',\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$foo = [\n    'foo' => [\n        (new Foo())\n                   ->foo(),\n    ],\n];",
+                        "<?php\n$foo = [\n  'foo' => [\n     (new Foo())\n                ->foo(),\n  ],\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$foo = [\n    [new Foo(\n            )],\n    [new Foo(\n            )],\n];",
+                        "<?php\n$foo = [\n      [new Foo(\n              )],\n  [new Foo(\n          )],\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n$foo = new Foo([\n    (new Bar())\n        ->foo([\n            'foo',\n            'foo',\n        ])\n         ->bar(['bar', 'bar'])\n          ->baz([\n              'baz',\n              'baz',\n          ])\n    ,\n]);",
+                        "<?php\n$foo = new Foo([\n               (new Bar())\n                   ->foo([\n                           'foo',\n            'foo',\n               ])\n                    ->bar(['bar', 'bar'])\n                     ->baz([\n                           'baz',\n            'baz',\n               ])\n         ,\n]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        $foo = [\n            'foo',\n            'foo',\n        ];\n\n        $bar = [\n            'bar',\n            'bar',\n        ];\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        $foo = [\n              'foo',\n         'foo',\n    ];\n\n        $bar = [\n  'bar',\n    'bar',\n                 ];\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        return new Bar([\n            (new Baz())\n                ->qux([function ($a) {\n                    foreach ($a as $b) {\n                        if ($b) {\n                            throw new Exception(sprintf(\n                                'Oops: %s',\n                                $b\n                            ));\n                        }\n                    }\n                }]),\n        ]);\n    }\n}\n",
+                        "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        return new Bar([\n(new Baz())\n    ->qux([function ($a) {\n        foreach ($a as $b) {\n            if ($b) {\n                throw new Exception(sprintf(\n                    'Oops: %s',\n                    $b\n                ));\n            }\n        }\n    }]),\n        ]);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n$foo = [\n    'Foo'.\n        foo()\n        .bar()\n    ,\n];",
+                        "<?php\n\n$foo = [\n  'Foo'.\n      foo()\n      .bar()\n,\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n$foo = [\n    [new \\stdClass()],\n    'foo',\n];",
+                        "<?php\n$foo = [\n  [new \\stdClass()],\n 'foo',\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n$foo = [\n    $bar\n        ? 'bar'\n        : 'foo'\n    ,\n];",
+                        "<?php\n$foo = [\n  $bar\n      ? 'bar'\n      : 'foo'\n      ,\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n$foo = [\n    $bar ?\n        'bar' :\n        'foo'\n    ,\n];",
+                        "<?php\n$foo = [\n  $bar ?\n      'bar' :\n      'foo'\n      ,\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\n$foo = [\n    [\n        'foo',\n    ], [\n        'bar',\n    ],\n];",
+                        "<?php\n\n$foo = [\n      [\n               'foo',\n ], [\n   'bar',\n  ],\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n$foo = [\n    'foo', // comment\n    'bar',\n];",
+                        "<?php\n$foo = [\n  'foo', // comment\n'bar',\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n$foo = [[[\n    'foo',\n    'bar',\n],\n],\n];",
+                        "<?php\n$foo = [[[\n  'foo',\n'bar',\n],\n ],\n  ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n$foo = [\n    [\n        [\n            'foo',\n            'bar',\n        ]]];",
+                        "<?php\n$foo = [\n[\n[\n    'foo',\n    'bar',\n ]]];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n$foo = [\n    [\n        [[\n            [[[\n                'foo',\n                'bar',\n            ]\n            ]]\n        ]\n        ]\n    ]];",
+                        "<?php\n$foo = [\n[\n[[\n[[[\n    'foo',\n    'bar',\n ]\n]]\n]\n ]\n]];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n$foo = [[\n    [\n        [[[],[[\n            [[[\n                'foo',\n                'bar',\n            ],[[],[]]]\n            ]],[\n                'baz',\n            ]]\n        ],[]],[]]\n]\n];",
+                        "<?php\n$foo = [[\n[\n[[[],[[\n[[[\n'foo',\n'bar',\n],[[],[]]]\n]],[\n'baz',\n]]\n],[]],[]]\n]\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php if ($foo): ?>\n    <?php foo([\n        'bar',\n        'baz',\n    ]) ?>\n<?php endif ?>",
+                        "<?php if ($foo): ?>\n    <?php foo([\n          'bar',\n      'baz',\n   ]) ?>\n<?php endif ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<div>\n    <a\n        class=\"link\"\n        href=\"<?= Url::to([\n            '/site/page',\n            'id' => 123,\n        ]); ?>\"\n    >\n        Link text\n    </a>\n</div>",
+                        "<div>\n    <a\n        class=\"link\"\n        href=\"<?= Url::to([\n              '/site/page',\n          'id' => 123,\n    ]); ?>\"\n    >\n        Link text\n    </a>\n</div>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n$arr = [\n    'a' => 'b',\n\n    //  'c' => 'd',\n];",
+                        "<?php\n$arr = [\n    'a' => 'b',\n\n//  'c' => 'd',\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n    \n$foo = [\n    \"foo\",\n    \"bar\",\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n$foo = [\n    'foo' =>\n          'Some'\n           .' long'\n            .' string',\n    'bar' =>\n        'Another'\n         .' long'\n          .' string'\n];",
+                        "<?php\n$foo = [\n  'foo' =>\n        'Some'\n         .' long'\n          .' string',\n        'bar' =>\n            'Another'\n             .' long'\n              .' string'\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n$foo = [\n    $test\n          ? [\n              123,\n          ]\n          : [\n              321,\n          ],\n];",
+                        "<?php\n$foo = [\n    $test\n          ? [\n                 123,\n          ]\n          : [\n                   321,\n          ],\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n$foo = [[\n    new Foo(\n        'foo'\n    ),\n]];",
+                        "<?php\n$foo = [[\n      new Foo(\n          'foo'\n      ),\n]];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n$array = [\n    'foo' => [\n        'bar' => [\n            'baz',\n        ],\n    ], // <- this one\n];",
+                        "<?php\n$array = [\n    'foo' => [\n        'bar' => [\n            'baz',\n        ],\n], // <- this one\n];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n$foo = [\n    ...$foo,\n    ...$bar,\n];",
+                        "<?php\n$foo = [\n  ...$foo,\n        ...$bar,\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n$foo = array(\n    'foo',\n    'bar' => 'baz',\n);",
+                        "<?php\n$foo = array(\n  'foo',\n        'bar' => 'baz',\n );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n    $foo = array(\n        'foo',\n        'bar' => 'baz',\n    );",
+                        "<?php\n    $foo = array(\n  'foo',\n        'bar' => 'baz',\n );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n$foo = array(\n    array('bar', 'baz'),\n    array(\n        'bar',\n        'baz'\n    ),\n);",
+                        "<?php\n$foo = array(\n        array('bar', 'baz'),\n     array(\n        'bar',\n         'baz'\n         ),\n );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n$foo = array(\n    array('foo',\n        'bar',\n        array('foo',\n            'bar',\n            array('foo',\n                'bar',\n                'baz')),\n        'baz'),\n);",
+                        "<?php\n$foo = array(\n array('foo',\n  'bar',\n  array('foo',\n   'bar',\n   array('foo',\n    'bar',\n    'baz')),\n  'baz'),\n );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public $foo = array(\n        array('bar', 'baz'),\n        array(\n            'bar',\n            'baz'\n        ),\n    );\n\n    public function bar()\n    {\n        return array(\n            array('bar', 'baz'),\n            array(\n                'bar',\n                'baz'\n            ),\n        );\n    }\n}",
+                        "<?php\nclass Foo\n{\n    public $foo = array(\n        array('bar', 'baz'),\n     array(\n        'bar',\n         'baz'\n         ),\n );\n\n    public function bar()\n    {\n        return array(\n                array('bar', 'baz'),\n             array(\n                'bar',\n                 'baz'\n                 ),\n         );\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n$foo = array(\n    'foo' => foo(\n               1,\n                2\n             ),\n    'bar' => bar(\n               1,\n                2\n             ),\n    'baz' => baz(\n               1,\n                2\n             ),\n);",
+                        "<?php\n$foo = array(\n   'foo' => foo(\n              1,\n               2\n            ),\n      'bar' => bar(\n                 1,\n                  2\n               ),\n         'baz' => baz(\n                    1,\n                     2\n                  ),\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\n$foo = array(\n    'foo' => array('bar' => array(\n        'baz',\n    )),\n    'qux',\n);",
+                        "<?php\n$foo = array(\n  'foo' => array('bar' => array(\n   'baz',\n  )),\n  'qux',\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n$foo = array(\n    'foo' => array(\n        (new Foo())\n                   ->foo(),\n    ),\n);",
+                        "<?php\n$foo = array(\n  'foo' => array(\n     (new Foo())\n                ->foo(),\n  ),\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\n$foo = array(\n    array(new Foo(\n            )),\n    array(new Foo(\n            )),\n);",
+                        "<?php\n$foo = array(\n      array(new Foo(\n              )),\n  array(new Foo(\n          )),\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n$foo = new Foo(array(\n    (new Bar())\n        ->foo(array(\n            'foo',\n            'foo',\n        ))\n         ->bar(array('bar', 'bar'))\n          ->baz(array(\n              'baz',\n              'baz',\n          ))\n    ,\n));",
+                        "<?php\n$foo = new Foo(array(\n               (new Bar())\n                   ->foo(array(\n                           'foo',\n            'foo',\n               ))\n                    ->bar(array('bar', 'bar'))\n                     ->baz(array(\n                           'baz',\n            'baz',\n               ))\n         ,\n));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        $foo = array(\n            'foo',\n            'foo',\n        );\n\n        $bar = array(\n            'bar',\n            'bar',\n        );\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        $foo = array(\n              'foo',\n         'foo',\n    );\n\n        $bar = array(\n  'bar',\n    'bar',\n                 );\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        return new Bar(array(\n            (new Baz())\n                ->qux(array(function ($a) {\n                    foreach ($a as $b) {\n                        if ($b) {\n                            throw new Exception(sprintf(\n                                'Oops: %s',\n                                $b\n                            ));\n                        }\n                    }\n                })),\n        ));\n    }\n}\n",
+                        "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        return new Bar(array(\n(new Baz())\n    ->qux(array(function ($a) {\n        foreach ($a as $b) {\n            if ($b) {\n                throw new Exception(sprintf(\n                    'Oops: %s',\n                    $b\n                ));\n            }\n        }\n    })),\n        ));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n\n$foo = array(\n    'Foo'.\n        foo()\n        .bar()\n    ,\n);",
+                        "<?php\n\n$foo = array(\n  'Foo'.\n      foo()\n      .bar()\n,\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\n$foo = array(\n    array(new \\stdClass()),\n    'foo',\n);",
+                        "<?php\n$foo = array(\n  array(new \\stdClass()),\n 'foo',\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n$foo = array(\n    $bar\n        ? 'bar'\n        : 'foo'\n    ,\n);",
+                        "<?php\n$foo = array(\n  $bar\n      ? 'bar'\n      : 'foo'\n      ,\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\n$foo = array(\n    $bar ?\n        'bar' :\n        'foo'\n    ,\n);",
+                        "<?php\n$foo = array(\n  $bar ?\n      'bar' :\n      'foo'\n      ,\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n\n$foo = array(\n    array(\n        'foo',\n    ), array(\n        'bar',\n    ),\n);",
+                        "<?php\n\n$foo = array(\n      array(\n               'foo',\n ), array(\n   'bar',\n  ),\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\n$foo = array(\n    'foo', // comment\n    'bar',\n);",
+                        "<?php\n$foo = array(\n  'foo', // comment\n'bar',\n );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n$foo = array(array(array(\n    'foo',\n    'bar',\n),\n),\n);",
+                        "<?php\n$foo = array(array(array(\n  'foo',\n'bar',\n),\n ),\n  );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\n$foo = array(\n    array(\n        array(\n            'foo',\n            'bar',\n        )));",
+                        "<?php\n$foo = array(\narray(\narray(\n    'foo',\n    'bar',\n )));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\n$foo = array(\n    array(\n        array(array(\n            array(array(array(\n                'foo',\n                'bar',\n            )\n            ))\n        )\n        )\n    ));",
+                        "<?php\n$foo = array(\narray(\narray(array(\narray(array(array(\n    'foo',\n    'bar',\n )\n))\n)\n )\n));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\n$foo = array(array(\n    array(\n        array(array(array(),array(array(\n            array(array(array(\n                'foo',\n                'bar',\n            ),array(array(),array()))\n            )),array(\n                'baz',\n            ))\n        ),array()),array())\n)\n);",
+                        "<?php\n$foo = array(array(\narray(\narray(array(array(),array(array(\narray(array(array(\n'foo',\n'bar',\n),array(array(),array()))\n)),array(\n'baz',\n))\n),array()),array())\n)\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php if ($foo): ?>\n    <?php foo(array(\n        'bar',\n        'baz',\n    )) ?>\n<?php endif ?>",
+                        "<?php if ($foo): ?>\n    <?php foo(array(\n          'bar',\n      'baz',\n   )) ?>\n<?php endif ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<div>\n    <a\n        class=\"link\"\n        href=\"<?= Url::to(array(\n            '/site/page',\n            'id' => 123,\n        )); ?>\"\n    >\n        Link text\n    </a>\n</div>",
+                        "<div>\n    <a\n        class=\"link\"\n        href=\"<?= Url::to(array(\n              '/site/page',\n          'id' => 123,\n    )); ?>\"\n    >\n        Link text\n    </a>\n</div>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php\n$arr = array(\n    'a' => 'b',\n\n    //  'c' => 'd',\n);",
+                        "<?php\n$arr = array(\n    'a' => 'b',\n\n//  'c' => 'd',\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php\n    \n$foo = array(\n    \"foo\",\n    \"bar\",\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php\n$foo = array(\n    'foo' =>\n          'Some'\n           .' long'\n            .' string',\n    'bar' =>\n        'Another'\n         .' long'\n          .' string'\n);",
+                        "<?php\n$foo = array(\n  'foo' =>\n        'Some'\n         .' long'\n          .' string',\n        'bar' =>\n            'Another'\n             .' long'\n              .' string'\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php\n$foo = array(\n    $test\n          ? array(\n              123,\n          )\n          : array(\n              321,\n          ),\n);",
+                        "<?php\n$foo = array(\n    $test\n          ? array(\n                 123,\n          )\n          : array(\n                   321,\n          ),\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php\n$foo = array(array(\n    new Foo(\n        'foo'\n    ),\n));",
+                        "<?php\n$foo = array(array(\n      new Foo(\n          'foo'\n      ),\n));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php\n$array = array(\n    'foo' => array(\n        'bar' => array(\n            'baz',\n        ),\n    ), // <- this one\n);",
+                        "<?php\n$array = array(\n    'foo' => array(\n        'bar' => array(\n            'baz',\n        ),\n), // <- this one\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php\n$foo = array(\n    ...$foo,\n    ...$bar,\n);",
+                        "<?php\n$foo = array(\n  ...$foo,\n        ...$bar,\n );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array destructuring",
+                    "args": [
+                        "    <?php\n    [\n        $foo,\n        $bar,\n        $baz\n    ] = $arr;",
+                        "    <?php\n    [\n    $foo,\n                $bar,\n      $baz\n    ] = $arr;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "array destructuring using list",
+                    "args": [
+                        "    <?php\n    list(\n        $foo,\n        $bar,\n        $baz\n    ) = $arr;",
+                        "    <?php\n    list(\n    $foo,\n                $bar,\n      $baz\n    ) = $arr;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\ArrayIndentationFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\"));\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$foo = [\n\t'foo',\n\t'bar' => 'baz',\n];",
+                        "<?php\n$foo = [\n  'foo',\n        'bar' => 'baz',\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$foo = [\n\t'foo',\n\t'bar' => 'baz',\n];",
+                        "<?php\n$foo = [\n\t\t\t'foo',\n\t\t'bar' => 'baz',\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n$foo = array(\n\t'foo',\n\t'bar' => 'baz',\n);",
+                        "<?php\n$foo = array(\n  'foo',\n        'bar' => 'baz',\n );"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n$foo = array(\n\t'foo',\n\t'bar' => 'baz',\n);",
+                        "<?php\n$foo = array(\n\t\t\t'foo',\n\t\t'bar' => 'baz',\n );"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "array destructuring",
+                    "args": [
+                        "    <?php\n    [\n    \t$foo,\n    \t$bar,\n    \t$baz\n    ] = $arr;",
+                        "    <?php\n    [\n    $foo,\n                $bar,\n      $baz\n    ] = $arr;"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "array destructuring using list",
+                    "args": [
+                        "    <?php\n    list(\n    \t$foo,\n    \t$bar,\n    \t$baz\n    ) = $arr;",
+                        "    <?php\n    list(\n    $foo,\n                $bar,\n      $baz\n    ) = $arr;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\ArrayIndentationFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "attribute",
+                    "args": [
+                        "<?php\nclass Foo {\n #[SimpleAttribute]\n#[ComplexAttribute(\n foo: true,\n    bar: [\n        1,\n        2,\n        3,\n    ]\n )]\n  public function bar()\n     {\n     }\n}",
+                        "<?php\nclass Foo {\n #[SimpleAttribute]\n#[ComplexAttribute(\n foo: true,\n    bar: [\n                1,\n                    2,\n              3,\n     ]\n )]\n  public function bar()\n     {\n     }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\ArrayIndentationFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "nested attribute",
+                    "args": [
+                        "<?php\n#[Foo([static function (#[SensitiveParameter] $a) {\n    return [\n        fn (#[Bar([1, 2])] $b) => [\n            $b[1]\n        ]\n    ]\n    ;\n}])]\nclass Baz {}",
+                        "<?php\n#[Foo([static function (#[SensitiveParameter] $a) {\n    return [\n        fn (#[Bar([1, 2])] $b) => [\n            $b[1]\n        ]\n                                                                        ]\n    ;\n}])]\nclass Baz {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}
