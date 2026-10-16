@@ -63,6 +63,58 @@ impl WhitespacesFixerConfig {
     }
 }
 
+/// Fixers PHP-CS-Fixer 3.95 marks deprecated (DeprecatedFixerInterface) and their successors. Pun does not port them.
+pub const DEPRECATED: &[(&str, &[&str])] = &[
+    ("braces", &["single_space_around_construct", "control_structure_braces", "control_structure_continuation_position", "declare_parentheses", "no_multiple_statements_per_line", "braces_position", "statement_indentation", "no_extra_blank_lines"]),
+    ("class_keyword_remove", &[]),
+    ("compact_nullable_typehint", &["compact_nullable_type_declaration"]),
+    ("curly_braces_position", &["braces_position"]),
+    ("escape_implicit_backslashes", &["string_implicit_backslashes"]),
+    ("function_typehint_space", &["type_declaration_spaces"]),
+    ("native_function_type_declaration_casing", &["native_type_declaration_casing"]),
+    ("new_with_braces", &["new_with_parentheses"]),
+    ("no_blank_lines_before_namespace", &["blank_lines_before_namespace"]),
+    ("no_spaces_inside_parenthesis", &["spaces_inside_parentheses"]),
+    ("no_trailing_comma_in_list_call", &["no_trailing_comma_in_singleline"]),
+    ("no_trailing_comma_in_singleline_array", &["no_trailing_comma_in_singleline"]),
+    ("no_trailing_comma_in_singleline_function_call", &["no_trailing_comma_in_singleline"]),
+    ("no_unneeded_curly_braces", &["no_unneeded_braces"]),
+    ("phpdoc_types_no_duplicates", &["phpdoc_no_duplicate_types"]),
+    ("single_blank_line_before_namespace", &["blank_lines_before_namespace"]),
+    ("single_space_after_construct", &["single_space_around_construct"]),
+    ("visibility_required", &["modifier_keywords"]),
+];
+
+/// AbstractProxyFixer: the successor's behaviour and priority under the deprecated name (which affects sort order).
+struct Proxy {
+    name: &'static str,
+    inner: Box<dyn Fixer>,
+}
+
+impl Fixer for Proxy {
+    fn name(&self) -> &'static str {
+        self.name
+    }
+    fn priority(&self) -> i32 {
+        self.inner.priority()
+    }
+    fn is_risky(&self) -> bool {
+        self.inner.is_risky()
+    }
+    fn is_candidate(&self, tokens: &Tokens) -> bool {
+        self.inner.is_candidate(tokens)
+    }
+    fn supports(&self, file: &Path) -> bool {
+        self.inner.supports(file)
+    }
+    fn configure(&mut self, options: &Value) -> Result<()> {
+        self.inner.configure(options)
+    }
+    fn fix(&self, file: &Path, tokens: &mut Tokens) {
+        self.inner.fix(file, tokens)
+    }
+}
+
 /// Enabled fixers, sorted exactly like `Utils::sortFixers` (priority desc, then name via strcmp).
 pub struct Pipeline {
     fixers: Vec<Box<dyn Fixer>>,
@@ -76,15 +128,30 @@ pub struct Fixed {
 }
 
 impl Pipeline {
-    /// `available` is every native fixer (from pun-fixers); only those named in `rules` are kept and configured.
-    pub fn new(rules: &[Rule], mut available: Vec<Box<dyn Fixer>>) -> Result<Self> {
-        let mut fixers = Vec::new();
+    /// `factory` returns a fresh set of every native fixer (pun_fixers::all); rules not in it are reported as not ported.
+    /// Deprecated PHP-CS-Fixer rules are refused (see DEPRECATED), except `visibility_required`, which Pint users still
+    /// enable and which upstream runs as a plain proxy of `modifier_keywords`.
+    pub fn new(rules: &[Rule], factory: &dyn Fn() -> Vec<Box<dyn Fixer>>) -> Result<Self> {
+        let mut fixers: Vec<Box<dyn Fixer>> = Vec::new();
         let mut not_ported = Vec::new();
         for rule in rules {
-            match available.iter().position(|f| f.name() == rule.name) {
-                Some(i) => {
-                    let mut f = available.swap_remove(i);
+            let mut target = rule.name.as_str();
+            if let Some((_, successors)) = DEPRECATED.iter().find(|(n, _)| *n == target) {
+                if target != "visibility_required" {
+                    let hint = match successors {
+                        [] => "Remove it; it has no replacement.".to_string(),
+                        s => format!("Use {} instead.", s.iter().map(|s| format!("\"{s}\"")).collect::<Vec<_>>().join(", ")),
+                    };
+                    bail!("Rule \"{target}\" is deprecated in PHP-CS-Fixer and not supported by Pun. {hint}");
+                }
+                target = successors[0];
+            }
+            match factory().into_iter().find(|f| f.name() == target) {
+                Some(mut f) => {
                     f.configure(&rule.options)?;
+                    if target != rule.name {
+                        f = Box::new(Proxy { name: "visibility_required", inner: f });
+                    }
                     fixers.push(f);
                 }
                 None => not_ported.push(rule.name.clone()),
@@ -182,11 +249,24 @@ mod tests {
     fn sorts_like_php_cs_fixer() {
         let rule = |n: &str| Rule { name: n.into(), options: Value::Null };
         let rules = [rule("b"), rule("a"), rule("z"), rule("missing")];
-        let p = Pipeline::new(&rules, vec![Box::new(F("z", 1)), Box::new(F("b", 5)), Box::new(F("a", 5)), Box::new(F("unused", 9))]).unwrap();
+        let all = || -> Vec<Box<dyn Fixer>> { vec![Box::new(F("z", 1)), Box::new(F("b", 5)), Box::new(F("a", 5)), Box::new(F("unused", 9))] };
+        let p = Pipeline::new(&rules, &all).unwrap();
         assert_eq!(p.fixers().map(|f| f.name()).collect::<Vec<_>>(), ["a", "b", "z"]);
         assert_eq!(p.not_ported, ["missing"]);
         assert!(p.run(Path::new("x.php"), b"<?php\nfunction (\n").is_err());
         assert!(p.run(Path::new("x.php"), b"<?php\necho 1;\n").unwrap().is_none());
         assert!(format_pun(b"<?php\necho   1;", "8.4").unwrap().is_some());
+    }
+
+    #[test]
+    fn deprecated_rules() {
+        let rule = |n: &str| Rule { name: n.into(), options: Value::Null };
+        let all = || -> Vec<Box<dyn Fixer>> { vec![Box::new(F("modifier_keywords", 56)), Box::new(F("new_with_parentheses", 37))] };
+        let err = Pipeline::new(&[rule("new_with_braces")], &all).err().unwrap().to_string();
+        assert!(err.contains("deprecated") && err.contains("\"new_with_parentheses\""), "{err}");
+        assert!(Pipeline::new(&[rule("class_keyword_remove")], &all).err().unwrap().to_string().contains("no replacement"));
+        // visibility_required runs a second modifier_keywords instance under its own name, sorted after the preset one.
+        let p = Pipeline::new(&[rule("visibility_required"), rule("modifier_keywords")], &all).unwrap();
+        assert_eq!(p.fixers().map(|f| (f.name(), f.priority())).collect::<Vec<_>>(), [("modifier_keywords", 56), ("visibility_required", 56)]);
     }
 }

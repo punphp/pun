@@ -159,7 +159,7 @@ Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeE
 - [ ] protected_to_private
 - [ ] self_accessor
 - [ ] self_static_accessor
-- [ ] visibility_required
+- [x] visibility_required — deprecated upstream; not ported. pun-format runs it as a proxy of modifier_keywords (like AbstractProxyFixer).
 - [ ] heredoc_to_nowdoc
 - [ ] no_empty_phpdoc
 - [ ] phpdoc_align
@@ -174,3 +174,10 @@ Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeE
 - [ ] phpdoc_var_without_name
 - [ ] no_superfluous_phpdoc_tags
 
+
+## Deprecated rules (not supported)
+
+PHP-CS-Fixer 3.95 marks 18 rules deprecated (`DeprecatedFixerInterface`, see https://cs.symfony.com/doc/rules/index.html).
+Pun does not port them: enabling one fails with a message naming its successor (`pun_format::DEPRECATED`).
+The one exception is `visibility_required`, which Pint configs such as Pinkary's still enable; upstream it is a pure
+proxy of `modifier_keywords`, so Pun runs a second `modifier_keywords` under that name.

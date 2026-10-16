@@ -159,10 +159,6 @@ fn show_config(fmt: &str, config: Option<PathBuf>, preset: Option<String>) -> Re
     Ok(0)
 }
 
-/// Native fixers. TODO: `pun_fixers::all()` once pun-fixers exports it (see docs/REQUESTS.md).
-fn native_fixers() -> Vec<Box<dyn Fixer>> {
-    pun_fixers::all()
-}
 
 enum Engine2 {
     Compat(Pipeline),
@@ -185,7 +181,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     let cfg = pun_config::load(&root, &opts)?;
 
     let engine = match cfg.engine {
-        Engine::Compat => Engine2::Compat(Pipeline::new(&cfg.rules, native_fixers())?),
+        Engine::Compat => Engine2::Compat(Pipeline::new(&cfg.rules, &pun_fixers::all)?),
         Engine::Pun => Engine2::Pun(cfg.php.clone()),
     };
     if a.explain {
