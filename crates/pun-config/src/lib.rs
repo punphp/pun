@@ -99,7 +99,11 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
     let mut sources = Vec::new();
     check_composer(root, &mut sources)?;
 
-    let pint_path = root.join(opts.config.clone().unwrap_or_else(|| "pint.json".into()));
+    // `--config=http://...` must reach read_pint_json unjoined (Path::join would make it `root/http:/...`).
+    let pint_path = match &opts.config {
+        Some(c) if c.to_string_lossy().contains("://") => c.clone(),
+        c => root.join(c.clone().unwrap_or_else(|| "pint.json".into())),
+    };
     let pint = if opts.no_config { Map::new() } else { read_pint_json(&pint_path, &mut sources)? };
 
     if !opts.pint_mode && !opts.no_config && opts.config.is_none() && !pint_path.exists() {
@@ -257,7 +261,9 @@ mod tests {
     use super::*;
 
     fn dir(files: &[(&str, &str)]) -> PathBuf {
-        let d = std::env::temp_dir().join(format!("pun-config-{}-{}", std::process::id(), files.len()));
+        static N: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+        let n = N.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        let d = std::env::temp_dir().join(format!("pun-config-{}-{n}", std::process::id()));
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
         for (n, c) in files {
@@ -293,5 +299,53 @@ mod tests {
         let d = dir(&[("composer.json", "{}"), (".php-cs-fixer.dist.php", "<?php")]);
         assert!(load(&d, &Options::default()).unwrap_err().to_string().contains("not yet supported"));
         assert!(load(&d, &Options { pint_mode: true, ..Default::default() }).is_ok());
+    }
+
+    fn err(d: &Path, o: Options) -> String {
+        load(d, &o).unwrap_err().to_string()
+    }
+
+    /// Messages are Pint's (ConfigurationResolverFactory, ConfigurationJsonRepository).
+    #[test]
+    fn pint_errors() {
+        let d = dir(&[("pint.json", r#"{"preset":"nope"}"#)]);
+        assert_eq!(err(&d, Options::default()), "Preset not found.");
+        // Real Pint: `pint --config=http://x/pint.json` prints this and exits 1.
+        let o = |c: &str| Options { config: Some(c.into()), ..Default::default() };
+        assert_eq!(err(&d, o("http://x/pint.json")), "Loading the configuration over plaintext HTTP is not allowed. Use HTTPS.");
+        assert!(err(&d, o("https://x/pint.json")).contains("not yet supported"));
+        let d = dir(&[("a.json", r#"{"extend":"b.json"}"#), ("pint.json", r#"{"extend":"a.json"}"#)]);
+        assert_eq!(err(&d, Options::default()), "Pint configuration cannot extend from more than 1 file.");
+        let d = dir(&[("pint.json", "1")]);
+        assert!(err(&d, Options::default()).ends_with("pint.json] is not valid JSON."));
+        let d = dir(&[("pint.json", "{")]);
+        assert!(err(&d, Options::default()).ends_with("pint.json] is not valid JSON."));
+    }
+
+    #[test]
+    fn options_and_show() {
+        // Lists merge by index like array_replace_recursive: ["x"] over ["a","b"] is ["x","b"]; a longer override appends.
+        let d = dir(&[
+            ("base.json", r#"{"preset":"empty","notName":["a"]}"#),
+            ("custom.json", r#"{"extend":"base.json","rules":{"concat_space":{"spacing":"one"},"single_quote":true},"notName":["x","y"],"in":"src"}"#),
+        ]);
+        let c = load(&d, &Options { config: Some("custom.json".into()), blade: true, engine: Some(Engine::Pun), ..Default::default() }).unwrap();
+        assert_eq!(c.finder.not_name, ["x", "y"]);
+        assert_eq!(c.finder.in_dirs, ["src"]);
+        assert!(c.blade);
+        assert_eq!(c.sources, [d.join("base.json"), d.join("custom.json")]);
+        assert_eq!(
+            c.show(),
+            serde_json::json!({
+                "sources": [d.join("base.json"), d.join("custom.json")],
+                "format": {"engine": "pun", "preset": "empty", "rules": {"concat_space": {"spacing": "one"}, "single_quote": true, "Pint/laravel_blade": true}},
+                "compat": {"php": "8.4"},
+                "finder": {"in": ["src"], "exclude": [], "notName": ["x", "y"], "notPath": []},
+            })
+        );
+        // --no-config ignores pint.json; --preset wins.
+        let d = dir(&[("pint.json", r#"{"preset":"nope"}"#)]);
+        let c = load(&d, &Options { no_config: true, preset: Some("psr12".into()), ..Default::default() }).unwrap();
+        assert_eq!((c.preset.as_str(), c.sources.len()), ("psr12", 0));
     }
 }

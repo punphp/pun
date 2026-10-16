@@ -43,6 +43,9 @@ for arg in "$@"; do
   pkg=$(sed -n 's/^name *= *"\(.*\)"/\1/p' "$dir/Cargo.toml" | head -1)
   echo "== $pkg ($dir)${ONLY:+ PUN_FIXERS_ONLY=$ONLY}" >&2
   cargo llvm-cov clean --profraw-only
+  # `report` maps every test/bin executable under the target dir; a stale one (older source) would add phantom
+  # uncovered lines, so drop them all. Only the executables relink; libraries and dependencies are reused.
+  find "$CARGO_LLVM_COV_TARGET_DIR/debug" "$CARGO_LLVM_COV_TARGET_DIR/debug/deps" -maxdepth 1 -type f -perm -u+x ! -name '*.*' -delete 2>/dev/null || true
   tests_ok=1
   filter=()
   # One fixer: only its own unit tests + the upstream fixture runner (which PUN_FIXERS_ONLY already narrows), so
