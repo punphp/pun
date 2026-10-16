@@ -56,4 +56,5 @@
 - **pun-format (from delegate agent):** native `Pipeline::run` ignores `// @php-cs-fixer-ignore <rule>` annotations, which
   PHP-CS-Fixer 3.95's `Runner::fixFile` honours (`FixerAnnotationAnalyzer`; an unknown or disabled rule name aborts the
   run). Repro: laravel preset, `<?php\n\n// @php-cs-fixer-ignore single_quote\n$a = "x";\n` — Pint keeps `"x"`, Pun
-  writes `'x'`. Delegate mode does it (crates/pun-delegate/src/worker.php has the exact messages).
+  writes `'x'`. Delegate mode does it (crates/pun-delegate/src/worker.php has the exact messages). **Done**: `Pipeline::run` skips the
+  annotated rules, `Pipeline::check_annotations` raises the run-level errors (pun-format/src/fixer_annotation.rs).

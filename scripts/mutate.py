@@ -67,6 +67,15 @@ MUTATIONS = [
     ('nullable-space', lambda s, r: re.sub(r'\?(?=[A-Z]\w*\s+\$)', '? ', s)),
     ('return-type-space', lambda s, r: re.sub(r'\): ', ') :', s)),
     ('no-final-newline', lambda s, r: s.rstrip('\n')),
+    # laravel-framework's own rules: phpdoc_summary, phpdoc_return_self_reference, phpdoc_trim_consecutive_blank_line_separation,
+    # combine_consecutive_issets / _unsets, class_reference_name_casing, switch_continue_to_break.
+    ('doc-summary-nodot', lambda s, r: re.sub(r'(?m)^(\s*/\*\*\n\s*\* [^@\n]*?)\.$', r'\1', s)),
+    ('doc-return-this', lambda s, r: re.sub(r'@return (\$this|static|self)\b', lambda m: '@return ' + {'$this': 'this', 'static': '@static', 'self': '$self'}[m.group(1)], s)),
+    ('doc-blank-run', lambda s, r: re.sub(r'(?m)^([ \t]*\*)\n', r'\1\n\1\n\1\n', s)),
+    ('split-isset', lambda s, r: re.sub(r'isset\(([^(),]+), ([^(),]+)\)', r'isset(\1) && isset(\2)', s)),
+    ('split-unset', lambda s, r: re.sub(r'unset\(([^(),;]+), ([^(),;]+)\);', r'unset(\1); unset(\2);', s)),
+    ('class-case', lambda s, r: re.sub(r'\\(Exception|InvalidArgumentException|RuntimeException|LogicException|stdClass|Closure|ArrayIterator|DateTime|DateTimeImmutable|Throwable)\b', lambda m: '\\' + m.group(1).lower(), s)),
+    ('break-continue', lambda s, r: re.sub(r'\bbreak;', 'continue;', s)),
 ]
 
 

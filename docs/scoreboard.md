@@ -43,29 +43,28 @@ Mutation fuzzing, `FUZZ_CONFIG` = `{"preset":"psr12"}` (scripts/fuzz-parity.sh):
 ## Delegate mode
 
 Projects whose config enables rules Pun hasn't ported run every file through real PHP-CS-Fixer (docs/oracle.md
-"Delegate mode"). laravel-framework's own pint.json has 8 (align_multiline_comment, class_reference_name_casing,
+"Delegate mode"). laravel-framework's own pint.json used to have 8 (align_multiline_comment, class_reference_name_casing,
 combine_consecutive_issets, combine_consecutive_unsets, phpdoc_return_self_reference, phpdoc_summary,
-phpdoc_trim_consecutive_blank_line_separation, switch_continue_to_break), so its row above is a delegated run
-(`PUN_PINT=.oracle/pint/builds/pint`); before M1.4 Pun warned "not ported" and exited 1 there. 2026-10-16:
+phpdoc_trim_consecutive_blank_line_separation, switch_continue_to_break); all 8 are ported now, and
+`// @php-cs-fixer-ignore` is honoured natively, so its row above is a fully native run (`--explain` lists every rule
+as `native`, nothing delegated). 2026-10-16:
 
 | check | files | result |
 |---|---|---|
-| harness, laravel-framework, its own pint.json | 3483 | 0 differing (pint changed 22, pun changed 22) |
-| fuzz-parity.sh laravel-framework seeds 1, 2, 3 (Support + Collections, own pint.json) | 128 each | 0 differing (pint changed 112 / 114 / 117) |
+| harness, laravel-framework, its own pint.json, fully native | 3483 | 0 differing (pint changed 22, pun changed 22) |
+| fuzz-parity.sh laravel-framework seeds 1, 2, 3 (Support + Collections, own pint.json; mutate.py now also targets the 8 rules) | 128 each | 0 differing (pint changed 112 / 110 / 115) |
+| fuzz-parity.sh laravel-framework seeds 4, 5 (Database + Foundation + Validation, own pint.json) | 602 each | 0 differing (pint changed 465 / 462) |
 | `.php-cs-fixer.php` with a project fixer class (crates/pun-delegate/tests/custom) | 3 | identical to `php-cs-fixer fix` (files and applied fixers) |
 | `pun format --format=json` vs Pint, delegated, perturbed Support + Collections + Validation | 210 | identical files and identical JSON report |
 
-`--test` on laravel-framework (debug build, load 2.4-3.5, one run each, `/usr/bin/time`):
+`--test` on laravel-framework (debug build, one run each, `/usr/bin/time`):
 
 | run | wall | max RSS (pun process) |
 |---|---|---|
 | `pint --test` | 200.3 s | 163 MB |
-| `pun format --test --no-cache` (delegated, 2 PHP workers) | 159.0 s | 111 MB |
-| same, warm cache (every file clean under the same signature) | 11.0 s | 108 MB |
-| `pun format --test --no-cache --native-only` (8 rules skipped, not Pint-identical) | 53.6 s | 46 MB |
-
-Delegated cold runs cost what PHP-CS-Fixer costs (minus Pint's start-up and process fan-out); the cache and porting
-the 8 rules are what make laravel-framework fast.
+| before: `pun format --test --no-cache` (delegated, 2 PHP workers) | 159.0 s | 111 MB |
+| before: same with `--native-only` (8 rules skipped, not Pint-identical) | 53.6 s | 46 MB |
+| now: `pun format --test --no-cache` (fully native, Pint-identical; load 4.8) | 38.3 s | 50 MB |
 
 ## Benchmarks
 
