@@ -13,38 +13,38 @@ Analyzers owned: WhitespacesAnalyzer, WhitespacesFixerConfig, Preg (pcre2 wrappe
 
 - [ ] array_indentation
 - [ ] binary_operator_spaces
-- [ ] blank_line_after_namespace
+- [x] blank_line_after_namespace
 - [x] blank_line_after_opening_tag
 - [ ] blank_line_before_statement
 - [ ] blank_line_between_import_groups
 - [ ] blank_lines_before_namespace
 - [ ] braces_position
-- [ ] cast_spaces
+- [x] cast_spaces
 - [ ] clean_namespace
-- [ ] concat_space
+- [x] concat_space
 - [ ] control_structure_braces
 - [x] encoding
 - [x] full_opening_tag
 - [ ] general_phpdoc_tag_rename
 - [ ] global_namespace_import
-- [ ] indentation_type
+- [x] indentation_type
 - [x] line_ending
 - [x] linebreak_after_opening_tag
 - [ ] method_argument_space
 - [ ] method_chaining_indentation
 - [ ] multiline_whitespace_before_semicolons
-- [ ] no_blank_lines_after_class_opening
-- [ ] no_blank_lines_after_phpdoc
+- [x] no_blank_lines_after_class_opening
+- [x] no_blank_lines_after_phpdoc
 - [x] no_closing_tag (6 `testWithShortOpenTag` cases are skipped upstream too: need `short_open_tag=On`)
 - [ ] no_empty_statement (1 `testWithShortOpenTag` case is skipped upstream too: needs `short_open_tag=On`)
 - [ ] no_extra_blank_lines
-- [ ] no_leading_namespace_whitespace
-- [ ] no_multiline_whitespace_around_double_arrow
+- [x] no_leading_namespace_whitespace
+- [x] no_multiline_whitespace_around_double_arrow
 - [ ] no_multiple_statements_per_line
 - [x] no_singleline_whitespace_before_semicolons
 - [x] no_space_around_double_colon
-- [ ] no_spaces_after_function_name
-- [ ] no_spaces_around_offset
+- [x] no_spaces_after_function_name
+- [x] no_spaces_around_offset
 
 ## Agent 2: syntax, casing, control flow, operators, strictness
 
