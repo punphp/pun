@@ -41,3 +41,16 @@ Owner = agent working on it. Status: todo / doing / done / blocked.
 | Architecture pass: dedupe helpers across fixers/analyzers, tighten crate boundaries | todo |
 | Remove comments that restate code; keep only non-obvious "why" (upstream parity quirks) | todo |
 | Re-run fixtures, corpus harness and coverage gate after the cleanup | todo |
+
+## v0.1 track (current)
+
+| Task | Status |
+| --- | --- |
+| All 147 Pinkary rules ported, fixtures + oracle cases + corpus + 100% coverage | done |
+| Full-preset parity vs Pint on Pinkary + corpus, CLI parity, first benchmarks | doing |
+| Coverage: Pun/ rules, tautology audit, final docs/COVERAGE.md | doing |
+| CI (tests, coverage gate, parity job) + cargo-dist release pipeline + Composer shim + README | doing |
+| Content-hash cache, speed work toward 30x Pint | todo (after parity) |
+| .php-cs-fixer.php evaluation, checkstyle/junit/gitlab formats, true --staged | todo (after parity) |
+| Wave 3: /code-review --fix, architecture pass, comment cleanup | queued |
+| Publish v0.1 (tag, crates, npm, Homebrew, Packagist) | needs user approval |
