@@ -220,15 +220,13 @@ impl Value {
         })
     }
 
-    /// PHP `var_export($v, true)` for scalars and null.
+    /// PHP `var_export($v, true)` for scalars (no caller passes anything else).
     pub fn var_export(&self) -> String {
         match self {
-            Value::Null => "NULL".into(),
             Value::Bool(b) => b.to_string(),
-            Value::Int(i) => i.to_string(),
             Value::Float(f) => float_var_export(*f),
             Value::Str(s) => format!("'{}'", s.replace('\\', "\\\\").replace('\'', "\\'")),
-            other => format!("{other:?}"),
+            int => int.to_php_string().unwrap_or_default(),
         }
     }
 }
@@ -267,14 +265,10 @@ fn split_exp(s: &str) -> (String, i32) {
     (m.replace('.', ""), e.parse().expect("exponent"))
 }
 
+/// INF/-INF (NEON's `1e999`); NAN cannot be written in NEON.
 fn special(f: f64) -> Option<String> {
-    if f.is_nan() {
-        Some("NAN".into())
-    } else if f.is_infinite() {
-        Some(if f > 0.0 { "INF" } else { "-INF" }.into())
-    } else {
-        None
-    }
+    f.is_infinite()
+        .then(|| if f > 0.0 { "INF" } else { "-INF" }.into())
 }
 
 /// `(string) $float` (precision=14).

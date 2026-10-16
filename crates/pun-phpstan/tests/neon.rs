@@ -72,3 +72,8 @@ fn base64(s: &str) -> Vec<u8> {
 fn nette_neon_test_suite() {
     run("neon.json");
 }
+
+#[test]
+fn extra_inputs() {
+    run("neon-extra.json");
+}

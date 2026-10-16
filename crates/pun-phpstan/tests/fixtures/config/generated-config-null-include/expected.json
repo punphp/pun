@@ -1,0 +1,3 @@
+{
+    "error": "Cannot include config from package acme/bad, expecting string file path but got NULL"
+}

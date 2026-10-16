@@ -7,7 +7,7 @@
 use crate::comments::{Identifier, LinesToIgnore};
 use crate::neon::json_string;
 use crate::php::{FileExcluder, is_match, normalize_path, preg, preg_quote};
-use crate::value::{Array, Key, Value, float_json};
+use crate::value::{Array, Key, Value};
 use indexmap::IndexMap;
 use pcre2::bytes::Regex;
 use std::cell::RefCell;
@@ -59,16 +59,12 @@ fn str_of(v: Option<&Value>) -> Option<String> {
     v.and_then(Value::to_php_string)
 }
 
-/// `Nette\Utils\Json::encode()` of a config value.
+/// `Nette\Utils\Json::encode()` of an `ignoreErrors` entry (schema-checked: strings, ints, bools, lists, maps).
 fn json(v: &Value) -> String {
     match v {
         Value::Null => "null".into(),
         Value::Bool(b) => b.to_string(),
         Value::Int(i) => i.to_string(),
-        Value::Float(f) => {
-            let s = float_json(*f);
-            if s.contains(['.', 'e']) { s } else { s + ".0" }
-        }
         Value::Array(a) if a.is_list() => {
             format!("[{}]", a.values().map(json).collect::<Vec<_>>().join(","))
         }
@@ -102,17 +98,8 @@ fn stringify(e: &Value) -> String {
         (None, Some(r)) => format!("\"{}\"", r.to_php_string().unwrap_or_default()),
         _ => String::new(),
     };
-    let ids = match (isset(e, "identifier"), isset(e, "identifiers")) {
-        (Some(id), _) => id.to_php_string(),
-        (None, Some(Value::Array(ids))) => Some(
-            ids.values()
-                .filter_map(Value::to_php_string)
-                .collect::<Vec<_>>()
-                .join(", "),
-        ),
-        _ => None,
-    };
-    if let Some(ids) = ids {
+    // (`identifiers` never reaches here: initialize() expanded it to `identifier`.)
+    if let Some(ids) = str_of(isset(e, "identifier")) {
         message = if message.is_empty() {
             ids
         } else {
@@ -337,7 +324,8 @@ impl IgnoredErrors {
         let mut unmatched: Vec<Option<Value>> =
             self.entries.iter().map(|(_, r)| Some(r.clone())).collect();
         let mut out = Processed::default();
-        let mut real_counts: HashMap<usize, i64> = HashMap::new();
+        // entry index => (times matched, its `count`)
+        let mut real_counts: HashMap<usize, (i64, i64)> = HashMap::new();
         let mut matched_at: HashMap<usize, (String, Option<i64>)> = HashMap::new();
 
         // Returns whether the error stays reported.
@@ -357,7 +345,7 @@ impl IgnoredErrors {
                     ignored = self.should_ignore(error, m, r, id, Some(path));
                     if ignored {
                         if let Some(Value::Int(count)) = isset(ignore, "count") {
-                            let real = real_counts.entry(i).or_default();
+                            let (real, _) = real_counts.entry(i).or_insert((0, *count));
                             *real += 1;
                             matched_at
                                 .entry(i)
@@ -437,20 +425,17 @@ impl IgnoredErrors {
             Error::new(message, file, line).non_ignorable("ignore.count")
         };
         for (i, u) in unmatched.iter().enumerate() {
-            let (Some(u), Some(&real)) = (u, real_counts.get(&i)) else {
+            let (Some(u), Some(&(real, count))) = (u, real_counts.get(&i)) else {
                 continue;
             };
-            let Some(Value::Int(count)) = isset(u, "count") else {
-                continue;
-            };
-            if real > *count {
+            if real > count {
                 out.errors.push(count_error(
                     i,
                     format!(
                         "{} {} is expected to occur {count} {}, but occurred {real} {}.",
                         label(u),
                         stringify(u),
-                        times(*count),
+                        times(count),
                         times(real)
                     ),
                 ));
@@ -475,9 +460,9 @@ impl IgnoredErrors {
                     stringify(u)
                 )
             };
-            match (isset(u, "count"), real_counts.get(&i)) {
-                (Some(Value::Int(count)), Some(&real)) if real_path.is_some() || !only_files => {
-                    if real < *count {
+            match real_counts.get(&i) {
+                Some(&(real, count)) if real_path.is_some() || !only_files => {
+                    if real < count {
                         out.errors.push(count_error(
                             i,
                             format!(

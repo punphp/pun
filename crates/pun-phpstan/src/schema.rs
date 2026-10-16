@@ -111,10 +111,18 @@ impl Arg {
         }
     }
 
+    /// The argument as a PHP value (a nested schema stays an object no value equals: null here).
     fn value(self) -> Value {
         match self {
             Arg::Value(v) => v,
-            _ => Value::Null,
+            Arg::Map(items) => {
+                let mut a = Array::new();
+                for (k, v) in items {
+                    a.set(k, v.value());
+                }
+                Value::Array(a)
+            }
+            Arg::Schema(_) => Value::Null,
         }
     }
 }

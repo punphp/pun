@@ -214,3 +214,27 @@ fn phpstan_analyse_local_ignores() {
         failures.join("\n")
     );
 }
+
+#[test]
+fn local_ignores_processor() {
+    for case in fixture("local-processor.json").as_array().unwrap() {
+        let (mut lines, _) = comments::lines_to_ignore(case["code"].as_str().unwrap().as_bytes());
+        let mut unmatched = lines.clone();
+        let errors = case["errors"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(error)
+            .collect();
+        let (kept, ignored) =
+            pun_phpstan::ignore::local_ignores("f.php", errors, &mut lines, &mut unmatched);
+        let got = json!({
+            "kept": kept.iter().map(dump).collect::<Vec<_>>(),
+            "ignored": ignored.iter().map(dump).collect::<Vec<_>>(),
+            "lines": tagged(&lines_value(&lines)),
+            "unmatched": tagged(&lines_value(&unmatched)),
+        });
+        let want = json!({ "kept": case["kept"], "ignored": case["ignored"], "lines": case["lines"], "unmatched": case["unmatched"] });
+        assert_eq!(got, want, "{}", case["code"]);
+    }
+}
