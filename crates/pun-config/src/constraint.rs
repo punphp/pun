@@ -43,6 +43,9 @@ fn conjunction(s: &str) -> Result<Range, String> {
             parts.push(std::mem::take(&mut pending) + tok);
         }
     }
+    if !pending.is_empty() {
+        return Err(format!("missing version after `{pending}`"));
+    }
     let mut r = Range { lo: (0, 0, 0), hi: None };
     for p in parts {
         let c = single(&p)?;
@@ -132,14 +135,27 @@ fn parse(s: &str) -> Result<(u64, Option<u64>, Option<u64>), String> {
 mod tests {
     use super::allows_below;
 
+    /// Expected values from composer/semver (Pint's vendor): `parseConstraints($c)->matches(parseConstraints('<8.4.0.0-dev'))`.
     #[test]
-    fn php_84_gate() {
+    fn php_84_gate_matches_composer() {
         let b = (8, 4, 0);
-        for ok in ["^8.4", "~8.4.0", ">=8.4", "8.4.*", "^8.4.0", ">=8.4 <9.0", "8.4", ">8.3.99 <8.3.99|^8.4", "8.4 - 8.5"] {
-            assert!(!allows_below(ok, b).unwrap(), "{ok} should be allowed");
+        let cases = [
+            ("^8.4", false), ("~8.4.0", false), (">=8.4", false), (">= 8.4", false), ("8.4.*", false), ("^8.4.0", false),
+            (">=8.4 <9.0", false), ("<9 >=8.4", false), ("8.4", false), ("==8.4", false), ("v8.4", false), ("8.4@stable", false),
+            ("8.4.0-dev", false), (">8.3.99 <8.3.99|^8.4", false), (">=8.4 <8.3", false), ("8.4 - 8.5", false), ("8.4 - 8.3", false),
+            ("^8.2", true), (">=8.1", true), ("8.3.*|^8.4", true), ("8.3.* || ^8.4", true), ("~8.3", true), ("~8.3.1", true),
+            ("~8", true), ("^7.4|^8.0", true), ("*", true), ("x", true), (">=8.2,<8.5", true), (">8.3", true), ("<9", true),
+            ("8.1 - 8.4", true), ("8.1 - 8.3.2", true), ("8.1 - 8", true), ("^0.0.3", true), ("^0.2", true), ("^0", true),
+            ("^0.0", true), ("<8.4", true), ("<=8.4", true), ("!=8.4", true), ("<>8.0", true), ("=8.3", true), ("8.*", true),
+            ("8.x", true), ("8.3.x", true), ("8.3.1.*", true), ("^8.3 <8.3.5", true), ("<8.5 <=8.5", true), ("<8.5, <=8.5", true),
+            ("<8.5 <8.5", true), ("<=8.3 <8.3", true),
+        ];
+        for (c, below) in cases {
+            assert_eq!(allows_below(c, b), Ok(below), "{c}");
         }
-        for bad in ["^8.2", ">=8.1", "8.3.*|^8.4", "8.3.* || ^8.4", "~8.3", "^7.4|^8.0", "*", ">=8.2,<8.5", ">8.3", "8.1 - 8.4", "<9"] {
-            assert!(allows_below(bad, b).unwrap(), "{bad} should be refused");
+        // composer: "Could not parse version constraint ..."
+        for bad in [">", "^", ">=8.4 <", "abc", "%8.4", "=>8.4", "!8.4"] {
+            assert!(allows_below(bad, b).is_err(), "{bad} should not parse");
         }
     }
 }
