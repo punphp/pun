@@ -292,7 +292,8 @@ impl StatementIndentationFixer {
                     continue;
                 }
 
-                let next_token = (index + 1 < tokens.count()).then(|| tokens[index + 1].clone());
+                // Only used when it is a comment.
+                let next_token = tokens.as_slice().get(index + 1).filter(|t| t.is_comment()).cloned();
 
                 let current = scopes.last().unwrap();
                 if current.type_ == ScopeType::Block || current.type_ == ScopeType::BlockSignature {
