@@ -897,11 +897,8 @@ version = "0.0.1"
 dependencies = [
  "anyhow",
  "mago-allocator",
- "mago-database",
  "mago-formatter",
  "mago-php-version",
- "mago-span",
- "mago-syntax",
  "punphp-config",
  "punphp-tokens",
  "serde_json",

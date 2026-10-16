@@ -15,7 +15,7 @@ pub struct RawToken<'a> {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum State {
+pub(crate) enum State {
     Initial,
     Scripting,
     LookingForProperty,
@@ -28,18 +28,22 @@ enum State {
     VarOffset,
 }
 
-struct Label {
+#[derive(Clone)]
+pub(crate) struct Label {
     start: usize,
     end: usize,
-    indentation: usize,
+    pub(crate) indentation: usize,
 }
 
-struct Lexer<'a> {
+#[derive(Clone)]
+pub(crate) struct Lexer<'a> {
     src: &'a [u8],
     pos: usize,
-    state: State,
+    pub(crate) state: State,
     stack: Vec<State>,
-    labels: Vec<Label>,
+    pub(crate) labels: Vec<Label>,
+    /// State that produced the last token.
+    pub(crate) tok_state: State,
 }
 
 #[inline]
@@ -59,7 +63,7 @@ fn is_ws(c: u8) -> bool {
 
 /// Tokenize like `token_get_all($src)`.
 pub fn tokenize(src: &[u8]) -> Vec<RawToken<'_>> {
-    let mut lx = Lexer { src, pos: 0, state: State::Initial, stack: Vec::new(), labels: Vec::new() };
+    let mut lx = Lexer::new(src);
     let mut spans: Vec<(Option<Kind>, usize, usize)> = Vec::with_capacity(src.len() / 4);
     let mut need_tokens: i32 = -1;
     let mut halted = false;
@@ -206,6 +210,10 @@ fn cast(lower: &[u8]) -> Option<Kind> {
 type Tok = (Option<Kind>, usize, usize);
 
 impl<'a> Lexer<'a> {
+    pub(crate) fn new(src: &'a [u8]) -> Self {
+        Lexer { src, pos: 0, state: State::Initial, stack: Vec::new(), labels: Vec::new(), tok_state: State::Initial }
+    }
+
     #[inline]
     fn at(&self, i: usize) -> u8 {
         // Like the scanner's NUL padding past the end.
@@ -236,12 +244,13 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn next(&mut self) -> Option<Tok> {
+    pub(crate) fn next(&mut self) -> Option<Tok> {
         loop {
             let p = self.pos;
             if p >= self.src.len() {
                 return None;
             }
+            self.tok_state = self.state;
             let r = match self.state {
                 State::Initial => Some(self.initial(p)),
                 State::Scripting => Some(self.scripting(p)),

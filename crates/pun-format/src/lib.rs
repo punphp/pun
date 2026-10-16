@@ -1,12 +1,14 @@
 //! Fixer pipeline (PHP-CS-Fixer's Runner::fixFile, single pass, priority order) and the two engines.
 
 use anyhow::{Result, bail};
-use mago_span::HasSpan;
 use pun_config::Rule;
 use serde_json::Value;
 use std::path::Path;
 
 pub use pun_tokens::Tokens;
+
+mod php_grammar;
+mod php_parser;
 
 /// A PHP-CS-Fixer fixer (`FixerInterface` + `ConfigurableFixerInterface`).
 pub trait Fixer: Send + Sync {
@@ -200,19 +202,13 @@ pub struct LintError {
     pub after_fix: bool,
 }
 
-/// Syntax check standing in for `token_get_all(TOKEN_PARSE)`. Message shape matches PHP-CS-Fixer's
-/// TokenizerLintingResult; the wording after "Parse error:" is mago's, not PHP's.
+/// `token_get_all($code, TOKEN_PARSE)` as PHP-CS-Fixer's TokenizerLinter runs it (PHP's own grammar and scanner
+/// errors, see php_parser.rs); the message is TokenizerLintingResult's.
 pub fn lint(code: &[u8]) -> Result<(), LintError> {
-    let arena = mago_allocator::LocalArena::new();
-    let program = mago_syntax::parser::parse_file_content(&arena, mago_database::file::FileId::zero(), code);
-    match program.errors.first() {
-        None => Ok(()),
-        Some(e) => {
-            let offset = e.span().start.offset as usize;
-            let line = code[..offset.min(code.len())].iter().filter(|&&b| b == b'\n').count() + 1;
-            Err(LintError { message: format!("Parse error: {e} on line {line}."), after_fix: false })
-        }
-    }
+    php_parser::parse(code).map_err(|e| LintError {
+        message: format!("{}: {} on line {}.", if e.fatal { "Fatal error" } else { "Parse error" }, e.message, e.line),
+        after_fix: false,
+    })
 }
 
 /// `--engine=pun`: mago-formatter with its Pint preset (whole-file reprint, not byte-identical to Pint).
