@@ -10,3 +10,10 @@ Plan: docs/PLAN.md. Home: github.com/punphp/pun (npm: @punphp/pun). Current scop
 - Oracle = real tools via system PHP 8.5 (no Docker, no embedded libphp yet). Pinned oracle installs live in `.oracle/` (gitignored).
 - Acceptance project: /home/forge/projects/pinkary.com (read-only — never modify it; copy into corpus/ if you need a writable checkout).
 - Use `pcre2` crate where upstream uses preg_*; PHP string semantics (byte strlen, ASCII strtolower) live in pun-tokens `php_compat`.
+
+## Keeping the box alive (2 cores / 7 GB, several agents at once)
+
+- Always `export CARGO_BUILD_JOBS=1` and prefix heavy commands with `nice` and `timeout` (e.g. `timeout 900 nice cargo test ...`).
+- One cargo/php command at a time per agent; never run things in the background and never `cargo build --workspace`/`--release`.
+- Harness corpus runs: one fixer, one project at a time; prefer Pinkary/laravel-framework subsets while iterating.
+- After every commit: `git push origin main` (retry once on failure; never force-push, never rewrite history).
