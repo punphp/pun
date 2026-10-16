@@ -31,6 +31,7 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | `scripts/effective-rules.php [pint.json]` | effective fixer list (run order, options, priority, risky, class, file) |
 | `scripts/rank.php <pint.json> <dir>...` | per-fixer changed-file counts, each fixer alone |
 | `scripts/export-fixtures.php <effective.json> <outdir>` | upstream data-provider test cases to JSON |
+| `scripts/cli-parity.sh [--project DIR] [--tty [--cols N]] [--env K=V] "ARGS"...` | byte-compare Pint and Pun's `pint` alias (stdout, stderr, exit code, files) per argument set, same directory |
 | `scripts/perturb.php <dir>` | make a deliberately unformatted copy (anti-laravel config + token noise, `php -l` checked) |
 
 ## Harness
@@ -59,3 +60,24 @@ is not touched in this mode.
 used, e.g. whitespace config), and every case `{provider, key, args}`. Objects are dumped as
 `{"__class": ..., props}`; non-UTF-8 strings as `{"__base64": ...}`. Includes non-fix providers
 (e.g. `provideInvalidConfigurationCases`); filter on `method`.
+
+## CLI output parity
+
+`scripts/cli-parity.sh` and `crates/pun-cli/tests/output.rs` compare every output mode against the PHAR: summary,
+`-v` diffs and syntax-error snippets, `-q`, `--format=` json/txt/agent/checkstyle/junit/xml/gitlab (stdout and
+`--output-to-file`), colours (`--ansi`, `--no-ansi`, TTY via `script`, NO_COLOR/FORCE_COLOR, Collision's TTY-only
+highlighting), terminal width (COLUMNS or `stty -a`), abort boxes and the prettier pre-flight check.
+
+Syntax-error messages are PHP's own: for a file that fails to lint Pun runs the local `php` once
+(`token_get_all(..., TOKEN_PARSE)`); without `php` it falls back to its parser's wording (same layout).
+The gitlab reporter's fixer descriptions/docs paths are generated: `php scripts/fixer-metadata.php --gitlab >
+crates/pun-cli/src/gitlab_fixers.json`.
+
+Intentional differences:
+
+- `-vvv`: Pint's PHAR wrapper (Box) prints a "Box Requirements Checker" block on stderr. It is not Pint output;
+  Pun doesn't print it (cli-parity.sh strips it before comparing).
+- Missing prettier packages for `Pint/laravel_blade`: interactive Pint asks whether to install them; Pun always
+  takes the non-interactive answer (no) and aborts with Pint's message.
+- Exceptions other than Pint's `abort()` (unreadable path, bad config) are rendered by Symfony with an
+  "In File.php line N:" header naming PHP source; Pun prints the message without that box.
