@@ -17,3 +17,16 @@ Plan: docs/PLAN.md. Home: github.com/punphp/pun (npm: @punphp/pun). Current scop
 - One cargo/php command at a time per agent; never run things in the background and never `cargo build --workspace`/`--release`.
 - Harness corpus runs: one fixer, one project at a time; prefer Pinkary/laravel-framework subsets while iterating.
 - After every commit: `git push origin main` (retry once on failure; never force-push, never rewrite history).
+
+## Tests: 100% coverage, zero tautological tests
+
+- Gate: 100% line coverage per crate, measured by `scripts/coverage.sh` (cargo-llvm-cov). Any line that genuinely cannot be
+  reached gets removed, not excluded; the rare justified exclusion is listed in docs/COVERAGE.md with the reason.
+- Expected values must come from somewhere other than the code under test: upstream fixtures, output of the real tool
+  (`php .oracle/pint/builds/pint`, `.oracle/php-cs-fixer`, `token_get_all`), or hand-derived values for hand-written cases.
+  To cover a fixer branch the upstream fixtures miss, write the input, run the oracle on it, and paste the oracle's output
+  as the expectation.
+- Banned (tautological): asserting a function equals itself or a copy of its own logic; snapshotting current output and
+  calling it expected; `assert!(true)`/no assertion; asserting only that something didn't panic when its output is checkable;
+  mocks that only verify calls; tests of private helpers whose behaviour is already pinned through the public API.
+- Each test must fail on a plausible wrong implementation. If you can't name the bug it catches, delete it.
