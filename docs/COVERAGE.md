@@ -13,4 +13,4 @@ Uncovered lines:
 
 ## Exclusions
 
-- none
+- `crates/pun-fixers/src/fixers/normalize_index_brace.rs:23-31` fix body: CT_ARRAY_INDEX_BRACE_* only come from PHP < 8 `$a{1}`, which no longer lints (upstream on PHP 8.5 never reaches it either; its fixtures are all `#[RequiresPhp(< 8.0)]`).

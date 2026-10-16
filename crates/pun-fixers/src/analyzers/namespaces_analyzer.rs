@@ -1,10 +1,8 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\NamespacesAnalyzer`.
-use crate::analyzers::analysis::{NamespaceAnalysis, NamespaceUseAnalysis};
-use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
+use crate::analyzers::analysis::NamespaceAnalysis;
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
 use pun_tokens::php_compat::trim;
-use std::collections::BTreeMap;
 
 pub struct NamespacesAnalyzer;
 
@@ -57,22 +55,5 @@ impl NamespacesAnalyzer {
             .into_iter()
             .find(|ns| ns.scope_start_index <= index && ns.scope_end_index >= index)
             .unwrap_or_else(|| panic!("Unable to get the namespace at index {index}."))
-    }
-
-    /// `[$namespaceAnalysis, $uses]` with `$uses` keyed by short name (class imports only; later ones win).
-    pub fn collect_namespace_analysis(
-        tokens: &Tokens,
-        start_index: usize,
-    ) -> (NamespaceAnalysis, BTreeMap<Vec<u8>, NamespaceUseAnalysis>) {
-        let namespace_analysis = NamespacesAnalyzer.get_namespace_at(tokens, start_index);
-        let namespace_use_analyses = NamespaceUsesAnalyzer.get_declarations_in_namespace(tokens, &namespace_analysis, false);
-        let mut uses = BTreeMap::new();
-        for u in namespace_use_analyses {
-            if !u.is_class() {
-                continue;
-            }
-            uses.insert(u.short_name.clone(), u);
-        }
-        (namespace_analysis, uses)
     }
 }

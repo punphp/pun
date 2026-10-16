@@ -74,3 +74,19 @@ impl ClassyAnalyzer {
         tokens[prev].is_given_kind(&[T_IMPLEMENTS, CT_USE_TRAIT])
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Expected values: PhpCsFixer's ClassyAnalyzer::isClassyInvocation on each T_STRING of the same code.
+    #[test]
+    fn matches_oracle() {
+        let tokens = Tokens::from_code(b"<?php new self; new Foo; function f(): int {}");
+        let got: Vec<(usize, bool)> = (0..tokens.count())
+            .filter(|&i| tokens[i].is_kind(T_STRING))
+            .map(|i| (i, ClassyAnalyzer.is_classy_invocation(&tokens, i)))
+            .collect();
+        assert_eq!(got, [(3, false), (8, true), (13, false), (18, false)]);
+    }
+}

@@ -9,5 +9,14 @@
         },
         "input": "<?php\n$a = join(\",\", $b);\n$c = sizeof($d);\n",
         "expected": "<?php\n$a = implode(\",\", $b);\n$c = count($d);\n"
+    },
+    {
+        "fixer": "no_alias_functions",
+        "config": {
+            "sets": [
+                "@x"
+            ]
+        },
+        "error": "[no_alias_functions] Invalid configuration: The option \"sets\" with value array is invalid."
     }
 ]

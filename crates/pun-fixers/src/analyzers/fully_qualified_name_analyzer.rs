@@ -65,3 +65,23 @@ impl<'a> FullyQualifiedNameAnalyzer<'a> {
         ns
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Expected values: PhpCsFixer's FullyQualifiedNameAnalyzer::getFullyQualifiedName on the same code and index
+    /// (function imports ignored for classes, a repeated short name overwrites, `y\Q` resolves through `use C\Y`).
+    #[test]
+    fn matches_oracle() {
+        let tokens = Tokens::from_code(b"<?php namespace N; use function F\\x; use A\\X; use B\\X; use C\\Y; class Z {}");
+        let a = FullyQualifiedNameAnalyzer::new(&tokens);
+        let last = tokens.count() - 1;
+        let got = |n: &str, t| String::from_utf8(a.get_fully_qualified_name(n.as_bytes(), last, t)).unwrap();
+        assert_eq!(got("x", NamespaceUseType::Class), "B\\X");
+        assert_eq!(got("X", NamespaceUseType::Class), "B\\X");
+        assert_eq!(got("y\\Q", NamespaceUseType::Class), "C\\Y\\Q");
+        assert_eq!(got("Q", NamespaceUseType::Class), "N\\Q");
+        assert_eq!(got("x", NamespaceUseType::Function), "F\\x");
+    }
+}

@@ -9,13 +9,17 @@ pub struct Resolved {
     map: Map<String, Value>,
 }
 
-/// `Null` (rule enabled with `true`) and `[]` mean "all defaults". Unknown keys are rejected like upstream.
+/// `Null` (rule enabled with `true`) means "all defaults". Unknown keys are rejected like upstream.
 pub fn resolve(fixer: &'static str, options: &Value, defined: &[&str]) -> Result<Resolved> {
+    // RuleSet / FixerFactory::useRuleSet checks, done before configure() upstream.
     let map = match options {
         Value::Null => Map::new(),
-        Value::Array(a) if a.is_empty() => Map::new(),
-        Value::Object(o) => o.clone(),
-        _ => bail!("[{fixer}] Invalid configuration: expected an array of options."),
+        Value::Object(o) if !o.is_empty() => o.clone(),
+        Value::Array(a) if !a.is_empty() => a.iter().enumerate().map(|(i, v)| (i.to_string(), v.clone())).collect(),
+        Value::Array(_) | Value::Object(_) => bail!("[{fixer}] Configuration must be an array and may not be empty."),
+        _ => bail!(
+            "[{fixer}] Rule must be enabled (true), disabled (false) or configured (non-empty, assoc array). Other values are not allowed."
+        ),
     };
     let mut unknown: Vec<&String> = map.keys().filter(|k| !defined.contains(&k.as_str())).collect();
     if !unknown.is_empty() {

@@ -18,5 +18,36 @@
         "fixer": "class_definition",
         "input": "<?php\n$a = new class // x]\nextends B {};\n",
         "expected": "<?php\n$a = new class // x]\nextends B {};\n"
+    },
+    {
+        "fixer": "class_definition",
+        "config": [
+            1
+        ],
+        "error": "[class_definition] Invalid configuration: The option \"0\" does not exist. Defined options are: \"inline_constructor_arguments\", \"multi_line_extends_each_single_line\", \"single_item_single_line\", \"single_line\", \"space_before_parenthesis\"."
+    },
+    {
+        "fixer": "class_definition",
+        "config": [],
+        "error": "[class_definition] Configuration must be an array and may not be empty.",
+        "source": "pint --test with this rule config (FixerFactory::useRuleSet)"
+    },
+    {
+        "fixer": "class_definition",
+        "config": {},
+        "error": "[class_definition] Configuration must be an array and may not be empty.",
+        "source": "pint --test with this rule config (FixerFactory::useRuleSet)"
+    },
+    {
+        "fixer": "class_definition",
+        "config": "x",
+        "error": "[class_definition] Rule must be enabled (true), disabled (false) or configured (non-empty, assoc array). Other values are not allowed.",
+        "source": "pint --test with this rule config (RuleSet::__construct)"
+    },
+    {
+        "fixer": "class_definition",
+        "config": 5,
+        "error": "[class_definition] Rule must be enabled (true), disabled (false) or configured (non-empty, assoc array). Other values are not allowed.",
+        "source": "pint --test with this rule config (RuleSet::__construct)"
     }
 ]
