@@ -117,11 +117,27 @@ impl Cx {
         (want, got)
     }
 
+    /// `same` for `-v` error boxes: in Pint's exception trace the PHAR's absolute path becomes `phar://pint/` and
+    /// the PHP call frames under the throw site are dropped (Pun prints only the throw site).
+    fn same_trace(&self, tree: &[(&str, &str)], args: &[&str]) -> Run {
+        let (mut want, got) = self.pair(tree, args, PLAIN);
+        assert!(want.stdout.contains("Exception trace:"), "{args:?}: {}", want.stdout);
+        want.stdout = normalise_trace(&want.stdout, &self.oracle);
+        assert_eq!(got, want, "{args:?}");
+        got
+    }
+
     fn same(&self, tree: &[(&str, &str)], args: &[&str], o: Opts) -> Run {
         let (want, got) = self.pair(tree, args, o);
         assert_eq!(got, want, "{args:?} env={:?} tty={:?}", o.env, o.tty);
         got
     }
+}
+
+fn normalise_trace(out: &str, oracle: &Path) -> String {
+    let frame = |l: &str| l.starts_with(' ') && !l.starts_with("  ") && l.contains(" at ");
+    let out = out.replace(&format!("phar://{}/", oracle.display()), "phar://pint/");
+    out.split_inclusive('\n').filter(|l| !frame(l)).collect()
 }
 
 fn which(bin: &str) -> String {
@@ -216,6 +232,7 @@ fn ignore_annotations_like_pint() {
         t.push(("app/Zbad.php", Box::leak(format!("<?php\n// @php-cs-fixer-ignore{bad}\n$a = \"x\";\n").into_boxed_str())));
         let r = cx.same(&t, &["--test"], PLAIN);
         assert_eq!(r.code, Some(1), "{bad}");
+        cx.same_trace(&t, &["--test", "-v", "--ansi"]);
     }
 }
 
@@ -251,35 +268,74 @@ fn error_boxes_like_pint() {
         &["app/Missing.php"],
         &["--ansi", "app/Missing.php"],
         &["--config=http://example.com/pint.json"],
+        // `pun format`'s own flags are unknown options to Pint.
+        &["--watch"],
+        &["--engine=pun"],
+        &["--engine", "nope"],
+        &["--explain"],
+        &["--native-only"],
+        &["--stdin"],
+        &["--staged"],
+        &["--since=HEAD"],
+        &["--no-cache"],
+        &["--list-files"],
     ] {
         let r = cx.same(&t, args, PLAIN);
         assert_eq!(r.code, Some(1), "{args:?}");
     }
-    for cfg in [r#"{"in":["nope"]}"#, r#"{"extend":"b.json"}"#, r#"{"rules":{"array_syntax":1}}"#, r#"{"rules":{"@PSR12":null}}"#, "{bad"] {
+    // A top-level list is an empty config (not invalid JSON); an unknown preset (Pint 1.29) finds no files, then
+    // its summary fails on the preset's name.
+    for cfg in [r#"{"in":["nope"]}"#, r#"{"extend":"b.json"}"#, r#"{"rules":{"array_syntax":1}}"#, r#"{"rules":{"@PSR12":null}}"#, "{bad", "[1]", r#"[{"preset":"empty"}]"#, r#"{"preset":"nope"}"#] {
         let mut t = tree();
         t[1] = ("pint.json", cfg);
         t.push(("b.json", r#"{"extend":"c.json"}"#));
         let r = cx.same(&t, &["--test"], PLAIN);
         assert_eq!(r.code, Some(1), "{cfg}");
+        if !cfg.starts_with('[') {
+            cx.same_trace(&t, &["--test", "-v"]);
+        }
     }
-    // Help and Pun-only value checks stay clap's (Pint's help differs; it has no --engine): exit 0 / 2, not a box.
+    for args in [&["--preset=nope"][..], &["--preset=nope", "--test", "--format=json"], &["--preset=nope", "--format=txt"], &["--preset=nope", "-q"], &["--preset=nope", "--ansi"]] {
+        cx.same(&t, args, PLAIN);
+    }
+    // -v: the exception class in the box and the throw site under it, for option errors too; -q wins over -v.
+    for args in [
+        &["--nope", "-v"][..],
+        // (not -vv: the PHAR's stub then prints Box's requirements check on stderr)
+        &["-z", "-v"],
+        &["-vz"],
+        &["--test=1", "--verbose"],
+        &["--config", "-v"],
+        &["--watch", "-v", "--ansi"],
+        &["--format=nope", "-v"],
+        &["--config=http://example.com/pint.json", "-v"],
+        &["app/Missing.php", "-v"],
+        &["--test", "-v", "--format=json", "--output-to-file=app"],
+        &["-vq", "--nope"],
+    ] {
+        cx.same_trace(&t, args);
+    }
+    cx.same(&t, &["-qv", "--nope"], PLAIN);
+    // ArgvInput lets a flag repeat.
+    cx.same(&t, &["--test", "--test"], PLAIN);
+    // Help stays clap's (Pint's help differs): exit 0, not a box.
     let ours = |args: &[&str]| run(&[&[cx.alias.to_str().unwrap()][..], args].concat(), &cx.dir, PLAIN);
     let h = ours(&["--help"]);
     assert!(h.code == Some(0) && h.stdout.starts_with("Fix the coding style of the given path\n"), "{h:?}");
-    let e = ours(&["--engine=nope"]);
-    assert!(e.code == Some(2) && e.stdout.is_empty() && e.stderr.contains("invalid value 'nope' for '--engine"), "{e:?}");
     // Unreadable / unwritable files abort the run (kept outside the snapshotted tree).
     let outside = tmp("perm").join("Fix.php");
-    for (mode, args) in [(0o000, &["--test"][..]), (0o444, &[])] {
+    // --bail stops there too, after the progress of the files before it.
+    for (mode, before, args) in [(0o000, &[][..], &["--test"][..]), (0o444, &[], &[]), (0o000, &["--bail", "app/Clean.php"], &[]), (0o444, &["-v"], &[])] {
         let pair = |cmd: &[&str]| {
             reset(&cx.dir, &t);
             std::fs::write(&outside, "<?php\n$a = array( 1,2 );\n").unwrap();
             std::fs::set_permissions(&outside, std::os::unix::fs::PermissionsExt::from_mode(mode)).unwrap();
-            let r = run(&[cmd, &[outside.to_str().unwrap()], args].concat(), &cx.dir, PLAIN);
+            let r = run(&[cmd, before, &[outside.to_str().unwrap()], args].concat(), &cx.dir, PLAIN);
             std::fs::set_permissions(&outside, std::os::unix::fs::PermissionsExt::from_mode(0o644)).unwrap();
             r
         };
-        let want = pair(&[&which("php"), cx.oracle.to_str().unwrap()]);
+        let mut want = pair(&[&which("php"), cx.oracle.to_str().unwrap()]);
+        want.stdout = normalise_trace(&want.stdout, &cx.oracle);
         assert!(want.stdout.contains("\nIn ") && want.code == Some(1), "{want:?}");
         assert_eq!(pair(&[cx.alias.to_str().unwrap()]), want, "mode {mode:o}");
     }
@@ -309,6 +365,7 @@ fn prettier_preflight_like_pint() {
     let r = cx.same(&t, &["--test"], PLAIN);
     assert!(r.stdout.contains("prettier dependencies to be installed using [npm]") && r.code == Some(1), "{r:?}");
     cx.same(&t, &["--ansi"], PLAIN);
+    cx.same_trace(&t, &["--test", "-v"]);
     let mut pnpm = t.clone();
     pnpm.push(("pnpm-lock.yaml", ""));
     cx.same(&pnpm, &["--test"], PLAIN);
@@ -351,4 +408,24 @@ fn syntax_error_without_php() {
     let line = r.stdout.lines().find(|l| l.starts_with("  ! a.php ")).unwrap_or_default();
     assert!(line.contains(" Parse error: ") && line.ends_with(" on line 3.  "), "{}", r.stdout);
     assert!(r.stdout.contains("\n      2▕ function (\n  ➜   3▕\n"), "{}", r.stdout);
+}
+
+/// A fixer exception (combine_consecutive_unsets' "Must not add empty token", a panic in Pun) fails only that file:
+/// `!` with the message, the other files still fixed, exit 1, no panic output. With a syntax error too, the summary's
+/// `invalid + exception` array union drops the exception.
+#[test]
+fn fixer_exception_like_pint() {
+    let Some(cx) = Cx::new("exception") else { return };
+    let mut t = vec![
+        ("pint.json", r#"{"preset":"empty","rules":{"combine_consecutive_unsets":true,"array_syntax":true}}"#),
+        ("app/U.php", "<?php unset($a ); unset( $b );\nunset($x, ); unset( $y);"),
+        ("app/Fix.php", "<?php\n$a = array(1);\nunset($a); unset($b);\n"),
+    ];
+    for args in [&[][..], &["--test"], &["--test", "-v"], &["--format=json"], &["--format=agent"], &["--test", "-q"]] {
+        let r = cx.same(&t, args, PLAIN);
+        assert_eq!(r.code, Some(1), "{args:?}");
+    }
+    t.push(("app/Bad.php", "<?php\nfunction (\n"));
+    cx.same(&t, &["--test"], PLAIN);
+    cx.same(&t, &["--format=txt", "--test"], PLAIN);
 }

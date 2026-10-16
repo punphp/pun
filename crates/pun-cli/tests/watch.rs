@@ -41,6 +41,25 @@ fn pint(before: &[(&str, &str)], files: &[(&str, &str)], explicit: bool) -> (Str
     (String::from_utf8(out.stdout).unwrap(), after)
 }
 
+/// Kills (and reaps) the watcher however the test ends, so a failed assertion can't leave it running.
+struct Reap(std::process::Child);
+
+impl Drop for Reap {
+    fn drop(&mut self) {
+        let _ = self.0.kill();
+        let _ = self.0.wait();
+    }
+}
+
+fn watcher(dir: &Path, home: &Path) -> Command {
+    let mut c = Command::new(env!("CARGO_BIN_EXE_pun"));
+    c.args(["format", "--watch"]).current_dir(dir).env_clear().env("PATH", std::env::var("PATH").unwrap()).env("HOME", home).env("COLUMNS", "80");
+    if let Ok(v) = std::env::var("LLVM_PROFILE_FILE") {
+        c.env("LLVM_PROFILE_FILE", v);
+    }
+    c
+}
+
 fn wait_for(what: &str, buf: &Mutex<String>, cond: impl Fn(&str) -> bool) {
     let start = Instant::now();
     while !cond(&buf.lock().unwrap()) {
@@ -59,12 +78,9 @@ fn watch_reformats_like_pint() {
     let dir = fresh("live");
     write(&dir, &start);
     let home = fresh("home");
-    let mut c = Command::new(env!("CARGO_BIN_EXE_pun"));
-    c.args(["format", "--watch"]).current_dir(&dir).env_clear().env("PATH", std::env::var("PATH").unwrap()).env("HOME", &home).env("COLUMNS", "80");
-    if let Ok(v) = std::env::var("LLVM_PROFILE_FILE") {
-        c.env("LLVM_PROFILE_FILE", v);
-    }
-    let mut child = c.stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped()).spawn().unwrap();
+    let mut child = Reap(watcher(&dir, &home).stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped()).spawn().unwrap());
+    let child_out = child.0.stdout.take().unwrap();
+    let child_err = child.0.stderr.take().unwrap();
     let collect = |mut r: Box<dyn Read + Send>| {
         let buf = Arc::new(Mutex::new(String::new()));
         let b = buf.clone();
@@ -76,8 +92,8 @@ fn watch_reformats_like_pint() {
         });
         buf
     };
-    let out = collect(Box::new(child.stdout.take().unwrap()));
-    let err = collect(Box::new(child.stderr.take().unwrap()));
+    let out = collect(Box::new(child_out));
+    let err = collect(Box::new(child_err));
 
     // The first run is a normal run.
     let (first, _) = pint(&[("pint.json", CFG)], &start[1..], false);
@@ -115,5 +131,32 @@ fn watch_reformats_like_pint() {
 
     // Removing the project ends the watch.
     std::fs::remove_dir_all(&dir).unwrap();
-    assert_eq!(child.wait().unwrap().code(), Some(0));
+    assert_eq!(child.0.wait().unwrap().code(), Some(0));
+}
+
+/// The watch ends when the process that started it does (here a shell that exits right after starting it).
+#[test]
+fn watch_ends_with_its_parent() {
+    let dir = fresh("orphan");
+    write(&dir, &[("pint.json", "{}"), ("a.php", "<?php\n")]);
+    let home = fresh("orphan-home");
+    let w = watcher(&dir, &home);
+    let program = w.get_program().to_str().unwrap().to_string();
+    let args: Vec<String> = w.get_args().map(|a| format!("'{}'", a.to_str().unwrap())).collect();
+    let mut sh = Command::new("sh");
+    // The shell exits once the first run has printed, so the watcher has seen its parent.
+    let log = home.join("out");
+    let script = format!("'{program}' {} >'{}' 2>&1 </dev/null & echo $!; while [ ! -s '{}' ]; do sleep 0.05; done", args.join(" "), log.display(), log.display());
+    sh.args(["-c", &script]).current_dir(&dir);
+    sh.env_clear().envs(w.get_envs().filter_map(|(k, v)| v.map(|v| (k, v))));
+    let pid = String::from_utf8(sh.output().unwrap().stdout).unwrap().trim().to_string();
+    let alive = || std::fs::read_to_string(format!("/proc/{pid}/stat")).is_ok_and(|s| !s.contains(") Z "));
+    let start = Instant::now();
+    while alive() {
+        if start.elapsed() > Duration::from_secs(20) {
+            let _ = Command::new("kill").arg(&pid).status();
+            panic!("pun format --watch (pid {pid}) outlived its parent");
+        }
+        std::thread::sleep(Duration::from_millis(50));
+    }
 }

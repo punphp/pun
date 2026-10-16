@@ -4,7 +4,7 @@
 
 use crate::console::{self, escape, format as fmt};
 use crate::fix_report::{self, Change};
-use crate::highlight;
+use crate::{highlight, pint_error};
 use anyhow::{Result, bail};
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -18,6 +18,8 @@ pub enum Status {
     Invalid,
     /// Fixers produced invalid code (TYPE_LINT).
     Lint,
+    /// A fixer threw (TYPE_EXCEPTION): Pun's fixers panic where upstream throws.
+    Exception,
     /// Symlink: listed by the finder, dropped by the runner without an event.
     Link,
 }
@@ -32,8 +34,8 @@ pub struct FileResult {
 }
 
 impl FileResult {
-    fn is_error(&self) -> bool {
-        matches!(self.status, Status::Invalid | Status::Lint)
+    pub fn is_error(&self) -> bool {
+        matches!(self.status, Status::Invalid | Status::Exception | Status::Lint)
     }
 }
 
@@ -60,8 +62,8 @@ pub fn running_in_agent() -> bool {
         || Path::new("/opt/.devin").exists()
 }
 
-/// Symfony Application::renderThrowable for Pint's `abort(1, $message)`: the red box, on stdout.
-pub fn abort_box(message: &str, decorated: bool) -> String {
+/// Symfony's doRenderThrowable box (without the blank line before it), on stdout; `title` is `-v`'s exception class line.
+pub fn abort_box(title: Option<&str>, message: &str, decorated: bool) -> String {
     let width = match console::width() {
         0 => usize::MAX,
         w => w - 1,
@@ -77,9 +79,13 @@ pub fn abort_box(message: &str, decorated: bool) -> String {
             lines.extend(chars.chunks(chunk).map(|c| format!("{:chunk$}", c.iter().collect::<String>())));
         }
     }
-    let len = lines.iter().map(|l| l.chars().count() + 4).max().unwrap_or(0);
+    let title_len = title.map_or(0, |t| t.chars().count());
+    let len = lines.iter().map(|l| l.chars().count() + 4).max().unwrap_or(0).max(title_len);
     let empty = format!("<error>{}</error>", " ".repeat(len));
-    let mut o = format!("\n{empty}\n");
+    let mut o = format!("{empty}\n");
+    if let Some(t) = title {
+        let _ = writeln!(o, "<error>{t}{}</error>", " ".repeat(len - title_len));
+    }
     for l in &lines {
         let _ = writeln!(o, "<error>  {}  {}</error>", escape(l), " ".repeat(len - l.chars().count() - 4));
     }
@@ -91,15 +97,14 @@ pub fn abort_box(message: &str, decorated: bool) -> String {
 /// `--blade`): Node must exist and prettier, prettier-plugin-blade and prettier-plugin-tailwindcss must resolve
 /// from the project at the required versions. Returns Pint's output when it would abort.
 /// ponytail: Pint offers to install missing packages when interactive; Pun always takes the non-interactive "no".
-pub fn ensure_prettier(root: &Path, enabled: bool, ansi: bool, no_ansi: bool) -> Option<String> {
+pub fn ensure_prettier(root: &Path, enabled: bool) -> Option<String> {
     use std::process::{Command, Stdio};
     if !enabled {
         return None;
     }
-    let decorated = console::decorated(1, ansi, no_ansi);
     let node_ok = Command::new("node").arg("-v").stdout(Stdio::null()).stderr(Stdio::null()).status().is_ok_and(|s| s.success());
     if !node_ok {
-        return Some(abort_box("The rules enabled in your pint configuration require Node.js to be installed.", decorated));
+        return Some(pint_error::render("The rules enabled in your pint configuration require Node.js to be installed."));
     }
     // resources/js/version-probe.cjs (argv shifted by one for `node -e`).
     const PROBE: &str = r#"const path = require('path'); const fs = require('fs'); const pkg = process.argv[1]; let entry;
@@ -136,7 +141,7 @@ while (dir !== path.dirname(dir)) { const manifest = path.join(dir, 'package.jso
             missing.join(", ")
         );
         let msg = format!("The rules enabled in your pint configuration require the following prettier dependencies to be installed: {}.", missing.join(", "));
-        return Some(warning + &abort_box(&msg, decorated));
+        return Some(warning + &pint_error::render(&msg));
     }
     if !outdated.is_empty() {
         let list: Vec<String> = outdated.iter().map(|(p, v, c)| format!("  - {p} (installed: {v}, required: {c})")).collect();
@@ -149,7 +154,7 @@ while (dir !== path.dirname(dir)) { const manifest = path.join(dir, 'package.jso
             manager.1,
             specs.join(" ")
         );
-        return Some(abort_box(&msg, decorated));
+        return Some(pint_error::render(&msg));
     }
     None
 }
@@ -173,7 +178,7 @@ pub fn emit(ctx: &Ctx, results: &[FileResult], format: Option<&str>, quiet: bool
     let out_dec = console::decorated(1, ctx.ansi, ctx.no_ansi);
     match emit_inner(ctx, results, format, quiet, to_file, file_format, out_dec) {
         Err(e) => {
-            print!("{}", abort_box(&e.to_string(), out_dec));
+            print!("{}", pint_error::render(&e.to_string()));
             Ok(1)
         }
         ok => ok,
@@ -192,7 +197,7 @@ fn emit_inner(ctx: &Ctx, results: &[FileResult], format: Option<&str>, quiet: bo
             eprintln!("{}", fmt(&format!("  {} {}: {}", symbol(i.status, ctx.dry_run, out_dec), i.rel, description(i)), err_dec));
         }
     } else {
-        out = summary(ctx, results, out_dec);
+        out = summary(ctx, results, out_dec)?;
     }
     print!("{}", fmt(&out, out_dec));
     std::io::Write::flush(&mut std::io::stdout())?;
@@ -201,7 +206,7 @@ fn emit_inner(ctx: &Ctx, results: &[FileResult], format: Option<&str>, quiet: bo
             // PHP's warning, rendered as an uncaught ErrorException. Rust adds " (os error N)" after the same strerror.
             let e = e.to_string();
             let msg = format!("file_put_contents({}): Failed to open stream: {}", path.display(), e.split(" (os error").next().unwrap_or(&e));
-            print!("{}{}", fmt("\n<comment>In ElaborateSummary.php line 106:</comment>", out_dec), abort_box(&msg, out_dec));
+            print!("{}", pint_error::render(&msg));
             return Ok(1);
         }
     }
@@ -218,7 +223,7 @@ fn symbol(s: Status, testing: bool, decorated: bool) -> String {
     let (sym, style) = match s {
         Status::Fixed if testing => ("⨯", "options=bold;fg=red"),
         Status::Fixed => ("✓", "options=bold;fg=green"),
-        Status::Invalid | Status::Lint => ("!", "options=bold;fg=red"),
+        Status::Invalid | Status::Exception | Status::Lint => ("!", "options=bold;fg=red"),
         _ => (".", "fg=gray"),
     };
     if decorated { format!("<{style}>{sym}</>") } else { sym.to_string() }
@@ -231,16 +236,21 @@ fn description(r: &FileResult) -> String {
 /// ErrorsManager: invalid errors, then lint errors (each in processing order).
 fn errors(results: &[FileResult]) -> impl Iterator<Item = &FileResult> {
     let of = move |s| results.iter().filter(move |r| r.status == s);
-    of(Status::Invalid).chain(of(Status::Lint))
+    of(Status::Invalid).chain(of(Status::Exception)).chain(of(Status::Lint))
 }
 
-/// SummaryOutput::getIssues: changes, then `invalid + exception + lint` (a PHP array union: a lint error only
-/// survives at an index past the invalid ones), sorted by Issue property order. Errors keep their absolute path
-/// in the compared field, so they sort before relative paths.
+/// SummaryOutput::getIssues: changes, then `invalid + exception + lint` (a PHP array union: each list only adds
+/// the entries at indexes past the lists before it), sorted by Issue property order. Errors keep their absolute
+/// path in the compared field, so they sort before relative paths.
 fn issues(results: &[FileResult]) -> Vec<&FileResult> {
-    let invalid: Vec<&FileResult> = results.iter().filter(|r| r.status == Status::Invalid).collect();
-    let lint = results.iter().filter(|r| r.status == Status::Lint).skip(invalid.len());
-    let mut v: Vec<&FileResult> = results.iter().filter(|r| r.status == Status::Fixed).chain(invalid.iter().copied()).chain(lint).collect();
+    let of = |s| results.iter().filter(move |r: &&FileResult| r.status == s);
+    let mut v: Vec<&FileResult> = of(Status::Fixed).collect();
+    let mut taken = 0;
+    for s in [Status::Invalid, Status::Exception, Status::Lint] {
+        let n = of(s).count();
+        v.extend(of(s).skip(taken));
+        taken = taken.max(n);
+    }
     let key = |r: &FileResult| if r.is_error() { r.path.to_string_lossy().into_owned() } else { r.rel.clone() };
     v.sort_by(|a, b| key(a).as_bytes().cmp(key(b).as_bytes()));
     v
@@ -259,7 +269,7 @@ pub fn progress<'a>(results: impl Iterator<Item = &'a FileResult>, width: usize,
     o
 }
 
-fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
+fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String> {
     let w = console::width();
     let inner = w.saturating_sub(4);
     let mut o = progress(results.iter(), w, ctx.dry_run, decorated);
@@ -272,7 +282,9 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
         "psr12" => "PSR 12",
         "laravel" => "Laravel",
         "symfony" => "Symfony",
-        _ => "Empty",
+        "empty" => "Empty",
+        // SummaryOutput's `$this->presets[$preset]` for a preset Pint 1.29 let through.
+        p => anyhow::bail!("Undefined array key \"{p}\""),
     };
     let _ = writeln!(o, "\n\n  <fg=gray>{}</> <fg=gray>{label}</>  ", "─".repeat(inner.saturating_sub(1 + label.chars().count())));
 
@@ -317,7 +329,11 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
         }
         let _ = writeln!(o, "  {left} <fg=gray>{}{desc}</>  ", " ".repeat(pad.saturating_sub(tw_len(&desc))));
         if ctx.verbose {
-            let code = if i.is_error() {
+            // Issue::code() highlights the exception's line, for a fixer's exception a line of PHP-CS-Fixer's source.
+            // ponytail: taken as past the end of the file (no snippet); files longer than that line would show one.
+            let code = if i.status == Status::Exception {
+                String::new()
+            } else if i.is_error() {
                 // Issue::code(): the file as it is on disk, around the exception's line.
                 let content = std::fs::read(&i.path).unwrap_or_default();
                 highlight::snippet(&String::from_utf8_lossy(&content), error_line(&i.message), colors)
@@ -330,7 +346,7 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
         }
     }
     o.push('\n');
-    o
+    Ok(o)
 }
 
 /// Termwind's getLength: width without anything STYLING_REGEX takes for a tag (`<x>`, `</a>`, `\e[1m`).

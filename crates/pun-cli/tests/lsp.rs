@@ -175,5 +175,20 @@ fn broken_config_fails_requests() {
     s.open(&format!("file://{}/app/A.php", dir.display()), "<?php\n");
     let r = s.format(&format!("file://{}/app/A.php", dir.display()));
     assert_eq!(r["error"], json!({"code": -32803, "message": format!("The configuration file [{}/pint.json] is not valid JSON.", dir.display())}));
+    // Fixing pint.json, then changing its rules or the file it extends, applies to the next request.
+    let code = "<?php\n$a = array(1);\n";
+    s.open(&format!("file://{}/app/A.php", dir.display()), code);
+    for (file, cfg) in [
+        ("pint.json", r#"{"preset":"empty","rules":{"array_syntax":true}}"#),
+        ("base.json", r#"{"rules":{"blank_line_after_opening_tag":true}}"#),
+        ("pint.json", r#"{"preset":"empty","extend":"base.json"}"#),
+        ("base.json", r#"{"rules":{"array_syntax":true}}"#),
+        ("pint.json", r#"{"preset":"empty"}"#),
+    ] {
+        std::fs::write(dir.join(file), cfg).unwrap();
+        let want = pint(&dir, "app/A.php", code);
+        let edits = if want == code { json!([]) } else { json!([{"range": {"start": {"line": 0, "character": 0}, "end": {"line": 2, "character": 0}}, "newText": want}]) };
+        assert_eq!(s.format(&format!("file://{}/app/A.php", dir.display()))["result"], edits, "{file}: {cfg}");
+    }
     s.stop();
 }

@@ -2,7 +2,7 @@
 //! Documents sync in full; `textDocument/formatting` runs the `--stdin` pipeline with the document's path, so the
 //! project's pint.json / pun.toml and their exclusions apply, and answers with one whole-document edit (no edits
 //! when nothing changes, the path is excluded or the code doesn't parse).
-//! ponytail: config is read once, at `initialize`; restart the server after editing pint.json.
+//! Config files are checked (mtimes) on each formatting request and reloaded when they changed.
 
 use crate::{Engine2, FormatArgs, engine, fix_text, load_config, root};
 use anyhow::Result;
@@ -17,6 +17,7 @@ use pun_config::Config;
 use serde_json::from_value;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::time::SystemTime;
 
 pub fn run() -> Result<u8> {
     let (conn, io) = Connection::stdio();
@@ -32,18 +33,18 @@ pub fn run() -> Result<u8> {
     if let Some(dir) = workspace.as_ref().and_then(file_path) {
         std::env::set_current_dir(dir)?;
     }
-    let a = FormatArgs::default();
-    let setup = root().and_then(|root| {
-        let cfg = load_config(&a, false, &root)?;
-        let engine = engine(&a, &cfg, &root)?;
-        Ok((cfg, engine))
-    });
+    let mut setup = setup();
+    let mut seen = stamp(&setup);
     let mut docs: HashMap<String, String> = HashMap::new();
     for msg in &conn.receiver {
         match msg {
             Message::Request(req) => {
                 if conn.handle_shutdown(&req)? {
                     break;
+                }
+                if req.method == Formatting::METHOD && stamp(&setup) != seen {
+                    setup = self::setup();
+                    seen = stamp(&setup);
                 }
                 let resp = match (req.method.as_str(), &setup) {
                     (Formatting::METHOD, Ok((cfg, engine))) => match from_value::<DocumentFormattingParams>(req.params) {
@@ -86,6 +87,25 @@ pub fn run() -> Result<u8> {
     drop(conn);
     io.join()?;
     Ok(0)
+}
+
+fn setup() -> Result<(Config, Engine2)> {
+    let a = FormatArgs::default();
+    let root = root()?;
+    let cfg = load_config(&a, false, &root)?;
+    let engine = engine(&a, &cfg, &root)?;
+    Ok((cfg, engine))
+}
+
+/// When each config file last changed and its size (`None`: absent): the ones a project can add, plus what the loaded config
+/// read (an `extend`ed file). A change reloads the config before the next formatting request.
+fn stamp(setup: &Result<(Config, Engine2)>) -> Vec<Option<(SystemTime, u64)>> {
+    let root = root().unwrap_or_default();
+    let mut files: Vec<PathBuf> = ["composer.json", "pint.json", "pun.toml", ".php-cs-fixer.php", ".php-cs-fixer.dist.php"].iter().map(|f| root.join(f)).collect();
+    if let Ok((cfg, _)) = setup {
+        files.extend(cfg.sources.iter().cloned());
+    }
+    files.iter().map(|f| std::fs::metadata(f).and_then(|m| Ok((m.modified()?, m.len()))).ok()).collect()
 }
 
 fn formatting(cfg: &Config, engine: &Engine2, docs: &HashMap<String, String>, uri: &Uri) -> Result<Vec<TextEdit>> {

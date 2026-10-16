@@ -121,8 +121,11 @@ impl Cx {
     fn pint(&self, script: &str, sub: &str, args: &[&str], stdin: &[u8]) -> Run {
         run(&["php", &self.oracle], script, sub, args, stdin)
     }
+    /// The `pint` alias, or `pun format` for Pun's own flags (`pint` rejects them like Pint).
     fn ours(&self, script: &str, sub: &str, args: &[&str], stdin: &[u8]) -> Run {
-        run(&[&self.alias], script, sub, args, stdin)
+        let pun_only = args.iter().any(|a| ["--stdin", "--staged", "--since"].contains(&a.split('=').next().unwrap()));
+        let cmd: &[&str] = if pun_only { &[env!("CARGO_BIN_EXE_pun"), "format"] } else { &[&self.alias] };
+        run(cmd, script, sub, args, stdin)
     }
     /// Same output, exit code and files; `pint_args` for Pun-only spellings.
     fn same_as(&self, script: &str, sub: &str, args: &[&str], pint_args: &[&str], stdin: &[u8]) -> Run {
@@ -295,6 +298,10 @@ fn stdin_matches_pint() {
             cx.same_as(cfg, "", args, pint_args, input);
         }
     }
+    // A fixer exception (a panic in Pun) echoes the input too.
+    let cfg = r#"printf '{"preset":"empty","rules":{"combine_consecutive_unsets":true}}' > pint.json"#;
+    let r = cx.same_as(cfg, "", &["-"], &["-"], b"<?php unset($a ); unset( $b );\nunset($x, ); unset( $y);");
+    assert!(r.stdout.starts_with("<?php unset($a ); unset( $b );") && r.stderr.is_empty(), "{r:?}");
 }
 
 /// Pun's `--staged` (`git diff --cached`) and `--since=<ref>` (`git diff <ref>` against the worktree, no merge-base,
