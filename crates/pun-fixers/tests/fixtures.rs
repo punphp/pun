@@ -14,6 +14,8 @@ fn upstream_fixtures() {
         for test in doc["tests"].as_array().into_iter().flatten() {
             let method = test["method"].as_str().unwrap_or("");
             if !method.starts_with("testFix") { continue }
+            // #[RequiresPhp('< 8.0.0')] etc.: the oracle is PHP 8.5, so such cases never run upstream either.
+            if test["requires_php"].as_str().is_some_and(|r| r.starts_with('<')) { continue }
             for case in test["cases"].as_array().into_iter().flatten() {
                 let args = case["args"].as_array().cloned().unwrap_or_default();
                 let expected = args.first().and_then(Value::as_str).unwrap_or("");
