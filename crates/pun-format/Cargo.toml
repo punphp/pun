@@ -14,3 +14,4 @@ pun-config.workspace = true
 mago-allocator.workspace = true
 mago-php-version.workspace = true
 mago-span.workspace = true
+pun-tokens.workspace = true

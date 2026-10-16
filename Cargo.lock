@@ -704,6 +704,7 @@ dependencies = [
  "anyhow",
  "clap",
  "punphp-config",
+ "punphp-fixers",
  "punphp-format",
  "punphp-workspace",
  "rayon",
@@ -725,6 +726,13 @@ dependencies = [
 [[package]]
 name = "punphp-fixers"
 version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "pcre2",
+ "punphp-format",
+ "punphp-tokens",
+ "serde_json",
+]
 
 [[package]]
 name = "punphp-format"
@@ -738,6 +746,7 @@ dependencies = [
  "mago-span",
  "mago-syntax",
  "punphp-config",
+ "punphp-tokens",
  "serde_json",
 ]
 

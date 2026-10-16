@@ -6,32 +6,7 @@ use pun_config::Rule;
 use serde_json::Value;
 use std::path::Path;
 
-pub use tokens::Tokens;
-
-/// Stand-in until `pun_tokens` exports `Tokens` (crates/pun-tokens/src/tokens.rs, same byte-based signatures):
-/// then replace this module with `pub use pun_tokens::Tokens`.
-mod tokens {
-    pub struct Tokens {
-        code: Vec<u8>,
-        changed: bool,
-    }
-
-    impl Tokens {
-        pub fn from_code(code: &[u8]) -> Self {
-            Tokens { code: code.to_vec(), changed: false }
-        }
-        pub fn generate_code(&self) -> Vec<u8> {
-            self.code.clone()
-        }
-        pub fn is_changed(&self) -> bool {
-            self.changed
-        }
-        pub fn clear_changed(&mut self) {
-            self.changed = false;
-        }
-        pub fn clear_empty_tokens(&mut self) {}
-    }
-}
+pub use pun_tokens::Tokens;
 
 /// A PHP-CS-Fixer fixer (`FixerInterface` + `ConfigurableFixerInterface`).
 pub trait Fixer: Send + Sync {

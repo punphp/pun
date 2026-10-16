@@ -17,4 +17,5 @@ similar.workspace = true
 toml.workspace = true
 pun-config.workspace = true
 pun-format.workspace = true
+pun-fixers.workspace = true
 pun-workspace.workspace = true
