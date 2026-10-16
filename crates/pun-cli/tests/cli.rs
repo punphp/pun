@@ -400,33 +400,33 @@ fn delegated_rules_match_pint() {
     let dir = tmp("delegate");
     let tree = [
         ("composer.json", r#"{"require":{"php":"^8.4"}}"#),
-        ("pint.json", r#"{"preset":"laravel","rules":{"combine_consecutive_unsets":true,"align_multiline_comment":true}}"#),
-        ("app/Unsets.php", "<?php\nunset($a);\nunset($b);\n$c = array(\"x\");\n"),
-        ("app/Doc.php", "<?php\n\n/**\n   * A\n     */\nfunction a() {}\n"),
+        ("pint.json", r#"{"preset":"laravel","rules":{"explicit_string_variable":true,"no_null_property_initialization":true}}"#),
+        ("app/Strings.php", "<?php\n$s = \"a $b\";\n$c = array(\"x\");\n"),
+        ("app/Props.php", "<?php\n\nclass A { public $x = null; }\n"),
         ("app/Clean.php", "<?php\n\n$a = [1];\n"),
         ("app/Fix.php", "<?php\n$a = array(1,2);   \n"),
         ("app/Bad.php", "<?php\n$a = ;\n"),
     ];
     let env = [("PUN_PINT", oracle.to_str().unwrap())];
-    for args in [&[][..], &["--test"], &["-v", "--test"], &["--format=json"], &["--test", "app/Unsets.php"]] {
+    for args in [&[][..], &["--test"], &["-v", "--test"], &["--format=json"], &["--test", "app/Strings.php"]] {
         cx.same(&dir, &tree, &[], args, &env, b"");
     }
     cx.same(&dir, &tree, &["format"], &["--test"], &env, b"");
     // stdin goes through the same workers.
     reset(&dir, &tree);
-    let (r, _) = run(Path::new(env!("CARGO_BIN_EXE_pun")), &["format", "--stdin"], &dir, &[], &env, b"<?php\nunset($a);\nunset($b);\n");
-    assert_eq!(r.stdout, "<?php\n\nunset($a, $b);\n");
+    let (r, _) = run(Path::new(env!("CARGO_BIN_EXE_pun")), &["format", "--stdin"], &dir, &[], &env, b"<?php\n$s = \"a $b\";\n");
+    assert_eq!(r.stdout, "<?php\n\n$s = \"a {$b}\";\n");
     // -v and --explain say why and list what ran in PHP; the `pint` alias stays silent like Pint.
     reset(&dir, &tree);
     let (_, err, _) = pun_env(&dir, &["format", "--test", "-v", "app/Clean.php"], &env);
     let why = format!(
-        "delegate: 2 of {} rules are not ported (combine_consecutive_unsets, align_multiline_comment), so every file runs through PHP-CS-Fixer in `php` ({})\n",
+        "delegate: 2 of {} rules are not ported (explicit_string_variable, no_null_property_initialization), so every file runs through PHP-CS-Fixer in `php` ({})\n",
         pun_config_rules(&dir),
         oracle.display()
     );
     assert_eq!(err, why);
     let (_, err, _) = pun_env(&dir, &["format", "--test", "--explain", "app/Clean.php"], &env);
-    assert!(err.starts_with(&why) && err.contains("\n  delegated     24  combine_consecutive_unsets\n") && err.contains("\n  delegated    -20  no_extra_blank_lines\n"), "{err}");
+    assert!(err.starts_with(&why) && err.contains("\n  delegated      6  explicit_string_variable\n") && err.contains("\n  delegated    -20  no_extra_blank_lines\n"), "{err}");
     let (_, err) = run(&cx.alias, &[], &dir, &["--test", "-v", "app/Clean.php"], &env, b"");
     assert_eq!(err, "");
 }
