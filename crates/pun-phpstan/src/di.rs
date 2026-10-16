@@ -343,33 +343,9 @@ fn process(
                 } else {
                     segment('(', ')')
                 };
-                if e.value == Value::str(neon::CHAIN) {
-                    let mut tmp: Option<Value> = None;
-                    for (_, st) in process(e.attributes, &pass, file, expand_relative)? {
-                        let Value::Entity(st) = st else {
-                            unreachable!("chain items are entities")
-                        };
-                        let entity = match tmp.take() {
-                            None => st.value,
-                            Some(prev) => {
-                                let name = match &st.value {
-                                    Value::Array(a) => a
-                                        .values()
-                                        .map(|v| v.to_php_string().unwrap_or_default())
-                                        .collect::<Vec<_>>()
-                                        .join("::"),
-                                    v => v.to_php_string().unwrap_or_default(),
-                                };
-                                Value::Array(Array::list([
-                                    prev,
-                                    Value::Str(name.trim_start_matches(':').to_string()),
-                                ]))
-                            }
-                        };
-                        tmp = Some(statement(entity, st.attributes));
-                    }
-                    tmp.unwrap_or(Value::Null)
-                } else if EXCLUDE_PATH_KEYS.contains(&key_to_resolve.as_str())
+                // (NeonAdapter folds `a()::b()` chains into nested statements; Pun only reads parameters, where any
+                // statement ends resolution (see config.rs), so chains stay as decoded.)
+                if EXCLUDE_PATH_KEYS.contains(&key_to_resolve.as_str())
                     && e.attributes.len() == 1
                     && e.attributes.get(&Key::Int(0)) == Some(&Value::str("?"))
                     && matches!(&e.value, Value::Str(s) if !s.contains('%') && !s.starts_with('*'))
@@ -430,7 +406,8 @@ pub fn assert_list(v: &Value, label: &str) -> Result<(), String> {
         Value::Str(s) if s.len() < 40 => format!("string {}", v.var_export()),
         Value::Str(_) => "string".to_string(),
         Value::Array(_) => "array".to_string(),
-        _ => "object Nette\\DI\\Definitions\\Statement".to_string(),
+        // (the phar's scoped class name)
+        _ => "object _PHPStan_88a9c7bcc\\Nette\\DI\\Definitions\\Statement".to_string(),
     };
     Err(format!("The {label} expects to be list, {ty} given."))
 }

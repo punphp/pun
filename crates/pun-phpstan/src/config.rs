@@ -502,9 +502,11 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
             }
         }
     }
+    // `elseif ($extra = key(array_diff_key(...)))`: only the first unknown section counts, and section 0 is falsy.
     if let Some((extra, _)) = sections
         .iter()
         .find(|(k, _)| !known.contains(&k.as_string()))
+        .filter(|(k, _)| *k != Key::Int(0))
     {
         let extra = extra.as_string();
         let hint = schema::suggestion(&known, &extra);
@@ -534,7 +536,21 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
             .map_err(|e| format!("Invalid configuration:\n{e}"))?;
     }
     params.remove(&Key::from("env"));
+    // A statement left in the parameters becomes a dynamic parameter, whose generated code references the unprefixed
+    // exception class: every `phpstan` run then dies with this message.
+    // ponytail: PHP would evaluate a plain function call (`::strtoupper(a)`) fine; only sys_get_temp_dir() is.
+    if contains_statement(&Value::Array(params.clone())) {
+        return Err("Class \"Nette\\DI\\ServiceCreationException\" not found".into());
+    }
     Ok(Resolved { parameters: params })
+}
+
+fn contains_statement(v: &Value) -> bool {
+    match v {
+        Value::Entity(_) => true,
+        Value::Array(a) => a.values().any(contains_statement),
+        _ => false,
+    }
 }
 
 fn truthy(v: &Value) -> bool {

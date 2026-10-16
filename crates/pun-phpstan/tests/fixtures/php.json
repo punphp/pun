@@ -1,0 +1,440 @@
+{
+    "regex": [
+        {
+            "pattern": "#^Foo$#",
+            "subject": "Foo",
+            "matched": true
+        },
+        {
+            "pattern": "#^Foo$#",
+            "subject": "foo",
+            "matched": false
+        },
+        {
+            "pattern": "#^foo$#i",
+            "subject": "FOO",
+            "matched": true
+        },
+        {
+            "pattern": "/a.c/s",
+            "subject": "a\nc",
+            "matched": true
+        },
+        {
+            "pattern": "/a.c/",
+            "subject": "a\nc",
+            "matched": false
+        },
+        {
+            "pattern": "/^b$/m",
+            "subject": "a\nb",
+            "matched": true
+        },
+        {
+            "pattern": "/a b/x",
+            "subject": "ab",
+            "matched": true
+        },
+        {
+            "pattern": "/é/u",
+            "subject": "é",
+            "matched": true
+        },
+        {
+            "pattern": "/^.$/u",
+            "subject": "é",
+            "matched": true
+        },
+        {
+            "pattern": "/^.$/",
+            "subject": "é",
+            "matched": false
+        },
+        {
+            "pattern": "/\\w/u",
+            "subject": "é",
+            "matched": true
+        },
+        {
+            "pattern": "/b/A",
+            "subject": "ab",
+            "matched": false
+        },
+        {
+            "pattern": "/a+/U",
+            "subject": "aaa",
+            "matched": true
+        },
+        {
+            "pattern": "/(?<n>a)|(?<n>b)/J",
+            "subject": "b",
+            "matched": true
+        },
+        {
+            "pattern": "/(a)/n",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "/a$/D",
+            "subject": "a\n",
+            "matched": false
+        },
+        {
+            "pattern": "/a/S",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "/a/X",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "  \n/a/",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "(a)",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "[a]i",
+            "subject": "A",
+            "matched": true
+        },
+        {
+            "pattern": "{a{1}}",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "<a>",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "(a(b)c)",
+            "subject": "abc",
+            "matched": true
+        },
+        {
+            "pattern": "#a\\#b#",
+            "subject": "a#b",
+            "matched": true
+        },
+        {
+            "pattern": "",
+            "subject": "a",
+            "error": "Empty regular expression in pattern: "
+        },
+        {
+            "pattern": "   ",
+            "subject": "a",
+            "error": "Empty regular expression in pattern:    "
+        },
+        {
+            "pattern": "abc",
+            "subject": "a",
+            "error": "Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: abc"
+        },
+        {
+            "pattern": "\\a\\",
+            "subject": "a",
+            "error": "Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: \\a\\"
+        },
+        {
+            "pattern": "/abc",
+            "subject": "a",
+            "error": "No ending delimiter '/' found in pattern: /abc"
+        },
+        {
+            "pattern": "(abc",
+            "subject": "a",
+            "error": "No ending matching delimiter ')' found in pattern: (abc"
+        },
+        {
+            "pattern": "{a",
+            "subject": "a",
+            "error": "No ending matching delimiter '}' found in pattern: {a"
+        },
+        {
+            "pattern": "/a/Z",
+            "subject": "a",
+            "error": "Unknown modifier 'Z' in pattern: /a/Z"
+        },
+        {
+            "pattern": "/a/ i",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "/a/\u0000",
+            "subject": "a",
+            "error": "NUL byte is not a valid modifier in pattern: /a/\u0000"
+        },
+        {
+            "pattern": "/a(/",
+            "subject": "a",
+            "error": "Compilation failed: missing closing parenthesis at offset 2 in pattern: /a(/"
+        },
+        {
+            "pattern": "/a)/",
+            "subject": "a",
+            "error": "Compilation failed: unmatched closing parenthesis at offset 1 in pattern: /a)/"
+        },
+        {
+            "pattern": "/[a/",
+            "subject": "a",
+            "error": "Compilation failed: missing terminating ] for character class at offset 2 in pattern: /[a/"
+        },
+        {
+            "pattern": "/a{2,1}/",
+            "subject": "a",
+            "error": "Compilation failed: numbers out of order in {} quantifier at offset 5 in pattern: /a{2,1}/"
+        },
+        {
+            "pattern": "/(?<1a>x)/",
+            "subject": "x",
+            "error": "Compilation failed: subpattern name must start with a non-digit at offset 3 in pattern: /(?<1a>x)/"
+        },
+        {
+            "pattern": "/a/A",
+            "subject": "ba",
+            "matched": false
+        },
+        {
+            "pattern": "/a(/A",
+            "subject": "a",
+            "error": "Compilation failed: missing closing parenthesis at offset 2 in pattern: /a(/A"
+        },
+        {
+            "pattern": "/x(/i",
+            "subject": "a",
+            "error": "Compilation failed: missing closing parenthesis at offset 2 in pattern: /x(/i"
+        },
+        {
+            "pattern": "/\\p{Zz}/u",
+            "subject": "a",
+            "error": "Compilation failed: unknown property after \\P or \\p at offset 6 in pattern: /\\p{Zz}/u"
+        },
+        {
+            "pattern": "~^\\d+~",
+            "subject": "123",
+            "matched": true
+        },
+        {
+            "pattern": "/a #c/xA",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "/a #c/xA",
+            "subject": "ba",
+            "matched": false
+        }
+    ],
+    "quote": [
+        {
+            "s": "a.b*c?d+e(f)g[h]i{j}k=l!m<n>o|p:q-r#s/t\\u^v$w",
+            "delimiter": null,
+            "quoted": "a\\.b\\*c\\?d\\+e\\(f\\)g\\[h\\]i\\{j\\}k\\=l\\!m\\<n\\>o\\|p\\:q\\-r\\#s/t\\\\u\\^v\\$w"
+        },
+        {
+            "s": "a/b#c",
+            "delimiter": "/",
+            "quoted": "a\\/b\\#c"
+        },
+        {
+            "s": "a/b#c",
+            "delimiter": "#",
+            "quoted": "a/b\\#c"
+        },
+        {
+            "s": "nul\u0000byte",
+            "delimiter": null,
+            "quoted": "nul\\000byte"
+        },
+        {
+            "s": "~x~",
+            "delimiter": "~",
+            "quoted": "\\~x\\~"
+        },
+        {
+            "s": "é",
+            "delimiter": null,
+            "quoted": "é"
+        }
+    ],
+    "normalize": [
+        {
+            "path": "/a/b/../c",
+            "normalized": "/a/c"
+        },
+        {
+            "path": "/a/./b//c/",
+            "normalized": "/a/b/c"
+        },
+        {
+            "path": "a\\b\\c",
+            "normalized": "a/b/c"
+        },
+        {
+            "path": "../x",
+            "normalized": "x"
+        },
+        {
+            "path": "/../x",
+            "normalized": "/x"
+        },
+        {
+            "path": "phar:///x/y.phar/../z",
+            "normalized": "/x/z"
+        },
+        {
+            "path": "phar:///x/y.phar/a/../b",
+            "normalized": "phar:///x/y.phar/b"
+        },
+        {
+            "path": "PHAR:///a/./b",
+            "normalized": "phar:///a/b"
+        },
+        {
+            "path": "C:\\a\\..\\b",
+            "normalized": "C:/b"
+        },
+        {
+            "path": "vfs://root/a/../b",
+            "normalized": "vfs://root/b"
+        },
+        {
+            "path": "1x://a",
+            "normalized": "1x://a"
+        },
+        {
+            "path": "a://",
+            "normalized": "a:"
+        },
+        {
+            "path": "://a",
+            "normalized": ":/a"
+        },
+        {
+            "path": "",
+            "normalized": ""
+        },
+        {
+            "path": "/",
+            "normalized": "/"
+        },
+        {
+            "path": "a/b/../../..",
+            "normalized": ""
+        }
+    ],
+    "absolutize": [
+        {
+            "path": "/abs",
+            "absolute": "/abs"
+        },
+        {
+            "path": "rel/x",
+            "absolute": "/cwd/project/rel/x"
+        },
+        {
+            "path": "./x",
+            "absolute": "/cwd/project/./x"
+        },
+        {
+            "path": "../x",
+            "absolute": "/cwd/project/../x"
+        },
+        {
+            "path": "phar://x/y",
+            "absolute": "phar://x/y"
+        },
+        {
+            "path": "a+b.c-d://x",
+            "absolute": "a+b.c-d://x"
+        },
+        {
+            "path": "bad scheme://x",
+            "absolute": "/cwd/project/bad scheme://x"
+        },
+        {
+            "path": "\\x",
+            "absolute": "/cwd/project/x"
+        }
+    ],
+    "relative": [
+        {
+            "parent": "/a/b",
+            "file": "/a/b/c.php",
+            "relative": "c.php"
+        },
+        {
+            "parent": "/a/b",
+            "file": "/a/c/d.php",
+            "relative": "../c/d.php"
+        },
+        {
+            "parent": "/a/b",
+            "file": "/x/y.php",
+            "relative": "/x/y.php"
+        },
+        {
+            "parent": "/a/b/",
+            "file": "/a/b/c.php",
+            "relative": "c.php"
+        },
+        {
+            "parent": "/a",
+            "file": "rel.php",
+            "relative": "rel.php"
+        },
+        {
+            "parent": "/a/b",
+            "file": "phar:///a/b/c.php",
+            "relative": "c.php"
+        },
+        {
+            "parent": "/a/b/c",
+            "file": "/a/b",
+            "relative": ".."
+        },
+        {
+            "parent": "\\a\\b",
+            "file": "/a/b/c.php",
+            "relative": "c.php"
+        }
+    ],
+    "fnmatch": [
+        {
+            "pattern": "*.php",
+            "string": "a.php",
+            "matched": true
+        },
+        {
+            "pattern": "/a/*/c",
+            "string": "/a/b/c",
+            "matched": true
+        },
+        {
+            "pattern": "/a/*",
+            "string": "/a/b/c",
+            "matched": true
+        },
+        {
+            "pattern": "[ab]?",
+            "string": "bc",
+            "matched": true
+        },
+        {
+            "pattern": "a\\*",
+            "string": "a*",
+            "matched": true
+        }
+    ]
+}

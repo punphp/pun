@@ -1,0 +1,5 @@
+parameters:
+	level: 1
+	mine: Foo(1)
+parametersSchema:
+	mine: mixed()
