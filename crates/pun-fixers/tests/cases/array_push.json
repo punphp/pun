@@ -1,0 +1,12 @@
+[
+    {
+        "fixer": "array_push",
+        "input": "<?php\narray_push($a, 1)\n;\narray_push($a, 2) ?>",
+        "expected": "<?php\n$a[] = 1\n;\n$a[] = 2 ?>"
+    },
+    {
+        "fixer": "array_push",
+        "input": "<?php\narray_push($a, 1) or die();\n",
+        "expected": "<?php\narray_push($a, 1) or die();\n"
+    }
+]

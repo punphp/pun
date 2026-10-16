@@ -1,0 +1,22 @@
+[
+    {
+        "fixer": "statement_indentation",
+        "input": "<?php\nclass A {\nuse T;\n    use U {\n  foo as bar;\n    }\n}\nuse A\\{\nB,\n   C\n};\nfoo();",
+        "expected": "<?php\nclass A {\n    use T;\n    use U {\n        foo as bar;\n    }\n}\nuse A\\{\n    B,\n    C\n};\nfoo();"
+    },
+    {
+        "fixer": "statement_indentation",
+        "input": "<?php\nclass A extends B implements\nC\n{\n}\nif ($a) // c\nfoo();\nswitch ($a) {\n    case 1:\n    switch ($b) {\n    case 2:\n    break;\n    }\n    break;\n}\n",
+        "expected": "<?php\nclass A extends B implements\n    C\n{\n}\nif ($a) // c\n    foo();\nswitch ($a) {\n    case 1:\n        switch ($b) {\n            case 2:\n                break;\n        }\n        break;\n}\n"
+    },
+    {
+        "fixer": "statement_indentation",
+        "input": "<?php\nif ($a)\ndo foo(); while ($b);\ndo\nif ($c) bar(); else baz();\nwhile ($d);\n",
+        "expected": "<?php\nif ($a)\n    do foo(); while ($b);\ndo\n    if ($c) bar(); else baz();\nwhile ($d);\n"
+    },
+    {
+        "fixer": "statement_indentation",
+        "input": "<?php\nif ($a)\ndo echo 1, 2; while ($b);\nswitch ($a) {\ncase 1:\nswitch ($b):\ncase 2:\nbreak;\nendswitch;\nbreak;\n}\n",
+        "expected": "<?php\nif ($a)\n    do echo 1, 2; while ($b);\nswitch ($a) {\n    case 1:\n        switch ($b):\n            case 2:\n                break;\n        endswitch;\n        break;\n}\n"
+    }
+]

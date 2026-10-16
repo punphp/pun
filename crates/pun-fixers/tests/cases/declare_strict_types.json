@@ -1,0 +1,42 @@
+[
+    {
+        "fixer": "declare_strict_types",
+        "config": {
+            "strategy": "remove"
+        },
+        "input": "<?php\ndeclare(ticks=1, strict_types = 1);\n",
+        "expected": "<?php\ndeclare(ticks=1);\n"
+    },
+    {
+        "fixer": "declare_strict_types",
+        "config": {
+            "strategy": "remove"
+        },
+        "input": "<?php\ndeclare(strict_types = 1, ticks=1);\n",
+        "expected": "<?php\ndeclare(ticks=1);\n"
+    },
+    {
+        "fixer": "declare_strict_types",
+        "config": {
+            "strategy": "remove"
+        },
+        "input": "<?php\ndeclare( strict_types = 1 ) ;\n",
+        "expected": "<?php\n"
+    },
+    {
+        "fixer": "declare_strict_types",
+        "config": {
+            "strategy": "remove"
+        },
+        "input": "<?php declare(ticks=1, strict_types = 1, encoding=\"UTF-8\");\n",
+        "expected": "<?php declare(ticks=1, encoding=\"UTF-8\");\n"
+    },
+    {
+        "fixer": "declare_strict_types",
+        "config": {
+            "strategy": "remove",
+            "preserve_existing_declaration": true
+        },
+        "error": "[declare_strict_types] Cannot configure \"strategy\" in parallel to configuring \"preserve_existing_declaration\"."
+    }
+]

@@ -1,0 +1,10 @@
+[
+    {
+        "fixer": "no_unneeded_braces",
+        "config": {
+            "namespaces": true
+        },
+        "input": "<?php\nnamespace A {\n    echo 1;\n}\necho 2;\n",
+        "expected": "<?php\nnamespace A {\n    echo 1;\n}\necho 2;\n"
+    }
+]

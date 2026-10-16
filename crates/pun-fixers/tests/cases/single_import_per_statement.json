@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "single_import_per_statement",
+        "input": "<?php\nuse Foo\\/*c*/{A, B};\n",
+        "expected": "<?php\nuse Foo\\A; /*c*/\nuse Foo\\B;\n"
+    },
+    {
+        "fixer": "single_import_per_statement",
+        "input": "<?php\nuse /* d */ Bar\\{C, D};\n",
+        "expected": "<?php\nuse  Bar\\C; /* d */\nuse  Bar\\D;\n"
+    },
+    {
+        "fixer": "single_import_per_statement",
+        "input": "<?php\nuse Baz\\{E, F // f\n};\n",
+        "expected": "<?php\nuse Baz\\E;\nuse Baz\\F// f\n;\n"
+    }
+]

@@ -44,9 +44,7 @@ impl Fixer for SingleLineCommentStyleFixer {
             let comment_content: &[u8] = if content.len() > 4 { &content[2..content.len() - 2] } else { b"" };
 
             if self.hash_enabled && content.starts_with(b"#") {
-                if content.get(1) == Some(&b'[') {
-                    continue; // This might be an attribute on PHP8, do not change
-                }
+                // upstream skips `#[` (an attribute before PHP 8); PHP 8 never lexes it as a comment
                 tokens.set(index, Token { id: token.id, content: [&b"//"[..], &content[1..]].concat() });
                 continue;
             }
