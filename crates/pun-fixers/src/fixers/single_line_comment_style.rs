@@ -35,10 +35,10 @@ impl Fixer for SingleLineCommentStyleFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
-            let token = tokens[index].clone();
-            if !token.is_kind(T_COMMENT) {
+            if !tokens[index].is_kind(T_COMMENT) {
                 continue;
             }
+            let token = tokens[index].clone();
             let content = &token.content;
             // substr($content, 2, -2) ?: ''
             let comment_content: &[u8] = if content.len() > 4 { &content[2..content.len() - 2] } else { b"" };

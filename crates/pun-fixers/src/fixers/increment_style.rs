@@ -35,10 +35,10 @@ impl Fixer for IncrementStyleFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in (0..tokens.count()).rev() {
-            let token = tokens[index].clone();
-            if !token.is_given_kind(&[T_INC, T_DEC]) {
+            if !tokens[index].is_given_kind(&[T_INC, T_DEC]) {
                 continue;
             }
+            let token = tokens[index].clone();
             if self.pre && TokensAnalyzer::new(tokens).is_unary_successor_operator(index) {
                 let next_token = &tokens[tokens.get_next_meaningful_token(index).unwrap()];
                 if !next_token.equals_any(&STATEMENT_END, true) {
