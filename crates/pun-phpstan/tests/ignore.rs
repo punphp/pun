@@ -131,3 +131,86 @@ fn ignored_error_helper() {
         failures.join("\n")
     );
 }
+
+/// The comment pipeline of `FileAnalyser` + `AnalyserResultFinalizer` against a real `phpstan analyse` run
+/// (tests/fixtures/local.json, scripts/export-local-ignore-fixtures.php): the raw errors come from the same files with
+/// the comments blanked out.
+#[test]
+fn phpstan_analyse_local_ignores() {
+    let dir = format!("{}/tests/fixtures/local", env!("CARGO_MANIFEST_DIR"));
+    let key = |j: &J| {
+        let s = |k: &str| j.get(k).map(J::to_string).unwrap_or_default();
+        (
+            j["line"].as_i64(),
+            j["message"].as_str().unwrap().to_string(),
+            s("ignorable"),
+            s("identifier"),
+            s("tip"),
+        )
+    };
+    let mut failures = Vec::new();
+    let all = fixture("local.json");
+    for (name, data) in all.as_object().unwrap() {
+        let file = format!("{dir}/{name}");
+        let code = std::fs::read(&file).unwrap();
+        for (without_comments, reported) in [(false, "reported"), (true, "reportedWithoutComments")]
+        {
+            let (mut lines, parse) = comments::lines_to_ignore(&code);
+            let mut unmatched = lines.clone();
+            let mut errors = pun_phpstan::ignore::parse_errors(&file, &parse);
+            let mut raw: Vec<Error> = data["raw"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|m| Error {
+                    can_be_ignored: m["ignorable"].as_bool().unwrap(),
+                    tip: opt(&m["tip"]),
+                    identifier: opt(&m["identifier"]),
+                    ..Error::new(m["message"].as_str().unwrap(), &file, m["line"].as_i64())
+                })
+                .collect();
+            raw.append(&mut errors);
+            let mut out = Vec::new();
+            if without_comments {
+                out.extend(pun_phpstan::ignore::ignores_without_comments(
+                    &file,
+                    &mut lines,
+                    &mut unmatched,
+                ));
+            }
+            let (kept, _) =
+                pun_phpstan::ignore::local_ignores(&file, raw, &mut lines, &mut unmatched);
+            out.extend(kept);
+            out.extend(pun_phpstan::ignore::unmatched_line_errors(
+                &file, &unmatched,
+            ));
+            let mut got: Vec<_> = out
+                .iter()
+                .map(|e| {
+                    let mut j = json!({ "line": e.line, "message": e.message, "ignorable": e.can_be_ignored });
+                    if let Some(id) = &e.identifier {
+                        j["identifier"] = json!(id);
+                    }
+                    if let Some(tip) = &e.tip {
+                        j["tip"] = json!(tip);
+                    }
+                    key(&j)
+                })
+                .collect();
+            let mut want: Vec<_> = data[reported].as_array().unwrap().iter().map(key).collect();
+            got.sort();
+            want.sort();
+            if got != want {
+                failures.push(format!(
+                    "{name} {reported}\n  want {want:?}\n  got  {got:?}"
+                ));
+            }
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "{} differ:\n{}",
+        failures.len(),
+        failures.join("\n")
+    );
+}
