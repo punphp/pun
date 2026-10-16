@@ -1202,6 +1202,7 @@ dependencies = [
  "indexmap",
  "libc",
  "pcre2",
+ "punphp-tokens",
  "serde_json",
 ]
 
