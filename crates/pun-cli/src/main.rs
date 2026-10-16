@@ -201,6 +201,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     let engine = a.engine.as_deref().map(|e| if e == "pun" { Engine::Pun } else { Engine::Compat });
     let opts = Options { config: a.config.clone(), no_config: a.no_config, preset: a.preset.clone(), engine, blade: a.blade, pint_mode };
     let cfg = pun_config::load(&root, &opts)?;
+    pun_fixers::analyzers::active_preset::set(&cfg.preset);
 
     let engine = match cfg.engine {
         Engine::Compat => Engine2::Compat(Pipeline::new(&cfg.rules, &pun_fixers::all)?),

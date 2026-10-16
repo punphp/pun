@@ -170,7 +170,8 @@ impl Pipeline {
         let mut tokens = Tokens::from_code(code);
         let mut applied = Vec::new();
         for f in &self.fixers {
-            if !f.supports(file) || !f.is_candidate(&tokens) {
+            // AbstractFixer::fix: `0 < $tokens->count() && isCandidate && supports` (Pint/laravel_blade can empty the list).
+            if tokens.count() == 0 || !f.supports(file) || !f.is_candidate(&tokens) {
                 continue;
             }
             f.fix(file, &mut tokens);
