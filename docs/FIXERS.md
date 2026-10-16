@@ -98,15 +98,15 @@ Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCa
 Analyzers owned: NamespaceUsesAnalyzer, NamespacesAnalyzer, ClassyAnalyzer, AttributeAnalyzer, Analysis/* structs.
 
 - [x] elseif
-- [ ] function_declaration
-- [ ] include
-- [ ] increment_style
+- [x] function_declaration
+- [x] include
+- [x] increment_style
 - [x] integer_literal_case
-- [ ] list_syntax
+- [x] list_syntax
 - [x] lowercase_cast
 - [x] lowercase_keywords
-- [ ] lowercase_static_reference
-- [ ] magic_method_casing
+- [x] lowercase_static_reference
+- [x] magic_method_casing
 - [ ] mb_str_functions
 - [ ] modernize_types_casting
 - [ ] native_function_casing
