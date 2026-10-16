@@ -199,6 +199,25 @@ fn terminal_like_pint() {
     }
 }
 
+/// `// @php-cs-fixer-ignore`: the named rules skip that file; a rule that isn't enabled, a duplicated value or a tab
+/// after the annotation name aborts the run with Pint's box (Runner / FixerAnnotationAnalyzer exceptions).
+#[test]
+fn ignore_annotations_like_pint() {
+    let Some(cx) = Cx::new("ignore") else { return };
+    let mut t = tree();
+    t.retain(|(f, _)| !f.starts_with("app/Bad"));
+    t.push(("app/Ignored.php", "<?php\n\n// @php-cs-fixer-ignore single_quote,array_syntax\n$a = array(\"x\");\n"));
+    for args in [&[][..], &["--test"], &["-v"]] {
+        cx.same(&t, args, PLAIN);
+    }
+    for bad in ["nope,@Foo,", "single_quote,a,a", "\tsingle_quote"] {
+        let mut t = t.clone();
+        t.push(("app/Zbad.php", Box::leak(format!("<?php\n// @php-cs-fixer-ignore {bad}\n$a = \"x\";\n").into_boxed_str())));
+        let r = cx.same(&t, &["--test"], PLAIN);
+        assert_eq!(r.code, Some(1), "{bad}");
+    }
+}
+
 /// Bad `--format`: Pint's abort box (stdout), wrapped to the terminal, red with --ansi; files are still fixed.
 #[test]
 fn abort_box_like_pint() {

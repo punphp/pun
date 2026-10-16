@@ -293,6 +293,8 @@ fn diffs_like_pint() {
         ("pint.json", r#"{"preset":"laravel"}"#),
         ("app/Imports.php", include_str!("fixtures/dirty_imports.php")),
         ("app/NoEol.php", "<?php\n\n$a = array(1);\n$b = 2;"),
+        // No line break in the old file at all: no "different line endings" warning (detectUnmatchedLineEndings).
+        ("app/OneLine.php", "<?php $a = array(1);"),
         ("app/Crlf.php", "<?php\r\n\r\n$a = array(1);\n"),
         ("app/Big.php", &big),
     ];

@@ -1130,6 +1130,7 @@ dependencies = [
  "mago-allocator",
  "mago-formatter",
  "mago-php-version",
+ "pcre2",
  "punphp-config",
  "punphp-tokens",
  "serde_json",
