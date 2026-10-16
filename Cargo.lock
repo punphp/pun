@@ -728,7 +728,9 @@ name = "punphp-fixers"
 version = "0.0.1"
 dependencies = [
  "anyhow",
+ "libc",
  "pcre2",
+ "pcre2-sys",
  "punphp-format",
  "punphp-tokens",
  "serde_json",

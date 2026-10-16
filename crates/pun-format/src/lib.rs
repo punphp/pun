@@ -26,6 +26,41 @@ pub trait Fixer: Send + Sync {
         if options.is_null() { Ok(()) } else { bail!("[{}] Is not configurable.", self.name()) }
     }
     fn fix(&self, file: &Path, tokens: &mut Tokens);
+    /// `WhitespacesAwareFixerInterface::setWhitespacesConfig`; only whitespace-aware fixers store it.
+    fn set_whitespaces_config(&mut self, _config: &WhitespacesFixerConfig) {}
+}
+
+/// `PhpCsFixer\WhitespacesFixerConfig` (Pint never overrides the defaults: four spaces, "\n").
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct WhitespacesFixerConfig {
+    indent: String,
+    line_ending: String,
+}
+
+impl Default for WhitespacesFixerConfig {
+    fn default() -> Self {
+        WhitespacesFixerConfig { indent: "    ".into(), line_ending: "\n".into() }
+    }
+}
+
+impl WhitespacesFixerConfig {
+    pub fn new(indent: &str, line_ending: &str) -> Result<Self> {
+        if !["  ", "    ", "\t"].contains(&indent) {
+            bail!("Invalid \"indent\" param, expected tab or two or four spaces.");
+        }
+        if !["\n", "\r\n"].contains(&line_ending) {
+            bail!("Invalid \"lineEnding\" param, expected \"\\n\" or \"\\r\\n\".");
+        }
+        Ok(WhitespacesFixerConfig { indent: indent.into(), line_ending: line_ending.into() })
+    }
+
+    pub fn get_indent(&self) -> &str {
+        &self.indent
+    }
+
+    pub fn get_line_ending(&self) -> &str {
+        &self.line_ending
+    }
 }
 
 /// Enabled fixers, sorted exactly like `Utils::sortFixers` (priority desc, then name via strcmp).
