@@ -620,6 +620,69 @@
         ]
     },
     {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: listOf(\"int\")\nparameters:\n\ta: [x]\n",
+        "messages": [
+            "The item 'parameters › a › 0' expects to be int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(\"string\", \"int\")\nparameters:\n\ta: {k: x}\n",
+        "messages": [
+            "The key of item 'parameters › a › k' expects to be int, 'k' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(\"string\", \"int\")\nparameters:\n\ta: [x]\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: listOf(5)\nparameters: []\n",
+        "exception": "_PHPStan_88a9c7bcc\\Nette\\Schema\\Elements\\Type::__construct(): Argument #1 ($type) must be of type string, int given, called in phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/vendor/nette/schema/src/Schema/Elements/Type.php on line 69"
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: \"int\"])\nparameters:\n\ta: {b: x}\n",
+        "exception": "_PHPStan_88a9c7bcc\\Nette\\Schema\\Elements\\Structure::{closure:_PHPStan_88a9c7bcc\\Nette\\Schema\\Elements\\Structure::__construct():31}(): Argument #1 must be of type _PHPStan_88a9c7bcc\\Nette\\Schema\\Schema, string given, called in phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/vendor/nette/schema/src/Schema/Elements/Structure.php on line 32"
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf([int()])\nparameters:\n\ta: [1]\n",
+        "messages": [
+            "The item 'parameters › a' expects to be array, array given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: schema(structure([b: int()]), pattern(\"x\"))\nparameters: []\n",
+        "exception": "Call to undefined method _PHPStan_88a9c7bcc\\Nette\\Schema\\Elements\\Structure::pattern()."
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: int()])\nparameters:\n\ta!: {b: 1}\n",
+        "messages": [
+            "Unexpected item 'parameters › a › _prevent_merging'."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: structure([b: int()])\nparameters:\n\ta!: {b: x}\n",
+        "messages": [
+            "Unexpected item 'parameters › a › _prevent_merging'.",
+            "The item 'parameters › a › b' expects to be int, 'x' given."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\ta: arrayOf(int())\nparameters:\n\ta: null\n",
+        "messages": []
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\t?a: structure([b: int()])\nparameters: []\n",
+        "messages": [
+            "The mandatory item 'parameters › a › b' is missing."
+        ]
+    },
+    {
+        "neon": "parametersSchema:\n\t__validate: bool()\n\t\"\": int()\n\tb: int()\nparameters:\n\tb: 1\n\t\"\": x\n",
+        "messages": [
+            "The item 'parameters › ' expects to be int, 'x' given."
+        ]
+    },
+    {
         "neon": "parametersSchema:\n\t__validate: bool()\n\ta: anyOf({x: 1, y: 2})\nparameters:\n\ta: {y: 2, x: 1}\n",
         "messages": [
             "The item 'parameters › a' expects to be array, array given."
