@@ -26,7 +26,7 @@ Analyzers owned: WhitespacesAnalyzer, WhitespacesFixerConfig, Preg (pcre2 wrappe
 - [x] encoding
 - [x] full_opening_tag
 - [x] general_phpdoc_tag_rename
-- [ ] global_namespace_import
+- [x] global_namespace_import
 - [x] indentation_type
 - [x] line_ending
 - [x] linebreak_after_opening_tag
