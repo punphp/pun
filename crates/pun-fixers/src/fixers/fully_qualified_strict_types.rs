@@ -19,6 +19,7 @@ use serde_json::Value;
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::Path;
+use std::sync::LazyLock;
 use std::rc::Rc;
 
 const CLASSY_KINDS: &[Kind] = &[T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM];
@@ -170,10 +171,13 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                 let mut index = namespace.scope_start_index;
                 while (index as isize) < namespace.scope_end_index as isize + index_diff {
                     let orig_size = tokens.count();
-                    let token = tokens[index].clone();
-                    if token.equals("{", true) {
+                    // Only comment branches read the content after edits; other tokens need just their kind.
+                    let t = &tokens[index];
+                    let (open, close) = (t.equals("{", true), t.equals("}", true));
+                    let token = if t.is_comment() { t.clone() } else { Token { id: t.id, content: Vec::new() } };
+                    if open {
                         opened_curly_brackets += 1;
-                    } else if token.equals("}", true) {
+                    } else if close {
                         st.reserved_identifiers_by_level.remove(&opened_curly_brackets);
                         opened_curly_brackets -= 1;
                         assert!(opened_curly_brackets >= 0);
@@ -481,8 +485,11 @@ impl FullyQualifiedStrictTypesFixer {
             return;
         }
         let php_doc_content = tokens[index].content.clone();
+        static DOC_TAG: LazyLock<String> = LazyLock::new(|| format!(r"/([*{{]\h*@)(\S+)(\h+)({REGEX_TYPES})(?!(?!\}})\S)/"));
+        static SEE_TAG: LazyLock<String> =
+            LazyLock::new(|| format!(r"/([*{{]\h*)@see(\h+)({})(::(?:\$\w+|\w+\(\)))(?!(?!\}})\S)/", regex_class()));
         let mut php_doc_content_new = Preg::replace_callback(
-            format!(r"/([*{{]\h*@)(\S+)(\h+)({REGEX_TYPES})(?!(?!\}})\S)/"),
+            &*DOC_TAG,
             |m| {
                 if !allowed_tags.iter().any(|t| t.as_bytes() == m.str(2)) {
                     return m.str(0).to_vec();
@@ -493,7 +500,7 @@ impl FullyQualifiedStrictTypesFixer {
         );
         if allowed_tags.iter().any(|t| t == "see") {
             php_doc_content_new = Preg::replace_callback(
-                format!(r"/([*{{]\h*)@see(\h+)({})(::(?:\$\w+|\w+\(\)))(?!(?!\}})\S)/", regex_class()),
+                &*SEE_TAG,
                 |m| [m.str(1), b"@see", m.str(2), &self.fix_php_doc_type(st, m.str(3), uses, ns), m.str(5)].concat(),
                 &php_doc_content_new,
             );
@@ -505,7 +512,8 @@ impl FullyQualifiedStrictTypesFixer {
 
     fn fix_php_doc_type(&self, st: &State, type_: &[u8], uses: &OMap, ns: &[u8]) -> Vec<u8> {
         let ctx = Rc::new(Context::default());
-        let regex = format!("/^{}$/", regex_class());
+        static CLASS: LazyLock<String> = LazyLock::new(|| format!("/^{}$/", regex_class()));
+        let regex: &str = &CLASS;
         let type_expression = TypeExpression::new(type_, ctx.clone()).map_types(&mut |type_| {
             let current_type_value = type_.to_string().to_vec();
             if type_.is_composite_type()
