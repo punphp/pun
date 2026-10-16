@@ -745,10 +745,6 @@ dependencies = [
 [[package]]
 name = "pun-tokens"
 version = "0.0.1"
-dependencies = [
- "mago-database",
- "mago-syntax",
-]
 
 [[package]]
 name = "pun-workspace"

@@ -1,0 +1,260 @@
+//! Token kinds: PHP's `T_*` (named after `token_name()`, not numbered: PHP renumbers them
+//! between versions) followed by PHP-CS-Fixer's `CT::T_*` custom kinds (prefixed `CT_`).
+
+macro_rules! kinds {
+    (php: [$($php:ident),* $(,)?] ct: [$($ct:ident = $ctname:literal),* $(,)?]) => {
+        #[allow(non_camel_case_types)]
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+        #[repr(u16)]
+        pub enum Kind { $($php,)* $($ct,)* }
+
+        impl Kind {
+            pub const ALL: &'static [Kind] = &[$(Kind::$php,)* $(Kind::$ct,)*];
+
+            /// `token_name()` for PHP kinds, `CT::getName()` (`CT::T_...`) for custom kinds.
+            pub fn name(self) -> &'static str {
+                match self {
+                    $(Kind::$php => stringify!($php),)*
+                    $(Kind::$ct => $ctname,)*
+                }
+            }
+
+            pub fn is_custom(self) -> bool {
+                self as u16 >= Kind::CT_ARRAY_INDEX_BRACE_CLOSE as u16
+            }
+
+            pub fn from_name(name: &str) -> Option<Kind> {
+                Kind::ALL.iter().copied().find(|k| k.name() == name)
+            }
+        }
+    };
+}
+
+kinds! {
+php: [
+    T_LNUMBER,
+    T_DNUMBER,
+    T_STRING,
+    T_NAME_FULLY_QUALIFIED,
+    T_NAME_RELATIVE,
+    T_NAME_QUALIFIED,
+    T_VARIABLE,
+    T_INLINE_HTML,
+    T_ENCAPSED_AND_WHITESPACE,
+    T_CONSTANT_ENCAPSED_STRING,
+    T_STRING_VARNAME,
+    T_NUM_STRING,
+    T_INCLUDE,
+    T_INCLUDE_ONCE,
+    T_EVAL,
+    T_REQUIRE,
+    T_REQUIRE_ONCE,
+    T_LOGICAL_OR,
+    T_LOGICAL_XOR,
+    T_LOGICAL_AND,
+    T_PRINT,
+    T_YIELD,
+    T_YIELD_FROM,
+    T_INSTANCEOF,
+    T_NEW,
+    T_CLONE,
+    T_EXIT,
+    T_IF,
+    T_ELSEIF,
+    T_ELSE,
+    T_ENDIF,
+    T_ECHO,
+    T_DO,
+    T_WHILE,
+    T_ENDWHILE,
+    T_FOR,
+    T_ENDFOR,
+    T_FOREACH,
+    T_ENDFOREACH,
+    T_DECLARE,
+    T_ENDDECLARE,
+    T_AS,
+    T_SWITCH,
+    T_ENDSWITCH,
+    T_CASE,
+    T_DEFAULT,
+    T_MATCH,
+    T_BREAK,
+    T_CONTINUE,
+    T_GOTO,
+    T_FUNCTION,
+    T_FN,
+    T_CONST,
+    T_RETURN,
+    T_TRY,
+    T_CATCH,
+    T_FINALLY,
+    T_THROW,
+    T_USE,
+    T_INSTEADOF,
+    T_GLOBAL,
+    T_STATIC,
+    T_ABSTRACT,
+    T_FINAL,
+    T_PRIVATE,
+    T_PROTECTED,
+    T_PUBLIC,
+    T_PRIVATE_SET,
+    T_PROTECTED_SET,
+    T_PUBLIC_SET,
+    T_READONLY,
+    T_VAR,
+    T_UNSET,
+    T_ISSET,
+    T_EMPTY,
+    T_HALT_COMPILER,
+    T_CLASS,
+    T_TRAIT,
+    T_INTERFACE,
+    T_ENUM,
+    T_EXTENDS,
+    T_IMPLEMENTS,
+    T_NAMESPACE,
+    T_LIST,
+    T_ARRAY,
+    T_CALLABLE,
+    T_LINE,
+    T_FILE,
+    T_DIR,
+    T_CLASS_C,
+    T_TRAIT_C,
+    T_METHOD_C,
+    T_FUNC_C,
+    T_PROPERTY_C,
+    T_NS_C,
+    T_ATTRIBUTE,
+    T_PLUS_EQUAL,
+    T_MINUS_EQUAL,
+    T_MUL_EQUAL,
+    T_DIV_EQUAL,
+    T_CONCAT_EQUAL,
+    T_MOD_EQUAL,
+    T_AND_EQUAL,
+    T_OR_EQUAL,
+    T_XOR_EQUAL,
+    T_SL_EQUAL,
+    T_SR_EQUAL,
+    T_COALESCE_EQUAL,
+    T_BOOLEAN_OR,
+    T_BOOLEAN_AND,
+    T_IS_EQUAL,
+    T_IS_NOT_EQUAL,
+    T_IS_IDENTICAL,
+    T_IS_NOT_IDENTICAL,
+    T_IS_SMALLER_OR_EQUAL,
+    T_IS_GREATER_OR_EQUAL,
+    T_SPACESHIP,
+    T_SL,
+    T_SR,
+    T_INC,
+    T_DEC,
+    T_INT_CAST,
+    T_DOUBLE_CAST,
+    T_STRING_CAST,
+    T_ARRAY_CAST,
+    T_OBJECT_CAST,
+    T_BOOL_CAST,
+    T_UNSET_CAST,
+    T_VOID_CAST,
+    T_OBJECT_OPERATOR,
+    T_NULLSAFE_OBJECT_OPERATOR,
+    T_DOUBLE_ARROW,
+    T_COMMENT,
+    T_DOC_COMMENT,
+    T_OPEN_TAG,
+    T_OPEN_TAG_WITH_ECHO,
+    T_CLOSE_TAG,
+    T_WHITESPACE,
+    T_START_HEREDOC,
+    T_END_HEREDOC,
+    T_DOLLAR_OPEN_CURLY_BRACES,
+    T_CURLY_OPEN,
+    T_DOUBLE_COLON,
+    T_NS_SEPARATOR,
+    T_ELLIPSIS,
+    T_COALESCE,
+    T_POW,
+    T_POW_EQUAL,
+    T_PIPE,
+    T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG,
+    T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG,
+    T_BAD_CHARACTER,
+]
+ct: [
+    CT_ARRAY_INDEX_BRACE_CLOSE = "CT::T_ARRAY_INDEX_BRACE_CLOSE",
+    CT_ARRAY_INDEX_BRACE_OPEN = "CT::T_ARRAY_INDEX_BRACE_OPEN",
+    CT_ARRAY_BRACKET_CLOSE = "CT::T_ARRAY_BRACKET_CLOSE",
+    CT_ARRAY_BRACKET_OPEN = "CT::T_ARRAY_BRACKET_OPEN",
+    CT_ARRAY_TYPEHINT = "CT::T_ARRAY_TYPEHINT",
+    CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE = "CT::T_CLASS_INSTANTIATION_PARENTHESIS_CLOSE",
+    CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN = "CT::T_CLASS_INSTANTIATION_PARENTHESIS_OPEN",
+    CT_CLASS_CONSTANT = "CT::T_CLASS_CONSTANT",
+    CT_CONST_IMPORT = "CT::T_CONST_IMPORT",
+    CT_CURLY_CLOSE = "CT::T_CURLY_CLOSE",
+    CT_DESTRUCTURING_BRACKET_CLOSE = "CT::T_DESTRUCTURING_BRACKET_CLOSE",
+    CT_DESTRUCTURING_BRACKET_OPEN = "CT::T_DESTRUCTURING_BRACKET_OPEN",
+    CT_DOLLAR_CLOSE_CURLY_BRACES = "CT::T_DOLLAR_CLOSE_CURLY_BRACES",
+    CT_DYNAMIC_PROP_BRACE_CLOSE = "CT::T_DYNAMIC_PROP_BRACE_CLOSE",
+    CT_DYNAMIC_PROP_BRACE_OPEN = "CT::T_DYNAMIC_PROP_BRACE_OPEN",
+    CT_DYNAMIC_VAR_BRACE_CLOSE = "CT::T_DYNAMIC_VAR_BRACE_CLOSE",
+    CT_DYNAMIC_VAR_BRACE_OPEN = "CT::T_DYNAMIC_VAR_BRACE_OPEN",
+    CT_FUNCTION_IMPORT = "CT::T_FUNCTION_IMPORT",
+    CT_GROUP_IMPORT_BRACE_CLOSE = "CT::T_GROUP_IMPORT_BRACE_CLOSE",
+    CT_GROUP_IMPORT_BRACE_OPEN = "CT::T_GROUP_IMPORT_BRACE_OPEN",
+    CT_NAMESPACE_OPERATOR = "CT::T_NAMESPACE_OPERATOR",
+    CT_NULLABLE_TYPE = "CT::T_NULLABLE_TYPE",
+    CT_RETURN_REF = "CT::T_RETURN_REF",
+    CT_TYPE_ALTERNATION = "CT::T_TYPE_ALTERNATION",
+    CT_TYPE_COLON = "CT::T_TYPE_COLON",
+    CT_USE_LAMBDA = "CT::T_USE_LAMBDA",
+    CT_USE_TRAIT = "CT::T_USE_TRAIT",
+    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PUBLIC = "CT::T_CONSTRUCTOR_PROPERTY_PROMOTION_PUBLIC",
+    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PROTECTED = "CT::T_CONSTRUCTOR_PROPERTY_PROMOTION_PROTECTED",
+    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PRIVATE = "CT::T_CONSTRUCTOR_PROPERTY_PROMOTION_PRIVATE",
+    CT_ATTRIBUTE_CLOSE = "CT::T_ATTRIBUTE_CLOSE",
+    CT_NAMED_ARGUMENT_NAME = "CT::T_NAMED_ARGUMENT_NAME",
+    CT_NAMED_ARGUMENT_COLON = "CT::T_NAMED_ARGUMENT_COLON",
+    CT_FIRST_CLASS_CALLABLE = "CT::T_FIRST_CLASS_CALLABLE",
+    CT_TYPE_INTERSECTION = "CT::T_TYPE_INTERSECTION",
+    CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN = "CT::T_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN",
+    CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE = "CT::T_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE",
+    CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN = "CT::T_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN",
+    CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE = "CT::T_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE",
+    CT_PROPERTY_HOOK_BRACE_OPEN = "CT::T_PROPERTY_HOOK_BRACE_OPEN",
+    CT_PROPERTY_HOOK_BRACE_CLOSE = "CT::T_PROPERTY_HOOK_BRACE_CLOSE",
+]
+}
+
+/// Upstream aliases (`T_PAAMAYIM_NEKUDOTAYIM`, deprecated `CT::` names still used by fixers).
+#[allow(non_upper_case_globals)]
+impl Kind {
+    pub const T_PAAMAYIM_NEKUDOTAYIM: Kind = Kind::T_DOUBLE_COLON;
+    pub const CT_ARRAY_INDEX_CURLY_BRACE_CLOSE: Kind = Kind::CT_ARRAY_INDEX_BRACE_CLOSE;
+    pub const CT_ARRAY_INDEX_CURLY_BRACE_OPEN: Kind = Kind::CT_ARRAY_INDEX_BRACE_OPEN;
+    pub const CT_ARRAY_SQUARE_BRACE_CLOSE: Kind = Kind::CT_ARRAY_BRACKET_CLOSE;
+    pub const CT_ARRAY_SQUARE_BRACE_OPEN: Kind = Kind::CT_ARRAY_BRACKET_OPEN;
+    pub const CT_BRACE_CLASS_INSTANTIATION_CLOSE: Kind = Kind::CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE;
+    pub const CT_BRACE_CLASS_INSTANTIATION_OPEN: Kind = Kind::CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN;
+    pub const CT_DESTRUCTURING_SQUARE_BRACE_CLOSE: Kind = Kind::CT_DESTRUCTURING_BRACKET_CLOSE;
+    pub const CT_DESTRUCTURING_SQUARE_BRACE_OPEN: Kind = Kind::CT_DESTRUCTURING_BRACKET_OPEN;
+    pub const CT_DYNAMIC_CLASS_CONSTANT_FETCH_CURLY_BRACE_OPEN: Kind = Kind::CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN;
+    pub const CT_DYNAMIC_CLASS_CONSTANT_FETCH_CURLY_BRACE_CLOSE: Kind = Kind::CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Kind;
+
+    #[test]
+    fn names() {
+        assert_eq!(Kind::T_STRING.name(), "T_STRING");
+        assert_eq!(Kind::CT_ARRAY_BRACKET_OPEN.name(), "CT::T_ARRAY_BRACKET_OPEN");
+        assert_eq!(Kind::from_name("CT::T_TYPE_COLON"), Some(Kind::CT_TYPE_COLON));
+        assert!(Kind::CT_TYPE_COLON.is_custom() && !Kind::T_BAD_CHARACTER.is_custom());
+    }
+}
