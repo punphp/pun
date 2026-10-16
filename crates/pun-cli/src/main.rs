@@ -2,6 +2,7 @@
 
 #[cfg(feature = "mago-lint")]
 mod lint;
+mod cache;
 mod console;
 mod fix_report;
 mod highlight;
@@ -109,9 +110,12 @@ pub struct FormatArgs {
     /// Print which rules run natively and which are not ported (to stderr).
     #[arg(long)]
     explain: bool,
-    /// Accepted for Pint compatibility; Pun has no cache yet.
+    /// The path to the cache file (default: a per-project file under ~/.cache/pun).
     #[arg(long)]
     cache_file: Option<String>,
+    /// Check every file, ignoring and not writing the cache (Pun).
+    #[arg(long)]
+    no_cache: bool,
     /// Accepted for Pint compatibility; Pun always runs in parallel.
     #[arg(short, long)]
     parallel: bool,
@@ -264,27 +268,40 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         return Ok(0);
     }
 
+    let cache = if a.no_cache {
+        None
+    } else {
+        a.cache_file.as_ref().map(|f| root.join(f)).or_else(|| cache::default_path(&root)).map(|p| cache::Cache::load(p, cache::signature(&cfg)))
+    };
     // Unreadable / unwritable files abort the whole run, like Pint (FileReader / Runner exceptions).
-    let process = |path: &PathBuf| -> Result<FileResult> {
+    // Besides the result: the content hash when the file is clean (for the cache), and whether the cache said so.
+    let process = |path: &PathBuf| -> Result<(FileResult, Option<String>, bool)> {
         let rel = path.strip_prefix(&root).unwrap_or(path).to_string_lossy().into_owned();
         let mut r = FileResult { path: path.clone(), rel, status: Status::NoChanges, applied: vec![], diff: String::new(), message: String::new() };
         // Runner FileFilterIterator: symlinks are dropped silently, empty files are "skipped".
         if path.is_symlink() {
             r.status = Status::Link;
-            return Ok(r);
+            return Ok((r, None, false));
         }
         let code = std::fs::read(path).with_context(|| format!("Failed to read content from \"{}\".", path.display()))?;
         if code.is_empty() || (matches!(engine, Engine2::Pun(_)) && r.rel.ends_with(".blade.php")) {
             r.status = Status::Skipped;
-            return Ok(r);
+            return Ok((r, None, false));
         }
+        let hash = cache.as_ref().map(|_| cache::hash(&code));
+        if let (Some(c), Some(h)) = (&cache, &hash) {
+            if c.is_clean(&r.rel, h) {
+                return Ok((r, hash, true));
+            }
+        }
+        let mut clean = None;
         match engine.run(path, &code) {
             Err(e) => {
                 r.status = if e.after_fix { Status::Lint } else { Status::Invalid };
                 // PHP's own wording when a `php` is around (only failing files pay for the process).
                 r.message = if e.after_fix { e.message } else { report::php_parse_error(&code).unwrap_or(e.message) };
             }
-            Ok(None) => {}
+            Ok(None) => clean = hash,
             Ok(Some((new, applied))) => {
                 r.diff = report::diff(&String::from_utf8_lossy(&code), &String::from_utf8_lossy(&new), path);
                 r.applied = applied;
@@ -294,15 +311,15 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
                 }
             }
         }
-        Ok(r)
+        Ok((r, clean, false))
     };
 
-    let results: Vec<FileResult> = if a.bail {
+    let results: Vec<(FileResult, Option<String>, bool)> = if a.bail {
         // --bail is PHP-CS-Fixer's stop-on-violation: sequential, stop at the first fixable file (errors don't stop it).
         let mut out = Vec::new();
         for f in &files {
             let r = process(f)?;
-            let stop = r.status == Status::Fixed;
+            let stop = r.0.status == Status::Fixed;
             out.push(r);
             if stop {
                 break;
@@ -312,6 +329,15 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     } else {
         files.par_iter().map(process).collect::<Result<_>>()?
     };
+
+    let hits = results.iter().filter(|r| r.2).count();
+    let (results, clean): (Vec<FileResult>, Vec<Option<String>>) = results.into_iter().map(|(r, c, _)| (r, c)).unzip();
+    if let Some(c) = cache {
+        if a.explain {
+            eprintln!("cache: {hits} of {} files unchanged since a clean run, skipped ({})", files.len(), c.path().display());
+        }
+        c.save(results.iter().map(|r| r.rel.clone()).zip(clean));
+    }
 
     let ctx = report::Ctx { preset: &cfg.preset, total: files.len(), dry_run, verbose: a.verbose > 0, ansi: a.ansi, no_ansi: a.no_ansi };
     let code = report::emit(&ctx, &results, a.format.as_deref(), a.quiet, a.output_to_file.as_deref(), a.output_format.as_deref())?;

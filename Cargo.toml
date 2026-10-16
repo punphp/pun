@@ -33,6 +33,7 @@ mago-span = "=1.57.0"
 mago-linter = "=1.57.0"
 mago-names = "=1.57.0"
 mago-reporting = "=1.57.0"
+xxhash-rust = { version = "0.8", features = ["xxh3"] }
 
 [profile.release]
 lto = "thin"

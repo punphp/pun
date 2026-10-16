@@ -87,7 +87,7 @@ fn main() -> Result<()> {
         }
         run(Command::new("php").arg(&pint).args(&args).current_dir(&oracle_dir), "pint")?;
         if pun.exists() {
-            run(Command::new(&pun).env("PUN_IGNORE_PHP_CONSTRAINT", "1").arg("format").args(&args).current_dir(&pun_dir), "pun")?;
+            run(Command::new(&pun).env("PUN_IGNORE_PHP_CONSTRAINT", "1").arg("format").arg("--no-cache").args(&args).current_dir(&pun_dir), "pun")?;
         }
 
         let o = compare(&p.name, &src, &oracle_dir, &pun_dir)?;
