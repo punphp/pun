@@ -2,55 +2,39 @@
 
 Owner = agent working on it. Status: todo / doing / done / blocked.
 
-## Wave 1 (Phase 0 + Phase 1 foundations)
+## Current state (update when you start or finish a task)
 
-| Task | Crate / path | Owner | Status |
-| --- | --- | --- | --- |
-| Lexer with token_get_all parity + parity tool | pun-tokens | tokens agent | doing |
-| PHP-CS-Fixer Tokens model + Transformers (CT kinds) | pun-tokens | tokens agent | doing |
-| php_compat (strlen, strcasecmp, strnatcasecmp...) | pun-tokens | tokens agent | doing |
-| Pinned Pint / PHP-CS-Fixer oracle | .oracle, scripts/oracle.sh | harness agent | doing |
-| Corpus manifest + clones | corpus/, scripts/corpus.sh | harness agent | doing |
-| Differential harness (`pun-harness format`, `--fixer`) | pun-harness | harness agent | doing |
-| Laravel preset + Pinkary effective rules + priorities | docs/presets | harness agent | doing |
-| Fixer impact ranking | docs/presets/ranking.md | harness agent | doing |
-| Upstream fixer fixtures → JSON | pun-harness/fixtures | harness agent | doing |
-| pint.json / pun.toml / composer.json (PHP >= 8.4 gate) | pun-config | cli agent | done |
-| Pint-identical file discovery, --dirty/--diff/--staged | pun-workspace | cli agent | done |
-| Fixer trait, registry, priority pipeline | pun-format | cli agent | done |
-| `pun` CLI + `pint` alias, `config --show`, `--engine=pun` | punphp (crates/pun-cli) | cli agent | done |
+Status: todo / doing / done / blocked. "doing" rows name the owner so a new session doesn't duplicate work.
+Background agents die with the session that started them: if a "doing" row's agent no longer exists
+(no recent commits, no cargo/php processes in `ps`), treat the row as abandoned. Check `git status` for its
+uncommitted files, run the parity gate, then commit or revert them before you take it over.
 
-## Wave 2 (after token layer lands)
+### Phase 1 / v0.1 (pun format)
 
-| Task | Crate | Status |
+| Task | Owner | Status |
 | --- | --- | --- |
-| Port fixers, split A/B in docs/FIXERS.md | pun-fixers | doing |
-| Delegate mode: unported fixers via system PHP-CS-Fixer | pun-format | todo |
-| Content-hash cache (blake3) | pun-workspace | todo |
+| All 147 Pinkary rules + new_with_parentheses + Pint/phpdoc_type_annotations_only | - | done |
+| 17 opt-in Pun/ (Mago) rules, `pun lint --mago` | - | done |
+| Full-config parity: 0 differing on all 7 corpus projects | - | done |
+| CLI output identical to Pint (all --format reporters, colours, -v diffs, prettier check) | - | done |
+| Lint = PHP's own grammar (TOKEN_PARSE parity, PHP error text) | - | done |
+| Mutation fuzzer `scripts/fuzz-parity.sh` (23 seeds, 0 diffs); per-rule e2e suite (166 rules) | - | done |
+| Content-hash cache (`--cache-file`, `--no-cache`, default ~/.cache/pun) | - | done |
+| Speed: profiling build, hot spots, Blade/Prettier batching, Mago comparison, scoreboard | perf agent (target-perf/) | doing |
+| M1.5 PSR-12: Pint psr12 preset + @PSR1/@PSR2/@PSR12, parity + fuzz | psr12 agent (target-psr12/) | doing |
+| M1.4 Delegate mode: unported/custom fixers via PHP, `--native-only` (crates/pun-delegate) | delegate agent (target-delegate/) | doing |
+| M1.6 `--watch` + formatting-only LSP | - | todo |
+| Verify --dirty/--diff/--repair/--parallel/--staged/--since/--stdin against Pint | - | todo |
+| Cleanup: /code-review --fix, architecture pass, remove restating comments, cargo fmt, clippy (59) | - | todo (after the doing rows) |
+| CI workflows (.github/ untracked: gh token lacks `workflow` scope) | user | blocked |
+| Publish v0.1 (tag, LICENSE, crates, npm @punphp, Homebrew, Packagist, public repo) | user | needs approval |
 
-## Deferred (ponytail: system PHP stands in until needed)
+### Later phases
 
-- pun-php embedded static libphp (static-php-cli build is heavy on this 2-core box); system `php` used for oracle + delegate meanwhile.
-- Phases 2–7 (lint, refactor, migrate, install, run, test).
+Phases 2–7 (lint/PHPStan, refactor/Rector, migrate, install/Composer, run/FrankenPHP, test/Pest): todo.
+Embedded static libphp (pun-php): deferred, system `php` stands in.
 
-## Wave 3 (queued — starts when all fixers are ticked and coverage is 100%)
+### Open questions for the user
 
-| Task | Status |
-| --- | --- |
-| `/code-review --fix` over the entire codebase, findings applied | todo |
-| Architecture pass: dedupe helpers across fixers/analyzers, tighten crate boundaries | todo |
-| Remove comments that restate code; keep only non-obvious "why" (upstream parity quirks) | todo |
-| Re-run fixtures, corpus harness and coverage gate after the cleanup | todo |
-
-## v0.1 track (current)
-
-| Task | Status |
-| --- | --- |
-| All 147 Pinkary rules ported, fixtures + oracle cases + corpus + 100% coverage | done |
-| Full-preset parity vs Pint on Pinkary + corpus, CLI parity, first benchmarks | doing |
-| Coverage: Pun/ rules, tautology audit, final docs/COVERAGE.md | doing |
-| CI (tests, coverage gate, parity job) + cargo-dist release pipeline + Composer shim + README | doing |
-| Content-hash cache, speed work toward 30x Pint | todo (after parity) |
-| .php-cs-fixer.php evaluation, checkstyle/junit/gitlab formats, true --staged | todo (after parity) |
-| Wave 3: /code-review --fix, architecture pass, comment cleanup | queued |
-| Publish v0.1 (tag, crates, npm, Homebrew, Packagist) | needs user approval |
+- Drop the `--engine=pun` (Mago formatter) path? ("remove unnecessary things about formatter")
+- "creat a r": release, README or PR?

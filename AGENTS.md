@@ -30,3 +30,9 @@ Plan: docs/PLAN.md. Home: github.com/punphp/pun (npm: @punphp/pun). Current scop
   calling it expected; `assert!(true)`/no assertion; asserting only that something didn't panic when its output is checkable;
   mocks that only verify calls; tests of private helpers whose behaviour is already pinned through the public API.
 - Each test must fail on a plausible wrong implementation. If you can't name the bug it catches, delete it.
+
+## Handoff between sessions
+
+- `docs/TASKS.md` "Current state" is the source of truth: set your row to `doing` with your owner/target dir before starting, `done` when pushed.
+- Each agent uses its own `CARGO_TARGET_DIR` (e.g. `target-perf`) and pulls with `--rebase` before every push.
+- Starting a new session: read TASKS.md, `git log -15`, `git status`, `ps aux | grep -E 'cargo|rustc|php'`. Rows marked doing with no live agent are abandoned work — verify and commit or revert their uncommitted files before continuing.
