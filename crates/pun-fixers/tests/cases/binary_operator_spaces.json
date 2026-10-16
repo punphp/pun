@@ -28,5 +28,13 @@
         },
         "input": "<?php\n$a = [\n\"a\"\n=> 1,\n\"bb\" => 2,\n];\n",
         "expected": "<?php\n$a = [\n\"a\"\n     => 1,\n\"bb\" => 2,\n];\n"
+    },
+    {
+        "fixer": "binary_operator_spaces",
+        "config": {
+            "default": "at_least_single_space"
+        },
+        "input": "<?php\n$a  =  1;\n$b=2;\n$c = [1=>2,  3    =>  4];\n$d = $a  +$b   ??  $c;\n",
+        "expected": "<?php\n$a  =  1;\n$b = 2;\n$c = [1 => 2,  3    =>  4];\n$d = $a  + $b   ??  $c;\n"
     }
 ]

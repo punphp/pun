@@ -3,5 +3,14 @@
         "fixer": "braces_position",
         "input": "x<?php function f() { return 1; }\n",
         "expected": "x<?php function f()\n{\nreturn 1;\n}\n"
+    },
+    {
+        "fixer": "braces_position",
+        "config": {
+            "allow_single_line_anonymous_functions": false,
+            "allow_single_line_empty_anonymous_classes": true
+        },
+        "input": "<?php\n$a = function () { return 1; };\n$b = function ($x) use ($y) { foo(); bar(); };\n$c = new class {};\n$d = new class { public $x; };\n$e = new class() {\n};\n",
+        "expected": "<?php\n$a = function () {\nreturn 1;\n};\n$b = function ($x) use ($y) {\nfoo(); bar();\n};\n$c = new class {};\n$d = new class {\npublic $x;\n};\n$e = new class() {\n};\n"
     }
 ]

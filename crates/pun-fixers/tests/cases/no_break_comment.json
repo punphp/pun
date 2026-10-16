@@ -1,0 +1,15 @@
+[
+    {
+        "fixer": "no_break_comment",
+        "input": "<?php\nswitch ($a) {\n    case 1:\n        foo();\n        /* NO BREAK, really No Break */\n    case 2:\n        bar();\n    // No break\n    case 3:\n        baz();\n        // no break\n        break;\n    default:\n        qux();\n}\n",
+        "expected": "<?php\nswitch ($a) {\n    case 1:\n        foo();\n        /* NO BREAK, really No Break */\n        // no break\n    case 2:\n        bar();\n    // no break\n    case 3:\n        baz();\n        break;\n    default:\n        qux();\n}\n"
+    },
+    {
+        "fixer": "no_break_comment",
+        "config": {
+            "comment_text": "äskip"
+        },
+        "input": "<?php\nswitch ($a) {\n    case 1:\n        foo();\n        # ÄSKIP ÄSkip\n    case 2:\n        bar();\n}\n",
+        "expected": "<?php\nswitch ($a) {\n    case 1:\n        foo();\n        # ÄSKIP ÄSkip\n    case 2:\n        bar();\n}\n"
+    }
+]

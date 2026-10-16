@@ -1,0 +1,1697 @@
+{
+    "fixer": "no_break_comment",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoBreakCommentFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/NoBreakCommentFixerTest.php",
+    "case_count": 150,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoBreakCommentFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n    case 2:\n        bar();\n        // no break\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n    case 2:\n        bar();\n    default:\n        baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n\n        foo();\n\n        // no break\n    case 2:\n\n        bar();\n\n        // no break\n    default:\n\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n\n        foo();\n\n    case 2:\n\n        bar();\n\n    default:\n\n        baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n    case 2:\n        bar();\n        // no break\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo(); // no break\n    case 2:\n        bar(); // no break\n    default:\n        baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        foo();\n        // no break\n    case 2;\n        bar();\n        // no break\n    default;\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        foo();\n    case 2;\n        bar();\n    default;\n        baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // foo\n        // no break\n    case 2:\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // foo\n    case 2:\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nswitch ($foo) { case 1: foo();\n// no break\ncase 2: bar(); }",
+                        "<?php\nswitch ($foo) { case 1: foo(); case 2: bar(); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nswitch ($foo) { case 1: foo();\n// no break\ncase 2: bar(); }",
+                        "<?php\nswitch ($foo) { case 1: foo();case 2: bar(); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        foreach ($bar as $baz) {\n            break;\n        }\n        // no break\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        foreach ($bar as $baz) {\n            break;\n        }\n    case 2;\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        for ($i = 0; $i < 1; ++$i) {\n            break;\n        }\n        // no break\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        for ($i = 0; $i < 1; ++$i) {\n            break;\n        }\n    case 2;\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        if ($foo) {\n            break;\n        }\n        // no break\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        if ($foo) {\n            break;\n        }\n    case 2;\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        do {\n            break;\n        } while ($bar);\n        // no break\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        do {\n            break;\n        } while ($bar);\n    case 2;\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = function ($bar) {\n            foreach ($bar as $baz) {\n                break;\n            }\n        };\n        // no break\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = function ($bar) {\n            foreach ($bar as $baz) {\n                break;\n            }\n        };\n    case 2;\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "            <?php\nswitch ($foo) {\n    case 1;\n        $foo = function ($bar): void {\n            foreach ($bar as $baz) {\n                break;\n            }\n        };\n        // no break\n    case 2;\n        bar();\n}",
+                        "            <?php\nswitch ($foo) {\n    case 1;\n        $foo = function ($bar): void {\n            foreach ($bar as $baz) {\n                break;\n            }\n        };\n    case 2;\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        switch ($bar) {\n            case 1:\n                foo();\n                // no break\n            case 2:\n                bar();\n        }\n        break;\n    case 2:\n        switch ($bar) {\n            case 1:\n                bar();\n                // no break\n            case 2:\n                foo();\n        }\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        switch ($bar) {\n            case 1:\n                foo();\n            case 2:\n                bar();\n        }\n        break;\n    case 2:\n        switch ($bar) {\n            case 1:\n                bar();\n            case 2:\n                foo();\n        }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        switch ($bar):\n            case 1:\n                foo();\n                // no break\n            case 2:\n                bar();\n        endswitch;\n        break;\n    case 2:\n        switch ($bar):\n            case 1:\n                bar();\n                // no break\n            case 2:\n                foo();\n        endswitch;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        switch ($bar):\n            case 1:\n                foo();\n            case 2:\n                bar();\n        endswitch;\n        break;\n    case 2:\n        switch ($bar):\n            case 1:\n                bar();\n            case 2:\n                foo();\n        endswitch;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        continue;\n    case 2:\n        bar();\n        continue;\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n        continue;\n    case 2:\n        bar();\n        // no break\n        continue;\n    default:\n        baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n\n        return foo();\n\n\n    case 2:\n\n        return bar();\n\n\n    default:\n\n        return baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n\n        return foo();\n\n        // no break\n\n    case 2:\n\n        return bar();\n\n        // no break\n\n    default:\n\n        return baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        return foo();\n    case 2:\n        return bar();\n    default:\n        return baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // no break\n        return foo();\n    case 2:\n        // no break\n        return bar();\n    default:\n        return baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        break;\n    case 2:\n        bar();\n        break;\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n        break;\n    case 2:\n        bar();\n        // no break\n        break;\n    default:\n        baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        break;\n    case 2:\n        bar();\n        break;\n    case 21:\n        bar();\n        break;\n    case 22:\n        bar();\n        break;\n    case 23:\n        bar();\n        break;\n    case 24:\n        bar();\n        break;\n    case 3:\n        baz();\n        break;\n    default:\n        qux();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        # no break\n        break;\n    case 2:\n        bar();\n        /* no break */\n        break;\n    case 21:\n        bar();\n        /*no break*/\n        break;\n    case 22:\n        bar();\n        /*     no break    */\n        break;\n    case 23:\n        bar();\n        /*no break    */\n        break;\n    case 24:\n        bar();\n        /*  no break*/\n        break;\n    case 3:\n        baz();\n        /** no break */\n        break;\n    default:\n        qux();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n    case 2:\n        bar();\n        break;\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // no break\n    case 2:\n        bar();\n        // no break\n        break;\n    default:\n        baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    default:\n        foo();\n}",
+                        "<?php\nswitch ($foo) {\n    default:\n        foo();\n        // no break\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php switch ($foo) { case 1: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 1;\n// no break\ncase 2: $foo = 2; }\n// no break\ncase 2: switch ($baz) { case 1: $foo = 3;\n// no break\ncase 2: $foo = 4; } }\n// no break\ncase 2: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 5;\n// no break\ncase 2: $foo = 6; }\n// no break\ncase 2: switch ($baz) { case 1: $foo = 7;\n// no break\ncase 2: $foo = 8; } } }",
+                        "<?php switch ($foo) { case 1: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 1; case 2: $foo = 2; } case 2: switch ($baz) { case 1: $foo = 3; case 2: $foo = 4; } } case 2: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 5; case 2: $foo = 6; } case 2: switch ($baz) { case 1: $foo = 7; case 2: $foo = 8; } } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\nswitch ($foo):\n    case 1:\n        foo();\n        // no break\n    case 2:\n        bar();\nendswitch;",
+                        "<?php\nswitch ($foo):\n    case 1:\n        foo();\n    case 2:\n        bar();\n        // no break\nendswitch;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php\n        // no break\n    case 2:\n        ?>bar<?php\n        break;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php\n    case 2:\n        ?>bar<?php\n        // no break\n        break;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php\n\n        // no break\n    case 2:\n        ?>bar<?php\n\n        break;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php\n\n    case 2:\n        ?>bar<?php\n\n        // no break\n        break;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php // foo\n        // no break\n    case 2:\n        ?>bar<?php // bar\n        break;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php // foo\n    case 2:\n        ?>bar<?php // bar\n        // no break\n        break;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n    case 2:\n        bar();\n        // no break\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // no break\n        foo();\n    case 2:\n        // no break\n        bar();\n    default:\n        baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        die;\n    case 2:\n        exit;\n    default:\n        die;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // no break\n        die;\n    case 2:\n        // no break\n        exit;\n    default:\n        die;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1: {\n        throw new \\Exception();\n    }\n    case 2:\n        ?>\n        <?php\n        throw new \\Exception();\n    default:\n        throw new \\Exception();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1: {\n        // no break\n        throw new \\Exception();\n    }\n    case 2:\n        ?>\n        <?php\n        // no break\n        throw new \\Exception();\n    default:\n        throw new \\Exception();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        goto a;\n    case 2:\n        goto a;\n    default:\n        goto a;\n}\n\na:\necho 'foo';",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // no break\n        goto a;\n    case 2:\n        // no break\n        goto a;\n    default:\n        goto a;\n}\n\na:\necho 'foo';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case \"bar\":\n        if (1) {\n        } else {\n        }\n\n        $aaa = new Bar();\n        break;\n    default:\n        $aaa = new Baz();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n?>\n<?php\n// no break\n    default:\n?>\n<?php\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n?>\n<?php\n    default:\n?>\n<?php\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n?>\n<?php\n// no break\ndefault:\n?>\n<?php }",
+                        "<?php\nswitch ($foo) {\n    case 1:\n?>\n<?php default:\n?>\n<?php }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n    case 2:\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // No break\n    case 2:\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\nswitch ($a) {\n    case 1:\n        throw new \\Exception(\"\");\n    case 2;\n        throw new \\Exception(\"\");\n    case 3:\n        throw new \\Exception(\"\");\n    case 4;\n        throw new \\Exception(\"\");\n    case 5:\n        throw new \\Exception(\"\");\n    case 6;\n        throw new \\Exception(\"\");\n}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\nswitch ($f) {\n    case 1:\n        if ($a) {\n            return \"\";\n        }\n\n        throw new $f();\n    case Z:\n        break;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = new class {\n            public function foo($bar)\n            {\n                foreach ($bar as $baz) {\n                    break;\n                }\n            }\n        };\n        // no break\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = new class {\n            public function foo($bar)\n            {\n                foreach ($bar as $baz) {\n                    break;\n                }\n            }\n        };\n    case 2;\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = new class(1) {\n            public function foo($bar)\n            {\n                foreach ($bar as $baz) {\n                    break;\n                }\n            }\n        };\n        // no break\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = new class(1) {\n            public function foo($bar)\n            {\n                foreach ($bar as $baz) {\n                    break;\n                }\n            }\n        };\n    case 2;\n        bar();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\nswitch($a) {\n    case 1:\n        $a = function () { throw new \\Exception(\"\"); };\n        // no break\n    case 2:\n        $a = new class(){\n            public function foo () { throw new \\Exception(\"\"); }\n        };\n        // no break\n    case 3:\n        echo 5;\n        // no break\n    default:\n        echo 1;\n}\n                ",
+                        "<?php\nswitch($a) {\n    case 1:\n        $a = function () { throw new \\Exception(\"\"); };\n    case 2:\n        $a = new class(){\n            public function foo () { throw new \\Exception(\"\"); }\n        };\n    case 3:\n        echo 5;\n    default:\n        echo 1;\n}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 10:\n        echo 1;\n        /* no break because of some more details stated here */\n    case 22:\n        break;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 10:\n        echo 1;\n        # no break because of some more details stated here */\n    case 22:\n        break;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 100:\n        echo 10;\n        /* no breaking windows please */\n        // no break\n    case 220:\n        break;\n}",
+                        "<?php\nswitch ($foo) {\n    case 100:\n        echo 10;\n        /* no breaking windows please */\n    case 220:\n        break;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // fall-through case!\n    case 2:\n        bar();\n        // fall-through case!\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n    case 2:\n        bar();\n    default:\n        baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n\n        foo();\n\n        // fall-through case!\n    case 2:\n\n        bar();\n\n        // fall-through case!\n    default:\n\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n\n        foo();\n\n    case 2:\n\n        bar();\n\n    default:\n\n        baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // fall-through case!\n    case 2:\n        bar();\n        // fall-through case!\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo(); // fall-through case!\n    case 2:\n        bar(); // fall-through case!\n    default:\n        baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        foo();\n        // fall-through case!\n    case 2;\n        bar();\n        // fall-through case!\n    default;\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        foo();\n    case 2;\n        bar();\n    default;\n        baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // foo\n        // fall-through case!\n    case 2:\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // foo\n    case 2:\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nswitch ($foo) { case 1: foo();\n// fall-through case!\ncase 2: bar(); }",
+                        "<?php\nswitch ($foo) { case 1: foo(); case 2: bar(); }",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nswitch ($foo) { case 1: foo();\n// fall-through case!\ncase 2: bar(); }",
+                        "<?php\nswitch ($foo) { case 1: foo();case 2: bar(); }",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        foreach ($bar as $baz) {\n            break;\n        }\n        // fall-through case!\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        foreach ($bar as $baz) {\n            break;\n        }\n    case 2;\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        for ($i = 0; $i < 1; ++$i) {\n            break;\n        }\n        // fall-through case!\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        for ($i = 0; $i < 1; ++$i) {\n            break;\n        }\n    case 2;\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        if ($foo) {\n            break;\n        }\n        // fall-through case!\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        if ($foo) {\n            break;\n        }\n    case 2;\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        do {\n            break;\n        } while ($bar);\n        // fall-through case!\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        do {\n            break;\n        } while ($bar);\n    case 2;\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = function ($bar) {\n            foreach ($bar as $baz) {\n                break;\n            }\n        };\n        // fall-through case!\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = function ($bar) {\n            foreach ($bar as $baz) {\n                break;\n            }\n        };\n    case 2;\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "            <?php\nswitch ($foo) {\n    case 1;\n        $foo = function ($bar): void {\n            foreach ($bar as $baz) {\n                break;\n            }\n        };\n        // fall-through case!\n    case 2;\n        bar();\n}",
+                        "            <?php\nswitch ($foo) {\n    case 1;\n        $foo = function ($bar): void {\n            foreach ($bar as $baz) {\n                break;\n            }\n        };\n    case 2;\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        switch ($bar) {\n            case 1:\n                foo();\n                // fall-through case!\n            case 2:\n                bar();\n        }\n        break;\n    case 2:\n        switch ($bar) {\n            case 1:\n                bar();\n                // fall-through case!\n            case 2:\n                foo();\n        }\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        switch ($bar) {\n            case 1:\n                foo();\n            case 2:\n                bar();\n        }\n        break;\n    case 2:\n        switch ($bar) {\n            case 1:\n                bar();\n            case 2:\n                foo();\n        }\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        switch ($bar):\n            case 1:\n                foo();\n                // fall-through case!\n            case 2:\n                bar();\n        endswitch;\n        break;\n    case 2:\n        switch ($bar):\n            case 1:\n                bar();\n                // fall-through case!\n            case 2:\n                foo();\n        endswitch;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        switch ($bar):\n            case 1:\n                foo();\n            case 2:\n                bar();\n        endswitch;\n        break;\n    case 2:\n        switch ($bar):\n            case 1:\n                bar();\n            case 2:\n                foo();\n        endswitch;\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        continue;\n    case 2:\n        bar();\n        continue;\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // fall-through case!\n        continue;\n    case 2:\n        bar();\n        // fall-through case!\n        continue;\n    default:\n        baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n\n        return foo();\n\n\n    case 2:\n\n        return bar();\n\n\n    default:\n\n        return baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n\n        return foo();\n\n        // fall-through case!\n\n    case 2:\n\n        return bar();\n\n        // fall-through case!\n\n    default:\n\n        return baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        return foo();\n    case 2:\n        return bar();\n    default:\n        return baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // fall-through case!\n        return foo();\n    case 2:\n        // fall-through case!\n        return bar();\n    default:\n        return baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        break;\n    case 2:\n        bar();\n        break;\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // fall-through case!\n        break;\n    case 2:\n        bar();\n        // fall-through case!\n        break;\n    default:\n        baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        break;\n    case 2:\n        bar();\n        break;\n    case 21:\n        bar();\n        break;\n    case 22:\n        bar();\n        break;\n    case 23:\n        bar();\n        break;\n    case 24:\n        bar();\n        break;\n    case 3:\n        baz();\n        break;\n    default:\n        qux();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        # fall-through case!\n        break;\n    case 2:\n        bar();\n        /* fall-through case! */\n        break;\n    case 21:\n        bar();\n        /*fall-through case!*/\n        break;\n    case 22:\n        bar();\n        /*     fall-through case!    */\n        break;\n    case 23:\n        bar();\n        /*fall-through case!    */\n        break;\n    case 24:\n        bar();\n        /*  fall-through case!*/\n        break;\n    case 3:\n        baz();\n        /** fall-through case! */\n        break;\n    default:\n        qux();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n    case 2:\n        bar();\n        break;\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // fall-through case!\n    case 2:\n        bar();\n        // fall-through case!\n        break;\n    default:\n        baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // fall-through case!\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    default:\n        foo();\n}",
+                        "<?php\nswitch ($foo) {\n    default:\n        foo();\n        // fall-through case!\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php switch ($foo) { case 1: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 1;\n// fall-through case!\ncase 2: $foo = 2; }\n// fall-through case!\ncase 2: switch ($baz) { case 1: $foo = 3;\n// fall-through case!\ncase 2: $foo = 4; } }\n// fall-through case!\ncase 2: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 5;\n// fall-through case!\ncase 2: $foo = 6; }\n// fall-through case!\ncase 2: switch ($baz) { case 1: $foo = 7;\n// fall-through case!\ncase 2: $foo = 8; } } }",
+                        "<?php switch ($foo) { case 1: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 1; case 2: $foo = 2; } case 2: switch ($baz) { case 1: $foo = 3; case 2: $foo = 4; } } case 2: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 5; case 2: $foo = 6; } case 2: switch ($baz) { case 1: $foo = 7; case 2: $foo = 8; } } }",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\nswitch ($foo):\n    case 1:\n        foo();\n        // fall-through case!\n    case 2:\n        bar();\nendswitch;",
+                        "<?php\nswitch ($foo):\n    case 1:\n        foo();\n    case 2:\n        bar();\n        // fall-through case!\nendswitch;",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php\n        // fall-through case!\n    case 2:\n        ?>bar<?php\n        break;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php\n    case 2:\n        ?>bar<?php\n        // fall-through case!\n        break;\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php\n\n        // fall-through case!\n    case 2:\n        ?>bar<?php\n\n        break;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php\n\n    case 2:\n        ?>bar<?php\n\n        // fall-through case!\n        break;\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php // foo\n        // fall-through case!\n    case 2:\n        ?>bar<?php // bar\n        break;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        ?>foo<?php // foo\n    case 2:\n        ?>bar<?php // bar\n        // fall-through case!\n        break;\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // fall-through case!\n    case 2:\n        bar();\n        // fall-through case!\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // fall-through case!\n        foo();\n    case 2:\n        // fall-through case!\n        bar();\n    default:\n        baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        die;\n    case 2:\n        exit;\n    default:\n        die;\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // fall-through case!\n        die;\n    case 2:\n        // fall-through case!\n        exit;\n    default:\n        die;\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1: {\n        throw new \\Exception();\n    }\n    case 2:\n        ?>\n        <?php\n        throw new \\Exception();\n    default:\n        throw new \\Exception();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1: {\n        // fall-through case!\n        throw new \\Exception();\n    }\n    case 2:\n        ?>\n        <?php\n        // fall-through case!\n        throw new \\Exception();\n    default:\n        throw new \\Exception();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        goto a;\n    case 2:\n        goto a;\n    default:\n        goto a;\n}\n\na:\necho 'foo';",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        // fall-through case!\n        goto a;\n    case 2:\n        // fall-through case!\n        goto a;\n    default:\n        goto a;\n}\n\na:\necho 'foo';",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case \"bar\":\n        if (1) {\n        } else {\n        }\n\n        $aaa = new Bar();\n        break;\n    default:\n        $aaa = new Baz();\n}",
+                        null,
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n?>\n<?php\n// fall-through case!\n    default:\n?>\n<?php\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n?>\n<?php\n    default:\n?>\n<?php\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n?>\n<?php\n// fall-through case!\ndefault:\n?>\n<?php }",
+                        "<?php\nswitch ($foo) {\n    case 1:\n?>\n<?php default:\n?>\n<?php }",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // fall-through case!\n    case 2:\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // Fall-through case!\n    case 2:\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\nswitch ($a) {\n    case 1:\n        throw new \\Exception(\"\");\n    case 2;\n        throw new \\Exception(\"\");\n    case 3:\n        throw new \\Exception(\"\");\n    case 4;\n        throw new \\Exception(\"\");\n    case 5:\n        throw new \\Exception(\"\");\n    case 6;\n        throw new \\Exception(\"\");\n}\n                ",
+                        null,
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\nswitch ($f) {\n    case 1:\n        if ($a) {\n            return \"\";\n        }\n\n        throw new $f();\n    case Z:\n        break;\n}",
+                        null,
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = new class {\n            public function foo($bar)\n            {\n                foreach ($bar as $baz) {\n                    break;\n                }\n            }\n        };\n        // fall-through case!\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = new class {\n            public function foo($bar)\n            {\n                foreach ($bar as $baz) {\n                    break;\n                }\n            }\n        };\n    case 2;\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = new class(1) {\n            public function foo($bar)\n            {\n                foreach ($bar as $baz) {\n                    break;\n                }\n            }\n        };\n        // fall-through case!\n    case 2;\n        bar();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1;\n        $foo = new class(1) {\n            public function foo($bar)\n            {\n                foreach ($bar as $baz) {\n                    break;\n                }\n            }\n        };\n    case 2;\n        bar();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\nswitch($a) {\n    case 1:\n        $a = function () { throw new \\Exception(\"\"); };\n        // fall-through case!\n    case 2:\n        $a = new class(){\n            public function foo () { throw new \\Exception(\"\"); }\n        };\n        // fall-through case!\n    case 3:\n        echo 5;\n        // fall-through case!\n    default:\n        echo 1;\n}\n                ",
+                        "<?php\nswitch($a) {\n    case 1:\n        $a = function () { throw new \\Exception(\"\"); };\n    case 2:\n        $a = new class(){\n            public function foo () { throw new \\Exception(\"\"); }\n        };\n    case 3:\n        echo 5;\n    default:\n        echo 1;\n}\n                ",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 10:\n        echo 1;\n        /* fall-through case! because of some more details stated here */\n    case 22:\n        break;\n}",
+                        null,
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 10:\n        echo 1;\n        # fall-through case! because of some more details stated here */\n    case 22:\n        break;\n}",
+                        null,
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 100:\n        echo 10;\n        /* fall-through case!ing windows please */\n        // fall-through case!\n    case 220:\n        break;\n}",
+                        "<?php\nswitch ($foo) {\n    case 100:\n        echo 10;\n        /* fall-through case!ing windows please */\n    case 220:\n        break;\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n        // fall-through case!\n    case 2:\n        bar();\n        // no break\n        // fall-through case!\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n    case 2:\n        bar();\n        // no break\n    default:\n        baz();\n}",
+                        {
+                            "comment_text": "fall-through case!"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // no break\r\n    case 2:\r\n        bar();\r\n        // no break\r\n    default:\r\n        baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n    case 2:\r\n        bar();\r\n    default:\r\n        baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n\r\n        foo();\r\n\r\n        // no break\r\n    case 2:\r\n\r\n        bar();\r\n\r\n        // no break\r\n    default:\r\n\r\n        baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n\r\n        foo();\r\n\r\n    case 2:\r\n\r\n        bar();\r\n\r\n    default:\r\n\r\n        baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // no break\r\n    case 2:\r\n        bar();\r\n        // no break\r\n    default:\r\n        baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo(); // no break\r\n    case 2:\r\n        bar(); // no break\r\n    default:\r\n        baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        foo();\r\n        // no break\r\n    case 2;\r\n        bar();\r\n        // no break\r\n    default;\r\n        baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        foo();\r\n    case 2;\r\n        bar();\r\n    default;\r\n        baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // foo\r\n        // no break\r\n    case 2:\r\n        bar();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // foo\r\n    case 2:\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\r\nswitch ($foo) { case 1: foo();\r\n// no break\r\ncase 2: bar(); }",
+                        "<?php\r\nswitch ($foo) { case 1: foo(); case 2: bar(); }",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\r\nswitch ($foo) { case 1: foo();\r\n// no break\r\ncase 2: bar(); }",
+                        "<?php\r\nswitch ($foo) { case 1: foo();case 2: bar(); }",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        foreach ($bar as $baz) {\r\n            break;\r\n        }\r\n        // no break\r\n    case 2;\r\n        bar();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        foreach ($bar as $baz) {\r\n            break;\r\n        }\r\n    case 2;\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        for ($i = 0; $i < 1; ++$i) {\r\n            break;\r\n        }\r\n        // no break\r\n    case 2;\r\n        bar();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        for ($i = 0; $i < 1; ++$i) {\r\n            break;\r\n        }\r\n    case 2;\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        if ($foo) {\r\n            break;\r\n        }\r\n        // no break\r\n    case 2;\r\n        bar();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        if ($foo) {\r\n            break;\r\n        }\r\n    case 2;\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        do {\r\n            break;\r\n        } while ($bar);\r\n        // no break\r\n    case 2;\r\n        bar();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        do {\r\n            break;\r\n        } while ($bar);\r\n    case 2;\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        $foo = function ($bar) {\r\n            foreach ($bar as $baz) {\r\n                break;\r\n            }\r\n        };\r\n        // no break\r\n    case 2;\r\n        bar();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        $foo = function ($bar) {\r\n            foreach ($bar as $baz) {\r\n                break;\r\n            }\r\n        };\r\n    case 2;\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "            <?php\r\nswitch ($foo) {\r\n    case 1;\r\n        $foo = function ($bar): void {\r\n            foreach ($bar as $baz) {\r\n                break;\r\n            }\r\n        };\r\n        // no break\r\n    case 2;\r\n        bar();\r\n}",
+                        "            <?php\r\nswitch ($foo) {\r\n    case 1;\r\n        $foo = function ($bar): void {\r\n            foreach ($bar as $baz) {\r\n                break;\r\n            }\r\n        };\r\n    case 2;\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        switch ($bar) {\r\n            case 1:\r\n                foo();\r\n                // no break\r\n            case 2:\r\n                bar();\r\n        }\r\n        break;\r\n    case 2:\r\n        switch ($bar) {\r\n            case 1:\r\n                bar();\r\n                // no break\r\n            case 2:\r\n                foo();\r\n        }\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        switch ($bar) {\r\n            case 1:\r\n                foo();\r\n            case 2:\r\n                bar();\r\n        }\r\n        break;\r\n    case 2:\r\n        switch ($bar) {\r\n            case 1:\r\n                bar();\r\n            case 2:\r\n                foo();\r\n        }\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        switch ($bar):\r\n            case 1:\r\n                foo();\r\n                // no break\r\n            case 2:\r\n                bar();\r\n        endswitch;\r\n        break;\r\n    case 2:\r\n        switch ($bar):\r\n            case 1:\r\n                bar();\r\n                // no break\r\n            case 2:\r\n                foo();\r\n        endswitch;\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        switch ($bar):\r\n            case 1:\r\n                foo();\r\n            case 2:\r\n                bar();\r\n        endswitch;\r\n        break;\r\n    case 2:\r\n        switch ($bar):\r\n            case 1:\r\n                bar();\r\n            case 2:\r\n                foo();\r\n        endswitch;\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        continue;\r\n    case 2:\r\n        bar();\r\n        continue;\r\n    default:\r\n        baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // no break\r\n        continue;\r\n    case 2:\r\n        bar();\r\n        // no break\r\n        continue;\r\n    default:\r\n        baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n\r\n        return foo();\r\n\r\n\r\n    case 2:\r\n\r\n        return bar();\r\n\r\n\r\n    default:\r\n\r\n        return baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n\r\n        return foo();\r\n\r\n        // no break\r\n\r\n    case 2:\r\n\r\n        return bar();\r\n\r\n        // no break\r\n\r\n    default:\r\n\r\n        return baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        return foo();\r\n    case 2:\r\n        return bar();\r\n    default:\r\n        return baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        // no break\r\n        return foo();\r\n    case 2:\r\n        // no break\r\n        return bar();\r\n    default:\r\n        return baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        break;\r\n    case 2:\r\n        bar();\r\n        break;\r\n    default:\r\n        baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // no break\r\n        break;\r\n    case 2:\r\n        bar();\r\n        // no break\r\n        break;\r\n    default:\r\n        baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        break;\r\n    case 2:\r\n        bar();\r\n        break;\r\n    case 21:\r\n        bar();\r\n        break;\r\n    case 22:\r\n        bar();\r\n        break;\r\n    case 23:\r\n        bar();\r\n        break;\r\n    case 24:\r\n        bar();\r\n        break;\r\n    case 3:\r\n        baz();\r\n        break;\r\n    default:\r\n        qux();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        # no break\r\n        break;\r\n    case 2:\r\n        bar();\r\n        /* no break */\r\n        break;\r\n    case 21:\r\n        bar();\r\n        /*no break*/\r\n        break;\r\n    case 22:\r\n        bar();\r\n        /*     no break    */\r\n        break;\r\n    case 23:\r\n        bar();\r\n        /*no break    */\r\n        break;\r\n    case 24:\r\n        bar();\r\n        /*  no break*/\r\n        break;\r\n    case 3:\r\n        baz();\r\n        /** no break */\r\n        break;\r\n    default:\r\n        qux();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n    case 2:\r\n        bar();\r\n        break;\r\n    default:\r\n        baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        // no break\r\n    case 2:\r\n        bar();\r\n        // no break\r\n        break;\r\n    default:\r\n        baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // no break\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    default:\r\n        foo();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    default:\r\n        foo();\r\n        // no break\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php switch ($foo) { case 1: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 1;\r\n// no break\r\ncase 2: $foo = 2; }\r\n// no break\r\ncase 2: switch ($baz) { case 1: $foo = 3;\r\n// no break\r\ncase 2: $foo = 4; } }\r\n// no break\r\ncase 2: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 5;\r\n// no break\r\ncase 2: $foo = 6; }\r\n// no break\r\ncase 2: switch ($baz) { case 1: $foo = 7;\r\n// no break\r\ncase 2: $foo = 8; } } }",
+                        "<?php switch ($foo) { case 1: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 1; case 2: $foo = 2; } case 2: switch ($baz) { case 1: $foo = 3; case 2: $foo = 4; } } case 2: switch ($bar) { case 1: switch ($baz) { case 1: $foo = 5; case 2: $foo = 6; } case 2: switch ($baz) { case 1: $foo = 7; case 2: $foo = 8; } } }",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php\r\nswitch ($foo):\r\n    case 1:\r\n        foo();\r\n        // no break\r\n    case 2:\r\n        bar();\r\nendswitch;",
+                        "<?php\r\nswitch ($foo):\r\n    case 1:\r\n        foo();\r\n    case 2:\r\n        bar();\r\n        // no break\r\nendswitch;",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        ?>foo<?php\r\n        // no break\r\n    case 2:\r\n        ?>bar<?php\r\n        break;\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        ?>foo<?php\r\n    case 2:\r\n        ?>bar<?php\r\n        // no break\r\n        break;\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        ?>foo<?php\r\n\r\n        // no break\r\n    case 2:\r\n        ?>bar<?php\r\n\r\n        break;\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        ?>foo<?php\r\n\r\n    case 2:\r\n        ?>bar<?php\r\n\r\n        // no break\r\n        break;\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        ?>foo<?php // foo\r\n        // no break\r\n    case 2:\r\n        ?>bar<?php // bar\r\n        break;\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        ?>foo<?php // foo\r\n    case 2:\r\n        ?>bar<?php // bar\r\n        // no break\r\n        break;\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // no break\r\n    case 2:\r\n        bar();\r\n        // no break\r\n    default:\r\n        baz();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        // no break\r\n        foo();\r\n    case 2:\r\n        // no break\r\n        bar();\r\n    default:\r\n        baz();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        die;\r\n    case 2:\r\n        exit;\r\n    default:\r\n        die;\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        // no break\r\n        die;\r\n    case 2:\r\n        // no break\r\n        exit;\r\n    default:\r\n        die;\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1: {\r\n        throw new \\Exception();\r\n    }\r\n    case 2:\r\n        ?>\r\n        <?php\r\n        throw new \\Exception();\r\n    default:\r\n        throw new \\Exception();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1: {\r\n        // no break\r\n        throw new \\Exception();\r\n    }\r\n    case 2:\r\n        ?>\r\n        <?php\r\n        // no break\r\n        throw new \\Exception();\r\n    default:\r\n        throw new \\Exception();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        goto a;\r\n    case 2:\r\n        goto a;\r\n    default:\r\n        goto a;\r\n}\r\n\r\na:\r\necho 'foo';",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        // no break\r\n        goto a;\r\n    case 2:\r\n        // no break\r\n        goto a;\r\n    default:\r\n        goto a;\r\n}\r\n\r\na:\r\necho 'foo';",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case \"bar\":\r\n        if (1) {\r\n        } else {\r\n        }\r\n\r\n        $aaa = new Bar();\r\n        break;\r\n    default:\r\n        $aaa = new Baz();\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n?>\r\n<?php\r\n// no break\r\n    default:\r\n?>\r\n<?php\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n?>\r\n<?php\r\n    default:\r\n?>\r\n<?php\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n?>\r\n<?php\r\n// no break\r\ndefault:\r\n?>\r\n<?php }",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n?>\r\n<?php default:\r\n?>\r\n<?php }",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // no break\r\n    case 2:\r\n        bar();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1:\r\n        foo();\r\n        // No break\r\n    case 2:\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php\r\nswitch ($a) {\r\n    case 1:\r\n        throw new \\Exception(\"\");\r\n    case 2;\r\n        throw new \\Exception(\"\");\r\n    case 3:\r\n        throw new \\Exception(\"\");\r\n    case 4;\r\n        throw new \\Exception(\"\");\r\n    case 5:\r\n        throw new \\Exception(\"\");\r\n    case 6;\r\n        throw new \\Exception(\"\");\r\n}\r\n                ",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php\r\nswitch ($f) {\r\n    case 1:\r\n        if ($a) {\r\n            return \"\";\r\n        }\r\n\r\n        throw new $f();\r\n    case Z:\r\n        break;\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        $foo = new class {\r\n            public function foo($bar)\r\n            {\r\n                foreach ($bar as $baz) {\r\n                    break;\r\n                }\r\n            }\r\n        };\r\n        // no break\r\n    case 2;\r\n        bar();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        $foo = new class {\r\n            public function foo($bar)\r\n            {\r\n                foreach ($bar as $baz) {\r\n                    break;\r\n                }\r\n            }\r\n        };\r\n    case 2;\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        $foo = new class(1) {\r\n            public function foo($bar)\r\n            {\r\n                foreach ($bar as $baz) {\r\n                    break;\r\n                }\r\n            }\r\n        };\r\n        // no break\r\n    case 2;\r\n        bar();\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 1;\r\n        $foo = new class(1) {\r\n            public function foo($bar)\r\n            {\r\n                foreach ($bar as $baz) {\r\n                    break;\r\n                }\r\n            }\r\n        };\r\n    case 2;\r\n        bar();\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php\r\nswitch($a) {\r\n    case 1:\r\n        $a = function () { throw new \\Exception(\"\"); };\r\n        // no break\r\n    case 2:\r\n        $a = new class(){\r\n            public function foo () { throw new \\Exception(\"\"); }\r\n        };\r\n        // no break\r\n    case 3:\r\n        echo 5;\r\n        // no break\r\n    default:\r\n        echo 1;\r\n}\r\n                ",
+                        "<?php\r\nswitch($a) {\r\n    case 1:\r\n        $a = function () { throw new \\Exception(\"\"); };\r\n    case 2:\r\n        $a = new class(){\r\n            public function foo () { throw new \\Exception(\"\"); }\r\n        };\r\n    case 3:\r\n        echo 5;\r\n    default:\r\n        echo 1;\r\n}\r\n                ",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 10:\r\n        echo 1;\r\n        /* no break because of some more details stated here */\r\n    case 22:\r\n        break;\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 10:\r\n        echo 1;\r\n        # no break because of some more details stated here */\r\n    case 22:\r\n        break;\r\n}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 88,
+                    "args": [
+                        "<?php\r\nswitch ($foo) {\r\n    case 100:\r\n        echo 10;\r\n        /* no breaking windows please */\r\n        // no break\r\n    case 220:\r\n        break;\r\n}",
+                        "<?php\r\nswitch ($foo) {\r\n    case 100:\r\n        echo 10;\r\n        /* no breaking windows please */\r\n    case 220:\r\n        break;\r\n}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with comment text with special regexp characters",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // ~***(//[No break here.]\\\\)***~\n    case 2:\n        bar();\n        // ~***(//[No break here.]\\\\)***~\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // ~***(//[No break here.]\\\\)***~\n    case 2:\n        bar();\n    default:\n        baz();\n}",
+                        {
+                            "comment_text": "~***(//[No break here.]\\\\)***~"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with comment text with trailing spaces",
+                    "args": [
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n        // no break\n    default:\n        baz();\n}",
+                        "<?php\nswitch ($foo) {\n    case 1:\n        foo();\n    default:\n        baz();\n}",
+                        {
+                            "comment_text": "no break     "
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedExceptionMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoBreakCommentFixerTest",
+            "body": "    public function testInvalidConfiguration(array $configuration, string $expectedExceptionMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($expectedExceptionMessage);\n\n        $this->fixer->configure($configuration); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 0,
+                    "args": [
+                        {
+                            "comment_text": "No\nbreak"
+                        },
+                        "/^\\[no_break_comment\\] Invalid configuration: The comment text must not contain new lines\\.$/"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "comment_text": "No\r\nbreak"
+                        },
+                        "/^\\[no_break_comment\\] Invalid configuration: The comment text must not contain new lines\\.$/"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 2,
+                    "args": [
+                        {
+                            "comment_text": "No\rbreak"
+                        },
+                        "/^\\[no_break_comment\\] Invalid configuration: The comment text must not contain new lines\\.$/"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 3,
+                    "args": [
+                        {
+                            "foo": true
+                        },
+                        "/^\\[no_break_comment\\] Invalid configuration: The option \"foo\" does not exist\\. Defined options are: \"comment_text\"\\.$/"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoBreakCommentFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                switch ($foo) {\n                    case 1:\n                        foo() ?? throw new \\Exception();\n                        // no break\n                    case 2:\n                        $a = $condition and throw new Exception();\n                        // no break\n                    case 3:\n                        $callable = fn() => throw new Exception();\n                        // no break\n                    case 4:\n                        $value = $falsableValue ?: throw new InvalidArgumentException();\n                        // no break\n                    default:\n                        echo \"PHP8\";\n                }\n            ",
+                        "<?php\n                switch ($foo) {\n                    case 1:\n                        foo() ?? throw new \\Exception();\n                    case 2:\n                        $a = $condition and throw new Exception();\n                    case 3:\n                        $callable = fn() => throw new Exception();\n                    case 4:\n                        $value = $falsableValue ?: throw new InvalidArgumentException();\n                    default:\n                        echo \"PHP8\";\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                match ($foo) {\n                    1 => \"a\",\n                    default => \"b\"\n                };\n                match ($bar) {\n                    2 => \"c\",\n                    default => \"d\"\n                };\n                match ($baz) {\n                    3 => \"e\",\n                    default => \"f\"\n                };\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "switch with break and nested match",
+                    "args": [
+                        "<?php switch ($value) {\n                case 1:\n                    $x = match (true) {\n                        default => 2\n                    };\n                    break;\n                default:\n                    $x = 3;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "switch without break and nested match",
+                    "args": [
+                        "<?php switch ($value) {\n                case 1:\n                    $x = match (true) {\n                        default => 2\n                    };\n                    // no break\n                default:\n                    $x = 3;\n            }",
+                        "<?php switch ($value) {\n                case 1:\n                    $x = match (true) {\n                        default => 2\n                    };\n                default:\n                    $x = 3;\n            }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoBreakCommentFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enums",
+                    "args": [
+                        "<?php\nenum Suit {\n    case Hearts;\n    case Diamonds;\n    case Clubs;\n    case Spades;\n}\n\nenum UserStatus: string {\n  case Pending = 'P';\n  case Active = 'A';\n  case Suspended = 'S';\n  case CanceledByUser = 'C';\n}\n\nswitch($a) { // pass the `is candidate` check\n    case 1:\n        echo 1;\n        break;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with function having return type and switch in that function",
+                    "args": [
+                        "<?php enum Foo: int\n{\n    case C1 = 1;\n    case C2 = 2;\n    case C3 = 3;\n    public static function f(string $s): self\n    {\n        switch ($s) {\n            case 'a':\n            case 'b':\n                return self::C1;\n            case 'c':\n                return self::C2;\n            case 'd':\n            case 'e':\n                return self::C3;\n            default:\n                throw new Exception();\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with exit",
+                    "args": [
+                        "<?php\nenum MyEnum: string\n{\n    case A = 'a';\n\n    public static function forHost(string $host): self\n    {\n        switch ($host) {\n            case 'hub.a':\n            case 'hub.b':\n                exit(1);\n            default:\n                throw new Exception('Unknown host: ' . $host);\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with continue",
+                    "args": [
+                        "<?php\nenum MyEnum: string\n{\n    case A = 'a';\n\n    public static function forHost(array $hosts): self\n    {\n        foreach($hosts as $host) {\n            switch ($host) {\n                case 'hub.a':\n                case 'hub.b':\n                    continue 2;\n                default:\n                    throw new Exception('Unknown host: ' . $host);\n            }\n        }\n\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with break",
+                    "args": [
+                        "<?php\nenum MyEnum: string\n{\n    case A = 'a';\n\n    public static function forHost(array $hosts): self\n    {\n        foreach($hosts as $host) {\n            switch ($host) {\n                case 'hub.a':\n                case 'hub.b':\n                    break 2;\n                default:\n                    throw new Exception('Unknown host: ' . $host);\n            }\n        }\n\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with throw",
+                    "args": [
+                        "<?php\nenum MyEnum: string\n{\n    case A = 'a';\n\n    public static function forHost(array $hosts): self\n    {\n        foreach($hosts as $host) {\n            switch ($host) {\n                case 'hub.a':\n                case 'hub.b':\n                    throw new RuntimeException('boo');\n                default:\n                    throw new Exception('Unknown host: ' . $host);\n            }\n        }\n\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with documented cases and switch",
+                    "args": [
+                        "<?php\n\nenum MyEnumWithSwitch\n{\n    /**\n     * This is the first case.\n     */\n    case OneCase;\n\n    /**\n     * This is the second case.\n     */\n    case SecondCase;\n\n    /**\n     * This is another case.\n     */\n    case AnotherCase;\n\n    public function doSomething(): string\n    {\n        switch ($this) {\n            case self::OneCase:\n                break;\n\n            default:\n                break;\n        }\n\n        return 'Hello World';\n    }\n\n    /**\n     * This is yet another case.\n     */\n    case YetAnotherCase;\n\n    /**\n     * This is one more case.\n     */\n    case OneMoreCase;\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

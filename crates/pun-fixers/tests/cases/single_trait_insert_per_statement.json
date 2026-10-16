@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "single_trait_insert_per_statement",
+        "input": "<?php\nclass Foo\n{\n    use A, /* c */ B,\n        C;\n    use D , E{ D::x insteadof E; }\n}\n",
+        "expected": "<?php\nclass Foo\n{\n    use A; /* c */use B;\n    use C;\n    use D , E{ D::x insteadof E; }\n}\n"
+    }
+]

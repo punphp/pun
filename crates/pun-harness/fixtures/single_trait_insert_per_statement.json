@@ -1,0 +1,123 @@
+{
+    "fixer": "single_trait_insert_per_statement",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SingleTraitInsertPerStatementFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/SingleTraitInsertPerStatementFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SingleTraitInsertPerStatementFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php\nfinal class Example\n{\n    use Foo;use Bar;\n}\n",
+                        "<?php\nfinal class Example\n{\n    use Foo, Bar;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple I",
+                    "args": [
+                        "<?php\nfinal class Example\n{\n    use Foo;use Bar;\n}\n",
+                        "<?php\nfinal class Example\n{\n    use Foo,Bar;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple II",
+                    "args": [
+                        "<?php\nuse Foo\\Bar, Foo\\Bar2; // do not touch\n\nfinal class Example\n{\n    use Foo;use Bar ;\n}\n",
+                        "<?php\nuse Foo\\Bar, Foo\\Bar2; // do not touch\n\nfinal class Example\n{\n    use Foo, Bar ;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple III",
+                    "args": [
+                        "<?php\nclass Example\n{\n    use Foo;use Bar;\n\n    public function baz() {}\n}\n",
+                        "<?php\nclass Example\n{\n    use Foo, Bar;\n\n    public function baz() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple",
+                    "args": [
+                        "<?php\nfinal class Example\n{\n    use Foo;\n    use Foo00;use Bar01;\n    use Foo10;use Bar11;use Bar110;\n    use Foo20;use Bar20;use Bar200;use Bar201;\n}\n",
+                        "<?php\nfinal class Example\n{\n    use Foo;\n    use Foo00, Bar01;\n    use Foo10, Bar11, Bar110;\n    use Foo20, Bar20, Bar200, Bar201;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple_multiline",
+                    "args": [
+                        "<?php\nfinal class Example\n{\n    use Foo;\n    use Bar;\n    use Baz;\n}\n",
+                        "<?php\nfinal class Example\n{\n    use Foo,\n        Bar,\n        Baz;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple_multiline_with_comment",
+                    "args": [
+                        "<?php\nfinal class Example\n{\n    use Foo;\n    use Bar;\n//        Bazz,\n    use Baz;\n}\n",
+                        "<?php\nfinal class Example\n{\n    use Foo,\n        Bar,\n//        Bazz,\n        Baz;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespaces",
+                    "args": [
+                        "<?php\nclass Z\n{\n    use X\\Y\\Z0;use X\\Y\\Z0;use M;\n    use X\\Y\\Z1;use X\\Y\\Z1;\n}\n                ",
+                        "<?php\nclass Z\n{\n    use X\\Y\\Z0, X\\Y\\Z0, M;\n    use X\\Y\\Z1, X\\Y\\Z1;\n}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments",
+                    "args": [
+                        "<?php\nclass ZZ\n{#1\nuse#2\nZ/* 2 */ #3\n#4\n;#5\n#6\nuse T#7\n#8\n;#9\n#10\n}\n",
+                        "<?php\nclass ZZ\n{#1\nuse#2\nZ/* 2 */ #3\n#4\n,#5\n#6\nT#7\n#8\n;#9\n#10\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "two classes. same file",
+                    "args": [
+                        "<?php\nnamespace Foo;\n\nclass Test1\n{\n    use A;use B; /** use A2, B2; */\n}\n\n?>\n<?php\n\nclass Test2\n{\n    use A1;use B1; # use A2, B2;\n}\n",
+                        "<?php\nnamespace Foo;\n\nclass Test1\n{\n    use A, B; /** use A2, B2; */\n}\n\n?>\n<?php\n\nclass Test2\n{\n    use A1, B1; # use A2, B2;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix group",
+                    "args": [
+                        "<?php\n                class Talker {\n    use A, B {\n        B::smallTalk insteadof A;\n        A::bigTalk insteadof B;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class",
+                    "args": [
+                        "<?php new class { use A;use B;}?>",
+                        "<?php new class { use A, B;}?>"
+                    ]
+                }
+            ]
+        }
+    ]
+}
