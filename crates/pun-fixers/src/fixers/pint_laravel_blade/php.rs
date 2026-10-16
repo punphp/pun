@@ -1,24 +1,12 @@
 //! The PHP string functions Pint's Blade formatters use, byte-oriented like PHP.
 
-/// `strpos($haystack, $needle, $offset)`.
+/// `strpos($haystack, $needle, $offset)` (callers pass a non-empty needle and `offset <= len`).
 pub fn strpos(haystack: &[u8], needle: &[u8], offset: usize) -> Option<usize> {
-    if offset > haystack.len() {
-        return None;
-    }
-    if needle.is_empty() {
-        return Some(offset);
-    }
     haystack[offset..].windows(needle.len()).position(|w| w == needle).map(|p| p + offset)
 }
 
 /// `stripos($haystack, $needle, $offset)` (ASCII case folding).
 pub fn stripos(haystack: &[u8], needle: &[u8], offset: usize) -> Option<usize> {
-    if offset > haystack.len() {
-        return None;
-    }
-    if needle.is_empty() {
-        return Some(offset);
-    }
     haystack[offset..].windows(needle.len()).position(|w| w.eq_ignore_ascii_case(needle)).map(|p| p + offset)
 }
 
@@ -30,11 +18,8 @@ pub fn strrpos(haystack: &[u8], needle: &[u8]) -> Option<usize> {
     (0..=haystack.len() - needle.len()).rev().find(|&i| &haystack[i..i + needle.len()] == needle)
 }
 
-/// `substr($s, $start, $length)` for non-negative start (clamped like PHP 8).
+/// `substr($s, $start, $length)` for `start < len` (callers guarantee it).
 pub fn substr(s: &[u8], start: usize, length: Option<usize>) -> &[u8] {
-    if start >= s.len() {
-        return b"";
-    }
     let end = length.map_or(s.len(), |l| (start + l).min(s.len()));
     &s[start..end]
 }

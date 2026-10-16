@@ -12,3 +12,13 @@ pub fn set(preset: &str) {
 pub fn get() -> String {
     PRESET.read().unwrap().clone().unwrap_or_else(|| "laravel".into())
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn oracle_set_overrides_laravel_default() {
+        assert_eq!(super::get(), "laravel");
+        super::set("psr12");
+        assert_eq!(super::get(), "psr12");
+    }
+}

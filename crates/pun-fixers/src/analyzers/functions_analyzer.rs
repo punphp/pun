@@ -79,21 +79,6 @@ impl FunctionsAnalyzer {
         Some(TypeAnalysis::new(&type_, Some(type_start_index), Some(type_end_index)))
     }
 
-    pub fn is_the_same_class_call(&self, tokens: &Tokens, index: usize) -> bool {
-        assert!(index < tokens.len(), "Token index {index} does not exist.");
-        let Some(operator_index) = tokens.get_prev_meaningful_token(index) else { return false };
-        if !tokens[operator_index].is_object_operator() && !tokens[operator_index].is_kind(T_DOUBLE_COLON) {
-            return false;
-        }
-        let Some(reference_index) = tokens.get_prev_meaningful_token(operator_index) else { return false };
-        if !tokens[reference_index]
-            .equals_any(&[(T_VARIABLE, "$this").into(), (T_STRING, "self").into(), (T_STATIC, "static").into()], false)
-        {
-            return false;
-        }
-        tokens[tokens.get_next_meaningful_token(index).unwrap()].equals("(", true)
-    }
-
     fn is_global_function_call_or_usage(&self, tokens: &Tokens, index: usize, call_only: bool) -> bool {
         if !tokens[index].is_kind(T_STRING) {
             return false;

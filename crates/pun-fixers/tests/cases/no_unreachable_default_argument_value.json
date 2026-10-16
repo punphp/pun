@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_unreachable_default_argument_value",
+        "input": "<?php\nfunction f($a = 1, $a = 2, $b) {}\n",
+        "expected": "<?php\nfunction f($a = 1, $a, $b) {}\n"
+    }
+]

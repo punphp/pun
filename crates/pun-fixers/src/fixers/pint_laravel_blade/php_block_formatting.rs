@@ -32,17 +32,15 @@ impl PhpFragmentFormatter {
         }
         let mut tokens = Tokens::from_code(code);
         let file = Path::new("fragment.php");
-        if let Some(pipeline) = self.fixers(fragment) {
-            for fixer in pipeline.fixers() {
-                // AbstractFixer::fix only applies to non-empty tokens.
-                if tokens.count() == 0 || !fixer.supports(file) || !fixer.is_candidate(&tokens) {
-                    continue;
-                }
-                fixer.fix(file, &mut tokens);
-                if tokens.is_changed() {
-                    tokens.clear_empty_tokens();
-                    tokens.clear_changed();
-                }
+        for fixer in self.fixers(fragment).into_iter().flat_map(Pipeline::fixers) {
+            // AbstractFixer::fix only applies to non-empty tokens.
+            if tokens.count() == 0 || !fixer.supports(file) || !fixer.is_candidate(&tokens) {
+                continue;
+            }
+            fixer.fix(file, &mut tokens);
+            if tokens.is_changed() {
+                tokens.clear_empty_tokens();
+                tokens.clear_changed();
             }
         }
         tokens.generate_code()

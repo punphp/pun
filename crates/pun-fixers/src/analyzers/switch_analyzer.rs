@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\SwitchAnalyzer`.
 use super::control_case_structures_analyzer::ControlCaseStructuresAnalyzer;
-use pun_tokens::{Kind::*, Tokens};
+use pun_tokens::Tokens;
 use std::cell::RefCell;
 
 thread_local! {
@@ -38,7 +38,7 @@ impl SwitchAnalyzer {
 
     fn get_colon_indices_for_switch(tokens: &Tokens) -> Vec<usize> {
         let mut colon_indices = Vec::new();
-        for analysis in ControlCaseStructuresAnalyzer::find_control_structures(tokens, &[T_SWITCH]) {
+        for analysis in ControlCaseStructuresAnalyzer::find_switch_structures(tokens) {
             if tokens[analysis.get_open_index()].equals(":", true) {
                 colon_indices.push(analysis.get_open_index());
             }

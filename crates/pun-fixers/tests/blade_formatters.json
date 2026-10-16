@@ -1,0 +1,219 @@
+[
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "@php\n$a=array(1,2);\n@endphp",
+        "expected": "@php\n    $a = [1, 2];\n@endphp"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "x\n<div",
+        "expected": "x\n<div"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div\n  class=\"a\"",
+        "expected": "<div\n  class=\"a\""
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div\n>\n</div>",
+        "expected": "<div\n>\n</div>"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div\n@if($a)\n>",
+        "expected": "<div @if($a)>"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div\n    @foo())\n>",
+        "expected": "<div\n    @foo())\n>"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div\n    @foo('a\n    b')\n>",
+        "expected": "<div\n    @foo('a\n    b')\n>"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div class=\"a\"",
+        "expected": "<div class=\"a\""
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div class=\"a\"\n>x</div\nfoo",
+        "expected": "<div class=\"a\"\n>x</div\nfoo"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div a)\n>x</div>",
+        "expected": "<div a)\n>x</div>"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div class=\"a\"\n>x</div\n>",
+        "expected": "<div class=\"a\">x</div>"
+    },
+    {
+        "formatter": "DirectiveTrailingCommas",
+        "input": "<div>\n@verbatim @foo(\n    a\n) @endverbatim\n@php(foo(\n    1\n))\n@php $a = foo(\n    1\n); @endphp\n@if(\n    $a\n)\n@foo(match ($x) {\n    1 => 2\n})\n@foo($f(1)(\n    2\n), 1 + (\n    3\n))\n@foo(\n    [1, 2], // c (\n    # d (\n    #[Attr]\n    /* e (\n    */\n    <<<EOT\n    x (\n    EOT\n)\n@foo(\n    <<<\"EOT\"\n    x\n      EOTX\n    EOT\n)\n@foo(<<< EOT\n    y\nEOT, <<<\n)\n@bar(`x` \"y\\\"\" \n    1\n)\n@foo(\"abc\n</div>",
+        "expected": "<div>\n@verbatim @foo(\n    a\n) @endverbatim\n@php(foo(\n    1,\n))\n@php $a = foo(\n    1\n); @endphp\n@if(\n    $a\n)\n@foo(match ($x) {\n    1 => 2\n})\n@foo($f(1)(\n    2,\n), 1 + (\n    3\n))\n@foo(\n    [1, 2], // c (\n    # d (\n    #[Attr]\n    /* e (\n    */\n    <<<EOT\n    x (\n    EOT,\n)\n@foo(\n    <<<\"EOT\"\n    x\n      EOTX\n    EOT,\n)\n@foo(<<< EOT\n    y\nEOT, <<<,\n)\n@bar(`x` \"y\\\"\" \n    1,\n)\n@foo(\"abc\n</div>"
+    },
+    {
+        "formatter": "DirectiveTrailingCommas",
+        "input": "@verbatim @foo(\n    a,\n)",
+        "expected": "@verbatim @foo(\n    a,\n)"
+    },
+    {
+        "formatter": "DirectiveTrailingCommas",
+        "input": "@php @foo(\n    a\n)",
+        "expected": "@php @foo(\n    a\n)"
+    },
+    {
+        "formatter": "DirectiveTrailingCommas",
+        "input": "@foo(<<<EOT",
+        "expected": "@foo(<<<EOT"
+    },
+    {
+        "formatter": "DirectiveTrailingCommas",
+        "input": "@foo(\n    1, // x",
+        "expected": "@foo(\n    1, // x"
+    },
+    {
+        "formatter": "DirectiveTrailingCommas",
+        "input": "<?php echo 1; @foo(\n  1\n) <?php x {{-- y {!! z {{ w @@a b@c @ @foo (\n    1\n)",
+        "expected": "<?php echo 1; @foo(\n  1\n) <?php x {{-- y {!! z {{ w @@a b@c @ @foo (\n    1\n)"
+    },
+    {
+        "formatter": "EmbeddedBladeMasker",
+        "input": "<div>__PINT_BLADE_0__</div>\n<script>{{ $first }}\nconst a = \"{{ $x }}\"; const b = 'a\\'b';\nx@@y; a@b.c; @ ; @php(foo(1)) @php $a = 1; @endphp\n@if($a) @if($b) x@@y a@b @ z @endif @foo(1) y @endif\n@empty($a) z @endempty\n@empty x\nconst c = `t {{ $y }}`;\n@json($a)\n{{-- comment --}}\n</script>\n<style>\na { color: {{ $c }}; }\n{{ $d }}\n.x { @if($e) b: c; @endif }\n</style>\n<script>@php(foo(</script>\n<script>@if(</script>\n<script>@if($a) x</script>\n<script>@php no end</script>\n<script>{{-- open</script>\n<script>'unterminated {{ $q }}</script>",
+        "expected": "<div>__PINT_BLADE_0__</div>\n<script>__PINT_BLADE_1__;\nconst a = __PINT_BLADE_2__; const b = 'a\\'b';\nx@@y; a@b.c; @ ; __PINT_BLADE_3__; __PINT_BLADE_4__\n__PINT_BLADE_5__;\n__PINT_BLADE_6__;\n@empty x\nconst c = __PINT_BLADE_7__;\n@json($a)\n__PINT_BLADE_8__;\n</script>\n<style>\na { color: __PINT_BLADE_9__; }\n--pint-blade-10: 1;\n.x { --pint-blade-11: 1; }\n</style>\n<script>__PINT_BLADE_12__;</script>\n<script>@if(</script>\n<script>@if($a) x</script>\n<script>@php no end</script>\n<script>{{-- open</script>\n<script>__PINT_BLADE_13__</script>",
+        "post_input": "x __PINT_BLADE_1__ __PINT_BLADE_1__",
+        "expected_post": "<div>__PINT_BLADE_0__</div>\n<script>{{ $first }}\nconst a = \"{{ $x }}\"; const b = 'a\\'b';\nx@@y; a@b.c; @ ; @php(foo(1)) @php $a = 1; @endphp\n@if($a) @if($b) x@@y a@b @ z @endif @foo(1) y @endif\n@empty($a) z @endempty\n@empty x\nconst c = `t {{ $y }}`;\n@json($a)\n{{-- comment --}}\n</script>\n<style>\na { color: {{ $c }}; }\n{{ $d }}\n.x { @if($e) b: c; @endif }\n</style>\n<script>@php(foo(</script>\n<script>@if(</script>\n<script>@if($a) x</script>\n<script>@php no end</script>\n<script>{{-- open</script>\n<script>'unterminated {{ $q }}</script>"
+    },
+    {
+        "formatter": "StripSensitiveLeadingBlankLines",
+        "input": "<pre\n    class=\"a\"\n/>\n<textarea\n    class=\"b\"",
+        "expected": "<pre\n    class=\"a\"\n/>\n<textarea\n    class=\"b\""
+    },
+    {
+        "formatter": "JoinDanglingOpenBracket",
+        "input": "<div\n>x</span>\n<div\n>x",
+        "expected": "<div\n>x</span>\n<div\n>x"
+    },
+    {
+        "formatter": "DedentHuggedTerminator",
+        "input": "<div\n    a=\"b\"",
+        "expected": "<div\n    a=\"b\""
+    },
+    {
+        "formatter": "CollapseShortSlots",
+        "input": "<x-slot name=\"a\" />\n<x-slot:a> extra\nx\n</x-slot:a>\n<x-slot:b>\ny",
+        "expected": "<x-slot name=\"a\" />\n<x-slot:a> extra\nx\n</x-slot:a>\n<x-slot:b>\ny"
+    },
+    {
+        "formatter": "CollapseShortSlots",
+        "input": "<x-slot:c>\nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy\n</x-slot:c>\n<x-slot name=\"d\n",
+        "expected": "<x-slot:c>\nyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy\n</x-slot:c>\n<x-slot name=\"d\n"
+    },
+    {
+        "formatter": "CollapseShortSlots",
+        "input": "<x-slot:e\nx\n</x-slot:e>",
+        "expected": "<x-slot:e\nx\n</x-slot:e>"
+    },
+    {
+        "formatter": "NotOperatorSpacing",
+        "input": "<div a=",
+        "expected": "<div a="
+    },
+    {
+        "formatter": "NotOperatorSpacing",
+        "input": "<div @if(foo",
+        "expected": "<div @if(foo"
+    },
+    {
+        "formatter": "NotOperatorSpacing",
+        "input": "<div x-show=\"{{ !a\">{{ b }}",
+        "expected": "<div x-show=\"{{ !a\">{{ b }}"
+    },
+    {
+        "formatter": "NotOperatorSpacing",
+        "input": "<div x-show=\"a!\">",
+        "expected": "<div x-show=\"a!\">"
+    },
+    {
+        "formatter": "NotOperatorSpacing",
+        "input": "<div @if('abc",
+        "expected": "<div @if('abc"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div class=\"a\"\n>x\n</div>",
+        "expected": "<div class=\"a\">x</div>"
+    },
+    {
+        "formatter": "CollapseSingleAttribute",
+        "input": "<div class=\"a\"\n>x",
+        "expected": "<div class=\"a\"\n>x"
+    },
+    {
+        "formatter": "JoinDanglingOpenBracket",
+        "input": "<div\n>x</span>",
+        "expected": "<div\n>x</span>"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "{{\n$a + @foo(1+1)\n}}",
+        "expected": "{{\n    $a + @foo(1 + 1)\n}}"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "@verbatim @php $a=1; @endphp @endverbatim",
+        "expected": "@verbatim @php $a=1; @endphp @endverbatim"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "@foo( )",
+        "expected": "@foo( )"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "@{{\n$a+1\n}}",
+        "expected": "@{{\n$a+1\n}}"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "{{\n   \n}}",
+        "expected": "{{\n   \n}}"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "{{\n    $a\n}}",
+        "expected": "{{\n    $a\n}}"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "{{\n;\n}}",
+        "expected": "{{\n;\n}}"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "<x-a :b=\"$c\" :d=\"\" :e=\"{{ $f }}\" />",
+        "expected": "<x-a :b=\"$c\" :d=\"\" :e=\"{{ $f }}\" />"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "<x-a :b=\"1+1\"",
+        "expected": "<x-a :b=\"1 + 1\""
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "@foo(1+1",
+        "expected": "@foo(1+1"
+    },
+    {
+        "formatter": "JoinDanglingOpenBracket",
+        "input": "x\n<div",
+        "expected": "x\n<div"
+    }
+]

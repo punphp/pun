@@ -17,7 +17,6 @@ pub mod classy_analyzer;
 pub mod indentation_trait;
 pub mod arguments_analyzer;
 pub mod functions_analyzer;
-pub mod reference_analyzer;
 pub mod abstract_no_useless_else_fixer;
 pub mod abstract_function_reference_fixer;
 pub mod abstract_phpdoc_types_fixer;

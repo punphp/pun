@@ -16,7 +16,7 @@ mod php;
 #[path = "pint_laravel_blade/php_block_formatting.rs"]
 mod php_block_formatting;
 
-use anyhow::{Result, anyhow, bail};
+use anyhow::{Result, bail};
 use line_formatters::*;
 use pun_format::Fixer;
 use pun_tokens::Tokens;
@@ -178,44 +178,64 @@ fn prettier_format(path: &str, content: &[u8]) -> Result<Vec<u8>> {
     let worker = guard.as_mut().unwrap();
     // json_encode(..., JSON_INVALID_UTF8_SUBSTITUTE)
     let request = serde_json::json!({ "path": path, "content": String::from_utf8_lossy(content) });
-    let sent = writeln!(worker.stdin, "{request}").and_then(|_| worker.stdin.flush());
+    // A dead worker fails the write and then reports `Closed` below.
+    let _ = writeln!(worker.stdin, "{request}").and_then(|_| worker.stdin.flush());
 
     let mut formatted: Vec<u8> = Vec::new();
-    let mut error: Vec<u8> = Vec::new();
-    let result = loop {
-        if sent.is_err() {
-            break Err(anyhow!("Laravel Pint's Prettier worker terminated unexpectedly."));
-        }
+    let failure = loop {
         if php::contains(&formatted, END) {
-            break Ok(());
-        }
-        if !error.is_empty() {
-            break Err(anyhow!("{}", String::from_utf8_lossy(&error)));
+            let body = &formatted[php::strpos(&formatted, START, 0).unwrap() + START.len()..];
+            return Ok(body[..php::strpos(body, END, 0).unwrap()].to_vec());
         }
         match worker.events.recv_timeout(WORKER_IDLE_TIMEOUT) {
             Ok(Chunk::Out(c)) => formatted.extend(c),
-            Ok(Chunk::Err(c)) => error.extend(c),
-            Ok(Chunk::Closed) | Err(RecvTimeoutError::Disconnected) => {
-                // Drain whatever stderr is still queued, as getErrorOutput() would.
-                while let Ok(Chunk::Err(c)) = worker.events.recv_timeout(Duration::from_millis(100)) {
-                    error.extend(c);
-                }
-                let message = if error.is_empty() { "Laravel Pint's Prettier worker terminated unexpectedly.".into() } else { String::from_utf8_lossy(&error).into_owned() };
-                break Err(anyhow!("{message}"));
-            }
-            Err(RecvTimeoutError::Timeout) => break Err(anyhow!("Laravel Pint's Prettier worker timed out while formatting [{path}].")),
+            event => break event,
         }
     };
-    if let Err(e) = result {
-        // Tear the worker down; the next file starts a fresh one.
-        if let Some(mut w) = guard.take() {
-            let _ = w.child.kill();
-            let _ = w.child.wait();
+    // Error output, the worker exiting, or silence: collect the rest of stderr (getErrorOutput()), tear the
+    // worker down (the next file starts a fresh one) and report the file.
+    std::thread::sleep(Duration::from_millis(100));
+    let timed_out = matches!(failure, Err(RecvTimeoutError::Timeout));
+    let error: Vec<u8> = std::iter::once(failure.ok()).flatten().chain(worker.events.try_iter()).flat_map(|e| if let Chunk::Err(c) = e { c } else { Vec::new() }).collect();
+    let mut dead = guard.take().unwrap();
+    let _ = dead.child.kill();
+    let _ = dead.child.wait();
+    let message = if timed_out { format!("Laravel Pint's Prettier worker timed out while formatting [{path}].") } else if error.is_empty() { "Laravel Pint's Prettier worker terminated unexpectedly.".into() } else { String::from_utf8_lossy(&error).into_owned() };
+    bail!("{message}")
+}
+
+/// Each formatter step against Pint's own class on the same input (tests/blade_formatters.json, from
+/// scripts/oracle-blade-formatter.php), for shapes the golden files in tests/blade don't reach.
+/// PhpBlockFormatting runs the laravel preset's fixers, so they must be compiled in.
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn oracle_blade_formatters() {
+        let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!("../../tests/blade_formatters.json")).unwrap();
+        for (i, case) in cases.iter().enumerate() {
+            let formatter = case["formatter"].as_str().unwrap();
+            let input = case["input"].as_str().unwrap().as_bytes();
+            let mut masker = embedded_blade_masker::EmbeddedBladeMasker::default();
+            let got = match formatter {
+                "StripSensitiveLeadingBlankLines" => strip_sensitive_leading_blank_lines::post_format(input),
+                "DirectiveTrailingCommas" => directive_trailing_commas::post_format(input),
+                "NotOperatorSpacing" => not_operator_spacing::post_format(input),
+                "CollapseShortSlots" => collapse_short_slots::post_format(input),
+                "CollapseSingleAttribute" => collapse_single_attribute::post_format(input),
+                "JoinDanglingCloseBracket" => join_dangling_close_bracket::post_format(input),
+                "JoinDanglingOpenBracket" => join_dangling_open_bracket::post_format(input),
+                "DedentHuggedTerminator" => dedent_hugged_terminator::post_format(input),
+                "EmbeddedBladeMasker" => masker.pre_format(input),
+                _ => php_block_formatting::PhpBlockFormatting::new(php_block_formatting::PhpFragmentFormatter::new("laravel".into()))
+                    .post_format(input),
+            };
+            assert_eq!(String::from_utf8_lossy(&got), case["expected"].as_str().unwrap(), "case {i} {formatter}");
+            if let Some(post_input) = case.get("post_input") {
+                let got = masker.post_format(post_input.as_str().unwrap().as_bytes());
+                assert_eq!(String::from_utf8_lossy(&got), case["expected_post"].as_str().unwrap(), "case {i} {formatter} postFormat");
+            }
         }
-        return Err(e);
     }
-    let Some(start) = php::strpos(&formatted, START, 0) else { bail!("Laravel Pint's Prettier worker did not return a valid response.") };
-    let body = &formatted[start + START.len()..];
-    let end = php::strpos(body, END, 0).unwrap();
-    Ok(body[..end].to_vec())
 }
