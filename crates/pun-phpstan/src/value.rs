@@ -113,6 +113,10 @@ impl Array {
         self.map.iter()
     }
 
+    pub fn values_mut(&mut self) -> impl Iterator<Item = &mut Value> {
+        self.map.values_mut()
+    }
+
     pub fn values(&self) -> impl Iterator<Item = &Value> {
         self.map.values()
     }
@@ -208,7 +212,7 @@ impl Value {
         )
     }
 
-    /// PHP `(string)` cast of a scalar or null (`None` for arrays and objects).
+    /// PHP `(string)` cast (`None` for objects, which PHP refuses).
     pub fn to_php_string(&self) -> Option<String> {
         Some(match self {
             Value::Null | Value::Bool(false) => String::new(),
@@ -216,6 +220,7 @@ impl Value {
             Value::Int(i) => i.to_string(),
             Value::Float(f) => float_to_string(*f),
             Value::Str(s) => s.clone(),
+            Value::Array(_) => "Array".into(), // (with PHP's "Array to string conversion" warning)
             _ => return None,
         })
     }

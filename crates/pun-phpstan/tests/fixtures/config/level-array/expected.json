@@ -1,0 +1,3 @@
+{
+    "error": "Level config file phar://{root}/phpstan.phar/conf/config.levelArray.neon was not found."
+}
