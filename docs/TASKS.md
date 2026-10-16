@@ -25,7 +25,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | M1.4 Delegate mode: unported/custom fixers via PHP, `--native-only` (crates/pun-delegate) | delegate agent (target-delegate/) | doing |
 | M1.6 `--watch` + formatting-only LSP | - | todo |
 | Verify --dirty/--diff/--repair/--parallel/--staged/--since/--stdin against Pint | - | todo |
-| Cleanup: /code-review --fix, architecture pass, remove restating comments, cargo fmt, clippy (59) | - | todo (after the doing rows) |
+| Cleanup: /code-review --fix, architecture pass, remove restating comments, cargo fmt, clippy (59); clap: `ValueEnum` for `--engine` and `config --format` instead of string lists + manual mapping (keep `--format`/`--output-format` as strings: Pint prints its own "Format [x] is not supported." box) | - | todo (after the doing rows) |
 | CI workflows (.github/ untracked: gh token lacks `workflow` scope) | user | blocked |
 | Publish v0.1 (tag, LICENSE, crates, npm @punphp, Homebrew, Packagist, public repo) | user | needs approval |
 
