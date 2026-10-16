@@ -58,7 +58,8 @@ fn main() -> Result<()> {
     if !pint.exists() {
         bail!("{} missing: run scripts/oracle.sh", pint.display());
     }
-    let pun = root.join("target/debug/pun");
+    // PUN_BIN: a private copy of the pun binary, so concurrent agents rebuilding target/debug/pun don't race.
+    let pun = std::env::var_os("PUN_BIN").map(PathBuf::from).unwrap_or_else(|| root.join("target/debug/pun"));
     if !pun.exists() {
         eprintln!("note: {} missing, treating pun as identity", pun.display());
     }
