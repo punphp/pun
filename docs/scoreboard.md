@@ -40,6 +40,33 @@ Mutation fuzzing, `FUZZ_CONFIG` = `{"preset":"psr12"}` (scripts/fuzz-parity.sh):
 | laravel-framework (Support, Database, Console) | 6 | 460 | 378 | 0 |
 | laravel-framework (Support, Database, Console) | 7 | 460 | 370 | 0 |
 
+## Delegate mode
+
+Projects whose config enables rules Pun hasn't ported run every file through real PHP-CS-Fixer (docs/oracle.md
+"Delegate mode"). laravel-framework's own pint.json has 8 (align_multiline_comment, class_reference_name_casing,
+combine_consecutive_issets, combine_consecutive_unsets, phpdoc_return_self_reference, phpdoc_summary,
+phpdoc_trim_consecutive_blank_line_separation, switch_continue_to_break), so its row above is a delegated run
+(`PUN_PINT=.oracle/pint/builds/pint`); before M1.4 Pun warned "not ported" and exited 1 there. 2026-10-16:
+
+| check | files | result |
+|---|---|---|
+| harness, laravel-framework, its own pint.json | 3483 | 0 differing (pint changed 22, pun changed 22) |
+| fuzz-parity.sh laravel-framework seeds 1, 2, 3 (Support + Collections, own pint.json) | 128 each | 0 differing (pint changed 112 / 114 / 117) |
+| `.php-cs-fixer.php` with a project fixer class (crates/pun-delegate/tests/custom) | 3 | identical to `php-cs-fixer fix` (files and applied fixers) |
+| `pun format --format=json` vs Pint, delegated, perturbed Support + Collections + Validation | 210 | identical files and identical JSON report |
+
+`--test` on laravel-framework (debug build, load 2.4-3.5, one run each, `/usr/bin/time`):
+
+| run | wall | max RSS (pun process) |
+|---|---|---|
+| `pint --test` | 200.3 s | 163 MB |
+| `pun format --test --no-cache` (delegated, 2 PHP workers) | 159.0 s | 111 MB |
+| same, warm cache (every file clean under the same signature) | 11.0 s | 108 MB |
+| `pun format --test --no-cache --native-only` (8 rules skipped, not Pint-identical) | 53.6 s | 46 MB |
+
+Delegated cold runs cost what PHP-CS-Fixer costs (minus Pint's start-up and process fan-out); the cache and porting
+the 8 rules are what make laravel-framework fast.
+
 ## Benchmarks
 
 `pint --test` vs `pun format --test`, wall time via `/usr/bin/time`, 3 cold runs each (fresh Pint `--cache-file` per run;
