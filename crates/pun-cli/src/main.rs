@@ -298,8 +298,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         match engine.run(path, &code) {
             Err(e) => {
                 r.status = if e.after_fix { Status::Lint } else { Status::Invalid };
-                // PHP's own wording when a `php` is around (only failing files pay for the process).
-                r.message = if e.after_fix { e.message } else { report::php_parse_error(&code).unwrap_or(e.message) };
+                r.message = e.message;
             }
             Ok(None) => clean = hash,
             Ok(Some((new, applied))) => {

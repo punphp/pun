@@ -60,21 +60,6 @@ fn running_in_agent() -> bool {
         || Path::new("/opt/.devin").exists()
 }
 
-/// TokenizerLinter's message as the local `php` words it (`token_get_all($code, TOKEN_PARSE)`), or None when
-/// there is no `php` or it accepts the code. Only called for files that failed to lint.
-pub fn php_parse_error(code: &[u8]) -> Option<String> {
-    use std::io::Write;
-    use std::process::{Command, Stdio};
-    const SCRIPT: &str = r#"try { token_get_all(stream_get_contents(STDIN), TOKEN_PARSE); } catch (\CompileError $e) { echo ($e instanceof \ParseError ? 'Parse error' : 'Fatal error'), ': ', $e->getMessage(), ' on line ', $e->getLine(), '.'; }"#;
-    let mut child =
-        Command::new("php").args(["-d", "display_errors=0", "-r", SCRIPT]).stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::null()).spawn().ok()?;
-    // A write error just means php exited early; its (empty) output decides.
-    let _ = child.stdin.take()?.write_all(code);
-    let out = child.wait_with_output().ok()?;
-    let msg = String::from_utf8_lossy(&out.stdout).into_owned();
-    (!msg.is_empty()).then_some(msg)
-}
-
 /// Symfony Application::renderThrowable for Pint's `abort(1, $message)`: the red box, on stdout.
 pub fn abort_box(message: &str, decorated: bool) -> String {
     let width = match console::width() {
