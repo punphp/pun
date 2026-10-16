@@ -4,10 +4,10 @@
 mod lint;
 mod report;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::{Args, Parser, Subcommand};
 use pun_config::{Config, Engine, Options};
-use pun_format::{Fixer, LintError, Pipeline};
+use pun_format::{LintError, Pipeline};
 use rayon::prelude::*;
 use report::{FileResult, Status};
 use std::io::{Read, Write};
@@ -238,22 +238,19 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         return Ok(0);
     }
 
-    let process = |path: &PathBuf| -> FileResult {
+    // Unreadable / unwritable files abort the whole run, like Pint (FileReader / Runner exceptions).
+    let process = |path: &PathBuf| -> Result<FileResult> {
         let rel = path.strip_prefix(&root).unwrap_or(path).to_string_lossy().into_owned();
         let mut r = FileResult { path: path.clone(), rel, status: Status::NoChanges, applied: vec![], diff: String::new(), message: String::new() };
         // Runner FileFilterIterator: symlinks are dropped silently, empty files are "skipped".
         if path.is_symlink() {
             r.status = Status::Link;
-            return r;
+            return Ok(r);
         }
-        let Ok(code) = std::fs::read(path) else {
-            r.status = Status::Exception;
-            r.message = format!("Failed to read file \"{}\".", path.display());
-            return r;
-        };
+        let code = std::fs::read(path).with_context(|| format!("Failed to read content from \"{}\".", path.display()))?;
         if code.is_empty() || (matches!(engine, Engine2::Pun(_)) && r.rel.ends_with(".blade.php")) {
             r.status = Status::Skipped;
-            return r;
+            return Ok(r);
         }
         match engine.run(path, &code) {
             Err(e) => {
@@ -266,21 +263,18 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
                 r.applied = applied;
                 r.status = Status::Fixed;
                 if !dry_run {
-                    if let Err(e) = std::fs::write(path, new) {
-                        r.status = Status::Exception;
-                        r.message = e.to_string();
-                    }
+                    std::fs::write(path, new).with_context(|| format!("Cannot write to file \"{}\" as it is not writable.", path.display()))?;
                 }
             }
         }
-        r
+        Ok(r)
     };
 
     let results: Vec<FileResult> = if a.bail {
         // --bail is PHP-CS-Fixer's stop-on-violation: sequential, stop at the first fixable file (errors don't stop it).
         let mut out = Vec::new();
         for f in &files {
-            let r = process(f);
+            let r = process(f)?;
             let stop = r.status == Status::Fixed;
             out.push(r);
             if stop {
@@ -289,13 +283,13 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         }
         out
     } else {
-        files.par_iter().map(process).collect()
+        files.par_iter().map(process).collect::<Result<_>>()?
     };
 
     let ctx = report::Ctx { preset: &cfg.preset, total: files.len(), dry_run, verbose: a.verbose > 0 };
     let code = report::emit(&ctx, &results, a.format.as_deref(), a.quiet, a.output_to_file.as_deref(), a.output_format.as_deref())?;
     let failed = ((dry_run || a.repair) && results.iter().any(|r| r.status == Status::Fixed))
-        || results.iter().any(|r| matches!(r.status, Status::Invalid | Status::Lint | Status::Exception));
+        || results.iter().any(|r| matches!(r.status, Status::Invalid | Status::Lint));
 
     if let Engine2::Compat(p) = &engine {
         if !p.not_ported.is_empty() {
