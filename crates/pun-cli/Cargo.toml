@@ -34,6 +34,9 @@ pun-workspace.workspace = true
 pun-delegate.workspace = true
 pun-tokens.workspace = true
 pcre2.workspace = true
+notify.workspace = true
+lsp-server.workspace = true
+lsp-types.workspace = true
 mago-allocator = { workspace = true, optional = true }
 mago-database = { workspace = true, optional = true }
 mago-linter = { workspace = true, optional = true }
