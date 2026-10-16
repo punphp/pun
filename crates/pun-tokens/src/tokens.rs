@@ -759,8 +759,9 @@ mod tests {
             t.count()
         };
         let mut t = Tokens::from_code(b"<?php foo(1);");
-        assert_eq!(*t.namespace_declarations(count), 7);
-        assert_eq!(*t.namespace_declarations(count), 7);
+        // token_get_all('<?php foo(1);') has 6 tokens.
+        assert_eq!(*t.namespace_declarations(count), 6);
+        assert_eq!(*t.namespace_declarations(count), 6);
         assert_eq!(runs.get(), 1);
         // Re-setting an identical token is not a change.
         t.set(1, t[1].clone());
@@ -777,7 +778,7 @@ mod tests {
             }),
             Box::new(|t| t.set_code(b"<?php $a;")),
         ];
-        let expected = [7, 8, 7, 4];
+        let expected = [6, 7, 6, 3];
         for (edit, len) in edits.drain(..).zip(expected) {
             let before = runs.get();
             edit(&mut t);

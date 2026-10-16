@@ -60,7 +60,12 @@ impl Annotation {
     }
 
     pub fn get_variable_name(&self) -> Option<Vec<u8>> {
-        let ty = preg::quote(&self.get_types_content().unwrap_or_default(), Some(b'/'));
+        let types = self.get_types_content().unwrap_or_default();
+        let content = self.get_content();
+        if let Some(v) = variable_name_ascii(&content, &self.get_tag().get_name(), &types) {
+            return Some(v);
+        }
+        let ty = preg::quote(&types, Some(b'/'));
         let regex = [
             &b"/@"[..],
             &self.get_tag().get_name(),
@@ -71,7 +76,6 @@ impl Annotation {
             b")(?:.*|$)/",
         ]
         .concat();
-        let content = self.get_content();
         preg::captures(&regex, &content).map(|m| m.name_str("variable").to_vec())
     }
 
@@ -156,5 +160,55 @@ impl Annotation {
     fn clear_cache(&self) {
         *self.types.borrow_mut() = None;
         *self.types_content.borrow_mut() = None;
+    }
+}
+
+/// The first path `getVariableName()`'s pattern tries at the first `@tag`, for ASCII content (where `\s`, the identifier
+/// class and the quoted types are all plain bytes): `@tag\s+` then `types\s*`, `&\s*`, `...\s*` greedily, then `$name`.
+/// That path is the regex's leftmost-first match whenever it succeeds; otherwise (`None`) the regex decides.
+fn variable_name_ascii(content: &[u8], tag: &[u8], types: &[u8]) -> Option<Vec<u8>> {
+    if !content.is_ascii() {
+        return None;
+    }
+    let ws = |s: &[u8]| s.iter().take_while(|b| matches!(b, b' ' | b'\t' | b'\n' | b'\r' | 0x0b | 0x0c)).count();
+    let at = content.windows(tag.len() + 1).position(|w| w[0] == b'@' && &w[1..] == tag)?;
+    let mut rest = &content[at + 1 + tag.len()..];
+    let n = ws(rest);
+    if n == 0 {
+        return None;
+    }
+    rest = &rest[n..];
+    if let Some(r) = rest.strip_prefix(types) {
+        rest = &r[ws(r)..];
+    }
+    if let Some(r) = rest.strip_prefix(b"&") {
+        rest = &r[ws(r)..];
+    }
+    if let Some(r) = rest.strip_prefix(b"...") {
+        rest = &r[ws(r)..];
+    }
+    let name = rest.strip_prefix(b"$")?;
+    let len = name.iter().take_while(|b| b.is_ascii_alphanumeric() || **b == b'_').count();
+    (len > 0 && !name[0].is_ascii_digit()).then(|| rest[..1 + len].to_vec())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::variable_name_ascii;
+
+    #[test]
+    fn variable_name_fast_path_matches_php() {
+        // Expected values: PHP 8.5 preg_match() with getVariableName()'s pattern on the same input.
+        let v = |c: &str, tag: &str, ty: &str| variable_name_ascii(c.as_bytes(), tag.as_bytes(), ty.as_bytes()).map(|v| String::from_utf8(v).unwrap());
+        assert_eq!(v("     * @param string $foo bar\n", "param", "string"), Some("$foo".into()));
+        assert_eq!(v("     * @param $this $a1_b\n", "param", "$this"), Some("$a1_b".into()));
+        assert_eq!(v(" * @param int &...  $x\n", "param", "int"), Some("$x".into()));
+        assert_eq!(v(" * @param\t\n  $x\n", "param", ""), Some("$x".into()));
+        // Not the first path (or no match at all): left to the regex.
+        assert_eq!(v(" * @param int $1x\n", "param", "int"), None);
+        assert_eq!(v(" * @param int x\n", "param", "int"), None);
+        assert_eq!(v(" * @param$x\n", "param", ""), None);
+        assert_eq!(v(" * @return int\n", "param", "int"), None);
+        assert_eq!(v(" * @param int $\u{e9}\n", "param", "int"), None);
     }
 }

@@ -126,22 +126,15 @@ impl Token {
 
     /// `Token::equals($other, $caseSensitive)`.
     pub fn equals<'a>(&self, other: impl Into<Proto<'a>>, case_sensitive: bool) -> bool {
-        let other = other.into();
-        if other == Proto::Char(b"&") {
-            return self.is_amp();
-        }
-        if self.id.is_none() && self.content == b"&" {
-            // Upstream only matches another Token instance here; prototypes never match.
-            return false;
-        }
-        match (self.id, other) {
-            (None, Proto::Char(c)) => self.content == c,
-            (Some(id), Proto::Kind(k)) => id == k,
-            (Some(id), Proto::KindContent(k, c)) => {
-                id == k
+        // A `&` token only matches the `&` prototype (via isAmp); upstream compares it to Token instances only.
+        match other.into() {
+            Proto::Char(b"&") => self.is_amp(),
+            Proto::Char(c) => self.id.is_none() && self.content == c,
+            Proto::Kind(k) => self.id == Some(k),
+            Proto::KindContent(k, c) => {
+                self.id == Some(k)
                     && if case_sensitive { self.content == c } else { self.content.eq_ignore_ascii_case(c) }
             }
-            _ => false,
         }
     }
 
