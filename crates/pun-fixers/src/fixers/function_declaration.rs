@@ -43,10 +43,10 @@ impl Fixer for FunctionDeclarationFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in (0..tokens.count()).rev() {
-            let token = tokens[index].clone();
-            if !token.is_given_kind(&[T_FUNCTION, T_FN]) {
+            if !tokens[index].is_given_kind(&[T_FUNCTION, T_FN]) {
                 continue;
             }
+            let token = tokens[index].clone();
             // Upstream also stops at `;`/`?>` and skips; in valid code a T_FUNCTION/T_FN always reaches its `(` first
             // (`use function` is CT_FUNCTION_IMPORT).
             let start_parenthesis_index = tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap();

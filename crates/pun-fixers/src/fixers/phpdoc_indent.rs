@@ -23,10 +23,10 @@ impl Fixer for PhpdocIndentFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in (0..tokens.count()).rev() {
-            let token = tokens[index].clone();
-            if !token.is_kind(T_DOC_COMMENT) {
+            if !tokens[index].is_kind(T_DOC_COMMENT) {
                 continue;
             }
+            let token = tokens[index].clone();
             let next_index = tokens.get_next_meaningful_token(index);
             // skip if there is no next token or if next token is block end `}`
             let Some(next_index) = next_index.filter(|&n| !tokens[n].equals("}", true)) else { continue };
