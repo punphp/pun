@@ -94,6 +94,40 @@ preset). That output is deliberately not Pint-identical, so there is nothing mor
 and drop redundant `??`, ternaries and comparisons. Every one of these needs a codebase-wide type model, so
 none of them fits a per-file token fixer. Effort L; skip. Users can run `mago analyze` themselves.
 
+## Implemented in Pun
+
+Five opt-in auto-fixers live in `crates/pun-fixers/src/fixers/pun_*.rs`. They use the same `Fixer` trait and
+build.rs registration as the ports and run at priority 0. Each is a token-level port of the Mago rule (Mago's
+fixes are CST text edits, so its code can't be reused directly). Mago's own test cases are carried over as unit
+tests.
+
+| Rule | Mago rule | Rewrites | Deviations from Mago |
+|---|---|---|---|
+| `Pun/prefer_dedicated_status_assertion` | prefer-dedicated-status-assertion | `->assertStatus(404)` → `->assertNotFound()` (25 codes) | none; skips calls with comments inside |
+| `Pun/prefer_fake_helper` | prefer-fake-helper | `$this->faker` → `fake()` in classes named `*Factory` | also skips write contexts (`= `, `isset`/`unset`, `[]`), where `fake()` would not compile |
+| `Pun/prefer_array_validation_rules` | prefer-array-validation-rules | `'a' => 'required\|string'` → `'a' => ['required', 'string']` in `rules()` methods | only string-literal keys, and only when the value is the whole literal |
+| `Pun/no_implicit_model_query` | no-implicit-model-query | `User::where(...)` → `User::query()->where(...)` | none (risky: a name heuristic, same method and facade lists as Mago; resolves `use ... as` aliases) |
+| `Pun/use_specific_expectations` | use-specific-expectations | `expect($x)->toBe(true\|false\|null)` → `->toBeTrue()` / `->toBeFalse()` / `->toBeNull()` | ports only the rewrites that keep the test's meaning. Not ported: `toEqual(...)` (loose → strict), `toBe([])`/`toBe('')` → `toBeEmpty()` (looser), and `not->toBeFalse()` → `toBeTrue()` (wrong for non-bools) |
+
+Tests: `PUN_FIXERS_ONLY=pun_prefer_dedicated_status_assertion,pun_prefer_fake_helper,pun_prefer_array_validation_rules,pun_no_implicit_model_query,pun_use_specific_expectations cargo test -p punphp-fixers --lib pun_`
+(10 tests: Mago's cases plus edge cases).
+
+### Enabling
+
+None of these rules is in a preset, so default output is unchanged. Enable them in `pun.toml`:
+
+```toml
+[format.rules]
+"Pun/prefer_dedicated_status_assertion" = true
+"Pun/prefer_fake_helper" = true
+"Pun/prefer_array_validation_rules" = true
+"Pun/no_implicit_model_query" = true
+"Pun/use_specific_expectations" = true
+```
+
+`pint.json` `"rules": {"Pun/prefer_fake_helper": true}` works too, but real Pint then fails with an unknown-rule
+error. Use `pun.toml` if the project also runs Pint. `pun.toml` is ignored when Pun is invoked as `pint`.
+
 ## Lint path
 
 `mago-linter` 1.57.0 is on crates.io. Beyond what Pun already builds (regex, schemars, strum and tracing are
@@ -101,3 +135,7 @@ in Cargo.lock through mago-formatter), it only adds the `mago-names`, `mago-coll
 `mago-casing`, `mago-phpdoc-syntax`, `mago-word` and `mago-bytes` crates. Until Pun has a lint path, run
 `mago lint` itself for the lint-only rules above, with the `laravel`/`pest`/`phpunit` integrations enabled in
 `mago.toml`.
+
+No `pun lint --mago` path was added. All five chosen extras auto-fix, so they are native fixers. Wiring the
+linter would be about 60 lines in pun-cli plus compiling ~185 rules, and it only pays off once a lint-only rule
+(for example prefer-casts-method or no-debug-symbols) is wanted.
