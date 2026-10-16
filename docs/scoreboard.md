@@ -68,12 +68,28 @@ as `native`, nothing delegated). 2026-10-16:
 
 ## Benchmarks
 
-`pint --test` vs `pun format --test`, wall time via `/usr/bin/time`, 3 cold runs each (fresh Pint `--cache-file` per run;
-Pun has no cache yet), already-formatted checkouts. 2026-10-16, 2-core / 7 GB box shared with other agents (load 2-4),
-so absolute numbers are noisy. **Pun is the unoptimised `target/debug` build** (release builds are off-limits on this box);
-no speed work has been done yet.
+2026-10-16, **`--profile profiling` build** (release + line tables, `lto = false`, `codegen-units = 16`; a full release
+build is off-limits on this box). 2-core / 7 GB box shared with other agents (load 1-3 during these runs), so absolute
+numbers are noisy; wall / CPU (user+sys) from `/usr/bin/time`, median of 3 runs. Pint 1.x (`.oracle/pint`) never
+caches (its presets call `setUsingCache(false)`), Mago 1.57.0 (prebuilt binary, `mago fmt --check <files>`) has no
+cache, so their cold and warm runs are the same. Pun cold = `--no-cache`; warm = second run on a clean tree (every
+file already formatted, content-hash cache hit).
 
-| project | files | pint runs (s) | pint median | pun runs (s) | pun median | pint max RSS | pun max RSS |
-|---|---|---|---|---|---|---|---|
-| pinkary (incl. Blade via Prettier) | 799 | 15.71 / 12.99 / 19.44 | 15.7 s | 14.36 / 13.52 / 19.70 | 14.4 s | ~165 MB | ~26 MB |
-| laravel-framework | 3483 | 182.96 / 156.79 / 172.23 | 172.2 s | 222.16 / 210.15 / 250.60 | 222.2 s | ~163 MB | ~65 MB |
+| project | tool | cold wall | cold CPU | warm wall | warm CPU |
+|---|---|---|---|---|---|
+| laravel-framework (3027 PHP files, own pint.json) | pint `--test` | 190 s | 154 s | 190 s | 154 s |
+| | pun `--test --native-only` | 4.0 s | 7.7 s | 0.07 s | 0.08 s |
+| | mago `fmt --check` | 1.6 s | 2.6 s | 1.6 s | 2.6 s |
+| laravel-framework, `--preset laravel` | pun | 6.1 s | 11.8 s | | |
+| pinkary (484 files, 137 Blade) | pint `--test` | 13.4 s | 15.1 s | 13.4 s | 15.1 s |
+| | pun `--test` | 4.2 s | 1.7 s + Node | 0.20 s | 0.19 s |
+| pinkary PHP only (347 files) | pun `--test`, pint.json without `Pint/laravel_blade` | 0.33 s | 0.58 s | 0.03 s | 0.02 s |
+| | mago `fmt --check` | 0.13 s | 0.25 s | 0.13 s | 0.25 s |
+
+- laravel-framework: Pun/Mago is 2.5x wall, 3x CPU cold; warm Pun is ~20x faster than Mago. Pun is ~45x Pint (wall).
+  `--native-only` skips the 7 rules of its pint.json that are not ported (Pint runs them).
+  Before the speed work the same command took 17.2 s wall / 30.6 s CPU.
+- pinkary cold is bound by Blade: Prettier (Node) takes ~2.9 s wall for the 137 Blade files even with one long-lived
+  worker per thread, so cold Pun is 3.2x Pint; warm is 67x. Of the 0.20 s warm run, ~0.17 s is
+  `ensure_prettier` launching Node four times (`node -v` + three package probes) before any file is read.
+- Stage timings: `PUN_PROFILE=1 pun format ...` prints time and call count per fixer, tokenize, lint and generate.
