@@ -12,6 +12,8 @@ declare(strict_types=1);
  *   absolutize_path FileHelper(cwd)->absolutizePath()
  *   relative_path   ParentDirectoryRelativePathHelper($parent)->getRelativePath($file)
  *   fnmatch         fnmatch($pattern, $string)
+ *   phpfile         `require` of tests/fixtures/phpfile/ok-*.php (literal-array configs, as baselines are), __DIR__
+ *                   as {dir}
  *
  *   php scripts/export-php-helpers-fixtures.php
  */
@@ -69,5 +71,23 @@ foreach ([['*.php', 'a.php'], ['/a/*/c', '/a/b/c'], ['/a/*', '/a/b/c'], ['[ab]?'
     $fnmatch[] = ['pattern' => $p, 'string' => $s, 'matched' => @fnmatch($p, $s)];
 }
 
-file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/php.json', json_encode(compact('regex', 'quote', 'normalize', 'absolutize', 'relative', 'fnmatch'), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n");
+function tagged(mixed $v): mixed
+{
+    if (is_array($v)) {
+        $items = [];
+        foreach ($v as $k => $x) {
+            $items[] = [$k, tagged($x)];
+        }
+
+        return ['array' => $items];
+    }
+
+    return is_string($v) ? str_replace(dirname(__DIR__).'/crates/pun-phpstan/tests/fixtures/phpfile', '{dir}', $v) : $v;
+}
+$phpfile = [];
+foreach (glob($root.'/crates/pun-phpstan/tests/fixtures/phpfile/ok-*.php') as $file) {
+    $phpfile[basename($file)] = tagged(require $file);
+}
+
+file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/php.json', json_encode(compact('regex', 'quote', 'normalize', 'absolutize', 'relative', 'fnmatch', 'phpfile'), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n");
 echo count($regex), " regexes\n";

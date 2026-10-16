@@ -1,0 +1,363 @@
+[
+    {
+        "code": "<?php\na(); // @phpstan-ignore x.a, x.b\nb(); // @phpstan-ignore-line\nc(); // @phpstan-ignore x.c (why)\n",
+        "errors": [
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": null
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.b"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.b"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 3,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": null
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 3,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "q.q"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 4,
+                "canBeIgnored": false,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            },
+            {
+                "message": "E",
+                "file": "other.php",
+                "line": 4,
+                "canBeIgnored": true,
+                "filePath": "other.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 4,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 5,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": null,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            }
+        ],
+        "kept": [
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": null
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.b"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 4,
+                "canBeIgnored": false,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            },
+            {
+                "message": "E",
+                "file": "other.php",
+                "line": 4,
+                "canBeIgnored": true,
+                "filePath": "other.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 5,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": null,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            }
+        ],
+        "ignored": [
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.b"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 3,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": null
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 3,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "q.q"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 4,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.c"
+            }
+        ],
+        "lines": {
+            "array": [
+                [
+                    3,
+                    null
+                ]
+            ]
+        },
+        "unmatched": {
+            "array": []
+        }
+    },
+    {
+        "code": "<?php\na(); // @phpstan-ignore x.a, x.a, x.b\n",
+        "errors": [
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            }
+        ],
+        "kept": [
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            }
+        ],
+        "ignored": [
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            },
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            }
+        ],
+        "lines": {
+            "array": [
+                [
+                    2,
+                    {
+                        "array": [
+                            [
+                                0,
+                                {
+                                    "array": [
+                                        [
+                                            "name",
+                                            "x.b"
+                                        ],
+                                        [
+                                            "comment",
+                                            null
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        },
+        "unmatched": {
+            "array": [
+                [
+                    2,
+                    {
+                        "array": [
+                            [
+                                0,
+                                {
+                                    "array": [
+                                        [
+                                            "name",
+                                            "x.b"
+                                        ],
+                                        [
+                                            "comment",
+                                            null
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    }
+]

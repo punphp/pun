@@ -436,5 +436,245 @@
             "string": "a*",
             "matched": true
         }
-    ]
+    ],
+    "phpfile": {
+        "ok-arrays.php": {
+            "array": [
+                [
+                    "parameters",
+                    {
+                        "array": [
+                            [
+                                "a",
+                                {
+                                    "array": [
+                                        [
+                                            "k",
+                                            null
+                                        ],
+                                        [
+                                            "yes",
+                                            true
+                                        ],
+                                        [
+                                            "no",
+                                            false
+                                        ],
+                                        [
+                                            "neg",
+                                            -5
+                                        ],
+                                        [
+                                            7,
+                                            "int key"
+                                        ],
+                                        [
+                                            "7b",
+                                            "string key"
+                                        ],
+                                        [
+                                            8,
+                                            "numeric string key"
+                                        ],
+                                        [
+                                            "nested",
+                                            {
+                                                "array": [
+                                                    [
+                                                        0,
+                                                        1
+                                                    ],
+                                                    [
+                                                        1,
+                                                        2
+                                                    ],
+                                                    [
+                                                        2,
+                                                        {
+                                                            "array": []
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        ],
+                                        [
+                                            "dir",
+                                            "{dir}/x/y"
+                                        ],
+                                        [
+                                            "trailing",
+                                            {
+                                                "array": [
+                                                    [
+                                                        0,
+                                                        1
+                                                    ],
+                                                    [
+                                                        1,
+                                                        2
+                                                    ]
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ],
+                            [
+                                "b",
+                                {
+                                    "array": [
+                                        [
+                                            "k",
+                                            null
+                                        ],
+                                        [
+                                            "yes",
+                                            true
+                                        ],
+                                        [
+                                            "no",
+                                            false
+                                        ],
+                                        [
+                                            "neg",
+                                            -5
+                                        ],
+                                        [
+                                            7,
+                                            "int key"
+                                        ],
+                                        [
+                                            "7b",
+                                            "string key"
+                                        ],
+                                        [
+                                            8,
+                                            "numeric string key"
+                                        ],
+                                        [
+                                            "nested",
+                                            {
+                                                "array": [
+                                                    [
+                                                        0,
+                                                        1
+                                                    ],
+                                                    [
+                                                        1,
+                                                        2
+                                                    ],
+                                                    [
+                                                        2,
+                                                        {
+                                                            "array": []
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        ],
+                                        [
+                                            "dir",
+                                            "{dir}/x/y"
+                                        ],
+                                        [
+                                            "trailing",
+                                            {
+                                                "array": [
+                                                    [
+                                                        0,
+                                                        1
+                                                    ],
+                                                    [
+                                                        1,
+                                                        2
+                                                    ]
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ],
+                            [
+                                "short",
+                                {
+                                    "array": [
+                                        [
+                                            0,
+                                            true
+                                        ],
+                                        [
+                                            1,
+                                            false
+                                        ]
+                                    ]
+                                }
+                            ],
+                            [
+                                "empty",
+                                {
+                                    "array": []
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        },
+        "ok-literals.php": {
+            "array": [
+                [
+                    "list",
+                    {
+                        "array": [
+                            [
+                                0,
+                                "it's"
+                            ],
+                            [
+                                1,
+                                "back\\slash and \\n not-a-newline"
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        },
+        "ok-multiline-string.php": {
+            "array": [
+                [
+                    "parameters",
+                    {
+                        "array": [
+                            [
+                                "ignoreErrors",
+                                {
+                                    "array": [
+                                        [
+                                            0,
+                                            {
+                                                "array": [
+                                                    [
+                                                        "message",
+                                                        "#^Line one\nline two$#"
+                                                    ],
+                                                    [
+                                                        "count",
+                                                        1
+                                                    ],
+                                                    [
+                                                        "path",
+                                                        "{dir}/src/a.php"
+                                                    ]
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    }
 }

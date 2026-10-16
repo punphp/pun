@@ -1,0 +1,173 @@
+[
+    {
+        "input": "\"-0\": x",
+        "value": {
+            "array": [
+                [
+                    "-0",
+                    "x"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: 1e999",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "float": "INF"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: -1e999",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "float": "-INF"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: 0xFFFFFFFFFFFFFFFFFF",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "float": "4.722366482869645E+21"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: 0o7777777777777777777777777",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "float": "3.777893186295716E+22"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: 0b1111111111111111111111111111111111111111111111111111111111111111111111",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "float": "1.1805916207174113E+21"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: 2024-01-02 10:00:00 +01",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "datetime": "2024-01-02 10:00:00.000000 +01:00"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: 2024-01-02 10:00:00 +0130",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "datetime": "2024-01-02 10:00:00.000000 +01:30"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: 2024-01-02 10:00:00 -05:30",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "datetime": "2024-01-02 10:00:00.000000 -05:30"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: 2024-01-02T10:00:00Z",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "datetime": "2024-01-02 10:00:00.000000 +00:00"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: \"a\\_b\"",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    "a b"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: \"\\é\"",
+        "error": "Invalid escaping sequence \\� on line 1, column 4."
+    },
+    {
+        "input": "a: \"\\€\"",
+        "error": "Invalid escaping sequence \\� on line 1, column 4."
+    },
+    {
+        "input": "a: \"\\😀\"",
+        "error": "Invalid escaping sequence \\� on line 1, column 4."
+    },
+    {
+        "input": "a: \"\\q\"",
+        "error": "Invalid escaping sequence \\q on line 1, column 4."
+    },
+    {
+        "input": "a: 1\n# c\na: 2",
+        "error": "Duplicated key 'a' on line 3, column 1."
+    },
+    {
+        "input": "{a: 1, # c\n a: 2}",
+        "error": "Duplicated key 'a' on line 2, column 2."
+    },
+    {
+        "input": "a: 1\n\n  # c\na: 2",
+        "error": "Duplicated key 'a' on line 4, column 1."
+    },
+    {
+        "input": "- a: 1\n  # x\n  a: 2",
+        "error": "Duplicated key 'a' on line 3, column 3."
+    }
+]

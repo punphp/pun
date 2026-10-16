@@ -7,6 +7,9 @@ declare(strict_types=1);
  *
  *   tests/fixtures/comments.json  RichParser::getLinesToIgnore() over php-parser's tokens (the inputs of
  *                                 phpstan-src's RichParserTest and IgnoreLexerTest, plus extra cases)
+ *   tests/fixtures/local.json is scripts/export-local-ignore-fixtures.php's; this one also writes
+ *   tests/fixtures/local-processor.json  LocalIgnoresProcessor::process() on getLinesToIgnore() of a code sample and
+ *                                 hand-picked errors (with/without identifier, non-ignorable, other file)
  *   tests/fixtures/ignore.json    IgnoredErrorHelper::initialize() + IgnoredErrorHelperResult::process() over
  *                                 ignoreErrors entries and errors (paths under tests/fixtures/ignore/files, as {dir})
  *
@@ -162,6 +165,7 @@ namespace {
         [[['message' => '#^Bar#', 'path' => $dir.'/s?b/*.php']], true, $standardErrors],
         [[['message' => '#^Bar#', 'path' => $dir.'/./sub/../sub/c.php']], true, $standardErrors],
         [[['message' => '#^Nope#', 'path' => $dir.'/./sub/../sub/c.php']], true, $standardErrors, false, [$dir.'/sub/c.php']],
+        [[['path' => "q\\\"/\x08\x0c\x01\u{2028}\u{2029}é\n\r\t", 'reportUnmatched' => false, 'count' => 3, 'x' => null]], true, []],
         [[['path' => $a], ['paths' => [$a]], ['messages' => [], 'path' => $a], ['message' => '#^Foo$#', 'count' => 1, 'path' => $a, 'reportUnmatched' => true, 'x' => [1, 'a' => null, true, false, 'é/"\\']]], true, []],
         [['#^Foo$#'], true, [$e('Foo', canBeIgnored: false)]],
         [[['message' => '#^Foo$#', 'path' => $a]], true, [$e('Foo', canBeIgnored: false)]],
@@ -202,4 +206,26 @@ namespace {
         ]);
     }
     write($fixtures.'/ignore.json', $out);
+
+    // --- LocalIgnoresProcessor ---
+    $processor = new PHPStan\Analyser\LocalIgnoresProcessor();
+    $local = [];
+    $localCases = [
+        ["<?php\na(); // @phpstan-ignore x.a, x.b\nb(); // @phpstan-ignore-line\nc(); // @phpstan-ignore x.c (why)\n", [[2, 'x.a'], [2, null], [2, 'x.b'], [2, 'x.b'], [3, null], [3, 'q.q'], [4, 'x.c', false], [4, 'x.c', true, 'other.php'], [4, 'x.c'], [5, 'x.c'], [null, 'x.c']]],
+        ["<?php\na(); // @phpstan-ignore x.a, x.a, x.b\n", [[2, 'x.a'], [2, 'x.a'], [2, 'x.a']]],
+    ];
+    foreach ($localCases as [$code, $errs]) {
+        ['lines' => $lines] = $linesToIgnore->invoke($parser, $lexer->tokenize($code));
+        $errors = array_map(fn (array $x) => new Error('E', $x[3] ?? 'f.php', $x[0], $x[2] ?? true, identifier: $x[1]), $errs);
+        $r = $processor->process($errors, ['f.php' => $lines], ['f.php' => $lines]);
+        $local[] = [
+            'code' => $code,
+            'errors' => array_map($dump, $errors),
+            'kept' => array_map($dump, $r->getFileErrors()),
+            'ignored' => array_map($dump, $r->getLocallyIgnoredErrors()),
+            'lines' => tagged($r->getLinesToIgnore()['f.php'] ?? []),
+            'unmatched' => tagged($r->getUnmatchedLineIgnores()['f.php'] ?? []),
+        ];
+    }
+    write($fixtures.'/local-processor.json', $local);
 }

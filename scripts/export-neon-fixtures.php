@@ -63,7 +63,7 @@ namespace {
             $r['input_base64'] = base64_encode($r['input']);
             unset($r['input']);
         }
-        $key = json_encode($r);
+        $key = json_encode($r, JSON_INVALID_UTF8_SUBSTITUTE);
         $GLOBALS['records'][$key] = $r;
     }
 

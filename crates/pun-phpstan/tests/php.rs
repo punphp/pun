@@ -73,3 +73,32 @@ fn php_helpers() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+/// Literal-array PHP configs (baselines) as `require` returns them; anything beyond literals is refused.
+#[test]
+fn php_config_files() {
+    let dir = format!("{}/tests/fixtures/phpfile", env!("CARGO_MANIFEST_DIR"));
+    let want = &fixture("php.json")["phpfile"];
+    let mut names: Vec<String> = std::fs::read_dir(&dir)
+        .unwrap()
+        .map(|e| e.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    names.sort();
+    for name in names {
+        let php = std::fs::read_to_string(format!("{dir}/{name}")).unwrap();
+        let got = pun_phpstan::phpfile::load_config(&php, "{dir}");
+        if name.starts_with("ok-") {
+            let got = common::tagged(&pun_phpstan::Value::Array(got.unwrap()));
+            assert_eq!(got, want[&name], "{name}");
+        } else {
+            assert!(got.is_err(), "{name}: {got:?}");
+        }
+    }
+    for not_generated in [
+        "<?php class X {}",
+        "<?php const EXTENSIONS;",
+        "<?php const EXTENSIONS = 5;",
+    ] {
+        assert!(pun_phpstan::phpfile::generated_config_extensions(not_generated, "/").is_err());
+    }
+}

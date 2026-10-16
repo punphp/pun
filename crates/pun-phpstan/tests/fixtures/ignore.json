@@ -4718,6 +4718,48 @@
                         "array": [
                             [
                                 "path",
+                                "q\\\"/\b\f\u0001\u2028\u2029é\n\r\t"
+                            ],
+                            [
+                                "reportUnmatched",
+                                false
+                            ],
+                            [
+                                "count",
+                                3
+                            ],
+                            [
+                                "x",
+                                null
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        },
+        "reportUnmatched": true,
+        "errors": [],
+        "onlyFiles": false,
+        "analysedFiles": [],
+        "hasInternalErrors": false,
+        "expected": {
+            "configErrors": [
+                "Ignored error {\"path\":\"q\\\\\\\"/\\b\\f\\u0001\\u2028\\u2029é\\n\\r\\t\",\"reportUnmatched\":false,\"count\":3,\"x\":null} is missing a message or an identifier."
+            ],
+            "errors": [],
+            "ignored": [],
+            "stringErrors": []
+        }
+    },
+    {
+        "ignoreErrors": {
+            "array": [
+                [
+                    0,
+                    {
+                        "array": [
+                            [
+                                "path",
                                 "{dir}/a.php"
                             ]
                         ]

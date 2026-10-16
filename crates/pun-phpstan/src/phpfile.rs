@@ -136,7 +136,10 @@ impl P<'_> {
             .chars()
             .take_while(|c| c.is_ascii_digit() || *c == '-')
             .collect();
-        if let Ok(n) = num.parse::<i64>() {
+        // (`1.5` is a float, not `1 . 5`: floats are not supported)
+        let float = rest[num.len()..].starts_with('.')
+            && rest[num.len() + 1..].starts_with(|c: char| c.is_ascii_digit());
+        if let (false, Ok(n)) = (float, num.parse::<i64>()) {
             self.i += num.len();
             return Ok(Value::Int(n));
         }
@@ -180,12 +183,8 @@ pub fn load_config(php: &str, dir: &str) -> Result<Array, String> {
     p.expect("<?php")?;
     loop {
         if p.eat("declare") {
-            while !p.eat(";") {
-                p.i += 1;
-                if p.i >= p.s.len() {
-                    return Err(p.unexpected());
-                }
-            }
+            let end = p.s[p.i..].find(';').ok_or_else(|| p.unexpected())?;
+            p.i += end + 1;
         } else if p.eat("return") {
             let v = p.expr()?;
             return match v {

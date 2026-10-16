@@ -5,20 +5,12 @@ use std::sync::LazyLock;
 
 use pcre2::bytes::{Regex, RegexBuilder};
 
-use crate::value::{Array, Entity, Key, Value, base_dec, float_json, float_to_string, numeric};
+use crate::value::{Array, Entity, Key, Value, base_dec, float_json, numeric};
 
 pub const CHAIN: &str = "!!chain";
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Error(pub String);
-
-impl std::fmt::Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.0)
-    }
-}
-
-impl std::error::Error for Error {}
 
 const STRING: &str = r#"
 			'''\n (?:(?: [^\n] | \n(?![\t\ ]*+''') )*+ \n)?[\t\ ]*+''' |
@@ -521,9 +513,9 @@ fn unescape(s: &str) -> Result<String, String> {
         } else if rest.len() >= 3 && (rest[0] | 0x20) == b'x' && hex(rest[1]) && hex(rest[2]) {
             4
         } else {
-            1 + utf8_len(rest[0])
+            2 // one byte, as PCRE without /u: the message may show half a character
         };
-        let sq = &s[i..i + len];
+        let sq = String::from_utf8_lossy(&s.as_bytes()[i..i + len]);
         let c = sq.as_bytes()[1];
         match c {
             b't' => out.push(b'\t'),
@@ -554,15 +546,6 @@ fn unescape(s: &str) -> Result<String, String> {
     // ponytail: PHP strings are bytes; a deprecated `\xHH` >= 0x80 is replaced by U+FFFD here.
     Ok(String::from_utf8(out)
         .unwrap_or_else(|e| String::from_utf8_lossy(e.as_bytes()).into_owned()))
-}
-
-fn utf8_len(first: u8) -> usize {
-    match first {
-        0xF0..=0xFF => 4,
-        0xE0..=0xEF => 3,
-        0xC0..=0xDF => 2,
-        _ => 1,
-    }
 }
 
 fn items_to_array(items: Vec<Item>) -> Array {
@@ -608,11 +591,6 @@ pub fn decode(input: &str) -> Result<Value, Error> {
 pub fn decode_bytes(input: &[u8]) -> Result<Value, Error> {
     let s = std::str::from_utf8(input).map_err(|_| Error("Invalid UTF-8 sequence.".into()))?;
     decode(s)
-}
-
-/// `Neon::decodeFile()` contents: a leading BOM is dropped.
-pub fn decode_file_contents(input: &[u8]) -> Result<Value, Error> {
-    decode_bytes(input.strip_prefix(b"\xEF\xBB\xBF").unwrap_or(input))
 }
 
 /// `Lexer::requiresDelimiters()`.
@@ -832,12 +810,4 @@ pub fn json_string(s: &str) -> String {
     }
     out.push('"');
     out
-}
-
-/// `(string)` for an entity key or float key, used by PHPStan's own messages.
-pub fn key_to_string(v: &Value) -> String {
-    match v {
-        Value::Float(f) => float_to_string(*f),
-        other => other.to_php_string().unwrap_or_default(),
-    }
 }

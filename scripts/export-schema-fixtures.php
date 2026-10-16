@@ -82,6 +82,7 @@ $cases = [
     [['a: int()', 'b: string()', 'c: bool()'], ['a: x', 'b: 1', 'c: 2']],
     [['a: listOf(int())'], ['a: {k: x}']],
     [['getFoo: int()', 'isBar: int()'], ['foo: 1'], ['setFoo: 1'], ['bar: 1']],
+    [['a: anyOf({x: 1, y: 2})'], ['a: {y: 2, x: 1}'], ['a: {x: 1, y: 2}']],
     [['abc: int()'], ['ab: 1'], ['abcdefghijk: 1'], ['x: 1']],
 ];
 
