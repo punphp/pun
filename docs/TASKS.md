@@ -40,3 +40,13 @@ Embedded static libphp (pun-php): deferred, system `php` stands in.
 
 - Drop the `--engine=pun` (Mago formatter) path? ("remove unnecessary things about formatter")
 - "creat a r": release, README or PR?
+
+### Overnight queue (autonomous, in order)
+
+1. Finish running rows: perf, rules (laravel-framework native), watch/LSP.
+2. Speed: final round, done only when the scoreboard benchmarks Pint, Pun and Mago with and without the cache. Includes Blade batching.
+3. Wave 3 cleanup, run alone with no other agents: /code-review --fix, architecture pass, comment cleanup, cargo fmt, clippy to 0, clap ValueEnum.
+4. Full gate: 100% coverage on every crate, corpus parity for laravel and psr12 on 7/7 projects, and fuzz.
+5. Phase 2 (`pun lint`, PHPStan parity), starting with M2.1 config and baseline.
+
+Not autonomous (needs the user): publishing or tagging a release, making the repo public, the gh `workflow` scope.
