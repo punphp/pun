@@ -26,7 +26,8 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
     // The content each file had when Pun last finished with it: events that leave it so (Pun's own writes) are no change.
     let mut done: HashMap<PathBuf, u64> = HashMap::new();
     let hash = |p: &PathBuf| std::fs::read(p).ok().map(|c| xxh3_64(&c));
-    while let Ok(first) = rx.recv() {
+    loop {
+        let first = rx.recv()?;
         let mut changed = HashSet::new();
         let mut add = |e: notify::Result<notify::Event>| match e {
             Ok(e) if !matches!(e.kind, EventKind::Access(_)) => changed.extend(e.paths),
@@ -57,7 +58,6 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
             }
         }
     }
-    Ok(0)
 }
 
 /// A failed run (unreadable file, broken pint.json) is reported like `main` does, and the watch goes on.
