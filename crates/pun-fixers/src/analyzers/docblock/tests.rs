@@ -430,3 +430,23 @@ fn type_regex_does_not_have_unnamed_capturing_group() {
     let named = re.capture_names()[..=last].iter().filter(|n| n.is_some()).count();
     assert_eq!(named, last);
 }
+
+/// A use whose short name differs from the type must be skipped (expected values from PHP-CS-Fixer's TypeExpression).
+#[test]
+fn type_expression_common_type_with_unrelated_use() {
+    let uses = vec![NamespaceUse { full_name: b"Bar\\Baz".to_vec(), short_name: b"Baz".to_vec() }];
+    let ctx = Rc::new(Context { namespace: None, namespace_uses: uses });
+    assert_eq!(TypeExpression::new(b"array|Traversable", ctx.clone()).get_common_type(), Some(b"iterable".to_vec()));
+    assert_eq!(TypeExpression::new(b"array|Baz", ctx).get_common_type(), None);
+}
+
+/// Annotation::getTypes caches: editing the line afterwards doesn't change the reported types (checked against PHP).
+#[test]
+fn annotation_get_types_is_cached() {
+    let doc = DocBlock::new(b"/**\n * @param int $a\n */");
+    let a = &doc.get_annotations()[0];
+    assert_eq!(a.get_types(), [b"int".to_vec()]);
+    doc.get_line(1).unwrap().borrow_mut().set_content(b" * @param string $a\n".to_vec());
+    assert_eq!(a.get_types(), [b"int".to_vec()]);
+    assert_eq!(a.get_content(), b" * @param string $a\n");
+}

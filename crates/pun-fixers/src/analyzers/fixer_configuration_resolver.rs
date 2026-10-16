@@ -126,4 +126,44 @@ impl Resolved {
         }
         Ok(items)
     }
+
+    /// Symfony OptionsResolver's `setAllowedTypes` check (`verifyTypes`) for scalar/array types such as
+    /// `["int", "int[]"]` or `["string[][]"]`; Ok when the option is absent or matches one of `types`.
+    pub fn check_types(&self, key: &str, types: &[&str]) -> Result<()> {
+        let Some(v) = self.map.get(key) else { return Ok(()) };
+        let mut invalid = vec![];
+        if types.iter().any(|t| verify_types(t, v, &mut invalid, 0)) {
+            return Ok(());
+        }
+        let (expected, provided) = (types.join("\" or \""), invalid.join("|"));
+        let element = if (v.is_array() || v.is_object()) && types.iter().any(|t| t.ends_with("[]")) { "one of the elements" } else { "" };
+        Err(if element.is_empty() {
+            self.error(key, v, &format!("is expected to be of type \"{expected}\", but is of type \"{provided}\""))
+        } else {
+            self.error(key, v, &format!("is expected to be of type \"{expected}\", but {element} is of type \"{provided}\""))
+        })
+    }
+}
+
+fn verify_types(type_: &str, v: &Value, invalid: &mut Vec<&'static str>, level: usize) -> bool {
+    let items: Option<Vec<&Value>> = match v {
+        Value::Array(a) => Some(a.iter().collect()),
+        Value::Object(o) => Some(o.values().collect()),
+        _ => None,
+    };
+    if let (Some(inner), Some(items)) = (type_.strip_suffix("[]"), items) {
+        // no short-circuit: every element records its invalid type
+        return items.into_iter().fold(true, |valid, item| verify_types(inner, item, invalid, level + 1) && valid);
+    }
+    let ok = match type_ {
+        "int" => v.is_i64() || v.is_u64(),
+        "string" => v.is_string(),
+        "bool" => v.is_boolean(),
+        "null" => v.is_null(),
+        _ => false,
+    };
+    if !ok && (invalid.is_empty() || level > 0) && !invalid.contains(&debug_type(v)) {
+        invalid.push(debug_type(v));
+    }
+    ok
 }

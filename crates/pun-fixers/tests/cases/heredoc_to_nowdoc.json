@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "heredoc_to_nowdoc",
+        "input": "<?php\n$a = <<<EOT\nfoo\\nbar\nEOT;\n",
+        "expected": "<?php\n$a = <<<EOT\nfoo\\nbar\nEOT;\n"
+    }
+]

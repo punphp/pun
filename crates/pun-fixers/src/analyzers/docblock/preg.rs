@@ -33,16 +33,5 @@ pub fn split(pattern: impl AsRef<[u8]>, subject: &[u8], flags: u32) -> Vec<Vec<u
 
 /// PHP `preg_quote`.
 pub fn quote(s: &[u8], delimiter: Option<u8>) -> Vec<u8> {
-    let mut o = Vec::with_capacity(s.len());
-    for &c in s {
-        if c == 0 {
-            o.extend_from_slice(b"\\000");
-            continue;
-        }
-        if b".\\+*?[^]$(){}=!<>|:-#".contains(&c) || Some(c) == delimiter {
-            o.push(b'\\');
-        }
-        o.push(c);
-    }
-    o
+    crate::analyzers::preg::preg_quote(s, delimiter)
 }

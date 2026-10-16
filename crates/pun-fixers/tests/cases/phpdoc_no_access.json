@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_no_access",
+        "input": "<?php\n/** @access public */\n$a = 1;\n",
+        "expected": "<?php\n\n$a = 1;\n"
+    }
+]
