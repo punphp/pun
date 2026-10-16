@@ -122,11 +122,9 @@ impl MethodArgumentSpaceFixer {
             None => Vec::new(),
             Some(p) if !tokens[p].is_kind(T_WHITESPACE) => return,
             Some(p) => {
+                // the search loop only stops on a token containing "\n" (upstream's `false === strrpos` arm is dead)
                 let c = tokens[p].get_content();
-                match c.iter().rposition(|&b| b == b'\n') {
-                    None => c.to_vec(),
-                    Some(l) => c[l + 1..].to_vec(),
-                }
+                c[c.iter().rposition(|&b| b == b'\n').unwrap() + 1..].to_vec()
             }
         };
         let indentation = [&existing_indentation[..], self.whitespaces_config.get_indent().as_bytes()].concat();
@@ -195,10 +193,8 @@ impl MethodArgumentSpaceFixer {
             }
             return;
         }
-        let next_meaningful_token_index = tokens.get_next_meaningful_token(index).unwrap();
-        if tokens[next_meaningful_token_index].equals(")", true) {
-            return;
-        }
+        // (upstream returns here when the next meaningful token is `)`; never true: commas before `)` are skipped by
+        // the caller, an attribute is followed by its parameter, and `(` only with at least one argument)
         tokens.ensure_whitespace_at_index(index + 1, 0, &ws);
     }
 
@@ -359,5 +355,18 @@ impl Fixer for MethodArgumentSpaceFixer {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    // Both rejected by the real fixer's configure() ("... is invalid. Accepted values are: ...").
+    #[test]
+    fn configure_rejects_unknown_values() {
+        assert!(fixer().configure(&json!({"on_multiline": "foo"})).is_err());
+        assert!(fixer().configure(&json!({"attribute_placement": "x"})).is_err());
     }
 }

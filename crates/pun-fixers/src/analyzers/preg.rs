@@ -21,7 +21,6 @@ use std::rc::Rc;
 pub const PREG_PATTERN_ORDER: u32 = 1;
 pub const PREG_SET_ORDER: u32 = 2;
 pub const PREG_OFFSET_CAPTURE: u32 = 256;
-pub const PREG_UNMATCHED_AS_NULL: u32 = 512;
 pub const PREG_SPLIT_NO_EMPTY: u32 = 1;
 pub const PREG_SPLIT_DELIM_CAPTURE: u32 = 2;
 pub const PREG_SPLIT_OFFSET_CAPTURE: u32 = 4;
@@ -210,11 +209,11 @@ impl Regex {
         if !self.utf {
             return 1;
         }
+        // `at` is on a character boundary (with_fallback drops `u` otherwise), so never a continuation byte
         match subject[at] {
-            b if b < 0x80 => 1,
-            b if b >= 0xF0 => 4,
-            b if b >= 0xE0 => 3,
-            b if b >= 0xC0 => 2,
+            0xF0.. => 4,
+            0xE0.. => 3,
+            0xC0.. => 2,
             _ => 1,
         }
     }
@@ -255,22 +254,15 @@ impl Regex {
 pub struct Captures<'s> {
     subject: &'s [u8],
     groups: Vec<Option<(usize, usize)>>,
-    /// Number of numeric entries PHP puts in `$matches` (`count` from pcre2_match, or every group with
-    /// PREG_UNMATCHED_AS_NULL).
+    /// Number of numeric entries PHP puts in `$matches` (`count` from pcre2_match: trailing unmatched groups omitted).
     len: usize,
-    unmatched_as_null: bool,
     names: Vec<(Vec<u8>, usize)>,
 }
 
 impl<'s> Captures<'s> {
-    fn new(subject: &'s [u8], groups: Vec<Option<(usize, usize)>>, re: &Regex, flags: u32) -> Self {
-        let unmatched_as_null = flags & PREG_UNMATCHED_AS_NULL != 0;
-        let len = if unmatched_as_null {
-            groups.len()
-        } else {
-            groups.iter().rposition(Option::is_some).map_or(0, |i| i + 1)
-        };
-        Captures { subject, groups, len, unmatched_as_null, names: re.names.clone() }
+    fn new(subject: &'s [u8], groups: Vec<Option<(usize, usize)>>, re: &Regex) -> Self {
+        let len = groups.iter().rposition(Option::is_some).map_or(0, |i| i + 1);
+        Captures { subject, groups, len, names: re.names.clone() }
     }
 
     /// Group text, `None` when the group did not participate (PHP: "" or null).
@@ -278,7 +270,7 @@ impl<'s> Captures<'s> {
         self.groups.get(i).copied().flatten().map(|(s, e)| &self.subject[s..e])
     }
 
-    /// Group text as PHP gives it without PREG_UNMATCHED_AS_NULL ("" for unmatched).
+    /// Group text as PHP gives it ("" for unmatched).
     pub fn str(&self, i: usize) -> &'s [u8] {
         self.get(i).unwrap_or(b"")
     }
@@ -293,23 +285,15 @@ impl<'s> Captures<'s> {
         i < self.len
     }
 
-    /// `isset($matches[$i])`: present and not null. Without PREG_UNMATCHED_AS_NULL unmatched middle
-    /// groups are "" and thus set.
-    pub fn isset(&self, i: usize) -> bool {
-        i < self.len && (self.get(i).is_some() || !self.unmatched_as_null)
-    }
-
-    /// Number of numeric entries in `$matches`.
+    /// Number of numeric entries in `$matches` (never 0: group 0 always matched).
+    #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
         self.len
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.len == 0
-    }
-
+    /// With duplicate names (`J`) PHP's `$matches['name']` is the last group of that name present in `$matches`.
     fn group_by_name(&self, name: &[u8]) -> Option<usize> {
-        self.names.iter().find(|(n, _)| n == name).map(|&(_, g)| g)
+        self.names.iter().filter(|&&(ref n, g)| n == name && g < self.len).map(|&(_, g)| g).max()
     }
 
     /// Named group text (`$matches['name']`), `None` when unmatched or absent.
@@ -324,7 +308,7 @@ impl<'s> Captures<'s> {
 
     /// `array_key_exists('name', $matches)`.
     pub fn name_exists(&self, name: &str) -> bool {
-        self.group_by_name(name.as_bytes()).is_some_and(|g| self.exists(g))
+        self.group_by_name(name.as_bytes()).is_some()
     }
 
     pub fn name_offset(&self, name: &str) -> isize {
@@ -380,33 +364,27 @@ impl Preg {
         Self::match_groups(pattern, subject.as_ref(), 0).is_some()
     }
 
-    /// `Preg::match($pattern, $subject, $matches, $flags)`; `None` when no match.
+    /// `Preg::match($pattern, $subject, $matches, $flags)`; `None` when no match. `flags` is only
+    /// documentation at call sites: offsets (PREG_OFFSET_CAPTURE) are always available on Captures.
     pub fn match_groups<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8], flags: u32) -> Option<Captures<'s>> {
         Self::match_at(pattern, subject, flags, 0)
     }
 
     /// `Preg::match($pattern, $subject, $matches, $flags, $offset)`.
-    pub fn match_at<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8], flags: u32, offset: usize) -> Option<Captures<'s>> {
+    pub fn match_at<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8], _flags: u32, offset: usize) -> Option<Captures<'s>> {
         let pattern = pattern.as_ref();
         with_fallback(pattern, subject, offset, "PhpCsFixer\\Preg::match", |re| {
-            if offset > subject.len() {
-                return Ok(None); // PHP: PREG_INTERNAL_ERROR? no: returns false with warning; treat as no match
-            }
             let m = re.matcher();
-            Ok(re.exec(&m, subject, offset, 0)?.map(|g| Captures::new(subject, g, re, flags)))
+            Ok(re.exec(&m, subject, offset, 0)?.map(|g| Captures::new(subject, g, re)))
         })
     }
 
     /// `Preg::matchAll($pattern, $subject, $matches, PREG_SET_ORDER)`: every match in order (its
     /// length is matchAll's return value). PREG_PATTERN_ORDER callers read `m.str(i)` of every match.
-    pub fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8], flags: u32) -> Vec<Captures<'s>> {
-        Self::match_all_at(pattern, subject, flags, 0)
-    }
-
-    pub fn match_all_at<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8], flags: u32, offset: usize) -> Vec<Captures<'s>> {
+    pub fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8], _flags: u32) -> Vec<Captures<'s>> {
         let pattern = pattern.as_ref();
-        with_fallback(pattern, subject, offset, "PhpCsFixer\\Preg::matchAll", |re| {
-            Ok(re.exec_all(subject, offset.min(subject.len()), None)?.into_iter().map(|g| Captures::new(subject, g, re, flags)).collect())
+        with_fallback(pattern, subject, 0, "PhpCsFixer\\Preg::matchAll", |re| {
+            Ok(re.exec_all(subject, 0, None)?.into_iter().map(|g| Captures::new(subject, g, re)).collect())
         })
     }
 
@@ -440,7 +418,7 @@ impl Preg {
             for g in all {
                 let (s, e) = g[0].unwrap();
                 out.extend_from_slice(&subject[last..s]);
-                out.extend(f(&Captures::new(subject, g, re, 0)));
+                out.extend(f(&Captures::new(subject, g, re)));
                 last = e;
             }
             out.extend_from_slice(&subject[last..]);
@@ -547,8 +525,16 @@ fn split_impl(re: &Regex, subject: &[u8], limit: isize, flags: u32) -> Result<Ve
 fn expand_replacement(replacement: &[u8], c: &Captures) -> Vec<u8> {
     let mut out = Vec::new();
     let mut i = 0;
+    // PHP's `walk_last`: the last literally copied byte; `\\` / `\$` after a copied `\\` replaces it.
+    let mut walk_last = 0u8;
     while i < replacement.len() {
         let ch = replacement[i];
+        if (ch == b'\\' || ch == b'$') && walk_last == b'\\' {
+            *out.last_mut().unwrap() = ch;
+            walk_last = 0;
+            i += 1;
+            continue;
+        }
         if (ch == b'\\' || ch == b'$') && i + 1 < replacement.len() {
             let mut w = i;
             let in_brace = ch == b'$' && replacement[w + 1] == b'{';
@@ -576,11 +562,13 @@ fn expand_replacement(replacement: &[u8], c: &Captures) -> Vec<u8> {
                 if ok {
                     out.extend_from_slice(c.str(backref));
                     i = w;
+                    walk_last = 0;
                     continue;
                 }
             }
         }
         out.push(ch);
+        walk_last = ch;
         i += 1;
     }
     out
@@ -619,6 +607,58 @@ mod tests {
         assert_eq!(Preg::replace("/\\R/", "|", "a\r\nb\nc"), b"a|b|c");
         assert_eq!(preg_quote(b"a.b/c\0", Some(b'/')), b"a\\.b\\/c\\000");
     }
+
+    // Expected values from PhpCsFixer\Preg on PHP 8.5 (delimiters, modifiers, PregException cases, split/replace edges).
+    #[test]
+    fn php_semantics_delimiters_modifiers_errors() {
+        for (p, s, m0) in [
+            ("(a)", "a", "a"), ("[A]i", "xa", "a"), ("{a{2}}", "aa", "aa"), ("{a\\}b}", "a}b", "a}b"), ("<a>", "a", "a"), ("/a\\/b/", "a/b", "a/b"),
+            ("/a b # c/x", "ab", "ab"), ("/a/S", "a", "a"), ("/a/X", "a", "a"), ("/a+?/U", "aa", "aa"), ("/a/ \n", "a", "a"),
+        ] {
+            assert_eq!(Preg::match_groups(p, s.as_bytes(), 0).map(|m| m.str(0).to_vec()), Some(m0.as_bytes().to_vec()), "{p}");
+        }
+        assert!(!Preg::r#match("/b/A", "ab"));
+        let m = Preg::match_groups("/(a)(?<n>b)?/n", b"ab", 0).unwrap();
+        assert_eq!((m.len(), m.str(1), m.name("n")), (2, &b"b"[..], Some(&b"b"[..])));
+        let m = Preg::match_groups("/(?<x>a)|(?<x>b)/J", b"b", 0).unwrap();
+        assert_eq!((m.str(1), m.str(2), m.name_str("x")), (&b""[..], &b"b"[..], &b"b"[..]));
+        let m = Preg::match_groups("/(?<x>a)|(?<x>b)/J", b"a", 0).unwrap(); // group 2 not in $matches
+        assert_eq!((m.len(), m.name_str("x"), m.name_exists("x"), m.name_exists("y")), (2, &b"a"[..], true, false));
+        for p in ["", "  ", "abc", "\\a\\", "/abc", "{abc", "/a/e", "/(/"] {
+            assert!(std::panic::catch_unwind(|| Preg::r#match(p, "a")).is_err(), "{p:?} must throw PregException");
+        }
+        assert!(std::panic::catch_unwind(|| Preg::match_at("/a/", b"abc", 0, 5)).is_err(), "offset past the end throws");
+        // "Backtrack limit exhausted" in PHP
+        assert!(std::panic::catch_unwind(|| Preg::r#match("/(a*)*[bc]/", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!")).is_err());
+        let s = |v: Vec<Piece>| v.into_iter().map(|p| String::from_utf8(p.text).unwrap()).collect::<Vec<_>>();
+        assert_eq!(s(Preg::split("//", "é日😀", -1, PREG_SPLIT_NO_EMPTY)), ["é", "日", "😀"]);
+        assert_eq!(Preg::replace("/x*/", "-", b"\xff\xfe"), b"-\xff-\xfe-"); // invalid UTF-8: non-u, byte steps
+        assert_eq!(s(Preg::split("/x*/", "abc", 2, 0)), ["", "abc"]);
+        assert_eq!(s(Preg::split("/x*/", "abc", 1, 0)), ["abc"]);
+        let pieces = Preg::split("/(,)/", "a,b", -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE);
+        assert_eq!(pieces.iter().map(|p| (p.text.as_slice(), p.offset)).collect::<Vec<_>>(), [(&b"a"[..], 0), (b",", 1), (b"b", 2)]);
+        assert_eq!(Preg::split_str("/,/", "a,b"), [b"a".to_vec(), b"b".to_vec()]);
+        assert_eq!(Preg::replace("/(a)(b)(c)(d)(e)(f)(g)(h)(i)(j)(k)/", r"[$11|\11|${11}|${1|$1x|\\|$|\", "abcdefghijk"), br"[k|k|k|${1|ax|\|$|\");
+        assert_eq!(Preg::replace("/(a)/", r"${1}2${99}$99\99", "a"), b"a2");
+        assert_eq!(Preg::replace("/(a)/", r"\\1|\$1|\\\1|\a|$$1", "a"), br"\1|$1|\a|\a|$a"); // `\\` and `\$` escapes
+    }
+
+    // Expected values from plain preg_* on PHP 8.5 (no `u` added, errors are false/null).
+    #[test]
+    fn raw_preg_php_values() {
+        let m = RawPreg::match_groups("/(a)(b)?/", b"xa").unwrap();
+        assert_eq!((m.len(), m.str(1)), (2, &b"a"[..]));
+        let all = RawPreg::match_all("/a(\\d)/", b"a1 a2");
+        assert_eq!((all.len(), all[1].str(1), all[1].offset(1)), (2, &b"2"[..], 4));
+        assert!(!RawPreg::r#match("/a/u", b"\xff"));
+        assert!(RawPreg::r#match("/a/", "ba"));
+        assert_eq!(RawPreg::replace("/(/", "", "a"), None);
+        assert_eq!(RawPreg::replace("/(a)/", "[$1]", "aba"), Some(b"[a]b[a]".to_vec()));
+        assert_eq!(RawPreg::replace_callback("/b/", |c| c.str(0).to_ascii_uppercase(), "abcb"), Some(b"aBcB".to_vec()));
+        let pieces = RawPreg::split("/,/", "a,,b", -1, PREG_SPLIT_NO_EMPTY).unwrap();
+        assert_eq!(pieces.into_iter().map(|p| p.text).collect::<Vec<_>>(), [b"a".to_vec(), b"b".to_vec()]);
+        assert!(RawPreg::split("/(/", "a", -1, 0).is_none());
+    }
 }
 
 /// Plain PHP `preg_*` calls (no `/u` added, no fallback), for ports of code that calls the PHP
@@ -639,7 +679,7 @@ impl RawPreg {
     pub fn match_groups<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Option<Captures<'s>> {
         Self::run(pattern.as_ref(), subject, |re| {
             let m = re.matcher();
-            Ok(re.exec(&m, subject, 0, 0)?.map(|g| Captures::new(subject, g, re, 0)))
+            Ok(re.exec(&m, subject, 0, 0)?.map(|g| Captures::new(subject, g, re)))
         })
         .flatten()
     }
@@ -652,7 +692,7 @@ impl RawPreg {
     /// use `Captures::offset` for offsets.
     pub fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Captures<'s>> {
         Self::run(pattern.as_ref(), subject, |re| {
-            Ok(re.exec_all(subject, 0, None)?.into_iter().map(|g| Captures::new(subject, g, re, 0)).collect())
+            Ok(re.exec_all(subject, 0, None)?.into_iter().map(|g| Captures::new(subject, g, re)).collect())
         })
         .unwrap_or_default()
     }
@@ -667,7 +707,7 @@ impl RawPreg {
             for g in all {
                 let (s, e) = g[0].unwrap();
                 out.extend_from_slice(&subject[last..s]);
-                out.extend(callback(&Captures::new(subject, g, re, 0)));
+                out.extend(callback(&Captures::new(subject, g, re)));
                 last = e;
             }
             out.extend_from_slice(&subject[last..]);

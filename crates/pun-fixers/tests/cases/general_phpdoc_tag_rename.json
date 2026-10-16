@@ -1,0 +1,13 @@
+[
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "A": "b",
+                "a": "b"
+            }
+        },
+        "input": "<?php\n/** @A @a {@inheritDoc} */\n",
+        "expected": "<?php\n/** @b @b {@inheritDoc} */\n"
+    }
+]

@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "multiline_whitespace_before_semicolons",
+        "input": "<?php\n/* c */\n;\n",
+        "expected": "<?php\n;/* c */\n"
+    }
+]

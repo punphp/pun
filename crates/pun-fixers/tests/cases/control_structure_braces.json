@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "control_structure_braces",
+        "input": "<?php\nwhile ($a) if ($b) foo(); elseif ($c) bar(); else baz();\nfor (;;) if ($b) foo(); else if ($c) bar();\n",
+        "expected": "<?php\nwhile ($a) { if ($b) { foo(); } elseif ($c) { bar(); } else { baz(); } }\nfor (;;) { if ($b) { foo(); } else if ($c) { bar(); } }\n"
+    },
+    {
+        "fixer": "control_structure_braces",
+        "input": "<?php\nwhile ($a) if ($b) foo();\nforeach ($a as $b) if ($b): foo(); endif;\n",
+        "expected": "<?php\nwhile ($a) { if ($b) { foo(); } }\nforeach ($a as $b) { if ($b): foo(); endif; }\n"
+    },
+    {
+        "fixer": "control_structure_braces",
+        "input": "<?php\nwhile ($a) foreach ($b as $c) foo();\n",
+        "expected": "<?php\nwhile ($a) { foreach ($b as $c) { foo(); } }\n"
+    }
+]

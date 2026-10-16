@@ -13,10 +13,8 @@ pub fn fixer() -> Box<dyn Fixer> {
 }
 
 fn ends_with_whitespace(s: &[u8]) -> bool {
-    if s.is_empty() {
-        return false;
-    }
-    trim(&s[s.len() - 1..]).is_empty()
+    // upstream's `'' === $str` guard never fires: freshly tokenized tokens are non-empty
+    s.last().is_some_and(|&b| trim(&[b]).is_empty())
 }
 
 impl Fixer for NoLeadingNamespaceWhitespaceFixer {

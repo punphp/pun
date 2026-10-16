@@ -75,10 +75,8 @@ pub fn is_constant_invocation(tokens: &Tokens, index: usize) -> bool {
     if tokens[next_index].equals(":", true) && GotoLabelAnalyzer.belongs_to_go_to_label(tokens, next_index) {
         return false;
     }
-    // check for non-capturing catches
-    while tokens[prev_index].is_given_kind(&[CT_NAMESPACE_OPERATOR, T_NS_SEPARATOR, T_STRING, CT_TYPE_ALTERNATION]) {
-        prev_index = prev(prev_index);
-    }
+    // check for non-capturing catches (upstream re-skips name tokens and `|` here first; that loop never
+    // runs: the loop above already skipped names, and a `|` before them returned false above)
     if tokens[prev_index].equals("(", true) {
         let prev_prev_index = prev(prev_index);
         if tokens[prev_prev_index].is_kind(T_CATCH) {
@@ -86,4 +84,56 @@ pub fn is_constant_invocation(tokens: &Tokens, index: usize) -> bool {
         }
     }
     true
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const CODE: &str = r#"<?php
+namespace N\M;
+use const A\B, C;
+use function D\e;
+use F\{G, H as I};
+#[Attr(X1)]
+class K extends L implements M1, M2 {
+    use T1, T2 { T1::f insteadof T2; T2::f as g; }
+    const Q = 1;
+    function f(A1 & $a, int|B2 $b, ?C2 $c): D2 { return Q2 & $a; }
+}
+enum En: string { case Ca = 'a'; const Z = self::Ca; }
+switch ($x) { case CS: break; }
+interface J1 extends J2, J3 {}
+echo "$a[FOO] $a[$b] {$a[BAR]}", FOO_BAR, new K(), K::class, $o->p, $o?->q, \X\Y, X2\Y2;
+foreach (CON as $v) {}
+foreach ($v as $k => [CON2]) {}
+try {} catch (E1 | E2) {} catch (\E3 $e) {} catch (E4) {}
+lbl: goto lbl;
+$x = A3 ? B3 : C3;
+fn(): E5 => E6;
+$y = [Z1 => Z2];
+function &rr() {}
+class Z { use T3, T4; }
+use X1, X2;
+"#;
+
+    // Expected: the real TokensAnalyzer::isConstantInvocation on every T_STRING of CODE.
+    #[test]
+    fn matches_php() {
+        let tokens = Tokens::from_code(CODE.as_bytes());
+        let got: Vec<(usize, String, bool)> = (0..tokens.count())
+            .filter(|&i| tokens[i].is_kind(T_STRING))
+            .map(|i| (i, String::from_utf8_lossy(tokens[i].get_content()).into_owned(), is_constant_invocation(&tokens, i)))
+            .collect();
+        let expected: Vec<(usize, String, bool)> = [(3, "N", false), (5, "M", false), (12, "A", false), (14, "B", false), (17, "C", true), (24, "D", false), (26, "e", false), (31, "F", false), (34, "G", false), (37, "H", false), (41, "I", false), (46, "Attr", false), (48, "X1", true), (54, "K", false), (58, "L", false), (62, "M1", false), (65, "M2", false), (71, "T1", false), (74, "T2", false), (78, "T1", false), (80, "f", false), (84, "T2", false), (87, "T2", false), (89, "f", false), (93, "g", false), (100, "Q", false), (109, "f", false), (111, "A1", false), (118, "int", false), (120, "B2", false), (126, "C2", false), (132, "D2", false), (138, "Q2", true), (151, "En", false), (154, "string", false), (160, "Ca", false), (169, "Z", false), (173, "self", false), (175, "Ca", false), (190, "CS", true), (200, "J1", false), (204, "J2", false), (207, "J3", false), (217, "FOO", false), (228, "BAR", true), (234, "FOO_BAR", true), (239, "K", false), (244, "K", false), (251, "p", false), (256, "q", false), (260, "X", false), (262, "Y", true), (265, "X2", false), (267, "Y2", true), (273, "CON", true), (295, "CON2", true), (310, "E1", false), (314, "E2", false), (324, "E3", false), (335, "E4", false), (341, "lbl", false), (346, "lbl", false), (353, "A3", true), (357, "B3", true), (361, "C3", true), (369, "E5", false), (373, "E6", true), (381, "Z1", true), (385, "Z2", true), (392, "rr", false), (401, "Z", false), (407, "T3", false), (410, "T4", false), (417, "X1", false), (420, "X2", false)].into_iter().map(|(i, c, b)| (i, c.to_string(), b)).collect();
+        assert_eq!(got, expected);
+    }
+
+    #[test]
+    #[should_panic(expected = "No T_STRING at given index 0")]
+    fn rejects_non_string() {
+        is_constant_invocation(&Tokens::from_code(CODE.as_bytes()), 0);
+    }
 }

@@ -24,10 +24,8 @@ impl BlankLinesBeforeNamespaceFixer {
         let mut preceding_newlines = 0;
         let mut newline_in_opening = false;
         let mut opening_token: Option<Token> = None;
+        // `index - i` never underflows: a T_NAMESPACE at index 1 is preceded by the T_OPEN_TAG, which breaks at i = 1.
         for i in 1..=2 {
-            if i > index {
-                continue;
-            }
             let token = &tokens[index - i];
             if token.is_kind(T_OPEN_TAG) {
                 opening_token = Some(token.clone());
@@ -138,5 +136,26 @@ impl Fixer for BlankLinesBeforeNamespaceFixer {
                 self.fix_lines_before_namespace(tokens, index, self.min_line_breaks, self.max_line_breaks);
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    // Messages from the real fixer's configure() (PHP-CS-Fixer 3.95).
+    #[test]
+    fn configure_validation() {
+        let err = |c: Value| fixer().configure(&c).unwrap_err().to_string();
+        assert_eq!(err(json!({"min_line_breaks": -1})), "[blank_lines_before_namespace] Option `min_line_breaks` cannot be lower than 0.");
+        assert_eq!(err(json!({"max_line_breaks": -1})), "[blank_lines_before_namespace] Option `max_line_breaks` cannot be lower than 0.");
+        assert_eq!(
+            err(json!({"min_line_breaks": 2, "max_line_breaks": 1})),
+            "[blank_lines_before_namespace] Option `max_line_breaks` cannot have lower value than `min_line_breaks`."
+        );
+        assert!(fixer().configure(&json!({"min_line_breaks": "1"})).is_err());
+        assert!(fixer().configure(&json!({"min_line_breaks": 1.0})).is_err());
+        assert!(fixer().configure(&json!({"min_line_breaks": 0, "max_line_breaks": 0})).is_ok());
     }
 }

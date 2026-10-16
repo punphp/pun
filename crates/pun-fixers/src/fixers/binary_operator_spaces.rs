@@ -184,9 +184,8 @@ impl BinaryOperatorSpacesFixer {
             prev_meaningful_index = tokens.get_prev_meaningful_token(prev_meaningful_index).unwrap();
             if tokens[prev_meaningful_index].equals("(", true) {
                 prev_meaningful_index = tokens.get_prev_meaningful_token(prev_meaningful_index).unwrap();
-                if tokens[prev_meaningful_index].is_kind(T_DECLARE) {
-                    return Some(prev_meaningful_index);
-                }
+                // `( T_STRING =` only parses as `declare(...)`
+                return tokens[prev_meaningful_index].is_kind(T_DECLARE).then_some(prev_meaningful_index);
             }
         }
         None
@@ -265,10 +264,8 @@ impl BinaryOperatorSpacesFixer {
                     index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index) + 1;
                     continue;
                 }
-                if tokens[index].equals(";", true) {
-                    index += 1;
-                    continue;
-                }
+                // (upstream's `;` arm is dead: `::class` is CT_CLASS_CONSTANT, and T_FUNCTION / T_CLASS always
+                // reach `(` or `{` before any `;`)
                 // Update the token to the `{` one in order to apply the following logic
                 token = tokens[index].clone();
             }
@@ -524,7 +521,9 @@ impl Fixer for BinaryOperatorSpacesFixer {
                 let mut out = Vec::new();
                 for (operator, value) in o {
                     if !SUPPORTED_OPERATORS.contains(&operator.as_str()) {
-                        bail!("[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of {}, got \"string#{operator}\".", SUPPORTED_OPERATORS.iter().map(|o| format!("\"{o}\"")).collect::<Vec<_>>().join(", "));
+                        let quoted: Vec<String> = SUPPORTED_OPERATORS.iter().map(|o| format!("\"{o}\"")).collect();
+                        let (last, rest) = quoted.split_last().unwrap();
+                        bail!("[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of {} and {last}, got \"string#{operator}\".", rest.join(", "));
                     }
                     match value {
                         Value::Null => out.push((operator.clone(), None)),
@@ -581,5 +580,25 @@ impl Fixer for BinaryOperatorSpacesFixer {
         if !to_align.is_empty() {
             self.fix_alignment(tokens, &to_align);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    // Accept/reject and messages from the real fixer's configure() (PHP-CS-Fixer 3.95).
+    #[test]
+    fn configure_validation() {
+        assert!(fixer().configure(&json!({"default": "foo"})).is_err());
+        assert!(fixer().configure(&json!({"operators": {"=": "foo"}})).is_err());
+        assert!(fixer().configure(&json!({"operators": "x"})).is_err());
+        assert_eq!(
+            fixer().configure(&json!({"operators": {"~~": "align"}})).unwrap_err().to_string(),
+            "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of \"=\", \"*\", \"/\", \"%\", \"<\", \">\", \"|\", \"^\", \"+\", \"-\", \"&\", \"&=\", \"&&\", \"||\", \".=\", \"/=\", \"=>\", \"==\", \">=\", \"===\", \"!=\", \"<>\", \"!==\", \"<=\", \"and\", \"or\", \"xor\", \"-=\", \"%=\", \"*=\", \"|=\", \"+=\", \"<<\", \"<<=\", \">>\", \">>=\", \"^=\", \"**\", \"**=\", \"<=>\", \"??\" and \"??=\", got \"string#~~\"."
+        );
+        assert!(fixer().configure(&json!({"operators": []})).is_ok());
+        assert!(fixer().configure(&json!({"default": null, "operators": {"=": null}})).is_ok());
     }
 }

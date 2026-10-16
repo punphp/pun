@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "method_chaining_indentation",
+        "input": "<?php\nif ($a\n->b) {}\n",
+        "expected": "<?php\nif ($a\n->b) {}\n"
+    }
+]

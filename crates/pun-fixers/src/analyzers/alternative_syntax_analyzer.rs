@@ -63,3 +63,46 @@ impl AlternativeSyntaxAnalyzer {
         tokens[index].equals(":", true)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const CODE: &[u8] = b"<?php
+if ($a): foo(); elseif ($b): bar(); else: baz(); endif;
+foreach ($x as $y): if ($y): z(); else: if ($q): endif; endif; endforeach;
+for (;;): endfor;
+while (1): endwhile;
+switch ($a): case 1: break; endswitch;
+declare(ticks=1): enddeclare;
+$t = $a ? $b : $c;
+if ($a) { } else { }
+foo(1) ?: 2;
+if ($a): if ($b): endif; endif;
+";
+
+    // Expected values: the real AlternativeSyntaxAnalyzer on CODE, for every token index
+    // (findAlternativeSyntaxBlockEnd only where it does not throw).
+    #[test]
+    fn matches_php() {
+        let tokens = Tokens::from_code(CODE);
+        let a = AlternativeSyntaxAnalyzer;
+        let belongs: Vec<usize> = (0..tokens.count()).filter(|&i| a.belongs_to_alternative_syntax(&tokens, i)).collect();
+        assert_eq!(belongs, [6, 18, 26, 45, 52, 60, 67, 84, 94, 104, 123, 175, 182]);
+        let starts: Vec<usize> = (0..tokens.count()).filter(|&i| a.is_start_of_alternative_syntax_block(&tokens, i)).collect();
+        let ends: Vec<(usize, usize)> = starts.iter().map(|&i| (i, a.find_alternative_syntax_block_end(&tokens, i))).collect();
+        assert_eq!(ends, [(1, 13), (13, 25), (25, 33), (36, 75), (47, 59), (59, 69), (62, 69), (78, 86), (89, 96), (99, 114), (170, 187), (177, 184)]);
+    }
+
+    #[test]
+    #[should_panic(expected = "There is no token at index 9999.")]
+    fn end_of_missing_index() {
+        AlternativeSyntaxAnalyzer.find_alternative_syntax_block_end(&Tokens::from_code(CODE), 9999);
+    }
+
+    #[test]
+    #[should_panic(expected = "Token at index 0 is not the start of an alternative syntax block.")]
+    fn end_of_non_block() {
+        AlternativeSyntaxAnalyzer.find_alternative_syntax_block_end(&Tokens::from_code(CODE), 0);
+    }
+}
