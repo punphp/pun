@@ -38,6 +38,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | Task | Owner | Status |
 | --- | --- | --- |
 | Phase 2 M2.1: PHPStan config + baseline (crates/pun-phpstan, .oracle/phpstan) | lint-config agent (target-lintcfg/) | done |
+| Phase 2 M2.2: symbol parity (crates/pun-phpstan) | symbols agent (target-symbols/) | doing |
 
 ### Later phases
 
