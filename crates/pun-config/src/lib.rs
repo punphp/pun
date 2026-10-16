@@ -19,6 +19,10 @@ pub const PRESETS: [(&str, &str); 5] = [
     ("empty", include_str!("../presets/empty.json")),
 ];
 
+/// PHP-CS-Fixer rule sets pun can expand (`RuleSets::getSetDefinition($name)->getRules()` of the pinned version).
+/// Other sets stay unexpanded and are reported as not ported.
+const SETS: &str = include_str!("../presets/sets.json");
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum Engine {
@@ -173,6 +177,7 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
         }
     }
 
+    let rules = resolve_set(rules);
     let blade = rules.get("Pint/laravel_blade").is_some_and(|v| *v != Value::Bool(false));
     let rules = rules
         .into_iter()
@@ -225,6 +230,36 @@ fn read_pint_json(path: &Path, sources: &mut Vec<PathBuf>) -> Result<Map<String,
         Value::Object(m) => Ok(m),
         _ => bail!(invalid()),
     }
+}
+
+/// RuleSet::resolveSet: sets expand in place (array_merge: a rule already present keeps its position, takes the
+/// set's value); a later rule or set overrides an earlier one.
+fn resolve_set(rules: Map<String, Value>) -> Map<String, Value> {
+    let mut out = Map::new();
+    for (name, value) in rules {
+        // Set values are already checked to be bools.
+        match resolve_subset(&name, value == Value::Bool(true)) {
+            Some(set) => out.extend(set),
+            None => drop(out.insert(name, value)),
+        }
+    }
+    out
+}
+
+/// RuleSet::resolveSubset: a set's rules with nested sets merged in; `false` disables every rule of the set.
+fn resolve_subset(name: &str, enabled: bool) -> Option<Map<String, Value>> {
+    let mut sets: std::collections::BTreeMap<String, Map<String, Value>> = serde_json::from_str(SETS).unwrap();
+    let def = sets.remove(name)?;
+    let mut rules = def.clone();
+    for (k, v) in def {
+        if k.starts_with('@') {
+            rules.shift_remove(&k);
+            rules.extend(resolve_subset(&k, enabled).unwrap());
+        } else {
+            rules.insert(k, if enabled { v } else { Value::Bool(false) });
+        }
+    }
+    Some(rules)
 }
 
 /// PHP's array_replace_recursive on JSON values (lists merge by index).
@@ -438,5 +473,26 @@ mod tests {
         assert_eq!(err(&d, Options::default()), "[@PSR12] Set must be enabled (true) or disabled (false). Other values are not allowed.");
         let d = dir(&[("pun.toml", "[format.rules]\nfinal_class = \"yes\"\n")]);
         assert!(err(&d, Options::default()).starts_with("[final_class] Rule must be enabled"));
+    }
+
+    /// Rule sets resolve like PHP-CS-Fixer's RuleSet (tests/rule_sets.json: `(new RuleSet($rules))->getRules()` of the
+    /// pinned version): same rules, options and order. The first case is Pint's psr12 preset.
+    #[test]
+    fn rule_sets_like_php_cs_fixer() {
+        let cases: Vec<Value> = serde_json::from_str(include_str!("../tests/rule_sets.json")).unwrap();
+        let resolved = |c: &Config| -> Vec<(String, Value)> { c.rules.iter().map(|r| (r.name.clone(), r.options.clone())).collect() };
+        let expected = |case: &Value| -> Vec<(String, Value)> {
+            let m = case["expected"].as_object().unwrap();
+            m.iter().map(|(k, v)| (k.clone(), if *v == Value::Bool(true) { Value::Null } else { v.clone() })).collect()
+        };
+        let psr12 = load(&dir(&[]), &Options { preset: Some("psr12".into()), ..Default::default() }).unwrap();
+        assert_eq!(resolved(&psr12), expected(&cases[0]));
+        for case in &cases {
+            let pint = serde_json::json!({"preset": "empty", "rules": case["rules"]}).to_string();
+            assert_eq!(resolved(&load(&dir(&[("pint.json", &pint)]), &Options::default()).unwrap()), expected(case));
+        }
+        // Sets pun has no definition for stay as one rule, so they are reported as not ported.
+        let c = load(&dir(&[("pint.json", r#"{"preset":"empty","rules":{"@PER-CS":true}}"#)]), &Options::default()).unwrap();
+        assert_eq!(resolved(&c), [("@PER-CS".to_string(), Value::Null)]);
     }
 }
