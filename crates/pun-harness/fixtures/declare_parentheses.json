@@ -1,0 +1,52 @@
+{
+    "fixer": "declare_parentheses",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\DeclareParenthesesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/DeclareParenthesesFixerTest.php",
+    "case_count": 3,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\DeclareParenthesesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "spaces around parentheses",
+                    "args": [
+                        "<?php declare(strict_types = 1);",
+                        "<?php declare ( strict_types = 1 );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "newlines (\\n) around parentheses",
+                    "args": [
+                        "<?php declare(strict_types = 1);",
+                        "<?php declare\n            (\n                strict_types = 1\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "newlines (\\r\\n) around parentheses",
+                    "args": [
+                        "<?php declare(strict_types = 1);",
+                        "<?php declare\r\n            (\r\n                strict_types = 1\r\n            );"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,391 @@
+{
+    "fixer": "nullable_type_declaration",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/NullableTypeDeclarationFixerTest.php",
+    "case_count": 29,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "scalar with null",
+                    "args": [
+                        "<?php\nfunction foo(?int $bar): void {}\n",
+                        "<?php\nfunction foo(int|null $bar): void {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with null",
+                    "args": [
+                        "<?php\nfunction bar(?\\stdClass $crate): int {}\n",
+                        "<?php\nfunction bar(null | \\stdClass $crate): int {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static null",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar(?array $config = null): ?static {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function bar(null|array $config = null): null|static {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple parameters",
+                    "args": [
+                        "<?php\nfunction baz(?Foo $foo, int|string $value, ?array $config = null): ?int {}\n",
+                        "<?php\nfunction baz(null|Foo $foo, int|string $value, null|array $config = null): int|null {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class properties",
+                    "args": [
+                        "<?php\nclass Dto\n{\n    public ?string $name;\n    public ?array $parameters;\n    public ?int $count;\n    public ?Closure $callable;\n}\n",
+                        "<?php\nclass Dto\n{\n    public null|string $name;\n    public array|null $parameters;\n    public int|null $count;\n    public null|Closure $callable;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "skips more than two atomic types",
+                    "args": [
+                        "<?php\nstatic fn (int|null|string $bar): bool => true;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "skips already fixed",
+                    "args": [
+                        "<?php\n$bar = function (?string $input): int {};\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->fixer->configure(['syntax' => 'union']);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "scalar with null",
+                    "args": [
+                        "<?php\nfunction foo(null|int $bar): void {}\n",
+                        "<?php\nfunction foo(?int $bar): void {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "class with null",
+                    "args": [
+                        "<?php\nfunction bar(null|\\stdClass $crate): int {}\n",
+                        "<?php\nfunction bar(?\\stdClass $crate): int {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "static null",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar(null|array $config = null): null|static {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function bar(?array $config = null): ?static {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple parameters",
+                    "args": [
+                        "<?php\nfunction baz(null|Foo $foo, int|string $value, null|array $config = null): null|int {}\n",
+                        "<?php\nfunction baz(?Foo $foo, int|string $value, ?array $config = null): ?int {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "class properties",
+                    "args": [
+                        "<?php\nclass Dto\n{\n    public null|\\Closure $callable;\n    public null|string $name;\n    public null|array $parameters;\n    public null|int $count;\n}\n",
+                        "<?php\nclass Dto\n{\n    public ?\\Closure $callable;\n    public ?string $name;\n    public ?array $parameters;\n    public ?int $count;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "space after ?",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private null|int $x;\n\n    public static function from(null|int $x): null|static {}\n}\n",
+                        "<?php\nclass Foo\n{\n    private ? int $x;\n\n    public static function from(?  int $x): ? static {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "skips already fixed",
+                    "args": [
+                        "<?php\n$bar = function (null | string $input): int {};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "no space before ?",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public null|int $a;\n    protected null|array $b;\n    private null|string $c;\n    private static null|bool $d;\n}",
+                        "<?php\nclass Foo\n{\n    public?int $a;\n    protected?array $b;\n    private?string $c;\n    private static?bool $d;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiline function declaration",
+                    "args": [
+                        "<?php function foo(\n    null|string $bar,\n    string $baz\n) {}",
+                        "<?php function foo(\n    ?string $bar,\n    string $baz\n) {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "readonly property",
+                    "args": [
+                        "<?php\nclass Qux\n{\n    public readonly ?int $baz;\n}\n",
+                        "<?php\nclass Qux\n{\n    public readonly int|null $baz;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "readonly property with union syntax expected",
+                    "args": [
+                        "<?php\nclass Qux\n{\n    public readonly null|int $baz;\n}\n",
+                        "<?php\nclass Qux\n{\n    public readonly ?int $baz;\n}\n",
+                        {
+                            "syntax": "union"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "skips DNF types",
+                    "args": [
+                        "<?php\nclass Infinite\n{\n    private static (A&B)|null $dft;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone null",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public function bar(null|array $config = null): null {}\n    public function baz(null|ARRAY $config = NULL): NULL {}\n}\n",
+                        "<?php\nclass Foo\n{\n    public function bar(?array $config = null): null {}\n    public function baz(?ARRAY $config = NULL): NULL {}\n}\n",
+                        {
+                            "syntax": "union"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility - fix `null|T` to `?T`",
+                    "args": [
+                        "<?php class Foo\n{\n    public public(set) ?int $a;\n    public protected(set) ?int $b;\n    public private(set) ?int $c;\n    public(set) ?int $d;\n    protected(set) ?int $e;\n    private(set) ?int $f;\n}",
+                        "<?php class Foo\n{\n    public public(set) null|int $a;\n    public protected(set) null|int $b;\n    public private(set) null|int $c;\n    public(set) null|int $d;\n    protected(set) null|int $e;\n    private(set) null|int $f;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility - fix `T|null` to `?T`",
+                    "args": [
+                        "<?php class Foo\n{\n    public public(set) ?int $a;\n    public protected(set) ?int $b;\n    public private(set) ?int $c;\n    public(set) ?int $d;\n    protected(set) ?int $e;\n    private(set) ?int $f;\n}",
+                        "<?php class Foo\n{\n    public public(set) int|null $a;\n    public protected(set) int|null $b;\n    public private(set) int|null $c;\n    public(set) int|null $d;\n    protected(set) int|null $e;\n    private(set) int|null $f;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility - fix `?T` to `null|T`",
+                    "args": [
+                        "<?php class Foo\n{\n    public public(set) null|int $a;\n    public protected(set) null|int $b;\n    public private(set) null|int $c;\n    public(set) null|int $d;\n    protected(set) null|int $e;\n    private(set) null|int $f;\n}",
+                        "<?php class Foo\n{\n    public public(set) ?int $a;\n    public protected(set) ?int $b;\n    public private(set) ?int $c;\n    public(set) ?int $d;\n    protected(set) ?int $e;\n    private(set) ?int $f;\n}",
+                        {
+                            "syntax": "union"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "abstract and final properties - fix `null|T` to `?T`",
+                    "args": [
+                        "<?php abstract class Foo\n{\n    abstract public ?int $abstractPublic { set; }\n    public abstract ?int $publicAbstract { set; }\n    final protected ?int $finalProtected { set(?int $x) { $this->finalProtected = $x; } }\n    protected final ?int $protectedFinal { set(?int $i) { $this->protectedFinal = $x; } }\n}",
+                        "<?php abstract class Foo\n{\n    abstract public null|int $abstractPublic { set; }\n    public abstract null|int $publicAbstract { set; }\n    final protected null|int $finalProtected { set(?int $x) { $this->finalProtected = $x; } }\n    protected final null|int $protectedFinal { set(?int $i) { $this->protectedFinal = $x; } }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "abstract and final properties - fix `T|null` to `?T`",
+                    "args": [
+                        "<?php abstract class Foo\n{\n    abstract public ?int $abstractPublic { set; }\n    public abstract ?int $publicAbstract { set; }\n    final protected ?int $finalProtected { set(?int $x) { $this->finalProtected = $x; } }\n    protected final ?int $protectedFinal { set(?int $i) { $this->protectedFinal = $x; } }\n}",
+                        "<?php abstract class Foo\n{\n    abstract public int|null $abstractPublic { set; }\n    public abstract int|null $publicAbstract { set; }\n    final protected int|null $finalProtected { set(?int $x) { $this->finalProtected = $x; } }\n    protected final int|null $protectedFinal { set(?int $i) { $this->protectedFinal = $x; } }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "abstract and final properties - fix `?T` to `null|T`",
+                    "args": [
+                        "<?php abstract class Foo\n{\n    abstract public null|int $abstractPublic { set; }\n    public abstract null|int $publicAbstract { set; }\n    final protected null|int $finalProtected { set(?int $x) { $this->finalProtected = $x; } }\n    protected final null|int $protectedFinal { set(?int $i) { $this->protectedFinal = $x; } }\n}",
+                        "<?php abstract class Foo\n{\n    abstract public ?int $abstractPublic { set; }\n    public abstract ?int $publicAbstract { set; }\n    final protected ?int $finalProtected { set(?int $x) { $this->finalProtected = $x; } }\n    protected final ?int $protectedFinal { set(?int $i) { $this->protectedFinal = $x; } }\n}",
+                        {
+                            "syntax": "union"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\NullableTypeDeclarationFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "final promoted properties - fix `null|T` to `?T`",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        final public    ?int $a,\n        final protected ?int $b,\n        final private   ?int $c,\n        public final    ?int $d,\n        protected final ?int $e,\n        private final   ?int $f,\n    ) {}\n}",
+                        "<?php class Foo\n{\n    public function __construct(\n        final public    null|int $a,\n        final protected null|int $b,\n        final private   null|int $c,\n        public final    null|int $d,\n        protected final null|int $e,\n        private final   null|int $f,\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "final promoted properties - fix `T|null` to `?T`",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        final public    ?int $a,\n        final protected ?int $b,\n        final private   ?int $c,\n        public final    ?int $d,\n        protected final ?int $e,\n        private final   ?int $f,\n    ) {}\n}",
+                        "<?php class Foo\n{\n    public function __construct(\n        final public    int|null $a,\n        final protected int|null $b,\n        final private   int|null $c,\n        public final    int|null $d,\n        protected final int|null $e,\n        private final   int|null $f,\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "final promoted properties - fix `?T` to `null|T`",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        final public    null|int $a,\n        final protected null|int $b,\n        final private   null|int $c,\n        public final    null|int $d,\n        protected final null|int $e,\n        private final   null|int $f,\n    ) {}\n}",
+                        "<?php class Foo\n{\n    public function __construct(\n        final public    ?int $a,\n        final protected ?int $b,\n        final private   ?int $c,\n        public final    ?int $d,\n        protected final ?int $e,\n        private final   ?int $f,\n    ) {}\n}",
+                        {
+                            "syntax": "union"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

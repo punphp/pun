@@ -1,0 +1,650 @@
+{
+    "fixer": "phpdoc_inline_tag_normalizer",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocInlineTagNormalizerFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocInlineTagNormalizerFixerTest.php",
+    "case_count": 79,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocInlineTagNormalizerFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    /**\n     * {link} { LINK }\n     * { test }\n     * {@inheritDoc rire éclatant des écoliers qui décontenança®¶ñ¿}\n     * test other comment\n     * {@inheritdoc test} a\n     * {@inheritdoc test} b\n     * {@inheritdoc test} c\n     * {@inheritdoc foo bar.} d\n     * {@inheritdoc foo bar.} e\n     * {@inheritdoc test} f\n     * end comment {@inheritdoc here we are done} @foo {1}\n     */\n",
+                        "<?php\n    /**\n     * {link} { LINK }\n     * { test }\n     * {@inheritDoc rire éclatant des écoliers qui décontenança®¶ñ¿ }\n     * test other comment\n     * @{inheritdoc test} a\n     * {{@inheritdoc    test}} b\n     * {@ inheritdoc   test} c\n     * { @inheritdoc \tfoo bar.  } d\n     * {@ \tinheritdoc foo bar.\t} e\n     * @{{inheritdoc test}} f\n     * end comment {@inheritdoc here we are done} @foo {1}\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    /**\n     * {@foo}\n     * @{ bar }\n     */",
+                        "<?php\n    /**\n     * @{ foo }\n     * @{ bar }\n     */",
+                        {
+                            "tags": [
+                                "foo"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    /**\n     * @inheritDoc\n     * {@inheritDoc}\n     */",
+                        "<?php\n    /**\n     * @inheritDoc\n     * @{ inheritDoc }\n     */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n     /**\n      * {@example}a\n      */\n",
+                        "<?php\n     /**\n      * @{example}a\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n     /**\n      * {@example} b\n      */\n",
+                        "<?php\n     /**\n      * {{@example}} b\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n     /**\n      * c {@example}\n      */\n",
+                        "<?php\n     /**\n      * c @{{example}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n     /**\n      * c {@example test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{example test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n     /**\n      * c {@example test}\n      */\n",
+                        "<?php\n     /**\n      * c {@example test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n     /**\n      * c {@example test}\n      */\n",
+                        "<?php\n     /**\n      * c {{@example test}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n     /**\n      * c {@example test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{example test}}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n     /**\n      * {@id}a\n      */\n",
+                        "<?php\n     /**\n      * @{id}a\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n     /**\n      * {@id} b\n      */\n",
+                        "<?php\n     /**\n      * {{@id}} b\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n     /**\n      * c {@id}\n      */\n",
+                        "<?php\n     /**\n      * c @{{id}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n     /**\n      * c {@id test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{id test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n     /**\n      * c {@id test}\n      */\n",
+                        "<?php\n     /**\n      * c {@id test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n     /**\n      * c {@id test}\n      */\n",
+                        "<?php\n     /**\n      * c {{@id test}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n     /**\n      * c {@id test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{id test}}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n     /**\n      * {@internal}a\n      */\n",
+                        "<?php\n     /**\n      * @{internal}a\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n     /**\n      * {@internal} b\n      */\n",
+                        "<?php\n     /**\n      * {{@internal}} b\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n     /**\n      * c {@internal}\n      */\n",
+                        "<?php\n     /**\n      * c @{{internal}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n     /**\n      * c {@internal test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{internal test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n     /**\n      * c {@internal test}\n      */\n",
+                        "<?php\n     /**\n      * c {@internal test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n     /**\n      * c {@internal test}\n      */\n",
+                        "<?php\n     /**\n      * c {{@internal test}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n     /**\n      * c {@internal test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{internal test}}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n     /**\n      * {@inheritdoc}a\n      */\n",
+                        "<?php\n     /**\n      * @{inheritdoc}a\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n     /**\n      * {@inheritdoc} b\n      */\n",
+                        "<?php\n     /**\n      * {{@inheritdoc}} b\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n     /**\n      * c {@inheritdoc}\n      */\n",
+                        "<?php\n     /**\n      * c @{{inheritdoc}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n     /**\n      * c {@inheritdoc test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{inheritdoc test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n     /**\n      * c {@inheritdoc test}\n      */\n",
+                        "<?php\n     /**\n      * c {@inheritdoc test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n     /**\n      * c {@inheritdoc test}\n      */\n",
+                        "<?php\n     /**\n      * c {{@inheritdoc test}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n     /**\n      * c {@inheritdoc test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{inheritdoc test}}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n     /**\n      * {@link}a\n      */\n",
+                        "<?php\n     /**\n      * @{link}a\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n     /**\n      * {@link} b\n      */\n",
+                        "<?php\n     /**\n      * {{@link}} b\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n     /**\n      * c {@link}\n      */\n",
+                        "<?php\n     /**\n      * c @{{link}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n     /**\n      * c {@link test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{link test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\n     /**\n      * c {@link test}\n      */\n",
+                        "<?php\n     /**\n      * c {@link test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n     /**\n      * c {@link test}\n      */\n",
+                        "<?php\n     /**\n      * c {{@link test}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\n     /**\n      * c {@link test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{link test}}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n     /**\n      * {@source}a\n      */\n",
+                        "<?php\n     /**\n      * @{source}a\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\n     /**\n      * {@source} b\n      */\n",
+                        "<?php\n     /**\n      * {{@source}} b\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n     /**\n      * c {@source}\n      */\n",
+                        "<?php\n     /**\n      * c @{{source}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n     /**\n      * c {@source test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{source test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n     /**\n      * c {@source test}\n      */\n",
+                        "<?php\n     /**\n      * c {@source test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n     /**\n      * c {@source test}\n      */\n",
+                        "<?php\n     /**\n      * c {{@source test}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\n     /**\n      * c {@source test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{source test}}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n     /**\n      * {@toc}a\n      */\n",
+                        "<?php\n     /**\n      * @{toc}a\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\n     /**\n      * {@toc} b\n      */\n",
+                        "<?php\n     /**\n      * {{@toc}} b\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n     /**\n      * c {@toc}\n      */\n",
+                        "<?php\n     /**\n      * c @{{toc}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\n     /**\n      * c {@toc test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{toc test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n     /**\n      * c {@toc test}\n      */\n",
+                        "<?php\n     /**\n      * c {@toc test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\n     /**\n      * c {@toc test}\n      */\n",
+                        "<?php\n     /**\n      * c {{@toc test}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\n     /**\n      * c {@toc test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{toc test}}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\n     /**\n      * {@tutorial}a\n      */\n",
+                        "<?php\n     /**\n      * @{tutorial}a\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php\n     /**\n      * {@tutorial} b\n      */\n",
+                        "<?php\n     /**\n      * {{@tutorial}} b\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php\n     /**\n      * c {@tutorial}\n      */\n",
+                        "<?php\n     /**\n      * c @{{tutorial}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php\n     /**\n      * c {@tutorial test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{tutorial test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php\n     /**\n      * c {@tutorial test}\n      */\n",
+                        "<?php\n     /**\n      * c {@tutorial test}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php\n     /**\n      * c {@tutorial test}\n      */\n",
+                        "<?php\n     /**\n      * c {{@tutorial test}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php\n     /**\n      * c {@tutorial test}\n      */\n",
+                        "<?php\n     /**\n      * c @{{tutorial test}}}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php\n     /**\n      * @example\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php\n     /**\n      * @id\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php\n     /**\n      * @internal\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php\n     /**\n      * @inheritdoc\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php\n     /**\n      * @foo\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php\n     /**\n      * @link\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php\n     /**\n      * @source\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php\n     /**\n      * @toc\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php\n     /**\n      * @tutorial\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php\n     /**\n      * {@example}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php\n     /**\n      * {@id}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php\n     /**\n      * {@internal}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php\n     /**\n      * {@inheritdoc}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php\n     /**\n      * {@foo}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php\n     /**\n      * {@link}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php\n     /**\n      * {@source}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php\n     /**\n      * {@toc}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php\n     /**\n      * {@tutorial}\n      */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php\n    /**\n     * {@link https://symfony.com/rfc/rfc1035.text)\n     */\n    $someVar = \"hello\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not rename tags",
+                    "args": [
+                        "<?php\n                /**\n                 * { @iDontWantToBeChanged }\n                 * @Route(\"/conventions/@{idcc}\", name=\"api_v1_convention_read_by_idcc\")\n                 *\n                 * { @ids }\n                 */\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}

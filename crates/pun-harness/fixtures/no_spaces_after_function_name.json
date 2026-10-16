@@ -1,0 +1,252 @@
+{
+    "fixer": "no_spaces_after_function_name",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoSpacesAfterFunctionNameFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/NoSpacesAfterFunctionNameFixerTest.php",
+    "case_count": 24,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoSpacesAfterFunctionNameFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function call",
+                    "args": [
+                        "<?php abc($a);",
+                        "<?php abc ($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test method call",
+                    "args": [
+                        "<?php $o->abc($a);",
+                        "<?php $o->abc ($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function-like constructs",
+                    "args": [
+                        "<?php\n    include(\"something.php\");\n    include_once(\"something.php\");\n    require(\"something.php\");\n    require_once(\"something.php\");\n    print(\"hello\");\n    unset($hello);\n    isset($hello);\n    empty($hello);\n    die($hello);\n    echo(\"hello\");\n    array(\"hello\");\n    list($a, $b) = $c;\n    eval(\"a\");\n    foo();\n    $foo = &ref();\n    ",
+                        "<?php\n    include (\"something.php\");\n    include_once (\"something.php\");\n    require (\"something.php\");\n    require_once (\"something.php\");\n    print (\"hello\");\n    unset ($hello);\n    isset ($hello);\n    empty ($hello);\n    die ($hello);\n    echo (\"hello\");\n    array (\"hello\");\n    list ($a, $b) = $c;\n    eval (\"a\");\n    foo ();\n    $foo = &ref ();\n    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo foo(1) ? \"y\" : \"n\";",
+                        "<?php echo foo (1) ? \"y\" : \"n\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo isset($name) ? \"y\" : \"n\";",
+                        "<?php echo isset ($name) ? \"y\" : \"n\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php include (isHtml())? \"1.html\": \"1.php\";",
+                        "<?php include (isHtml ())? \"1.html\": \"1.php\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a = 2 * (1 + 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php echo ($a == $b) ? \"foo\" : \"bar\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php echo ($a == test($b)) ? \"foo\" : \"bar\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php include ($html)? \"custom.html\": \"custom.php\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "don't touch function declarations",
+                    "args": [
+                        "<?php\n                function TisMy ($p1)\n                {\n                    print $p1;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php class A {\n                    function TisMy    ($p1)\n                    {\n                        print $p1;\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test dynamic by array",
+                    "args": [
+                        "<?php $a[\"e\"](1); $a[2](1);",
+                        "<?php $a[\"e\"] (1); $a[2] (1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test variable variable",
+                    "args": [
+                        "<?php\n${$e}(1);\n$$e(2);\n                ",
+                        "<?php\n${$e}\t(1);\n$$e    (2);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test dynamic function and method calls",
+                    "args": [
+                        "<?php $b->$a(); $c();",
+                        "<?php $b->$a  (); $c  ();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function call comment",
+                    "args": [
+                        "<?php abc#\n ($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php echo (new Process())->getOutput();",
+                        "<?php echo (new Process())->getOutput ();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $a()(1);",
+                        "<?php $a () (1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                echo (function () {})();\n                echo ($propertyValue ? \"TRUE\" : \"FALSE\") . EOL;\n                echo(FUNCTION_1);\n                echo (EXPRESSION + CONST_1), CONST_2;\n            ",
+                        "<?php\n                echo (function () {})();\n                echo ($propertyValue ? \"TRUE\" : \"FALSE\") . EOL;\n                echo (FUNCTION_1);\n                echo (EXPRESSION + CONST_1), CONST_2;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                include(SOME_PATH_1);\n                include_once(SOME_PATH_2);\n                require(SOME_PATH_3);\n                require_once(SOME_PATH_4);\n                print(SOME_VALUE);\n                print(FIRST_HALF_OF_STRING_1 . SECOND_HALF_OF_STRING_1);\n                print((FIRST_HALF_OF_STRING_2) . (SECOND_HALF_OF_STRING_2));\n            ",
+                        "<?php\n                include         (SOME_PATH_1);\n                include_once    (SOME_PATH_2);\n                require         (SOME_PATH_3);\n                require_once    (SOME_PATH_4);\n                print           (SOME_VALUE);\n                print           (FIRST_HALF_OF_STRING_1 . SECOND_HALF_OF_STRING_1);\n                print           ((FIRST_HALF_OF_STRING_2) . (SECOND_HALF_OF_STRING_2));\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                include         (DIR) . FILENAME_1;\n                include_once    (DIR) . (FILENAME_2);\n                require         (DIR) . FILENAME_3;\n                require_once    (DIR) . (FILENAME_4);\n                print           (FIRST_HALF_OF_STRING_1) . SECOND_HALF_OF_STRING_1;\n                print           (FIRST_HALF_OF_STRING_2) . ((((SECOND_HALF_OF_STRING_2))));\n                print           ((FIRST_HALF_OF_STRING_3)) . ((SECOND_HALF_OF_STRING_3));\n                print           ((((FIRST_HALF_OF_STRING_4)))) . ((((SECOND_HALF_OF_STRING_4))));\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoSpacesAfterFunctionNameFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "test dynamic by array, curly mix",
+                    "args": [
+                        "<?php $a[\"e\"](1); $a{2}(1);",
+                        "<?php $a[\"e\"] (1); $a{2} (1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "test dynamic by array, curly only",
+                    "args": [
+                        "<?php $a{\"e\"}(1); $a{2}(1);",
+                        "<?php $a{\"e\"} (1); $a{2} (1);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\NoSpacesAfterFunctionNameFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php strlen(...);",
+                        "<?php strlen  (...);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

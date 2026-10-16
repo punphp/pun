@@ -1,0 +1,775 @@
+{
+    "fixer": "ordered_imports",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\OrderedImportsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Import/OrderedImportsFixerTest.php",
+    "case_count": 63,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\OrderedImportsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple namespaces",
+                    "args": [
+                        "<?php\n\nnamespace FooRoo {\n\n    use Foo\\Bar;\n    use Foo\\Bar\\Foo as Fooo, Foo\\Bar\\FooBar as FooBaz;\n     use Foo\\Bir as FBB;\n    use Foo\\Zar\\Baz;\n    use SomeClass;\n       use Symfony\\Annotation\\Template, Zoo\\Bar as ZooBar;\n    use Zoo\\Tar1;\n\n    $a = new Bar();\n    $a = new FooBaz();\n    $a = new someclass();\n\n    use Zoo\\Tar2;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}\n\nnamespace BlaRoo {\n\n    use Foo\\Zar\\Baz;\n  use SomeClass;\n    use Symfony\\Annotation\\Template;\n  use Symfony\\Doctrine\\Entities\\Entity, Zoo\\Bar;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}",
+                        "<?php\n\nnamespace FooRoo {\n\n    use Foo\\Bar\\FooBar as FooBaz;\n    use Zoo\\Bar as ZooBar, Zoo\\Tar1;\n     use Foo\\Bar;\n    use Foo\\Zar\\Baz;\n    use Symfony\\Annotation\\Template;\n       use Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\n    use SomeClass;\n\n    $a = new Bar();\n    $a = new FooBaz();\n    $a = new someclass();\n\n    use Zoo\\Tar2;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}\n\nnamespace BlaRoo {\n\n    use Foo\\Zar\\Baz;\n  use Zoo\\Bar;\n    use SomeClass;\n  use Symfony\\Annotation\\Template, Symfony\\Doctrine\\Entities\\Entity;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple namespaces II",
+                    "args": [
+                        "<?php namespace Space1 {\n    use Foo\\Bar\\Foo;\n    use Symfony\\Annotation\\Template;\n}\n\nnamespace Space2 { use A,B; }\n\nnamespace Space3 {\n    use Symfony\\Annotation\\Template;\n    use Symfony\\Doctrine\\Entities\\Entity0, Zoo\\Bar;\n    echo Bar::C;\n    use A\\B;\n}\n\nnamespace Space4{}",
+                        "<?php namespace Space1 {\n    use Symfony\\Annotation\\Template;\n    use Foo\\Bar\\Foo;\n}\n\nnamespace Space2 { use B,A; }\n\nnamespace Space3 {\n    use Zoo\\Bar;\n    use Symfony\\Annotation\\Template, Symfony\\Doctrine\\Entities\\Entity0;\n    echo Bar::C;\n    use A\\B;\n}\n\nnamespace Space4{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with imports after logic",
+                    "args": [
+                        "<?php\n                use B;\n                use C;\n                $foo = new C();\n                use A;\n            ",
+                        "<?php\n                use C;\n                use B;\n                $foo = new C();\n                use A;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open-close groups",
+                    "args": [
+                        "\n                <?php use X ?>\n                <?php use Z ?>\n                <?php echo X::class ?>\n                <?php use E ?>   output\n                <?php use F ?><?php echo E::class; use A; ?>\n            ",
+                        "\n                <?php use Z ?>\n                <?php use X ?>\n                <?php echo X::class ?>\n                <?php use F ?>   output\n                <?php use E ?><?php echo E::class; use A; ?>\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with comment",
+                    "args": [
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Foo as Fooo, Foo\\Bar\\FooBar /* He there */ as FooBaz;\n use Foo\\Bir as FBB;\nuse Foo\\Zar\\Baz;\nuse SomeClass;\n   use /* check */Symfony\\Annotation\\Template, Zoo\\Bar as ZooBar;\nuse Zoo\\Tar;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar\\FooBar /* He there */ as FooBaz;\nuse Zoo\\Bar as ZooBar, Zoo\\Tar;\n use Foo\\Bar;\nuse Foo\\Zar\\Baz;\nuse /* check */Symfony\\Annotation\\Template;\n   use Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with traits",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Foo as Fooo, Foo\\Bar\\FooBar as FooBaz;\n use Foo\\Bir as FBB;\nuse Foo\\Zar\\Baz;\nuse SomeClass;\n   use Symfony\\Annotation\\Template, Zoo\\Bar as ZooBar;\nuse Zoo\\Tar;\n\ntrait Foo {}\n\ntrait Zoo {}\n\nclass AnnotatedClass\n{\n    use Foo, Bar;\n\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        "<?php\n\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Zoo\\Bar as ZooBar, Zoo\\Tar;\n use Foo\\Bar;\nuse Foo\\Zar\\Baz;\nuse Symfony\\Annotation\\Template;\n   use Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\nuse SomeClass;\n\ntrait Foo {}\n\ntrait Zoo {}\n\nclass AnnotatedClass\n{\n    use Foo, Bar;\n\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with trait imports",
+                    "args": [
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Acme\\MyReusableTrait;\nuse Foo\\Bar, Foo\\Bar\\Foo as Fooo;\n use Foo\\Bar\\FooBar as FooBaz;\nuse Foo\\Bir as FBB;\nuse Foo\\Zar\\Baz;\nuse SomeClass;\n   use Symfony\\Annotation\\Template, Zoo\\Bar as ZooBar;\nuse Zoo\\Tar;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nclass AnnotatedClass\n{\n    use MyReusableTrait;\n\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $baz) {};\n    }\n}",
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Zoo\\Bar as ZooBar, Zoo\\Tar;\n use Foo\\Bar;\nuse Foo\\Zar\\Baz;\nuse Acme\\MyReusableTrait;\nuse Symfony\\Annotation\\Template;\n   use Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nclass AnnotatedClass\n{\n    use MyReusableTrait;\n\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $baz) {};\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with different cases",
+                    "args": [
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Baz;\nuse abc\\Bar;\n\n<?php\n\nuse abc\\Bar;\nuse Zoo\\Baz;\n\nclass Test\n{\n}",
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Baz;\nuse abc\\Bar;\n\n<?php\n\nuse Zoo\\Baz;\nuse abc\\Bar;\n\nclass Test\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "without uses",
+                    "args": [
+                        "<?php\n\n$c = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with trailing digits",
+                    "args": [
+                        "<?php\n\nuse abc\\Bar;\nuse abc2\\Bar2;\nuse xyz\\abc\\Bar6;\nuse xyz\\abc2\\Bar7;\nuse xyz\\xyz\\Bar4;\nuse xyz\\xyz\\Bar5;\n\nclass Test\n{\n}",
+                        "<?php\n\nuse abc2\\Bar2;\nuse abc\\Bar;\nuse xyz\\abc2\\Bar7;\nuse xyz\\abc\\Bar6;\nuse xyz\\xyz\\Bar4;\nuse xyz\\xyz\\Bar5;\n\nclass Test\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with imports only",
+                    "args": [
+                        "<?php\n\nuse Aaa;\nuse Bbb;",
+                        "<?php\n\nuse Bbb;\nuse Aaa;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with close tag",
+                    "args": [
+                        "<?php\n                use A\\C1;\n                use A\\D?><?php use B\\C2; use E\\F ?>",
+                        "<?php\n                use A\\C1;\n                use B\\C2?><?php use A\\D; use E\\F ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with comments",
+                    "args": [
+                        "<?php\n                use A\\C1 /* A */;\n                use /* B */ B\\C2;",
+                        "<?php\n                use /* B */ B\\C2;\n                use A\\C1 /* A */;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with text before opening tag",
+                    "args": [
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar as ZooBar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Foo as Fooo, Foo\\Bar\\FooBar as FooBaz;\n use Foo\\Bir as FBB;\nuse Foo\\Zar\\Baz;\nuse SomeClass;\n   use Symfony\\Annotation\\Template, Zoo\\Bar as ZooBar;\nuse Zoo\\Tar;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar as ZooBar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Zoo\\Bar as ZooBar, Zoo\\Tar;\n use Foo\\Bar;\nuse Foo\\Zar\\Baz;\nuse Symfony\\Annotation\\Template;\n   use Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with grouped import",
+                    "args": [
+                        "<?php\nuse A\\B;\nuse some\\a\\{ClassA, ClassB, ClassC as C};\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse const some\\a\\{ConstA, ConstB, ConstC};\nuse const some\\b\\{\n    ConstX,\n    ConstY,\n    ConstZ\n};\nuse function some\\a\\{fn_a, fn_b, fn_c};\nuse function some\\b\\{\n    fn_x,\n    fn_y,\n    fn_z\n};\n",
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C};\nuse function some\\b\\{\n    fn_y,\n    fn_z,\n    fn_x\n};\nuse function some\\a\\{fn_a, fn_b, fn_c};\nuse A\\B;\nuse const some\\b\\{\n    ConstZ,\n    ConstX,\n    ConstY\n};\nuse const some\\a\\{ConstA, ConstB, ConstC};\nuse some\\b\\{\n    ClassG,\n    ClassF\n};\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with grouped import and comment",
+                    "args": [
+                        "<?php\nuse A\\B;\nuse some\\a\\{ClassA as A /*z*/, ClassB, ClassC};\nuse const some\\a\\{\n    ConstA,\n    ConstB,\n    ConstC\n};\nuse function some\\a\\{fn_a, fn_b, fn_c};\n",
+                        "<?php\nuse some\\a\\{  ClassB,ClassC, /*z*/ ClassA as A};\nuse function some\\a\\{fn_c,  fn_a,fn_b   };\nuse A\\B;\nuse const some\\a\\{\n    ConstA,\n    ConstB,\n    ConstC\n};\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with grouped import for classes, constants and functions",
+                    "args": [
+                        "<?php\nuse A\\B;\nuse some\\a\\{ClassA, ClassB, ClassC as C};\nuse const some\\a\\{ConstA, ConstB, ConstC};\nuse function some\\a\\{fn_a, fn_b, fn_c};\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse const some\\b\\{\n    ConstX,\n    ConstY,\n    ConstZ\n};\nuse function some\\b\\{\n    fn_x,\n    fn_y,\n    fn_z\n};\n",
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C};\nuse function some\\b\\{\n    fn_y,\n    fn_z,\n    fn_x\n};\nuse function some\\a\\{fn_a, fn_b, fn_c};\nuse A\\B;\nuse const some\\b\\{\n    ConstZ,\n    ConstX,\n    ConstY\n};\nuse const some\\a\\{ConstA, ConstB, ConstC};\nuse some\\b\\{\n    ClassG,\n    ClassF\n};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with grouped imports",
+                    "args": [
+                        "<?php\nuse A\\B;\nuse const some\\a\\{\n    ConstA,\n    ConstB,\n    ConstC\n};\nuse some\\a\\{ClassA as A /*z2*/, ClassB, ClassC};\nuse function some\\a\\{fn_a, fn_b, fn_c};\n",
+                        "<?php\nuse some\\a\\{  ClassB,ClassC, /*z2*/ ClassA as A};\nuse function some\\a\\{fn_c,  fn_a,fn_b   };\nuse A\\B;\nuse const some\\a\\{\n    ConstA,\n    ConstB,\n    ConstC\n};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with order of types",
+                    "args": [
+                        "<?php\nuse C\\B;\nuse function B\\fn_a;\nuse const A\\ConstA;\n            ",
+                        "<?php\nuse const A\\ConstA;\nuse function B\\fn_a;\nuse C\\B;\n            ",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "class",
+                                "function",
+                                "const"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with imports in the same line and in the new lines",
+                    "args": [
+                        "<?php\nuse Foo\\Bar\\Baz;use Foo\\Bar\\{ClassA, ClassB, ClassC};\nuse Foo\\Bir;\n",
+                        "<?php\nuse Foo\\Bar\\Baz, Foo\\Bir;\nuse Foo\\Bar\\{ClassC, ClassB, ClassA};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "many import in single line",
+                    "args": [
+                        "<?php\nuse A\\A;use Foo3\\Bar\\{ClassA};use G\\G;use H\\H;use Ioo2\\Bar\\{ClassB};use J\\J;use K\\K;use Loo1\\Bar\\{ClassC};use M\\M;\n",
+                        "<?php\nuse A\\A,G\\G;use Foo3\\Bar\\{ClassA};use H\\H,J\\J;use Ioo2\\Bar\\{ClassB};use K\\K,M\\M;use Loo1\\Bar\\{ClassC};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "grouped import changing location to comma separated imports",
+                    "args": [
+                        "<?php\nuse A;\nuse B;use C\\{C1, C2, C3};use D;",
+                        "<?php\nuse C\\{C1, C2, C3};\nuse D, A, B;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "many grouped imports",
+                    "args": [
+                        "<?php\nuse Foo\\Bar\\{ClassA, ClassB, ClassC};\nuse Foo\\Bir\\{\n    ClassD,\n    ClassE,\n    ClassF\n};\nuse Foo\\Bor\\{\n    ClassG,\n    ClassH,\n    ClassI,\n    ClassJ\n};\n",
+                        "<?php\nuse Foo\\Bar\\{ClassC, ClassB, ClassA};\nuse Foo\\Bir\\{ClassE, ClassF,\n    ClassD};\nuse Foo\\Bor\\{\n            ClassJ,\n                    ClassI,\n    ClassH,\n                        ClassG\n};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha - ['class', 'function', 'const']",
+                    "args": [
+                        "<?php\nuse Z\\Z;\nuse function X\\X;\nuse const Y\\Y;\n            ",
+                        "<?php\nuse const Y\\Y;\nuse function X\\X;\nuse Z\\Z;\n            ",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "class",
+                                "function",
+                                "const"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha - ['class', 'const', 'function']",
+                    "args": [
+                        "<?php\nuse Z\\Z;\nuse const Y\\Y;\nuse function X\\X;\n            ",
+                        "<?php\nuse function X\\X;\nuse const Y\\Y;\nuse Z\\Z;\n            ",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha - ['function', 'class', 'const']",
+                    "args": [
+                        "<?php\nuse function Z\\Z;\nuse Y\\Y;\nuse const X\\X;\n            ",
+                        "<?php\nuse const X\\X;\nuse Y\\Y;\nuse function Z\\Z;\n            ",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "function",
+                                "class",
+                                "const"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha - ['function', 'const', 'class']",
+                    "args": [
+                        "<?php\nuse function Z\\Z;\nuse const Y\\Y;\nuse X\\X;\n            ",
+                        "<?php\nuse X\\X;\nuse const Y\\Y;\nuse function Z\\Z;\n            ",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "function",
+                                "const",
+                                "class"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha - ['const', 'function', 'class']",
+                    "args": [
+                        "<?php\nuse const Z\\Z;\nuse function Y\\Y;\nuse X\\X;\n            ",
+                        "<?php\nuse X\\X;\nuse function Y\\Y;\nuse const Z\\Z;\n            ",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "const",
+                                "function",
+                                "class"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha - ['const', 'class', 'function']",
+                    "args": [
+                        "<?php\nuse const Z\\Z;\nuse Y\\Y;\nuse function X\\X;\n            ",
+                        "<?php\nuse function X\\X;\nuse Y\\Y;\nuse const Z\\Z;\n            ",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "const",
+                                "class",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "\"strcasecmp\" vs. \"strnatcasecmp\"",
+                    "args": [
+                        "<?php\nuse A\\A1;\nuse A\\A10;\nuse A\\A2;\nuse A\\A20;\n            ",
+                        "<?php\nuse A\\A20;\nuse A\\A2;\nuse A\\A10;\nuse A\\A1;\n            ",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with trailing comma in single-line grouped import",
+                    "args": [
+                        "<?php\nuse A\\{B,};\nuse C\\{D,E,};\n",
+                        "<?php\nuse C\\{D,E,};\nuse A\\{B,};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with trailing comma in multi-line grouped import",
+                    "args": [
+                        "<?php\nuse Foo\\{\n    Aaa,\n    Bbb,\n};",
+                        "<?php\nuse Foo\\{\n    Bbb,\n    Aaa,\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with trailing comma in multi-line grouped import with comments",
+                    "args": [
+                        "<?php\nuse Foo\\{\n    Aaa /* 3 *//* 4 *//* 5 */,\n    Bbb /* 1 *//* 2 */,\n};",
+                        "<?php\nuse Foo\\{\n    /* 1 */Bbb/* 2 */,/* 3 */\n    /* 4 */Aaa/* 5 */,/* 6 */\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with trailing comma in multi-line grouped import - sorting alphabetically",
+                    "args": [
+                        "<?php use A\\{B,};\nuse C\\{D,E,};\nuse some\\y\\{ClassA, ClassB, ClassC as C,};\nuse const some\\X\\{ConstA,ConstB,ConstC,ConstF};\nuse const some\\Z\\{ConstAA,ConstBB,ConstCC,};\nuse function some\\a\\{fn_a, fn_b, fn_c,};\n",
+                        "<?php use A\\{B,};\nuse some\\y\\{ClassA, ClassB, ClassC as C,};\nuse function some\\a\\{fn_a, fn_b, fn_c,};\nuse const some\\Z\\{ConstAA,ConstBB,ConstCC,};\nuse const some\\X\\{ConstA,ConstB,ConstC,ConstF};\nuse C\\{D,E,};\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with trailing comma in multi-line grouped import - sorting by length",
+                    "args": [
+                        "<?php use A\\{B,};\nuse C\\{D,E,};\nuse some\\y\\{ClassA, ClassB, ClassC as C,};\nuse const some\\Z\\{ConstAA,ConstBB,ConstCC,};\nuse const some\\X\\{ConstA,ConstB,ConstC,ConstF};\nuse function some\\a\\{fn_a, fn_b, fn_c,};\n",
+                        "<?php use A\\{B,};\nuse some\\y\\{ClassA, ClassB, ClassC as C,};\nuse function some\\a\\{fn_a, fn_b, fn_c,};\nuse const some\\Z\\{ConstAA,ConstBB,ConstCC,};\nuse const some\\X\\{ConstA,ConstB,ConstC,ConstF};\nuse C\\{D,E,};\n",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with trailing comma in multi-line grouped import - no sorting",
+                    "args": [
+                        "<?php use A\\{B,};\nuse some\\y\\{ClassA, ClassB, ClassC as C,};\nuse C\\{D,E,};\nuse const some\\Z\\{ConstAA,ConstBB,ConstCC,};\nuse const some\\X\\{ConstA,ConstB,ConstC,ConstF};\nuse function some\\a\\{fn_a, fn_b, fn_c,};\n",
+                        "<?php use A\\{B,};\nuse some\\y\\{ClassA, ClassB, ClassC as C,};\nuse function some\\a\\{fn_a, fn_b, fn_c,};\nuse const some\\Z\\{ConstAA,ConstBB,ConstCC,};\nuse const some\\X\\{ConstA,ConstB,ConstC,ConstF};\nuse C\\{D,E,};\n",
+                        {
+                            "sort_algorithm": "none",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only constant imports",
+                    "args": [
+                        "<?php use const CONST_A, CONST_B, CONST_C;",
+                        "<?php use const CONST_C, CONST_B, CONST_A;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "only function imports",
+                    "args": [
+                        "<?php use function Foo\\A, Foo\\B, Foo\\C;",
+                        "<?php use function Foo\\B, Foo\\C, Foo\\A;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length with same length",
+                    "args": [
+                        "<?php\n\nuse Acme;\nuse Bar1;\nuse Barr;\nuse Fooo;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        "<?php\n\nuse Acme;\nuse Fooo;\nuse Barr;\nuse Bar1;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length with same length and case sensitive",
+                    "args": [
+                        "<?php\n\nuse Acme;\nuse BaRr;\nuse Bar1;\nuse Fooo;\n\nclass AnnotatedClass { }",
+                        "<?php\n\nuse Acme;\nuse Fooo;\nuse Bar1;\nuse BaRr;\n\nclass AnnotatedClass { }",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null,
+                            "case_sensitive": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length with multiple namespace",
+                    "args": [
+                        "<?php\n\nnamespace FooRoo {\n\n    use Foo\\Bar;\n    use Zoo\\Tar1, Zoo\\Tar2;\n    use SomeClass;\n    use Foo\\Zar\\Baz;\n    use Foo\\Bir as FBB;\n    use Zoo\\Bar as ZooBar, Foo\\Bar\\Foo as Fooo;\n    use Foo\\Bar\\FooBar as FooBaz;\n\n    use Symfony\\Annotation\\Template;\n\n    $a = new Bar();\n    $a = new FooBaz();\n    $a = new someclass();\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}\n\nnamespace BlaRoo {\n\n    use Zoo\\Bar;\n    use SomeClass;\n    use Foo\\Zar\\Baz;\n    use Symfony\\Annotation\\Template, Symfony\\Doctrine\\Entities\\Entity;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}",
+                        "<?php\n\nnamespace FooRoo {\n\n    use Foo\\Bar\\FooBar as FooBaz;\n    use Zoo\\Bar as ZooBar, Zoo\\Tar1;\n    use Foo\\Bar;\n    use Foo\\Zar\\Baz;\n    use Symfony\\Annotation\\Template;\n    use Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\n    use SomeClass;\n\n    use Zoo\\Tar2;\n\n    $a = new Bar();\n    $a = new FooBaz();\n    $a = new someclass();\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}\n\nnamespace BlaRoo {\n\n    use Foo\\Zar\\Baz;\n    use Zoo\\Bar;\n    use SomeClass;\n    use Symfony\\Annotation\\Template, Symfony\\Doctrine\\Entities\\Entity;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length with comment",
+                    "args": [
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar;\nuse Zoo\\Tar, SomeClass;\nuse Foo\\Zar\\Baz;\nuse Foo\\Bir as FBB;\nuse Zoo\\Bar as ZooBar;\nuse Foo\\Bar\\Foo as Fooo, Foo\\Bar\\FooBar /* He there */ as FooBaz;\nuse /* FIXME */Symfony\\Annotation\\Template;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nuse Symfony\\Doctrine\\Entities\\Entity;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar\\FooBar /* He there */ as FooBaz;\nuse Zoo\\Bar as ZooBar, Zoo\\Tar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\nuse /* FIXME */Symfony\\Annotation\\Template;\nuse Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nuse Symfony\\Doctrine\\Entities\\Entity;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar;\nuse Zoo\\Tar, SomeClass;\nuse Foo\\Zar\\Baz;\nuse Foo\\Bir as FBB;\nuse Zoo\\Bar as ZooBar;\nuse Foo\\Bar\\Foo as Fooo, Foo\\Bar\\FooBar as FooBaz;\nuse Symfony\\Annotation\\Template;\n\nuse Symfony\\Doctrine\\Entities\\Entity;\n\ntrait Foo {}\n\ntrait Zoo {}\n\nclass AnnotatedClass\n{\n    use Foo, Bar;\n\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        "<?php\n\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Zoo\\Bar as ZooBar, Zoo\\Tar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\nuse Symfony\\Annotation\\Template;\nuse Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\nuse SomeClass;\n\nuse Symfony\\Doctrine\\Entities\\Entity;\n\ntrait Foo {}\n\ntrait Zoo {}\n\nclass AnnotatedClass\n{\n    use Foo, Bar;\n\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length with trait imports",
+                    "args": [
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar;\nuse Zoo\\Tar, SomeClass;\nuse Foo\\Zar\\Baz;\nuse Foo\\Bir as FBB;\nuse Zoo\\Bar as ZooBar;\nuse Foo\\Bar\\Foo as Fooo;\nuse Acme\\MyReusableTrait, Foo\\Bar\\FooBar as FooBaz;\nuse Symfony\\Annotation\\Template;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nuse Symfony\\Doctrine\\Entities\\Entity;\n\nclass AnnotatedClass\n{\n    use MyReusableTrait;\n\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $baz) {};\n    }\n}",
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Zoo\\Bar as ZooBar, Zoo\\Tar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\nuse Acme\\MyReusableTrait;\nuse Symfony\\Annotation\\Template;\nuse Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nuse Symfony\\Doctrine\\Entities\\Entity;\n\nclass AnnotatedClass\n{\n    use MyReusableTrait;\n\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $baz) {};\n    }\n}",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length with different cases",
+                    "args": [
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Baz;\nuse abc\\Bar;\n\n<?php\n\nuse abc\\Bar;\nuse Zoo\\Baz;\n\nclass Test\n{\n}",
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Baz;\nuse abc\\Bar;\n\n<?php\n\nuse Zoo\\Baz;\nuse abc\\Bar;\n\nclass Test\n{\n}",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length order with trailing digit",
+                    "args": [
+                        "<?php\n\nuse abc\\Bar;\nuse abc2\\Bar2;\nuse xyz\\abc\\Bar6;\nuse xyz\\xyz\\Bar4;\nuse xyz\\xyz\\Bar5;\nuse xyz\\abc2\\Bar7;\n\nclass Test\n{\n}",
+                        "<?php\n\nuse abc2\\Bar2;\nuse abc\\Bar;\nuse xyz\\abc2\\Bar7;\nuse xyz\\abc\\Bar6;\nuse xyz\\xyz\\Bar4;\nuse xyz\\xyz\\Bar5;\n\nclass Test\n{\n}",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length code with imports only",
+                    "args": [
+                        "<?php\n\nuse Aaa;\nuse Bbb;",
+                        "<?php\n\nuse Bbb;\nuse Aaa;",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length without uses",
+                    "args": [
+                        "<?php\n\n$c = 1;",
+                        null,
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length 2",
+                    "args": [
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar as ZooBar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar;\nuse Zoo\\Tar, SomeClass;\n use Foo\\Zar\\Baz;\nuse Foo\\Bir as FBB;\nuse Zoo\\Bar as ZooBar;\n   use Foo\\Bar\\Foo as Fooo, Foo\\Bar\\FooBar as FooBaz;\nuse Symfony\\Annotation\\Template;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nuse Symfony\\Doctrine\\Entities\\Entity;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar as ZooBar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Zoo\\Bar as ZooBar, Zoo\\Tar;\n use Foo\\Bar;\nuse Foo\\Zar\\Baz;\nuse Symfony\\Annotation\\Template;\n   use Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nuse Symfony\\Doctrine\\Entities\\Entity;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by length 3",
+                    "args": [
+                        "<?php\nuse A\\B;\nuse Foo\\Bar\\Biz;\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse function some\\a\\{fn_a, fn_b, fn_c};\nuse some\\b\\{ClassA, ClassB, ClassC as C};\nuse const some\\a\\{ConstA, ConstB, ConstC};\nuse some\\a\\{ClassX as X /*z*/, ClassY, ClassZ};\nuse Some\\Biz\\Barz\\Boozz\\Foz\\Which\\Is\\Really\\Long;\nuse const some\\b\\{ConstG, ConstX, ConstY, ConstZ};\nuse some\\c\\{ClassR, ClassT, ClassV as V, NiceClassName};\n",
+                        "<?php\nuse function some\\a\\{fn_a, fn_b, fn_c};\nuse Foo\\Bar\\Biz;\nuse some\\c\\{ClassR, ClassT, ClassV as V, NiceClassName};\nuse A\\B;\nuse Some\\Biz\\Barz\\Boozz\\Foz\\Which\\Is\\Really\\Long;\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse const some\\a\\{ConstB, ConstA, ConstC};\nuse const some\\b\\{ConstX, ConstY, ConstZ, ConstG};\nuse some\\b\\{ClassA, ClassB, ClassC as C};\nuse some\\a\\{  ClassY,ClassZ, /*z*/ ClassX as X};\n",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "without types order",
+                    "args": [
+                        "<?php\nuse const ZZZ;\nuse function B;\nuse function A123;\n",
+                        "<?php\nuse function B;\nuse function A123;\nuse const ZZZ;\n",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types order and length",
+                    "args": [
+                        "<?php\nuse A\\B;\nuse Some\\Bar;\nuse Foo\\Zar\\Baz;\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse some\\a\\{ClassA, ClassB, ClassC as C};\nuse some\\b\\{ClassK, ClassL, ClassM as M};\nuse some\\a\\{ClassX as X /*z*/, ClassY, ClassZ};\nuse const some\\a\\{ConstA, ConstB, ConstC};\nuse const some\\b\\{ConstD, ConstE, ConstF};\nuse function some\\a\\{fn_a, fn_b};\nuse function some\\f\\{fn_c, fn_d, fn_e};\nuse function some\\b\\{fn_k, fn_l, func_m};\n",
+                        "<?php\nuse const some\\a\\{ConstA, ConstB, ConstC};\nuse some\\a\\{ClassA, ClassB, ClassC as C};\nuse Foo\\Zar\\Baz;\nuse some\\b\\{ClassK, ClassL, ClassM as M};\nuse some\\a\\{ClassX as X /*z*/, ClassY, ClassZ};\nuse A\\B;\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse function some\\b\\{fn_k, fn_l, func_m};\nuse Some\\Bar;\nuse function some\\a\\{fn_a, fn_b};\nuse const some\\b\\{ConstD, ConstE, ConstF};\nuse function some\\f\\{fn_c, fn_d, fn_e};\n",
+                        {
+                            "sort_algorithm": "length",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types order and alphabet",
+                    "args": [
+                        "<?php\nuse Aaa\\Bbb;\nuse Aaa\\Ccc;\nuse Bar\\Biz\\Boooz\\Bum;\nuse Foo\\Zar\\Baz;\nuse some\\a\\{ClassA};\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse some\\b\\{ClassB, ClassC as C, ClassD};\nuse Some\\Cloz;\nuse const some\\a\\{ConstA};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse const some\\a\\{ConstD};\nuse const some\\b\\{ConstE};\nuse function some\\a\\{fn_a, fn_b};\nuse function some\\a\\{fn_bc};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse function some\\c\\{fn_f};\nuse function some\\f\\{fn_g, fn_h, fn_i};\n",
+                        "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse function some\\c\\{fn_f};\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse const some\\a\\{ConstD};\nuse Some\\Cloz;\nuse function some\\a\\{fn_bc};\nuse const some\\a\\{ConstA};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse Aaa\\Bbb;\nuse const some\\b\\{ConstE};\nuse function some\\a\\{fn_a, fn_b};\n",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "types order and none",
+                    "args": [
+                        "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse Some\\Cloz;\nuse Aaa\\Bbb;\nuse const some\\a\\{ConstD};\nuse const some\\a\\{ConstA};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse const some\\b\\{ConstE};\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse function some\\c\\{fn_f};\nuse function some\\a\\{fn_x};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse function some\\a\\{fn_a, fn_b};\n",
+                        "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse function some\\c\\{fn_f};\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse const some\\a\\{ConstD};\nuse Some\\Cloz;\nuse function some\\a\\{fn_x};\nuse const some\\a\\{ConstA};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse Aaa\\Bbb;\nuse const some\\b\\{ConstE};\nuse function some\\a\\{fn_a, fn_b};\n",
+                        {
+                            "sort_algorithm": "none",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "by none",
+                    "args": [
+                        "The normal\nuse of this fixer\nshould not change this sentence nor those statements below\nuse Zoo\\Bar as ZooBar;\nuse Foo\\Bar;\nuse Foo\\Zar\\Baz;\n\n<?php\n\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Zoo\\Bar as ZooBar, Zoo\\Tar;\n use Foo\\Bar;\nuse Foo\\Zar\\Baz;\nuse Symfony\\Annotation\\Template;\n   use Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new someclass();\n\nuse Symfony\\Doctrine\\Entities\\Entity;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n\n        return function () use ($bar, $foo) {};\n    }\n}",
+                        null,
+                        {
+                            "sort_algorithm": "none",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with case sensitive",
+                    "args": [
+                        "<?php\n\nuse AA;\nuse Aaa;\n\nclass Foo { }",
+                        "<?php\n\nuse Aaa;\nuse AA;\n\nclass Foo { }",
+                        {
+                            "case_sensitive": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not take the braces in grouped imports into account",
+                    "args": [
+                        "<?php\nuse Foo\\{Alfa, Alfa2};\nuse Foo\\Bravo;\nuse Foo\\{Delta, Delta2};\nuse Foo\\Foxtrot\\Uniform\\Charlie\\Kilo;\nuse Foo\\November\\{Golf, Juliett};\nuse Foo\\November\\Hotel;\nuse Foo\\{Yankee007, Yankee42, Yankee99};\nuse Foo\\{Zulu, Zulu2};",
+                        "<?php\nuse Foo\\{Zulu, Zulu2};\nuse Foo\\{Delta2, Delta};\nuse Foo\\{Alfa, Alfa2};\nuse Foo\\{Yankee99, Yankee42, Yankee007};\nuse Foo\\Bravo;\nuse Foo\\Foxtrot\\Uniform\\Charlie\\Kilo;\nuse Foo\\November\\Hotel;\nuse Foo\\November\\{Juliett, Golf};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "wrongConfig",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\OrderedImportsFixerTest",
+            "body": "    public function testInvalidConfiguration(string $expectedMessage, array $wrongConfig): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessage($expectedMessage);\n\n        $this->fixer->configure($wrongConfig); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "unknown order types",
+                    "args": [
+                        "[ordered_imports] Invalid configuration: Unknown sort types \"foo\" and \"bar\".",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "class",
+                                "const",
+                                "function",
+                                "foo",
+                                "bar"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid order types size",
+                    "args": [
+                        "[ordered_imports] Invalid configuration: Missing sort type \"function\".",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "class",
+                                "const"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid order type",
+                    "args": [
+                        "[ordered_imports] Invalid configuration: Missing sort type \"class\".",
+                        {
+                            "sort_algorithm": "alpha",
+                            "imports_order": [
+                                "const",
+                                "function",
+                                "bar"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid sort algorithm",
+                    "args": [
+                        "[ordered_imports] Invalid configuration: The option \"sort_algorithm\" with value \"dope\" is invalid. Accepted values are: \"alpha\", \"length\", \"none\".",
+                        {
+                            "sort_algorithm": "dope",
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid sort algorithm 2",
+                    "args": [
+                        "[ordered_imports] Invalid configuration: The option \"sort_algorithm\" with value array is invalid. Accepted values are: \"alpha\", \"length\", \"none\".",
+                        {
+                            "sort_algorithm": [
+                                "alpha",
+                                "length"
+                            ],
+                            "imports_order": null
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid sort algorithm 3",
+                    "args": [
+                        "[ordered_imports] Invalid configuration: The option \"sort_algorithm\" with value stdClass is invalid. Accepted values are: \"alpha\", \"length\", \"none\".",
+                        {
+                            "sort_algorithm": {
+                                "__class": "stdClass"
+                            },
+                            "imports_order": null
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,235 @@
+{
+    "fixer": "single_import_per_statement",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\SingleImportPerStatementFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Import/SingleImportPerStatementFixerTest.php",
+    "case_count": 21,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\SingleImportPerStatementFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                    /**/use Foo;\n                    use FooB;\n                ",
+                        "<?php\n                    /**/use Foo,FooB;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "use Some, Not, PHP, Like, Use, Statement;\n<?php\n\nuse Foo;\nuse FooA;\nuse FooB;\nuse FooC;\nuse FooD as D;\nuse FooE;\nuse FooF;\nuse FooG as G;\nuse FooH;\nuse FooI;\nuse FooJ;\nuse FooZ;\n",
+                        "use Some, Not, PHP, Like, Use, Statement;\n<?php\n\nuse Foo;\nuse FooA, FooB;\nuse FooC, FooD as D, FooE;\nuse FooF,\n    FooG as G,\n  FooH,     FooI,\n        FooJ;\nuse FooZ;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\nnamespace {\n    use Foo;\n    use FooA;\n    use FooB;\n    use FooC;\n    use FooD as D;\n    use FooE;\n    use FooF;\n    use FooG as G;\n    use FooH;\n    use FooI;\n    use FooJ;\n    use FooZ;\n}\n\nnamespace Boo {\n    use Bar;\n    use BarA;\n    use BarB;\n    use BarC;\n    use BarD as D;\n    use BarE;\n    use BarF;\n    use BarG as G;\n    use BarH;\n    use BarI;\n    use BarJ;\n    use BarZ;\n}\n",
+                        "<?php\n\nnamespace {\n    use Foo;\n    use FooA, FooB;\n    use FooC, FooD as D, FooE;\n    use FooF,\n        FooG as G,\n      FooH,     FooI,\n            FooJ;\n    use FooZ;\n}\n\nnamespace Boo {\n    use Bar;\n    use BarA, BarB;\n    use BarC, BarD as D, BarE;\n    use BarF,\n        BarG as G,\n      BarH,     BarI,\n            BarJ;\n    use BarZ;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                    use FooA;\n                    use FooB;\n                ",
+                        "<?php\n                    use FooA, FooB;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php use FooA;\nuse FooB?>",
+                        "<?php use FooA, FooB?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nuse B;\nuse C;\n    use E;\n    use F;\n        use G;\n        use H;\n",
+                        "<?php\nuse B,C;\n    use E,F;\n        use G,H;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nuse B;\n/*\n*/use C;\n",
+                        "<?php\nuse B,\n/*\n*/C;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nuse A;\nuse B;\n//,{} use ; :\n#,{} use ; :\n/*,{} use ; :*/\nuse C  ; ",
+                        "<?php\nuse A,B,\n//,{} use ; :\n#,{} use ; :\n/*,{} use ; :*/\nC  ; "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php use Z ;\nuse X ?><?php new X(); // run before white space around semicolon",
+                        "<?php use Z , X ?><?php new X(); // run before white space around semicolon"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php use FooA#\n;#\n#\nuse FooB;",
+                        "<?php use FooA#\n,#\n#\nFooB;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php use some\\b\\ClassB;\nuse function some\\b\\CC as C;\nuse function some\\b\\D;\nuse const some\\b\\E;\nuse function some\\b\\A\\B;",
+                        "<?php use some\\b\\{ClassB, function CC as C, function D, const E, function A\\B};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nuse Foo\\Bar;\nuse Foo\\Baz;",
+                        "<?php\nuse Foo\\ {\n    Bar, Baz\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\nuse Foo\\Bar;\nuse Foo\\Baz;",
+                        "<?php\nuse Foo\\\n{\n    Bar, Baz\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nuse function md5;\nuse function str_repeat;\nuse const true;\nuse const false;\nuse A;\nuse B;\n",
+                        "<?php\nuse function md5, str_repeat;\nuse const true, false;\nuse A,B;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nuse D\\E;\nuse D\\F;\nuse G\\H;\nuse G\\I/*1*//*2*/;\n",
+                        "<?php\nuse D\\{E,F,};\nuse G\\{H,I/*1*/,/*2*/};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nuse A\\B;\n",
+                        "<?php\nuse A\\{B};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nuse Space\\Models\\TestModelA;\nuse Space\\Models\\TestModelB;\nuse Space\\Models\\TestModel;",
+                        "<?php\nuse Space\\Models\\ {\n    TestModelA,\n    TestModelB,\n    TestModel,\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nuse Space\\Models\\ {\n    TestModelA,\n    TestModelB,\n    TestModel,\n};",
+                        null,
+                        {
+                            "group_to_single_imports": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\r\n    use FooA;\r\n    use FooB;",
+                        "<?php\r\n    use FooA, FooB;",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\SingleImportPerStatementFixerTest",
+            "body": "    public function testFixPre80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nuse some\\a\\ClassA;\nuse some\\a\\ClassB;\nuse some\\a\\ClassC as C;\nuse function some\\b\\fn_a;\nuse function some\\b\\fn_b;\nuse function some\\b\\fn_c;\nuse const some\\c\\ConstA/**/as/**/E; /* group comment */\nuse const some\\c\\ConstB as D;\nuse const some\\c\\// use.,{}\nConstC;\nuse A\\B;\nuse D\\E;\nuse D\\F;\n                ",
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C};\nuse    function some\\b\\{fn_a, fn_b, fn_c};\nuse const/* group comment */some\\c\\{ConstA/**/as/**/ E   ,    ConstB   AS    D, \n// use.,{}\nConstC};\nuse A\\{B};\nuse D\\{E,F};\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "messy comments",
+                    "args": [
+                        "<?php\nuse D\\/*1*//*2*//*3*/E;\nuse D\\/*4*//*5*//*6*//*7*//*8*//*9*/F/*10*//*11*//*12*/;\n",
+                        "<?php\nuse D\\{\n/*1*//*2*//*3*/E,/*4*//*5*//*6*/\n/*7*//*8*//*9*/F/*10*//*11*//*12*/\n};\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

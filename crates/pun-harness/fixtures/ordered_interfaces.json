@@ -1,0 +1,293 @@
+{
+    "fixer": "ordered_interfaces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedInterfacesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/OrderedInterfacesFixerTest.php",
+    "case_count": 26,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedInterfacesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "single",
+                    "args": [
+                        "<?php class T implements A {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple",
+                    "args": [
+                        "<?php class T implements A, B, C {}",
+                        "<?php class T implements C, A, B {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "newlines",
+                    "args": [
+                        "<?php class T implements\nB,\nC\n{}",
+                        "<?php class T implements\nC,\nB\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "newlines and comments",
+                    "args": [
+                        "<?php class T implements\n// Here's A\nA,\n// Here's B\nB\n{}",
+                        "<?php class T implements\n// Here's B\nB,\n// Here's A\nA\n{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no whitespace",
+                    "args": [
+                        "<?php class T implements/*An*/AnInterface,/*Second*/SecondInterface/*end*/{}",
+                        "<?php class T implements/*Second*/SecondInterface,/*An*/AnInterface/*end*/{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "FQCN",
+                    "args": [
+                        "<?php class T implements \\F\\Q\\C\\N, \\F\\Q\\I\\N {}",
+                        "<?php class T implements \\F\\Q\\I\\N, \\F\\Q\\C\\N {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixed",
+                    "args": [
+                        "<?php class T implements \\F\\Q\\C\\N, Partially\\Q\\C\\N, /* Who mixes these? */ UnNamespaced {}",
+                        "<?php class T implements /* Who mixes these? */ UnNamespaced, \\F\\Q\\C\\N, Partially\\Q\\C\\N {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple in file",
+                    "args": [
+                        "<?php\n                    class A1 implements A\\B\\C, Z\\X\\Y {}\n                    class B2 implements A\\B, Z\\X {}\n                    class C3 implements A, Z\\X {}\n                    class D4 implements A\\B, B\\V, Z\\X\\V {}\n                    class E5 implements U\\B, X\\B, Y\\V, Z\\X\\V {}\n                ",
+                        "<?php\n                    class A1 implements Z\\X\\Y, A\\B\\C {}\n                    class B2 implements Z\\X, A\\B {}\n                    class C3 implements Z\\X, A {}\n                    class D4 implements Z\\X\\V, B\\V, A\\B {}\n                    class E5 implements Z\\X\\V, Y\\V, X\\B, U\\B {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interface extends",
+                    "args": [
+                        "<?php interface T extends A, B, C {}",
+                        "<?php interface T extends C, A, B {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested anonymous classes",
+                    "args": [
+                        "<?php\n                    class T implements A, B, C\n                    {\n                        public function getAnonymousClassObject()\n                        {\n                            return new class() implements C, D, E\n                            {\n                                public function getNestedAnonymousClassObject()\n                                {\n                                    return new class() implements E, F, G {};\n                                }\n                            };\n                        }\n                    }\n                ",
+                        "<?php\n                    class T implements C, A, B\n                    {\n                        public function getAnonymousClassObject()\n                        {\n                            return new class() implements E, C, D\n                            {\n                                public function getNestedAnonymousClassObject()\n                                {\n                                    return new class() implements F, G, E {};\n                                }\n                            };\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single line after interfaces",
+                    "args": [
+                        "<?php\n                class Foo implements B, C //, A\n                {}\n            ",
+                        "<?php\n                class Foo implements C, B //, A\n                {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "descend single",
+                    "args": [
+                        "<?php class T implements A {}",
+                        null,
+                        {
+                            "direction": "descend"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "descend multiple",
+                    "args": [
+                        "<?php class T implements C, B, A {}",
+                        "<?php class T implements C, A, B {}",
+                        {
+                            "direction": "descend"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "descend mixed",
+                    "args": [
+                        "<?php class T implements /* Who mixes these? */ UnNamespaced, Partially\\Q\\C\\N, \\F\\Q\\C\\N {}",
+                        "<?php class T implements /* Who mixes these? */ UnNamespaced, \\F\\Q\\C\\N, Partially\\Q\\C\\N {}",
+                        {
+                            "direction": "descend"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "length single",
+                    "args": [
+                        "<?php class A implements A {}",
+                        null,
+                        {
+                            "order": "length"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "length multiple",
+                    "args": [
+                        "<?php class A implements Short, Longer, MuchLonger {}",
+                        "<?php class A implements MuchLonger, Short, Longer {}",
+                        {
+                            "order": "length"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "length mixed",
+                    "args": [
+                        "<?php class T implements \\F\\Q\\C\\N, /* Who mixes these? */ UnNamespaced, Partially\\Q\\C\\N {}",
+                        "<?php class T implements /* Who mixes these? */ UnNamespaced, \\F\\Q\\C\\N, Partially\\Q\\C\\N {}",
+                        {
+                            "order": "length"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "length normalized",
+                    "args": [
+                        "<?php\n                    class A implements\n                         ABCDE,\n                         A\\B\\C\\D\n                    { /* */ }\n                ",
+                        "<?php\n                    class A implements\n                         A\\B\\C\\D,\n                         ABCDE\n                    { /* */ }\n                ",
+                        {
+                            "order": "length"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "length, descend single",
+                    "args": [
+                        "<?php class A implements A {}",
+                        null,
+                        {
+                            "order": "length",
+                            "direction": "descend"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "length, descend multiple",
+                    "args": [
+                        "<?php class A implements MuchLonger, Longer, Short {}",
+                        "<?php class A implements MuchLonger, Short, Longer {}",
+                        {
+                            "order": "length",
+                            "direction": "descend"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "length, descend mixed",
+                    "args": [
+                        "<?php class T implements Partially\\Q\\C\\N, /* Who mixes these? */ UnNamespaced, \\F\\Q\\C\\N {}",
+                        "<?php class T implements /* Who mixes these? */ UnNamespaced, \\F\\Q\\C\\N, Partially\\Q\\C\\N {}",
+                        {
+                            "order": "length",
+                            "direction": "descend"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "length, descend normalized",
+                    "args": [
+                        "<?php\n                    class A implements\n                         A\\B\\C\\D,\n                         ABCDE\n                    { /* */ }\n                ",
+                        "<?php\n                    class A implements\n                         ABCDE,\n                         A\\B\\C\\D\n                    { /* */ }\n                ",
+                        {
+                            "order": "length",
+                            "direction": "descend"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case sensitive single",
+                    "args": [
+                        "<?php class A implements A {}",
+                        null,
+                        {
+                            "order": "alpha",
+                            "case_sensitive": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha multiple",
+                    "args": [
+                        "<?php class A implements AA, Aaa, FF, Fff {}",
+                        "<?php class A implements Fff, Aaa, FF, AA {}",
+                        {
+                            "order": "alpha",
+                            "case_sensitive": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha mixed",
+                    "args": [
+                        "<?php class T implements \\F\\Q\\C\\N, Partially\\Q\\C\\N, /* Who mixes these? */ UnNamespaced {}",
+                        "<?php class T implements /* Who mixes these? */ UnNamespaced, \\F\\Q\\C\\N, Partially\\Q\\C\\N {}",
+                        {
+                            "order": "alpha",
+                            "case_sensitive": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alpha normalized",
+                    "args": [
+                        "<?php\n                    class A implements\n                         A\\B\\C\\D,\n                         AAa\\B\\C\\D,\n                         ABCDE,\n                         Aaa\\B\\C\\D\n                    { /* */ }\n                ",
+                        "<?php\n                    class A implements\n                         Aaa\\B\\C\\D,\n                         AAa\\B\\C\\D,\n                         ABCDE,\n                         A\\B\\C\\D\n                    { /* */ }\n                ",
+                        {
+                            "order": "alpha",
+                            "case_sensitive": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

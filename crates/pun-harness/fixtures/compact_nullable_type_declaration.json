@@ -1,0 +1,251 @@
+{
+    "fixer": "compact_nullable_type_declaration",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\CompactNullableTypeDeclarationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/CompactNullableTypeDeclarationFixerTest.php",
+    "case_count": 26,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\AbstractNullableTypeDeclarationFixerTestCase",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a instanceof static ? \\DateTime::class : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(?int $param): ?int {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo(? /* foo */ int $param): ? /* foo */ int {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(? /** foo */ int $param): ? /** foo */ int {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(? // foo\n                    int $param): ? // foo\n                    int {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(/**? int*/$param): ?int {}",
+                        "<?php function foo(/**? int*/$param): ? int {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo(?callable $param): ?callable {}",
+                        "<?php function foo(? callable $param): ? callable {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php function foo(?array &$param): ?array {}",
+                        "<?php function foo(? array &$param): ? array {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function foo(?Bar $param): ?Bar {}",
+                        "<?php function foo(? Bar $param): ? Bar {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php function foo(?\\Bar $param): ?\\Bar {}",
+                        "<?php function foo(? \\Bar $param): ? \\Bar {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php function foo(?Bar\\Baz $param): ?Bar\\Baz {}",
+                        "<?php function foo(? Bar\\Baz $param): ? Bar\\Baz {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php function foo(?Bar\\Baz &$param): ?Bar\\Baz {}",
+                        "<?php function foo(? Bar\\Baz &$param): ? Bar\\Baz {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $foo = function(?Bar\\Baz $param): ?Bar\\Baz {};",
+                        "<?php $foo = function(? Bar\\Baz $param): ? Bar\\Baz {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $foo = function(?Bar\\Baz &$param): ?Bar\\Baz {};",
+                        "<?php $foo = function(? Bar\\Baz &$param): ? Bar\\Baz {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php class Test { public function foo(?Bar\\Baz $param): ?Bar\\Baz {} }",
+                        "<?php class Test { public function foo(? Bar\\Baz $param): ? Bar\\Baz {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php abstract class Test { abstract public function foo(?Bar\\Baz $param); }",
+                        "<?php abstract class Test { abstract public function foo(? Bar\\Baz $param); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $foo = function(?array $a,\n                    ?array $b): ?Bar\\Baz {};",
+                        "<?php $foo = function(?\n                    array $a,\n                    ? array $b): ?\n                    Bar\\Baz {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php function foo(?array ...$param): ?array {}",
+                        "<?php function foo(? array ...$param): ? array {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php class Foo { private ?string $foo; }",
+                        "<?php class Foo { private ? string $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php class Foo { protected ?string $foo; }",
+                        "<?php class Foo { protected ? string $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php class Foo { public ?string $foo; }",
+                        "<?php class Foo { public ? string $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php class Foo { var ?Foo\\Bar $foo; }",
+                        "<?php class Foo { var ? Foo\\Bar $foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $foo = fn(?Bar\\Baz $param): ?Bar\\Baz => null;",
+                        "<?php $foo = fn(? Bar\\Baz $param): ? Bar\\Baz => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $foo = fn(?Bar\\Baz &$param): ?Bar\\Baz => null;",
+                        "<?php $foo = fn(? Bar\\Baz &$param): ? Bar\\Baz => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $foo = fn(?array $a,\n                    ?array $b): ?Bar\\Baz => null;",
+                        "<?php $foo = fn(?\n                    array $a,\n                    ? array $b): ?\n                    Bar\\Baz => null;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\AbstractNullableTypeDeclarationFixerTestCase",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "static return",
+                    "args": [
+                        "<?php\nclass Foo { public function bar(): ?static {} }\n",
+                        "<?php\nclass Foo { public function bar(): ?   static {} }\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

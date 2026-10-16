@@ -1,0 +1,728 @@
+{
+    "fixer": "ordered_class_elements",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/OrderedClassElementsFixerTest.php",
+    "case_count": 39,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\nclass Foo {}\n\nclass Bar\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nclass Foo { const C1 = 1; protected $abc = 'abc'; public function baz($y, $z) {} private function bar1($x) { return 1; } }",
+                        "<?php\n\nclass Foo { private function bar1($x) { return 1; } protected $abc = 'abc'; const C1 = 1; public function baz($y, $z) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\ninterface FooInterface\n{\n\n    /** const 1 */\n    const CONST1 = 'const1';\n\n    // foo\n\n    // const 2\n    const CONST2 = 'const2';\n    public function xyz($x, $y, $z); // comment\n\n    /**\n     * @param array $a\n     *\n     * @return string\n     */\n    function abc(array &$a = null);\n\n    public function def();\n}",
+                        "<?php\n\ninterface FooInterface\n{\n    public function xyz($x, $y, $z); // comment\n\n    /** const 1 */\n    const CONST1 = 'const1';\n\n    /**\n     * @param array $a\n     *\n     * @return string\n     */\n    function abc(array &$a = null);\n\n    // foo\n\n    // const 2\n    const CONST2 = 'const2';\n\n    public function def();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\nabstract class Foo extends FooParent implements FooInterface1, FooInterface2\n{\n\n    use Bar;\n\n    use Baz {\n        abc as private;\n    }\n\n    const C1 = 1;\n    /* comment for C2 */\n\n    const C2 = 2;\n\n    public $fooPublic;\n\n    // comment 3\n\n    protected $fooProtected = array(1, 2);\n    // comment 1\n\n    private $fooPrivate;\n\n    protected function __construct()\n    {\n    }\n\n    public function __destruct() {}\n\n    public function __clone() {}\n\n    public static function setUpBeforeClass() {}\n\n    public static function tearDownAfterclass() {\n    } /* multiline\n    comment */\n\n    protected function setUp() {}\n\n    protected function assertPreConditions() {}\n\n    protected function assertPostConditions() {}\n\n    protected function tearDown() {}\n\n    abstract public function foo1($a, $b = 1);\n\n    // foo2\n    function foo2()\n    {\n        return $this->foo1(1);\n    }\n\n    public static function foo3(self $foo)\n    {\n        return $foo->foo2();\n    } /* comment 1 */ /* comment 2 */\n\n    // comment\n\n    /**\n     * Docblock\n     */\n    protected function foo4(\\ArrayObject $object, array $array, $a = null)\n    {\n        bar();\n\n        if (!$a) {\n            $a = function ($x) {\n                var_dump($x);\n            };\n        }\n    }\n\n    private function foo5()\n    {\n    } // end foo5\n}",
+                        "<?php\n\nabstract class Foo extends FooParent implements FooInterface1, FooInterface2\n{\n    // comment 1\n\n    private $fooPrivate;\n\n    abstract public function foo1($a, $b = 1);\n\n    protected function setUp() {}\n\n    protected function tearDown() {}\n\n    public function __clone() {}\n\n    const C1 = 1;\n\n    // foo2\n    function foo2()\n    {\n        return $this->foo1(1);\n    }\n\n    public static function setUpBeforeClass() {}\n\n    public function __destruct() {}\n\n    use Bar;\n\n    public static function foo3(self $foo)\n    {\n        return $foo->foo2();\n    } /* comment 1 */ /* comment 2 */\n\n    // comment 3\n\n    protected $fooProtected = array(1, 2);\n\n    public $fooPublic;\n    /* comment for C2 */\n\n    const C2 = 2;\n\n    public static function tearDownAfterclass() {\n    } /* multiline\n    comment */\n\n    protected function assertPostConditions() {}\n\n    use Baz {\n        abc as private;\n    }\n\n    protected function assertPreConditions() {}\n\n    private function foo5()\n    {\n    } // end foo5\n\n    protected function __construct()\n    {\n    }\n\n    // comment\n\n    /**\n     * Docblock\n     */\n    protected function foo4(\\ArrayObject $object, array $array, $a = null)\n    {\n        bar();\n\n        if (!$a) {\n            $a = function ($x) {\n                var_dump($x);\n            };\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    const C = 'C';\n    public function abc() {}\n    protected function xyz() {}\n}\n\nclass Bar\n{\n    const C = 1;\n    public function foo($a) { return 1; }\n    public function baz() {}\n}",
+                        "<?php\n\nclass Foo\n{\n    protected function xyz() {}\n    const C = 'C';\n    public function abc() {}\n}\n\nclass Bar\n{\n    public function foo($a) { return 1; }\n    const C = 1;\n    public function baz() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\ntrait FooTrait\n{\n\n    use BarTrait;\n\n    use BazTrait;\n    protected function abc() {\n    }\n}",
+                        "<?php\n\ntrait FooTrait\n{\n    protected function abc() {\n    }\n\n    use BarTrait;\n\n    use BazTrait;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * @see #4086\n */\nclass ComplexStringVariableAndUseTrait\n{\n    use FooTrait;\n    public function sayHello($name)\n    {\n        echo \"Hello, {$name}!\";\n    }\n}\n",
+                        "<?php\n\n/**\n * @see #4086\n */\nclass ComplexStringVariableAndUseTrait\n{\n    public function sayHello($name)\n    {\n        echo \"Hello, {$name}!\";\n    }\n    use FooTrait;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    use BarTrait;\n    use BazTrait;\n    const C1 = 1;\n    const C2 = 2;\n    protected static $protStatProp;\n    public static $pubStatProp1;\n    public $pubProp1;\n    protected $protProp;\n    var $pubProp2;\n    private static $privStatProp;\n    private $privProp;\n    public static $pubStatProp2;\n    public $pubProp3;\n    protected function __construct() {}\n    private static function privStatFunc() {}\n    public function pubFunc1() {}\n    public function __toString() {}\n    protected function protFunc() {}\n    function pubFunc2() {}\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    public static function pubStatFunc3() {}\n    protected static function protStatFunc() {}\n    public function __destruct() {}\n}",
+                        "<?php\n\nclass Foo\n{\n    private static function privStatFunc() {}\n    protected static $protStatProp;\n    public static $pubStatProp1;\n    public function pubFunc1() {}\n    use BarTrait;\n    public $pubProp1;\n    public function __toString() {}\n    protected function protFunc() {}\n    protected $protProp;\n    function pubFunc2() {}\n    public function __destruct() {}\n    var $pubProp2;\n    private static $privStatProp;\n    use BazTrait;\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    private $privProp;\n    const C1 = 1;\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    public static $pubStatProp2;\n    protected function __construct() {}\n    const C2 = 2;\n    public static function pubStatFunc3() {}\n    public $pubProp3;\n    protected static function protStatFunc() {}\n}",
+                        {
+                            "order": [
+                                "use_trait",
+                                "constant",
+                                "property",
+                                "construct",
+                                "method",
+                                "destruct"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public static $pubStatProp1;\n    public function pubFunc1() {}\n    public $pubProp1;\n    public function __toString() {}\n    function pubFunc2() {}\n    public function __destruct() {}\n    var $pubProp2;\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    const C1 = 1;\n    static function pubStatFunc2() {}\n    public static $pubStatProp2;\n    const C2 = 2;\n    public static function pubStatFunc3() {}\n    public $pubProp3;\n    protected static $protStatProp;\n    protected function protFunc() {}\n    protected $protProp;\n    protected function __construct() {}\n    protected static function protStatFunc() {}\n    private static function privStatFunc() {}\n    private static $privStatProp;\n    private $privProp;\n    private function privFunc() {}\n    use BarTrait;\n    use BazTrait;\n}",
+                        "<?php\n\nclass Foo\n{\n    private static function privStatFunc() {}\n    protected static $protStatProp;\n    public static $pubStatProp1;\n    public function pubFunc1() {}\n    use BarTrait;\n    public $pubProp1;\n    public function __toString() {}\n    protected function protFunc() {}\n    protected $protProp;\n    function pubFunc2() {}\n    public function __destruct() {}\n    var $pubProp2;\n    private static $privStatProp;\n    use BazTrait;\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    private $privProp;\n    const C1 = 1;\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    public static $pubStatProp2;\n    protected function __construct() {}\n    const C2 = 2;\n    public static function pubStatFunc3() {}\n    public $pubProp3;\n    protected static function protStatFunc() {}\n}",
+                        {
+                            "order": [
+                                "public",
+                                "protected",
+                                "private"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    use BarTrait;\n    use BazTrait;\n    const C1 = 1;\n    const C2 = 2;\n    public static $pubStatProp1;\n    public static $pubStatProp2;\n    protected static $protStatProp;\n    private static $privStatProp;\n    public $pubProp1;\n    var $pubProp2;\n    public $pubProp3;\n    protected $protProp;\n    private $privProp;\n    protected function __construct() {}\n    public function __destruct() {}\n    public function __toString() {}\n    public static function pubStatFunc1() {}\n    static function pubStatFunc2() {}\n    public static function pubStatFunc3() {}\n    protected static function protStatFunc() {}\n    private static function privStatFunc() {}\n    public function pubFunc1() {}\n    function pubFunc2() {}\n    public function pubFunc3() {}\n    protected function protFunc() {}\n    private function privFunc() {}\n}",
+                        "<?php\n\nclass Foo\n{\n    private static function privStatFunc() {}\n    protected static $protStatProp;\n    public static $pubStatProp1;\n    public function pubFunc1() {}\n    use BarTrait;\n    public $pubProp1;\n    public function __toString() {}\n    protected function protFunc() {}\n    protected $protProp;\n    function pubFunc2() {}\n    public function __destruct() {}\n    var $pubProp2;\n    private static $privStatProp;\n    use BazTrait;\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    private $privProp;\n    const C1 = 1;\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    public static $pubStatProp2;\n    protected function __construct() {}\n    const C2 = 2;\n    public static function pubStatFunc3() {}\n    public $pubProp3;\n    protected static function protStatFunc() {}\n}",
+                        {
+                            "order": [
+                                "use_trait",
+                                "constant",
+                                "property_public_static",
+                                "property_protected_static",
+                                "property_private_static",
+                                "property_public",
+                                "property_protected",
+                                "property_private",
+                                "construct",
+                                "destruct",
+                                "magic",
+                                "method_public_static",
+                                "method_protected_static",
+                                "method_private_static",
+                                "method_public",
+                                "method_protected",
+                                "method_private"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\nabstract class Foo\n{\n    use BarTrait;\n    use BazTrait;\n    const C1 = 1;\n    const C2 = 2;\n    protected static $protStatProp;\n    public static $pubStatProp1;\n    public $pubProp1;\n    protected $protProp;\n    var $pubProp2;\n    private static $privStatProp;\n    private $privProp;\n    public static $pubStatProp2;\n    public $pubProp3;\n    protected function __construct() {}\n    abstract public function absPubFunc();\n    private static function privStatFunc() {}\n    public function pubFunc1() {}\n    abstract protected function absProtFunc();\n    public function __toString() {}\n    protected function protFunc() {}\n    function pubFunc2() {}\n    abstract protected static function absProtStatFunc();\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    abstract public static function absPubStatFunc();\n    public static function pubStatFunc3() {}\n    protected static function protStatFunc() {}\n    public function __destruct() {}\n}",
+                        "<?php\n\nabstract class Foo\n{\n    abstract public function absPubFunc();\n    private static function privStatFunc() {}\n    protected static $protStatProp;\n    public static $pubStatProp1;\n    public function pubFunc1() {}\n    abstract protected function absProtFunc();\n    use BarTrait;\n    public $pubProp1;\n    public function __toString() {}\n    protected function protFunc() {}\n    protected $protProp;\n    function pubFunc2() {}\n    abstract protected static function absProtStatFunc();\n    public function __destruct() {}\n    var $pubProp2;\n    private static $privStatProp;\n    use BazTrait;\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    private $privProp;\n    const C1 = 1;\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    public static $pubStatProp2;\n    abstract public static function absPubStatFunc();\n    protected function __construct() {}\n    const C2 = 2;\n    public static function pubStatFunc3() {}\n    public $pubProp3;\n    protected static function protStatFunc() {}\n}",
+                        {
+                            "order": [
+                                "use_trait",
+                                "constant",
+                                "property",
+                                "construct",
+                                "method",
+                                "destruct"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\nabstract class Foo\n{\n    abstract public function absPubFunc();\n    public static $pubStatProp1;\n    public function pubFunc1() {}\n    public $pubProp1;\n    public function __toString() {}\n    function pubFunc2() {}\n    public function __destruct() {}\n    var $pubProp2;\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    const C1 = 1;\n    static function pubStatFunc2() {}\n    public static $pubStatProp2;\n    abstract public static function absPubStatFunc();\n    const C2 = 2;\n    public static function pubStatFunc3() {}\n    public $pubProp3;\n    protected static $protStatProp;\n    abstract protected function absProtFunc();\n    protected function protFunc() {}\n    protected $protProp;\n    abstract protected static function absProtStatFunc();\n    protected function __construct() {}\n    protected static function protStatFunc() {}\n    private static function privStatFunc() {}\n    private static $privStatProp;\n    private $privProp;\n    private function privFunc() {}\n    use BarTrait;\n    use BazTrait;\n}",
+                        "<?php\n\nabstract class Foo\n{\n    abstract public function absPubFunc();\n    private static function privStatFunc() {}\n    protected static $protStatProp;\n    public static $pubStatProp1;\n    public function pubFunc1() {}\n    abstract protected function absProtFunc();\n    use BarTrait;\n    public $pubProp1;\n    public function __toString() {}\n    protected function protFunc() {}\n    protected $protProp;\n    function pubFunc2() {}\n    abstract protected static function absProtStatFunc();\n    public function __destruct() {}\n    var $pubProp2;\n    private static $privStatProp;\n    use BazTrait;\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    private $privProp;\n    const C1 = 1;\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    public static $pubStatProp2;\n    abstract public static function absPubStatFunc();\n    protected function __construct() {}\n    const C2 = 2;\n    public static function pubStatFunc3() {}\n    public $pubProp3;\n    protected static function protStatFunc() {}\n}",
+                        {
+                            "order": [
+                                "public",
+                                "protected",
+                                "private"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\nabstract class Foo\n{\n    use BarTrait;\n    use BazTrait;\n    const C1 = 1;\n    const C2 = 2;\n    public static $pubStatProp1;\n    public static $pubStatProp2;\n    protected static $protStatProp;\n    private static $privStatProp;\n    public $pubProp1;\n    var $pubProp2;\n    public $pubProp3;\n    protected $protProp;\n    private $privProp;\n    protected function __construct() {}\n    public function __destruct() {}\n    public function __toString() {}\n    public static function pubStatFunc1() {}\n    static function pubStatFunc2() {}\n    public static function pubStatFunc3() {}\n    abstract public static function absPubStatFunc();\n    protected static function protStatFunc() {}\n    abstract protected static function absProtStatFunc();\n    private static function privStatFunc() {}\n    public function pubFunc1() {}\n    function pubFunc2() {}\n    public function pubFunc3() {}\n    abstract public function absPubFunc();\n    protected function protFunc() {}\n    abstract protected function absProtFunc();\n    private function privFunc() {}\n}",
+                        "<?php\n\nabstract class Foo\n{\n    abstract public function absPubFunc();\n    private static function privStatFunc() {}\n    protected static $protStatProp;\n    public static $pubStatProp1;\n    public function pubFunc1() {}\n    abstract protected function absProtFunc();\n    use BarTrait;\n    public $pubProp1;\n    public function __toString() {}\n    protected function protFunc() {}\n    protected $protProp;\n    function pubFunc2() {}\n    abstract protected static function absProtStatFunc();\n    public function __destruct() {}\n    var $pubProp2;\n    private static $privStatProp;\n    use BazTrait;\n    public static function pubStatFunc1() {}\n    public function pubFunc3() {}\n    private $privProp;\n    const C1 = 1;\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    public static $pubStatProp2;\n    abstract public static function absPubStatFunc();\n    protected function __construct() {}\n    const C2 = 2;\n    public static function pubStatFunc3() {}\n    public $pubProp3;\n    protected static function protStatFunc() {}\n}",
+                        {
+                            "order": [
+                                "use_trait",
+                                "constant",
+                                "property_public_static",
+                                "property_protected_static",
+                                "property_private_static",
+                                "property_public",
+                                "property_protected",
+                                "property_private",
+                                "construct",
+                                "destruct",
+                                "magic",
+                                "method_public_static",
+                                "method_public_abstract_static",
+                                "method_protected_static",
+                                "method_protected_abstract_static",
+                                "method_private_static",
+                                "method_public",
+                                "method_public_abstract",
+                                "method_protected",
+                                "method_protected_abstract",
+                                "method_private"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\nabstract class Foo\n{\n    public function test2(){}\n    public abstract function test1();\n}",
+                        "<?php\n\nabstract class Foo\n{\n    public abstract function test1();\n    public function test2(){}\n}",
+                        {
+                            "order": [
+                                "method_public",
+                                "method_abstract"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\nabstract class Foo\n{\n    protected function __construct() {}\n    public function __invoke() {}\n    public function __destruct() {}\n    public static function pubStatFunc1() {}\n    static function pubStatFunc2() {}\n    public static function pubStatFunc3() {}\n    private function custom1() {}\n    abstract public static function absPubStatFunc();\n    protected static function protStatFunc() {}\n    abstract protected static function absProtStatFunc();\n    private static function privStatFunc() {}\n    public function pubFunc1() {}\n    function pubFunc2() {}\n    public function pubFunc3() {}\n    abstract public function custom3();\n    abstract public function absPubFunc();\n    protected function protFunc() {}\n    abstract protected function absProtFunc();\n    private function privFunc() {}\n    protected static function custom2() {}\n    public function __get($prop) {}\n    public function __toString() {}\n}",
+                        "<?php\n\nabstract class Foo\n{\n    public function __get($prop) {}\n    private function custom1() {}\n    abstract public function absPubFunc();\n    private static function privStatFunc() {}\n    public function pubFunc1() {}\n    abstract protected function absProtFunc();\n    public function __toString() {}\n    protected function protFunc() {}\n    function pubFunc2() {}\n    abstract protected static function absProtStatFunc();\n    public function __destruct() {}\n    public static function pubStatFunc1() {}\n    public function __invoke() {}\n    public function pubFunc3() {}\n    static function pubStatFunc2() {}\n    private function privFunc() {}\n    abstract public static function absPubStatFunc();\n    protected function __construct() {}\n    public static function pubStatFunc3() {}\n    protected static function protStatFunc() {}\n    abstract public function custom3();\n    protected static function custom2() {}\n}",
+                        {
+                            "order": [
+                                "construct",
+                                "method:__invoke",
+                                "destruct",
+                                "method_public_static",
+                                "method:custom1",
+                                "method_public_abstract_static",
+                                "method_protected_static",
+                                "method_protected_abstract_static",
+                                "method_private_static",
+                                "method_public",
+                                "method:custom3",
+                                "method_public_abstract",
+                                "method_protected",
+                                "method_protected_abstract",
+                                "method_private",
+                                "method:custom2",
+                                "magic"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\nabstract class Foo\n{\n    public function pub() {}\n    public function bar() {}\n    public function __toString() {}\n}",
+                        "<?php\n\nabstract class Foo\n{\n    public function __toString() {}\n    public function pub() {}\n    public function bar() {}\n}",
+                        {
+                            "order": [
+                                "method:foo",
+                                "method_public",
+                                "method:bar",
+                                "method:baz",
+                                "magic"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nclass Example\n{\n    public static $pubStatProp1;\n    public static $pubStatProp2;\n    public function A(){}\n    public function B1(){}\n    public function B2(){}\n    public function C(){}\n    public function C1(){}\n    public function D(){}\n    private function E(){}\n}",
+                        "<?php\nclass Example\n{\n    public function D(){}\n    public static $pubStatProp2;\n    public function B1(){}\n    public function B2(){}\n    private function E(){}\n    public static $pubStatProp1;\n    public function A(){}\n    public function C(){}\n    public function C1(){}\n}",
+                        {
+                            "order": [
+                                "property_public_static",
+                                "method_public",
+                                "method_private"
+                            ],
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    use BarTrait;\n    use BazTrait;\n    const C1 = 1;\n    const C2 = 2;\n    public static $pubStatProp1;\n    public static $pubStatProp2;\n    protected static $protStatProp;\n    private static $privStatProp;\n    public $pubProp1;\n    var $pubProp2;\n    public $pubProp3;\n    protected $protProp;\n    private $privProp;\n    protected function __construct() {}\n    public function __destruct() {}\n    public function __magicA() {}\n    public function __magicB() {}\n    public function __toString() {}\n    public static function pubStatFunc1() {}\n    static function pubStatFunc2() {}\n    public static function pubStatFunc3() {\n        return $this->privFunc();\n    }\n    protected static function protStatFunc() {}\n    private static function privStatFunc() {}\n    public function pubFunc1() {}\n    function pubFunc2() {}\n    public function pubFunc3(int $b, int $c) {\n        $a = $b*$c;\n\n        return $a % 4;\n    }\n    protected function protFunc() {}\n    private function privFunc() {}\n}",
+                        "<?php\nclass Foo\n{\n    private static function privStatFunc() {}\n    protected static $protStatProp;\n    use BazTrait;\n    public static $pubStatProp2;\n    public $pubProp3;\n    use BarTrait;\n    public function __toString() {}\n    protected function protFunc() {}\n    protected $protProp;\n    function pubFunc2() {}\n    public $pubProp1;\n    public function __destruct() {}\n    var $pubProp2;\n    public function __magicB() {}\n    const C2 = 2;\n    public static $pubStatProp1;\n    public function __magicA() {}\n    private static $privStatProp;\n    static function pubStatFunc2() {}\n    public function pubFunc3(int $b, int $c) {\n        $a = $b*$c;\n\n        return $a % 4;\n    }\n    private $privProp;\n    const C1 = 1;\n    public static function pubStatFunc3() {\n        return $this->privFunc();\n    }\n    public function pubFunc1() {}\n    public static function pubStatFunc1() {}\n    private function privFunc() {}\n    protected function __construct() {}\n    protected static function protStatFunc() {}\n}",
+                        {
+                            "order": [
+                                "use_trait",
+                                "constant",
+                                "property_public_static",
+                                "property_protected_static",
+                                "property_private_static",
+                                "property_public",
+                                "property_protected",
+                                "property_private",
+                                "construct",
+                                "destruct",
+                                "magic",
+                                "method_public_static",
+                                "method_protected_static",
+                                "method_private_static",
+                                "method_public",
+                                "method_protected",
+                                "method_private"
+                            ],
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\nabstract class Foo\n{\n    use BarTrait;\n    use BazTrait;\n    const C1 = 1;\n    const C2 = 2;\n    public static $pubStatProp1;\n    public static $pubStatProp2;\n    protected static $protStatProp;\n    private static $privStatProp;\n    public $pubProp1;\n    var $pubProp2;\n    public $pubProp3;\n    protected $protProp;\n    private $privProp;\n    protected function __construct() {}\n    public function __destruct() {}\n    public function __magicA() {}\n    public function __magicB() {}\n    public function __toString() {}\n    public static function pubStatFunc1() {}\n    static function pubStatFunc2() {}\n    public static function pubStatFunc3() {\n        return $this->privFunc();\n    }\n    abstract public static function absPubStatFunc1();\n    protected static function protStatFunc() {}\n    abstract protected static function absProtStatFunc();\n    private static function privStatFunc() {}\n    public function pubFunc1() {}\n    function pubFunc2() {}\n    public function pubFunc3(int $b, int $c) {\n        $a = $b*$c;\n\n        return $a % 4;\n    }\n    abstract public function absPubFunc();\n    protected function protFunc() {}\n    abstract protected function absProtFunc();\n    private function privFunc() {}\n}",
+                        "<?php\nabstract class Foo\n{\n    private static function privStatFunc() {}\n    protected static $protStatProp;\n    use BazTrait;\n    abstract public function absPubFunc();\n    public static $pubStatProp2;\n    public $pubProp3;\n    use BarTrait;\n    public function __toString() {}\n    protected function protFunc() {}\n    protected $protProp;\n    function pubFunc2() {}\n    public $pubProp1;\n    abstract protected static function absProtStatFunc();\n    public function __destruct() {}\n    var $pubProp2;\n    public function __magicB() {}\n    const C2 = 2;\n    public static $pubStatProp1;\n    public function __magicA() {}\n    private static $privStatProp;\n    static function pubStatFunc2() {}\n    public function pubFunc3(int $b, int $c) {\n        $a = $b*$c;\n\n        return $a % 4;\n    }\n    private $privProp;\n    const C1 = 1;\n    abstract protected function absProtFunc();\n    public static function pubStatFunc3() {\n        return $this->privFunc();\n    }\n    public function pubFunc1() {}\n    public static function pubStatFunc1() {}\n    private function privFunc() {}\n    protected function __construct() {}\n    protected static function protStatFunc() {}\n    abstract public static function absPubStatFunc1();\n}",
+                        {
+                            "order": [
+                                "use_trait",
+                                "constant",
+                                "property_public_static",
+                                "property_protected_static",
+                                "property_private_static",
+                                "property_public",
+                                "property_protected",
+                                "property_private",
+                                "construct",
+                                "destruct",
+                                "magic",
+                                "method_public_static",
+                                "method_public_abstract_static",
+                                "method_protected_static",
+                                "method_protected_abstract_static",
+                                "method_private_static",
+                                "method_public",
+                                "method_public_abstract",
+                                "method_protected",
+                                "method_protected_abstract",
+                                "method_private"
+                            ],
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    const C2 = 2;\n    public const C1 = 1;\n    public const C3 = 3;\n    protected const C4 = 4;\n    private const C5 = 5;\n}",
+                        "<?php\n\nclass Foo\n{\n    private const C5 = 5;\n    const C2 = 2;\n    public const C1 = 1;\n    protected const C4 = 4;\n    public const C3 = 3;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public const C1 = 1;\n    const C2 = 2;\n    public const C3b = 3;\n    protected const C4a = 4;\n    private const C5 = 5;\n}",
+                        "<?php\n\nclass Foo\n{\n    private const C5 = 5;\n    const C2 = 2;\n    public const C1 = 1;\n    protected const C4a = 4;\n    public const C3b = 3;\n}",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    const A_ = 1;\n    const AA = 2;\n    const Ab = 3;\n}",
+                        "<?php\n\nclass Foo\n{\n    const AA = 2;\n    const Ab = 3;\n    const A_ = 1;\n}",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    const AA = 2;\n    const A_ = 1;\n    const Ab = 3;\n}",
+                        "<?php\n\nclass Foo\n{\n    const AA = 2;\n    const Ab = 3;\n    const A_ = 1;\n}",
+                        {
+                            "sort_algorithm": "alpha",
+                            "case_sensitive": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\nclass TestClass\n{\n    public function __construct(){}\n    public function z(){}\n}",
+                        "<?php\nclass TestClass\n{\n    public function z(){}\n    public function __construct(){}\n}",
+                        {
+                            "order": [
+                                "use_trait"
+                            ],
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\nclass TestClass\n{\n    public function __destruct(){}\n    public function z(){}\n}",
+                        "<?php\nclass TestClass\n{\n    public function z(){}\n    public function __destruct(){}\n}",
+                        {
+                            "order": [
+                                "use_trait"
+                            ],
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\nclass TestClass\n{\n    public function __sleep(){}\n    public function z(){}\n}",
+                        "<?php\nclass TestClass\n{\n    public function z(){}\n    public function __sleep(){}\n}",
+                        {
+                            "order": [
+                                "use_trait"
+                            ],
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\nclass TestClass\n{\n    public function abc(){}\n    public function z(){}\n}",
+                        "<?php\nclass TestClass\n{\n    public function z(){}\n    public function abc(){}\n}",
+                        {
+                            "order": [
+                                "use_trait"
+                            ],
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n            class Foo {\n                public iterable $baz;\n                var ? Foo\\Bar $qux;\n                protected string $bar;\n                private ?int $foo;\n            }",
+                        "<?php\n            class Foo {\n                private ?int $foo;\n                protected string $bar;\n                public iterable $baz;\n                var ? Foo\\Bar $qux;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n            class Foo {\n                public string $bar;\n                public array $baz;\n                public ?int $foo;\n                public ? Foo\\Bar $qux;\n            }",
+                        "<?php\n            class Foo {\n                public array $baz;\n                public ? Foo\\Bar $qux;\n                public string $bar;\n                public ?int $foo;\n            }",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\ntrait TestTrait\n{\n    abstract static public function abstractStaticPublic();\n    abstract private function abstractPrivate();\n    abstract static private function abstractStaticPrivate();\n}\n",
+                        "<?php\n\ntrait TestTrait\n{\n    abstract private function abstractPrivate();\n    abstract static private function abstractStaticPrivate();\n    abstract static public function abstractStaticPublic();\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo\n            {\n\n                #[PublicBarAttribute0]\n                public int $bar = 1;\n\n                #[PublicAttribute0]\n                #[PublicAttribute1]\n                #[PublicAttribute2]\n                public function fooPublic()\n                {\n                }\n                #[PrivateAttribute0]\n                private function fooPrivate()\n                {\n                }\n            }",
+                        "<?php class Foo\n            {\n                #[PrivateAttribute0]\n                private function fooPrivate()\n                {\n                }\n\n                #[PublicBarAttribute0]\n                public int $bar = 1;\n\n                #[PublicAttribute0]\n                #[PublicAttribute1]\n                #[PublicAttribute2]\n                public function fooPublic()\n                {\n                }\n            }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\nclass A\n{\n    readonly public string $publicProp0;\n    public readonly string $publicProp1;\n    public string $pubProp2;\n    protected readonly string $protectedProp0;\n    readonly protected string $protectedProp1;\n    readonly private string $privateProp0;\n    private readonly string $privateProp1;\n}\n",
+                        "<?php\n\nclass A\n{\n    public string $pubProp2;\n    readonly public string $publicProp0;\n    public readonly string $publicProp1;\n    private readonly string $privateProp1;\n    readonly private string $privateProp0;\n    protected readonly string $protectedProp0;\n    readonly protected string $protectedProp1;\n}\n",
+                        {
+                            "order": [
+                                "property_public_readonly",
+                                "property_public",
+                                "property_protected_readonly",
+                                "property_private_readonly"
+                            ],
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n enum A: int\n {\n     case Foo = 1;\n     case Bar = 2;\n     private const C1 = 1;\n     function qux() {\n         switch (true) {\n             case 1: break;\n         }\n     }\n }\n ",
+                        "<?php\n\n enum A: int\n {\n     private const C1 = 1;\n     case Foo = 1;\n     function qux() {\n         switch (true) {\n             case 1: break;\n         }\n     }\n     case Bar = 2;\n }\n "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php trait Foo { const C1 = 1; protected $abc = \"abc\"; }",
+                        "<?php trait Foo { protected $abc = \"abc\"; const C1 = 1; }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public const int A = 42;\n    public const string B = 'bravo';\n    public const bool C = true;\n}",
+                        "<?php\nclass Foo\n{\n    public const string B = 'bravo';\n    public const bool C = true;\n    public const int A = 42;\n}",
+                        {
+                            "sort_algorithm": "alpha"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "single element with property hook",
+                    "args": [
+                        "<?php class Foo\n{\n    public function __construct(\n        public string $x {\n            set(string $value) {\n                $this->x = $value;\n            }\n        },\n        public bool $y,\n    ) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hook for abstract property",
+                    "args": [
+                        "<?php abstract class Foo\n{\n    abstract string $a { get; }\n    abstract public string $b { get; }\n    abstract protected string $c { get; }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hook and const",
+                    "args": [
+                        "<?php class Foo\n{\n    public const C = 0;\n    public int $i { get {} }\n}",
+                        "<?php class Foo\n{\n    public int $i { get {} }\n    public const C = 0;\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedClassElementsFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "closure in attribute",
+                    "args": [
+                        "<?php class Foo {\n    #[AnAttribute__Invoke(static function () {})]\n    public function __invoke() {}\n    #[AnAttributeBar(static function () {})]\n    public function bar() {}\n    #[AnAttributeBaz(static function () {})]\n    public function baz() {}\n}",
+                        "<?php class Foo {\n    #[AnAttributeBar(static function () {})]\n    public function bar() {}\n    #[AnAttribute__Invoke(static function () {})]\n    public function __invoke() {}\n    #[AnAttributeBaz(static function () {})]\n    public function baz() {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

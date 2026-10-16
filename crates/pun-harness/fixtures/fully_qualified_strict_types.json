@@ -1,0 +1,1472 @@
+{
+    "fixer": "fully_qualified_strict_types",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\FullyQualifiedStrictTypesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Import/FullyQualifiedStrictTypesFixerTest.php",
+    "case_count": 153,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\FullyQualifiedStrictTypesFixerTest",
+            "body": "    public function testFix(\n        string $expected,\n        ?string $input = null,\n        array $configuration = [],\n        ?WhitespacesFixerConfig $whitespacesConfig = null\n    ): void {\n        $this->fixer->configure($configuration);\n\n        if (null !== $whitespacesConfig) {\n            $this->fixer->setWhitespacesConfig($whitespacesConfig);\n            $expected = str_replace(\"\\n\", $whitespacesConfig->getLineEnding(), $expected);\n            if (null !== $input) {\n                $input = str_replace(\"\\n\", $whitespacesConfig->getLineEnding(), $input);\n            }\n        }\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace === type name",
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar;\nfunction test(\\Foo\\Bar $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "reserved type",
+                    "args": [
+                        "<?php\n\nfunction test(int $x): void {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore class resolution shortening when imported symbol is a function",
+                    "args": [
+                        "<?php\n\nuse function Symfony\\Component\\String\\u;\n\necho Symfony\\Component\\String\\u::class;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace cases",
+                    "args": [
+                        "<?php\n\nnamespace A\\B\\C\\D\n{\n    class Foo {}\n}\n\nnamespace A\\B\\C\\D\\E\n{\n    class Bar {}\n}\n\nnamespace A\\B\\C\\D\n{\n    function A(Foo $fix, \\X\\B\\C\\D\\E\\Bar $doNotFix) {}\n}\n",
+                        "<?php\n\nnamespace A\\B\\C\\D\n{\n    class Foo {}\n}\n\nnamespace A\\B\\C\\D\\E\n{\n    class Bar {}\n}\n\nnamespace A\\B\\C\\D\n{\n    function A(\\A\\B\\C\\D\\Foo $fix, \\X\\B\\C\\D\\E\\Bar $doNotFix) {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple use",
+                    "args": [
+                        "<?php use A\\Exception; function foo(Exception $e) {}",
+                        "<?php use A\\Exception; function foo(\\A\\Exception $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple use with global",
+                    "args": [
+                        "<?php use A\\Exception; function foo(Exception $e, \\Exception $e2) {}",
+                        "<?php use A\\Exception; function foo(\\A\\Exception $e, \\Exception $e2) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "no backslash with global",
+                    "args": [
+                        "<?php use A\\Exception; function foo(Exception $e, Foo $e2) {}",
+                        "<?php use A\\Exception; function foo(A\\Exception $e, \\Foo $e2) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leading backslash in global namespace",
+                    "args": [
+                        "<?php use A\\Exception; function foo(Exception $e, \\Foo $e2) {}",
+                        "<?php use A\\Exception; function foo(A\\Exception $e, Foo $e2) {}",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "backslash must be kept when conflicts with other use with global",
+                    "args": [
+                        "<?php use A\\Exception; function foo(Exception $e, \\Exception $e2) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple use as",
+                    "args": [
+                        "<?php use A\\Exception as C; function foo(C $e) {}",
+                        "<?php use A\\Exception as C; function foo(\\A\\Exception $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple use as casing",
+                    "args": [
+                        "<?php use A\\Exception as C; function foo(C $e) {}",
+                        "<?php use A\\Exception as C; function foo(\\A\\EXCEPTION $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple use 2",
+                    "args": [
+                        "<?php use \\A\\Exception; function foo(Exception $e) {}",
+                        "<?php use \\A\\Exception; function foo(\\A\\Exception $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "common prefix 1",
+                    "args": [
+                        "<?php namespace Foo; function foo(\\FooBar $v): \\FooBar {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "common prefix 2",
+                    "args": [
+                        "<?php namespace Foo; function foo(\\FooBar\\Baz $v): \\FooBar {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "issue #7025 - non-empty namespace, import and FQCN in argument",
+                    "args": [
+                        "<?php namespace foo\\bar\\baz;\n\nuse foo\\baz\\buzz;\n\nclass A {\n    public function b(buzz $buzz): void {\n    }\n}",
+                        "<?php namespace foo\\bar\\baz;\n\nuse foo\\baz\\buzz;\n\nclass A {\n    public function b(\\foo\\baz\\buzz $buzz): void {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interface multiple extends",
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar;\nuse D\\E;\nuse IIII\\G;\nuse Foo\\Bar\\C;\ninterface NakanoInterface extends IzumiInterface, A, E, \\C, EZ\n{\n}",
+                        "<?php\nnamespace Foo\\Bar;\nuse D\\E;\nuse IIII\\G;\nuse Foo\\Bar\\C;\ninterface NakanoInterface extends \\Foo\\Bar\\IzumiInterface, \\Foo\\Bar\\A, \\D\\E, \\C, EZ\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interface in global namespace with global extend",
+                    "args": [
+                        "<?php interface Foo1 extends \\ArrayAccess2{}",
+                        "<?php interface Foo1 extends ArrayAccess2{}",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interface in global namespace with multiple extend",
+                    "args": [
+                        "<?php use B\\Exception; interface Foo extends \\ArrayAccess, \\Exception, Exception {}",
+                        "<?php use B\\Exception; interface Foo extends \\ArrayAccess, \\Exception, \\B\\Exception {}",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class implements",
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar;\nclass SomeClass implements Izumi\n{\n}",
+                        "<?php\nnamespace Foo\\Bar;\nclass SomeClass implements \\Foo\\Bar\\Izumi\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class implements, shorten to namespace",
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar;\n$a = new class implements Izumi {};",
+                        "<?php\nnamespace Foo\\Bar;\n$a = new class implements \\Foo\\Bar\\Izumi {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class implements, shorten to imported name",
+                    "args": [
+                        "<?php\nuse Foo\\Bar\\Izumi;\n$a = new class implements Izumi {};",
+                        "<?php\nuse Foo\\Bar\\Izumi;\n$a = new class implements \\Foo\\Bar\\Izumi {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class extends and implements",
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar;\nclass SomeClass extends A implements Izumi\n{\n}",
+                        "<?php\nnamespace Foo\\Bar;\nclass SomeClass extends \\Foo\\Bar\\A implements \\Foo\\Bar\\Izumi\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class extends and implements multiple",
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar;\nclass SomeClass extends A implements Izumi, A, \\A\\B, C\n{\n}",
+                        "<?php\nnamespace Foo\\Bar;\nclass SomeClass extends \\Foo\\Bar\\A implements \\Foo\\Bar\\Izumi, A, \\A\\B, \\Foo\\Bar\\C\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single caught exception",
+                    "args": [
+                        "<?php use A\\B; echo 1; try{ foo(999); } catch (B $z) {}",
+                        "<?php use A\\B; echo 1; try{ foo(999); } catch (\\A\\B $z) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single caught exception namespaced",
+                    "args": [
+                        "<?php namespace B; try{ foo(999); } catch (A $z) {}",
+                        "<?php namespace B; try{ foo(999); } catch (\\B\\A $z) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple caught exceptions",
+                    "args": [
+                        "<?php namespace D; use A\\B; try{ foo(); } catch (B |  \\A\\C  | /* 1 */  \\A\\D $z) {}",
+                        "<?php namespace D; use A\\B; try{ foo(); } catch (\\A\\B |  \\A\\C  | /* 1 */  \\A\\D $z) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "catch in multiple namespaces",
+                    "args": [
+                        "<?php\nnamespace {\n    try{ foo(); } catch (\\Exception $z) {}\n    try{ foo(); } catch (\\Exception $z) {}\n    try{ foo(); } catch (\\A\\X $z) {}\n    try{ foo(); } catch (\\A\\X $z) {}\n    try{ foo(); } catch (\\B\\Z $z) {}\n    try{ foo(); } catch (\\B\\Z $z) {}\n}\nnamespace A {\n    try{ foo(); } catch (\\Exception $z) {}\n    try{ foo(); } catch (X $z) {}\n    try{ foo(); } catch (\\B\\Z $z) {}\n}\nnamespace B {\n    try{ foo(); } catch (\\Exception $z) {}\n    try{ foo(); } catch (\\A\\X $z) {}\n    try{ foo(); } catch (Z $z) {}\n}\n",
+                        "<?php\nnamespace {\n    try{ foo(); } catch (Exception $z) {}\n    try{ foo(); } catch (\\Exception $z) {}\n    try{ foo(); } catch (A\\X $z) {}\n    try{ foo(); } catch (\\A\\X $z) {}\n    try{ foo(); } catch (B\\Z $z) {}\n    try{ foo(); } catch (\\B\\Z $z) {}\n}\nnamespace A {\n    try{ foo(); } catch (\\Exception $z) {}\n    try{ foo(); } catch (\\A\\X $z) {}\n    try{ foo(); } catch (\\B\\Z $z) {}\n}\nnamespace B {\n    try{ foo(); } catch (\\Exception $z) {}\n    try{ foo(); } catch (\\A\\X $z) {}\n    try{ foo(); } catch (\\B\\Z $z) {}\n}\n",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "new class",
+                    "args": [
+                        "<?php use A\\B; new B();",
+                        "<?php use A\\B; new \\A\\B();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "new class namespaced",
+                    "args": [
+                        "<?php namespace B; new A();",
+                        "<?php namespace B; new \\B\\A();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "new class not imported",
+                    "args": [
+                        "<?php new A\\B(); new A\\B();",
+                        "<?php new \\A\\B(); new A\\B();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "instanceof",
+                    "args": [
+                        "<?php use A\\B; $res = $v instanceof B;",
+                        "<?php use A\\B; $res = $v instanceof \\A\\B;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "instanceof namespaced",
+                    "args": [
+                        "<?php namespace B; $res = ($v->obj()) instanceof A;",
+                        "<?php namespace B; $res = ($v->obj()) instanceof \\B\\A;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use trait simple",
+                    "args": [
+                        "<?php use A\\B; class Foo { use B; };",
+                        "<?php use A\\B; class Foo { use \\A\\B; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use trait complex",
+                    "args": [
+                        "<?php use A\\B; class Foo { use A\\C; use D; use B { B::bar as baz; } };",
+                        "<?php use A\\B; class Foo { use \\A\\C; use \\D; use \\A\\B { \\A\\B::bar as baz; } };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "typed property in class",
+                    "args": [
+                        "<?php use A\\B; class Cl { public B $p; var B $p2; }",
+                        "<?php use A\\B; class Cl { public \\A\\B $p; var \\A\\B $p2; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "typed property in anonymous class",
+                    "args": [
+                        "<?php use A\\B; new class() { public B $p; };",
+                        "<?php use A\\B; new class() { public \\A\\B $p; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "typed nullable property in class",
+                    "args": [
+                        "<?php use A\\B; class Cl { public ?B $p = null, $r; }",
+                        "<?php use A\\B; class Cl { public ?\\A\\B $p = null, $r; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "starts with but not full name extends",
+                    "args": [
+                        "<?php namespace a\\abcd;\nclass Foo extends \\a\\abcdTest { }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "starts with but not full name function arg",
+                    "args": [
+                        "<?php\nnamespace Z\\B\\C\\D\n{\n    function A(\\Z\\B\\C\\DE\\Foo $fix) {}\n}\n",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static class reference",
+                    "args": [
+                        "<?php\n            use ZXY\\A;\n            echo A::class;\n            echo A::B();\n            echo A::class;\n            foo(A::B,A::C);\n            echo $a[A::class];\n            echo A::class?>\n            ",
+                        "<?php\n            use ZXY\\A;\n            echo \\ZXY\\A::class;\n            echo \\ZXY\\A::B();\n            echo \\ZXY\\A::class;\n            foo(\\ZXY\\A::B,\\ZXY\\A::C);\n            echo $a[\\ZXY\\A::class];\n            echo \\ZXY\\A::class?>\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n            namespace Foo\\Test;\n            $this->assertSame($names, \\Foo\\TestMyThing::zxy(1,2));\n            ",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n            use ZXY\\A;\n            use D;\n            echo $D::CONST_VALUE;\n            echo parent::CONST_VALUE;\n            echo self::$abc;\n            echo Z::F;\n            echo X\\Z::F;\n            ",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import new symbols from all supported places",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Test;\nuse Other\\BaseClass;\nuse Other\\CaughtThrowable;\nuse Other\\FunctionArgument;\nuse Other\\FunctionReturnType;\nuse Other\\InstanceOfClass;\nuse Other\\Interface1;\nuse Other\\Interface2;\nuse Other\\NewClass;\nuse Other\\PropertyPhpDoc;\nuse Other\\StaticFunctionCall;\n\nclass Foo extends BaseClass implements Interface1, Interface2\n{\n    /** @var PropertyPhpDoc */\n    private $array;\n    public function __construct(FunctionArgument $arg) {}\n    public function foo(): FunctionReturnType\n    {\n        try {\n            StaticFunctionCall::bar();\n        } catch (CaughtThrowable $e) {}\n    }\n}\n\nnew NewClass();\n\nif ($a instanceof InstanceOfClass) { return false; }\n            ",
+                        "<?php\n\nnamespace Foo\\Test;\n\nclass Foo extends \\Other\\BaseClass implements \\Other\\Interface1, \\Other\\Interface2\n{\n    /** @var \\Other\\PropertyPhpDoc */\n    private $array;\n    public function __construct(\\Other\\FunctionArgument $arg) {}\n    public function foo(): \\Other\\FunctionReturnType\n    {\n        try {\n            \\Other\\StaticFunctionCall::bar();\n        } catch (\\Other\\CaughtThrowable $e) {}\n    }\n}\n\nnew \\Other\\NewClass();\n\nif ($a instanceof \\Other\\InstanceOfClass) { return false; }\n            ",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import new symbols under already existing imports",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Test;\n\nuse Other\\A;\nuse Other\\B;\nuse Other\\C;\nuse Other\\D;\nuse Other\\E;\n\nfunction foo(A $a, B $b) {}\nfunction bar(C $c, D $d): E {}\n",
+                        "<?php\n\nnamespace Foo\\Test;\n\nuse Other\\A;\nuse Other\\B;\n\nfunction foo(A $a, B $b) {}\nfunction bar(\\Other\\C $c, \\Other\\D $d): \\Other\\E {}\n",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import new symbols within multiple namespaces",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar {\n    use Other\\A;\nuse Other\\B;\n\n    function foo(A $a, B $b) {}\n}\nnamespace Foo\\Baz {\n    use Other\\A;\nuse Other\\C;\n\n    function foo(A $a, C $c) {}\n}\n",
+                        "<?php\n\nnamespace Foo\\Bar {\n    use Other\\A;\n\n    function foo(A $a, \\Other\\B $b) {}\n}\nnamespace Foo\\Baz {\n    use Other\\A;\n\n    function foo(A $a, \\Other\\C $c) {}\n}\n",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import new symbols with no existing imports nor namespace /wo declare",
+                    "args": [
+                        "<?php\n\nuse Ns\\A;\n// comment\n\nfoo();\n\nfunction foo(A $v) {}",
+                        "<?php\n\n// comment\n\nfoo();\n\nfunction foo(\\Ns\\A $v) {}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import new symbols with no existing imports nor namespace /w declare",
+                    "args": [
+                        "<?php\n\n// comment\n\ndeclare(strict_types=1);\nuse Ns\\A;\n\nfunction foo(A $v) {}",
+                        "<?php\n\n// comment\n\ndeclare(strict_types=1);\n\nfunction foo(\\Ns\\A $v) {}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import new symbols with custom whitespace config",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Other\\A;\nuse Other\\B;\n\nfunction foo(A $a, B $b) {}\n",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Other\\A;\n\nfunction foo(A $a, \\Other\\B $b) {}\n",
+                        {
+                            "import_symbols": true
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore importing if there is name conflict",
+                    "args": [
+                        "<?php namespace Foo\\Test; use Other\\A; function foo(A $a, \\YetAnother\\A $b) {}",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore importing if symbol is not a FQN",
+                    "args": [
+                        "<?php namespace Foo\\Test; use Foo\\Test\\Sub\\Symbol1; function foo(Symbol1 $a, Sub\\Symbol2 $b) {}",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore global FQNs (there is GlobalNamespaceImportFixer for that)",
+                    "args": [
+                        "<?php namespace Foo\\Test; function foo(\\Symbol $a, \\OtherSymbol $b) {}",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@link shall not crash fixer",
+                    "args": [
+                        "<?php\n\nuse Symfony\\Component\\Validator\\Constraints\\Valid;\n/**\n * {@link Valid} is assumed.\n *\n * @return void\n */\nfunction validate(): void {}\n",
+                        "<?php\n\n/**\n * {@link \\Symfony\\Component\\Validator\\Constraints\\Valid} is assumed.\n *\n * @return void\n */\nfunction validate(): void {}\n",
+                        {
+                            "import_symbols": true,
+                            "phpdoc_tags": [
+                                "link"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import short name only once (ignore consequent same-name, different-namespace symbols)",
+                    "args": [
+                        "<?php\n\nnamespace Test;\nuse A\\A;\n\nclass Foo extends A implements \\B\\A, \\C\\A\n{\n    /** @var \\D\\A */\n    private $array;\n    public function __construct(\\E\\A $arg) {}\n    public function foo(): \\F\\A\n    {\n        try {\n            \\G\\A::bar();\n        } catch (\\H\\A $e) {}\n    }\n}",
+                        "<?php\n\nnamespace Test;\n\nclass Foo extends \\A\\A implements \\B\\A, \\C\\A\n{\n    /** @var \\D\\A */\n    private $array;\n    public function __construct(\\E\\A $arg) {}\n    public function foo(): \\F\\A\n    {\n        try {\n            \\G\\A::bar();\n        } catch (\\H\\A $e) {}\n    }\n}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import if already implicitly used by class declaration",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\nclass City\n{\n    public \\Ns2\\City $city;\n}",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import if already implicitly used by interface declaration",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\ninterface City\n{\n    public function f(\\Ns2\\City $city);\n}",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import if already implicitly used by trait declaration",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\ntrait City\n{\n    public \\Ns2\\City $city;\n}",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import if already implicitly used by short name usage in class instantiation",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\nnew \\Ns2\\MyCl();\nnew MyCl();",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import if already implicitly used by short name usage in attribute",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\nnew \\Ns2\\MyCl();\n#[MyCl]\nclass Cl {}",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import if already implicitly used by short name usage in phpdoc",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\nnew \\Ns2\\MyCl();\n/** @var MyCl */;",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import if already implicitly used by relative name first part",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\nnew \\Ns2\\MyCl();\nnew MyCl\\Sub();",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import if already implicitly used by relative name first part (with more backslashes than other FQCN)",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\nnew \\Ns2\\MyCl();\nnew MyCl\\A\\B\\C();",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "prevent import if implicitly used by generics template",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\nuse Foo\\T;\n\nclass Cl\n{\n    /**\n     * @return T\n     */\n    public function before()\n    {\n        return new T();\n    }\n\n    /**\n     * @template T of \\Exception\n     * @param \\Closure(\\Foo\\T): T $fx\n     * @return T\n     */\n    public function makeException(\\Closure $fx)\n    {\n        $arg = new \\Foo\\T();\n\n        return $fx($arg);\n    }\n\n    /**\n     * @return T\n     */\n    public function after()\n    {\n        return new T();\n    }\n\n    /**\n     * @return T\n     */\n    public function anony()\n    {\n        $anony = new\n        /**\n         * @template T of \\Exception\n         */\n        class(new RuntimeException()) {\n            /** @var T */\n            public \\Exception $e;\n\n            /**\n             * @param T $e\n             */\n            public function __construct(\\Exception $e)\n            {\n                $this->e = $e;\n            }\n\n            public function before(): void\n            {\n                new \\Foo\\T();\n            }\n\n            /**\n             * @return T\n             */\n            public function returnT()\n            {\n                new \\Foo\\T();\n\n                return $this->e;\n            }\n\n            public function after(): void\n            {\n                new \\Foo\\T();\n            }\n        };\n\n        return new T();\n    }\n}",
+                        "<?php\n\nnamespace Ns;\n\nclass Cl\n{\n    /**\n     * @return \\Foo\\T\n     */\n    public function before()\n    {\n        return new \\Foo\\T();\n    }\n\n    /**\n     * @template T of \\Exception\n     * @param \\Closure(\\Foo\\T): T $fx\n     * @return T\n     */\n    public function makeException(\\Closure $fx)\n    {\n        $arg = new \\Foo\\T();\n\n        return $fx($arg);\n    }\n\n    /**\n     * @return \\Foo\\T\n     */\n    public function after()\n    {\n        return new \\Foo\\T();\n    }\n\n    /**\n     * @return \\Foo\\T\n     */\n    public function anony()\n    {\n        $anony = new\n        /**\n         * @template T of \\Exception\n         */\n        class(new RuntimeException()) {\n            /** @var T */\n            public \\Exception $e;\n\n            /**\n             * @param T $e\n             */\n            public function __construct(\\Exception $e)\n            {\n                $this->e = $e;\n            }\n\n            public function before(): void\n            {\n                new \\Foo\\T();\n            }\n\n            /**\n             * @return T\n             */\n            public function returnT()\n            {\n                new \\Foo\\T();\n\n                return $this->e;\n            }\n\n            public function after(): void\n            {\n                new \\Foo\\T();\n            }\n        };\n\n        return new \\Foo\\T();\n    }\n}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "prevent import if implicitly used by local type",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\nuse Ns2\\Bar;\nuse Ns2\\Foo;\n\n/**\n * @phpstan-type Foo array{int, int}\n * @phpstan-import-type Bar from OtherCl\n */\nclass Cl\n{\n    /**\n     * @param \\Ns2\\Foo $v\n     *\n     * @return Foo\n     */\n    public function foo($v)\n    {\n        return [1, 2];\n    }\n\n    /**\n     * @param \\Ns2\\Bar $v\n     *\n     * @return Bar\n     */\n    public function bar($v)\n    {\n        return null;\n    }\n}\n\nclass Cl2\n{\n    /**\n     * @param Foo $v\n     */\n    public function foo($v): void {}\n\n    /**\n     * @param Bar $v\n     */\n    public function bar($v): void {}\n}",
+                        "<?php\n\nnamespace Ns;\n\n/**\n * @phpstan-type Foo array{int, int}\n * @phpstan-import-type Bar from OtherCl\n */\nclass Cl\n{\n    /**\n     * @param \\Ns2\\Foo $v\n     *\n     * @return Foo\n     */\n    public function foo($v)\n    {\n        return [1, 2];\n    }\n\n    /**\n     * @param \\Ns2\\Bar $v\n     *\n     * @return Bar\n     */\n    public function bar($v)\n    {\n        return null;\n    }\n}\n\nclass Cl2\n{\n    /**\n     * @param \\Ns2\\Foo $v\n     */\n    public function foo($v): void {}\n\n    /**\n     * @param \\Ns2\\Bar $v\n     */\n    public function bar($v): void {}\n}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "prevent import if implicitly used by generics template - psalm/phpstan prefix",
+                    "args": [
+                        "<?php\n\n/** @psalm-template T1 */\n/** @phpstan-template T2 */\nclass Foo {\n    /** @var T1 */\n    public $v1;\n    /** @var T2 */\n    public $v2;\n    /** @var \\T3 */\n    public $v3;\n}",
+                        "<?php\n\n/** @psalm-template T1 */\n/** @phpstan-template T2 */\nclass Foo {\n    /** @var T1 */\n    public $v1;\n    /** @var T2 */\n    public $v2;\n    /** @var T3 */\n    public $v3;\n}",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "prevent import if implicitly used by generics template - covariant/contravariant suffix",
+                    "args": [
+                        "<?php\n\n/** @template-covariant T1 */\n/** @psalm-template-contravariant T2 */\nclass Foo {\n    /** @var T1 */\n    public $v1;\n    /** @var T2 */\n    public $v2;\n}",
+                        null,
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import with relative and absolute symbols - global",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar;\nnew Exception();\nnew Exception();\nnew Bar();",
+                        "<?php\n\nnew \\Exception();\nnew Exception();\nnew Foo\\Bar();",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import with relative and absolute symbols - global and leading backslash",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar;\nnew \\Exception();\nnew \\Exception();\nnew Bar();",
+                        "<?php\n\nnew \\Exception();\nnew Exception();\nnew Foo\\Bar();",
+                        {
+                            "import_symbols": true,
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import with relative and absolute symbols - namespaced",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\nuse Ns2\\Foo4;\nuse Ns\\Foo3\\Sub3;\nuse Ns\\Foo\\Sub2;\n\nnew Foo();\nnew Foo\\Sub();\nnew Foo();\nnew Foo2();\nnew Sub2();\nnew Sub3();\nnew \\Ns2\\Foo();\nnew Foo4();",
+                        "<?php\n\nnamespace Ns;\n\nnew Foo();\nnew Foo\\Sub();\nnew \\Ns\\Foo();\nnew \\Ns\\Foo2();\nnew \\Ns\\Foo\\Sub2();\nnew \\Ns\\Foo3\\Sub3();\nnew \\Ns2\\Foo();\nnew \\Ns2\\Foo4();",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "shorten relative reference to already imported, direct short name",
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar\\Baz;\n\nuse Foo\\Bar;\nuse Foo\\Bar\\A\\B;\n\nfinal class Buzz extends Bar implements B {}\nfinal class Fuzz extends Bar implements B {}",
+                        "<?php\nnamespace Foo\\Bar\\Baz;\n\nuse Foo\\Bar;\nuse Foo\\Bar\\A\\B;\n\nfinal class Buzz extends Bar implements Bar\\A\\B {}\nfinal class Fuzz extends Bar implements B {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix to longest imported name",
+                    "args": [
+                        "<?php\n\nuse A\\B;\nuse A\\X as Y;\nuse S as R;\nuse S\\T;\n\nnew B();\nnew B\\C();\nnew Y();\nnew Y\\Z();\nnew T();",
+                        "<?php\n\nuse A\\B;\nuse A\\X as Y;\nuse S as R;\nuse S\\T;\n\nnew \\A\\B();\nnew \\A\\B\\C();\nnew \\A\\X();\nnew \\A\\X\\Z();\nnew R\\T();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "shortening - namespace with shorter import",
+                    "args": [
+                        "<?php\nnamespace U\\V\\W;\nuse U\\V;\nnew \\U();\nnew V();\nnew V\\W();\nnew X();\nnew X\\Y();\nnew X\\Y\\Z();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "shortening - namespace with same import",
+                    "args": [
+                        "<?php\nnamespace U\\V\\W;\nuse U\\V\\W;\nnew \\U();\nnew \\U\\V();\nnew W();\nnew X();\nnew X\\Y();\nnew X\\Y\\Z();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "shortening - namespace with useless import",
+                    "args": [
+                        "<?php\nnamespace U\\V\\W;\nuse U\\V\\W\\X;\nnew \\U();\nnew \\U\\V();\nnew \\U\\V\\W();\nnew X();\nnew X\\Y();\nnew X\\Y\\Z();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "shortening - namespace with longer import",
+                    "args": [
+                        "<?php\nnamespace U\\V\\W;\nuse U\\V\\W\\X\\Y;\nnew \\U();\nnew \\U\\V();\nnew \\U\\V\\W();\nnew X();\nnew Y();\nnew Y\\Z();\nnew Y\\Z\\e();\nnew Y\\Z\\e\\f();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix class named the same as imported function",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Bar\\Request;\nuse function Baz\\request;\nclass Test\n{\n    public function request(Request $request = null)\n    {\n        $request = $request ?? Request::create('/docs.json');\n    }\n}\n$request = new Request();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix property named the same as class",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Bar\\Service;\nclass Baz {\n    public function getValue()\n    {\n        return $this->service::getValueFromService();\n    }\n\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import even if partly importable using namespace",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\nuse Ns\\A\\B;\nuse Ns\\A\\B\\C;\n\nnew A();\nnew B();\nnew C();",
+                        "<?php\n\nnamespace Ns;\n\nnew \\Ns\\A();\nnew \\Ns\\A\\B();\nnew \\Ns\\A\\B\\C();",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import relative symbols if not configured so - namespaced",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\nnew A();\nnew A\\B();\nnew A\\B\\C();",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import relative symbols if not configured so - global with use",
+                    "args": [
+                        "<?php\n\nuse A;\nuse B\\B2\\C2;\n\nnew A();\nnew A\\B();\nnew A\\B\\C();\nnew C2();",
+                        "<?php\n\nuse A;\n\nnew A();\nnew A\\B();\nnew A\\B\\C();\nnew B\\B2\\C2();",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not import partly on import conflict (until conflicts are fully handled and consistent with namespaced/non-namespaced files) - global with use",
+                    "args": [
+                        "<?php\n\nuse A;\n\nnew A();\nnew X\\Y\\A();",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "the root namespace of the imported class is equal to the imported global class name in lowercase (default behaviour)",
+                    "args": [
+                        "<?php\n\nuse App;\n\nclass Some extends \\app\\components\\Some\n{\n    public function getDef()\n    {\n        $a = App::getA();\n\n        return new \\app\\components\\Def($a);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "the root namespace of the imported class is equal to the imported global class name in lowercase (with import_symbols option)",
+                    "args": [
+                        "<?php\n\nuse App;\nuse app\\components\\Def;\n\nclass Some extends \\app\\components\\Some\n{\n    public function getDef()\n    {\n        $a = App::getA();\n\n        return new Def($a);\n    }\n}",
+                        "<?php\n\nuse App;\n\nclass Some extends \\app\\components\\Some\n{\n    public function getDef()\n    {\n        $a = App::getA();\n\n        return new \\app\\components\\Def($a);\n    }\n}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "the namespace of the imported class contains multiple occurrences of the imported global class name in lowercase (default behaviour)",
+                    "args": [
+                        "<?php\n\nuse App;\n\nclass Some extends \\app\\app\\Some\n{\n    public function getDef()\n    {\n        $a = App::getA();\n\n        return new \\app\\components\\Def($a);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "the namespace of the imported class contains multiple occurrences of the imported global class name in lowercase (with import_symbols option)",
+                    "args": [
+                        "<?php\n\nuse App;\nuse app\\components\\Def;\n\nclass Some extends \\app\\app\\Some\n{\n    public function getDef()\n    {\n        $a = App::getA();\n\n        return new Def($a);\n    }\n}",
+                        "<?php\n\nuse App;\n\nclass Some extends \\app\\app\\Some\n{\n    public function getDef()\n    {\n        $a = App::getA();\n\n        return new \\app\\components\\Def($a);\n    }\n}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Shorten symbol from comma-separated multi-use statement",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Bar\\Service1, Bar\\Service2;\nuse function Bar\\func1, Bar\\func2;\nuse const Bar\\CONST1, Bar\\CONST2;\n\n\\Bar\\func1(new Service1(\\Bar\\CONST1));\n\\Bar\\func2(new Service2(\\Bar\\CONST2));",
+                        "<?php\nnamespace Foo;\nuse Bar\\Service1, Bar\\Service2;\nuse function Bar\\func1, Bar\\func2;\nuse const Bar\\CONST1, Bar\\CONST2;\n\n\\Bar\\func1(new \\Bar\\Service1(\\Bar\\CONST1));\n\\Bar\\func2(new \\Bar\\Service2(\\Bar\\CONST2));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Shorten symbol from multi-line, comma-separated multi-use statement, with some noise here and there",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Bar\\Service1, /* MAKE SOME NOOOOOISE! */\n    /* MAKE SOME NOOOOOISE! */ Bar\\Service2;\nuse function Bar\\func1, // MAKE SOME NOOOOOISE!\n    /** MAKE SOME NOOOOOISE! */ Bar\\func2;\nuse const /* MAKE SOME NOOOOOISE! */ Bar\\CONST1,\n    Bar\\CONST2; # MAKE SOME NOOOOOISE!\n\n\\Bar\\func1(new Service1(\\Bar\\CONST1));\n\\Bar\\func2(new Service2(\\Bar\\CONST2));",
+                        "<?php\nnamespace Foo;\nuse Bar\\Service1, /* MAKE SOME NOOOOOISE! */\n    /* MAKE SOME NOOOOOISE! */ Bar\\Service2;\nuse function Bar\\func1, // MAKE SOME NOOOOOISE!\n    /** MAKE SOME NOOOOOISE! */ Bar\\func2;\nuse const /* MAKE SOME NOOOOOISE! */ Bar\\CONST1,\n    Bar\\CONST2; # MAKE SOME NOOOOOISE!\n\n\\Bar\\func1(new \\Bar\\Service1(\\Bar\\CONST1));\n\\Bar\\func2(new \\Bar\\Service2(\\Bar\\CONST2));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Shorten symbol from grouped multi-use statement",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Bar\\{Service1, Service2};\nuse function Bar\\{func1, func2};\nuse const Bar\\{CONST1, CONST2};\n\n\\Bar\\func1(new Service1(\\Bar\\CONST1));\n\\Bar\\func2(new Service2(\\Bar\\CONST2));",
+                        "<?php\nnamespace Foo;\nuse Bar\\{Service1, Service2};\nuse function Bar\\{func1, func2};\nuse const Bar\\{CONST1, CONST2};\n\n\\Bar\\func1(new \\Bar\\Service1(\\Bar\\CONST1));\n\\Bar\\func2(new \\Bar\\Service2(\\Bar\\CONST2));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Shorten symbol from multi-line grouped multi-use statement with some noise here and there",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Bar\\{\n    /* MAKE SOME NOOOOOISE! */ Service1,\n\n    Service2 /* MAKE SOME NOOOOOISE! */\n};\nuse function Bar\\{\n    func1, // MAKE SOME NOOOOOISE!\n\n    /** MAKE SOME NOOOOOISE! */ func2\n};\nuse const Bar\\{\n    /* MAKE SOME NOOOOOISE! */ CONST1,\n\n    CONST2 # MAKE SOME NOOOOOISE!\n};\n\n\\Bar\\func1(new Service1(\\Bar\\CONST1));\n\\Bar\\func2(new Service2(\\Bar\\CONST2));",
+                        "<?php\nnamespace Foo;\nuse Bar\\{\n    /* MAKE SOME NOOOOOISE! */ Service1,\n\n    Service2 /* MAKE SOME NOOOOOISE! */\n};\nuse function Bar\\{\n    func1, // MAKE SOME NOOOOOISE!\n\n    /** MAKE SOME NOOOOOISE! */ func2\n};\nuse const Bar\\{\n    /* MAKE SOME NOOOOOISE! */ CONST1,\n\n    CONST2 # MAKE SOME NOOOOOISE!\n};\n\n\\Bar\\func1(new \\Bar\\Service1(\\Bar\\CONST1));\n\\Bar\\func2(new \\Bar\\Service2(\\Bar\\CONST2));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not crash on large PHPDoc",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    /**\n     * @return array{k0: int, k1: int, k2: int, k3: int, k4: int, k5: int, k6: int, k7: int, k8: int, k9: int, k10: int, k11: int, with-dash: int}\n     */\n    function bar() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Import common strict types",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(Bar $foo): Baz\n    {\n    }\n}",
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(\\Foo\\Bar $foo): \\Foo\\Bar\\Baz\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test namespace fixes",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $bar6): Baz\n    {\n    }\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $bar6): \\Foo\\Bar\\Baz\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Partial class name looks like FQCN",
+                    "args": [
+                        "<?php\n\nnamespace One;\n\nuse Two\\Three;\n\nclass Two\n{\n    /**\n     * Note that for this example, the following classes exist:\n     *\n     * - One\\Two\n     * - One\\Two\\Three\n     * - Two\\Three\\Four\n     */\n    public function three(Three\\Four $four): Two\\Three\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test multi namespace fixes",
+                    "args": [
+                        "<?php\nnamespace Foo\\Other {\n}\n\nnamespace Foo\\Bar {\n    use Foo\\Bar\\Baz;\n\n    class SomeClass\n    {\n        public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $bar5): Baz\n        {\n        }\n    }\n}",
+                        "<?php\nnamespace Foo\\Other {\n}\n\nnamespace Foo\\Bar {\n    use Foo\\Bar\\Baz;\n\n    class SomeClass\n    {\n        public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $bar5): Baz\n        {\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test fixes in interface",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ninterface SomeClass\n{\n    public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $bar4): Baz;\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ninterface SomeClass\n{\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $bar4): \\Foo\\Bar\\Baz;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test fixes in trait",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ntrait SomeClass\n{\n    public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $bar3): Baz\n    {\n    }\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ntrait SomeClass\n{\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $bar3): \\Foo\\Bar\\Baz\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test fixes in regular functions",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\nfunction doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $bar2): Baz\n{\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\nfunction doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $bar2): \\Foo\\Bar\\Baz\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Import common strict types with reserved",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(Bar $foo, array $bar): Baz\n    {\n    }\n}",
+                        "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(\\Foo\\Bar $foo, array $bar): \\Foo\\Bar\\Baz\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "import from namespace and global",
+                    "args": [
+                        "<?php\nuse App\\DateTime;\n\nclass TestBar\n{\n    public function bar(\\DateTime $dateTime)\n    {\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Import common strict types without return type",
+                    "args": [
+                        "<?php\n\nuse Foo\\Bar;\n\nclass SomeClass\n{\n    public function doSomething(Bar $foo)\n    {\n    }\n}",
+                        "<?php\n\nuse Foo\\Bar;\n\nclass SomeClass\n{\n    public function doSomething(\\Foo\\Bar $foo)\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test namespace fixes without return type",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nclass SomeClass\n{\n    public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $bar1)\n    {\n    }\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nclass SomeClass\n{\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $bar1)\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Partial class name looks like FQCN without return type",
+                    "args": [
+                        "<?php\n\nnamespace One;\n\nuse Two\\Three;\n\nclass Two\n{\n    /**\n     * Note that for this example, the following classes exist:\n     *\n     * - One\\Two\n     * - One\\Two\\Three\n     * - Two\\Three\n     */\n    public function three(Two\\Three $three, Three $other)\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test multi namespace fixes without return type",
+                    "args": [
+                        "<?php\nnamespace Foo\\Other {\n}\n\nnamespace Foo\\Bar {\n    class SomeClass\n    {\n        public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $barbuz)\n        {\n        }\n    }\n}",
+                        "<?php\nnamespace Foo\\Other {\n}\n\nnamespace Foo\\Bar {\n    class SomeClass\n    {\n        public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $barbuz)\n        {\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test fixes in interface without return type",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ninterface SomeClass\n{\n    public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $barbuz);\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ninterface SomeClass\n{\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $barbuz);\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test fixes in trait without return type",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ntrait SomeClass\n{\n    public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $barbuz)\n    {\n    }\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ntrait SomeClass\n{\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $barbuz)\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test fixes in regular functions without return type",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\nfunction doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $barbuz)\n{\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\nfunction doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $barbuz)\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test partial namespace and use imports",
+                    "args": [
+                        "<?php\n\nnamespace Ping\\Pong;\n\nuse Foo\\Bar;\nuse Ping;\nuse Ping\\Pong\\Pang;\nuse Ping\\Pong\\Pyng\\Pung;\n\nclass SomeClass\n{\n    public function doSomething(\n        Ping\\Something $something,\n        Ping\\Pong\\Pung\\Pang $other,\n        Ping\\Pong\\Pung $other1,\n        Pang\\Pung $other2,\n        Pung\\Pong $other3,\n        Bar\\Baz\\Buz $other4\n    ){}\n}",
+                        "<?php\n\nnamespace Ping\\Pong;\n\nuse Foo\\Bar;\nuse Ping;\nuse Ping\\Pong\\Pang;\nuse Ping\\Pong\\Pyng\\Pung;\n\nclass SomeClass\n{\n    public function doSomething(\n        \\Ping\\Something $something,\n        \\Ping\\Pong\\Pung\\Pang $other,\n        \\Ping\\Pong\\Pung $other1,\n        \\Ping\\Pong\\Pang\\Pung $other2,\n        \\Ping\\Pong\\Pyng\\Pung\\Pong $other3,\n        \\Foo\\Bar\\Baz\\Buz $other4\n    ){}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test reference",
+                    "args": [
+                        "<?php\nfunction withReference(Exception &$e) {}",
+                        "<?php\nfunction withReference(\\Exception &$e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test reference with use",
+                    "args": [
+                        "<?php\nuse A\\exception;\nfunction withReference(\\Exception &$e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test reference with use different casing",
+                    "args": [
+                        "<?php\nnamespace {\n    use A\\EXCEPTION;\n    function withReference(\\Exception &$e) {}\n    }\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test FQCN is not removed when class with the same name, but different namespace, is imported",
+                    "args": [
+                        "<?php namespace Foo;\n                use Bar\\TheClass;\n                class Test\n                {\n                    public function __construct(\n                        \\Foo\\TheClass $x\n                    ) {}\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test namespace fixes with nullable types",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(SomeClass $foo, Buz $buz, ?Zoof\\Buz $barbuz): ?Baz\n    {\n    }\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, ?\\Foo\\Bar\\Zoof\\Buz $barbuz): ?\\Foo\\Bar\\Baz\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Partial class name looks like FQCN with return type with nullable",
+                    "args": [
+                        "<?php\n\nnamespace One;\n\nuse Two\\Three;\n\nclass Two\n{\n    /**\n     * Note that for this example, the following classes exist:\n     *\n     * - One\\Two\n     * - One\\Two\\Three\n     * - Two\\Three\\Four\n     */\n    public function three(Three\\Four $four): ?Two\\Three\n    {\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test class PHPDoc fixes",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\nuse Foo\\Bar\\Bam;\n\n/**\n * @see Baz\n * @see Bam\n * @see Baz::$someProp\n * @see Bam::someMethod()\n * @see Baz::SOME_CONST\n */\nclass SomeClass\n{\n    /**\n     * @var Baz\n     */\n    public $baz;\n\n    /** @var Bam */\n    public $bam;\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\nuse Foo\\Bar\\Bam;\n\n/**\n * @see \\Foo\\Bar\\Baz\n * @see \\Foo\\Bar\\Bam\n * @see \\Foo\\Bar\\Baz::$someProp\n * @see \\Foo\\Bar\\Bam::someMethod()\n * @see \\Foo\\Bar\\Baz::SOME_CONST\n */\nclass SomeClass\n{\n    /**\n     * @var \\Foo\\Bar\\Baz\n     */\n    public $baz;\n\n    /** @var \\Foo\\Bar\\Bam */\n    public $bam;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test PHPDoc nullable fixes",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\nuse Foo\\Bar\\Bam;\n\n/**\n * @see Baz|null\n * @see Bam|null\n */\nclass SomeClass {}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\nuse Foo\\Bar\\Bam;\n\n/**\n * @see \\Foo\\Bar\\Baz|null\n * @see \\Foo\\Bar\\Bam|null\n */\nclass SomeClass {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test PHPDoc union",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\n/**\n * @param \\Exception|\\Exception2|int|null $v\n */\nfunction foo($v) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test PHPDoc union with imports",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\nuse Other\\Foo;\nuse Other\\FooŇ;\n\n/**\n * @param \\Exception|\\Exception2|int|Foo|FooŇ|null $v\n */\nfunction foo($v) {}",
+                        "<?php\n\nnamespace Ns;\n\n/**\n * @param \\Exception|\\Exception2|int|\\Other\\Foo|\\Other\\FooŇ|null $v\n */\nfunction foo($v) {}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test complex PHPDoc with imports",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\nuse X\\A;\n\n/**\n * @param \\Closure(A&\\X\\B, '\\Y\\A&(\\Y\\B|\\Y\\C)', array{A: B}): ($v is string ? Foo : Bar) $v\n */\nfunction foo($v) {}",
+                        "<?php\n\nnamespace Ns;\n\n/**\n * @param \\Closure(\\X\\A&\\X\\B, '\\Y\\A&(\\Y\\B|\\Y\\C)', array{A: B}): ($v is string ? \\Ns\\Foo : \\Ns\\Bar) $v\n */\nfunction foo($v) {}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test PHPDoc string must be kept as is",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\nuse Other\\Foo;\nuse Other\\Foo2;\n\n/**\n * @param Foo|'\\Other\\Bar|\\Other\\Bar2|\\Other\\Bar3'|Foo2 $v\n */\nfunction foo($v) {}",
+                        "<?php\n\nnamespace Ns;\n\n/**\n * @param \\Other\\Foo|'\\Other\\Bar|\\Other\\Bar2|\\Other\\Bar3'|\\Other\\Foo2 $v\n */\nfunction foo($v) {}",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test PHPDoc in interface",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ninterface SomeClass\n{\n   /**\n    * @param SomeClass $foo\n    * @param Buz $buz\n    * @param Zoof\\Buz $barbuz\n    *\n    * @return Baz\n    */\n    public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $barbuz): Baz;\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz;\n\ninterface SomeClass\n{\n   /**\n    * @param \\Foo\\Bar\\SomeClass $foo\n    * @param \\Foo\\Bar\\Buz $buz\n    * @param \\Foo\\Bar\\Zoof\\Buz $barbuz\n    *\n    * @return \\Foo\\Bar\\Baz\n    */\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $barbuz): \\Foo\\Bar\\Baz;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test PHPDoc in interface with no imports",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\ninterface SomeClass\n{\n   /**\n    * @param SomeClass $foo\n    * @param Buz $buz\n    * @param Zoof\\Buz $barbuz\n    *\n    * @return Baz\n    */\n    public function doSomething(SomeClass $foo, Buz $buz, Zoof\\Buz $barbuz): Baz;\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\ninterface SomeClass\n{\n   /**\n    * @param \\Foo\\Bar\\SomeClass $foo\n    * @param \\Foo\\Bar\\Buz $buz\n    * @param \\Foo\\Bar\\Zoof\\Buz $barbuz\n    *\n    * @return \\Foo\\Bar\\Baz\n    */\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz, \\Foo\\Bar\\Zoof\\Buz $barbuz): \\Foo\\Bar\\Baz;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test not imported PHPDoc fixes",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\n/**\n * @see Baz\n * @see Bam\n */\nfinal class SomeClass {}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\n/**\n * @see \\Foo\\Bar\\Baz\n * @see \\Foo\\Bar\\Bam\n */\nfinal class SomeClass {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc with generics - without namespace",
+                    "args": [
+                        "<?php\n\n/**\n * @param Iterator<mixed, SplFileInfo> $iter\n */\nfunction foo($iter) {}",
+                        "<?php\n\n/**\n * @param \\Iterator<mixed, \\SplFileInfo> $iter\n */\nfunction foo($iter) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHPDoc with generics - with namespace",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\n/**\n * @param \\Iterator<mixed, \\SplFileInfo> $iter\n */\nfunction foo($iter) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test multiple PHPDoc blocks",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Buz;\nuse Foo\\Bar\\Baz;\nuse Foo\\Bar\\SomeClass;\n\n/**\n * @see Baz\n * @see Bam\n *\n * @property SomeClass $foo\n * @property-read Buz $buz\n * @property-write Baz $baz\n * @phpstan-property SomeClass $foo\n * @phpstan-property-read Buz $buz\n * @phpstan-property-write Baz $baz\n * @psalm-property SomeClass $foo\n * @psalm-property-read Buz $buz\n * @psalm-property-write Baz $baz\n */\ninterface SomeClass\n{\n    /**\n    * @param SomeClass $foo\n    * @phpstan-param Buz $buz\n    *\n    * @psalm-return Baz\n    */\n    public function doSomething(SomeClass $foo, Buz $buz): Baz;\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Buz;\nuse Foo\\Bar\\Baz;\nuse Foo\\Bar\\SomeClass;\n\n/**\n * @see \\Foo\\Bar\\Baz\n * @see \\Foo\\Bar\\Bam\n *\n * @property \\Foo\\Bar\\SomeClass $foo\n * @property-read \\Foo\\Bar\\Buz $buz\n * @property-write \\Foo\\Bar\\Baz $baz\n * @phpstan-property \\Foo\\Bar\\SomeClass $foo\n * @phpstan-property-read \\Foo\\Bar\\Buz $buz\n * @phpstan-property-write \\Foo\\Bar\\Baz $baz\n * @psalm-property \\Foo\\Bar\\SomeClass $foo\n * @psalm-property-read \\Foo\\Bar\\Buz $buz\n * @psalm-property-write \\Foo\\Bar\\Baz $baz\n */\ninterface SomeClass\n{\n    /**\n    * @param \\Foo\\Bar\\SomeClass $foo\n    * @phpstan-param \\Foo\\Bar\\Buz $buz\n    *\n    * @psalm-return \\Foo\\Bar\\Baz\n    */\n    public function doSomething(\\Foo\\Bar\\SomeClass $foo, \\Foo\\Bar\\Buz $buz): \\Foo\\Bar\\Baz;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Skip @covers in tests (they require FQCN)",
+                    "args": [
+                        "<?php\n\nnamespace Tests\\Foo\\Bar;\n\nuse Foo\\Bar\\SomeClass;\n\n/**\n * @covers \\Foo\\Bar\\SomeClass\n */\nclass SomeClassTest {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Imports with aliases",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz as Buzz;\nuse Foo\\Bar\\Bam as Boom;\n\n/**\n * @see Buzz\n * @see Boom\n */\nclass SomeClass\n{\n    /**\n     * @var Buzz\n     */\n    public $baz;\n\n    /** @var Boom */\n    public $bam;\n\n    /**\n     * @param Buzz $baz\n     * @param Boom $bam\n     */\n    public function __construct($baz, $bam) {\n        $this->baz = $baz;\n        $this->bam = $bam;\n    }\n\n    /**\n     * @return Buzz\n     */\n    public function getBaz() {\n        return $this->baz;\n    }\n\n    /**\n     * @return Boom\n     */\n    public function getBam() {\n        return $this->bam;\n    }\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Baz as Buzz;\nuse Foo\\Bar\\Bam as Boom;\n\n/**\n * @see \\Foo\\Bar\\Baz\n * @see \\Foo\\Bar\\Bam\n */\nclass SomeClass\n{\n    /**\n     * @var \\Foo\\Bar\\Baz\n     */\n    public $baz;\n\n    /** @var \\Foo\\Bar\\Bam */\n    public $bam;\n\n    /**\n     * @param \\Foo\\Bar\\Baz $baz\n     * @param \\Foo\\Bar\\Bam $bam\n     */\n    public function __construct($baz, $bam) {\n        $this->baz = $baz;\n        $this->bam = $bam;\n    }\n\n    /**\n     * @return \\Foo\\Bar\\Baz\n     */\n    public function getBaz() {\n        return $this->baz;\n    }\n\n    /**\n     * @return \\Foo\\Bar\\Bam\n     */\n    public function getBam() {\n        return $this->bam;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Leading backslash in global namespace - standard phpdoc",
+                    "args": [
+                        "<?php\n\n/**\n * @param \\DateTimeInterface $dateTime\n * @param callable(): (\\Closure(): void) $fx\n * @return \\DateTimeInterface\n * @see \\DateTimeImmutable\n * @throws \\Exception\n */\nfunction foo($dateTime, $fx) {}",
+                        "<?php\n\n/**\n * @param DateTimeInterface $dateTime\n * @param callable(): (\\Closure(): void) $fx\n * @return DateTimeInterface\n * @see DateTimeImmutable\n * @throws Exception\n */\nfunction foo($dateTime, $fx) {}",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Leading backslash in global namespace - reserved phpdoc",
+                    "args": [
+                        "<?php\n\n/**\n * @param int $v\n * @phpstan-param positive-int $v\n * @param 'GET'|'POST' $method\n * @param \\Closure $fx\n * @psalm-param \\Closure(): (callable(): \\Closure) $fx\n * @return list<int>\n */\nfunction foo($v, $method, $fx) {}\n\n/** @param int<min, max> $v */\nfunction intMinMax($v) {}",
+                        "<?php\n\n/**\n * @param int $v\n * @phpstan-param positive-int $v\n * @param 'GET'|'POST' $method\n * @param Closure $fx\n * @psalm-param Closure(): (callable(): Closure) $fx\n * @return list<int>\n */\nfunction foo($v, $method, $fx) {}\n\n/** @param int<min, max> $v */\nfunction intMinMax($v) {}",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Do not touch PHPDoc if configured with empty collection",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Bar\\Buz;\nuse Foo\\Bar\\Baz;\nuse Foo\\Bar\\SomeClass;\n\n/**\n * @see \\Foo\\Bar\\Baz\n * @see \\Foo\\Bar\\Bam\n *\n * @property \\Foo\\Bar\\SomeClass $foo\n * @property-read \\Foo\\Bar\\Buz $buz\n * @property-write \\Foo\\Bar\\Baz $baz\n */\ninterface SomeClass\n{\n    /**\n    * @param \\Foo\\Bar\\SomeClass $foo\n    * @phpstan-param \\Foo\\Bar\\Buz $buz\n    *\n    * @psalm-return \\Foo\\Bar\\Baz\n    */\n    public function doSomething($foo, $buz);\n}",
+                        null,
+                        {
+                            "phpdoc_tags": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Process only specified PHPDoc annotation",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Baz\\Buzz;\n\n/**\n * @see \\Foo\\Baz\\Buzz\n *\n * @property \\Foo\\Baz\\Buzz $buzz1\n * @property-read Buzz $buzz2\n */\ninterface SomeClass\n{\n    /**\n    * @param \\Foo\\Baz\\Buzz $a\n    * @phpstan-param Buzz $b\n    *\n    * @psalm-return \\Foo\\Baz\\Buzz\n    */\n    public function doSomething($a, $b): void;\n}",
+                        "<?php\n\nnamespace Foo\\Bar;\n\nuse Foo\\Baz\\Buzz;\n\n/**\n * @see \\Foo\\Baz\\Buzz\n *\n * @property \\Foo\\Baz\\Buzz $buzz1\n * @property-read \\Foo\\Baz\\Buzz $buzz2\n */\ninterface SomeClass\n{\n    /**\n    * @param \\Foo\\Baz\\Buzz $a\n    * @phpstan-param \\Foo\\Baz\\Buzz $b\n    *\n    * @psalm-return \\Foo\\Baz\\Buzz\n    */\n    public function doSomething($a, $b): void;\n}",
+                        {
+                            "phpdoc_tags": [
+                                "property-read",
+                                "phpstan-param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore @see with URL",
+                    "args": [
+                        "<?php\n/**\n * @see     http://example.com\n */\ndefine('FOO_BAR', true);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Respect whitespace between phpDoc annotation and value",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Test;\n\nuse Foo\\Bar;\n\n/**\n * @param Bar $a\n * @see   Bar\n */\nfunction foo($a) {}",
+                        "<?php\n\nnamespace Foo\\Test;\n\nuse Foo\\Bar;\n\n/**\n * @param \\Foo\\Bar $a\n * @see   \\Foo\\Bar\n */\nfunction foo($a) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with shebang",
+                    "args": [
+                        "#!/usr/bin/env php\n<?php\n\nuse Bar\\Baz;\n$foo = new Baz();",
+                        "#!/usr/bin/env php\n<?php\n$foo = new Bar\\Baz();",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not do weird stuff",
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar {\n    use Foo\\Exception as Chumbawamba;\n    class ThatMustExtendsSomething extends Something {}\n}\nnamespace Foo {\n    interface I\n    {\n        public function f(Exception $exception);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix arrow function return type",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Lib\\Package\\Bar;\n$function = fn (): Bar => new Bar();",
+                        "<?php\nnamespace Foo;\n$function = fn (): \\Lib\\Package\\Bar => new \\Lib\\Package\\Bar();",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "usage of <?=",
+                    "args": [
+                        "<?php\n\nuse Bar1\\Baz1;\nuse Bar2\\Baz2;\n?><?= $foo ?>\n<div>some random HTML :(</div>\n<?php\necho Baz1::$quux1;\necho Baz2::$quux2;",
+                        "<?= $foo ?>\n<div>some random HTML :(</div>\n<?php\necho Bar1\\Baz1::$quux1;\necho Bar2\\Baz2::$quux2;",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\FullyQualifiedStrictTypesFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(int|float $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(int|A $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo(A|B|C $x) {}",
+                        "<?php function foo(\\A|\\B|\\C $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(): A|B|C {}",
+                        "<?php function foo(): \\A|\\B|\\C {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "aaa",
+                    "args": [
+                        "<?php function foo(): A | B | C {}",
+                        "<?php function foo(): \\A | \\B | \\C {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php function f(): Foo|Bar|A\\B\\C {}",
+                        "<?php function f(): Foo|\\Bar|\\A\\B\\C {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "caught exception without var",
+                    "args": [
+                        "<?php use A\\B; try{ foo(0); } catch (B) {}",
+                        "<?php use A\\B; try{ foo(0); } catch (\\A\\B) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "typed promoted property in class",
+                    "args": [
+                        "<?php use A\\B; class Cl { public function __construct(private B $p2) {} }",
+                        "<?php use A\\B; class Cl { public function __construct(private \\A\\B $p2) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "import new symbols from attributes",
+                    "args": [
+                        "<?php\n\nnamespace Foo\\Test;\nuse Other\\ClassAttr;\nuse Other\\ClassAttr2;\nuse Other\\MethodAttr;\nuse Other\\MethodAttr2;\nuse Other\\PromotedAttr;\nuse Other\\PromotedAttr2;\nuse Other\\PropertyAttr;\nuse Other\\PropertyAttr2;\n\n#[ClassAttr]\n#[ClassAttr, ClassAttr2]\n#[\\AllowDynamicProperties]\nclass Foo\n{\n    #[PropertyAttr]\n    #[PropertyAttr, PropertyAttr2]\n    public int $prop;\n\n    public function __construct(\n        #[PromotedAttr]\n        #[PromotedAttr, PromotedAttr2]\n        public int $arg\n    ) {}\n\n    #[MethodAttr]\n    #[MethodAttr, MethodAttr2]\n    public function foo(): void {}\n}\n            ",
+                        "<?php\n\nnamespace Foo\\Test;\n\n#[\\Other\\ClassAttr]\n#[\\Other\\ClassAttr, \\Other\\ClassAttr2]\n#[\\AllowDynamicProperties]\nclass Foo\n{\n    #[\\Other\\PropertyAttr]\n    #[\\Other\\PropertyAttr, \\Other\\PropertyAttr2]\n    public int $prop;\n\n    public function __construct(\n        #[\\Other\\PromotedAttr]\n        #[\\Other\\PromotedAttr, \\Other\\PromotedAttr2]\n        public int $arg\n    ) {}\n\n    #[\\Other\\MethodAttr]\n    #[\\Other\\MethodAttr, \\Other\\MethodAttr2]\n    public function foo(): void {}\n}\n            ",
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "do not fix property named the same as class",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Bar\\Baz;\necho $x?->baz::CONSTANT_1;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\FullyQualifiedStrictTypesFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function f(): Foo&Bar & A\\B\\C {}",
+                        "<?php function f(): Foo&\\Bar & \\A\\B\\C {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "union/intersect param in global namespace without use",
+                    "args": [
+                        "<?php\nfunction foo(\\X|\\Y $a, \\X&\\Y $b) {}\nfunction bar(\\X|\\Y $a, \\X&\\Y $b) {}",
+                        "<?php\nfunction foo(\\X|\\Y $a, \\X&\\Y $b) {}\nfunction bar(X|Y $a, X&Y $b) {}",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(Bar $foo): Bar\\Ba3{}\n    public function doSomethingMore(Bar|B $foo): Baz{}\n    public function doSomethingElse(Bar&A\\Z $foo): Baz{}\n}",
+                        "<?php\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\n\nclass SomeClass\n{\n    public function doSomething(\\Foo\\Bar $foo): \\Foo\\Bar\\Ba3{}\n    public function doSomethingMore(\\Foo\\Bar|B $foo): \\Foo\\Bar\\Baz{}\n    public function doSomethingElse(\\Foo\\Bar&\\A\\Z $foo): \\Foo\\Bar\\Baz{}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "do not import if already implicitly used by enum declaration",
+                    "args": [
+                        "<?php\n\nnamespace Ns;\n\nenum City\n{\n    public function f(\\Ns2\\City $city) {}\n}",
+                        null,
+                        {
+                            "import_symbols": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\FullyQualifiedStrictTypesFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "simple param in global namespace without use",
+                    "args": [
+                        "<?php\nfunction foo(\\X $x, \\Y $y, int $z) {}\nfunction bar(\\X $x, \\Y $y, true $z) {}",
+                        "<?php\nfunction foo(\\X $x, \\Y $y, int $z) {}\nfunction bar(X $x, Y $y, true $z) {}",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "simple return in global namespace without use",
+                    "args": [
+                        "<?php\nfunction foo(): \\X {}\nfunction bar(): \\Y {}\nfunction x(): never {}",
+                        "<?php\nfunction foo(): \\X {}\nfunction bar(): Y {}\nfunction x(): never {}",
+                        {
+                            "leading_backslash_in_global_namespace": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo((A&B)|(x&y&Ze)|int|null $x) {}",
+                        "<?php function foo((\\A&\\B)|(\\x&\\y&\\Ze)|int|null $x) {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

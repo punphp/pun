@@ -1,0 +1,43 @@
+{
+    "fixer": "standardize_not_equals",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\StandardizeNotEqualsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/StandardizeNotEqualsFixerTest.php",
+    "case_count": 2,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\StandardizeNotEqualsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = ($b != $c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = ($b != $c);",
+                        "<?php $a = ($b <> $c);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

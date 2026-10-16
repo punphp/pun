@@ -1,0 +1,698 @@
+{
+    "fixer": "constant_case",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Casing\\ConstantCaseFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Casing/ConstantCaseFixerTest.php",
+    "case_count": 64,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\ConstantCaseFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php if (true) if (false) if (null) {}",
+                        "<?php if (TRUE) if (FALSE) if (NULL) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php if (!true) if (!false) if (!null) {}",
+                        "<?php if (!TRUE) if (!FALSE) if (!NULL) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php if ($a == true) if ($a == false) if ($a == null) {}",
+                        "<?php if ($a == TRUE) if ($a == FALSE) if ($a == NULL) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php if ($a === true) if ($a === false) if ($a === null) {}",
+                        "<?php if ($a === TRUE) if ($a === FALSE) if ($a === NULL) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php if ($a != true) if ($a != false) if ($a != null) {}",
+                        "<?php if ($a != TRUE) if ($a != FALSE) if ($a != NULL) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php if ($a !== true) if ($a !== false) if ($a !== null) {}",
+                        "<?php if ($a !== TRUE) if ($a !== FALSE) if ($a !== NULL) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php if (true && true and true AND true || false or false OR false xor null XOR null) {}",
+                        "<?php if (TRUE && TRUE and TRUE AND TRUE || FALSE or FALSE OR FALSE xor NULL XOR NULL) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php /* foo */ true; /** bar */ false;",
+                        "<?php /* foo */ TRUE; /** bar */ FALSE;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php echo $null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $x = False::foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $x = Foo::NULL;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php namespace Null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php namespace Foo\\Null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php class Foo extends True {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php class Foo implements False {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $foo instanceof True; $foo instanceof False; $foo instanceof Null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php return Null\\Foo::class;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php return Null\\Foo::bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n    class Foo\n    {\n        const TRUE = 1;\n        const FALSE = true;\n        const NULL = null;\n    }",
+                        "<?php\n    class Foo\n    {\n        const TRUE = 1;\n        const FALSE = TRUE;\n        const NULL = NULL;\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $x = new /**/False?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php Null/**/::test();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php True//\n                                ::test();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php class Foo { public function Bar() { $this->False = 1; $this->True = 2; $this->Null = 3; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $x = true;",
+                        "<?php $x = TRUE;",
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $x = true;",
+                        "<?php $x = True;",
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $x = new True;",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $x = new TRUE;",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $x = \"true story\";",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $x = \"true\";",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $x = false;",
+                        "<?php $x = FALSE;",
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $x = false;",
+                        "<?php $x = False;",
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php $x = new False;",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php $x = new FALSE;",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php $x = \"false story\";",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $x = \"false\";",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $x = null;",
+                        "<?php $x = NULL;",
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php $x = null;",
+                        "<?php $x = Null;",
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $x = new Null;",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php $x = new NULL;",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $x = \"null story\";",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php $x = \"null\";",
+                        null,
+                        {
+                            "case": "lower"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php $x = TRUE;",
+                        "<?php $x = true;",
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php $x = TRUE;",
+                        "<?php $x = True;",
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php $x = new True;",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php $x = new TRUE;",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php $x = \"true story\";",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php $x = \"true\";",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php $x = FALSE;",
+                        "<?php $x = false;",
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php $x = FALSE;",
+                        "<?php $x = False;",
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php $x = new False;",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php $x = new FALSE;",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php $x = \"false story\";",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php $x = \"false\";",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php $x = NULL;",
+                        "<?php $x = null;",
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php $x = NULL;",
+                        "<?php $x = Null;",
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php $x = new Null;",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php $x = new NULL;",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php $x = \"null story\";",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php $x = \"null\";",
+                        null,
+                        {
+                            "case": "upper"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\ConstantCaseFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "nullsafe operator",
+                    "args": [
+                        "<?php class Foo { public function Bar() { return $this?->False; } }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\ConstantCaseFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "final class const",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    final const TRUE = 1;\n                    public final const FALSE = true;\n                    final public const NULL = null;\n                }\n            ",
+                        "<?php\n                class Foo\n                {\n                    final const TRUE = 1;\n                    public final const FALSE = TRUE;\n                    final public const NULL = NULL;\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum and switch",
+                    "args": [
+                        "<?php\n                enum Foo\n                {\n                    case True;\n                    case False;\n                    case Null;\n\n                    public function methodWithSwitch(mixed $value): void\n                    {\n                        switch ($value) {\n                            case true:\n                            case false:\n                            case null:\n                                break;\n                        }\n                    }\n                }\n            ",
+                        "<?php\n                enum Foo\n                {\n                    case True;\n                    case False;\n                    case Null;\n\n                    public function methodWithSwitch(mixed $value): void\n                    {\n                        switch ($value) {\n                            case TRUE:\n                            case FALSE:\n                            case NULL:\n                                break;\n                        }\n                    }\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum",
+                    "args": [
+                        "<?php\n                $y = false;\n                enum Foo: string { case FALSE = \"false\"; }\n                $x = true;\n            ",
+                        "<?php\n                $y = FALSE;\n                enum Foo: string { case FALSE = \"false\"; }\n                $x = TRUE;\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\ConstantCaseFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "typed constant",
+                    "args": [
+                        "<?php\nclass Foo1  { const array          NULL  = [];    }\nclass Foo2  { const int            NULL  = 0;     }\nclass Foo3  { const mixed          NULL  = 0;     }\nclass Foo4  { const string         NULL  = '';    }\nclass Foo5  { const Foo|null       NULL  = null;  }\nclass Foo6  { const null|Foo       NULL  = null;  }\nclass Foo7  { const null|(Foo&Bar) NULL  = null;  }\nclass Foo8  { const bool           TRUE  = true;  }\nclass Foo9  { const false          FALSE = false; }\nclass Foo10 { const true           TRUE  = true;  }",
+                        "<?php\nclass Foo1  { const array          NULL  = [];    }\nclass Foo2  { const int            NULL  = 0;     }\nclass Foo3  { const mixed          NULL  = 0;     }\nclass Foo4  { const string         NULL  = '';    }\nclass Foo5  { const Foo|NULL       NULL  = NULL;  }\nclass Foo6  { const NULL|Foo       NULL  = NULL;  }\nclass Foo7  { const NULL|(Foo&Bar) NULL  = NULL;  }\nclass Foo8  { const bool           TRUE  = TRUE;  }\nclass Foo9  { const FALSE          FALSE = FALSE; }\nclass Foo10 { const TRUE           TRUE  = TRUE;  }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

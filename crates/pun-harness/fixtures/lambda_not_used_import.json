@@ -1,0 +1,218 @@
+{
+    "fixer": "lambda_not_used_import",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\LambdaNotUsedImportFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/LambdaNotUsedImportFixerTest.php",
+    "case_count": 23,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\LambdaNotUsedImportFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php $foo = function() {};",
+                        "<?php $foo = function() use ($bar) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, one of two",
+                    "args": [
+                        "<?php $foo = function & () use ( $foo) { echo $foo; };",
+                        "<?php $foo = function & () use ($bar, $foo) { echo $foo; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, one used, one reference, two not used",
+                    "args": [
+                        "<?php $foo = function() use ($bar, &$foo  ) { echo $bar; };",
+                        "<?php $foo = function() use ($bar, &$foo, $not1, $not2) { echo $bar; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, but witch comments",
+                    "args": [
+                        "<?php $foo = function()\n# 1\n#2\n# 3\n#4\n# 5\n #6\n{};",
+                        "<?php $foo = function()\nuse\n# 1\n( #2\n# 3\n$bar #4\n# 5\n) #6\n{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested lambda I",
+                    "args": [
+                        "<?php\n\n$f = function() {\n    return function ($d) use ($c) {\n        $b = 1; echo $c;\n    };\n};\n",
+                        "<?php\n\n$f = function() use ($b) {\n    return function ($d) use ($c) {\n        $b = 1; echo $c;\n    };\n};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested lambda II",
+                    "args": [
+                        "<?php\n// do not fix\n$f = function() use ($a) { return function() use ($a) { return function() use ($a) { return function() use ($a) { echo $a; }; }; }; };\n$f = function() use ($b) { return function($b) { return function($b) { return function($b) { echo $b; }; }; }; };\n\n// do fix\n$f = function() { return function() { return function() { return function() { }; }; }; };\n                ",
+                        "<?php\n// do not fix\n$f = function() use ($a) { return function() use ($a) { return function() use ($a) { return function() use ($a) { echo $a; }; }; }; };\n$f = function() use ($b) { return function($b) { return function($b) { return function($b) { echo $b; }; }; }; };\n\n// do fix\n$f = function() use ($a) { return function() use ($a) { return function() use ($a) { return function() use ($a) { }; }; }; };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class",
+                    "args": [
+                        "<?php\n$a = function() use ($b) { new class($b){}; }; // do not fix\n$a = function() { new class(){ public function foo($b){echo $b;}}; }; // do fix\n",
+                        "<?php\n$a = function() use ($b) { new class($b){}; }; // do not fix\n$a = function() use ($b) { new class(){ public function foo($b){echo $b;}}; }; // do fix\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class with a string argument",
+                    "args": [
+                        "<?php $function = function () {\n                    new class(\"bar\") {};\n                };",
+                        "<?php $function = function () use ($foo) {\n                    new class(\"bar\") {};\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "reference",
+                    "args": [
+                        "<?php $fn = function() use(&$b) {} ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "compact 1",
+                    "args": [
+                        "<?php $foo = function() use ($b) { return compact('b'); };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "compact 2",
+                    "args": [
+                        "<?php $foo = function() use ($b) { return \\compact('b'); };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "eval",
+                    "args": [
+                        "<?php $foo = function($c) use ($b) { eval($c); };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "include",
+                    "args": [
+                        "<?php $foo = function($c) use ($b) { include __DIR__.\"/test3.php\"; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "include_once",
+                    "args": [
+                        "<?php $foo = function($c) use ($b) { include_once __DIR__.\"/test3.php\"; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "require",
+                    "args": [
+                        "<?php $foo = function($c) use ($b) { require __DIR__.\"/test3.php\"; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "require_once",
+                    "args": [
+                        "<?php $foo = function($c) use ($b) { require_once __DIR__.\"/test3.php\"; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "${X}",
+                    "args": [
+                        "<?php $foo = function($g) use ($b) { $h = ${$g}; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "$$c",
+                    "args": [
+                        "<?php $foo = function($g) use ($b) { $h = $$g; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interpolation 1",
+                    "args": [
+                        "<?php $foo = function() use ($world) { echo \"hello $world\"; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interpolation 2",
+                    "args": [
+                        "<?php $foo = function() use ($world) { echo \"hello {$world}\"; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interpolation 3",
+                    "args": [
+                        "<?php $foo = function() use ($world) { echo \"hello ${world}\"; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "heredoc",
+                    "args": [
+                        "<?php\n$b = 123;\n$foo = function() use ($b) {\n    echo\n<<<\"TEST\"\nFoo $b\nTEST;\n};\n\n$foo();\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\LambdaNotUsedImportFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "simple",
+                    "args": [
+                        "<?php $foo = function() {};",
+                        "<?php $foo = function() use ($bar,) {};"
+                    ]
+                }
+            ]
+        }
+    ]
+}

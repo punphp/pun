@@ -1,0 +1,277 @@
+{
+    "fixer": "heredoc_to_nowdoc",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\HeredocToNowdocFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/HeredocToNowdocFixerTest.php",
+    "case_count": 33,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\HeredocToNowdocFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = <<<'TEST'\nFoo $bar \\n\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = <<<'TEST'\nTEST;\n",
+                        "<?php $a = <<<TEST\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = <<<'TEST'\nFoo \\\\ $bar \\n\nTEST;\n",
+                        "<?php $a = <<<TEST\nFoo \\\\\\\\ \\$bar \\\\n\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a = <<<'TEST'\nFoo\nTEST;\n",
+                        "<?php $a = <<<\"TEST\"\nFoo\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $a = <<<TEST\nFoo $bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $a = <<<TEST\nFoo \\\\$bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $a = <<<TEST\nFoo \\n $bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a = <<<TEST\nFoo \\x00 $bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$html = <<<   'HTML'\na\nHTML;\n",
+                        "<?php\n$html = <<<   HTML\na\nHTML;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $a = <<<           'TEST'\nFoo\nTEST;\n",
+                        "<?php $a = <<<           \"TEST\"\nFoo\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php echo <<<'TEST'\r\nFoo\r\nTEST;\n",
+                        "<?php echo <<<TEST\r\nFoo\r\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $a = b<<<'TEST'\nFoo $bar \\n\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $a = b<<<'TEST'\nTEST;\n",
+                        "<?php $a = b<<<TEST\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $a = b<<<'TEST'\nFoo \\\\ $bar \\n\nTEST;\n",
+                        "<?php $a = b<<<TEST\nFoo \\\\\\\\ \\$bar \\\\n\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $a = b<<<'TEST'\nFoo\nTEST;\n",
+                        "<?php $a = b<<<\"TEST\"\nFoo\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $a = b<<<TEST\nFoo $bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $a = b<<<TEST\nFoo \\\\$bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $a = b<<<TEST\nFoo \\n $bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $a = b<<<TEST\nFoo \\x00 $bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n$html = b<<<   'HTML'\na\nHTML;\n",
+                        "<?php\n$html = b<<<   HTML\na\nHTML;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $a = b<<<           'TEST'\nFoo\nTEST;\n",
+                        "<?php $a = b<<<           \"TEST\"\nFoo\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php echo b<<<'TEST'\r\nFoo\r\nTEST;\n",
+                        "<?php echo b<<<TEST\r\nFoo\r\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $a = B<<<'TEST'\nFoo $bar \\n\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $a = B<<<'TEST'\nTEST;\n",
+                        "<?php $a = B<<<TEST\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $a = B<<<'TEST'\nFoo \\\\ $bar \\n\nTEST;\n",
+                        "<?php $a = B<<<TEST\nFoo \\\\\\\\ \\$bar \\\\n\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $a = B<<<'TEST'\nFoo\nTEST;\n",
+                        "<?php $a = B<<<\"TEST\"\nFoo\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $a = B<<<TEST\nFoo $bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $a = B<<<TEST\nFoo \\\\$bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $a = B<<<TEST\nFoo \\n $bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $a = B<<<TEST\nFoo \\x00 $bar\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n$html = B<<<   'HTML'\na\nHTML;\n",
+                        "<?php\n$html = B<<<   HTML\na\nHTML;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php $a = B<<<           'TEST'\nFoo\nTEST;\n",
+                        "<?php $a = B<<<           \"TEST\"\nFoo\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php echo B<<<'TEST'\r\nFoo\r\nTEST;\n",
+                        "<?php echo B<<<TEST\r\nFoo\r\nTEST;\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

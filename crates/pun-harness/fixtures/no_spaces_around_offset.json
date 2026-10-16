@@ -1,0 +1,377 @@
+{
+    "fixer": "no_spaces_around_offset",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoSpacesAroundOffsetFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/NoSpacesAroundOffsetFixerTest.php",
+    "case_count": 34,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoSpacesAroundOffsetFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$foo = array(1, 2, 3);\n$var = $foo[1];",
+                        "<?php\n$foo = array(1, 2, 3);\n$var = $foo[ 1 ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$arr = [2,   2 , ];\n$var = $arr[0];",
+                        "<?php\n$arr = [2,   2 , ];\n$var = $arr[ 0 ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n$arr[2] = 3;",
+                        "<?php\n$arr[ 2    ] = 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n$arr[] = 3;",
+                        "<?php\n$arr[  ] = 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n$arr[][\"some_offset\"][] = 3;",
+                        "<?php\n$arr[  ][ \"some_offset\"   ][     ] = 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n$arr[][\"some  offset with  spaces\"][] = 3;",
+                        "<?php\n$arr[  ][ \"some  offset with  spaces\"   ][     ] = 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n$var = $arr[0];",
+                        "<?php\n$var = $arr[     0   ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$var = $arr[0][0];",
+                        "<?php\n$var = $arr[    0        ][ 0  ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$var = $arr[$a[$b]];",
+                        "<?php\n$var = $arr[    $a    [ $b    ]  ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n$var = $arr[$a[$b]];",
+                        "<?php\n$var = $arr[\t$a\t[\t$b\t]\t];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n$var = $arr[0][\n     0];",
+                        "<?php\n$var = $arr[0][\n     0 ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n$var = $arr[0][0\n         ];",
+                        "<?php\n$var = $arr[0][     0\n         ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n$a = $b[0]    ;",
+                        "<?php\n$a = $b   [0]    ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n$a = array($b[0]     ,   $b[0]  );",
+                        "<?php\n$a = array($b      [0]     ,   $b [0]  );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n$withComments[0] // here is a comment\n    [1] // and here is another\n    [2][3] = 4;",
+                        "<?php\n$withComments [0] // here is a comment\n    [1] // and here is another\n    [2] [3] = 4;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n$c = SOME_CONST[0][1][2];",
+                        "<?php\n$c = SOME_CONST [0] [1]   [2];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n$f = someFunc()[0][1][2];",
+                        "<?php\n$f = someFunc() [0] [1]   [2];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n$foo[][0][1][2] = 3;",
+                        "<?php\n$foo [] [0] [1]   [2] = 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n$foo[0][1][2] = 3;",
+                        "<?php\n$foo [0] [1]   [2] = 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n$bar = $foo[0][1][2];",
+                        "<?php\n$bar = $foo [0] [1]   [2];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n$baz[0][1][2] = 3;",
+                        "<?php\n$baz [0]\n     [1]\n     [2] = 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave new lines alone",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    private function bar()\n    {\n        if ([1, 2, 3] && [\n            'foo',\n            'bar' ,\n            'baz'// a comment just to mix things up\n        ]) {\n            return 1;\n        };\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n\n$withComments[0] // here is a comment\n    [1] // and here is another\n    [2] = 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n$a = $b[# z\n 1#z\n ];",
+                        "<?php\n$a = $b[ # z\n 1#z\n ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave complex string",
+                    "args": [
+                        "<?php\n\necho \"I am printing some spaces here    {$foo->bar[1]}     {$foo->bar[1]}.\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leave functions",
+                    "args": [
+                        "<?php\n\nfunction someFunc()    {   $someVar = [];   }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Config \"default\".",
+                    "args": [
+                        "<?php [ $a ] = $a;\nif ($controllerName = $request->attributes->get(1)) {\n    return false;\n}\n[  $class  ,   $method  ] = $this->splitControllerClassAndMethod($controllerName);\n$a = $b[0];\n",
+                        "<?php [ $a ] = $a;\nif ($controllerName = $request->attributes->get(1)) {\n    return false;\n}\n[  $class  ,   $method  ] = $this->splitControllerClassAndMethod($controllerName);\n$a = $b   [0];\n",
+                        {
+                            "positions": [
+                                "inside",
+                                "outside"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoSpacesAroundOffsetFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$foo{0}{1}{2} = 3;",
+                        "<?php\n$foo {0} {1}   {2} = 3;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$foobar = $foo{0}[1]{2};",
+                        "<?php\n$foobar = $foo {0} [1]   {2};"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n$var = $arr[0]{0\n         };",
+                        "<?php\n$var = $arr[0]{     0\n         };"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$arr1[]  [\"some_offset\"] [] {\"foo\"} = 3;",
+                        "<?php\n$arr1[  ]  [ \"some_offset\"   ] [     ] { \"foo\" } = 3;",
+                        {
+                            "positions": [
+                                "inside"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$arr1[  ][ \"some_offset\"   ][     ]{ \"foo\" } = 3;",
+                        "<?php\n$arr1[  ]  [ \"some_offset\"   ] [     ] { \"foo\" } = 3;",
+                        {
+                            "positions": [
+                                "outside"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoSpacesAroundOffsetFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input, array $configuration): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$arr1[]  [\"some_offset\"] [] [\"foo\"] = 3;",
+                        "<?php\n$arr1[  ]  [ \"some_offset\"   ] [     ] [ \"foo\" ] = 3;",
+                        {
+                            "positions": [
+                                "inside"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$arr1[  ][ \"some_offset\"   ][     ][ \"foo\" ] = 3;",
+                        "<?php\n$arr1[  ]  [ \"some_offset\"   ] [     ] [ \"foo\" ] = 3;",
+                        {
+                            "positions": [
+                                "outside"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

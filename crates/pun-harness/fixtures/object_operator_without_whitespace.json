@@ -1,0 +1,133 @@
+{
+    "fixer": "object_operator_without_whitespace",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\ObjectOperatorWithoutWhitespaceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/ObjectOperatorWithoutWhitespaceFixerTest.php",
+    "case_count": 11,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\ObjectOperatorWithoutWhitespaceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $object->method();",
+                        "<?php $object   ->method();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $object->method();",
+                        "<?php $object   ->   method();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $object->method();",
+                        "<?php $object->   method();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $object->method();",
+                        "<?php $object\t->method();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $object->method();",
+                        "<?php $object->\tmethod();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $object->method();",
+                        "<?php $object\t->\tmethod();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php echo \"use it as -> you want\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $object->method()\n                        ->method2()\n                        ->method3();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $this\n             ->add()\n             // Some comment\n             ->delete();"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\ObjectOperatorWithoutWhitespaceFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $object?->method();",
+                        "<?php $object?->   method();"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $object?->method();",
+                        "<?php $object   ?->   method();"
+                    ]
+                }
+            ]
+        }
+    ]
+}

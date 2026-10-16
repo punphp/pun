@@ -1,0 +1,38 @@
+# Formatting corpus. Each project is a shallow checkout at `commit` in corpus/<name>.
+# Populate with scripts/corpus.sh. Keep one key per line (the script greps it).
+
+[[project]]
+name = "pinkary"
+url = "/home/forge/projects/pinkary.com"
+commit = "53529d53c71d1cfb85ca3e535cb3292be8baa7e6"
+
+[[project]]
+name = "laravel-framework"
+url = "https://github.com/laravel/framework.git"
+commit = "86864f3dcf81ae4a4ad6abfe2fd4b6174fc8298f"
+
+[[project]]
+name = "laravel-laravel"
+url = "https://github.com/laravel/laravel.git"
+commit = "9ffef3bc4241e3cc333ef267258a404d0d95f194"
+
+[[project]]
+name = "laravel-pint"
+url = "https://github.com/laravel/pint.git"
+commit = "855ea2557ae59e74995756cefdb207a11da820b1"
+
+[[project]]
+name = "pest"
+url = "https://github.com/pestphp/pest.git"
+commit = "73fe04f8c30a734fe2e269a71d4628cdf7131062"
+
+[[project]]
+name = "larastan"
+url = "https://github.com/larastan/larastan.git"
+commit = "89729bbea3b48bee78fe10eef37baa74fe5bddcb"
+
+# Derived: copy of corpus/<url> run through scripts/perturb.php (deliberately unformatted).
+[[project]]
+name = "pinkary-dirty"
+url = "pinkary"
+commit = "derived"

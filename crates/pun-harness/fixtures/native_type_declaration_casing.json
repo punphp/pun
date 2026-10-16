@@ -1,0 +1,619 @@
+{
+    "fixer": "native_type_declaration_casing",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Casing\\NativeTypeDeclarationCasingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Casing/NativeTypeDeclarationCasingFixerTest.php",
+    "case_count": 65,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\NativeTypeDeclarationCasingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                function A(int $a): void {}\n\n                class Foo\n                {\n                    private bool $c = false;\n                    private bool $d = false;\n\n                    public function B(int $a): bool { return $this->c || $this->d; }\n                }\n\n                function C(float $a): array { return [$a];}\n                function D(array $a): array { return [$a];}\n            ",
+                        "<?php\n                function A(INT $a): VOID {}\n\n                class Foo\n                {\n                    private BOOL $c = false;\n                    private BOOL $d = false;\n\n                    public function B(INT $a): BOOL { return $this->c || $this->d; }\n                }\n\n                function C(FLOAT $a): ARRAY { return [$a];}\n                function D(ARRAY $a): ARRAY { return [$a];}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    private function Bar(array $bar) {\n        return false;\n    }\n}\n",
+                        "<?php\nclass Foo\n{\n    private function Bar(ARRAY $bar) {\n        return false;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\ninterface Foo\n{\n    public function Bar(array $bar);\n}\n",
+                        "<?php\ninterface Foo\n{\n    public function Bar(ArrAY $bar);\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nfunction Foo(/**/array/**/$bar) {\n    return false;\n}\n",
+                        "<?php\nfunction Foo(/**/ARRAY/**/$bar) {\n    return false;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass Bar { function Foo(array $a, callable $b, self $c) {} }\n                ",
+                        "<?php\nclass Bar { function Foo(ARRAY $a, CALLABLE $b, Self $c) {} }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nfunction Foo(INTEGER $a) {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php function Foo(\n                    String\\A $x,\n                    B\\String\\C $y\n                ) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php final class Foo1 { final public function Foo(bool $A, float $B, int $C, string $D): int {} }",
+                        "<?php final class Foo1 { final public function Foo(BOOL $A, FLOAT $B, INT $C, STRING $D): INT {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function Foo(bool $A, float $B, int $C, string $D): int {}",
+                        "<?php function Foo(BOOL $A, FLOAT $B, INT $C, STRING $D): INT {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php function Foo(): Foo\\A { return new Foo(); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php trait XYZ { function Foo(iterable $A): void {} }",
+                        "<?php trait XYZ { function Foo(ITERABLE $A): VOID {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php function Foo(iterable $A): void {}",
+                        "<?php function Foo(ITERABLE $A): VOID {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php function Foo(?int $A): void {}",
+                        "<?php function Foo(?INT $A): VOID {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php function Foo(string $A): ?/* */int {}",
+                        "<?php function Foo(STRING $A): ?/* */INT {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php function Foo(object $A): void {}",
+                        "<?php function Foo(OBJECT $A): VOID {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php return function (callable $c) {};",
+                        "<?php return function (CALLABLE $c) {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php return fn (callable $c): int => 1;",
+                        "<?php return fn (CALLABLE $c): INT => 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    const A = 1;\n                    const B = [];\n                    const INT = \"A\"; // class constant; INT is the name of the const, not the type\n                    const FLOAT=1.2;\n                }\n\n                const INT = \"A\"; // outside class; INT is the name of the const, not the type\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class properties single type",
+                    "args": [
+                        "<?php\n                class D{}\n\n                $a = new class extends D {\n                    private array $ax;\n                    private bool $bx = false;\n                    private float $cx = 3.14;\n                    private int $dx = 667;\n                    private iterable $ex = [];\n                    private object $f;\n                    private parent $g;\n                    private self $h;\n                    private static $i;\n                    private ?string $j;\n\n                    private $INT = 1;\n                    private FOO $bar;\n                    private A\\INT\\B $z;\n                };\n            ",
+                        "<?php\n                class D{}\n\n                $a = new class extends D {\n                    private ARRAY $ax;\n                    private BOOL $bx = false;\n                    private FLOAT $cx = 3.14;\n                    private INT $dx = 667;\n                    private ITERABLE $ex = [];\n                    private OBJECT $f;\n                    private PARENT $g;\n                    private Self $h;\n                    private STatic $i;\n                    private ?STRIng $j;\n\n                    private $INT = 1;\n                    private FOO $bar;\n                    private A\\INT\\B $z;\n                };\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "var keyword",
+                    "args": [
+                        "<?php class Foo {\n                var $bar;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static property without type",
+                    "args": [
+                        "<?php class Foo { static $bar; }",
+                        "<?php class Foo { STATIC $bar; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dynamic property",
+                    "args": [
+                        "<?php class Foo {\n                public function doFoo() {\n                    $this->Object->doBar();\n                }\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "constants",
+                    "args": [
+                        "<?php\nfunction f() {}\nif (True === $x) {\n} elseif (True == $y) {\n} elseif ($z === False) {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\NativeTypeDeclarationCasingFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "class properties single type",
+                    "args": [
+                        "<?php\n                class D {\n                    private mixed $m;\n                };\n            ",
+                        "<?php\n                class D {\n                    private MIXED $m;\n                };\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class T { public function Foo(object $A): static {}}",
+                        "<?php class T { public function Foo(object $A): StatiC {}}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class T { public function Foo(object $A): ?static {}}",
+                        "<?php class T { public function Foo(object $A): ?StatiC {}}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php class T { public function Foo(mixed $A): mixed {}}",
+                        "<?php class T { public function Foo(Mixed $A): MIXED {}}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "mixed in arrow function",
+                    "args": [
+                        "<?php return fn (mixed $c): mixed => 1;",
+                        "<?php return fn (MiXeD $c): MIXED => 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo(int|bool $x) {}",
+                        "<?php function foo(INT|BOOL $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(int | bool $x) {}",
+                        "<?php function foo(INT | BOOL $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(): int|bool {}",
+                        "<?php function foo(): INT|BOOL {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "return type string|false",
+                    "args": [
+                        "<?php function foo(): string|false {}",
+                        "<?php function foo(): string|FALSE {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "return type string|null",
+                    "args": [
+                        "<?php function foo(): string|null {}",
+                        "<?php function foo(): string|NULL {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "union types in arrow function",
+                    "args": [
+                        "<?php return fn (string|null $c): int|null => 1;",
+                        "<?php return fn (string|NULL $c): INT|NULL => 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "union Types",
+                    "args": [
+                        "<?php $a = new class {\n                    private null|int|bool $a4 = false;\n                };",
+                        "<?php $a = new class {\n                    private NULL|INT|BOOL $a4 = false;\n                };"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "promoted properties",
+                    "args": [
+                        "<?php class Foo extends Bar {\n    public function __construct(\n        public int $i,\n        protected parent $p,\n        private string $s\n    ) {}\n}",
+                        "<?php class Foo extends Bar {\n    public function __construct(\n        public INT $i,\n        protected PARENT $p,\n        private STRING $s\n    ) {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\NativeTypeDeclarationCasingFixerTest",
+            "body": "    public function testFix81(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "return type `never`",
+                    "args": [
+                        "<?php class T { public function Foo(object $A): never {die;}}",
+                        "<?php class T { public function Foo(object $A): NEVER {die;}}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "class readonly property",
+                    "args": [
+                        "<?php class Z {\n                    private readonly array $ax;\n                };",
+                        "<?php class Z {\n                    private readonly ARRAY $ax;\n                };"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\NativeTypeDeclarationCasingFixerTest",
+            "body": "    public function testFix82(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "disjunctive normal form types in arrow function",
+                    "args": [
+                        "<?php return fn ((A&B)|C|null $c): (X&Y)|Z|null => 1;",
+                        "<?php return fn ((A&B)|C|Null $c): (X&Y)|Z|NULL => 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "iterable: disjunctive normal form types in arrow function",
+                    "args": [
+                        "<?php return fn (iterable|C|null $c): (X&Y)|Z|null => 1;",
+                        "<?php return fn (ITERABLE|C|Null $c): (X&Y)|Z|NULL => 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `true` in class method",
+                    "args": [
+                        "<?php class T { public function Foo(true $A): true {return $A;}}",
+                        "<?php class T { public function Foo(TRUE $A): TRUE {return $A;}}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `true` in function",
+                    "args": [
+                        "<?php function Foo(true $A): true {return $A;}",
+                        "<?php function Foo(TRUE $A): TRUE {return $A;}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `true` in closure",
+                    "args": [
+                        "<?php array_filter([], function (true $A): true {return $A;});",
+                        "<?php array_filter([], function (TRUE $A): TRUE {return $A;});"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `true` in arrow function",
+                    "args": [
+                        "<?php array_filter([], fn (true $A): true => $A);",
+                        "<?php array_filter([], fn (TRUE $A): TRUE => $A);"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `false` in class method",
+                    "args": [
+                        "<?php class T { public function Foo(false $A): false {return $A;}}",
+                        "<?php class T { public function Foo(FALSE $A): FALSE {return $A;}}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `false` in function",
+                    "args": [
+                        "<?php function Foo(false $A): false {return $A;}",
+                        "<?php function Foo(FALSE $A): FALSE {return $A;}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `false` in closure",
+                    "args": [
+                        "<?php array_filter([], function (false $A): false {return $A;});",
+                        "<?php array_filter([], function (FALSE $A): FALSE {return $A;});"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `false` in arrow function",
+                    "args": [
+                        "<?php array_filter([], fn (false $A): false => $A);",
+                        "<?php array_filter([], fn (FALSE $A): FALSE => $A);"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `null` in class method",
+                    "args": [
+                        "<?php class T { public function Foo(null $A): null {return $A;}}",
+                        "<?php class T { public function Foo(NULL $A): NULL {return $A;}}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `null` in function",
+                    "args": [
+                        "<?php function Foo(null $A): null {return $A;}",
+                        "<?php function Foo(NULL $A): NULL {return $A;}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `null` in closure",
+                    "args": [
+                        "<?php array_filter([], function (null $A): null {return $A;});",
+                        "<?php array_filter([], function (NULL $A): NULL {return $A;});"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "standalone type `null` in arrow function",
+                    "args": [
+                        "<?php array_filter([], fn (null $A): null => $A);",
+                        "<?php array_filter([], fn (NULL $A): NULL => $A);"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "intersection Types",
+                    "args": [
+                        "<?php $a = new class {\n                    private (A&B)|int|D $d5;\n                    private (A\\STRING\\B&B\\INT\\C)|int|(A&B) $e6;\n                };",
+                        "<?php $a = new class {\n                    private (A&B)|INT|D $d5;\n                    private (A\\STRING\\B&B\\INT\\C)|int|(A&B) $e6;\n                };"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\NativeTypeDeclarationCasingFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "simple case",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    const int FOO = 6;\n                }\n            ",
+                        "<?php\n                class Foo\n                {\n                    const INT FOO = 6;\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "single types",
+                    "args": [
+                        "<?php\n                class Foo\n                {\n                    const int SOME_INT = 3;\n                    const array SOME_ARRAY = [7];\n                    const float SOME_FLOAT = 1.23;\n                    const iterable SOME_ITERABLE = [1, 2];\n                    const mixed SOME_MIXED = 1;\n                    const null SOME_NULL = NULL;\n                    const string SOME_STRING = \"X\";\n                }\n            ",
+                        "<?php\n                class Foo\n                {\n                    const INT SOME_INT = 3;\n                    const ARRAY SOME_ARRAY = [7];\n                    const Float SOME_FLOAT = 1.23;\n                    const ITERABLE SOME_ITERABLE = [1, 2];\n                    const MIXED SOME_MIXED = 1;\n                    const NULL SOME_NULL = NULL;\n                    const STRING SOME_STRING = \"X\";\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "nullables `self`, `parent` and `object`",
+                    "args": [
+                        "<?php\n                class Foo extends FooParent\n                {\n                    const ?object SOME_OBJECT = NULL;\n                    const ?parent SOME_PARENT = NULL;\n                    const ?self SOME_SELF = NULL;\n                    const ?int/* x */A/* y */= 3;\n\n                    const ?BAR B = null;\n                    const ?BAR C = null;\n                    const ?\\BAR D = null;\n                    const ?\\INT\\B E = null;\n                    public const ?INT\\A/* x */X=C;\n                }\n            ",
+                        "<?php\n                class Foo extends FooParent\n                {\n                    const ?OBJECT SOME_OBJECT = NULL;\n                    const ?PARENT SOME_PARENT = NULL;\n                    const ?Self SOME_SELF = NULL;\n                    const ?INT/* x */A/* y */= 3;\n\n                    const ?BAR B = null;\n                    const ?BAR C = null;\n                    const ?\\BAR D = null;\n                    const ?\\INT\\B E = null;\n                    public const ?INT\\A/* x */X=C;\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "simple `|`",
+                    "args": [
+                        "<?php class Foo1 {\n                const D|float BAR = 1.0;\n            }",
+                        "<?php class Foo1 {\n                const D|Float BAR = 1.0;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "multiple `|`",
+                    "args": [
+                        "<?php class Foo2 {\n                const int|array|null|A\\B|\\C\\D|float BAR_1 = NULL;\n            }",
+                        "<?php class Foo2 {\n                const INT|ARRAY|NULL|A\\B|\\C\\D|FLOAT BAR_1 = NULL;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "handle mix of `|` and `(X&Y)`",
+                    "args": [
+                        "<?php\n                class Foo extends FooParent\n                {\n                    private const Z|A\\S\\T\\R|int|float|iterable SOMETHING = 123;\n                    protected const \\A\\B|(Foo & Stringable )|null|\\X D = null;\n\n                    public const Foo&Stringable G = V::A;\n                }\n            ",
+                        "<?php\n                class Foo extends FooParent\n                {\n                    private const Z|A\\S\\T\\R|INT|FLOAT|ITERABLE SOMETHING = 123;\n                    protected const \\A\\B|(Foo & Stringable )|NULL|\\X D = null;\n\n                    public const Foo&Stringable G = V::A;\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "interface, nullable int",
+                    "args": [
+                        "<?php interface SomeInterface {\n                const ?int FOO = 1;\n            }",
+                        "<?php interface SomeInterface {\n                const ?INT FOO = 1;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "trait, string",
+                    "args": [
+                        "<?php trait T {\n                const string TEST = E::TEST;\n            }",
+                        "<?php trait T {\n                const STRING TEST = E::TEST;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "enum, int",
+                    "args": [
+                        "<?php enum E: string {\n                case Hearts = \"H\";\n\n                const int TEST = 789;\n                const self A = self::Hearts;\n                const static B = self::Hearts;\n            }",
+                        "<?php enum E: STRING {\n                case Hearts = \"H\";\n\n                const INT TEST = 789;\n                const SELF A = self::Hearts;\n                const STATIC B = self::Hearts;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "enum with \"Mixed\" case",
+                    "args": [
+                        "<?php\nenum Foo\n{\n    case Mixed;\n    public function bar()\n    {\n        self::Mixed;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "do not fix",
+                    "args": [
+                        "<?php class Foo {\n                PUBLIC CONST FOO&STRINGABLE G = A::B;\n            }\n\n            CONST A = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "fix \"false\" in type",
+                    "args": [
+                        "<?php class Foo { private false|int $bar; private false $baz; }",
+                        "<?php class Foo { private FALSE|INT $bar; private FALSE $baz; }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

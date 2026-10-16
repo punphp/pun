@@ -1,0 +1,1262 @@
+{
+    "fixer": "blank_line_before_statement",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\BlankLineBeforeStatementFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/BlankLineBeforeStatementFixerTest.php",
+    "case_count": 100,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "controlStatement",
+                    "type": "",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\BlankLineBeforeStatementFixerTest",
+            "body": "    public function testInvalidConfiguration($controlStatement): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n\n        $this->fixer->configure([\n            'statements' => [$controlStatement],\n        ]);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "null",
+                    "args": [
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "false",
+                    "args": [
+                        false
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "true",
+                    "args": [
+                        true
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "int",
+                    "args": [
+                        0
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "float",
+                    "args": [
+                        3.14
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "array",
+                    "args": [
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "object",
+                    "args": [
+                        {
+                            "__class": "stdClass"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "unknown",
+                    "args": [
+                        "foo"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\BlankLineBeforeStatementFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nif ($a) { /* 1 */ /* 2 */ /* 3 */ // something about $a\n    return $b;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nif ($a) { // something about $a\n    return $b;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "\n$a = $a;\nreturn $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n$a = $a;\n\nreturn $a;",
+                        "<?php\n$a = $a; return $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n$b = $b;\n\nreturn $b;",
+                        "<?php\n$b = $b;return $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n$c = $c;\n\nreturn $c;",
+                        "<?php\n$c = $c;\nreturn $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n$d = $d;\n\nreturn $d;",
+                        "<?php\n$d = $d;\nreturn $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nif (true) {\n    return 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nif (true)\n    return 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nif (true) {\n    return 1;\n} else {\n    return 2;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nif (true)\n    return 1;\nelse\n    return 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nif (true) {\n    return 1;\n} elseif (false) {\n    return 2;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\nif (true)\n    return 1;\nelseif (false)\n    return 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nthrow new Exception(\"return true; //.\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nfunction foo()\n{\n    // comment\n    return \"foo\";\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nfunction foo()\n{\n    // comment\n\n    return \"bar\";\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\nfunction foo()\n{\n    switch ($foo) {\n        case 2: // comment\n            return 1;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix when there is empty line between statement and preceding comment",
+                    "args": [
+                        "<?php function foo()\n                {\n                    bar();\n                    // comment\n\n                    return 42;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix when there is empty line between preceding comments",
+                    "args": [
+                        "<?php function foo()\n                {\n                    bar();\n                    // comment1\n                    // comment2\n\n                    // comment3\n                    return 42;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nswitch ($a) {\n    case 42:\n        break;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "break"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\nswitch ($a) {\n    case 42:\n        $foo = $bar;\n\n        break;\n}",
+                        "<?php\nswitch ($a) {\n    case 42:\n        $foo = $bar;\n        break;\n}",
+                        {
+                            "statements": [
+                                "break"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\nwhile (true) {\n    if ($foo === $bar) {\n        break;\n    }\n}",
+                        null,
+                        {
+                            "statements": [
+                                "break"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\nwhile (true) {\n    if ($foo === $bar) {\n        break 1;\n    }\n}",
+                        null,
+                        {
+                            "statements": [
+                                "break"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\nwhile (true) {\n    if ($foo === $bar) {\n        echo $baz;\n\n        break;\n    }\n}",
+                        "<?php\nwhile (true) {\n    if ($foo === $bar) {\n        echo $baz;\n        break;\n    }\n}",
+                        {
+                            "statements": [
+                                "break"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\nwhile (true) {\n    if ($foo === $bar) {\n        echo $baz;\n\n        break 1;\n    }\n}",
+                        "<?php\nwhile (true) {\n    if ($foo === $bar) {\n        echo $baz;\n        break 1;\n    }\n}",
+                        {
+                            "statements": [
+                                "break"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\nwhile (true) {\n    if ($foo === $bar) {\n        /** X */\n        break 1;\n    }\n}",
+                        null,
+                        {
+                            "statements": [
+                                "break"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\nswitch ($a) {\n    case 1:\n        return 1;\n\n    case 2;\n        return 2;\n\n    case 3:\n        return 3;\n}",
+                        "<?php\nswitch ($a) {\n    case 1:\n        return 1;\n    case 2;\n        return 2;\n    case 3:\n        return 3;\n}",
+                        {
+                            "statements": [
+                                "case"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\nwhile (true) {\n    continue;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "continue"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\nwhile (true) {\n    continue 1;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "continue"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\nwhile (true) {\n    while (true) {\n        continue 2;\n    }\n}",
+                        null,
+                        {
+                            "statements": [
+                                "continue"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\nwhile (true) {\n    $foo = true;\n\n    continue;\n}",
+                        "<?php\nwhile (true) {\n    $foo = true;\n    continue;\n}",
+                        {
+                            "statements": [
+                                "continue"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\nwhile (true) {\n    $foo = true;\n\n    continue 1;\n}",
+                        "<?php\nwhile (true) {\n    $foo = true;\n    continue 1;\n}",
+                        {
+                            "statements": [
+                                "continue"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\nwhile (true) {\n    while (true) {\n        switch($a) {\n            case 1:\n                echo 1;\n\n                continue;\n        }\n        $foo = true;\n\n        continue 2;\n    }\n}",
+                        "<?php\nwhile (true) {\n    while (true) {\n        switch($a) {\n            case 1:\n                echo 1;\n                continue;\n        }\n        $foo = true;\n        continue 2;\n    }\n}",
+                        {
+                            "statements": [
+                                "continue"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\ndeclare(ticks=1);",
+                        null,
+                        {
+                            "statements": [
+                                "declare"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n$foo = \"bar\";\ndo {\n} while (true);\n$foo = \"bar\";\n\ndeclare(ticks=1);",
+                        "<?php\n$foo = \"bar\";\ndo {\n} while (true);\n$foo = \"bar\";\ndeclare(ticks=1);",
+                        {
+                            "statements": [
+                                "declare"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\nswitch ($a) {\n    case 1:\n        return 1;\n\n    default:\n        return 2;\n}\n\nswitch ($a1) {\n    default:\n        return 22;\n}",
+                        "<?php\nswitch ($a) {\n    case 1:\n        return 1;\n    default:\n        return 2;\n}\n\nswitch ($a1) {\n    default:\n        return 22;\n}",
+                        {
+                            "statements": [
+                                "default"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\ndo {\n} while (true);",
+                        null,
+                        {
+                            "statements": [
+                                "do"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\n$foo = \"bar\";\n\ndo {\n} while (true);",
+                        "<?php\n$foo = \"bar\";\ndo {\n} while (true);",
+                        {
+                            "statements": [
+                                "do"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\nif ($foo === $bar) {\n    exit();\n}",
+                        null,
+                        {
+                            "statements": [
+                                "exit"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\nif ($foo === $bar) {\n    echo $baz;\n\n    exit();\n}",
+                        "<?php\nif ($foo === $bar) {\n    echo $baz;\n    exit();\n}",
+                        {
+                            "statements": [
+                                "exit"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\nif ($foo === $bar) {\n    echo $baz;\n\n    exit();\n}",
+                        null,
+                        {
+                            "statements": [
+                                "exit"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\nmysqli_connect() or exit();",
+                        null,
+                        {
+                            "statements": [
+                                "exit"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\nif ($foo === $bar) {\n    $bar = 9001;\n    mysqli_connect() or exit();\n}",
+                        null,
+                        {
+                            "statements": [
+                                "exit"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n                    echo 1;\n\n                    for(;;){break;}\n                ",
+                        "<?php\n                    echo 1;\n                    for(;;){break;}\n                ",
+                        {
+                            "statements": [
+                                "for"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\na:\n\nif ($foo === $bar) {\n    goto a;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "goto"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\na:\n\nif ($foo === $bar) {\n    echo $baz;\n\n    goto a;\n}",
+                        "<?php\na:\n\nif ($foo === $bar) {\n    echo $baz;\n    goto a;\n}",
+                        {
+                            "statements": [
+                                "goto"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\na:\n\nif ($foo === $bar) {\n    echo $baz;\n\n    goto a;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "goto"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php if (true) {\n    echo $bar;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "if"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\nif (true) {\n    echo $bar;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "if"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n$foo = $bar;\n\nif (true) {\n    echo $bar;\n}",
+                        "<?php\n$foo = $bar;\nif (true) {\n    echo $bar;\n}",
+                        {
+                            "statements": [
+                                "if"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\n// foo\nif ($foo) { }",
+                        null,
+                        {
+                            "statements": [
+                                "if"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n                    echo 1;\n\n                    foreach($a as $b){break;}\n                ",
+                        "<?php\n                    echo 1;\n                    foreach($a as $b){break;}\n                ",
+                        {
+                            "statements": [
+                                "foreach"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\ninclude \"foo.php\";",
+                        null,
+                        {
+                            "statements": [
+                                "include"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\n$foo = $bar;\n\ninclude \"foo.php\";",
+                        "<?php\n$foo = $bar;\ninclude \"foo.php\";",
+                        {
+                            "statements": [
+                                "include"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\ninclude_once \"foo.php\";",
+                        null,
+                        {
+                            "statements": [
+                                "include_once"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php\n$foo = $bar;\n\ninclude_once \"foo.php\";",
+                        "<?php\n$foo = $bar;\ninclude_once \"foo.php\";",
+                        {
+                            "statements": [
+                                "include_once"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php\nrequire \"foo.php\";",
+                        null,
+                        {
+                            "statements": [
+                                "require"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php\n$foo = $bar;\n\nrequire \"foo.php\";",
+                        "<?php\n$foo = $bar;\nrequire \"foo.php\";",
+                        {
+                            "statements": [
+                                "require"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php\nrequire_once \"foo.php\";",
+                        null,
+                        {
+                            "statements": [
+                                "require_once"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php\n$foo = $bar;\n\nrequire_once \"foo.php\";",
+                        "<?php\n$foo = $bar;\nrequire_once \"foo.php\";",
+                        {
+                            "statements": [
+                                "require_once"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php\r\n$a = $a;\r\n\r\nreturn $a;",
+                        "<?php\r\n$a = $a; return $a;",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php\r\n$b = $b;\r\n\r\nreturn $b;",
+                        "<?php\r\n$b = $b;return $b;",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php\r\n$c = $c;\r\n\r\nreturn $c;",
+                        "<?php\r\n$c = $c;\r\nreturn $c;",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php\nswitch ($a) {\n    case 42:\n        break;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "switch"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php\n$foo = $bar;\n\nswitch ($foo) {\n    case $bar:\n        break;\n}",
+                        "<?php\n$foo = $bar;\nswitch ($foo) {\n    case $bar:\n        break;\n}",
+                        {
+                            "statements": [
+                                "switch"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php\nif (false) {\n    throw new \\Exception(\"Something unexpected happened.\");\n}",
+                        null,
+                        {
+                            "statements": [
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php\nif (false) {\n    $log->error(\"No\");\n\n    throw new \\Exception(\"Something unexpected happened.\");\n}",
+                        "<?php\nif (false) {\n    $log->error(\"No\");\n    throw new \\Exception(\"Something unexpected happened.\");\n}",
+                        {
+                            "statements": [
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php\ntry {\n    $transaction->commit();\n} catch (\\Exception $exception) {\n    $transaction->rollback();\n}",
+                        null,
+                        {
+                            "statements": [
+                                "try"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php\n$foo = $bar;\n\ntry {\n    $transaction->commit();\n} catch (\\Exception $exception) {\n    $transaction->rollback();\n}",
+                        "<?php\n$foo = $bar;\ntry {\n    $transaction->commit();\n} catch (\\Exception $exception) {\n    $transaction->rollback();\n}",
+                        {
+                            "statements": [
+                                "try"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php\nwhile (true) {\n    $worker->work();\n}",
+                        null,
+                        {
+                            "statements": [
+                                "while"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php\n$foo = $bar;\n\nwhile (true) {\n    $worker->work();\n}",
+                        "<?php\n$foo = $bar;\nwhile (true) {\n    $worker->work();\n}",
+                        {
+                            "statements": [
+                                "while"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php\n$foo = $bar;\n\ndo {\n    echo 1;\n\n    while($a());\n    $worker->work();\n} while (true);",
+                        "<?php\n$foo = $bar;\n\ndo {\n    echo 1;\n    while($a());\n    $worker->work();\n} while (true);",
+                        {
+                            "statements": [
+                                "while"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php\nfunction foo() {\nyield $a; /* a *//* b */     /* c */       /* d *//* e *//* etc */\n   \nyield $b;\n}",
+                        "<?php\nfunction foo() {\nyield $a; /* a *//* b */     /* c */       /* d *//* e *//* etc */   \nyield $b;\n}",
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php\nfunction foo() {\n    yield $a; // test\n\n    yield $b; // test /* A */\n\n    yield $c;\n\n    yield $d;\n\nyield $e;#\n\nyield $f;\n\n    /* @var int $g */\n    yield $g;\n\n/* @var int $h */\nyield $i;\n\nyield $j;\n}",
+                        "<?php\nfunction foo() {\n    yield $a; // test\n    yield $b; // test /* A */\n    yield $c;\n    yield $d;yield $e;#\nyield $f;\n    /* @var int $g */\n    yield $g;\n/* @var int $h */\nyield $i;\nyield $j;\n}",
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php\nfunction foo() {\n    yield $a;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php\nfunction foo() {\n    yield $a;\n\n    yield $b;\n}",
+                        "<?php\nfunction foo() {\n    yield $a;\n    yield $b;\n}",
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php\nfunction foo() {\n    yield 'b' => $a;\n\n    yield \"a\" => $b;\n}",
+                        "<?php\nfunction foo() {\n    yield 'b' => $a;\n    yield \"a\" => $b;\n}",
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php\nfunction foo() {\n    $a = $a;\n\n    yield $a;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php\nfunction foo() {\n    $a = $a;\n\n    yield $a;\n}",
+                        "<?php\nfunction foo() {\n    $a = $a;\n    yield $a;\n}",
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php function foo() {\n                    // yield 1\n                    yield 1;\n\n                    // yield 2\n                    yield 2;\n                }",
+                        "<?php function foo() {\n                    // yield 1\n                    yield 1;\n                    // yield 2\n                    yield 2;\n                }",
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php function foo() {\n                    yield 1;\n\n                    // yield 2\n                    // or maybe yield 3\n                    // better compromise\n                    yield 2.5;\n                }",
+                        "<?php function foo() {\n                    yield 1;\n                    // yield 2\n                    // or maybe yield 3\n                    // better compromise\n                    yield 2.5;\n                }",
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php\nfunction foo() {\n    yield from $a;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "yield_from"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php\nfunction foo() {\n    yield from $a;\n\n    yield from $b;\n}",
+                        "<?php\nfunction foo() {\n    yield from $a;\n    yield from $b;\n}",
+                        {
+                            "statements": [
+                                "yield_from"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php\nfunction foo() {\n    $a = $a;\n\n    yield from $a;\n\n    yield $a;\n    yield $b;\n}",
+                        null,
+                        {
+                            "statements": [
+                                "yield_from"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php\nfunction foo() {\n    $a = $a;\n\n    yield from $a;\n}",
+                        "<?php\nfunction foo() {\n    $a = $a;\n    yield from $a;\n}",
+                        {
+                            "statements": [
+                                "yield_from"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php\n                    while($a) {\n                        if ($c) {\n                            switch ($d) {\n                                case $e:\n                                    continue 2;\n                                case 4:\n                                    break;\n                                case 5:\n                                    return 1;\n                                default:\n                                    return 0;\n                            }\n                        }\n                    }\n                ",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "continue",
+                                "declare",
+                                "do",
+                                "for",
+                                "foreach",
+                                "if",
+                                "include",
+                                "include_once",
+                                "require",
+                                "require_once",
+                                "return",
+                                "switch",
+                                "throw",
+                                "try",
+                                "while"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php\n                    while($a) {\n                        if ($c) {\n                            switch ($d) {\n                                case $e:\n                                    continue 2;\n\n                                case 4:\n                                    break;\n\n                                case 5:\n                                    return 1;\n\n                                default:\n                                    return 0;\n                            }\n                        }\n                    }\n                ",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "continue",
+                                "declare",
+                                "do",
+                                "for",
+                                "foreach",
+                                "if",
+                                "include",
+                                "include_once",
+                                "require",
+                                "require_once",
+                                "return",
+                                "switch",
+                                "throw",
+                                "try",
+                                "while",
+                                "case",
+                                "default"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php\ndo {\n    echo 0;\n    if ($a) {\n        echo 1;\n\n        break;\n    }\n    echo 2;\n\n    throw $f;\n} while(true);",
+                        "<?php\ndo {\n    echo 0;\n    if ($a) {\n        echo 1;\n        break;\n    }\n    echo 2;\n    throw $f;\n} while(true);",
+                        {
+                            "statements": [
+                                "break",
+                                "throw"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php\n/** @var int $foo */\n$foo = 123;\n\n/** @var float $bar */\n$bar = 45.6;\n\n/** @var string */\n$baz = \"789\";\n",
+                        "<?php\n/** @var int $foo */\n$foo = 123;\n/** @var float $bar */\n$bar = 45.6;\n/** @var string */\n$baz = \"789\";\n",
+                        {
+                            "statements": [
+                                "phpdoc"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php\n/* header */\n\n/**\n * Class description\n */\nclass Foo {\n    /** test */\n    public function bar() {}\n}\n",
+                        null,
+                        {
+                            "statements": [
+                                "phpdoc"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\BlankLineBeforeStatementFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->testFix($expected, $input, ['statements' => ['default']]);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "match",
+                    "args": [
+                        "<?php\n                match ($foo) {\n                    1 => \"a\",\n                    default => \"b\"\n                };\n\n                match ($foo) {\n                    1 => \"a1\",\n\n\n                    default => \"b2\"\n                };\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\BlankLineBeforeStatementFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->testFix($expected, $input, ['statements' => ['case']]);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum",
+                    "args": [
+                        "<?php\nenum Suit {\n    case Hearts;\n    case Diamonds;\n    case Clubs;\n\n\n    case Spades;\n}\n\nenum UserStatus: string {\n    case Pending = \"P\";\n    case Active = \"A\";\n\n    public function label(): string {\n        switch ($a) {\n            case 1:\n                return 1;\n\n            case 2:\n                return 2; // do fix\n        }\n\n        return \"label\";\n    }\n}\n",
+                        "<?php\nenum Suit {\n    case Hearts;\n    case Diamonds;\n    case Clubs;\n\n\n    case Spades;\n}\n\nenum UserStatus: string {\n    case Pending = \"P\";\n    case Active = \"A\";\n\n    public function label(): string {\n        switch ($a) {\n            case 1:\n                return 1;\n            case 2:\n                return 2; // do fix\n        }\n\n        return \"label\";\n    }\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

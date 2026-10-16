@@ -1,0 +1,3904 @@
+{
+    "fixer": "no_unneeded_control_parentheses",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededControlParenthesesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/NoUnneededControlParenthesesFixerTest.php",
+    "case_count": 192,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededControlParenthesesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php while ($x) { while ($y) { break 2; } }",
+                        "<?php while ($x) { while ($y) { break (2); } }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php while ($x) { while ($y) { break 2; } }",
+                        "<?php while ($x) { while ($y) { break(2); } }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php while ($x) { while ($y) { continue 2; } }",
+                        "<?php while ($x) { while ($y) { continue (2); } }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php while ($x) { while ($y) { continue 2; } }",
+                        "<?php while ($x) { while ($y) { continue(2); } }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                $var = clone ($obj1 ?: $obj2);\n                $var = clone ($obj1 ? $obj1->getSubject() : $obj2);\n                ",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php clone $object;",
+                        "<?php clone ($object);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php clone new Foo();",
+                        "<?php clone (new Foo());",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                foo(clone $a);\n                foo(clone $a, 1);\n                $a = $b ? clone $b : $c;\n                ",
+                        "<?php\n                foo(clone($a));\n                foo(clone($a), 1);\n                $a = $b ? clone($b) : $c;\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                echo (1 + 2) . $foo;\n                print (1 + 2) . $foo;\n                ",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php echo (1 + 2) * 10, \"\\n\";",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php echo (1 + 2) * 10, \"\\n\" ?>",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php echo \"foo\" ?>",
+                        "<?php echo (\"foo\") ?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php print \"foo\" ?>",
+                        "<?php print (\"foo\") ?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php echo \"foo2\"; print \"foo\";",
+                        "<?php echo (\"foo2\"); print (\"foo\");",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php echo \"foo\"; print \"foo1\";",
+                        "<?php echo(\"foo\"); print(\"foo1\");",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php echo 2; print 2;",
+                        "<?php echo(2); print(2);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                echo $a ? $b : $c;\n                echo ($a ? $b : $c) ? $d : $e;\n                echo 10 * (2 + 3);\n                echo (\"foo\"), (\"bar\");\n                echo my_awesome_function(\"foo\");\n                echo $this->getOutput(1);\n                ",
+                        "<?php\n                echo ($a ? $b : $c);\n                echo ($a ? $b : $c) ? $d : $e;\n                echo 10 * (2 + 3);\n                echo (\"foo\"), (\"bar\");\n                echo my_awesome_function(\"foo\");\n                echo $this->getOutput(1);\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php return (1 + 2) * 10;",
+                        "<?php return ((1 + 2) * 10);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php return \"prod\";",
+                        "<?php return (\"prod\");",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php return $x;",
+                        "<?php return($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php return 2;",
+                        "<?php return(2);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php return 2?>",
+                        "<?php return(2)?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case \"prod\":\n                        break;\n                }\n                ",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case \"prod\":\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case (\"prod\"):\n                        break;\n                }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case $x;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case($x);\n                }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case 2;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case(2);\n                }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n                $a = 5.1;\n                $b = 1.0;\n                switch($a) {\n                    case (int) $a < 1 : {\n                        echo \"leave alone\";\n                        break;\n                    }\n                    case $a < 2/* test */: {\n                        echo \"fix 1\";\n                        break;\n                    }\n                    case 3 : {\n                        echo \"fix 2\";\n                        break;\n                    }\n                    case /**//**/ // test\n                        4\n                        /**///\n                        /**/: {\n                        echo \"fix 3\";\n                        break;\n                    }\n                    case ((int)$b) + 4.1: {\n                        echo \"fix 4\";\n                        break;\n                    }\n                    case ($b + 1) * 2: {\n                        echo \"leave alone\";\n                        break;\n                    }\n                }\n                ",
+                        "<?php\n                $a = 5.1;\n                $b = 1.0;\n                switch($a) {\n                    case (int) $a < 1 : {\n                        echo \"leave alone\";\n                        break;\n                    }\n                    case ($a < 2)/* test */: {\n                        echo \"fix 1\";\n                        break;\n                    }\n                    case (3) : {\n                        echo \"fix 2\";\n                        break;\n                    }\n                    case /**/(/**/ // test\n                        4\n                        /**/)//\n                        /**/: {\n                        echo \"fix 3\";\n                        break;\n                    }\n                    case (((int)$b) + 4.1): {\n                        echo \"fix 4\";\n                        break;\n                    }\n                    case ($b + 1) * 2: {\n                        echo \"leave alone\";\n                        break;\n                    }\n                }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php while ($x) { while ($y) { break#\n#\n2#\n#\n; } }",
+                        "<?php while ($x) { while ($y) { break#\n(#\n2#\n)#\n; } }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n                function foo() { yield \"prod\"; }\n                ",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n                function foo() { yield (1 + 2) * 10; }\n                ",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n                function foo() { yield (1 + 2) * 10; }\n                ",
+                        "<?php\n                function foo() { yield ((1 + 2) * 10); }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n                function foo() { yield \"prod\"; }\n                ",
+                        "<?php\n                function foo() { yield (\"prod\"); }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n                function foo() { yield 2; }\n                ",
+                        "<?php\n                function foo() { yield(2); }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n                function foo() { $a = (yield $x); }\n                ",
+                        "<?php\n                function foo() { $a = (yield($x)); }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n                $var = clone ($obj1->getSubject() ?? $obj2);\n                ",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "===",
+                    "args": [
+                        "<?php $at = $a === $b;",
+                        "<?php $at = ($a) === ($b);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "yield/from fun",
+                    "args": [
+                        "<?php\n                function foo3() { $a = (yield $x); }\n                function foo4() { yield from (1 + 2) * 10; }\n\n                function foo5() { yield from \"prod\"; }\n                function foo6() { $a = (yield $x); }\n                function foo7() { yield from 2; }\n                function foo8() { $a = (yield from $x); }\n                ",
+                        "<?php\n                function foo3() { $a = (yield $x); }\n                function foo4() { yield from ((1 + 2) * 10); }\n\n                function foo5() { yield from (\"prod\"); }\n                function foo6() { $a = (yield($x)); }\n                function foo7() { yield from(2); }\n                function foo8() { $a = (yield from($x)); }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "clone stuff",
+                    "args": [
+                        "<?php\n                clone new $f[0];\n                $a1 = clone new foo;\n                $a2 = clone new foo();\n\n                $a3 = [clone $f];\n                $a4 = [1, clone $f];\n                $a5 = [clone $f, 2];\n                $a6 = [1, clone $f, 2];\n\n                $c1 = fn() => clone $z;\n\n                for ( clone new Bar(1+2) ; $i < 100; ++$i) {\n                    $i = foo();\n                }\n\n                clone $object2[0]->foo()[2] /* 1 */ ?>",
+                        "<?php\n                clone (new $f[0]);\n                $a1 = clone (new foo);\n                $a2 = clone (new foo());\n\n                $a3 = [clone ($f)];\n                $a4 = [1, clone ($f)];\n                $a5 = [clone ($f), 2];\n                $a6 = [1, clone ($f), 2];\n\n                $c1 = fn() => clone ($z);\n\n                for ( clone(new Bar(1+2) ); $i < 100; ++$i) {\n                    $i = foo();\n                }\n\n                clone ($object2[0]->foo()[2]) /* 1 */ ?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "print unary wrapped sequence",
+                    "args": [
+                        "<?php $b7 =[ print !$a   ,];",
+                        "<?php $b7 =[ print !($a)   ,];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "print - sequence",
+                    "args": [
+                        "<?php\n                $b7 =[ print $a, 1];\n                $b7 =[1, print $a];\n            ",
+                        "<?php\n                $b7 =[ print ($a), 1];\n                $b7 =[1, print ($a)];\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "print - wrapped block",
+                    "args": [
+                        "<?php $b7 =[ print $a ];",
+                        "<?php $b7 =[ print ($a) ];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "print fun",
+                    "args": [
+                        "<?php\n                for ( print $b+1; foo(); ++$i ) {}\n                for( print $b+1; foo(); ++$i ) {}\n\n                $b1 = $c[print $e+5];\n                $b2 = [1, print $e++];\n                $b3 = [print $e+9, 1];\n                $b4 = [1, 1 + print $e, 1];\n\n                $b51 = fn() => print $b.\"something\";\n                $b52 = fn() => print $b.\"else\";\n\n                $b6 = foo(print $a);\n                $b7 =[ print $a   ,];\n\n                $b8 =[ print ($a+1) . \"1\"   ,];\n            ",
+                        "<?php\n                for ( (print $b+1); foo(); ++$i ) {}\n                for( print ($b+1); foo(); ++$i ) {}\n\n                $b1 = $c[(print $e+5)];\n                $b2 = [1, (print $e++)];\n                $b3 = [(print $e+9), 1];\n                $b4 = [1, (1 + print $e), 1];\n\n                $b51 = fn() => (print $b.\"something\");\n                $b52 = fn() => print ($b.\"else\");\n\n                $b6 = foo(print ($a));\n                $b7 =[ (print ($a))   ,];\n\n                $b8 =[ (print ($a+1) . \"1\")   ,];\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php $aw?><?php $av;",
+                        "<?php ($aw)?><?php ($av);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, echo open tag",
+                    "args": [
+                        "<?= $a;",
+                        "<?= ($a);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "+ (X),",
+                    "args": [
+                        "<?php $bw = [1 + !!$a, 2 + $b,];",
+                        "<?php $bw = [1 + !!($a), 2 + ($b),];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "op ns",
+                    "args": [
+                        "<?php $aq = A\\B::c . $d;",
+                        "<?php $aq = (A\\B::c) . $d;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped FN",
+                    "args": [
+                        "<?php $fn1 = fn($x) => $x + $y;",
+                        "<?php $fn1 = fn($x) => ($x + $y);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped FN 2 with pre and reference",
+                    "args": [
+                        "<?php $fn1 = fn & ($x) => !$x;",
+                        "<?php $fn1 = fn & ($x) => !($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped FN with `,`",
+                    "args": [
+                        "<?php\n                $fn1 = array_map(fn() => 1, $array);\n                $fn2 = array_map($array, fn() => 2);\n                $fn3 = array_map($array, fn() => 3, $array);\n            ",
+                        "<?php\n                $fn1 = array_map(fn() => (1), $array);\n                $fn2 = array_map($array, fn() => (2));\n                $fn3 = array_map($array, fn() => (3), $array);\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped FN with return type",
+                    "args": [
+                        "<?php\n                $fn8 = fn(): int => 123456;\n            ",
+                        "<?php\n                $fn8 = fn(): int => (123456);\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped `for` elements",
+                    "args": [
+                        "<?php\n                for (!$a; $a < 10; ++$a){\n                    echo $a;\n                }\n            ",
+                        "<?php\n                for (!($a); ($a < 10); (++$a)){\n                    echo $a;\n                }\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "echo, no op, space",
+                    "args": [
+                        "<?php function foo(){ echo $e; }",
+                        "<?php function foo(){ echo ($e); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "echo, wrapped op, no space",
+                    "args": [
+                        "<?php function foo(){;echo $e.$f; }",
+                        "<?php function foo(){;echo($e.$f); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "print, no op, space",
+                    "args": [
+                        "<?php function foo(){ print $e; }",
+                        "<?php function foo(){ print ($e); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "print, wrapped op, no space",
+                    "args": [
+                        "<?php function foo(){;print $e.$f; }",
+                        "<?php function foo(){;print($e.$f); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return, no op, space",
+                    "args": [
+                        "<?php function foo(){ return $e; }",
+                        "<?php function foo(){ return ($e); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return, wrapped op, no space",
+                    "args": [
+                        "<?php function foo(){;return $e.$f; }",
+                        "<?php function foo(){;return($e.$f); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throw, no op, space",
+                    "args": [
+                        "<?php function foo(){ throw $e; }",
+                        "<?php function foo(){ throw ($e); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throw, wrapped op, no space",
+                    "args": [
+                        "<?php function foo(){;throw $e.$f; }",
+                        "<?php function foo(){;throw($e.$f); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "yield from, no op, space",
+                    "args": [
+                        "<?php function foo(){ yield from $e; }",
+                        "<?php function foo(){ yield from ($e); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "yield from, wrapped op, no space",
+                    "args": [
+                        "<?php function foo(){;yield from $e.$f; }",
+                        "<?php function foo(){;yield from($e.$f); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "yield, no op, space",
+                    "args": [
+                        "<?php function foo(){ yield $e; }",
+                        "<?php function foo(){ yield ($e); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "yield, wrapped op, no space",
+                    "args": [
+                        "<?php function foo(){;yield $e.$f; }",
+                        "<?php function foo(){;yield($e.$f); }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "yield wrapped unary",
+                    "args": [
+                        "<?php $a = function($a) {yield ++$a;};",
+                        "<?php $a = function($a) {yield (++$a);};",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "__CLASS__+ op",
+                    "args": [
+                        "<?php $a = __CLASS__ . $b;",
+                        "<?php $a = (__CLASS__) . $b;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "__DIR__+ op",
+                    "args": [
+                        "<?php $a = __DIR__ . $b;",
+                        "<?php $a = (__DIR__) . $b;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "__FILE__+ op",
+                    "args": [
+                        "<?php $a = __FILE__ . $b;",
+                        "<?php $a = (__FILE__) . $b;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "__FUNCTION__+ op",
+                    "args": [
+                        "<?php $a = __FUNCTION__ . $b;",
+                        "<?php $a = (__FUNCTION__) . $b;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "__LINE__+ op",
+                    "args": [
+                        "<?php $a = __LINE__ . $b;",
+                        "<?php $a = (__LINE__) . $b;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "__METHOD__+ op",
+                    "args": [
+                        "<?php $a = __METHOD__ . $b;",
+                        "<?php $a = (__METHOD__) . $b;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "__NAMESPACE__+ op",
+                    "args": [
+                        "<?php $a = __NAMESPACE__ . $b;",
+                        "<?php $a = (__NAMESPACE__) . $b;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "__TRAIT__+ op",
+                    "args": [
+                        "<?php $a = __TRAIT__ . $b;",
+                        "<?php $a = (__TRAIT__) . $b;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "break/continue",
+                    "args": [
+                        "<?php\n                while(foo() && $f) {\n                    while(bar()) {\n                        if ($a) {\n                            break 2;\n                        } else {\n                            continue 2;\n                        }\n                    }\n                }\n            ",
+                        "<?php\n                while((foo() && $f)) {\n                    while(bar()) {\n                        if ($a) {\n                            break (2);\n                        } else {\n                            continue (2);\n                        }\n                    }\n                }\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch case",
+                    "args": [
+                        "<?php switch($a) {\n                case 1: echo 1;\n                case !$a; echo 2;\n            }",
+                        "<?php switch($a) {\n                case(1): echo 1;\n                case !($a); echo 2;\n            }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch case II",
+                    "args": [
+                        "<?php\n                switch ($x) {\n                    case $a + 1 + 3:\n                        break;\n                    case 1 + $a + 4:\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($x) {\n                    case ($a) + 1 + 3:\n                        break;\n                    case 1 + ($a) + 4:\n                        break;\n                }\n                ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin pre bin",
+                    "args": [
+                        "<?php $t = 1+ $i +1;",
+                        "<?php $t = 1+($i)+1;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin, (X))",
+                    "args": [
+                        "<?php $ap = 1 + $a;",
+                        "<?php $ap = 1 + ($a);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin close tag",
+                    "args": [
+                        "<?php $d + 2; ?>",
+                        "<?php ($d) + 2; ?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin after open echo",
+                    "args": [
+                        "<?= $d - 55;",
+                        "<?= ($d) - 55;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "more bin + sequences combinations",
+                    "args": [
+                        "<?php\n                $b1 = [1 + $d];\n                $b2 = [1 + $d,];\n                $b3 = [1,1 + $d + 1];\n                $b4 = [1,1 + $d,];\n            ",
+                        "<?php\n                $b1 = [1 + ($d)];\n                $b2 = [1 + ($d),];\n                $b3 = [1,1 + ($d) + 1];\n                $b4 = [1,1 + ($d),];\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin doggybag",
+                    "args": [
+                        "<?php\n                while(foo()[1]){bar();}\n                $aR . \"\";\n                $e = [$a] + $b;\n                $f = [$a] + $b[1];\n                $a = $b + !$c + $d;\n                $b = !$a[1]++;\n                $c = $c + !!!(bool) -$a;\n                throw $b . \"\";\n            ",
+                        "<?php\n                while((foo())[1]){bar();}\n                ($aR) . \"\";\n                $e = [$a] + ($b);\n                $f = [$a] + ($b)[1];\n                $a = $b + !($c) + $d;\n                $b = !($a)[1]++;\n                $c = $c + !!!(bool) -($a);\n                throw($b) . \"\";\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "while(foo()){echo 1;} (X) bin",
+                    "args": [
+                        "<?php while(foo()){echo 1;} $e . \"foo\";",
+                        "<?php while(foo()){echo 1;} ($e) . \"foo\";",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": ";;;; (X) bin",
+                    "args": [
+                        "<?php ;;;; $e . \"foo\";",
+                        "<?php ;;;; ($e) . \"foo\";",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "echo (X) bin",
+                    "args": [
+                        "<?php echo $e . \"foo\";",
+                        "<?php echo ($e) . \"foo\";",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "print (X) bin",
+                    "args": [
+                        "<?php print $e . \"foo\";",
+                        "<?php print ($e) . \"foo\";",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return (X) bin",
+                    "args": [
+                        "<?php return $e . \"foo\";",
+                        "<?php return ($e) . \"foo\";",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throw (X) bin",
+                    "args": [
+                        "<?php throw $e . \"foo\";",
+                        "<?php throw ($e) . \"foo\";",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": " (X) bin",
+                    "args": [
+                        "<?php  $e . \"foo\";",
+                        "<?php  ($e) . \"foo\";",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin after",
+                    "args": [
+                        "<?php\n                $d * 5;\n                ; $a - $b;\n                while(foo() + 1 < 100){} $z - 6 ?>",
+                        "<?php\n                ($d) * 5;\n                ; ($a) - $b;\n                while((foo()) + 1 < 100){} ($z) - 6 ?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin after throw/return",
+                    "args": [
+                        "<?php\n                function foo() {\n                    if($b) {\n                        throw $e . \"\";\n                    }\n\n                    return ((string)$dd)[1] . \"a\";\n            }",
+                        "<?php\n                function foo() {\n                    if(($b)) {\n                        throw($e) . \"\";\n                    }\n\n                    return(((string)$dd)[1] . \"a\");\n            }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple fixes",
+                    "args": [
+                        "<?php\n                $a = [];\n                $b = [1, []];\n                foo();\n                while(foo()){\n                    $a = foo2();\n                }\n            ",
+                        "<?php\n                $a = ([]);\n                $b = ([1,([])]);\n                (foo());\n                while(foo()){\n                    $a = (foo2());\n                }\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "access",
+                    "args": [
+                        "<?php\n                $ag = $b->A::$foo;\n\n                $a1 = $b->$c[1];\n                $a2 = $b->c[1][2];\n                $a3 = $b->$c[1]->$a[2]->${\"abc\"};\n                $a4 = $b->$c[1][2]->${\"abc\"}(22);\n\n                $a5 = $o->$foo();\n                $o->$c[] = 6;\n                $a7 = $o->$c[8]   (7);\n                $a9 = $o->abc($a);\n                $a10 = $o->abc($a)[1];\n                $a11 = $o->{$bar};\n                $a12 = $o->{$c->d}($e)[1](2)[$f]->$c[1]()?>\n            ",
+                        "<?php\n                $ag = (($b)->A::$foo);\n\n                $a1 = (($b)->$c[1]);\n                $a2 = (($b)->c[1][2]);\n                $a3 = (($b)->$c[1]->$a[2]->${\"abc\"});\n                $a4 = (($b)->$c[1][2]->${\"abc\"}(22));\n\n                $a5 = (($o)->$foo());\n                ($o)->$c[] = 6;\n                $a7 = (($o)->$c[8]   (7));\n                $a9 = (($o)->abc($a));\n                $a10 = (($o)->abc($a)[1]);\n                $a11 = (($o)->{$bar});\n                $a12 = (($o)->{$c->d}($e)[1](2)[$f]->$c[1]())?>\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple unary `!`",
+                    "args": [
+                        "<?php\n                $a1 = !$foo;\n                $a2 = +$f;\n                $a3 = -$f;\n                $a4 = @bar();\n            ",
+                        "<?php\n                $a1 = !($foo);\n                $a2 = +($f);\n                $a3 = -($f);\n                $a4 = @(bar());\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "pre op ! function call",
+                    "args": [
+                        "<?php $a9 = !foo($a + 1);",
+                        "<?php $a9 = !(foo($a + 1));",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple pre in wrapped array init",
+                    "args": [
+                        "<?php $d7 = [!!!!!!!$a5];",
+                        "<?php $d7 = [!!!!!!!($a5)];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "pre op cast",
+                    "args": [
+                        "<?php $a6 = (bool)$foo;",
+                        "<?php $a6 = (bool)($foo);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "pre op ! wrapped",
+                    "args": [
+                        "<?php if (!$z) {echo 1;}",
+                        "<?php if ((!($z))) {echo 1;}",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "crazy unary",
+                    "args": [
+                        "<?php\n                $b0 = !!!(bool) $a1;\n                $b1 = [!!!(bool) $a2,1];\n                !!!(bool) $a3;\n                !!!(bool) $a4;\n                $b = 1 + (!!!!!!!$a5);\n                $a = !$a[1]++;\n                while(!!!(bool) $a2[1] ){echo 1;}\n                $b = @$a[1];\n                $b = ++$a[1];\n            ",
+                        "<?php\n                $b0 = !!!(bool) ($a1);\n                $b1 = [!!!(bool) ($a2),1];\n                (!!!(bool) (($a3)));\n                (!!!(bool) ($a4));\n                $b = 1 + (!!!!!!!($a5));\n                $a = !($a)[1]++;\n                while(!!!(bool) ($a2)[1] ){echo 1;}\n                $b = @($a)[1];\n                $b = ++($a)[1];\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "logic &&",
+                    "args": [
+                        "<?php $arr = $a && $b;",
+                        "<?php $arr = ($a) && $b;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin before",
+                    "args": [
+                        "<?php\n                $ax = $d + $a;\n                $dx = 1 + $z ?>",
+                        "<?php\n                $ax = $d + ($a);\n                $dx = 1 + ($z) ?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "bin before and after",
+                    "args": [
+                        "<?php\n                echo 1 + 2 + 3;\n                echo 1.5 + 2.5 + 3.5;\n                echo 1 + $obj->value + 3;\n                echo 1 + Obj::VALUE + 3;\n            ",
+                        "<?php\n                echo 1 + (2) + 3;\n                echo 1.5 + (2.5) + 3.5;\n                echo 1 + ($obj->value) + 3;\n                echo 1 + (Obj::VALUE) + 3;\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "new class as sequence element",
+                    "args": [
+                        "<?php $a7 = [1, new class($a+$b) {}];",
+                        "<?php $a7 = [1, (new class($a+$b) {})];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "pre @ sequence",
+                    "args": [
+                        "<?php $a8 = [1, @ ($f.$b)() ];",
+                        "<?php $a8 = [1, @( ($f.$b)() )];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "inside `{` and `}`",
+                    "args": [
+                        "<?php\n                while(foo()) { bar(); }\n                while(bar()){foo1();};\n                if($a){foo();}\n            ",
+                        "<?php\n                while(foo()) { (bar()); }\n                while(bar()){(foo1());};\n                if($a){(foo());}\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "block type dynamic var brace",
+                    "args": [
+                        "<?php ${$bar};",
+                        "<?php ${($bar)};",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "block type dynamic prop brace",
+                    "args": [
+                        "<?php $foo->{$bar};",
+                        "<?php $foo->{($bar)};",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class wrapped init",
+                    "args": [
+                        "<?php $a11 = new class(1){};",
+                        "<?php $a11 = new class((1)){};",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "return, new long array notation, no space",
+                    "args": [
+                        "<?php return array();",
+                        "<?php return(array());",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "block type array square brace",
+                    "args": [
+                        "<?php\n                echo $a13 = [1];\n                $bX = [1,];\n                $b0 = [1, 2, 3,];\n                $b1 = [$a + 1];\n                $b2 = [-1 + $a];\n                $b3 = [2 + $c];\n            ",
+                        "<?php\n                echo $a13 = [(1)];\n                $bX = [(1),];\n                $b0 = [(1),(2),(3),];\n                $b1 = [($a) + 1];\n                $b2 = [-1 + ($a)];\n                $b3 = [2 + ($c)];\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple array construct elements",
+                    "args": [
+                        "<?php echo $a14 = [1, $a(1,$b(3)), 3+4]?>",
+                        "<?php echo $a14 = [(1),($a(1,$b(3))),(3+4)]?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "double comma and `)`",
+                    "args": [
+                        "<?php echo sprintf(\"%d%s\", $e, $f);",
+                        "<?php echo sprintf(\"%d%s\", ($e), ($f));",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "two wrapped function calls",
+                    "args": [
+                        "<?php foo(); $ap = foo();",
+                        "<?php (foo()); $ap = (foo());",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped function call, op + call as arg",
+                    "args": [
+                        "<?php $bk = foo(1 + bar()) ?>",
+                        "<?php $bk = (foo(1 + bar())) ?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped function call, short open, semicolon",
+                    "args": [
+                        "<?= foo1z() ?>",
+                        "<?=(foo1z()) ?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped function call, short open, close tag",
+                    "args": [
+                        "<?=   foo2A();",
+                        "<?=(   foo2A());",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped returns",
+                    "args": [
+                        "<?php function A($a) {return 1;}",
+                        "<?php function A($a) {return (1);}",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped returns ops",
+                    "args": [
+                        "<?php function A($a1,$b2) {return ++$a1+$b2;}",
+                        "<?php function A($a1,$b2) {return (++$a1+$b2);}",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throws, no space",
+                    "args": [
+                        "<?php throw $z . 2;",
+                        "<?php throw($z . 2);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "throws + op, wrapped in {}",
+                    "args": [
+                        "<?php if (k()) { throw new $a.$b(1,2); } ?>",
+                        "<?php if (k()) { throw (new $a.$b(1,2)); } ?>",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "dynamic class name op",
+                    "args": [
+                        "<?php $xX = ($d+$e)->test();",
+                        "<?php $xX = (($d+$e))->test();",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "token type changing edge case",
+                    "args": [
+                        "<?php $y1 = (new Foo())->bar;",
+                        "<?php $y1 = ((new Foo()))->bar;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "brace class instantiation open, double wrapped, no assign",
+                    "args": [
+                        "<?php (new Foo())->bar();",
+                        "<?php (((new Foo())))->bar();",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "brace class instantiation open, multiple wrapped",
+                    "args": [
+                        "<?php $y0 = (new Foo())->bar;",
+                        "<?php $y0 = (((((new Foo())))))->bar;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped instance check",
+                    "args": [
+                        "<?php\n                ; $foo instanceof Foo;\n                ; $foo() instanceof Foo;\n                $l1 = $foo instanceof $z;\n                $l2 = $foo instanceof $z[1];\n                $l3 = [$foo instanceof $z->a[1]];\n                $l4 = [1, $foo instanceof $a[1]->$f];\n                $l5 = [$foo instanceof Foo, 1];\n                $l6 = [1, $foo instanceof Foo, 1];\n                $fn1 = fn($x) => $fx instanceof Foo;\n                for ($foo instanceof Foo ; $i < 1; ++$i) { echo $i; }\n                class foo {\n                    public function bar() {\n                        self instanceof static;\n                        self instanceof self;\n                        $a instanceof static;\n                        self instanceof $a;\n                        $a instanceof self;\n                    }\n                }\n            ",
+                        "<?php\n                ; ($foo instanceof Foo);\n                ; ($foo() instanceof Foo);\n                $l1 = ($foo instanceof $z);\n                $l2 = ($foo instanceof $z[1]);\n                $l3 = [($foo instanceof $z->a[1])];\n                $l4 = [1, ($foo instanceof $a[1]->$f)];\n                $l5 = [($foo instanceof Foo), 1];\n                $l6 = [1, ($foo instanceof Foo), 1];\n                $fn1 = fn($x) => ($fx instanceof Foo);\n                for (($foo instanceof Foo) ; $i < 1; ++$i) { echo $i; }\n                class foo {\n                    public function bar() {\n                        (self instanceof static);\n                        (self instanceof self);\n                        ($a instanceof static);\n                        (self instanceof $a);\n                        ($a instanceof self);\n                    }\n                }\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped negative instanceof",
+                    "args": [
+                        "<?php\n                !$z instanceof $z[1];\n                $z2 = !$foo[1]->b(1)[2] instanceof A\\Foo;\n\n                $z3 = [!$z instanceof Foo\\Bar::$a];\n\n                $z4 = [1, !$z instanceof Foo\\Bar::$a];\n                $z5 = [!$z instanceof Foo\\Bar::$a, 2];\n                $z6 = [8, !$z instanceof Foo\\Bar::$a, 2];\n\n                for( !$z instanceof Foo\\Bar::$a ; $a < 100; ++$a) {\n                    foo();\n                }\n\n                $c1 = fn() => !$z instanceof $z[1];\n\n                if (!$x instanceof $v) {\n                    echo 123;\n                }\n            ",
+                        "<?php\n                !($z instanceof $z[1]);\n                $z2 = !($foo[1]->b(1)[2] instanceof A\\Foo);\n\n                $z3 = [!($z instanceof Foo\\Bar::$a)];\n\n                $z4 = [1, !($z instanceof Foo\\Bar::$a)];\n                $z5 = [!($z instanceof Foo\\Bar::$a), 2];\n                $z6 = [8, !($z instanceof Foo\\Bar::$a), 2];\n\n                for( !($z instanceof Foo\\Bar::$a) ; $a < 100; ++$a) {\n                    foo();\n                }\n\n                $c1 = fn() => !($z instanceof $z[1]);\n\n                if (!($x instanceof $v)) {\n                    echo 123;\n                }\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrapped negative instanceof 2",
+                    "args": [
+                        "<?php\n                class foo {\n                    public function bar() {\n                        !self instanceof static;\n                        !self instanceof self;\n                        !$a instanceof static;\n                        !self instanceof $a;\n                        !$a instanceof self;\n                    }\n            }",
+                        "<?php\n                class foo {\n                    public function bar() {\n                        !(self instanceof static);\n                        !(self instanceof self);\n                        !($a instanceof static);\n                        !(self instanceof $a);\n                        !($a instanceof self);\n                    }\n            }",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "(x,y",
+                    "args": [
+                        "<?php $n = [\"\".foo(1+2),3];",
+                        "<?php $n = [(\"\".foo(1+2)),3];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "x,y) =",
+                    "args": [
+                        "<?php $m = [$x, $y];",
+                        "<?php $m = [$x,($y)];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "(x,y,x)",
+                    "args": [
+                        "<?php $aj = [1, \"\".foo(1+2),3];",
+                        "<?php $aj = [1,(\"\".foo(1+2)),3];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "block type index square brace",
+                    "args": [
+                        "<?php $n = $foo[1];",
+                        "<?php $n = $foo[(1)];",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple wrapped call",
+                    "args": [
+                        "<?php\n                $u = $z($b);\n                $a = bar/*1*/ ($a) /*2*/;",
+                        "<?php\n                $u = $z(($b));\n                $a = bar/*1*/ (((($a)))) /*2*/;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if",
+                    "args": [
+                        "<?php if ($z) {echo 1;}",
+                        "<?php if ((($z))) {echo 1;}",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "destructuring square brace + comments",
+                    "args": [
+                        "<?php\n                [/*A*/$a/*B*/] = z();\n                [/*A*/$a/*B*/, $c] = z();\n            ",
+                        "<?php\n                [/*A*/($a)/*B*/] = z();\n                [/*A*/($a)/*B*/,($c)] = z();\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple fix cases",
+                    "args": [
+                        "<?php\n                $aF=array(1);$a=array(1);$a=array(1);$a=array(1);\n                $bF=array(1);$b=array(1);$b=array(1);$b=array(1);\n                $cF=array(1);$c=array(1);$c=array(1);$c=array(1);\n            ",
+                        "<?php\n                $aF=array((1));$a=array((1));$a=array((1));$a=array((1));\n                $bF=array((1));$b=array((1));$b=array((1));$b=array((1));\n                $cF=array((1));$c=array((1));$c=array((1));$c=array((1));\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple fix cases with space inserts",
+                    "args": [
+                        "<?php $a=$b. 1 .$c;$a=$b. 1 .$c;$a=$b. 1 .$c;$a=$b. 1 .$c;$a=$b. 1 .$c;$a=$b./*1*/1/*2*/.$c;",
+                        "<?php $a=$b.(1).$c;$a=$b.(1).$c;$a=$b.(1).$c;$a=$b.(1).$c;$a=$b.(1).$c;$a=$b./*1*/(1)/*2*/.$c;",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty exit/die",
+                    "args": [
+                        "<?php exit; die;",
+                        "<?php exit(); die();",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "more space around concat handling",
+                    "args": [
+                        "<?php\n                $s2 = \"a\". 0.1 . 2 .    \"b\"    . \"c\";\n                $f = 'x' .  'y'  . 'z';\n            ",
+                        "<?php\n                $s2 = \"a\".(0.1). (2) .    (\"b\")    . \"c\";\n                $f = 'x' . ( 'y' ) . 'z';\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $a &= $x;",
+                        "<?php $a &= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php $a ??= $x;",
+                        "<?php $a ??= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $a .= $x;",
+                        "<?php $a .= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php $a /= $x;",
+                        "<?php $a /= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $a != $x;",
+                        "<?php $a != ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php $a %= $x;",
+                        "<?php $a %= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php $a *= $x;",
+                        "<?php $a *= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php $a |= $x;",
+                        "<?php $a |= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php $a += $x;",
+                        "<?php $a += ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php $a **= $x;",
+                        "<?php $a **= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php $a <<= $x;",
+                        "<?php $a <<= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php $a >>= $x;",
+                        "<?php $a >>= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php $a ^= $x;",
+                        "<?php $a ^= ($x);",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "after `}`",
+                    "args": [
+                        "<?php\n                while(foo()){}  ++$i;\n                for(;;){}++$i;\n                foreach ($a as $b){}++$i;\n\n                if (foo()) {}++$i;\n                if (foo()) {} else {}++$i;\n                if (foo()) {} elseif(bar()) {}++$i;\n\n                switch(foo()){case 1: echo 1;}++$i;\n                switch (foo()){\n                    case 1: {}++$i; break;\n                }\n\n                function Bar(): array {\n                    $i++;\n                    return [];\n                }\n                function Foo1(){}++$i;\n                function & Foo2(){}++$i;\n\n                class A{}++$i;\n                class A1 extends BD{}++$i;\n                class A2 extends BD implements CE{}++$i;\n                class A3 extends BD implements CE,DE{}++$i;\n\n                interface B{}++$i;\n                interface B1 extends A{}++$i;\n                interface B2 extends A,B{}++$i;\n\n                trait X{}++$i;\n\n                try{}catch(E $e){}$i++;\n                try {} finally {}++$i;\n            ",
+                        "<?php\n                while(foo()){}  (++$i);\n                for(;;){}(++$i);\n                foreach ($a as $b){}(++$i);\n\n                if (foo()) {}(++$i);\n                if (foo()) {} else {}(++$i);\n                if (foo()) {} elseif(bar()) {}(++$i);\n\n                switch(foo()){case 1: echo 1;}(++$i);\n                switch (foo()){\n                    case 1: {}(++$i); break;\n                }\n\n                function Bar(): array {\n                    ($i++);\n                    return [];\n                }\n                function Foo1(){}(++$i);\n                function & Foo2(){}(++$i);\n\n                class A{}(++$i);\n                class A1 extends BD{}(++$i);\n                class A2 extends BD implements CE{}(++$i);\n                class A3 extends BD implements CE,DE{}(++$i);\n\n                interface B{}(++$i);\n                interface B1 extends A{}(++$i);\n                interface B2 extends A,B{}(++$i);\n\n                trait X{}(++$i);\n\n                try{}catch(E $e){}($i++);\n                try {} finally {}(++$i);\n            ",
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix",
+                    "args": [
+                        "<?php\n                $b = ($a+=$c);\n\n                foo();\n                foo(1);\n                foo(1,$a,3);\n                foo(1,3,);\n                foo($a)->$b;\n                ${foo}();\n                foo(+ $a, -$b);\n                $a[1](2);\n                $b = $c();\n                $z = foo(1) + 2;\n                $a = ${'foo'}();\n                $b[\"foo\"]($bar);\n                namespace\\func();\n                Y::class();\n\n                $z = (print 'a') + 2;\n\n                $fn1 = fn($x) => $x + $y;\n                $d = function() use ($d) {};\n                function provideFixCases(): iterable{}\n                $z = function &($x) {++$x;};\n\n                final class Foo { public static function bar() { return new static(); } }\n\n                $a = (print 1) + 1;\n                $b = $c(print $e);\n                $c = foo(print $e);\n                $c2 =[ print !($a + 1)   ,];\n\n                $a = ($a && !$c) && $b;\n                $a = (1 + foo()) * 2;\n                $a = -($f+$a);\n                $a = !($f ? $a : $b);\n                $a = @( ($f.$b)() . foo() );\n                $a = $b ? ($c)($d + 2) : $d;\n                $d = ($c && $a ? true : false) ? 1 : 2; // PHP Deprecated:  Unparenthesized `a ? b : c ? d : e` is deprecated.\n                $z = $b ? ($c)($d + 2) : $d;\n                $x = $b ? foo($c)[$a](1) : $d;\n\n                $a = [1,($a.$foo[1])[2]];\n                $b = [ $d[4]($a[1].$b) , ];\n                $c = [$d[4]($a[1].$b)];\n\n                $a = ($a ? 1 : 2) ? 1 : 2;\n                $a = $a ? ($a ? 1 : 2): 2;\n                $a = $a ? 1 : ($a ? 1 : 2);\n\n                $a = 1 + ($a + 1) ? 1 : 2;\n                $a = $a ? ($a + 1) + 3 : 2;\n                $a = $a ? 3 + ($a + 1) : 2;\n                $a = $a ? 3 : 1 + ($a + 1);\n                $a = $a ? 3 : ($a + 1) + 2;\n\n                $b += ($a+=$c);\n\n                $a = isset( ( (array) $b) [1] );\n                $a =  ( (array) $b) [1] ;\n\n                exit(4);\n                exit (foo()) + 1;\n\n                $a = array();\n                $b = new class(){};\n                declare(ticks=1);\n                $d = empty($e);\n                $e = eval($b);\n                list($f) = $f;\n\n                try {foo();} catch (E $e){}\n                if ($a){ echo 1; } elseif($b) { echo 2; }\n                switch($a) {case 1: echo 1;}\n\n                foreach ($a1 as $b){}\n                foreach ($a2 as $b => $c){}\n\n                for ($a =0; $a < 1; --$a){}\n\n                while(bar()) {}\n                while(!!!(bool) $a1() ){echo 1;}\n                while(  ($a2)(1) ){echo 1;}\n\n                $d = isset($c);\n                $d = isset($c,$a,$z);\n                $y = isset($foo) && isset($foo2);\n                unset($d);\n                unset($d,$e);\n\n                // from https://www.php.net/manual/en/language.operators.precedence.php\n\n                $a = 1;\n                echo $a + ($a++); // echo $a + $a++; // may print either 2 or 3\n\n                $i = 1;\n                $array[$i] = ($i++); // $array[$i] = $i++; // may set either index 1 or 2\n\n                $t = 1+($i++)+1;\n\n                echo ((\"x minus one equals \" . $x) - 1) . \", or so I hope\\n\";\n                echo \"x minus one equals \" . ($x-1) . \", or so I hope\\n\";\n\n                $bool = (true and false);\n\n                $a = ($a instanceof MyClass) && true;\n                $a = foo($a instanceof MyClass);\n                $a = $a || ($a instanceof MyClass);\n\n                $a = clone ($a)[0];\n\n                // handled by the `include` rule\n\n                require (__DIR__.\"/foo2.php\");\n                require_once (__DIR__.\"/foo.php\");\n                include ($a);\n                include_once ($b);\n\n                // halt compiler\n\n                __halt_compiler();\n            ",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix 2",
+                    "args": [
+                        "<?php\n                SomeClass::{$method}(\n                    $variableA,\n                    $variableB\n                );",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix 3",
+                    "args": [
+                        "<?php SomeClass::{$method}(2) + 1;",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix 4",
+                    "args": [
+                        "<?php $object::{$method}(...$args);",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "alternative syntax is not completely supported",
+                    "args": [
+                        "<?php if ($a):(++$i); endif;",
+                        null,
+                        {
+                            "statements": [
+                                "break",
+                                "clone",
+                                "continue",
+                                "echo_print",
+                                "return",
+                                "switch_case",
+                                "yield",
+                                "yield_from",
+                                "others",
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: break",
+                    "args": [
+                        "<?php\n                while (foo()) {\n                    while (foo()) {\n                        break 2;\n                    }\n                }\n            ",
+                        "<?php\n                while (foo()) {\n                    while (foo()) {\n                        break (2);\n                    }\n                }\n            ",
+                        {
+                            "statements": [
+                                "break"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: break",
+                    "args": [
+                        "<?php\n                while (foo()) {\n                    while (foo()) {\n                        break (2);\n                    }\n                }\n            ",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: clone",
+                    "args": [
+                        "<?php ; clone $f;",
+                        "<?php ; clone($f);",
+                        {
+                            "statements": [
+                                "clone"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: clone",
+                    "args": [
+                        "<?php ; clone($f);",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: continue",
+                    "args": [
+                        "<?php\n                while (foo()) {\n                    while (foo()) {\n                        continue 2;\n                    }\n                }\n            ",
+                        "<?php\n                while (foo()) {\n                    while (foo()) {\n                        continue (2);\n                    }\n                }\n            ",
+                        {
+                            "statements": [
+                                "continue"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: continue",
+                    "args": [
+                        "<?php\n                while (foo()) {\n                    while (foo()) {\n                        continue (2);\n                    }\n                }\n            ",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: echo_print",
+                    "args": [
+                        "<?php\n                echo 1; print 2;\n            ",
+                        "<?php\n                echo (1); print (2);\n            ",
+                        {
+                            "statements": [
+                                "echo_print"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: echo_print",
+                    "args": [
+                        "<?php\n                echo (1); print (2);\n            ",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: return",
+                    "args": [
+                        "<?php ; return 999 ?>",
+                        "<?php ; return (999) ?>",
+                        {
+                            "statements": [
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: return",
+                    "args": [
+                        "<?php ; return (999) ?>",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: switch_case",
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case 22: echo 1;\n                }\n            ",
+                        "<?php\n                switch ($a) {\n                    case (22): echo 1;\n                }\n            ",
+                        {
+                            "statements": [
+                                "switch_case"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: switch_case",
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case (22): echo 1;\n                }\n            ",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: yield",
+                    "args": [
+                        "<?php function foo() { yield \"prod\"; }",
+                        "<?php function foo() { yield (\"prod\"); }",
+                        {
+                            "statements": [
+                                "yield"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: yield",
+                    "args": [
+                        "<?php function foo() { yield (\"prod\"); }",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: yield_from",
+                    "args": [
+                        "<?php function foo() { ; yield from $a; }",
+                        "<?php function foo() { ; yield from ($a); }",
+                        {
+                            "statements": [
+                                "yield_from"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: yield_from",
+                    "args": [
+                        "<?php function foo() { ; yield from ($a); }",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: negative_instanceof",
+                    "args": [
+                        "<?php !$foo instanceof $b;",
+                        "<?php !($foo instanceof $b);",
+                        {
+                            "statements": [
+                                "negative_instanceof"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: negative_instanceof",
+                    "args": [
+                        "<?php !($foo instanceof $b);",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix - config: others",
+                    "args": [
+                        "<?php ; ++$v[1];",
+                        "<?php ; ++($v)[1];",
+                        {
+                            "statements": [
+                                "others"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix - config: others",
+                    "args": [
+                        "<?php ; ++($v)[1];",
+                        null,
+                        {
+                            "statements": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededControlParenthesesFixerTest",
+            "body": "    public function testFixPre80(string $expected, string $input): void\n    {\n        $this->fixer->configure(\n            [\n                'statements' => [\n                    'break',\n                    'clone',\n                    'continue',\n                    'echo_print',\n                    'return',\n                    'switch_case',\n                    'yield',\n                    'yield_from',\n                    'others',\n                ],\n            ],\n        );\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "block type array index curly brace",
+                    "args": [
+                        "<?php echo $a12 = $a{1};",
+                        "<?php echo $a12 = $a{(1)};"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "PHP8 bin doggybag",
+                    "args": [
+                        "<?php\n                $s = $a{$d}(1) + 1;\n                $t = $a{1}(2);\n            ",
+                        "<?php\n                $s = ($a{$d}(1)) + 1;\n                $t = ($a{1}(2));\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededControlParenthesesFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->fixer->configure(\n            [\n                'statements' => [\n                    'break',\n                    'clone',\n                    'continue',\n                    'echo_print',\n                    'return',\n                    'switch_case',\n                    'yield',\n                    'yield_from',\n                    'others',\n                ],\n            ],\n        );\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "fn throw",
+                    "args": [
+                        "<?php $triggerError = fn () => throw new MyError();",
+                        "<?php $triggerError = fn () => (throw new MyError());"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "match",
+                    "args": [
+                        "<?php\n                $r = match ($food) {\n                    'apple' => 'An apple',\n                    'cake' => 'Some cake',\n                };\n            ",
+                        "<?php\n                $r = match (($food)) {\n                    'apple' => 'An apple',\n                    'cake' => 'Some cake',\n                };\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "wrapped FN with return types",
+                    "args": [
+                        "<?php\n                $fn8 = fn(): int|bool => 123456;\n            ",
+                        "<?php\n                $fn8 = fn(): int|bool => (123456);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo 1 + $obj?->value + 3;",
+                        "<?php echo 1 + ($obj?->value) + 3;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededControlParenthesesFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->fixer->configure(\n            [\n                'statements' => [\n                    'break',\n                    'clone',\n                    'continue',\n                    'echo_print',\n                    'return',\n                    'switch_case',\n                    'yield',\n                    'yield_from',\n                    'others',\n                ],\n            ],\n        );\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                enum Foo: string\n                {\n                    case Bar = \"do fix\";\n                }\n            ",
+                        "<?php\n                enum Foo: string\n                {\n                    case Bar = (\"do fix\");\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo Number::Two->value;",
+                        "<?php echo (Number::Two)->value;"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "wrapped FN with return types",
+                    "args": [
+                        "<?php\n                $fn8 = fn(): A&B => new C();\n            ",
+                        "<?php\n                $fn8 = fn(): A&B => (new C());\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "wrapped FN with return types and ref",
+                    "args": [
+                        "<?php\n                $fn9 = fn & (): D & E => new F();\n            ",
+                        "<?php\n                $fn9 = fn & (): D & E => (new F());\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nenum Suit\n{\n    case Hearts;\n}$i++;\n",
+                        "<?php\nenum Suit\n{\n    case Hearts;\n}($i++);\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": "< 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededControlParenthesesFixerTest",
+            "body": "    public function testFixPre84(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre84Cases",
+                    "key": "access",
+                    "args": [
+                        "<?php $a = $o->{$c->d}($e)[1](2){$f}->$c[1]();",
+                        "<?php $a = (($o)->{$c->d}($e)[1](2){$f}->$c[1]());",
+                        {
+                            "statements": [
+                                "others"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\NoUnneededControlParenthesesFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $y = \\clone($x);"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $y = clone($x, []);"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php $y = clone($x, [\n                    \"foo\" => $foo,\n                    \"bar\" => $bar,\n                ]);"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php $y = clone($x, $array);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

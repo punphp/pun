@@ -1,0 +1,445 @@
+{
+    "fixer": "final_class",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalClassFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/FinalClassFixerTest.php",
+    "case_count": 53,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalClassFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** @Entity */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; /** @ORM\\Entity */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; /** @ORM\\Entity(repositoryClass=\"MyRepository\") */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping; /** @Mapping\\Entity */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php use Doctrine\\ORM; /** @ORM\\Mapping\\Entity */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /** @Document */ class MyDocument {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php use Doctrine\\ODM\\MongoDB\\Mapping\\Annotations as ODM; /** @ODM\\Document */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php /** @entity */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; /** @orm\\entity */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php abstract class MyAbstract {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php trait MyTrait {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php interface MyInterface {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php echo Exception::class;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php final class MyClass {}",
+                        "<?php class MyClass {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php final class MyClass extends MyAbstract {}",
+                        "<?php class MyClass extends MyAbstract {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php final class MyClass implements MyInterface {}",
+                        "<?php class MyClass implements MyInterface {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php /** @codeCoverageIgnore */ final class MyEntity {}",
+                        "<?php /** @codeCoverageIgnore */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php final class A {} abstract class B {} final class C {}",
+                        "<?php class A {} abstract class B {} class C {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php /** @internal Map my app to an @Entity */ final class MyMapper {}",
+                        "<?php /** @internal Map my app to an @Entity */ class MyMapper {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $anonymClass = new class {};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalClassFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php #[Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; #[ORM\\Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; #[ORM\\Entity(repositoryClass:\"MyRepository\")] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php use Doctrine\\ORM; #[ORM\\Mapping\\Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php #[Document] class MyDocument {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php use Doctrine\\ODM\\MongoDB\\Mapping\\Annotations as ODM; #[ODM\\Document] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; #[ORM\\entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 7,
+                    "args": [
+                        "<?php #[IgnoredAttribute] #[Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 8,
+                    "args": [
+                        "<?php #[IgnoredAttribute(\"Some-Value\"), Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 9,
+                    "args": [
+                        "<?php #[Entity] /* some comment */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 10,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; #[ORM\\Entity] /* some comment */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 11,
+                    "args": [
+                        "<?php use Doctrine\\ORM; #[ORM\\Mapping\\Entity] /* some comment */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 12,
+                    "args": [
+                        "<?php #[Document] /* some comment */ class MyDocument {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 13,
+                    "args": [
+                        "<?php use Doctrine\\ODM\\MongoDB\\Mapping\\Annotations as ODM; #[ODM\\Document] /* some comment */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 14,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; #[IgnoredAttribute] #[Entity] /* some comment */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 15,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; #[IgnoredAttribute(\"Some-Value\"), Entity] /* some comment */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 16,
+                    "args": [
+                        "<?php /* some comment */ #[Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 17,
+                    "args": [
+                        "<?php /* some comment */ use Doctrine\\ORM\\Mapping as ORM; #[ORM\\Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 18,
+                    "args": [
+                        "<?php /* some comment */ use Doctrine\\ORM; #[ORM\\Mapping\\Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 19,
+                    "args": [
+                        "<?php /* some comment */ #[Document] class MyDocument {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 20,
+                    "args": [
+                        "<?php /* some comment */ use Doctrine\\ODM\\MongoDB\\Mapping\\Annotations as ODM; #[ODM\\Document] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 21,
+                    "args": [
+                        "<?php /* some comment */ use Doctrine\\ORM\\Mapping as ORM; #[ORM\\entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 22,
+                    "args": [
+                        "<?php /* some comment */ use Doctrine\\ORM\\Mapping as ORM; #[IgnoredAttribute] #[Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 23,
+                    "args": [
+                        "<?php /* some comment */ use Doctrine\\ORM\\Mapping as ORM; #[IgnoredAttribute, Entity] class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 24,
+                    "args": [
+                        "<?php\nuse Doctrine\\ORM;\n#[IgnoredAttribute(\"Some-Value\"), IgnoredAttribute(\"Another-Value\")]\n#[ORM\\Mapping\\Entity]\n/**\n * multi\n * line\n */\nclass MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 25,
+                    "args": [
+                        "<?php\nuse Doctrine\\ORM;\n#[\n    IgnoredAttribute(\"Some-Value\"),\n    IgnoredAttribute(\"Another-Value\"),#\n    ORM\\Mapping\\Entity,\n]\n/**\n * multi\n * line\n */\nclass MyEntity {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalClassFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php #[Entity] readonly class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php use Doctrine\\ORM\\Mapping as ORM; #[ORM\\Entity] readonly class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php use Doctrine\\ORM; #[ORM\\Mapping\\Entity] readonly class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php #[Document] readonly class MyDocument {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php use Doctrine\\ODM\\MongoDB\\Mapping\\Annotations as ODM; #[ODM\\Document] readonly class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php use Doctrine\\ORM; #[ORM\\Mapping\\Entity] readonly /* ... */ class MyEntity {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nuse Doctrine\\ORM;\n#[ORM\\Mapping\\Entity]\nreadonly\n/**\n * multi\n * line\n */\nclass MyEntity {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

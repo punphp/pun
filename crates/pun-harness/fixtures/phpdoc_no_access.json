@@ -1,0 +1,51 @@
+{
+    "fixer": "phpdoc_no_access",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoAccessFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocNoAccessFixerTest.php",
+    "case_count": 3,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoAccessFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "access",
+                    "args": [
+                        "<?php\n    /**\n     */\n",
+                        "<?php\n    /**\n     * @access public\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "many",
+                    "args": [
+                        "<?php\n/**\n * Hello!\n * @notaccess bar\n */\n",
+                        "<?php\n/**\n * Hello!\n * @access private\n * @notaccess bar\n * @access foo\n */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do nothing",
+                    "args": [
+                        "<?php\n    /**\n     * @var access\n     */\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

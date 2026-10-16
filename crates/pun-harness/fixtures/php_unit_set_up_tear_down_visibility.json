@@ -1,0 +1,122 @@
+{
+    "fixer": "php_unit_set_up_tear_down_visibility",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitSetUpTearDownVisibilityFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitSetUpTearDownVisibilityFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitSetUpTearDownVisibilityFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "setUp and tearDown are made protected if they are public",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    protected function setUp() {}\n\n    protected function tearDown() {}\n}\n",
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function setUp() {}\n\n    public function tearDown() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Other functions are ignored",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function hello() {}\n\n    protected function setUp() {}\n\n    protected function tearDown() {}\n\n    public function testWork() {}\n\n    protected function testProtectedFunction() {}\n\n    private function privateHelperFunction() {}\n}\n",
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function hello() {}\n\n    public function setUp() {}\n\n    public function tearDown() {}\n\n    public function testWork() {}\n\n    protected function testProtectedFunction() {}\n\n    private function privateHelperFunction() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works when setUp and tearDown are final",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    protected final function setUp() {}\n\n    final protected function tearDown() {}\n}\n",
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public final function setUp() {}\n\n    final public function tearDown() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works when setUp and tearDown do not have visibility defined",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    protected function setUp() {}\n\n    protected function tearDown() {}\n}\n",
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    function setUp() {}\n\n    function tearDown() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works when setUp and tearDown do not have visibility defined and are final",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    final protected function setUp() {}\n\n    final protected function tearDown() {}\n}\n",
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    final function setUp() {}\n\n    final function tearDown() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Functions outside a test class do not get changed",
+                    "args": [
+                        "<?php\nclass Fixer extends OtherClass\n{\n    public function hello() {}\n\n    public function setUp() {}\n\n    public function tearDown() {}\n\n    public function testWork() {}\n\n    protected function testProtectedFunction() {}\n\n    private function privateHelperFunction() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works even when setup and teardown have improper casing",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    protected function sEtUp() {}\n\n    protected function TeArDoWn() {}\n}\n",
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function sEtUp() {}\n\n    public function TeArDoWn() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works even with messy comments",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    protected /** foo */ function setUp() {}\n\n    /** foo */protected function tearDown() {}\n}\n",
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public /** foo */ function setUp() {}\n\n    /** foo */public function tearDown() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works even with messy comments and no defined visibility",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** foo */protected function setUp() {}\n\n    /** bar */protected function tearDown() {}\n}\n",
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** foo */function setUp() {}\n\n    /** bar */function tearDown() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Nothing changes if setUp or tearDown are private",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    private function setUp() {}\n\n    private function tearDown() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works when there are multiple classes in one file",
+                    "args": [
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    protected function setUp() {}\n\n    protected function tearDown() {}\n}\n\nclass OtherTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    protected function setUp() {}\n\n    protected function tearDown() {}\n}\n",
+                        "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function setUp() {}\n\n    public function tearDown() {}\n}\n\nclass OtherTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function setUp() {}\n\n    public function tearDown() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not touch anonymous class",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    protected function setUp(): void {\n        $mock = new class {\n            public function setUp() {}\n        };\n    }\n    protected function testSomethingElse() {\n        $mock = new class implements SetupableInterface {\n            public function setUp() {}\n        };\n    }\n}\n",
+                        "<?php\nclass FooTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function setUp(): void {\n        $mock = new class {\n            public function setUp() {}\n        };\n    }\n    protected function testSomethingElse() {\n        $mock = new class implements SetupableInterface {\n            public function setUp() {}\n        };\n    }\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

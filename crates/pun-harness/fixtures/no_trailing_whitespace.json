@@ -1,0 +1,230 @@
+{
+    "fixer": "no_trailing_whitespace",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoTrailingWhitespaceFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/NoTrailingWhitespaceFixerTest.php",
+    "case_count": 24,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoTrailingWhitespaceFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n$a = 1;",
+                        "<?php\n$a = 1;   "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$a = 1  ;",
+                        "<?php\n$a = 1  ;   "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n$b = 1;",
+                        "<?php\n$b = 1;\t\t"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $b = 1;\n  ",
+                        "<?php $b = 1;\t\t\n  "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $b = 1;\n$c = 1;",
+                        "<?php $b = 1;   \t   \n$c = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\necho 1;\n   \necho2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\t$b = 1;\n\t"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$a=1;\n      \n\t\n$b = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\necho 1;\n?>\n\n\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\techo 1;\n?>\n\n\t  a \r\n\tb   \r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n<<<'EOT'\nIl y eut un rire éclatant des écoliers qui décontenança le pauvre\ngarçon, si bien qu'il ne savait s'il fallait garder sa casquette à\nla main, la laisser par terre ou la mettre sur sa tête. Il se\nrassit et la posa sur ses genoux.\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n$string = 'x  \ny';\necho (strlen($string) === 5);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\necho <<<'EOT'\nInline Il y eut un   \r\nrire éclatant    \n     \n   \r\nEOT;\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\necho 'Hello World';",
+                        "<?php \necho 'Hello World';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\necho 'Hello World';",
+                        "<?php \n\necho 'Hello World';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\r\necho 'Hello World';",
+                        "<?php \r\necho 'Hello World';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\necho 'Hello World';",
+                        "<?php  \necho 'Hello World';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\necho 'Hello World';",
+                        "<?php\t\necho 'Hello World';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php ",
+                        "<?php  "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\t",
+                        "<?php\t\t"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n      \n   \n    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n   \n    ",
+                        "<?php      \n   \n    "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\NoTrailingWhitespaceFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo {\n    #[Required]\n    public $bar;\n}",
+                        "<?php class Foo {\n    #[Required]     \n    public $bar;\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

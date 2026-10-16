@@ -1,0 +1,135 @@
+{
+    "fixer": "no_multiple_statements_per_line",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Basic\\NoMultipleStatementsPerLineFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Basic/NoMultipleStatementsPerLineFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\NoMultipleStatementsPerLineFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php\n                foo();\n                bar();",
+                        "<?php\n                foo(); bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "for loop",
+                    "args": [
+                        "<?php\n                for ($i = 0; $i < 10; ++$i) {\n                    foo();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "mixed `;` and close tag",
+                    "args": [
+                        "<?php ++$a;\n++$b ?>",
+                        "<?php ++$a; ++$b ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "followed by closing brace",
+                    "args": [
+                        "<?php if ($foo) { foo(); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "followed by closing tag",
+                    "args": [
+                        "<?php foo(); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "if alternative syntax",
+                    "args": [
+                        "<?php if ($foo): foo(); endif;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "for alternative syntax",
+                    "args": [
+                        "<?php for (;;): foo(); endfor;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "foreach alternative syntax",
+                    "args": [
+                        "<?php foreach ($foo as $bar): foo(); endforeach;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "while alternative syntax",
+                    "args": [
+                        "<?php while ($foo): foo(); endwhile;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "switch alternative syntax",
+                    "args": [
+                        "<?php switch ($foo): case true: foo(); endswitch;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with comment and no whitespace",
+                    "args": [
+                        "<?php\n    foo();/* comment */\n    bar();",
+                        "<?php\n    foo();/* comment */bar();"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\NoMultipleStatementsPerLineFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "don't touch property hooks",
+                    "args": [
+                        "<?php interface I {\n    public string $readable { get; }\n    public string $writeable { set; }\n    public string $both { get; set; }\n    public string $differentCasing { GET; Set; }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

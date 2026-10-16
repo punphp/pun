@@ -1,0 +1,361 @@
+{
+    "fixer": "cast_spaces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\CastSpacesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/CastNotation/CastSpacesFixerTest.php",
+    "case_count": 30,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\CastSpacesFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $expectedMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($expectedMessage);\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "missing key",
+                    "args": [
+                        {
+                            "a": 1
+                        },
+                        "#^\\[cast_spaces\\] Invalid configuration: The option \"a\" does not exist\\. Defined options are: \"space\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid value",
+                    "args": [
+                        {
+                            "space": "double"
+                        },
+                        "#^\\[cast_spaces\\] Invalid configuration: The option \"space\" with value \"double\" is invalid\\. Accepted values are: \"none\", \"single\"\\.$#"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\CastSpacesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo \"( int ) $foo\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $bar = (int) $foo;",
+                        "<?php $bar = ( int)$foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $bar = (int) $foo;",
+                        "<?php $bar = (\tint)$foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $bar = (int) $foo;",
+                        "<?php $bar = (int)\t$foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $bar = (string) (int) $foo;",
+                        "<?php $bar = ( string )( int )$foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $bar = (string) (int) $foo;",
+                        "<?php $bar = (string)(int)$foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $bar = (string) (int) $foo;",
+                        "<?php $bar = ( string   )    (   int )$foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $bar = (string) $foo;",
+                        "<?php $bar = ( string )   $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $bar = (float) Foo::bar();",
+                        "<?php $bar = (float )Foo::bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $bar = Foo::baz((float) Foo::bar());",
+                        "<?php $bar = Foo::baz((float )Foo::bar());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $bar = $query[\"params\"] = (array) $query[\"params\"];",
+                        "<?php $bar = $query[\"params\"] = (array)$query[\"params\"];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $bar = (int)\n $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $bar = (int)\r\n $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php echo \"( int ) $foo\";",
+                        null,
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $bar = (int)$foo;",
+                        "<?php $bar = ( int)$foo;",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $bar = (int)$foo;",
+                        "<?php $bar = (\tint)$foo;",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $bar = (int)$foo;",
+                        "<?php $bar = (int)\t$foo;",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $bar = (string)(int)$foo;",
+                        "<?php $bar = ( string )( int )$foo;",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $bar = (string)(int)$foo;",
+                        null,
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $bar = (string)(int)$foo;",
+                        "<?php $bar = ( string   )    (   int )$foo;",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $bar = (string)$foo;",
+                        "<?php $bar = ( string )   $foo;",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $bar = (float)Foo::bar();",
+                        "<?php $bar = (float )Foo::bar();",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $bar = Foo::baz((float)Foo::bar());",
+                        "<?php $bar = Foo::baz((float )Foo::bar());",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $bar = $query[\"params\"] = (array)$query[\"params\"];",
+                        null,
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $bar = (int)$foo;",
+                        "<?php $bar = (int)\n $foo;",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $bar = (int)$foo;",
+                        "<?php $bar = (int)\r\n $foo;",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\CastSpacesFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php (void) foo();",
+                        "<?php (void)    foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFix85Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php (void)foo();",
+                        "<?php (void)    foo();",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

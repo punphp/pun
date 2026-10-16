@@ -1,0 +1,60 @@
+{
+    "fixer": "no_space_around_double_colon",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\NoSpaceAroundDoubleColonFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/NoSpaceAroundDoubleColonFixerTest.php",
+    "case_count": 4,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NoSpaceAroundDoubleColonFixerTest",
+            "body": "    public function testFix(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo self::$a;",
+                        "<?php echo self :: $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo static::$a;",
+                        "<?php echo static ::$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                echo F\\B::class;\n                echo A\\B::     /**/ c;\n                echo C\\B/**/::c;\n            ",
+                        "<?php\n                echo F\\B::    class;\n                echo A\\B   ::     /**/ c;\n                echo C\\B/**/::   c;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nnamespace {\n    class Foo { public const a = 1; }\n\n    echo Foo::a; // Fix\n    echo \"\\n\".Place\\Bar::$a.\"\\n\"; // Fix\n}\n\nnamespace Somewhere\\Over\\The\\Rainbow {\n    class Bar {\n        public static $a = \"BAR-A:: \";\n\n        public function v(?string $z = \"zzz\"): void\n        {\n            echo \"\\n\".self::$a.$z; // Fix\n            echo \"\\n\".static::class; // Fix\n            echo \"\\n\".static # do ...\n              :: # ... not ...\n            $a.$z; // ... fix\n        }\n    }\n\n    $bar = new Bar();\n    $bar->v();\n}\n\n # ; echo A :: B;\n// ; echo A :: B;\n/* ; echo A :: B; */\n",
+                        "<?php\nnamespace {\n    class Foo { public const a = 1; }\n\n    echo Foo:: a; // Fix\n    echo \"\\n\".Place\\Bar  ::   $a.\"\\n\"; // Fix\n}\n\nnamespace Somewhere\\Over\\The\\Rainbow {\n    class Bar {\n        public static $a = \"BAR-A:: \";\n\n        public function v(?string $z = \"zzz\"): void\n        {\n            echo \"\\n\".self  ::  $a.$z; // Fix\n            echo \"\\n\".static  ::  class; // Fix\n            echo \"\\n\".static # do ...\n              :: # ... not ...\n            $a.$z; // ... fix\n        }\n    }\n\n    $bar = new Bar();\n    $bar->v();\n}\n\n # ; echo A :: B;\n// ; echo A :: B;\n/* ; echo A :: B; */\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

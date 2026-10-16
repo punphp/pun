@@ -1,0 +1,131 @@
+{
+    "fixer": "single_line_comment_spacing",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Comment\\SingleLineCommentSpacingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Comment/SingleLineCommentSpacingFixerTest.php",
+    "case_count": 14,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Comment\\SingleLineCommentSpacingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "comment list",
+                    "args": [
+                        "<?php\n                // following:\n                //     1 :\n                //     2 :\n\n                # Test:\n                #   - abc\n                #   - fgh\n\n                # Title:\n                #   | abc1\n                #   | xyz\n\n                // Point:\n                //  * first point\n                //  * some other point\n\n                // Matrix:\n                //   [1,2]\n                //   [3,4]\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /*    XYZ */",
+                        "<?php /*    XYZ   */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php // /",
+                        "<?php ///"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php // //",
+                        "<?php ////"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "hash open slash asterisk close",
+                    "args": [
+                        "<?php # A*/",
+                        "<?php #A*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n// a\n# b\n/* ABC */\n\n//     \t d\n#\te\n/* f */\n",
+                        "<?php\n//a\n#b\n/*ABC*/\n\n//     \t d\n#\te\n/* f     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix multi line comments",
+                    "args": [
+                        "<?php\n/*\n*/\n\n/*A\nB*/\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty double slash",
+                    "args": [
+                        "<?php //"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty hash",
+                    "args": [
+                        "<?php #"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php /**/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /***/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix PHPDocs",
+                    "args": [
+                        "<?php /**\n*/ /**\nX1*/ /**  Y1  */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix comments looking like PHPDocs",
+                    "args": [
+                        "<?php /**/ /**X1*/ /**  Y1  */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix annotation",
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nnew\n#[Foo]\nclass extends stdClass {};\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

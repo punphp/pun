@@ -1,0 +1,450 @@
+{
+    "fixer": "spaces_inside_parentheses",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\SpacesInsideParenthesesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/SpacesInsideParenthesesFixerTest.php",
+    "case_count": 40,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "wrongConfig",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\SpacesInsideParenthesesFixerTest",
+            "body": "    public function testInvalidConfiguration(array $wrongConfig, string $expectedMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($expectedMessage);\n\n        $this->fixer->configure($wrongConfig); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "missing key",
+                    "args": [
+                        {
+                            "a": 1
+                        },
+                        "#^\\[spaces_inside_parentheses\\] Invalid configuration: The option \"a\" does not exist\\. Defined options are: \"space\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid value",
+                    "args": [
+                        {
+                            "space": "double"
+                        },
+                        "#^\\[spaces_inside_parentheses\\] Invalid configuration: The option \"space\" with value \"double\" is invalid\\. Accepted values are: \"none\", \"single\"\\.$#"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\SpacesInsideParenthesesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    private function bar()\n    {\n        if (foo(\n            'foo' ,\n            'bar'    ,\n            [1, 2, 3],\n            'baz' // a comment just to mix things up\n        )) {\n            return 1;\n        };\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php foo();",
+                        "<?php foo( );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nif (true) {\n    // if body\n}",
+                        "<?php\nif ( true ) {\n    // if body\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nif (true) {\n    // if body\n}",
+                        "<?php\nif (     true   ) {\n    // if body\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nfunction foo($bar, $baz)\n{\n    // function body\n}",
+                        "<?php\nfunction foo( $bar, $baz )\n{\n    // function body\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n$foo->bar($arg1, $arg2);",
+                        "<?php\n$foo->bar(  $arg1, $arg2   );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n$var = array( 1, 2, 3 );\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$var = [ 1, 2, 3 ];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php list($path, $mode, ) = foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php list($path, $mode,) = foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n$a = $b->test(  // do not remove space\n    $e          // between `(` and `)`\n                // and this comment\n);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nfunction hello($value) {\n    // code...\n}",
+                        "<?php\nfunction hello( $value ) {\n    // code...\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n$code = function ($hello, $there) use ($ami, $tumi) {\n    // code\n};\n",
+                        "<?php\n$code = function ( $hello, $there   ) use ( $ami, $tumi ) {\n    // code\n};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nfor ($i = 0; $i < 42; $i++) {\n    // code...\n}\n",
+                        "<?php\nfor (   $i = 0; $i < 42; $i++ ) {\n    // code...\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nexplode($a, $b);\n",
+                        "<?php\nexplode( $a, $b );\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nif ($something) {\n    // code\n}\n",
+                        "<?php\nif (  $something      ) {\n    // code\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nmultiply((2 + 3) * 4);\n",
+                        "<?php\nmultiply( (    2 + 3  ) * 4    );\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $x = (new Foo())->bar();",
+                        "<?php $x = ( new Foo() )->bar();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $x = (new Foo)->bar;",
+                        "<?php $x = ( new Foo )->bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "leaves new lines alone",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    private function bar()\n    {\n        if ( foo(\n            'foo' ,\n            'bar'    ,\n            [1, 2, 3],\n            'baz' // a comment just to mix things up\n        ) ) {\n            return 1;\n        };\n    }\n}",
+                        null,
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php foo();",
+                        "<?php foo( );",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\nif ( true ) {\n    // if body\n}",
+                        "<?php\nif (true) {\n    // if body\n}",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\nif ( true ) {\n    // if body\n}",
+                        "<?php\nif (     true   ) {\n    // if body\n}",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\nfunction foo( $bar, $baz )\n{\n    // function body\n}",
+                        "<?php\nfunction foo($bar, $baz)\n{\n    // function body\n}",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n$foo->bar( $arg1, $arg2 );",
+                        "<?php\n$foo->bar(  $arg1, $arg2   );",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n$var = array( 1, 2, 3 );\n",
+                        "<?php\n$var = array(1, 2, 3);\n",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n$var = [ 1, 2, 3 ];\n",
+                        null,
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php list( $path, $mode, ) = foo();",
+                        "<?php list($path, $mode,) = foo();",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n$a = $b->test(  // do not remove space\n    $e          // between `(` and `)`\n                // and this comment\n );",
+                        null,
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\nfunction hello( $value ) {\n    // code...\n}",
+                        "<?php\nfunction hello($value) {\n    // code...\n}",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n$code = function ( $hello, $there ) use ( $ami, $tumi ) {\n    // code\n};\n",
+                        "<?php\n$code = function ($hello, $there) use ($ami, $tumi) {\n    // code\n};\n",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\nfor ( $i = 0; $i < 42; $i++ ) {\n    // code...\n}\n",
+                        "<?php\nfor ($i = 0; $i < 42; $i++) {\n    // code...\n}\n",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\nexplode( $a, $b );\n",
+                        "<?php\nexplode($a, $b);\n",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\nif ( $something ) {\n    // code\n}\n",
+                        "<?php\nif (    $something    ) {\n    // code\n}\n",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\nmultiply( ( 2 + 3 ) * 4 );\n",
+                        "<?php\nmultiply((2 + 3) * 4);\n",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $x = ( new Foo() )->bar();",
+                        "<?php $x = (new Foo())->bar();",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\SpacesInsideParenthesesFixerTest",
+            "body": "    public function testFix80(string $expected, string $input, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "mixed argument",
+                    "args": [
+                        "<?php function foo(mixed $a){}",
+                        "<?php function foo( mixed $a ){}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "mixed argument single space",
+                    "args": [
+                        "<?php function foo( mixed $a ){}",
+                        "<?php function foo(mixed $a){}",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

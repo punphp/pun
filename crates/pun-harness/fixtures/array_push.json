@@ -1,0 +1,482 @@
+{
+    "fixer": "array_push",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Alias\\ArrayPushFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Alias/ArrayPushFixerTest.php",
+    "case_count": 49,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\ArrayPushFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal",
+                    "args": [
+                        "<?php $a[] =$b;",
+                        "<?php array_push($a,$b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php $a[] = $b;",
+                        "<?php array_push($a, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, spaces",
+                    "args": [
+                        "<?php  $a   [] =$b ;",
+                        "<?php array_push( $a ,  $b );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple 25x times",
+                    "args": [
+                        "<?php $a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;$a[] = $b;",
+                        "<?php array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);array_push($a, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple namespaced",
+                    "args": [
+                        "<?php $a[] = $b1;",
+                        "<?php \\array_push($a, $b1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "; before",
+                    "args": [
+                        "<?php ; $a1[] = $b2 ?>",
+                        "<?php ; array_push($a1, $b2) ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": ") before",
+                    "args": [
+                        "<?php\n                if ($c) $a[] = $b;\n\n                while (--$c > 0) $a[] = $c;\n            ",
+                        "<?php\n                if ($c) array_push($a, $b);\n\n                while (--$c > 0) array_push($a, $c);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "} before",
+                    "args": [
+                        "<?php $b3 = []; { $a = 1; } $b5[] = 1;",
+                        "<?php $b3 = []; { $a = 1; } \\array_push($b5, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "{ before",
+                    "args": [
+                        "<?php { $a[] = $b8; }",
+                        "<?php { array_push($a, $b8); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments and PHPDoc",
+                    "args": [
+                        "<?php /* */ $a2[] = $b3 /** */;",
+                        "<?php /* */ array_push($a2, $b3) /** */;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a4[1][] = $b6[2];",
+                        "<?php array_push($a4[1], $b6[2]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "case insensitive and precedence",
+                    "args": [
+                        "<?php\n                $a[] = $b--;\n                $a[] = ++$b;\n                $a[] = !$b;\n                $a[] = $b + $c;\n                $a[] = 1 ** $c / 2 || !b && c(1,2,3) ^ $a[1];\n            ",
+                        "<?php\n                array_push($a, $b--);\n                ARRAY_push($a, ++$b);\n                array_PUSH($a, !$b);\n                ARRAY_PUSH($a, $b + $c);\n                \\array_push($a, 1 ** $c / 2 || !b && c(1,2,3) ^ $a[1]);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple traditional array",
+                    "args": [
+                        "<?php $a[] = array($b, $c);",
+                        "<?php array_push($a, array($b, $c));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple short array",
+                    "args": [
+                        "<?php $a[] = [$b];",
+                        "<?php array_push($a, [$b]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple element short array",
+                    "args": [
+                        "<?php $a[] = [[], [], $b, $c];",
+                        "<?php array_push($a, [[], [], $b, $c]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "second argument wrapped in `(` `)`",
+                    "args": [
+                        "<?php $a::$c[] = ($b);",
+                        "<?php array_push($a::$c, ($b));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a::$c[] = $b;",
+                        "<?php array_push($a::$c, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a[foo(1,2,3)][] = $b[foo(1,2,3)];",
+                        "<?php array_push($a[foo(1,2,3)], $b[foo(1,2,3)]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php \\A\\B::$foo[] = 1;",
+                        "<?php array_push(\\A\\B::$foo, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php static::$foo[] = 1;",
+                        "<?php array_push(static::$foo, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php namespace\\A::$foo[] = 1;",
+                        "<?php array_push(namespace\\A::$foo, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php foo()->bar[] = 1;",
+                        "<?php array_push(foo()->bar, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php foo()[] = 1;",
+                        "<?php array_push(foo(), 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $a->$c[] = $b;",
+                        "<?php array_push($a->$c, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $a->$c[1]->$d[$a--]->$a[7][] = $b;",
+                        "<?php array_push($a->$c[1]->$d[$a--]->$a[7], $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "push multiple",
+                    "args": [
+                        "<?php array_push($a6, $b9, $c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "push multiple II",
+                    "args": [
+                        "<?php ; array_push($a6a, $b9->$a(1,2), $c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "push multiple short",
+                    "args": [
+                        "<?php array_push($a6, [$b,$c], []);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "returns number of elements in the array I",
+                    "args": [
+                        "<?php foo(array_push($a7, $b10)); // ;array_push($a, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "returns number of elements in the array II",
+                    "args": [
+                        "<?php $a = 3 * array_push($a8, $b11);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "returns number of elements in the array III",
+                    "args": [
+                        "<?php $a = foo($z, array_push($a9, $b12));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "returns number of elements in the array IV",
+                    "args": [
+                        "<?php $z = array_push($a00, $b13);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "function declare in different namespace",
+                    "args": [
+                        "<?php namespace Foo; function array_push($a11, $b14){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "overridden detect I",
+                    "args": [
+                        "<?php namespace Foo; array_push(1, $a15);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "overridden detect II",
+                    "args": [
+                        "<?php namespace Foo; array_push($a + 1, $a16);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "different namespace and not a function call",
+                    "args": [
+                        "<?php\n                A\\array_push($a, $b17);\n                A::array_push($a, $b18);\n                $a->array_push($a, $b19);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "open echo",
+                    "args": [
+                        "<?= array_push($a, $b20) ?> <?= array_push($a, $b20); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ellipsis",
+                    "args": [
+                        "<?php array_push($a, ...$b21);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php array_push($a, $b and $c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php array_push($a, $b or $c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php array_push($a, $b xor $c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                while (foo()) $a[] = $b;\n                foreach (foo() as $C) $a[] = $b;\n                if (foo()) $a[] = $b;\n                if ($b) {} elseif (foo()) $a[] = $b;\n            ",
+                        "<?php\n                while (foo()) array_push($a, $b);\n                foreach (foo() as $C) array_push($a, $b);\n                if (foo()) array_push($a, $b);\n                if ($b) {} elseif (foo()) array_push($a, $b);\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "many calls",
+                    "args": [
+                        "<?php\n    $a[] = 1;\n    array_push($a);\n    $a[] = 2;",
+                        "<?php\n    array_push($a, 1);\n    array_push($a);\n    array_push($a, 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expression after call",
+                    "args": [
+                        "<?php array_push($a, $b) + 1;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\ArrayPushFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a5{1*3}[2+1][] = $b4{2+1};",
+                        "<?php array_push($a5{1*3}[2+1], $b4{2+1});"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a5{1*3}[2+1][] = $b7{2+1};",
+                        "<?php array_push($a5{1*3}[2+1], $b7{2+1});"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\ArrayPushFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php array_push($b?->c[2], $b19);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\ArrayPushFixerTest",
+            "body": "    public function testFix81(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "simple 8.1",
+                    "args": [
+                        "<?php\n                $a[] = $b;\n                $a = array_push(...);\n            ",
+                        "<?php\n                array_push($a, $b);\n                $a = array_push(...);\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\ArrayPushFixerTest",
+            "body": "    public function testFixPre84(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre84Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a->$c[1]->$d{$a--}->$a[7][] = $b;",
+                        "<?php array_push($a->$c[1]->$d{$a--}->$a[7], $b);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

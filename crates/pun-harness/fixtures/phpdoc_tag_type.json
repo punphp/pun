@@ -1,0 +1,245 @@
+{
+    "fixer": "phpdoc_tag_type",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagTypeFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocTagTypeFixerTest.php",
+    "case_count": 19,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagTypeFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n/**\n * @api\n * @author\n * @copyright\n * @deprecated\n * @example\n * @global\n * @inheritDoc\n * @internal\n * @license\n * @method\n * @package\n * @param\n * @property\n * @return\n * @see\n * @since\n * @throws\n * @todo\n * @uses\n * @var\n * @version\n */",
+                        "<?php\n/**\n * {@api}\n * {@author}\n * {@copyright}\n * {@deprecated}\n * {@example}\n * {@global}\n * {@inheritDoc}\n * {@internal}\n * {@license}\n * {@method}\n * {@package}\n * {@param}\n * {@property}\n * {@return}\n * {@see}\n * {@since}\n * {@throws}\n * {@todo}\n * {@uses}\n * {@var}\n * {@version}\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n/**\n * @api\n * @author\n * @copyright\n * @deprecated\n * @example\n * @global\n * @inheritDoc\n * @internal\n * @license\n * @method\n * @package\n * @param\n * @property\n * @return\n * @see\n * @since\n * @throws\n * @todo\n * @uses\n * @var\n * @version\n */",
+                        "<?php\n/**\n * {@api}\n * {@author}\n * {@copyright}\n * {@deprecated}\n * {@example}\n * {@global}\n * {@inheritDoc}\n * {@internal}\n * {@license}\n * {@method}\n * {@package}\n * {@param}\n * {@property}\n * {@return}\n * {@see}\n * {@since}\n * {@throws}\n * {@todo}\n * {@uses}\n * {@var}\n * {@version}\n */",
+                        {
+                            "tags": {
+                                "api": "annotation",
+                                "author": "annotation",
+                                "copyright": "annotation",
+                                "deprecated": "annotation",
+                                "example": "annotation",
+                                "global": "annotation",
+                                "inheritDoc": "annotation",
+                                "internal": "annotation",
+                                "license": "annotation",
+                                "method": "annotation",
+                                "package": "annotation",
+                                "param": "annotation",
+                                "property": "annotation",
+                                "return": "annotation",
+                                "see": "annotation",
+                                "since": "annotation",
+                                "throws": "annotation",
+                                "todo": "annotation",
+                                "uses": "annotation",
+                                "var": "annotation",
+                                "version": "annotation"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n/**\n * {@api}\n * {@author}\n * {@copyright}\n * {@deprecated}\n * {@example}\n * {@global}\n * {@inheritDoc}\n * {@internal}\n * {@license}\n * {@method}\n * {@package}\n * {@param}\n * {@property}\n * {@return}\n * {@see}\n * {@since}\n * {@throws}\n * {@todo}\n * {@uses}\n * {@var}\n * {@version}\n */",
+                        "<?php\n/**\n * @api\n * @author\n * @copyright\n * @deprecated\n * @example\n * @global\n * @inheritDoc\n * @internal\n * @license\n * @method\n * @package\n * @param\n * @property\n * @return\n * @see\n * @since\n * @throws\n * @todo\n * @uses\n * @var\n * @version\n */",
+                        {
+                            "tags": {
+                                "api": "inline",
+                                "author": "inline",
+                                "copyright": "inline",
+                                "deprecated": "inline",
+                                "example": "inline",
+                                "global": "inline",
+                                "inheritDoc": "inline",
+                                "internal": "inline",
+                                "license": "inline",
+                                "method": "inline",
+                                "package": "inline",
+                                "param": "inline",
+                                "property": "inline",
+                                "return": "inline",
+                                "see": "inline",
+                                "since": "inline",
+                                "throws": "inline",
+                                "todo": "inline",
+                                "uses": "inline",
+                                "var": "inline",
+                                "version": "inline"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n/** @api */",
+                        "<?php\n/** {@api} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n/**\n * @deprecated since version X\n */",
+                        "<?php\n/**\n * {@deprecated since version X}\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n/**\n * {@deprecated since version X}\n */",
+                        "<?php\n/**\n * @deprecated since version X\n */",
+                        {
+                            "tags": {
+                                "deprecated": "inline"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n/** {@deprecated since version X} */",
+                        "<?php\n/** @deprecated since version X */",
+                        {
+                            "tags": {
+                                "deprecated": "inline"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n/**\n * @inheritDoc\n */",
+                        "<?php\n/**\n * {@inheritDoc}\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n/**\n * @inheritdoc\n */",
+                        "<?php\n/**\n * {@inheritdoc}\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n/**\n * {@inheritdoc}\n */",
+                        "<?php\n/**\n * @inheritdoc\n */",
+                        {
+                            "tags": {
+                                "inheritDoc": "inline"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n/**\n * Some summary.\n *\n * {@inheritdoc}\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n/**\n * Some summary.\n *\n * Some description.\n *\n * {@inheritdoc}\n *\n * More description.\n *\n * @param Foo $foo\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n/**\n * {@inheritdoc}\n *\n * More description.\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n/**\n *\n * @inheritdoc\n *\n */",
+                        "<?php\n/**\n *\n * {@inheritdoc}\n *\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n/**\n * @return array{0: float, 1: int}\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n/** @internal Please use {@see Foo} instead */",
+                        "<?php\n/** {@internal Please use {@see Foo} instead} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n/**\n * @internal Please use {@see Foo} instead\n */",
+                        "<?php\n/**\n * {@internal Please use {@see Foo} instead}\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n/**\n *\n * @internal Please use {@see Foo} instead\n *\n */",
+                        "<?php\n/**\n *\n * {@internal Please use {@see Foo} instead}\n *\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n/** @internal Foo Bar {@see JsonSerializable} */"
+                    ]
+                }
+            ]
+        }
+    ]
+}

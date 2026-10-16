@@ -1,0 +1,413 @@
+{
+    "fixer": "single_line_after_imports",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Import\\SingleLineAfterImportsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Import/SingleLineAfterImportsFixerTest.php",
+    "case_count": 47,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\SingleLineAfterImportsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nuse D;\nuse E;\nuse DP;   /**/\nuse EZ; //\nuse DAZ;\nuse EGGGG; /**/\nuse A\\B;\n\nuse C\\DE;\n\n\nuse E\\F;\n\n\n\nuse G\\H;\n\n",
+                        "<?php\nuse D;         use E;\nuse DP;   /**/      use EZ; //\nuse DAZ;         use EGGGG; /**/\nuse A\\B;\n\nuse C\\DE;\n\n\nuse E\\F;\n\n\n\nuse G\\H;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php use \\Exception;\n\n?>\n<?php\n$a = new Exception();\n",
+                        "<?php use \\Exception?>\n<?php\n$a = new Exception();\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php use \\stdClass;\nuse \\DateTime;\n\n?>\n<?php\n$a = new DateTime();\n",
+                        "<?php use \\stdClass; use \\DateTime?>\n<?php\n$a = new DateTime();\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php namespace Foo;\n              \nuse Bar\\Baz;\n\n/**\n * Foo.\n */",
+                        "<?php namespace Foo;\n              \nuse Bar\\Baz;\n/**\n * Foo.\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nnamespace A\\B;\n\nuse D;\n\nclass C {}\n",
+                        "<?php\nnamespace A\\B;\n\nuse D;\nclass C {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    namespace A\\B;\n\n    use D;\n\n    class C {}\n",
+                        "<?php\n    namespace A\\B;\n\n    use D;\n    class C {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nnamespace A\\B;\n\nuse D;\nuse E;\n\nclass C {}\n",
+                        "<?php\nnamespace A\\B;\n\nuse D;\nuse E;\nclass C {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nnamespace A\\B;\n\nuse D;\n\nclass C {}\n",
+                        "<?php\nnamespace A\\B;\n\nuse D; class C {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nnamespace A\\B;\nuse D;\nuse E;\n\n{\n    class C {}\n}",
+                        "<?php\nnamespace A\\B;\nuse D; use E; {\n    class C {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nnamespace A\\B;\nuse D;\nuse E;\n\n{\n    class C {}\n}",
+                        "<?php\nnamespace A\\B;\nuse D;\nuse E; {\n    class C {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nnamespace A\\B {\n    use D;\n    use E;\n\n    class C {}\n}",
+                        "<?php\nnamespace A\\B {\n    use D; use E; class C {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nnamespace A\\B;\nclass C {\n    use SomeTrait;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n$lambda = function () use (\n    $arg\n){\n    return true;\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nnamespace A\\B;\nuse D, E;\n\nclass C {\n\n}",
+                        "<?php\nnamespace A\\B;\nuse D, E;\nclass C {\n\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n    namespace A1;\n    use B1; // need to import this !\n    use B2;\n\n    class C1 {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n    namespace A2;\n    use B2;// need to import this !\n    use B3;\n\n    class C4 {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nnamespace A1;\nuse B1; // need to import this !\nuse B2;\n\nclass C1 {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nnamespace A1;\nuse B1;// need to import this !\nuse B2;\n\nclass C1 {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\nnamespace A1;\nuse B1; /** need to import this !*/\nuse B2;\n\nclass C1 {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\nnamespace A1;\nuse B1;# need to import this !\nuse B2;\n\nclass C1 {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\nnamespace Foo;\n\nuse Bar;\nuse Baz;\n\nclass Hello {}\n",
+                        "<?php\nnamespace Foo;\n\nuse Bar;\nuse Baz;\n\n\nclass Hello {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\nclass HelloTrait {\n    use SomeTrait;\n\n    use Another;// ensure use statements for traits are not touched\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\nnamespace Foo {}\nnamespace Bar {\n    class Baz\n    {\n        use Aaa;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php use A\\B;\n\n?>",
+                        "<?php use A\\B?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php use A\\B;\n\n",
+                        "<?php use A\\B;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\r\nuse Foo;\r\nuse Bar;\r\n\r\nclass Baz {}\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\nuse some\\test\\{ClassA, ClassB, ClassC as C};\n\n?>\ntest 123\n",
+                        "<?php\nuse some\\test\\{ClassA, ClassB, ClassC as C}         ?>\ntest 123\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\nuse some\\test\\{CA, Cl, ClassC as C};\n\nclass Test {}\n",
+                        "<?php\nuse some\\test\\{CA, Cl, ClassC as C};\nclass Test {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\nuse function some\\test\\{fn_g, fn_f, fn_e};\n\nfn_a();",
+                        "<?php\nuse function some\\test\\{fn_g, fn_f, fn_e};\nfn_a();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\nuse const some\\test\\{ConstA, ConstB, ConstD};\n\n",
+                        "<?php\nuse const some\\test\\{ConstA, ConstB, ConstD};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\nnamespace Z\\B;\nuse const some\\test\\{ConstA, ConstB, ConstC};\nuse A\\B\\C;\n\n",
+                        "<?php\nnamespace Z\\B;\nuse const some\\test\\{ConstA, ConstB, ConstC};\nuse A\\B\\C;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        " <?php\nuse some\\a\\ClassA;\nuse function some\\a\\fn_a;\nuse const some\\c;\n\n",
+                        " <?php\nuse some\\a\\ClassA; use function some\\a\\fn_a; use const some\\c;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php use some\\a\\{ClassA,};\n\n",
+                        "<?php use some\\a\\{ClassA,};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php use some\\a\\{ClassA};\nuse some\\b\\{ClassB};\n\n",
+                        "<?php use some\\a\\{ClassA};use some\\b\\{ClassB};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php use some\\a\\{ClassA};\nuse const some\\b\\{ClassB};\n\n",
+                        "<?php use some\\a\\{ClassA};use const some\\b\\{ClassB};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php use some\\a\\{ClassA, ClassZ};\nuse const some\\b\\{ClassB, ClassX};\nuse function some\\d;\n\n",
+                        "<?php use some\\a\\{ClassA, ClassZ};use const some\\b\\{ClassB, ClassX};use function some\\d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "group types with trailing comma",
+                    "args": [
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C,};\nuse function some\\a\\{fn_a, fn_b, fn_c,};\nuse const some\\a\\{ConstA,ConstB,ConstC,};\nuse const some\\Z\\{ConstX,ConstY,ConstZ,};\n\necho 1;",
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C,};use function some\\a\\{fn_a, fn_b, fn_c,};use const some\\a\\{ConstA,ConstB,ConstC,};use const some\\Z\\{ConstX,ConstY,ConstZ,}; echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\nuse \\some\\a\\{ClassA, ClassB, ClassC as C,};\n\necho 1;",
+                        "<?php\nuse \\some\\a\\{ClassA, ClassB, ClassC as C,}; echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C,};\n\necho 1;",
+                        "<?php\nuse some\\a\\{ClassA, ClassB, ClassC as C,}; echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\nuse function \\some\\a\\{fn_a, fn_b, fn_c,};\n\necho 1;",
+                        "<?php\nuse function \\some\\a\\{fn_a, fn_b, fn_c,}; echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\nuse function some\\a\\{fn_a, fn_b, fn_c,};\n\necho 1;",
+                        "<?php\nuse function some\\a\\{fn_a, fn_b, fn_c,}; echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\nuse const \\some\\a\\{ConstA,ConstB,ConstC,};\n\necho 1;",
+                        "<?php\nuse const \\some\\a\\{ConstA,ConstB,ConstC,}; echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\nuse const some\\a\\{ConstA,ConstB,ConstC,};\n\necho 1;",
+                        "<?php\nuse const some\\a\\{ConstA,ConstB,ConstC,}; echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\nuse const \\some\\Z\\{ConstX,ConstY,ConstZ,};\n\necho 1;",
+                        "<?php\nuse const \\some\\Z\\{ConstX,ConstY,ConstZ,}; echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\nuse const some\\Z\\{ConstX,ConstY,ConstZ,};\n\necho 1;",
+                        "<?php\nuse const some\\Z\\{ConstX,ConstY,ConstZ,}; echo 1;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Import\\SingleLineAfterImportsFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php namespace A\\B;\r\n    use D;\r\n\r\n    class C {}",
+                        "<?php namespace A\\B;\r\n    use D;\r\n\r\n\r\n    class C {}"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php namespace A\\B;\r\n    use D;\r\n\r\n    class C {}",
+                        "<?php namespace A\\B;\r\n    use D;\r\n    class C {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

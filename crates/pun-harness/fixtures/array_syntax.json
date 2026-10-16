@@ -1,0 +1,460 @@
+{
+    "fixer": "array_syntax",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\ArraySyntaxFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ArrayNotation/ArraySyntaxFixerTest.php",
+    "case_count": 39,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ArrayNotation\\ArraySyntaxFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "default configuration",
+                    "args": [
+                        "<?php $a = []; $b = [];",
+                        "<?php $a = []; $b = array();",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = array();",
+                        "<?php $x = [];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $x = array(); $y = array();",
+                        "<?php $x = []; $y = [];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $x = array( );",
+                        "<?php $x = [ ];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $x = array('foo');",
+                        "<?php $x = ['foo'];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $x = array( 'foo' );",
+                        "<?php $x = [ 'foo' ];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $x = array(($y ? true : false));",
+                        "<?php $x = [($y ? true : false)];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $x = array(($y ? array(true) : array(false)));",
+                        "<?php $x = [($y ? [true] : [false])];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $x = array(($y ? array(true) : array( false )));",
+                        "<?php $x = [($y ? [true] : [ false ])];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $x = array(($y ? array(\"t\" => true) : array(\"f\" => false)));",
+                        "<?php $x = [($y ? [\"t\" => true] : [\"f\" => false])];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php print_r(array(($y ? true : false)));",
+                        "<?php print_r([($y ? true : false)]);",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $x = array(array(array()));",
+                        "<?php $x = [[[]]];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $x = array(array(array())); $y = array(array(array()));",
+                        "<?php $x = [[[]]]; $y = [[[]]];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php function(array $foo = array()) {};",
+                        "<?php function(array $foo = []) {};",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $x = array(1, 2)[0];",
+                        "<?php $x = [1, 2][0];",
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $x[] = 1;",
+                        null,
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $x[ ] = 1;",
+                        null,
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $x[2] = 1;",
+                        null,
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $x[\"a\"] = 1;",
+                        null,
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $x = func()[$x];",
+                        null,
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $x = \"foo\"[$x];",
+                        null,
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $text = \"foo ${aaa[123]} bar $bbb[0] baz\";",
+                        null,
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php foreach ($array as [$x, $y]) {}",
+                        null,
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php foreach ($array as $key => [$x, $y]) {}",
+                        null,
+                        {
+                            "syntax": "long"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $x = [];",
+                        "<?php $x = array();",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $x = []; $y = [];",
+                        "<?php $x = array(); $y = array();",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $x = [ ];",
+                        "<?php $x = array( );",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $x = ['foo'];",
+                        "<?php $x = array('foo');",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $x = [ 'foo' ];",
+                        "<?php $x = array( 'foo' );",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $x = [($y ? true : false)];",
+                        "<?php $x = array(($y ? true : false));",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $x = [($y ? [true] : [false])];",
+                        "<?php $x = array(($y ? array(true) : array(false)));",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $x = [($y ? [true] : [ false ])];",
+                        "<?php $x = array(($y ? array(true) : array( false )));",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php $x = [($y ? [\"t\" => true] : [\"f\" => false])];",
+                        "<?php $x = array(($y ? array(\"t\" => true) : array(\"f\" => false)));",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php print_r([($y ? true : false)]);",
+                        "<?php print_r(array(($y ? true : false)));",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php $x = [[[]]];",
+                        "<?php $x = array(array(array()));",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $x = [[[]]]; $y = [[[]]];",
+                        "<?php $x = array(array(array())); $y = array(array(array()));",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php function(array $foo = []) {};",
+                        "<?php function(array $foo = array()) {};",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php function(array $foo) {};",
+                        null,
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $a  =   [  ];",
+                        "<?php $a  =  array (  );",
+                        {
+                            "syntax": "short"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,386 @@
+{
+    "fixer": "self_accessor",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfAccessorFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/SelfAccessorFixerTest.php",
+    "case_count": 42,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfAccessorFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo { const BAR = self::BAZ; }",
+                        "<?php class Foo { const BAR = Foo::BAZ; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo { private $bar = self::BAZ; }",
+                        "<?php class Foo { private $bar = fOO::BAZ; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo { function bar($a = self::BAR) {} }",
+                        "<?php class Foo { function bar($a = Foo::BAR) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo { function bar() { self::baz(); } }",
+                        "<?php class Foo { function bar() { Foo::baz(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php class Foo { function bar() { self::class; } }",
+                        "<?php class Foo { function bar() { Foo::class; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php class Foo { function bar() { $x instanceof self; } }",
+                        "<?php class Foo { function bar() { $x instanceof Foo; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php class Foo { function bar() { new self(); } }",
+                        "<?php class Foo { function bar() { new Foo(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php interface Foo { const BAR = self::BAZ; function bar($a = self::BAR); }",
+                        "<?php interface Foo { const BAR = Foo::BAZ; function bar($a = Foo::BAR); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php class Foo { const Foo = 1; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php class Foo { function foo() { } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php class Foo { function bar() { new \\Baz\\Foo(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php class Foo { function bar() { new Foo\\Baz(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php class Foo { function bar() { Baz\\Foo::class; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php trait Foo { function bar() { Foo::bar(); } } class Bar { use Foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php class Foo { public function bar(self $foo, self $bar) { return new self(); } }",
+                        "<?php class Foo { public function bar(Foo $foo, Foo $bar) { return new Foo(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php interface Foo { public function bar(self $foo, self $bar); }",
+                        "<?php interface Foo { public function bar(Foo $foo, Foo $bar); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php interface Foo { public function bar(self $foo); }",
+                        "<?php interface Foo { public function bar(\\Foo $foo); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php namespace Foo; interface Bar { public function baz(\\Bar $bar); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php namespace Foo; interface Bar { public function baz(self $bar); }",
+                        "<?php namespace Foo; interface Bar { public function baz(Bar $bar); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php namespace Foo; interface Bar { public function baz(self $bar); }",
+                        "<?php namespace Foo; interface Bar { public function baz(\\Foo\\Bar $bar); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php namespace Foo; interface Bar { public function baz(Foo\\Bar $bar); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php namespace Foo; interface Bar { public function baz(Bar\\Foo $bar); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                namespace Foo\\Foo2;\n                interface Bar {\n                    public function baz00(Foo2\\Bar $bar);\n                    public function baz10(\\Foo2\\Bar $bar);\n                    public function baz20(Foo\\Foo2\\Bar $bar);\n                    public function baz21(self $bar);\n                    public function baz30(Test\\Foo\\Foo2\\Bar $bar);\n                    public function baz31(\\Test\\Foo\\Foo2\\Bar $bar);\n                }",
+                        "<?php\n                namespace Foo\\Foo2;\n                interface Bar {\n                    public function baz00(Foo2\\Bar $bar);\n                    public function baz10(\\Foo2\\Bar $bar);\n                    public function baz20(Foo\\Foo2\\Bar $bar);\n                    public function baz21(\\Foo\\Foo2\\Bar $bar);\n                    public function baz30(Test\\Foo\\Foo2\\Bar $bar);\n                    public function baz31(\\Test\\Foo\\Foo2\\Bar $bar);\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php class Foo { function bar() {\n                    new class() { function baz() { new Foo(); } };\n                } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php class Foo { protected $foo; function bar() { return $this->foo::find(2); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php class Foo { public function bar(self $foo, self $bar): self { return new self(); } }",
+                        "<?php class Foo { public function bar(Foo $foo, Foo $bar): Foo { return new Foo(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php interface Foo { public function bar(self $foo, self $bar): self; }",
+                        "<?php interface Foo { public function bar(Foo $foo, Foo $bar): Foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php class Foo { public function bar(?self $foo, ?self $bar): ?self { return new self(); } }",
+                        "<?php class Foo { public function bar(?Foo $foo, ?Foo $bar): ?Foo { return new Foo(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php interface Foo{ public function bar()\t/**/:?/**/self; }",
+                        "<?php interface Foo{ public function bar()\t/**/:?/**/Foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not replace in lambda",
+                    "args": [
+                        "<?php\n\nfinal class A\n{\n    public static function Z(): void\n    {\n        (function () {\n            var_dump(self::class, A::class);\n        })->bindTo(null, B::class)();\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not replace in arrow function",
+                    "args": [
+                        "<?php\n\nfinal class A\n{\n    public function Z($b): void\n    {\n        $a = fn($b) => self::class. A::class . $b;\n        echo $a;\n    }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfAccessorFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php interface Foo { public function bar(self $foo, self $bar,): self; }",
+                        "<?php interface Foo { public function bar(Foo $foo, Foo $bar,): Foo; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo { function bar() { $x instanceof (Foo()); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Foo { protected $foo; function bar() { return $this?->foo::find(2); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo { public function f(self|Bar|Baz $b) {} }",
+                        "<?php class Foo { public function f(Foo|Bar|Baz $b) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php class Foo { public function f(Bar|self|Baz $b) {} }",
+                        "<?php class Foo { public function f(Bar|Foo|Baz $b) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php class Foo { public function f(Bar|Baz|self $b) {} }",
+                        "<?php class Foo { public function f(Bar|Baz|Foo $b) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php class Foo { public function f(Bar|Foo\\C|Baz $b) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 7,
+                    "args": [
+                        "<?php class Foo { public function f(Bar|C\\Foo|Baz $b) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "do not replace constant with same name as class in the middle of a static access chain",
+                    "args": [
+                        "<?php\nclass Foo {\n    public static function create(): self {\n        return new self();\n    }\n}\nclass Bar {\n    const Baz = 'Foo';\n}\nclass Baz {\n    public static function f(): object {\n        return Bar::Baz::create();\n    }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\SelfAccessorFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo { public function f(self|(Bar&Baz)|Qux $b) {} }",
+                        "<?php class Foo { public function f(Foo|(Bar&Baz)|Qux $b) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo { public function f(Bar|(Baz&Qux)|self $b) {} }",
+                        "<?php class Foo { public function f(Bar|(Baz&Qux)|Foo $b) {} }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

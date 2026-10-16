@@ -1,0 +1,206 @@
+{
+    "fixer": "switch_case_semicolon_to_colon",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSemicolonToColonFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/SwitchCaseSemicolonToColonFixerTest.php",
+    "case_count": 15,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSemicolonToColonFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                switch (1) {\n                    case f(function () { return; }):\n                        break;\n                }\n                ",
+                        "<?php\n                switch (1) {\n                    case f(function () { return; });\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case 42:\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case 42;\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case [\"foo\" => \"bar\"]:\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case [\"foo\" => \"bar\"];\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                    switch ($a) {\n                        case 42:\n                            break;\n                        case 1:\n                            switch ($a) {\n                                case 42:\n                                    break;\n                                default :\n                                    echo 1;\n                            }\n                    }",
+                        "<?php\n                    switch ($a) {\n                        case 42;\n                            break;\n                        case 1:\n                            switch ($a) {\n                                case 42;\n                                    break;\n                                default ;\n                                    echo 1;\n                            }\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case 42:;;// NoEmptyStatementFixer should clean this up (partly)\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case 42;;;// NoEmptyStatementFixer should clean this up (partly)\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"d\" :\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"d\" ;\n                        break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"d\": break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"d\"; break;\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                switch($a) {\n                    case (int) $a < 1: {\n                        echo \"leave ; alone\";\n                        break;\n                    }\n                    case ($a < 2)/* test */ : {\n                        echo \"fix 1\";\n                        break;\n                    }\n                    case (3):{\n                        echo \"fix 2\";\n                        break;\n                    }\n                    case /**/(/**/ // test\n                        4\n                        /**/)//\n                        /**/: {\n                        echo \"fix 3\";\n                        break;\n                    }\n                    case (((int)$b) + 4.1) : {\n                        echo \"fix 4\";\n                        break;\n                    }\n                    case ($b + 1) * 2 : {;;\n                        echo \"leave alone\";\n                        break;\n                    }\n                }\n                ",
+                        "<?php\n                switch($a) {\n                    case (int) $a < 1; {\n                        echo \"leave ; alone\";\n                        break;\n                    }\n                    case ($a < 2)/* test */ ; {\n                        echo \"fix 1\";\n                        break;\n                    }\n                    case (3);{\n                        echo \"fix 2\";\n                        break;\n                    }\n                    case /**/(/**/ // test\n                        4\n                        /**/)//\n                        /**/; {\n                        echo \"fix 3\";\n                        break;\n                    }\n                    case (((int)$b) + 4.1) ; {\n                        echo \"fix 4\";\n                        break;\n                    }\n                    case ($b + 1) * 2 ; {;;\n                        echo \"leave alone\";\n                        break;\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "nested switch in switch case",
+                    "args": [
+                        "<?php\n                    switch (1) {\n                        case new class {public function A(){echo 1;switch(time()){case 1: echo 2;}}}:break;}\n                ",
+                        "<?php\n                    switch (1) {\n                        case new class {public function A(){echo 1;switch(time()){case 1; echo 2;}}};break;}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                switch (1) {\n                    case $b ? f(function () { return; }) : new class {public function A(){echo 1;}} :\n                        break;\n                }\n                ",
+                        "<?php\n                switch (1) {\n                    case $b ? f(function () { return; }) : new class {public function A(){echo 1;}} ;\n                        break;\n                }\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSemicolonToColonFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"this\" ? \"is\" : \"ugly\":\n                        break;\n                }\n                ",
+                        "<?php\n                switch ($a) {\n                    case $b ? \"c\" : \"this\" ? \"is\" : \"ugly\";\n                        break;\n                }\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSemicolonToColonFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Simple match",
+                    "args": [
+                        "<?php\n                    echo match ($a) {\n                        default => \"foo\",\n                    };\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Match in switch",
+                    "args": [
+                        "<?php\n                    switch ($foo) {\n                        case \"bar\":\n                            echo match ($a) {\n                                default => \"foo\",\n                            };\n                            break;\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "Match in case value",
+                    "args": [
+                        "<?php\n                    switch ($foo) {\n                        case match ($bar) {\n                            default => \"foo\",\n                        }: echo \"It works!\";\n                    }\n                ",
+                        "<?php\n                    switch ($foo) {\n                        case match ($bar) {\n                            default => \"foo\",\n                        }; echo \"It works!\";\n                    }\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\SwitchCaseSemicolonToColonFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enums",
+                    "args": [
+                        "<?php\nenum Suit {\n    case Hearts; // do not fix\n}\n\nenum UserStatus: string {\n  case Pending = \"P\"; // do not fix\n\n  public function label(): string {\n    switch (foo()) {\n        case 42: // do fix\n            bar();\n\n            $a = new class() {\n                public function bar() {\n                    switch (foo()) {\n                        case 43: // do fix\n                        bar();\n                    }\n\n                    $expressionResult = match ($condition) {\n                        default => baz(),\n                    };\n                }\n            };\n\n            $a->bar();\n\n            break;\n    }\n\n    return \"label\";\n  }\n}\n\n$expressionResult = match ($condition) {\n    default => baz(),\n};\n",
+                        "<?php\nenum Suit {\n    case Hearts; // do not fix\n}\n\nenum UserStatus: string {\n  case Pending = \"P\"; // do not fix\n\n  public function label(): string {\n    switch (foo()) {\n        case 42; // do fix\n            bar();\n\n            $a = new class() {\n                public function bar() {\n                    switch (foo()) {\n                        case 43; // do fix\n                        bar();\n                    }\n\n                    $expressionResult = match ($condition) {\n                        default => baz(),\n                    };\n                }\n            };\n\n            $a->bar();\n\n            break;\n    }\n\n    return \"label\";\n  }\n}\n\n$expressionResult = match ($condition) {\n    default => baz(),\n};\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

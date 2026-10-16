@@ -1,0 +1,155 @@
+{
+    "fixer": "phpdoc_indent",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocIndentFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocIndentFixerTest.php",
+    "case_count": 17,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocIndentFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** @var Foo $foo */ ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /** foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n/**\n * Do not indent\n */\n\n/**\n * Do not indent this\n */\nclass DocBlocks\n{\n    /**\n     *Test that attribute docblocks are indented\n     */\n    protected $indent = false;\n\n    /**\n     * Test that method docblocks are indented.\n     */\n    public function test() {}\n}",
+                        "<?php\n/**\n * Do not indent\n */\n\n/**\n * Do not indent this\n */\nclass DocBlocks\n{\n/**\n *Test that attribute docblocks are indented\n */\n    protected $indent = false;\n\n/**\n * Test that method docblocks are indented.\n */\n    public function test() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass DocBlocks\n{\n    /**\n     * Test constants\n     */\n    const INDENT = 1;\n\n    /**\n     * Test with var keyword\n     */\n    var $oldStyle = false;\n\n    /**\n     * Test static\n     */\n    public static function test1() {}\n\n    /**\n     * Test static first.\n     */\n    static public function test2() {}\n\n    /**\n     * Test final first.\n     */\n    final public function test3() {}\n\n    /**\n     * Test no keywords\n     */\n    function test4() {}\n}",
+                        "<?php\nclass DocBlocks\n{\n/**\n * Test constants\n */\n    const INDENT = 1;\n\n/**\n * Test with var keyword\n */\n    var $oldStyle = false;\n\n/**\n * Test static\n */\n    public static function test1() {}\n\n/**\n * Test static first.\n */\n    static public function test2() {}\n\n/**\n * Test final first.\n */\n    final public function test3() {}\n\n/**\n * Test no keywords\n */\n    function test4() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n/**\n * Final class should also not be indented\n */\nfinal class DocBlocks\n{\n    /**\n     * Test with var keyword\n     */\n    var $oldStyle = false;\n}",
+                        "<?php\n/**\n * Final class should also not be indented\n */\nfinal class DocBlocks\n{\n/**\n * Test with var keyword\n */\n    var $oldStyle = false;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    if (1) {\n        class Foo {\n            /**\n             * Foo\n             */\n            function foo() {}\n\n            /**\n             * Bar\n             */\n            function bar() {}\n        }\n    }",
+                        "<?php\n    if (1) {\n        class Foo {\n/**\n * Foo\n */\n            function foo() {}\n\n                        /**\n                         * Bar\n                         */\n            function bar() {}\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n/**\n * Variable\n */\n$variable = true;\n\n/**\n * Partial docblock fix\n */\n$partialFix = true;\n\n    /**\n     * Other partial docblock fix\n     */\n    $otherPartial = true;\n\n    /** Single line */\n    $single = true;\n\n    /**\n     * Function\n     */\n    function something()\n    {\n        /**\n         * Inside functions\n         */\n        return;\n    }\n\n    /**\n     * function call\n     */\n    something();\n\n    /**\n     * Control structure\n     * @var \\Sqlite3 $sqlite\n     */\n    foreach($connections as $sqlite) {\n        $sqlite->open();\n    }",
+                        "<?php\n    /**\n     * Variable\n     */\n$variable = true;\n\n/**\n * Partial docblock fix\n */\n$partialFix = true;\n\n    /**\n    * Other partial docblock fix\n    */\n    $otherPartial = true;\n\n/** Single line */\n    $single = true;\n\n/**\n * Function\n */\n    function something()\n    {\n/**\n * Inside functions\n */\n        return;\n    }\n\n/**\n * function call\n */\n    something();\n\n/**\n * Control structure\n * @var \\Sqlite3 $sqlite\n */\n    foreach($connections as $sqlite) {\n        $sqlite->open();\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n    $user = $event->getForm()->getData();  /** @var User $user */\n    echo \"Success\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    $user = $event->getForm()->getData();/** @var User $user */\n    echo \"Success\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nclass DocBlocks\n{\n\t/**\n\t *Test that attribute docblocks are indented\n\t */\n\tprotected $indent = false;\n\n\t/**\n\t * Test that method docblocks are indented.\n\t */\n\tpublic function test() {}\n}",
+                        "<?php\nclass DocBlocks\n{\n/**\n *Test that attribute docblocks are indented\n */\n\tprotected $indent = false;\n\n/**\n * Test that method docblocks are indented.\n */\n\tpublic function test() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n/**\n * Used to write a value to a session key.\n *\n * ...\n */\nfunction write($name) {}\n",
+                        "<?php\n\t/**\n * Used to write a value to a session key.\n *\n * ...\n */\nfunction write($name) {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n    class Foo\n    {\n        public function bar()\n        {\n            /**\n             * baz\n             */\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n/**\n * docs\n */\n\n// comment\n$foo = $bar;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nfunction foo()\n{\n    $foo->bar(/** oops */$baz);\n    $foo->bar($a,/** oops */$baz);\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\n/**\n * Foo\n       Bar\n */\nclass Foo\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nclass Application\n{\n}/**\n */\nclass Dispatcher\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n$foo->bar()    /** comment */\n    ->baz();\n",
+                        "<?php\n$foo->bar()/** comment */\n    ->baz();\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

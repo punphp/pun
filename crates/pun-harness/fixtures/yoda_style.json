@@ -1,0 +1,5197 @@
+{
+    "fixer": "yoda_style",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\YodaStyleFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/YodaStyleFixerTest.php",
+    "case_count": 423,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\YodaStyleFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = 1 + ($b + $c) === true ? 1 : 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = 1 + ($b + $c) === true ? 1 : 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = true === ($b + $c) ? 1 : 2;",
+                        "<?php $a = ($b + $c) === true ? 1 : 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a = ($b + $c) === true ? 1 : 2;",
+                        "<?php $a = true === ($b + $c) ? 1 : 2;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nif ((1 === $a) === 1) {\n    return;\n}",
+                        "<?php\nif (($a === 1) === 1) {\n    return;\n}",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nif (($a === 1) === 1) {\n    return;\n}",
+                        "<?php\nif ((1 === $a) === 1) {\n    return;\n}",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nif (true === (1 !== $foo[0])) {\n    return;\n}",
+                        "<?php\nif (($foo[0] !== 1) === true) {\n    return;\n}",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nif (($foo[0] !== 1) === true) {\n    return;\n}",
+                        "<?php\nif (true === (1 !== $foo[0])) {\n    return;\n}",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php return 1 !== $a [$b];",
+                        "<?php return $a [$b] !== 1;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php return $a [$b] !== 1;",
+                        "<?php return 1 !== $a [$b];",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?= 1 === $a ? 5 : 7;",
+                        "<?= $a === 1 ? 5 : 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?= $a === 1 ? 5 : 7;",
+                        "<?= 1 === $a ? 5 : 7;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php print 1 === 1343;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php print 1 === 1343;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                echo 3 === $a ? 2 : 4;\n                ",
+                        "<?php\n                echo $a === 3 ? 2 : 4;\n                ",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                echo $a === 3 ? 2 : 4;\n                ",
+                        "<?php\n                echo 3 === $a ? 2 : 4;\n                ",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php 1 === foo($a) ? 1 : 2;",
+                        "<?php foo($a) === 1 ? 1 : 2;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php foo($a) === 1 ? 1 : 2;",
+                        "<?php 1 === foo($a) ? 1 : 2;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php 1 === $a::$a ? 1 : 2;",
+                        "<?php $a::$a === 1 ? 1 : 2;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $a::$a === 1 ? 1 : 2;",
+                        "<?php 1 === $a::$a ? 1 : 2;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php 1 === (bool) $a ? 8 : 7;",
+                        "<?php (bool) $a === 1 ? 8 : 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php (bool) $a === 1 ? 8 : 7;",
+                        "<?php 1 === (bool) $a ? 8 : 7;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php 1 === new $a ? 1 : 2;",
+                        "<?php new $a === 1 ? 1 : 2;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php new $a === 1 ? 1 : 2;",
+                        "<?php 1 === new $a ? 1 : 2;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php 1 === \"a\".$a ? 5 : 6;",
+                        "<?php \"a\".$a === 1 ? 5 : 6;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php \"a\".$a === 1 ? 5 : 6;",
+                        "<?php 1 === \"a\".$a ? 5 : 6;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php 1 === __DIR__.$a ? 5 : 6;",
+                        "<?php __DIR__.$a === 1 ? 5 : 6;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php __DIR__.$a === 1 ? 5 : 6;",
+                        "<?php 1 === __DIR__.$a ? 5 : 6;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php 1 === $a.$b ? 5 : 6;",
+                        "<?php $a.$b === 1 ? 5 : 6;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $a.$b === 1 ? 5 : 6;",
+                        "<?php 1 === $a.$b ? 5 : 6;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php echo 1 === (object) $a ? 8 : 7;",
+                        "<?php echo (object) $a === 1 ? 8 : 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php echo (object) $a === 1 ? 8 : 7;",
+                        "<?php echo 1 === (object) $a ? 8 : 7;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php echo 1 === (int) $a ? 8 : 7;",
+                        "<?php echo (int) $a === 1 ? 8 : 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php echo (int) $a === 1 ? 8 : 7;",
+                        "<?php echo 1 === (int) $a ? 8 : 7;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php echo 1 === (float) $a ? 8 : 7;",
+                        "<?php echo (float) $a === 1 ? 8 : 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php echo (float) $a === 1 ? 8 : 7;",
+                        "<?php echo 1 === (float) $a ? 8 : 7;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php echo 1 === (string) $a ? 8 : 7;",
+                        "<?php echo (string) $a === 1 ? 8 : 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php echo (string) $a === 1 ? 8 : 7;",
+                        "<?php echo 1 === (string) $a ? 8 : 7;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php echo 1 === (array) $a ? 8 : 7;",
+                        "<?php echo (array) $a === 1 ? 8 : 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php echo (array) $a === 1 ? 8 : 7;",
+                        "<?php echo 1 === (array) $a ? 8 : 7;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php echo 1 === (bool) $a ? 8 : 7;",
+                        "<?php echo (bool) $a === 1 ? 8 : 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php echo (bool) $a === 1 ? 8 : 7;",
+                        "<?php echo 1 === (bool) $a ? 8 : 7;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\nif ($a = true === $obj instanceof A) {\n    echo 'A';\n}",
+                        "<?php\nif ($a = $obj instanceof A === true) {\n    echo 'A';\n}",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\nif ($a = $obj instanceof A === true) {\n    echo 'A';\n}",
+                        "<?php\nif ($a = true === $obj instanceof A) {\n    echo 'A';\n}",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php echo 1 === !!$a ? 8 : 7;",
+                        "<?php echo !!$a === 1 ? 8 : 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php echo !!$a === 1 ? 8 : 7;",
+                        "<?php echo 1 === !!$a ? 8 : 7;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php $a = 1 === new b ? 1 : 2;",
+                        "<?php $a = new b === 1 ? 1 : 2;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php $a = new b === 1 ? 1 : 2;",
+                        "<?php $a = 1 === new b ? 1 : 2;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php $a = 1 === empty($a) ? 1 : 2;",
+                        "<?php $a = empty($a) === 1 ? 1 : 2;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php $a = empty($a) === 1 ? 1 : 2;",
+                        "<?php $a = 1 === empty($a) ? 1 : 2;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php $b = 1 === clone $a ? 5 : 9;",
+                        "<?php $b = clone $a === 1 ? 5 : 9;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php $b = clone $a === 1 ? 5 : 9;",
+                        "<?php $b = 1 === clone $a ? 5 : 9;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php while(1 === $a ? 1 : 2){};",
+                        "<?php while($a === 1 ? 1 : 2){};",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php while($a === 1 ? 1 : 2){};",
+                        "<?php while(1 === $a ? 1 : 2){};",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php switch(1 === $a){\n                    case true: echo 1;\n                };",
+                        "<?php switch($a === 1){\n                    case true: echo 1;\n                };",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php switch($a === 1){\n                    case true: echo 1;\n                };",
+                        "<?php switch(1 === $a){\n                    case true: echo 1;\n                };",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php echo 1 === $a ? 1 : 2;",
+                        "<?php echo $a === 1 ? 1 : 2;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php echo $a === 1 ? 1 : 2;",
+                        "<?php echo 1 === $a ? 1 : 2;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php $a = 1 === 1;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php $a = 1 === 1;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php $b = $b === $c;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php $b = $b === $c;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php $c = $$b === $$c;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php $c = $$b === $$c;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php $d = count($this->array[$var]) === $a;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php $d = count($this->array[$var]) === $a;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php $e = $a === count($this->array[$var]);",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php $e = $a === count($this->array[$var]);",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php $f = ($a123 & self::MY_BITMASK) === $a;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php $f = ($a123 & self::MY_BITMASK) === $a;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php $g = $a === ($a456 & self::MY_BITMASK);",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php $g = $a === ($a456 & self::MY_BITMASK);",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php $h = $this->getStuff() === $myVariable;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php $h = $this->getStuff() === $myVariable;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php $i = $myVariable === $this->getStuff();",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php $i = $myVariable === $this->getStuff();",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php $j = 2 * $myVar % 3 === $a;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php $j = 2 * $myVar % 3 === $a;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php return $k === 2 * $myVar % 3;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php return $k === 2 * $myVar % 3;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php $l = $c > 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php $l = $c > 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php return $this->myObject1->{$index}+$b === \"\";",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php return $this->myObject1->{$index}+$b === \"\";",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php return $m[2]+1 == 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php return $m[2]+1 == 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php return $foo === $bar[$baz][1];",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php return $foo === $bar[$baz][1];",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 88,
+                    "args": [
+                        "<?php $a = $b[$key][\"1\"] === $c[\"2\"];",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 89,
+                    "args": [
+                        "<?php $a = $b[$key][\"1\"] === $c[\"2\"];",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 90,
+                    "args": [
+                        "<?php return $foo->$a === $foo->$b->$c;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 91,
+                    "args": [
+                        "<?php return $foo->$a === $foo->$b->$c;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 92,
+                    "args": [
+                        "<?php return $x === 2 - 1;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 93,
+                    "args": [
+                        "<?php return $x === 2 - 1;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 94,
+                    "args": [
+                        "<?php return $x === 2-1;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 95,
+                    "args": [
+                        "<?php return $x === 2-1;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 96,
+                    "args": [
+                        "<?php return array(2) == $o;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 97,
+                    "args": [
+                        "<?php return array(2) == $o;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 98,
+                    "args": [
+                        "<?php return $p == array(2);",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 99,
+                    "args": [
+                        "<?php return $p == array(2);",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 100,
+                    "args": [
+                        "<?php return $p == array(\"2\");",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 101,
+                    "args": [
+                        "<?php return $p == array(\"2\");",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 102,
+                    "args": [
+                        "<?php return $p == array(TWO);",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 103,
+                    "args": [
+                        "<?php return $p == array(TWO);",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 104,
+                    "args": [
+                        "<?php return $p == array(array());",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 105,
+                    "args": [
+                        "<?php return $p == array(array());",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 106,
+                    "args": [
+                        "<?php return $p == [[]];",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 107,
+                    "args": [
+                        "<?php return $p == [[]];",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 108,
+                    "args": [
+                        "<?php return array($q) == $a;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 109,
+                    "args": [
+                        "<?php return array($q) == $a;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 110,
+                    "args": [
+                        "<?php return $r == array($a);",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 111,
+                    "args": [
+                        "<?php return $r == array($a);",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 112,
+                    "args": [
+                        "<?php $s = ((array(2))) == $a;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 113,
+                    "args": [
+                        "<?php $s = ((array(2))) == $a;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 114,
+                    "args": [
+                        "<?php $t = $a == ((array(2)));",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 115,
+                    "args": [
+                        "<?php $t = $a == ((array(2)));",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 116,
+                    "args": [
+                        "<?php list($a) = $c === array(1) ? $b : $d;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 117,
+                    "args": [
+                        "<?php list($a) = $c === array(1) ? $b : $d;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 118,
+                    "args": [
+                        "<?php $b = 7 === list($a) = [7];",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 119,
+                    "args": [
+                        "<?php $b = 7 === list($a) = [7];",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 120,
+                    "args": [
+                        "<?php $a = function(){} === array(0);",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 121,
+                    "args": [
+                        "<?php $a = function(){} === array(0);",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 122,
+                    "args": [
+                        "<?php $z = $n == list($a) = $b;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 123,
+                    "args": [
+                        "<?php $z = $n == list($a) = $b;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 124,
+                    "args": [
+                        "<?php return $n == list($a) = $b;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 125,
+                    "args": [
+                        "<?php return $n == list($a) = $b;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 126,
+                    "args": [
+                        "<?php list($a) = 11 === $c ? $b : $d;",
+                        "<?php list($a) = $c === 11 ? $b : $d;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 127,
+                    "args": [
+                        "<?php list($a) = $c === 11 ? $b : $d;",
+                        "<?php list($a) = 11 === $c ? $b : $d;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 128,
+                    "args": [
+                        "<?php $z=2==$a;$b=$c>1&&$c<=10;",
+                        "<?php $z=$a==2;$b=$c>1&&$c<=10;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 129,
+                    "args": [
+                        "<?php $z=$a==2;$b=$c>1&&$c<=10;",
+                        "<?php $z=2==$a;$b=$c>1&&$c<=10;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 130,
+                    "args": [
+                        "<?php $z = /**/ /**/2/**/ /**/\n                 # aa\n                 /**/==/**/$a/***/;",
+                        "<?php $z = /**/ /**/$a/**/ /**/\n                 # aa\n                 /**/==/**/2/***/;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 131,
+                    "args": [
+                        "<?php $z = /**/ /**/$a/**/ /**/\n                 # aa\n                 /**/==/**/2/***/;",
+                        "<?php $z = /**/ /**/2/**/ /**/\n                 # aa\n                 /**/==/**/$a/***/;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 132,
+                    "args": [
+                        "<?php return 2 == ($a)?>",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 133,
+                    "args": [
+                        "<?php return 2 == ($a)?>",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 134,
+                    "args": [
+                        "<?php return ($a) == 2?>",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 135,
+                    "args": [
+                        "<?php return ($a) == 2?>",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 136,
+                    "args": [
+                        "<?php return 2 == ($a)?>",
+                        "<?php return ($a) == 2?>",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 137,
+                    "args": [
+                        "<?php return ($a) == 2?>",
+                        "<?php return 2 == ($a)?>",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 138,
+                    "args": [
+                        "<?php $a = ($c === ((null === $b)));",
+                        "<?php $a = ($c === (($b === null)));",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 139,
+                    "args": [
+                        "<?php $a = ($c === (($b === null)));",
+                        "<?php $a = ($c === ((null === $b)));",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 140,
+                    "args": [
+                        "<?php return null == $a[2];",
+                        "<?php return $a[2] == null;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 141,
+                    "args": [
+                        "<?php return $a[2] == null;",
+                        "<?php return null == $a[2];",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 142,
+                    "args": [
+                        "<?php return \"\" === $this->myArray[$index];",
+                        "<?php return $this->myArray[$index] === \"\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 143,
+                    "args": [
+                        "<?php return $this->myArray[$index] === \"\";",
+                        "<?php return \"\" === $this->myArray[$index];",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 144,
+                    "args": [
+                        "<?php return \"\" === $this->myArray[$index]->/*1*//*2*//*3*/a;",
+                        "<?php return $this->myArray[$index]->/*1*//*2*//*3*/a === \"\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 145,
+                    "args": [
+                        "<?php return $this->myArray[$index]->/*1*//*2*//*3*/a === \"\";",
+                        "<?php return \"\" === $this->myArray[$index]->/*1*//*2*//*3*/a;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 146,
+                    "args": [
+                        "<?php return \"\" === $this->myArray[$index]->a;",
+                        "<?php return $this->myArray[$index]->a === \"\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 147,
+                    "args": [
+                        "<?php return $this->myArray[$index]->a === \"\";",
+                        "<?php return \"\" === $this->myArray[$index]->a;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 148,
+                    "args": [
+                        "<?php return \"\" === $this->myObject2->  {$index};",
+                        "<?php return $this->myObject2->  {$index} === \"\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 149,
+                    "args": [
+                        "<?php return $this->myObject2->  {$index} === \"\";",
+                        "<?php return \"\" === $this->myObject2->  {$index};",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 150,
+                    "args": [
+                        "<?php return \"\" === $this->myObject3->{$index}->a;",
+                        "<?php return $this->myObject3->{$index}->a === \"\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 151,
+                    "args": [
+                        "<?php return $this->myObject3->{$index}->a === \"\";",
+                        "<?php return \"\" === $this->myObject3->{$index}->a;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 152,
+                    "args": [
+                        "<?php return \"\" === $this->myObject4->{$index}->{$index}->a;",
+                        "<?php return $this->myObject4->{$index}->{$index}->a === \"\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 153,
+                    "args": [
+                        "<?php return $this->myObject4->{$index}->{$index}->a === \"\";",
+                        "<?php return \"\" === $this->myObject4->{$index}->{$index}->a;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 154,
+                    "args": [
+                        "<?php return \"\" === $this->myObject4->$index->a;",
+                        "<?php return $this->myObject4->$index->a === \"\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 155,
+                    "args": [
+                        "<?php return $this->myObject4->$index->a === \"\";",
+                        "<?php return \"\" === $this->myObject4->$index->a;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 156,
+                    "args": [
+                        "<?php return self::MY_CONST === self::$myVariable;",
+                        "<?php return self::$myVariable === self::MY_CONST;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 157,
+                    "args": [
+                        "<?php return self::$myVariable === self::MY_CONST;",
+                        "<?php return self::MY_CONST === self::$myVariable;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 158,
+                    "args": [
+                        "<?php return \\A\\B\\C::MY_CONST === \\A\\B\\C::$myVariable;",
+                        "<?php return \\A\\B\\C::$myVariable === \\A\\B\\C::MY_CONST;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 159,
+                    "args": [
+                        "<?php return \\A\\B\\C::$myVariable === \\A\\B\\C::MY_CONST;",
+                        "<?php return \\A\\B\\C::MY_CONST === \\A\\B\\C::$myVariable;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 160,
+                    "args": [
+                        "<?php $a = 1 == $$a?>",
+                        "<?php $a = $$a == 1?>",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 161,
+                    "args": [
+                        "<?php $a = $$a == 1?>",
+                        "<?php $a = 1 == $$a?>",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 162,
+                    "args": [
+                        "<?php return null === $a[0 === $b ? $c : $d];",
+                        "<?php return $a[$b === 0 ? $c : $d] === null;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 163,
+                    "args": [
+                        "<?php return $a[$b === 0 ? $c : $d] === null;",
+                        "<?php return null === $a[0 === $b ? $c : $d];",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 164,
+                    "args": [
+                        "<?php return null === $this->{null === $a ? \"a\" : \"b\"};",
+                        "<?php return $this->{$a === null ? \"a\" : \"b\"} === null;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 165,
+                    "args": [
+                        "<?php return $this->{$a === null ? \"a\" : \"b\"} === null;",
+                        "<?php return null === $this->{null === $a ? \"a\" : \"b\"};",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 166,
+                    "args": [
+                        "<?php\nif ($a == $b) {\n    return null === $b ? (null === $a ? 0 : 0 === $a->b) : 0 === $b->a;\n} else {\n    if ($c === (null === $b)) {\n        return false === $d;\n    }\n}",
+                        "<?php\nif ($a == $b) {\n    return $b === null ? ($a === null ? 0 : $a->b === 0) : $b->a === 0;\n} else {\n    if ($c === ($b === null)) {\n        return $d === false;\n    }\n}",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 167,
+                    "args": [
+                        "<?php\nif ($a == $b) {\n    return $b === null ? ($a === null ? 0 : $a->b === 0) : $b->a === 0;\n} else {\n    if ($c === ($b === null)) {\n        return $d === false;\n    }\n}",
+                        "<?php\nif ($a == $b) {\n    return null === $b ? (null === $a ? 0 : 0 === $a->b) : 0 === $b->a;\n} else {\n    if ($c === (null === $b)) {\n        return false === $d;\n    }\n}",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 168,
+                    "args": [
+                        "<?php $b = list($a) = 7 === [7];",
+                        "<?php $b = list($a) = [7] === 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 169,
+                    "args": [
+                        "<?php $b = list($a) = [7] === 7;",
+                        "<?php $b = list($a) = 7 === [7];",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 170,
+                    "args": [
+                        "<?php $a = 1 === function(){};",
+                        "<?php $a = function(){} === 1;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 171,
+                    "args": [
+                        "<?php $a = function(){} === 1;",
+                        "<?php $a = 1 === function(){};",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 172,
+                    "args": [
+                        "<?php\n$z#1\n#2\n=\n#3\n1#4\n#5\n===#6\n#7\n$a#8\n#9\n;#10",
+                        "<?php\n$z#1\n#2\n=\n#3\n$a#4\n#5\n===#6\n#7\n1#8\n#9\n;#10",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 173,
+                    "args": [
+                        "<?php\n$z#1\n#2\n=\n#3\n$a#4\n#5\n===#6\n#7\n1#8\n#9\n;#10",
+                        "<?php\n$z#1\n#2\n=\n#3\n1#4\n#5\n===#6\n#7\n$a#8\n#9\n;#10",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 174,
+                    "args": [
+                        "<?php $i = 2 === $this/*a*//*b*//*c*//*d*//*e*//*f*/->getStuff();",
+                        "<?php $i = $this/*a*//*b*//*c*//*d*//*e*//*f*/->getStuff() === 2;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 175,
+                    "args": [
+                        "<?php $i = $this/*a*//*b*//*c*//*d*//*e*//*f*/->getStuff() === 2;",
+                        "<?php $i = 2 === $this/*a*//*b*//*c*//*d*//*e*//*f*/->getStuff();",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 176,
+                    "args": [
+                        "<?php return \"\" === $this->myObject5->{$index}->/*1*//*2*/b;",
+                        "<?php return $this->myObject5->{$index}->/*1*//*2*/b === \"\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 177,
+                    "args": [
+                        "<?php return $this->myObject5->{$index}->/*1*//*2*/b === \"\";",
+                        "<?php return \"\" === $this->myObject5->{$index}->/*1*//*2*/b;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 178,
+                    "args": [
+                        "<?php\n                function hello() {}\n                1 === $a ? b() : c();\n                ",
+                        "<?php\n                function hello() {}\n                $a === 1 ? b() : c();\n                ",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 179,
+                    "args": [
+                        "<?php\n                function hello() {}\n                $a === 1 ? b() : c();\n                ",
+                        "<?php\n                function hello() {}\n                1 === $a ? b() : c();\n                ",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 180,
+                    "args": [
+                        "<?php\n                class A{}\n                1 === $a ? b() : c();\n                ",
+                        "<?php\n                class A{}\n                $a === 1 ? b() : c();\n                ",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 181,
+                    "args": [
+                        "<?php\n                class A{}\n                $a === 1 ? b() : c();\n                ",
+                        "<?php\n                class A{}\n                1 === $a ? b() : c();\n                ",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 182,
+                    "args": [
+                        "<?php\n                function foo() {\n                    foreach ($arr as $key => $value) {\n                        false !== uniqid() ? 1 : 2;\n                    }\n                    false !== uniqid() ? 1 : 2;\n                }",
+                        "<?php\n                function foo() {\n                    foreach ($arr as $key => $value) {\n                        uniqid() !== false ? 1 : 2;\n                    }\n                    uniqid() !== false ? 1 : 2;\n                }",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 183,
+                    "args": [
+                        "<?php\n                function foo() {\n                    foreach ($arr as $key => $value) {\n                        uniqid() !== false ? 1 : 2;\n                    }\n                    uniqid() !== false ? 1 : 2;\n                }",
+                        "<?php\n                function foo() {\n                    foreach ($arr as $key => $value) {\n                        false !== uniqid() ? 1 : 2;\n                    }\n                    false !== uniqid() ? 1 : 2;\n                }",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 184,
+                    "args": [
+                        "<?php false === $a = array();",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 185,
+                    "args": [
+                        "<?php false === $a = array();",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 186,
+                    "args": [
+                        "<?php $e = count($this->array[$var]) === $a;",
+                        "<?php $e = $a === count($this->array[$var]);",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 187,
+                    "args": [
+                        "<?php $e = $a === count($this->array[$var]);",
+                        "<?php $e = count($this->array[$var]) === $a;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 188,
+                    "args": [
+                        "<?php $i = $this->getStuff() === $myVariable;",
+                        "<?php $i = $myVariable === $this->getStuff();",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 189,
+                    "args": [
+                        "<?php $i = $myVariable === $this->getStuff();",
+                        "<?php $i = $this->getStuff() === $myVariable;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 190,
+                    "args": [
+                        "<?php $g = ($a789 & self::MY_BITMASK) === $a;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 191,
+                    "args": [
+                        "<?php $g = ($a789 & self::MY_BITMASK) === $a;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 192,
+                    "args": [
+                        "<?php return $myVar + 2 === $k;",
+                        "<?php return $k === $myVar + 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 193,
+                    "args": [
+                        "<?php return $k === $myVar + 2;",
+                        "<?php return $myVar + 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 194,
+                    "args": [
+                        "<?php return $myVar . $b === $k;",
+                        "<?php return $k === $myVar . $b;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 195,
+                    "args": [
+                        "<?php return $k === $myVar . $b;",
+                        "<?php return $myVar . $b === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 196,
+                    "args": [
+                        "<?php return $myVar - 2 === $k;",
+                        "<?php return $k === $myVar - 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 197,
+                    "args": [
+                        "<?php return $k === $myVar - 2;",
+                        "<?php return $myVar - 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 198,
+                    "args": [
+                        "<?php return $myVar * 2 === $k;",
+                        "<?php return $k === $myVar * 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 199,
+                    "args": [
+                        "<?php return $k === $myVar * 2;",
+                        "<?php return $myVar * 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 200,
+                    "args": [
+                        "<?php return $myVar / 2 === $k;",
+                        "<?php return $k === $myVar / 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 201,
+                    "args": [
+                        "<?php return $k === $myVar / 2;",
+                        "<?php return $myVar / 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 202,
+                    "args": [
+                        "<?php return $myVar % 2 === $k;",
+                        "<?php return $k === $myVar % 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 203,
+                    "args": [
+                        "<?php return $k === $myVar % 2;",
+                        "<?php return $myVar % 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 204,
+                    "args": [
+                        "<?php return $myVar ** 2 === $k;",
+                        "<?php return $k === $myVar ** 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 205,
+                    "args": [
+                        "<?php return $k === $myVar ** 2;",
+                        "<?php return $myVar ** 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 206,
+                    "args": [
+                        "<?php return $myVar < 2 === $k;",
+                        "<?php return $k === $myVar < 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 207,
+                    "args": [
+                        "<?php return $k === $myVar < 2;",
+                        "<?php return $myVar < 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 208,
+                    "args": [
+                        "<?php return $myVar > 2 === $k;",
+                        "<?php return $k === $myVar > 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 209,
+                    "args": [
+                        "<?php return $k === $myVar > 2;",
+                        "<?php return $myVar > 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 210,
+                    "args": [
+                        "<?php return $myVar <= 2 === $k;",
+                        "<?php return $k === $myVar <= 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 211,
+                    "args": [
+                        "<?php return $k === $myVar <= 2;",
+                        "<?php return $myVar <= 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 212,
+                    "args": [
+                        "<?php return $myVar >= 2 === $k;",
+                        "<?php return $k === $myVar >= 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 213,
+                    "args": [
+                        "<?php return $k === $myVar >= 2;",
+                        "<?php return $myVar >= 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 214,
+                    "args": [
+                        "<?php return $myVar . 2 === $k;",
+                        "<?php return $k === $myVar . 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 215,
+                    "args": [
+                        "<?php return $k === $myVar . 2;",
+                        "<?php return $myVar . 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 216,
+                    "args": [
+                        "<?php return $myVar << 2 === $k;",
+                        "<?php return $k === $myVar << 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 217,
+                    "args": [
+                        "<?php return $k === $myVar << 2;",
+                        "<?php return $myVar << 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 218,
+                    "args": [
+                        "<?php return $myVar >> 2 === $k;",
+                        "<?php return $k === $myVar >> 2;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 219,
+                    "args": [
+                        "<?php return $k === $myVar >> 2;",
+                        "<?php return $myVar >> 2 === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 220,
+                    "args": [
+                        "<?php return !$myVar === $k;",
+                        "<?php return $k === !$myVar;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 221,
+                    "args": [
+                        "<?php return $k === !$myVar;",
+                        "<?php return !$myVar === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 222,
+                    "args": [
+                        "<?php return $myVar instanceof Foo === $k;",
+                        "<?php return $k === $myVar instanceof Foo;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 223,
+                    "args": [
+                        "<?php return $k === $myVar instanceof Foo;",
+                        "<?php return $myVar instanceof Foo === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 224,
+                    "args": [
+                        "<?php return (bool) $myVar === $k;",
+                        "<?php return $k === (bool) $myVar;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 225,
+                    "args": [
+                        "<?php return $k === (bool) $myVar;",
+                        "<?php return (bool) $myVar === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 226,
+                    "args": [
+                        "<?php return (int) $myVar === $k;",
+                        "<?php return $k === (int) $myVar;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 227,
+                    "args": [
+                        "<?php return $k === (int) $myVar;",
+                        "<?php return (int) $myVar === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 228,
+                    "args": [
+                        "<?php return (float) $myVar === $k;",
+                        "<?php return $k === (float) $myVar;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 229,
+                    "args": [
+                        "<?php return $k === (float) $myVar;",
+                        "<?php return (float) $myVar === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 230,
+                    "args": [
+                        "<?php return (string) $myVar === $k;",
+                        "<?php return $k === (string) $myVar;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 231,
+                    "args": [
+                        "<?php return $k === (string) $myVar;",
+                        "<?php return (string) $myVar === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 232,
+                    "args": [
+                        "<?php return (array) $myVar === $k;",
+                        "<?php return $k === (array) $myVar;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 233,
+                    "args": [
+                        "<?php return $k === (array) $myVar;",
+                        "<?php return (array) $myVar === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 234,
+                    "args": [
+                        "<?php return (object) $myVar === $k;",
+                        "<?php return $k === (object) $myVar;",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 235,
+                    "args": [
+                        "<?php return $k === (object) $myVar;",
+                        "<?php return (object) $myVar === $k;",
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 236,
+                    "args": [
+                        "<?php $a = null === foo();",
+                        "<?php $a = foo() === null;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 237,
+                    "args": [
+                        "<?php $a = foo() === null;",
+                        "<?php $a = null === foo();",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 238,
+                    "args": [
+                        "<?php $a = 'foo' === foo();",
+                        "<?php $a = foo() === 'foo';",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 239,
+                    "args": [
+                        "<?php $a = foo() === 'foo';",
+                        "<?php $a = 'foo' === foo();",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 240,
+                    "args": [
+                        "<?php $a = \"foo\" === foo();",
+                        "<?php $a = foo() === \"foo\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 241,
+                    "args": [
+                        "<?php $a = foo() === \"foo\";",
+                        "<?php $a = \"foo\" === foo();",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 242,
+                    "args": [
+                        "<?php $a = 1 === foo();",
+                        "<?php $a = foo() === 1;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 243,
+                    "args": [
+                        "<?php $a = foo() === 1;",
+                        "<?php $a = 1 === foo();",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 244,
+                    "args": [
+                        "<?php $a = 1.2 === foo();",
+                        "<?php $a = foo() === 1.2;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 245,
+                    "args": [
+                        "<?php $a = foo() === 1.2;",
+                        "<?php $a = 1.2 === foo();",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 246,
+                    "args": [
+                        "<?php $a = true === foo();",
+                        "<?php $a = foo() === true;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 247,
+                    "args": [
+                        "<?php $a = foo() === true;",
+                        "<?php $a = true === foo();",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 248,
+                    "args": [
+                        "<?php $a = false === foo();",
+                        "<?php $a = foo() === false;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 249,
+                    "args": [
+                        "<?php $a = foo() === false;",
+                        "<?php $a = false === foo();",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 250,
+                    "args": [
+                        "<?php $a = -1 === reset($foo);",
+                        "<?php $a = reset($foo) === -1;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 251,
+                    "args": [
+                        "<?php $a = reset($foo) === -1;",
+                        "<?php $a = -1 === reset($foo);",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 252,
+                    "args": [
+                        "<?php $a = - 1 === reset($foo);",
+                        "<?php $a = reset($foo) === - 1;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 253,
+                    "args": [
+                        "<?php $a = reset($foo) === - 1;",
+                        "<?php $a = - 1 === reset($foo);",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 254,
+                    "args": [
+                        "<?php $a = -/* bar */1 === reset($foo);",
+                        "<?php $a = reset($foo) === -/* bar */1;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 255,
+                    "args": [
+                        "<?php $a = reset($foo) === -/* bar */1;",
+                        "<?php $a = -/* bar */1 === reset($foo);",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 256,
+                    "args": [
+                        "<?php return array() === $array;",
+                        "<?php return $array === array();",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 257,
+                    "args": [
+                        "<?php return $array === array();",
+                        "<?php return array() === $array;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 258,
+                    "args": [
+                        "<?php return [] === $array;",
+                        "<?php return $array === [];",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 259,
+                    "args": [
+                        "<?php return $array === [];",
+                        "<?php return [] === $array;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 260,
+                    "args": [
+                        "<?php return array(/* foo */) === $array;",
+                        "<?php return $array === array(/* foo */);",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 261,
+                    "args": [
+                        "<?php return $array === array(/* foo */);",
+                        "<?php return array(/* foo */) === $array;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 262,
+                    "args": [
+                        "<?php return [\n                    // 1\n                ] === $array;",
+                        "<?php return $array === [\n                    // 1\n                ];",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 263,
+                    "args": [
+                        "<?php return $array === [\n                    // 1\n                ];",
+                        "<?php return [\n                    // 1\n                ] === $array;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 264,
+                    "args": [
+                        "<?php $a = $b = null === $c;",
+                        "<?php $a = $b = $c === null;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 265,
+                    "args": [
+                        "<?php $a = $b = $c === null;",
+                        "<?php $a = $b = null === $c;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 266,
+                    "args": [
+                        "<?php $a = ($b + $c) || 1 === true ? 1 : 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 267,
+                    "args": [
+                        "<?php $a = ($b + $c) || 1 === true ? 1 : 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 268,
+                    "args": [
+                        "<?php $a = ($b + $c) && 1 === true ? 1 : 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 269,
+                    "args": [
+                        "<?php $a = ($b + $c) && 1 === true ? 1 : 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 270,
+                    "args": [
+                        "<?php $a = 4 === $b ? 2 : 3;",
+                        "<?php $a = $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 271,
+                    "args": [
+                        "<?php $a = $b === 4 ? 2 : 3;",
+                        "<?php $a = 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 272,
+                    "args": [
+                        "<?php $a **= 4 === $b ? 2 : 3;",
+                        "<?php $a **= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 273,
+                    "args": [
+                        "<?php $a **= $b === 4 ? 2 : 3;",
+                        "<?php $a **= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 274,
+                    "args": [
+                        "<?php $a *= 4 === $b ? 2 : 3;",
+                        "<?php $a *= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 275,
+                    "args": [
+                        "<?php $a *= $b === 4 ? 2 : 3;",
+                        "<?php $a *= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 276,
+                    "args": [
+                        "<?php $a |= 4 === $b ? 2 : 3;",
+                        "<?php $a |= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 277,
+                    "args": [
+                        "<?php $a |= $b === 4 ? 2 : 3;",
+                        "<?php $a |= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 278,
+                    "args": [
+                        "<?php $a += 4 === $b ? 2 : 3;",
+                        "<?php $a += $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 279,
+                    "args": [
+                        "<?php $a += $b === 4 ? 2 : 3;",
+                        "<?php $a += 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 280,
+                    "args": [
+                        "<?php $a -= 4 === $b ? 2 : 3;",
+                        "<?php $a -= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 281,
+                    "args": [
+                        "<?php $a -= $b === 4 ? 2 : 3;",
+                        "<?php $a -= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 282,
+                    "args": [
+                        "<?php $a ^= 4 === $b ? 2 : 3;",
+                        "<?php $a ^= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 283,
+                    "args": [
+                        "<?php $a ^= $b === 4 ? 2 : 3;",
+                        "<?php $a ^= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 284,
+                    "args": [
+                        "<?php $a <<= 4 === $b ? 2 : 3;",
+                        "<?php $a <<= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 285,
+                    "args": [
+                        "<?php $a <<= $b === 4 ? 2 : 3;",
+                        "<?php $a <<= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 286,
+                    "args": [
+                        "<?php $a >>= 4 === $b ? 2 : 3;",
+                        "<?php $a >>= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 287,
+                    "args": [
+                        "<?php $a >>= $b === 4 ? 2 : 3;",
+                        "<?php $a >>= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 288,
+                    "args": [
+                        "<?php $a &= 4 === $b ? 2 : 3;",
+                        "<?php $a &= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 289,
+                    "args": [
+                        "<?php $a &= $b === 4 ? 2 : 3;",
+                        "<?php $a &= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 290,
+                    "args": [
+                        "<?php $a .= 4 === $b ? 2 : 3;",
+                        "<?php $a .= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 291,
+                    "args": [
+                        "<?php $a .= $b === 4 ? 2 : 3;",
+                        "<?php $a .= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 292,
+                    "args": [
+                        "<?php $a /= 4 === $b ? 2 : 3;",
+                        "<?php $a /= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 293,
+                    "args": [
+                        "<?php $a /= $b === 4 ? 2 : 3;",
+                        "<?php $a /= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 294,
+                    "args": [
+                        "<?php $a %= 4 === $b ? 2 : 3;",
+                        "<?php $a %= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 295,
+                    "args": [
+                        "<?php $a %= $b === 4 ? 2 : 3;",
+                        "<?php $a %= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 296,
+                    "args": [
+                        "<?php $a ??= 4 === $b ? 2 : 3;",
+                        "<?php $a ??= $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 297,
+                    "args": [
+                        "<?php $a ??= $b === 4 ? 2 : 3;",
+                        "<?php $a ??= 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 298,
+                    "args": [
+                        "<?php $a xor 4 === $b ? 2 : 3;",
+                        "<?php $a xor $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 299,
+                    "args": [
+                        "<?php $a xor $b === 4 ? 2 : 3;",
+                        "<?php $a xor 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 300,
+                    "args": [
+                        "<?php $a or 4 === $b ? 2 : 3;",
+                        "<?php $a or $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 301,
+                    "args": [
+                        "<?php $a or $b === 4 ? 2 : 3;",
+                        "<?php $a or 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 302,
+                    "args": [
+                        "<?php $a and 4 === $b ? 2 : 3;",
+                        "<?php $a and $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 303,
+                    "args": [
+                        "<?php $a and $b === 4 ? 2 : 3;",
+                        "<?php $a and 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 304,
+                    "args": [
+                        "<?php $a || 4 === $b ? 2 : 3;",
+                        "<?php $a || $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 305,
+                    "args": [
+                        "<?php $a || $b === 4 ? 2 : 3;",
+                        "<?php $a || 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 306,
+                    "args": [
+                        "<?php $a && 4 === $b ? 2 : 3;",
+                        "<?php $a && $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 307,
+                    "args": [
+                        "<?php $a && $b === 4 ? 2 : 3;",
+                        "<?php $a && 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 308,
+                    "args": [
+                        "<?php $a ?? 4 === $b ? 2 : 3;",
+                        "<?php $a ?? $b === 4 ? 2 : 3;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 309,
+                    "args": [
+                        "<?php $a ?? $b === 4 ? 2 : 3;",
+                        "<?php $a ?? 4 === $b ? 2 : 3;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 310,
+                    "args": [
+                        "<?php 1 === $x = 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 311,
+                    "args": [
+                        "<?php 1 === $x = 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 312,
+                    "args": [
+                        "<?php 1 === $x **= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 313,
+                    "args": [
+                        "<?php 1 === $x **= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 314,
+                    "args": [
+                        "<?php 1 === $x *= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 315,
+                    "args": [
+                        "<?php 1 === $x *= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 316,
+                    "args": [
+                        "<?php 1 === $x |= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 317,
+                    "args": [
+                        "<?php 1 === $x |= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 318,
+                    "args": [
+                        "<?php 1 === $x += 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 319,
+                    "args": [
+                        "<?php 1 === $x += 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 320,
+                    "args": [
+                        "<?php 1 === $x -= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 321,
+                    "args": [
+                        "<?php 1 === $x -= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 322,
+                    "args": [
+                        "<?php 1 === $x ^= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 323,
+                    "args": [
+                        "<?php 1 === $x ^= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 324,
+                    "args": [
+                        "<?php 1 === $x <<= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 325,
+                    "args": [
+                        "<?php 1 === $x <<= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 326,
+                    "args": [
+                        "<?php 1 === $x >>= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 327,
+                    "args": [
+                        "<?php 1 === $x >>= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 328,
+                    "args": [
+                        "<?php 1 === $x &= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 329,
+                    "args": [
+                        "<?php 1 === $x &= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 330,
+                    "args": [
+                        "<?php 1 === $x .= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 331,
+                    "args": [
+                        "<?php 1 === $x .= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 332,
+                    "args": [
+                        "<?php 1 === $x /= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 333,
+                    "args": [
+                        "<?php 1 === $x /= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 334,
+                    "args": [
+                        "<?php 1 === $x %= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 335,
+                    "args": [
+                        "<?php 1 === $x %= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 336,
+                    "args": [
+                        "<?php 1 === $x ??= 2;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 337,
+                    "args": [
+                        "<?php 1 === $x ??= 2;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 338,
+                    "args": [
+                        "<?php $a = $b + 1 <=> $d;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 339,
+                    "args": [
+                        "<?php $a = $b + 1 <=> $d;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 340,
+                    "args": [
+                        "<?php $a = new class(10) extends SomeClass implements SomeInterface {} === $a;/**/",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 341,
+                    "args": [
+                        "<?php $a = new class(10) extends SomeClass implements SomeInterface {} === $a;/**/",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 342,
+                    "args": [
+                        "<?php $a = $b ?? 1 ?? 2 == $d;",
+                        "<?php $a = $b ?? 1 ?? $d == 2;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 343,
+                    "args": [
+                        "<?php $a = $b ?? 1 ?? $d == 2;",
+                        "<?php $a = $b ?? 1 ?? 2 == $d;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 344,
+                    "args": [
+                        "<?php $a = 1 === new class(10) extends SomeClass implements SomeInterface {};/**/",
+                        "<?php $a = new class(10) extends SomeClass implements SomeInterface {} === 1;/**/",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 345,
+                    "args": [
+                        "<?php $a = new class(10) extends SomeClass implements SomeInterface {} === 1;/**/",
+                        "<?php $a = 1 === new class(10) extends SomeClass implements SomeInterface {};/**/",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 346,
+                    "args": [
+                        "<?php\nfunction a() {\n    for ($i = 1; $i <= 3; $i++) {\n        echo yield 1 === $i ? 1 : 2;\n    }\n}\n",
+                        "<?php\nfunction a() {\n    for ($i = 1; $i <= 3; $i++) {\n        echo yield $i === 1 ? 1 : 2;\n    }\n}\n",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 347,
+                    "args": [
+                        "<?php\nfunction a() {\n    for ($i = 1; $i <= 3; $i++) {\n        echo yield $i === 1 ? 1 : 2;\n    }\n}\n",
+                        "<?php\nfunction a() {\n    for ($i = 1; $i <= 3; $i++) {\n        echo yield 1 === $i ? 1 : 2;\n    }\n}\n",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 348,
+                    "args": [
+                        "<?php function test() {return yield 1 !== $a [$b];};",
+                        "<?php function test() {return yield $a [$b] !== 1;};",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 349,
+                    "args": [
+                        "<?php function test() {return yield $a [$b] !== 1;};",
+                        "<?php function test() {return yield 1 !== $a [$b];};",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 350,
+                    "args": [
+                        "<?php function test() {return yield 1 === $a;};",
+                        "<?php function test() {return yield $a === 1;};",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 351,
+                    "args": [
+                        "<?php function test() {return yield $a === 1;};",
+                        "<?php function test() {return yield 1 === $a;};",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 352,
+                    "args": [
+                        "<?php\n$a = 1;\nswitch ($a) {\n    case 1 === $a:\n        echo 123;\n        break;\n}\n",
+                        "<?php\n$a = 1;\nswitch ($a) {\n    case $a === 1:\n        echo 123;\n        break;\n}\n",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 353,
+                    "args": [
+                        "<?php\n$a = 1;\nswitch ($a) {\n    case $a === 1:\n        echo 123;\n        break;\n}\n",
+                        "<?php\n$a = 1;\nswitch ($a) {\n    case 1 === $a:\n        echo 123;\n        break;\n}\n",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 354,
+                    "args": [
+                        "<?php require 1 === $var ? \"A.php\" : \"B.php\";",
+                        "<?php require $var === 1 ? \"A.php\" : \"B.php\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 355,
+                    "args": [
+                        "<?php require $var === 1 ? \"A.php\" : \"B.php\";",
+                        "<?php require 1 === $var ? \"A.php\" : \"B.php\";",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 356,
+                    "args": [
+                        "<?php require_once 1 === $var ? \"A.php\" : \"B.php\";",
+                        "<?php require_once $var === 1 ? \"A.php\" : \"B.php\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 357,
+                    "args": [
+                        "<?php require_once $var === 1 ? \"A.php\" : \"B.php\";",
+                        "<?php require_once 1 === $var ? \"A.php\" : \"B.php\";",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 358,
+                    "args": [
+                        "<?php include 1 === $var ? \"A.php\" : \"B.php\";",
+                        "<?php include $var === 1 ? \"A.php\" : \"B.php\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 359,
+                    "args": [
+                        "<?php include $var === 1 ? \"A.php\" : \"B.php\";",
+                        "<?php include 1 === $var ? \"A.php\" : \"B.php\";",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 360,
+                    "args": [
+                        "<?php include_once 1 === $var ? \"A.php\" : \"B.php\";",
+                        "<?php include_once $var === 1 ? \"A.php\" : \"B.php\";",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 361,
+                    "args": [
+                        "<?php include_once $var === 1 ? \"A.php\" : \"B.php\";",
+                        "<?php include_once 1 === $var ? \"A.php\" : \"B.php\";",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 362,
+                    "args": [
+                        "<?php function test() {return yield from 1 === $a ? $c : $d;};",
+                        "<?php function test() {return yield from $a === 1 ? $c : $d;};",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 363,
+                    "args": [
+                        "<?php function test() {return yield from $a === 1 ? $c : $d;};",
+                        "<?php function test() {return yield from 1 === $a ? $c : $d;};",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 364,
+                    "args": [
+                        "<?php if (1_000 === $b);",
+                        "<?php if ($b === 1_000);",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 365,
+                    "args": [
+                        "<?php if ($b === 1_000);",
+                        "<?php if (1_000 === $b);",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 366,
+                    "args": [
+                        "<?php fn() => $c === array(1) ? $b : $d;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "less_and_greater": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 367,
+                    "args": [
+                        "<?php fn() => $c === array(1) ? $b : $d;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false,
+                            "less_and_greater": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 368,
+                    "args": [
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = $c === array(1) ? $b : $d;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 369,
+                    "args": [
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = $c === array(1) ? $b : $d;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 370,
+                    "args": [
+                        "<?php list(list(\"x\" => $x1, \"y\" => $y1), list(\"x\" => $x2, \"y\" => $y2)) = $points;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 371,
+                    "args": [
+                        "<?php list(list(\"x\" => $x1, \"y\" => $y1), list(\"x\" => $x2, \"y\" => $y2)) = $points;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 372,
+                    "args": [
+                        "<?php list(\"first\" => list($x1, $y1), \"second\" => list($x2, $y2)) = $points;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 373,
+                    "args": [
+                        "<?php list(\"first\" => list($x1, $y1), \"second\" => list($x2, $y2)) = $points;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 374,
+                    "args": [
+                        "<?php [$a, $b, $c] = [1, 2, 3];",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 375,
+                    "args": [
+                        "<?php [$a, $b, $c] = [1, 2, 3];",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 376,
+                    "args": [
+                        "<?php [\"a\" => $a, \"b\" => $b, \"c\" => $c] = $a[0];",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 377,
+                    "args": [
+                        "<?php [\"a\" => $a, \"b\" => $b, \"c\" => $c] = $a[0];",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 378,
+                    "args": [
+                        "<?php $b = 7 === [$a] = [7];",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 379,
+                    "args": [
+                        "<?php $b = 7 === [$a] = [7];",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 380,
+                    "args": [
+                        "<?php [$a] = $c === array(1) ? $b : $d;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 381,
+                    "args": [
+                        "<?php [$a] = $c === array(1) ? $b : $d;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 382,
+                    "args": [
+                        "<?php $z = $n == [$a] = $b;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 383,
+                    "args": [
+                        "<?php $z = $n == [$a] = $b;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 384,
+                    "args": [
+                        "<?php return $n == [$a] = $b;",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 385,
+                    "args": [
+                        "<?php return $n == [$a] = $b;",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 386,
+                    "args": [
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = 1 === $c ? $b : $d;",
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = $c === 1 ? $b : $d;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 387,
+                    "args": [
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = $c === 1 ? $b : $d;",
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = 1 === $c ? $b : $d;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 388,
+                    "args": [
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = A::B === $c ? $b : $d;",
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = $c === A::B ? $b : $d;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 389,
+                    "args": [
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = $c === A::B ? $b : $d;",
+                        "<?php list(\"a\" => $a, \"b\" => $b, \"c\" => $c) = A::B === $c ? $b : $d;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 390,
+                    "args": [
+                        "<?php list( (2 === $c ? \"a\" : \"b\") => $b) = [\"a\" => 7 === $c ? 5 : 1, \"b\" => 7];",
+                        "<?php list( ($c === 2 ? \"a\" : \"b\") => $b) = [\"a\" => $c === 7 ? 5 : 1, \"b\" => 7];",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 391,
+                    "args": [
+                        "<?php list( ($c === 2 ? \"a\" : \"b\") => $b) = [\"a\" => $c === 7 ? 5 : 1, \"b\" => 7];",
+                        "<?php list( (2 === $c ? \"a\" : \"b\") => $b) = [\"a\" => 7 === $c ? 5 : 1, \"b\" => 7];",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 392,
+                    "args": [
+                        "<?php [ (ABC::A === $c ? \"a\" : \"b\") => $b] = [\"a\" => 7 === $c ? 5 : 1, \"b\" => 7];",
+                        "<?php [ ($c === ABC::A ? \"a\" : \"b\") => $b] = [\"a\" => $c === 7 ? 5 : 1, \"b\" => 7];",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 393,
+                    "args": [
+                        "<?php [ ($c === ABC::A ? \"a\" : \"b\") => $b] = [\"a\" => $c === 7 ? 5 : 1, \"b\" => 7];",
+                        "<?php [ (ABC::A === $c ? \"a\" : \"b\") => $b] = [\"a\" => 7 === $c ? 5 : 1, \"b\" => 7];",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 394,
+                    "args": [
+                        "<?php [$a] = 11 === $c ? $b : $d;",
+                        "<?php [$a] = $c === 11 ? $b : $d;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 395,
+                    "args": [
+                        "<?php [$a] = $c === 11 ? $b : $d;",
+                        "<?php [$a] = 11 === $c ? $b : $d;",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 396,
+                    "args": [
+                        "<?php $b = [$a] = 7 === [7];",
+                        "<?php $b = [$a] = [7] === 7;",
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 397,
+                    "args": [
+                        "<?php $b = [$a] = [7] === 7;",
+                        "<?php $b = [$a] = 7 === [7];",
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 398,
+                    "args": [
+                        "<?php $a = 3 <= $b;",
+                        "<?php $a = $b >= 3;",
+                        {
+                            "less_and_greater": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 399,
+                    "args": [
+                        "<?php $a = $b >= 3;",
+                        "<?php $a = 3 <= $b;",
+                        {
+                            "less_and_greater": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 400,
+                    "args": [
+                        "<?php $a = 3 > $b;",
+                        "<?php $a = $b < 3;",
+                        {
+                            "less_and_greater": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 401,
+                    "args": [
+                        "<?php $a = $b < 3;",
+                        "<?php $a = 3 > $b;",
+                        {
+                            "less_and_greater": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 402,
+                    "args": [
+                        "<?php $a = (3 > $b) || $d;",
+                        "<?php $a = ($b < 3) || $d;",
+                        {
+                            "less_and_greater": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 403,
+                    "args": [
+                        "<?php $a = ($b < 3) || $d;",
+                        "<?php $a = (3 > $b) || $d;",
+                        {
+                            "less_and_greater": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 404,
+                    "args": [
+                        "<?php\n                $a = 1 === $b;\n                $b = $c != 1;\n                $c = $c > 3;\n            ",
+                        "<?php\n                $a = $b === 1;\n                $b = $c != 1;\n                $c = $c > 3;\n            ",
+                        {
+                            "equal": null,
+                            "identical": true,
+                            "less_and_greater": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 405,
+                    "args": [
+                        "<?php\n$a = [1, 2, 3];\nwhile (2 !== $b = array_pop($c));\n",
+                        null,
+                        {
+                            "identical": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 406,
+                    "args": [
+                        "<?php\n                if ($revision->event == 'created') {\n    foreach ($revision->getModified() as $col => $data) {\n        $model->$col = $data['new'];\n    }\n} else {\n    foreach ($revision->getModified() as $col => $data) {\n        $model->$col = $data['old'];\n    }\n}",
+                        null,
+                        {
+                            "equal": false,
+                            "identical": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\YodaStyleFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $expectedMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches(\"#^\\\\[{$this->fixer->getName()}\\\\] {$expectedMessage}$#\");\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 0,
+                    "args": [
+                        {
+                            "equal": 2
+                        },
+                        "Invalid configuration: The option \"equal\" with value 2 is expected to be of type \"bool\" or \"null\", but is of type \"(int|integer)\"\\."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": 1,
+                    "args": [
+                        {
+                            "_invalid_": true
+                        },
+                        "Invalid configuration: The option \"_invalid_\" does not exist\\. Defined options are: \"always_move_variable\", \"equal\", \"identical\", \"less_and_greater\"\\."
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\YodaStyleFixerTest",
+            "body": "    public function testFixPre81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php return \\A/*5*/\\/*6*/B\\/*7*/C::MY_CONST === \\A/*1*//*1*//*1*//*1*//*1*/\\/*2*/B/*3*/\\C/*4*/::$myVariable;",
+                        "<?php return \\A/*1*//*1*//*1*//*1*//*1*/\\/*2*/B/*3*/\\C/*4*/::$myVariable === \\A/*5*/\\/*6*/B\\/*7*/C::MY_CONST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php return A\\/**//**//**/B/*a*//*a*//*a*//*a*/::MY_CONST === B\\C::$myVariable;",
+                        "<?php return B\\C::$myVariable === A\\/**//**//**/B/*a*//*a*//*a*//*a*/::MY_CONST;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php return $foo === $bar[$baz]{1};"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php return $foo->$a[1] === $bar[$baz]{1}->$a[1][2][3]->$d[$z]{1};"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php return $m->a{2}+1 == 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php return $m{2}+1 == 2;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre81Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php echo 1 === (unset) $a ? 8 : 7;",
+                        "<?php echo (unset) $a === 1 ? 8 : 7;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\YodaStyleFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nif ($a = true === $obj instanceof (foo())) {\n    echo 1;\n}",
+                        "<?php\nif ($a = $obj instanceof (foo()) === true) {\n    echo 1;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $i = $this?->getStuff() === $myVariable;",
+                        "<?php $i = $myVariable === $this?->getStuff();",
+                        {
+                            "equal": true,
+                            "identical": true,
+                            "always_move_variable": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php 42 === $a->b[5]?->c;",
+                        "<?php $a->b[5]?->c === 42;"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php return $this->myObject1?->{$index}+$b === \"\";",
+                        null,
+                        {
+                            "equal": true,
+                            "identical": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php new Foo(bar: 1 === $var);",
+                        "<?php new Foo(bar: $var === 1);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\YodaStyleFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "does not make a lot of sense but is valid syntax, do not break 1",
+                    "args": [
+                        "<?php $b = strlen( ... ) === $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "does not make a lot of sense but is valid syntax, do not break 2",
+                    "args": [
+                        "<?php $b = $a === strlen( ... );"
+                    ]
+                }
+            ]
+        }
+    ]
+}

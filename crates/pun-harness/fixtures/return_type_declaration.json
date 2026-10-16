@@ -1,0 +1,206 @@
+{
+    "fixer": "return_type_declaration",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\ReturnTypeDeclarationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/ReturnTypeDeclarationFixerTest.php",
+    "case_count": 15,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\ReturnTypeDeclarationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo1(int $a) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo2(int $a): string {}",
+                        "<?php function foo2(int $a):string {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo3(int $c)/**/ : /**/ string {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo4(int $a): string {}",
+                        "<?php function foo4(int $a)  :  string {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo5(int $e)#\n: #\n#\nstring {}",
+                        "<?php function foo5(int $e)#\n:#\n#\nstring {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                    function foo1(int $a): string {}\n                    function foo2(int $a): string {}\n                    function foo3(int $a): string {}\n                    function foo4(int $a): string {}\n                    function foo5(int $a): string {}\n                    function foo6(int $a): string {}\n                    function foo7(int $a): string {}\n                    function foo8(int $a): string {}\n                    function foo9(int $a): string {}\n                ",
+                        "<?php\n                    function foo1(int $a):string {}\n                    function foo2(int $a):string {}\n                    function foo3(int $a):string {}\n                    function foo4(int $a):string {}\n                    function foo5(int $a):string {}\n                    function foo6(int $a):string {}\n                    function foo7(int $a):string {}\n                    function foo8(int $a):string {}\n                    function foo9(int $a):string {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php fn(): int => 1;",
+                        "<?php fn():int => 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php function fooA(int $a) {}",
+                        null,
+                        {
+                            "space_before": "one"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function fooB(int $a) : string {}",
+                        "<?php function fooB(int $a):string {}",
+                        {
+                            "space_before": "one"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php function fooC(int $a)/**/ : /**/string {}",
+                        "<?php function fooC(int $a)/**/:/**/string {}",
+                        {
+                            "space_before": "one"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php function fooD(int $a) : string {}",
+                        "<?php function fooD(int $a)  :  string {}",
+                        {
+                            "space_before": "one"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php function fooE(int $a) /**/ : /**/ string {}",
+                        null,
+                        {
+                            "space_before": "one"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\ReturnTypeDeclarationFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(): mixed{}",
+                        "<?php function foo()   :   mixed{}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class A { public function foo(): static{}}",
+                        "<?php class A { public function foo()   :static{}}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\ReturnTypeDeclarationFixerTest",
+            "body": "    public function testFix81(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php enum Foo: int {}",
+                        "<?php enum Foo   :   int {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

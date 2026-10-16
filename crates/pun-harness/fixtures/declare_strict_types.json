@@ -1,0 +1,359 @@
+{
+    "fixer": "declare_strict_types",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Strict\\DeclareStrictTypesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Strict/DeclareStrictTypesFixerTest.php",
+    "case_count": 37,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Strict\\DeclareStrictTypesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove existing declaration",
+                    "args": [
+                        "<?php ",
+                        "<?php declare(strict_types=1);",
+                        {
+                            "strategy": "remove"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove existing declaration with ticks",
+                    "args": [
+                        "<?php declare(ticks=1);",
+                        "<?php declare(strict_types=1, ticks=1);",
+                        {
+                            "strategy": "remove"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove existing declaration with ticks before",
+                    "args": [
+                        "<?php declare(ticks=1);",
+                        "<?php declare(ticks=1, strict_types=1);",
+                        {
+                            "strategy": "remove"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove existing declaration with strict_types=0",
+                    "args": [
+                        "<?php ",
+                        "<?php declare(strict_types=0);",
+                        {
+                            "strategy": "remove"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove existing declaration with comments",
+                    "args": [
+                        "<?php /**/ ",
+                        "<?php /**/ declare(strict_types=1);",
+                        {
+                            "strategy": "remove"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "update multi-declare statement",
+                    "args": [
+                        "<?php declare(strict_types=1, ticks=1);",
+                        "<?php declare(strict_types=0, ticks=1);",
+                        {
+                            "strategy": "enforce"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\ndeclare(ticks=1);\n//\ndeclare(strict_types=1);\n\nnamespace A\\B\\C;\nclass A {\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php declare/* A b C*/(strict_types=1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php declare(strict_types=1, ticks=1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php declare(ticks=1, strict_types=1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php declare(ticks=1, strict_types=1);",
+                        "<?php declare(ticks=1, strict_types=0);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "monolithic file with closing tag",
+                    "args": [
+                        "<?php /**/ /**/ deClarE  (strict_types=1)    ?>",
+                        "<?php /**/ /**/ deClarE  (STRICT_TYPES=1)    ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "monolithic file with closing tag and extra new line",
+                    "args": [
+                        "<?php /**/ /**/ deClarE  (strict_types=1)    ?>\n",
+                        "<?php /**/ /**/ deClarE  (STRICT_TYPES=1)    ?>\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "monolithic file with closing tag and extra content",
+                    "args": [
+                        "<?php /**/ /**/ deClarE  (STRICT_TYPES=1)    ?>Test"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php            DECLARE  (    strict_types=1   )   ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                /**/\n                declare(strict_types=1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php declare(strict_types=1);\n\n                phpinfo();",
+                        "<?php\n\n                phpinfo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php declare(strict_types=1);\n\n/**\n * Foo\n */\nphpinfo();",
+                        "<?php\n\n/**\n * Foo\n */\nphpinfo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php declare(strict_types=1);\n\n// comment after empty line",
+                        "<?php\n\n// comment after empty line"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php declare(strict_types=1);\n// comment without empty line before",
+                        "<?php\n// comment without empty line before"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php declare(strict_types=1);\nphpinfo();",
+                        "<?php phpinfo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php declare(strict_types=1);\n$a = 456;\n",
+                        "<?php\n$a = 456;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php declare(strict_types=1);\n/**/",
+                        "<?php /**/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php declare(strict_types=1);",
+                        "<?php declare(strict_types=0);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php declare(strict_types=1);",
+                        "<?php declare(strict_types=0);",
+                        {
+                            "strategy": "enforce"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php declare(strict_types=0);",
+                        null,
+                        {
+                            "strategy": "add_when_missing"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "  <?php echo 123;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?= 123;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty file /wo open tag",
+                    "args": [
+                        ""
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty file /w open tag",
+                    "args": [
+                        "<?php declare(strict_types=1);",
+                        "<?php"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non-empty file /wo open tag",
+                    "args": [
+                        "x"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non-empty file /w open tag",
+                    "args": [
+                        "x<?php"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "file with shebang /w open tag",
+                    "args": [
+                        "#!x\n<?php declare(strict_types=1);",
+                        "#!x\n<?php"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "file with shebang /wo open tag",
+                    "args": [
+                        "#!x\ny"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "file with shebang not followed by open tag",
+                    "args": [
+                        "#!x\n#!not_a_shebang\n<?php"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Strict\\DeclareStrictTypesFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php declare(strict_types=1);\r\nphpinfo();",
+                        "<?php\r\n\tphpinfo();"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php declare(strict_types=1);\r\nphpinfo();",
+                        "<?php\nphpinfo();"
+                    ]
+                }
+            ]
+        }
+    ]
+}

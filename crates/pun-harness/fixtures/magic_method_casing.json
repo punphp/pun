@@ -1,0 +1,446 @@
+{
+    "fixer": "magic_method_casing",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Casing\\MagicMethodCasingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Casing/MagicMethodCasingFixerTest.php",
+    "case_count": 51,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\MagicMethodCasingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__callstatic\".",
+                    "args": [
+                        "<?php class Foo {public static function __callStatic($a, $b){}}",
+                        "<?php class Foo {public static function __CALLStatic($a, $b){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static call to \"__callstatic\".",
+                    "args": [
+                        "<?php Foo::__callStatic() ?>",
+                        "<?php Foo::__callstatic() ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__set_state\".",
+                    "args": [
+                        "<?php class Foo {public static function __set_state($a){}}",
+                        "<?php class Foo {public static function __set_STATE($a){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static call to \"__set_state\".",
+                    "args": [
+                        "<?php Foo::__set_state() ?>",
+                        "<?php Foo::__set_STATE() ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__clone\".",
+                    "args": [
+                        "<?php class Foo {public function __clone(){}}",
+                        "<?php class Foo {public function __CLONE(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__call\".",
+                    "args": [
+                        "<?php class Foo {public function __call($a, $b){}}",
+                        "<?php class Foo {public function __CALL($a, $b){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__set\".",
+                    "args": [
+                        "<?php class Foo {public function __set($a, $b){}}",
+                        "<?php class Foo {public function __SET($a, $b){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__call\".",
+                    "args": [
+                        "<?php $a->__call($a, $b);",
+                        "<?php $a->__CALL($a, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__set\".",
+                    "args": [
+                        "<?php $a->__set($a, $b);",
+                        "<?php $a->__SET($a, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__get\".",
+                    "args": [
+                        "<?php class Foo {public function __get($a){}}",
+                        "<?php class Foo {public function __GET($a){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__isset\".",
+                    "args": [
+                        "<?php class Foo {public function __isset($a){}}",
+                        "<?php class Foo {public function __ISSET($a){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__unset\".",
+                    "args": [
+                        "<?php class Foo {public function __unset($a){}}",
+                        "<?php class Foo {public function __UNSET($a){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__unserialize\".",
+                    "args": [
+                        "<?php class Foo {public function __unserialize($a){}}",
+                        "<?php class Foo {public function __UNSERIALIZE($a){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__get\".",
+                    "args": [
+                        "<?php $a->__get($a);",
+                        "<?php $a->__GET($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__isset\".",
+                    "args": [
+                        "<?php $a->__isset($a);",
+                        "<?php $a->__ISSET($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__unset\".",
+                    "args": [
+                        "<?php $a->__unset($a);",
+                        "<?php $a->__UNSET($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__unserialize\".",
+                    "args": [
+                        "<?php $a->__unserialize($a);",
+                        "<?php $a->__UNSERIALIZE($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__construct\".",
+                    "args": [
+                        "<?php class Foo {public function __construct(){}}",
+                        "<?php class Foo {public function __CONSTRUCT(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__debugInfo\".",
+                    "args": [
+                        "<?php class Foo {public function __debugInfo(){}}",
+                        "<?php class Foo {public function __DEBUGINFO(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__destruct\".",
+                    "args": [
+                        "<?php class Foo {public function __destruct(){}}",
+                        "<?php class Foo {public function __DESTRUCT(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__invoke\".",
+                    "args": [
+                        "<?php class Foo {public function __invoke(){}}",
+                        "<?php class Foo {public function __INVOKE(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__serialize\".",
+                    "args": [
+                        "<?php class Foo {public function __serialize(){}}",
+                        "<?php class Foo {public function __SERIALIZE(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__sleep\".",
+                    "args": [
+                        "<?php class Foo {public function __sleep(){}}",
+                        "<?php class Foo {public function __SLEEP(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__toString\".",
+                    "args": [
+                        "<?php class Foo {public function __toString(){}}",
+                        "<?php class Foo {public function __TOSTRING(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration for \"__wakeup\".",
+                    "args": [
+                        "<?php class Foo {public function __wakeup(){}}",
+                        "<?php class Foo {public function __WAKEUP(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__construct\".",
+                    "args": [
+                        "<?php $a->__construct();",
+                        "<?php $a->__CONSTRUCT();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__debugInfo\".",
+                    "args": [
+                        "<?php $a->__debugInfo();",
+                        "<?php $a->__DEBUGINFO();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__destruct\".",
+                    "args": [
+                        "<?php $a->__destruct();",
+                        "<?php $a->__DESTRUCT();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__invoke\".",
+                    "args": [
+                        "<?php $a->__invoke();",
+                        "<?php $a->__INVOKE();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__serialize\".",
+                    "args": [
+                        "<?php $a->__serialize();",
+                        "<?php $a->__SERIALIZE();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__sleep\".",
+                    "args": [
+                        "<?php $a->__sleep();",
+                        "<?php $a->__SLEEP();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__toString\".",
+                    "args": [
+                        "<?php $a->__toString();",
+                        "<?php $a->__TOSTRING();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call \"__wakeup\".",
+                    "args": [
+                        "<?php $a->__wakeup();",
+                        "<?php $a->__WAKEUP();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration in interface",
+                    "args": [
+                        "<?php interface Foo {public function __toString();}",
+                        "<?php interface Foo {public function __tostring();}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method declaration in trait",
+                    "args": [
+                        "<?php trait Foo {public function __toString(){}}",
+                        "<?php trait Foo {public function __tostring(){}}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "(un)serialize",
+                    "args": [
+                        "<?php\n\nclass Foo extends Bar\n{\n    public function __serialize() {\n        $this->__serialize();\n    }\n\n    public function __unserialize($payload) {\n        $this->__unserialize($this->$a);\n    }\n}\n",
+                        "<?php\n\nclass Foo extends Bar\n{\n    public function __SERIALIZE() {\n        $this->__SERIALIZE();\n    }\n\n    public function __unSERIALIZE($payload) {\n        $this->__unSERIALIZE($this->$a);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PHP 7 syntax",
+                    "args": [
+                        "<?php\n            function __TOSTRING(){} // do not fix\n\n            trait FooTrait\n            {\n                public function __invoke($a){} // fix\n            }\n\n            function __GET($a){} // do not fix\n\n            interface Foo\n            {\n                public function __sleep(); // fix\n            }\n\n            final class Foo\n            {\n                private function __construct($a, $b, $c, $d = null, $e = 1) // fix\n                {\n                }\n\n                public function __isset($a) // fix\n                {\n                    return $b->__isset($b); // fix\n                }\n\n                private function bar()\n                {\n                    new class {\n                        public function __unset($a) // fix\n                        {\n                            $b = null === $a\n                                ? $b->__unset($a) // fix\n                                : $a->__unset($a) // fix\n                            ;\n\n                            return $b;\n                        }\n                    };\n                }\n            }\n\n            function __ISSET($bar){} // do not fix\n\n            $a->__unset($foo); // fix\n            ",
+                        "<?php\n            function __TOSTRING(){} // do not fix\n\n            trait FooTrait\n            {\n                public function __INVOKE($a){} // fix\n            }\n\n            function __GET($a){} // do not fix\n\n            interface Foo\n            {\n                public function __SlEeP(); // fix\n            }\n\n            final class Foo\n            {\n                private function __consTRUCT($a, $b, $c, $d = null, $e = 1) // fix\n                {\n                }\n\n                public function __ISSET($a) // fix\n                {\n                    return $b->__IsseT($b); // fix\n                }\n\n                private function bar()\n                {\n                    new class {\n                        public function __UnSet($a) // fix\n                        {\n                            $b = null === $a\n                                ? $b->__UnSet($a) // fix\n                                : $a->__UnSet($a) // fix\n                            ;\n\n                            return $b;\n                        }\n                    };\n                }\n            }\n\n            function __ISSET($bar){} // do not fix\n\n            $a->__UnSet($foo); // fix\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $foo->__invoke(1, );",
+                        "<?php $foo->__INVOKE(1, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n__Tostring();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nfunction __Tostring() {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                    #->__sleep()\n                    /** ->__sleep() */\n                    echo $a->__sleep;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                    class B\n                    {\n                        public function _not_magic()\n                        {\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                    function __alsoNotMagic()\n                    {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                    function __()\n                    {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                    function a()\n                    {\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                    $a->__not_magic();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                    $a->a();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php A\\B\\__callstatic(); echo $a->b;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\MagicMethodCasingFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "static call to \"__set_state\".",
+                    "args": [
+                        "<?php $f = Foo::__set_state(...);",
+                        "<?php $f = Foo::__set_STATE(...);"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "isset",
+                    "args": [
+                        "<?php $a->__isset(...);",
+                        "<?php $a->__ISSET(...);"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum",
+                    "args": [
+                        "<?php\nenum Foo\n{\n    public static function __callStatic(string $method, array $parameters){ echo $method;}\n}\nFoo::test();",
+                        "<?php\nenum Foo\n{\n    public static function __CALLStatic(string $method, array $parameters){ echo $method;}\n}\nFoo::test();"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,202 @@
+{
+    "fixer": "single_line_empty_body",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Basic\\SingleLineEmptyBodyFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Basic/SingleLineEmptyBodyFixerTest.php",
+    "case_count": 17,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\SingleLineEmptyBodyFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "non-empty class",
+                    "args": [
+                        "<?php class Foo\n            {\n                public function bar () {}\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "non-empty function body",
+                    "args": [
+                        "<?php\n                function f1()\n                { /* foo */ }\n                function f2()\n                { /** foo */ }\n                function f3()\n                { // foo\n                }\n                function f4()\n                {\n                    return true;\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "classes",
+                    "args": [
+                        "<?php\n            class Foo {}\n            class Bar extends BarParent {}\n            class Baz implements BazInterface {}\n            abstract class A {}\n            final class F {}\n            ",
+                        "<?php\n            class Foo\n            {\n            }\n            class Bar extends BarParent\n            {}\n            class Baz implements BazInterface    {}\n            abstract class A\n            {}\n            final class F\n            {\n\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple functions",
+                    "args": [
+                        "<?php\n                function notThis1()    { return 1; }\n                function f1() {}\n                function f2() {}\n                function f3() {}\n                function notThis2(){ return 1; }\n            ",
+                        "<?php\n                function notThis1()    { return 1; }\n                function f1()\n                {}\n                function f2() {\n                }\n                function f3()\n                {\n                }\n                function notThis2(){ return 1; }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove spaces",
+                    "args": [
+                        "<?php\n                function f1() {}\n                function f2() {}\n                function f3() {}\n            ",
+                        "<?php\n                function f1() { }\n                function f2() {  }\n                function f3() {    }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add spaces",
+                    "args": [
+                        "<?php\n                function f1() {}\n                function f2() {}\n                function f3() {}\n            ",
+                        "<?php\n                function f1(){}\n                function f2(){}\n                function f3(){}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with return types",
+                    "args": [
+                        "<?php\n                function f1(): void {}\n                function f2(): \\Foo\\Bar {}\n                function f3(): ?string {}\n            ",
+                        "<?php\n                function f1(): void\n                {}\n                function f2(): \\Foo\\Bar    {    }\n                function f3(): ?string {\n\n\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "abstract functions",
+                    "args": [
+                        "<?php abstract class C {\n                abstract function f1();\n                function f2() {}\n                abstract function f3();\n            }\n            if (true)    {    }\n            ",
+                        "<?php abstract class C {\n                abstract function f1();\n                function f2()    {    }\n                abstract function f3();\n            }\n            if (true)    {    }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "every token in separate line",
+                    "args": [
+                        "<?php\n                function\n                foo\n                (\n                )\n                :\n                void {}\n            ",
+                        "<?php\n                function\n                foo\n                (\n                )\n                :\n                void\n                {\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments before body",
+                    "args": [
+                        "<?php\n                function f1()\n                // foo\n                {}\n                function f2()\n                /* foo */\n                {}\n                function f3()\n                /** foo */\n                {}\n                function f4()\n                /** foo */\n                /** bar */\n                {}\n            ",
+                        "<?php\n                function f1()\n                // foo\n                {\n                }\n                function f2()\n                /* foo */\n                {\n\n                }\n                function f3()\n                /** foo */\n                {\n                }\n                function f4()\n                /** foo */\n                /** bar */\n                {    }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class",
+                    "args": [
+                        "<?php\n                $o = new class() {};\n            ",
+                        "<?php\n                $o = new class() {\n                };\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous function",
+                    "args": [
+                        "<?php\n                $x = function () {};\n            ",
+                        "<?php\n                $x = function () {\n                };\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interface",
+                    "args": [
+                        "<?php interface Foo {}\n            ",
+                        "<?php interface Foo\n                {\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait",
+                    "args": [
+                        "<?php trait Foo {}\n            ",
+                        "<?php trait Foo\n                {\n                }\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\SingleLineEmptyBodyFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "single-line promoted properties",
+                    "args": [
+                        "<?php class Foo\n                {\n                    public function __construct(private int $x, private int $y) {}\n                }\n            ",
+                        "<?php class Foo\n                {\n                    public function __construct(private int $x, private int $y)\n                    {\n                    }\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multi-line promoted properties",
+                    "args": [
+                        "<?php class Foo\n                {\n                    public function __construct(\n                        private int $x,\n                        private int $y,\n                    ) {}\n                }\n            ",
+                        "<?php class Foo\n                {\n                    public function __construct(\n                        private int $x,\n                        private int $y,\n                    ) {\n                    }\n                }\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\SingleLineEmptyBodyFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum",
+                    "args": [
+                        "<?php enum Foo {}\n            ",
+                        "<?php enum Foo\n                {\n                }\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}

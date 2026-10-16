@@ -1,0 +1,543 @@
+{
+    "fixer": "final_internal_class",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalInternalClassFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/FinalInternalClassFixerTest.php",
+    "case_count": 35,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalInternalClassFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix multiple classes",
+                    "args": [
+                        "<?php /** @internal */\nfinal class class1\n{\n}\n/** @internal */\nfinal class class2\n{\n}\n/** @internal */\nfinal class class3\n{\n}\n/** @internal */\nfinal class class4\n{\n}\n/** @internal */\nfinal class class5\n{\n}\n/** @internal */\nfinal class class6\n{\n}\n/** @internal */\nfinal class class7\n{\n}\n/** @internal */\nfinal class class8\n{\n}\n/** @internal */\nfinal class class9\n{\n}\n",
+                        "<?php /** @internal */\nclass class1\n{\n}\n/** @internal */\nclass class2\n{\n}\n/** @internal */\nclass class3\n{\n}\n/** @internal */\nclass class4\n{\n}\n/** @internal */\nclass class5\n{\n}\n/** @internal */\nclass class6\n{\n}\n/** @internal */\nclass class7\n{\n}\n/** @internal */\nclass class8\n{\n}\n/** @internal */\nclass class9\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/** @internal */\nfinal class class1\n{\n}\n\ninterface A {}\ntrait B{}\n\n/** @internal */\nfinal class class2\n{\n}\n",
+                        "<?php\n\n/** @internal */\nclass class1\n{\n}\n\ninterface A {}\ntrait B{}\n\n/** @internal */\nclass class2\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n/** @internal */\nfinal class class1\n{\n}\n\n/** @internal */\nfinal class class2\n{\n}\n\n/**\n * @internal\n * @final\n */\nclass class3\n{\n}\n\n/**\n * @internal\n */\nabstract class class4 {}\n",
+                        "<?php\n/** @internal */\nfinal class class1\n{\n}\n\n/** @internal */\nclass class2\n{\n}\n\n/**\n * @internal\n * @final\n */\nclass class3\n{\n}\n\n/**\n * @internal\n */\nabstract class class4 {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                    /**\n                     * @ annotation_with_space_after_at_sign\n                     */\n                    class A {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "indent before `class`",
+                    "args": [
+                        "<?php /** @internal */\n                    final class class1\n                    {\n                    }",
+                        "<?php /** @internal */\n                    class class1\n                    {\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple classes, first with internal annotation and second without internal annotation",
+                    "args": [
+                        "<?php\n\n/** @internal */\nfinal class Foo {}\n\nclass Bar {}\n",
+                        "<?php\n\n/** @internal */\nclass Foo {}\n\nclass Bar {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple classes, first without internal annotation and second with internal annotation",
+                    "args": [
+                        "<?php\n\nclass Foo {}\n\n/** @internal */\nfinal class Bar {}\n",
+                        "<?php\n\nclass Foo {}\n\n/** @internal */\nclass Bar {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n/** @CUSTOM */final class A{}",
+                        "<?php\n/** @CUSTOM */class A{}",
+                        {
+                            "include": [
+                                "@Custom"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n/**\n * @CUSTOM\n * @abc\n */\nfinal class A{}\n\n/**\n * @CUSTOM\n */\nfinal class B{}\n",
+                        "<?php\n/**\n * @CUSTOM\n * @abc\n */\nclass A{}\n\n/**\n * @CUSTOM\n */\nclass B{}\n",
+                        {
+                            "include": [
+                                "@Custom",
+                                "@abc"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n/**\n * @CUSTOM\n * @internal\n */\n final class A{}\n\n/**\n * @CUSTOM\n * @internal\n * @other\n */\n final class B{}\n\n/**\n * @CUSTOM\n * @internal\n * @not-fix\n */\n class C{}\n",
+                        "<?php\n/**\n * @CUSTOM\n * @internal\n */\n class A{}\n\n/**\n * @CUSTOM\n * @internal\n * @other\n */\n class B{}\n\n/**\n * @CUSTOM\n * @internal\n * @not-fix\n */\n class C{}\n",
+                        {
+                            "include": [
+                                "@Custom",
+                                "@internal"
+                            ],
+                            "exclude": [
+                                "@not-fix"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n/**\n * @internal\n */\nfinal class A{}\n\n/**\n * @abc\n */\nclass B{}\n",
+                        "<?php\n/**\n * @internal\n */\nclass A{}\n\n/**\n * @abc\n */\nclass B{}\n",
+                        {
+                            "exclude": [
+                                "abc"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php final class A{}",
+                        "<?php class A{}",
+                        {
+                            "consider_absent_docblock_as_internal_class": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with annotation with matching include and partial matching exclude",
+                    "args": [
+                        "<?php\n\n/** @HelloWorld */\nfinal class Foo {}\n",
+                        "<?php\n\n/** @HelloWorld */\nclass Foo {}\n",
+                        {
+                            "include": [
+                                "HelloWorld"
+                            ],
+                            "exclude": [
+                                "Hello"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n/** @internal */\n$a = new class (){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n/** @internal */\n$a = new class{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $object = new /**/ class(){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "old config",
+                    "args": [
+                        "<?php\n                /** @include */\n                final class Foo {}\n            ",
+                        "<?php\n                /** @include */\n                class Foo {}\n            ",
+                        {
+                            "annotation_include": [
+                                "include"
+                            ],
+                            "annotation_exclude": [
+                                "exclude"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "exceptionExpression",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "deprecationMessage",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalInternalClassFixerTest",
+            "body": "    public function testInvalidConfiguration(array $config, string $exceptionExpression, ?string $deprecationMessage = null): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessageMatches($exceptionExpression);\n        if (null !== $deprecationMessage) {\n            $this->expectDeprecation($deprecationMessage);\n        }\n\n        $this->fixer->configure($config); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "same annotation in both lists",
+                    "args": [
+                        {
+                            "include": [
+                                "@internal123",
+                                "a"
+                            ],
+                            "exclude": [
+                                "@internal123",
+                                "b"
+                            ]
+                        },
+                        "#^\\[final_internal_class\\] Annotation cannot be used in both \"include\" and \"exclude\" list, got duplicates\\: \"internal123\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "both new and old include set",
+                    "args": [
+                        {
+                            "annotation_include": [
+                                "@internal",
+                                "a"
+                            ],
+                            "include": [
+                                "@internal",
+                                "b"
+                            ]
+                        },
+                        "#^\\[final_internal_class\\] Configuration cannot contain deprecated option \"annotation_include\" and new option \"include\"\\.$#",
+                        "Option \"annotation_include\" for rule \"final_internal_class\" is deprecated and will be removed in version 4.0. Use \"include\" to configure PHPDoc annotations tags and attributes."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "both new and old exclude set",
+                    "args": [
+                        {
+                            "annotation_exclude": [
+                                "@internal",
+                                "a"
+                            ],
+                            "exclude": [
+                                "@internal",
+                                "b"
+                            ]
+                        },
+                        "#^\\[final_internal_class\\] Configuration cannot contain deprecated option \"annotation_exclude\" and new option \"exclude\"\\.$#",
+                        "Option \"annotation_exclude\" for rule \"final_internal_class\" is deprecated and will be removed in version 4.0. Use \"exclude\" to configure PHPDoc annotations tags and attributes."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "empty value",
+                    "args": [
+                        {
+                            "include": [
+                                ""
+                            ]
+                        },
+                        "#^\\[final_internal_class\\] Invalid configuration\\: The option \"include\" with value array is invalid\\.$#"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalInternalClassFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input, array $configuration): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple attributes, all configured as not to fix",
+                    "args": [
+                        "<?php\n#[X]\n#[A]\nclass Foo {}",
+                        null,
+                        {
+                            "exclude": [
+                                "a",
+                                "X"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple attributes, one configured as to fix, one as not to fix",
+                    "args": [
+                        "<?php\n#[Internal]\n#[A]\nclass Foo {}",
+                        null,
+                        {
+                            "include": [
+                                "internal"
+                            ],
+                            "exclude": [
+                                "A"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple attributes, one configured as to fix",
+                    "args": [
+                        "<?php\n#[Internal]\n#[A]\nfinal class Foo {}",
+                        "<?php\n#[Internal]\n#[A]\nclass Foo {}",
+                        {
+                            "include": [
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "single attribute configured as to fix",
+                    "args": [
+                        "<?php\n#[Internal]\nfinal class Foo {}",
+                        "<?php\n#[Internal]\nclass Foo {}",
+                        {
+                            "include": [
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "class that should be ignored as it has an attribute not included with absent docblock as true",
+                    "args": [
+                        "<?php\n#[StandWithUkraine]\nclass Foo {}",
+                        null,
+                        {
+                            "consider_absent_docblock_as_internal_class": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "mixed bag of cases",
+                    "args": [
+                        "<?php\n#[Entity(repositoryClass: PostRepository::class)]\nclass User\n{}\n\n#[ORM\\Entity]\n#[Index(name: \"category_idx\", columns: [\"category\"])]\nfinal class Article\n{}\n\n#[A]\nclass ArticleB\n{}\n\n#[B]\nfinal class Foo {}\n\n#[C]\nclass FooX {}\n\n$object1 = new #[ExampleAttribute] class(){};\n$object2 = new /* */ class(){};\n$object3 = new #[B] #[ExampleAttribute] class(){};\n\n/**\n * @B\n */\nfinal class PhpDocClass{}\n",
+                        "<?php\n#[Entity(repositoryClass: PostRepository::class)]\nclass User\n{}\n\n#[ORM\\Entity]\n#[Index(name: \"category_idx\", columns: [\"category\"])]\nclass Article\n{}\n\n#[A]\nclass ArticleB\n{}\n\n#[B]\nclass Foo {}\n\n#[C]\nclass FooX {}\n\n$object1 = new #[ExampleAttribute] class(){};\n$object2 = new /* */ class(){};\n$object3 = new #[B] #[ExampleAttribute] class(){};\n\n/**\n * @B\n */\nclass PhpDocClass{}\n",
+                        {
+                            "exclude": [
+                                "Entity",
+                                "A"
+                            ],
+                            "include": [
+                                "orm\\entity",
+                                "B"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple classes, first configured with attribute, second without attribute",
+                    "args": [
+                        "<?php\n#[Internal]\nfinal class Foo {}\n\nclass Bar {}",
+                        "<?php\n#[Internal]\nclass Foo {}\n\nclass Bar {}",
+                        {
+                            "include": [
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple classes, first configured without attribute, second with attribute",
+                    "args": [
+                        "<?php\nclass Foo {}\n\n#[Internal]\nfinal class Bar {}",
+                        "<?php\nclass Foo {}\n\n#[Internal]\nclass Bar {}",
+                        {
+                            "include": [
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "include by attribute, but exclude by doc",
+                    "args": [
+                        "<?php\n/** @final */\n#[A]\nclass Foo {}",
+                        null,
+                        {
+                            "exclude": [
+                                "final"
+                            ],
+                            "include": [
+                                "A"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "include by phpDoc, but exclude by attribute",
+                    "args": [
+                        "<?php\n/** @a */\n#[Internal]\nclass Foo {}",
+                        null,
+                        {
+                            "exclude": [
+                                "Internal"
+                            ],
+                            "include": [
+                                "A"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "comment between attributes",
+                    "args": [
+                        "<?php\n#[A]\n/**\n * @B\n */\n#[C]\nfinal class Foo {}",
+                        "<?php\n#[A]\n/**\n * @B\n */\n#[C]\nclass Foo {}",
+                        {
+                            "include": [
+                                "A",
+                                "C"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "empty include",
+                    "args": [
+                        "<?php\n                #[Aa]\n                final class Foo {}\n            ",
+                        "<?php\n                #[Aa]\n                class Foo {}\n            ",
+                        {
+                            "include": [],
+                            "exclude": [
+                                "A",
+                                "Aaa"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\FinalInternalClassFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input, array $configuration): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "readonly with enabled `consider_absent_docblock_as_internal_class`",
+                    "args": [
+                        "<?php readonly final class A{}",
+                        "<?php readonly class A{}",
+                        {
+                            "consider_absent_docblock_as_internal_class": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "readonly with `internal` attribute and comment in-between",
+                    "args": [
+                        "<?php #[Internal] readonly /* comment */ final class A{}",
+                        "<?php #[Internal] readonly /* comment */ class A{}",
+                        {
+                            "consider_absent_docblock_as_internal_class": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,349 @@
+{
+    "fixer": "control_structure_continuation_position",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\ControlStructureContinuationPositionFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ControlStructure/ControlStructureContinuationPositionFixerTest.php",
+    "case_count": 32,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\ControlStructureContinuationPositionFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "else (same line, default)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                } else {\n                    bar();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                else {\n                    bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif (same line, default)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                } elseif ($bar) {\n                    bar();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                elseif ($bar) {\n                    bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else if (same line, default)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                } else if ($bar) {\n                    bar();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                else if ($bar) {\n                    bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do while (same line, default)",
+                    "args": [
+                        "<?php\n                do {\n                    foo();\n                } while ($foo);",
+                        "<?php\n                do {\n                    foo();\n                }\n                while ($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try catch finally (same line, default)",
+                    "args": [
+                        "<?php\n                try {\n                    foo();\n                } catch (Throwable $e) {\n                    bar();\n                } finally {\n                    baz();\n                }",
+                        "<?php\n                try {\n                    foo();\n                }\n                catch (Throwable $e) {\n                    bar();\n                }\n                finally {\n                    baz();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else (next line)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                else {\n                    bar();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                } else {\n                    bar();\n                }",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif (next line)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                elseif ($bar) {\n                    bar();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                } elseif ($bar) {\n                    bar();\n                }",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else if (next line)",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                else if ($bar) {\n                    bar();\n                }",
+                        "<?php\n                if ($foo) {\n                    foo();\n                } else if ($bar) {\n                    bar();\n                }",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do while (next line)",
+                    "args": [
+                        "<?php\n                do {\n                    foo();\n                }\n                while ($foo);",
+                        "<?php\n                do {\n                    foo();\n                } while ($foo);",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try catch finally (next line)",
+                    "args": [
+                        "<?php\n                try {\n                    foo();\n                }\n                catch (Throwable $e) {\n                    bar();\n                }\n                finally {\n                    baz();\n                }",
+                        "<?php\n                try {\n                    foo();\n                } catch (Throwable $e) {\n                    bar();\n                } finally {\n                    baz();\n                }",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else with comment after closing brace",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                } // comment\n                else {\n                    bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "elseif with comment after closing brace",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                } // comment\n                elseif ($bar) {\n                    bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "else if with comment after closing brace",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                } // comment\n                else if ($bar) {\n                    bar();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do while with comment after closing brace",
+                    "args": [
+                        "<?php\n                do {\n                    foo();\n                } // comment\n                while (false);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "try catch finally with comment after closing brace",
+                    "args": [
+                        "<?php\n                try {\n                    foo();\n                } // comment\n                catch (Throwable $e) {\n                    bar();\n                } // comment\n                finally {\n                    baz();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "while not after do",
+                    "args": [
+                        "<?php\n                if ($foo) {\n                    foo();\n                }\n                while ($bar) {\n                    bar();\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ControlStructure\\ControlStructureContinuationPositionFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null, ?array $configuration = null): void\n    {\n        if (null !== $configuration) {\n            $this->fixer->configure($configuration);\n        }\n\n        $this->fixer->setWhitespacesConfig(\n            new WhitespacesFixerConfig('    ', \"\\r\\n\"),\n        );\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "else (same line, default)",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                } else {\r\n                    bar();\r\n                }",
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                }\r\n                else {\r\n                    bar();\r\n                }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "elseif (same line, default)",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                } elseif ($bar) {\r\n                    bar();\r\n                }",
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                }\r\n                elseif ($bar) {\r\n                    bar();\r\n                }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "else if (same line, default)",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                } else if ($bar) {\r\n                    bar();\r\n                }",
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                }\r\n                else if ($bar) {\r\n                    bar();\r\n                }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "do while (same line, default)",
+                    "args": [
+                        "<?php\r\n                do {\r\n                    foo();\r\n                } while ($foo);",
+                        "<?php\r\n                do {\r\n                    foo();\r\n                }\r\n                while ($foo);",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "try catch finally (same line, default)",
+                    "args": [
+                        "<?php\r\n                try {\r\n                    foo();\r\n                } catch (Throwable $e) {\r\n                    bar();\r\n                } finally {\r\n                    baz();\r\n                }",
+                        "<?php\r\n                try {\r\n                    foo();\r\n                }\r\n                catch (Throwable $e) {\r\n                    bar();\r\n                }\r\n                finally {\r\n                    baz();\r\n                }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "else (next line)",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                }\r\n                else {\r\n                    bar();\r\n                }",
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                } else {\r\n                    bar();\r\n                }",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "elseif (next line)",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                }\r\n                elseif ($bar) {\r\n                    bar();\r\n                }",
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                } elseif ($bar) {\r\n                    bar();\r\n                }",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "else if (next line)",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                }\r\n                else if ($bar) {\r\n                    bar();\r\n                }",
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                } else if ($bar) {\r\n                    bar();\r\n                }",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "do while (next line)",
+                    "args": [
+                        "<?php\r\n                do {\r\n                    foo();\r\n                }\r\n                while ($foo);",
+                        "<?php\r\n                do {\r\n                    foo();\r\n                } while ($foo);",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "try catch finally (next line)",
+                    "args": [
+                        "<?php\r\n                try {\r\n                    foo();\r\n                }\r\n                catch (Throwable $e) {\r\n                    bar();\r\n                }\r\n                finally {\r\n                    baz();\r\n                }",
+                        "<?php\r\n                try {\r\n                    foo();\r\n                } catch (Throwable $e) {\r\n                    bar();\r\n                } finally {\r\n                    baz();\r\n                }",
+                        {
+                            "position": "next_line"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "else with comment after closing brace",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                } // comment\r\n                else {\r\n                    bar();\r\n                }",
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "elseif with comment after closing brace",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                } // comment\r\n                elseif ($bar) {\r\n                    bar();\r\n                }",
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "else if with comment after closing brace",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                } // comment\r\n                else if ($bar) {\r\n                    bar();\r\n                }",
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "do while with comment after closing brace",
+                    "args": [
+                        "<?php\r\n                do {\r\n                    foo();\r\n                } // comment\r\n                while (false);",
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "try catch finally with comment after closing brace",
+                    "args": [
+                        "<?php\r\n                try {\r\n                    foo();\r\n                } // comment\r\n                catch (Throwable $e) {\r\n                    bar();\r\n                } // comment\r\n                finally {\r\n                    baz();\r\n                }",
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "while not after do",
+                    "args": [
+                        "<?php\r\n                if ($foo) {\r\n                    foo();\r\n                }\r\n                while ($bar) {\r\n                    bar();\r\n                }",
+                        null,
+                        null
+                    ]
+                }
+            ]
+        }
+    ]
+}

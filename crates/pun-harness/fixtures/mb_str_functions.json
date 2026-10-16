@@ -1,0 +1,241 @@
+{
+    "fixer": "mb_str_functions",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Alias\\MbStrFunctionsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Alias/MbStrFunctionsFixerTest.php",
+    "case_count": 23,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\MbStrFunctionsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = \"strlen\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $x = Foo::strlen(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $x = new strlen(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $x = new \\strlen(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $x = new Foo\\strlen(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $x = Foo\\strlen(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $x = strlen::call(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $x = $foo->strlen(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $x = strlen();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $x = strlen($a, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $x = mb_strlen(\"bar\");",
+                        "<?php $x = strlen(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $x = \\mb_strlen(\"bar\");",
+                        "<?php $x = \\strlen(\"bar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $x = mb_strtolower(mb_strstr(\"bar\", \"a\"));",
+                        "<?php $x = strtolower(strstr(\"bar\", \"a\"));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $x = mb_strtolower( \\mb_strstr (\"bar\", \"a\"));",
+                        "<?php $x = strtolower( \\strstr (\"bar\", \"a\"));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $x = mb_substr(\"bar\", 2, 1);",
+                        "<?php $x = substr(\"bar\", 2, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                interface Test\n                {\n                    public function &strlen($a);\n                    public function strtolower($a);\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $a = mb_str_split($a);",
+                        "<?php $a = str_split($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse function Bar\\strlen;\nuse function mb_strtolower;\nuse function mb_strtoupper;\nuse function \\mb_str_split;\nreturn strlen($x) > 10 ? mb_strtolower($x) : mb_strtoupper($x);",
+                        "<?php\nnamespace Foo;\nuse function Bar\\strlen;\nuse function strtolower;\nuse function strtoupper;\nuse function \\str_split;\nreturn strlen($x) > 10 ? strtolower($x) : strtoupper($x);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\MbStrFunctionsFixerTest",
+            "body": "    public function testFix83(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": "mb_str_pad()",
+                    "args": [
+                        "<?php $x = mb_str_pad(\"bar\", 2, \"0\", STR_PAD_LEFT);",
+                        "<?php $x = str_pad(\"bar\", 2, \"0\", STR_PAD_LEFT);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Alias\\MbStrFunctionsFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "mb_trim 1 argument",
+                    "args": [
+                        "<?php $x = mb_trim(\"    foo  \");",
+                        "<?php $x = trim(\"    foo  \");"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "mb_trim 2 arguments",
+                    "args": [
+                        "<?php $x = mb_trim(\"____foo__\", \"_\");",
+                        "<?php $x = trim(\"____foo__\", \"_\");"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "ltrim",
+                    "args": [
+                        "<?php $x = mb_ltrim(\"    foo  \");",
+                        "<?php $x = ltrim(\"    foo  \");"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "rtrim",
+                    "args": [
+                        "<?php $x = mb_rtrim(\"    foo  \");",
+                        "<?php $x = rtrim(\"    foo  \");"
+                    ]
+                }
+            ]
+        }
+    ]
+}

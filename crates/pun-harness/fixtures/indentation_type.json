@@ -1,0 +1,370 @@
+{
+    "fixer": "indentation_type",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\IndentationTypeFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/IndentationTypeFixerTest.php",
+    "case_count": 35,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\IndentationTypeFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n        echo ALPHA;",
+                        "<?php\n\t\techo ALPHA;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n        echo BRAVO;",
+                        "<?php\n\t\techo BRAVO;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n        echo CHARLIE;",
+                        "<?php\n \t\techo CHARLIE;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n        echo DELTA;",
+                        "<?php\n  \t\techo DELTA;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n        echo 'ECHO';",
+                        "<?php\n   \t\techo 'ECHO';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n        echo FOXTROT;",
+                        "<?php\n\t \techo FOXTROT;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n        echo GOLF;",
+                        "<?php\n\t  \techo GOLF;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n        echo HOTEL;",
+                        "<?php\n\t   \techo HOTEL;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n        echo INDIA;",
+                        "<?php\n\t    echo INDIA;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n        echo JULIET;",
+                        "<?php\n \t   \techo JULIET;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n        echo KILO;",
+                        "<?php\n  \t  \techo KILO;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n        echo MIKE;",
+                        "<?php\n   \t \techo MIKE;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n        echo NOVEMBER;",
+                        "<?php\n    \techo NOVEMBER;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n         echo OSCAR;",
+                        "<?php\n\t \t echo OSCAR;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n          echo PAPA;",
+                        "<?php\n\t \t  echo PAPA;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n           echo QUEBEC;",
+                        "<?php\n\t \t   echo QUEBEC;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $x = \"a: \\t\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n$x = \"\n\tLike\n\ta\n\tdog\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n    /**\n     * Test that tabs in docblocks are converted to spaces.\n     *\n     * @test\n     *\n     * @return\n     */",
+                        "<?php\n\t/**\n\t * Test that tabs in docblocks are converted to spaces.\n\t *\n\t * @test\n\t *\n\t * @return\n\t */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n        /**\n         * Test that tabs in docblocks are converted to spaces.\n         */",
+                        "<?php\n\t\t/**\n\t\t * Test that tabs in docblocks are converted to spaces.\n\t\t */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n    /*\n     | Test that tabs in comments are converted to spaces    \t.\n     */",
+                        "<?php\n\t/*\n\t | Test that tabs in comments are converted to spaces    \t.\n\t */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n    /**\n     * This variable\n     * should not be '\t', really!\n     */",
+                        "<?php\n\t/**\n\t * This variable\n\t * should not be '\t', really!\n\t */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\necho 1;\n?>\r\n\t$a = ellow;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tabs - 0",
+                    "args": [
+                        "<?php\n\t\techo KILO;",
+                        "<?php\n        echo KILO;",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "spaces - 0",
+                    "args": [
+                        "<?php\n        echo KILO;",
+                        "<?php\n\t\techo KILO;",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tabs - 1",
+                    "args": [
+                        "<?php\n\t\t   echo QUEBEC;",
+                        "<?php\n           echo QUEBEC;",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "spaces - 1",
+                    "args": [
+                        "<?php\n           echo QUEBEC;",
+                        "<?php\n\t\t   echo QUEBEC;",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tabs - 2",
+                    "args": [
+                        "<?php\n\t/**\n\t * This variable\n\t * should not be '\t', really!\n\t */",
+                        "<?php\n    /**\n     * This variable\n     * should not be '\t', really!\n     */",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "spaces - 2",
+                    "args": [
+                        "<?php\n    /**\n     * This variable\n     * should not be '\t', really!\n     */",
+                        "<?php\n\t/**\n\t * This variable\n\t * should not be '\t', really!\n\t */",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tabs - mix indentation",
+                    "args": [
+                        "<?php\n\t\t/*\n\t\t * multiple indentation\n\t\t * shall be handled properly\n\t\t */",
+                        "<?php\n\t\t/*\n\t\t * multiple indentation\n    \t * shall be handled properly\n\t     */",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tabs - do not touch whitespace that is not indentation",
+                    "args": [
+                        "<?php\nfunction myFunction() {\n\t$foo        = 1;\n\t//abc\n\t$myFunction = 2;\n\t$middleVar  = 1;\n}",
+                        "<?php\nfunction myFunction() {\n    $foo        = 1;\n    //abc\n    $myFunction = 2;\n    $middleVar  = 1;\n}",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "spaces - do not touch whitespace that is not indentation",
+                    "args": [
+                        "<?php\nfunction myFunction() {\n    $foo        = 1;\n    //abc\n    $myFunction = 2;\n    $middleVar  = 1;\n}",
+                        "<?php\nfunction myFunction() {\n\t$foo        = 1;\n\t//abc\n\t$myFunction = 2;\n\t$middleVar  = 1;\n}",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "    ",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\nif (true) {\n  if (true) {\n    (new stdClass())->foo(\n      \"text\",\n      \"text2\"\n    );\n  }\n}",
+                        null,
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "  ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\nif (true) {\n  if (true) {\n    (new stdClass())->foo(\n      'text',\n      'text2'\n    );\n  }\n}",
+                        "<?php\nif (true) {\n  if (true) {\n\t(new stdClass())->foo(\n\t  'text',\n\t  'text2'\n\t);\n  }\n}",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "  ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n    /*\n     * Foo\n     */\n",
+                        "<?php\n\t/*\n\t * Foo\n\t */\n",
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "  ",
+                            "lineEnding": "\n"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

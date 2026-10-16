@@ -1,0 +1,267 @@
+{
+    "fixer": "phpdoc_var_without_name",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocVarWithoutNameFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocVarWithoutNameFixerTest.php",
+    "case_count": 26,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocVarWithoutNameFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n\n        $expected = str_replace('@var', '@type', $expected);\n        if (null !== $input) {\n            $input = str_replace('@var', '@type', $input);\n        }\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "testFixVar",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var string Hello!\n     */\n    public $foo;\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var string $foo Hello!\n     */\n    public $foo;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testFixType",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var int|null\n     */\n    public $bar;\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var int|null $bar\n     */\n    public $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testDoNothing",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var Foo\\Bar This is a variable.\n     */\n    public $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testFixVarWithNestedKeys",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var array {\n     *     @var bool   $required Whether this element is required\n     *     @var string $label    The display name for this element\n     * }\n     */\n     public $options;\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var array $options {\n     *     @var bool   $required Whether this element is required\n     *     @var string $label    The display name for this element\n     * }\n     */\n     public $options;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testSingleLine",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar */\n    public $bar;\n}",
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar $bar */\n    public $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testSingleLineProtected",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar */\n    protected $bar;\n}",
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar $bar */\n    protected $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testSingleLinePrivate",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar */\n    private $bar;\n}",
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar $bar */\n    private $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testSingleLineVar",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar */\n    var $bar;\n}",
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar $bar */\n    var $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testSingleLineStatic",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar */\n    static public $bar;\n}",
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar $bar */\n    static public $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testSingleLineNoSpace",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar*/\n    public $bar;\n}",
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo\\Bar $bar*/\n    public $bar;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testInlineDoc",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * Initializes this class with the given options.\n     *\n     * @param array $options {\n     *     @var bool   $required Whether this element is required\n     *     @var string $label    The display name for this element\n     * }\n     */\n    public function init($options)\n    {\n        // Do something\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testSingleLineNoProperty",
+                    "args": [
+                        "<?php\n\n/** @var Foo\\Bar $bar */\n$bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testMultiLineNoProperty",
+                    "args": [
+                        "<?php\n\n/**\n * @var Foo\\Bar $bar\n */\n$bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testVeryNestedInlineDoc",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var array {\n     *     @var array $secondLevelOne   {\n     *         {@internal This should not break}\n     *         @var int $thirdLevel\n     *     }\n     *     @var array $secondLevelTwo   {\n     *         @var array $thirdLevel     {\n     *             @var string $fourthLevel\n     *         }\n     *         @var int   $moreThirdLevel\n     *     }\n     *     @var int   $secondLevelThree\n     * }\n     */\n    public $nestedFoo;\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var array $nestedFoo {\n     *     @var array $secondLevelOne   {\n     *         {@internal This should not break}\n     *         @var int $thirdLevel\n     *     }\n     *     @var array $secondLevelTwo   {\n     *         @var array $thirdLevel     {\n     *             @var string $fourthLevel\n     *         }\n     *         @var int   $moreThirdLevel\n     *     }\n     *     @var int   $secondLevelThree\n     * }\n     */\n    public $nestedFoo;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    /**\n     * @no_candidate string Hello!\n     */\n    public $foo;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo{}\n/**  */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymousClass",
+                    "args": [
+                        "<?php\n\nclass Anon\n{\n    public function getNewAnon()\n    {\n        return new class()\n        {\n            /**\n             * @var string\n             */\n            public $stringVar;\n\n            public function getNewAnon()\n            {\n                return new class()\n                {\n                    /**\n                     * @var string\n                     */\n                    public $stringVar;\n                };\n            }\n        };\n    }\n}",
+                        "<?php\n\nclass Anon\n{\n    public function getNewAnon()\n    {\n        return new class()\n        {\n            /**\n             * @var $stringVar string\n             */\n            public $stringVar;\n\n            public function getNewAnon()\n            {\n                return new class()\n                {\n                    /**\n                     * @var $stringVar string\n                     */\n                    public $stringVar;\n                };\n            }\n        };\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n/**\n * Header\n */\n\nclass A {} // for the candidate check\n\n/**\n * @var ClassLoader $loader\n */\n$loader = require __DIR__.'/../vendor/autoload.php';\n\n/**\n * @var \\Foo\\Bar $bar\n */\n$bar->doSomething(1);\n\n/**\n * @var $bar \\Foo\\Bar\n */\n$bar->doSomething(2);\n\n/**\n * @var User $bar\n */\n($bar = tmp())->doSomething(3);\n\n/**\n * @var User $bar\n */\nlist($bar) = a();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "const are not handled by this fixer",
+                    "args": [
+                        "<?php\nclass A\n{\n    /**\n     * @var array<string, true> SKIPPED_TYPES\n     */\n    private const SKIPPED_TYPES = [\"a\" => true];\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait",
+                    "args": [
+                        "<?php\n trait StaticExample {\n    /**\n     * @var string Hello!\n     */\n    public static $static = \"foo\";\n}",
+                        "<?php\n trait StaticExample {\n    /**\n     * @var string $static Hello!\n     */\n    public static $static = \"foo\";\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complex type with union containing callable that has `$this` in signature",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var array<string, string|array{ string|\\Closure(mixed, string, $this): int|float }>|false Hello!\n     */\n    public $foo;\n\n    /** @var int Hello! */\n    public $foo2;\n\n    /** @var int Hello! */\n    public $foo3;\n\n    /** @var int Hello! */\n    public $foo4;\n}",
+                        "<?php\n\nclass Foo\n{\n    /**\n     * @var array<string, string|array{ string|\\Closure(mixed, string, $this): int|float }>|false $foo Hello!\n     */\n    public $foo;\n\n    /** @var int $thi Hello! */\n    public $foo2;\n\n    /** @var int $thiss Hello! */\n    public $foo3;\n\n    /** @var int $this2 Hello! */\n    public $foo4;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "testFixMultibyteVariableName",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var int Hello! */\n    public $foo;\n\n    /** @var 🚀 🚀 */\n    public $foo2;\n}",
+                        "<?php\n\nclass Foo\n{\n    /** @var int $my🚀 Hello! */\n    public $foo;\n\n    /** @var 🚀 $my 🚀 */\n    public $foo2;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "@var with callable syntax",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var array<callable(string, Buzz): void> */\n    protected $bar;\n}",
+                        "<?php\n\nclass Foo\n{\n    /** @var array<callable(string $baz, Buzz $buzz): void> */\n    protected $bar;\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocVarWithoutNameFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "readonly",
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo */\n    public $bar1;\n\n    /** @var Foo */\n    public readonly int $bar2;\n\n    /** @var Foo */\n    readonly public int $bar3;\n\n    /** @var Foo */\n    readonly int $bar4;\n}",
+                        "<?php\n\nclass Foo\n{\n    /** @var Foo $bar1 */\n    public $bar1;\n\n    /** @var Foo $bar2 */\n    public readonly int $bar2;\n\n    /** @var Foo $bar3 */\n    readonly public int $bar3;\n\n    /** @var Foo $bar4 */\n    readonly int $bar4;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "final public const are not handled by this fixer",
+                    "args": [
+                        "<?php\nclass A\n{\n    /**\n     * @var array<string, true> SKIPPED_TYPES\n     */\n    final public const SKIPPED_TYPES = [\"a\" => true];\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocVarWithoutNameFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility",
+                    "args": [
+                        "<?php class Foo\n{\n    /** @var bool */\n    public(set) bool $a;\n\n    /** @var bool */\n    protected(set) bool $b;\n\n    /** @var bool */\n    private(set) bool $c;\n}",
+                        "<?php class Foo\n{\n    /** @var bool $a */\n    public(set) bool $a;\n\n    /** @var bool $b */\n    protected(set) bool $b;\n\n    /** @var bool $c */\n    private(set) bool $c;\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

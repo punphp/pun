@@ -1,0 +1,307 @@
+{
+    "fixer": "types_spaces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypesSpacesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/TypesSpacesFixerTest.php",
+    "case_count": 24,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypesSpacesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php try {} catch (ErrorA|ErrorB $e) {}",
+                        "<?php try {} catch (ErrorA | ErrorB $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php try {} catch (ErrorA|ErrorB $e) {}",
+                        "<?php try {} catch (ErrorA    |    ErrorB $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php try {} catch (ErrorA | ErrorB $e) {}",
+                        "<?php try {} catch (ErrorA|ErrorB $e) {}",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php try {} catch (ErrorA | ErrorB $e) {}",
+                        "<?php try {} catch (ErrorA    |    ErrorB $e) {}",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n            ",
+                        "<?php\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n            ",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypesSpacesFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php function foo(TypeA|TypeB $x) {}",
+                        "<?php function foo(TypeA | TypeB $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(TypeA|TypeB|TypeC|TypeD $x, TypeE|TypeF $y, TypeA|TypeB $z) {}",
+                        "<?php function foo(TypeA | TypeB    |    TypeC | TypeD $x, TypeE    |    TypeF $y, TypeA| TypeB $z) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php function foo(): TypeA|TypeB {}",
+                        "<?php function foo(): TypeA | TypeB {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php class Foo { private array|int $x; }",
+                        "<?php class Foo { private array | int $x; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo(TypeA\n                |\n                TypeB $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo(TypeA\n                |\n                TypeB $x) {}",
+                        null,
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo(TypeA/* not a space */|/* not a space */TypeB $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 7,
+                    "args": [
+                        "<?php function foo(TypeA/* not a space */ | /* not a space */TypeB $x) {}",
+                        "<?php function foo(TypeA/* not a space */|/* not a space */TypeB $x) {}",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 8,
+                    "args": [
+                        "<?php function foo(TypeA// not a space\n|//not a space\nTypeB $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 9,
+                    "args": [
+                        "<?php function foo(TypeA// not a space\n| //not a space\nTypeB $x) {}",
+                        "<?php function foo(TypeA// not a space\n|//not a space\nTypeB $x) {}",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 10,
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    public int|string $a,\n                    protected int|string $b,\n                    private int|string $c\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    public int    |    string $a,\n                    protected int | string $b,\n                    private int   |   string $c\n                ) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                function foo(TypeA | TypeB $x) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n            ",
+                        "<?php\n                function foo(TypeA |TypeB $x) {}\n                try {} catch (ErrorA| ErrorB $e) {}\n            ",
+                        {
+                            "space": "single",
+                            "space_multiple_catch": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                function foo(TypeA|TypeB $x) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n            ",
+                        "<?php\n                function foo(TypeA | TypeB $x) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n            ",
+                        {
+                            "space": "none",
+                            "space_multiple_catch": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                function foo(TypeA|TypeB $x) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n            ",
+                        "<?php\n                function foo(TypeA| TypeB $x) {}\n                try {} catch (ErrorA |ErrorB $e) {}\n            ",
+                        {
+                            "space": "none",
+                            "space_multiple_catch": "none"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                function foo(TypeA | TypeB $x) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n            ",
+                        "<?php\n                function foo(TypeA |TypeB $x) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n            ",
+                        {
+                            "space": "single",
+                            "space_multiple_catch": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                function foo(TypeA | TypeB $x) {}\n                try {} catch (ErrorA | ErrorB $e) {}\n            ",
+                        "<?php\n                function foo(TypeA|TypeB $x) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n            ",
+                        {
+                            "space": "single"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                function foo(TypeA|TypeB $x) {}\n                try {} catch (ErrorA|ErrorB $e) {}\n            ",
+                        "<?php\n                function foo(TypeA  | TypeB $x) {}\n                try {} catch (ErrorA  | ErrorB $e) {}\n            ",
+                        {
+                            "space": "none"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\TypesSpacesFixerTest",
+            "body": "    public function testFix81(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo {\n                public function __construct(\n                    public readonly int|string $a,\n                    protected    readonly       int|string $b,\n                    private  readonly int|string $c\n                ) {}\n            }",
+                        "<?php class Foo {\n                public function __construct(\n                    public readonly int    |    string $a,\n                    protected    readonly       int | string $b,\n                    private  readonly int   |   string $c\n                ) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo(): \\Foo&Bar {}",
+                        "<?php function foo(): \\Foo  &  Bar {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

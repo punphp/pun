@@ -1,0 +1,246 @@
+{
+    "fixer": "line_ending",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\LineEndingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/LineEndingFixerTest.php",
+    "case_count": 25,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\LineEndingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "T_OPEN_TAG",
+                    "args": [
+                        "<?php\n $a = 1;",
+                        "<?php\r\n $a = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "T_WHITESPACE",
+                    "args": [
+                        "<?php \n $a\n= 1;\n",
+                        "<?php \r\n $a\r\n= 1;\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "T_COMMENT",
+                    "args": [
+                        "<?php /*\n*/",
+                        "<?php /*\r\n*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "T_DOC_COMMENT",
+                    "args": [
+                        "<?php /**\n*/",
+                        "<?php /**\r\n*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "T_START_HEREDOC",
+                    "args": [
+                        "<?php $a = <<<'TEST'\nAA\nTEST;\n",
+                        "<?php $a = <<<'TEST'\r\nAA\r\nTEST;\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = <<<TEST\nAAA\nTEST;\n",
+                        "<?php $a = <<<TEST\r\nAAA\r\nTEST;\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "T_ENCAPSED_AND_WHITESPACE",
+                    "args": [
+                        "<?php $a = <<<'TEST'\nAAAA 1\n $b\nTEST;\n",
+                        "<?php $a = <<<'TEST'\r\nAAAA 1\r\n $b\r\nTEST;\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\nAAAAA \n |\nTEST;\n",
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\r\nAAAAA \r\n |\r\nTEST;\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\nAAAAA \n |\nTEST;\n",
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\r\nAAAAA \r\n |\r\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\nAAAAA \n |\nTEST;\n",
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\r\nAAAAA \n |\r\nTEST;\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "T_INLINE_HTML",
+                    "args": [
+                        "<?php ?>\nZ\r\n<?php ?>\nZ\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "!T_CONSTANT_ENCAPSED_STRING",
+                    "args": [
+                        "<?php $a=\"a\r\n\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php echo 'foo',\n\n'bar';",
+                        "<?php echo 'foo',\r\r\n'bar';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "T_CLOSE_TAG",
+                    "args": [
+                        "<?php\n?>\n<?php\n",
+                        "<?php\n?>\r\n<?php\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "T_CLOSE_TAG II",
+                    "args": [
+                        "<?php\n?>\n<?php\n?>\n<?php\n",
+                        "<?php\n?>\r\n<?php\n?>\r\n<?php\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\LineEndingFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "T_OPEN_TAG",
+                    "args": [
+                        "<?php\r\n $a = 1;",
+                        "<?php\n $a = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "T_WHITESPACE",
+                    "args": [
+                        "<?php \r\n $a\r\n= 1;\r\n",
+                        "<?php \n $a\n= 1;\n"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "T_COMMENT",
+                    "args": [
+                        "<?php /*\r\n*/",
+                        "<?php /*\n*/"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "T_DOC_COMMENT",
+                    "args": [
+                        "<?php /**\r\n*/",
+                        "<?php /**\n*/"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "T_START_HEREDOC",
+                    "args": [
+                        "<?php $a = <<<'TEST'\r\nAA\r\nTEST;\r\n",
+                        "<?php $a = <<<'TEST'\nAA\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = <<<TEST\r\nAAA\r\nTEST;\r\n",
+                        "<?php $a = <<<TEST\nAAA\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": "T_ENCAPSED_AND_WHITESPACE",
+                    "args": [
+                        "<?php $a = <<<'TEST'\r\nAAAA 1\r\n $b\r\nTEST;\r\n",
+                        "<?php $a = <<<'TEST'\nAAAA 1\n $b\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\r\nAAAAA \r\n |\r\nTEST;\r\n",
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\nAAAAA \n |\nTEST;\n"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\r\nAAAAA \r\n |\r\nTEST;\r\n",
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\nAAAAA \n |\nTEST;\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\r\nAAAAA \r\n |\r\nTEST;\r\n",
+                        "<?php $b = \" $a \r\n 123\"; $a = <<<TEST\nAAAAA \r\n |\nTEST;\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,190 @@
+{
+    "fixer": "native_function_casing",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Casing\\NativeFunctionCasingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Casing/NativeFunctionCasingFixerTest.php",
+    "case_count": 20,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\NativeFunctionCasingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                namespace Bar {\n                    function STRLEN($str) {\n                        return \"overridden\" . \\strlen($str);\n                    }\n                }\n\n                namespace {\n                    echo \\Bar\\STRLEN(\"xxx\");\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                    echo strtolower(\"hello 1\");\n                ",
+                        "<?php\n                    echo STRTOLOWER(\"hello 1\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                    echo strtolower //a\n                        (\"hello 2\");\n                ",
+                        "<?php\n                    echo STRTOLOWER //a\n                        (\"hello 2\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                    echo strtolower /**/   (\"hello 3\");\n                ",
+                        "<?php\n                    echo STRTOLOWER /**/   (\"hello 3\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                    echo \\sqrt(4);\n                ",
+                        "<?php\n                    echo \\sQrT(4);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                    echo \"1\".\\sqrt(\"hello 5\");\n                ",
+                        "<?php\n                    echo \"1\".\\SQRT(\"hello 5\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                    class Test{\n                        public function gettypE()\n                        {\n                            return 1;\n                        }\n\n                        function sqrT($a)\n                        {\n                        }\n\n                        function &END($a)\n                        {\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                    new STRTOLOWER();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                    new \\STRTOLOWER();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                    new \\A\\B\\STRTOLOWER();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                    a::STRTOLOWER();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                    $a->STRTOLOWER();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php fOoO();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                    namespace Foo {\n                        function &Next() {\n                            return prev(-1);\n                        }\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                    $next1 = & next($array1);\n                    $next2 = & \\next($array2);\n                ",
+                        "<?php\n                    $next1 = & Next($array1);\n                    $next2 = & \\Next($array2);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                    namespace Foo;\n                    use function MyStuff\\StrToLower;\n                    class Bar {\n                        public function getName() {\n                            return StrToLower($this->name);\n                        }\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                    echo \\sqrt(4 , );\n                ",
+                        "<?php\n                    echo \\sQrT(4 , );\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n                    $a->STRTOLOWER(1,);\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Casing\\NativeFunctionCasingFixerTest",
+            "body": "    public function testFix80(string $expected): void\n    {\n        $this->doTest($expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a?->STRTOLOWER(1,);"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                    final class SomeClass\n            {\n                #[File(mimeTypes: [\"application/pdf\", \"image/*\"])]\n                public FileBlob $attachment;\n            }\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}

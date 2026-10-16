@@ -1,0 +1,360 @@
+{
+    "fixer": "short_scalar_cast",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\ShortScalarCastFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/CastNotation/ShortScalarCastFixerTest.php",
+    "case_count": 41,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\ShortScalarCastFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo ( bool  )$a;",
+                        "<?php echo ( boolean  )$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b=(bool) $d;",
+                        "<?php $b=(boolean) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $b= (bool)$d;",
+                        "<?php $b= (BOOLEAN)$d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $b=( bool) $d;",
+                        "<?php $b=( Boolean) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $b=(bool ) $d;",
+                        "<?php $b=(Boolean ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo ( int  )$a;",
+                        "<?php echo ( integer  )$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b=(int) $d;",
+                        "<?php $b=(integer) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $b= (int)$d;",
+                        "<?php $b= (INTEGER)$d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $b=( int) $d;",
+                        "<?php $b=( Integer) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $b=(int ) $d;",
+                        "<?php $b=(Integer ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo ( float  )$a;",
+                        "<?php echo ( double  )$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b=(float) $d;",
+                        "<?php $b=(double) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $b= (float)$d;",
+                        "<?php $b= (DOUBLE)$d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $b=( float) $d;",
+                        "<?php $b=( Double) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $b=(float ) $d;",
+                        "<?php $b=(Double ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo ( string  )$a;",
+                        "<?php echo ( binary  )$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b=(string) $d;",
+                        "<?php $b=(binary) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $b= (string)$d;",
+                        "<?php $b= (BINARY)$d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $b=( string) $d;",
+                        "<?php $b=( Binary) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $b=(string ) $d;",
+                        "<?php $b=(Binary ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $b=(string) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b=( string ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $b=(String ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $b=(STRING ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $b=(array) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $b=( array ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $b=(Array ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $b=(ARRAY ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $b=(object) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $b=( object ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $b=(Object ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $b=(OBJECT ) $d;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\CastNotation\\ShortScalarCastFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $b=(unset) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b=( unset ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php $b=(Unset ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php $b=(UNSET ) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php echo ( float  )$a;",
+                        "<?php echo ( real  )$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $b=(float) $d;",
+                        "<?php $b=(real) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php $b= (float)$d;",
+                        "<?php $b= (REAL)$d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php $b=( float) $d;",
+                        "<?php $b=( Real) $d;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php $b=(float ) $d;",
+                        "<?php $b=(Real ) $d;"
+                    ]
+                }
+            ]
+        }
+    ]
+}

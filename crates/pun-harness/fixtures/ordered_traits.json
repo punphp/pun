@@ -1,0 +1,186 @@
+{
+    "fixer": "ordered_traits",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedTraitsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/OrderedTraitsFixerTest.php",
+    "case_count": 19,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\OrderedTraitsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A;\n    use B;\n}",
+                        "<?php\nclass Foo {\n    use B;\n    use A;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "in multiple classes",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A;\n    use C;\n}\nclass Bar {\n    use B;\n    use D;\n}",
+                        "<?php\nclass Foo {\n    use C;\n    use A;\n}\nclass Bar {\n    use D;\n    use B;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "separated by a property",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A;\n    use C;\n\n    private $foo;\n\n    use B;\n    use D;\n}",
+                        "<?php\nclass Foo {\n    use C;\n    use A;\n\n    private $foo;\n\n    use D;\n    use B;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "separated by a method",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A;\n    use C;\n\n    public function foo() { }\n\n    use B;\n    use D;\n}",
+                        "<?php\nclass Foo {\n    use C;\n    use A;\n\n    public function foo() { }\n\n    use D;\n    use B;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "grouped statements",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A, C;\n    use B;\n}",
+                        "<?php\nclass Foo {\n    use B;\n    use A, C;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with aliases and conflicts",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A {\n        A::foo insteadof B;\n        A::bar as bazA;\n        A::baz as protected;\n    }\n    use B {\n        B::bar as bazB;\n    }\n}",
+                        "<?php\nclass Foo {\n    use B {\n        B::bar as bazB;\n    }\n    use A {\n        A::foo insteadof B;\n        A::bar as bazA;\n        A::baz as protected;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "symbol imports",
+                    "args": [
+                        "<?php\nuse C;\nuse B;\nuse A;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous function with inherited variables",
+                    "args": [
+                        "<?php\n$foo = function () use ($b, $a) { };\n$bar = function () use ($a, $b) { };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple traits in a single statement",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A, B, C, D;\n}",
+                        "<?php\nclass Foo {\n    use C, B, D, A;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple traits per statement",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A, D;\n    use B, C;\n}",
+                        "<?php\nclass Foo {\n    use C, B;\n    use D, A;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, multiple I",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A00;\n    use A01;\n    use A02;\n    use A03;\n    use A04;\n    use A05;\n    use A06;\n    use A07;\n    use A08;\n    use A09;\n    use A10;\n    use A11;\n    use A12;\n    use A13;\n    use A14;\n    use A15;\n    use A16;\n    use A17;\n    use A18;\n    use A19;\n    use A20;\n    use A21;\n    use A22;\n    use A23;\n    use A24;\n}",
+                        "<?php\nclass Foo {\n    use A24;\n    use A23;\n    use A22;\n    use A21;\n    use A20;\n    use A19;\n    use A18;\n    use A17;\n    use A16;\n    use A15;\n    use A14;\n    use A13;\n    use A12;\n    use A11;\n    use A10;\n    use A09;\n    use A08;\n    use A07;\n    use A06;\n    use A05;\n    use A04;\n    use A03;\n    use A02;\n    use A01;\n    use A00;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, length diff. I",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A;\n    use B\\B;\n    use C\\C\\C;\n    use D\\D\\D\\D;\n}",
+                        "<?php\nclass Foo {\n    use D\\D\\D\\D;\n    use C\\C\\C;\n    use B\\B;\n    use A;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments handling",
+                    "args": [
+                        "<?php\nclass Foo {\n    /* A */use A\\A\\A\\A/* A */;\n    /* B */use B\\B\\B/* B */;\n    /* C */use C\\C/* C */;\n    /* D */use D/* D */;\n}",
+                        "<?php\nclass Foo {\n    /* D */use D/* D */;\n    /* C */use C\\C/* C */;\n    /* B */use B\\B\\B/* B */;\n    /* A */use A\\A\\A\\A/* A */;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "grouped statements II",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A\\Z, C\\Y;\n    use B\\E;\n}",
+                        "<?php\nclass Foo {\n    use B\\E;\n    use A\\Z, C\\Y;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, leading \\",
+                    "args": [
+                        "<?php\nclass Foo {\n    use \\A;\n    use \\B;\n}",
+                        "<?php\nclass Foo {\n    use \\B;\n    use \\A;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple, leading \\ before character order",
+                    "args": [
+                        "<?php\nclass Foo {\n    use A;\n    use \\B;\n    use C;\n}",
+                        "<?php\nclass Foo {\n    use C;\n    use \\B;\n    use A;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with phpdoc",
+                    "args": [
+                        "<?php\nclass Foo {\n    // foo 1\n\n    /** @phpstan-use A<Foo> */\n    use A;\n    /** @phpstan-use B<Foo> */\n    use B;\n\n    /** @phpstan-use C<Foo> */\n    use C;\n}",
+                        "<?php\nclass Foo {\n    /** @phpstan-use C<Foo> */\n    use C;\n    /** @phpstan-use B<Foo> */\n    use B;\n\n    // foo 1\n\n    /** @phpstan-use A<Foo> */\n    use A;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple and with namespace",
+                    "args": [
+                        "<?php\n\nclass User\n{\n    use Test\\B, TestA;\n}",
+                        "<?php\n\nclass User\n{\n    use TestA, Test\\B;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with case sensitive order",
+                    "args": [
+                        "<?php\nclass Foo {\n    use AA;\n    use Aaa;\n}",
+                        "<?php\nclass Foo {\n    use Aaa;\n    use AA;\n}",
+                        {
+                            "case_sensitive": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

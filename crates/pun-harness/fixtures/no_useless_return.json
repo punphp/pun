@@ -1,0 +1,132 @@
+{
+    "fixer": "no_useless_return",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\NoUselessReturnFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ReturnNotation/NoUselessReturnFixerTest.php",
+    "case_count": 14,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\NoUselessReturnFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                    function bar($baz)\n                    {\n                        if ($baz)\n                            return $this->baz();\n                        else\n                            return;\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                    function bar($baz)\n                    {\n                        if ($baz)\n                            return $this->baz();\n                        elseif($a)\n                            return;\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                    function bar($baz)\n                    {\n                        if ($baz)\n                            return $this->baz();\n                        else if($a)\n                            return;\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n                    function bar($baz)\n                    {\n                        if ($baz)\n                            return;\n                    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n    function b($b) {\n        if ($b) {\n            return;\n        }\n         /**/\n    }",
+                        "<?php\n    function b($b) {\n        if ($b) {\n            return;\n        }\n        return /**/;\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    class Test2\n    {\n        private static function a($a)\n        {\n            if ($a) {\n                return;\n            }\n\n            $c1 = function() use ($a) {\n                if ($a)\n                    return;\n                if ($a > 1) return;\n                echo $a;\n                \n            };\n            $c1();\n            \n            \n        }\n\n        private function test()\n        {\n            $d = function(){\n                echo 123;\n                \n            };\n\n            $d();\n        }\n    }",
+                        "<?php\n    class Test2\n    {\n        private static function a($a)\n        {\n            if ($a) {\n                return;\n            }\n\n            $c1 = function() use ($a) {\n                if ($a)\n                    return;\n                if ($a > 1) return;\n                echo $a;\n                return;\n            };\n            $c1();\n            return\n            ;\n        }\n\n        private function test()\n        {\n            $d = function(){\n                echo 123;\n                return;\n            };\n\n            $d();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n    function aT($a) {\n        if ($a) {\n            return;\n        }\n                   \n    }",
+                        "<?php\n    function aT($a) {\n        if ($a) {\n            return;\n        }\n        return           ;\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php return;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    function c($c) {\n        if ($c) {\n            return;\n        }\n        //\n    }",
+                        "<?php\n    function c($c) {\n        if ($c) {\n            return;\n        }\n        return;//\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n    class Test {\n\n        private static function d($d) {\n            if ($d) {\n                return;\n            }\n            }\n    }",
+                        "<?php\n    class Test {\n\n        private static function d($d) {\n            if ($d) {\n                return;\n            }\n            return;}\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n    interface FooInterface\n    {\n        public function fnc();\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n    abstract class AbstractFoo\n    {\n        abstract public function fnc();\n        abstract public function fnc1();\n        static private function fn2(){}\n        public function fnc3() {\n            echo 1 . self::fn2();//{}\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n    function foo () { }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                $a = function() {\n                       /**/\n                     \n           /* a */   //\n                    \n                };\n                ",
+                        "<?php\n                $a = function() {\n                    return  ; /**/\n                    return ;\n           /* a */  return; //\n                    return;\n                };\n                "
+                    ]
+                }
+            ]
+        }
+    ]
+}

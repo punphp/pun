@@ -1,0 +1,160 @@
+{
+    "fixer": "phpdoc_no_useless_inheritdoc",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoUselessInheritdocFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocNoUselessInheritdocFixerTest.php",
+    "case_count": 17,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoUselessInheritdocFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n/** */class min1{}",
+                        "<?php\n/** @inheritdoc */class min1{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n/** */class min1{}",
+                        "<?php\n/** @inheritDoc */class min1{}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nclass min2{/** */}",
+                        "<?php\nclass min2{/** @inheritdoc */}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass min2{/** */}",
+                        "<?php\nclass min2{/** @inheritDoc */}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n                class A\n                {\n                    /** */\n                    public function A(){}\n\n                    /**\n                     * \n                     */\n                    public function B(){}\n\n                    /**\n                     * Descr.\n                     *\n                     * @param int $c\n                     * \n                     */\n                    public function C($c){}\n                }\n                ",
+                        "<?php\n                class A\n                {\n                    /** @inheritdoc */\n                    public function A(){}\n\n                    /**\n                     * @inheritdoc\n                     */\n                    public function B(){}\n\n                    /**\n                     * Descr.\n                     *\n                     * @param int $c\n                     * @inheritdoc\n                     */\n                    public function C($c){}\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n                class B\n                {\n                    /** */\n                    public function B(){}\n                }\n                ",
+                        "<?php\n                class B\n                {\n                    /** {@INHERITDOC} */\n                    public function B(){}\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n                /** D C */\n                class C\n                {\n                }\n                ",
+                        "<?php\n                /** D {    @INHERITDOC   } C */\n                class C\n                {\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n                /** E */\n                class E\n                {\n                }\n                ",
+                        "<?php\n                /**     {{@Inheritdoc}}   E */\n                class E\n                {\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                /** F */\n                class F\n                {\n                }\n                ",
+                        "<?php\n                /** F    @inheritdoc      */\n                class F\n                {\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                    /** */\n                    class G1{}\n                    /** */\n                    class G2{}\n                ",
+                        "<?php\n                    /** @inheritdoc */\n                    class G1{}\n                    /** @inheritdoc */\n                    class G2{}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                class H\n                {\n                    /* @inheritdoc comment, not PHPDoc */\n                    public function H(){}\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                class J extends Z\n                {\n                    /** @inheritdoc */\n                    public function H(){}\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                interface K extends Z\n                {\n                    /** @inheritdoc */\n                    public function H();\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                /** */\n                interface K\n                {\n                    /** */\n                    public function H();\n                }\n                ",
+                        "<?php\n                /** @{inheritdoc} */\n                interface K\n                {\n                    /** {@Inheritdoc} */\n                    public function H();\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                trait T\n                {\n                    /** @inheritdoc */\n                    public function T()\n                    {\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                class B\n                {\n                    /** */\n                    public function falseImportFromTrait()\n                    {\n                    }\n                }\n\n                /** */\n                class A\n                {\n                    use T;\n\n                    /** @inheritdoc */\n                    public function importFromTrait()\n                    {\n                    }\n                }\n                ",
+                        "<?php\n                class B\n                {\n                    /** @inheritdoc */\n                    public function falseImportFromTrait()\n                    {\n                    }\n                }\n\n                /** @inheritdoc */\n                class A\n                {\n                    use T;\n\n                    /** @inheritdoc */\n                    public function importFromTrait()\n                    {\n                    }\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\n/** delete 1 */\nclass A\n{\n    /** delete 2 */\n    public function B()\n    {\n        $a = new class implements I {\n\n            /** @inheritdoc keep */\n            public function A()\n            {\n                $b = new class extends D {\n\n                    /** @inheritdoc keep */\n                    public function C()\n                    {\n                        $d = new class() {\n\n                            /** delete 3 */\n                            public function D()\n                            {\n                            }\n                        };\n                    }\n                };\n            }\n        };\n    }\n\n    /** delete 4 */\n    public function B1()\n    {\n        $a1 = new class(){ };\n    }\n\n    /** delete 5 */\n    public function B2()\n    {\n        //$a1 = new class(){ use D; };\n    }\n}\n",
+                        "<?php\n\n/** @inheritdoc delete 1 */\nclass A\n{\n    /** @inheritdoc delete 2 */\n    public function B()\n    {\n        $a = new class implements I {\n\n            /** @inheritdoc keep */\n            public function A()\n            {\n                $b = new class extends D {\n\n                    /** @inheritdoc keep */\n                    public function C()\n                    {\n                        $d = new class() {\n\n                            /** @inheritdoc delete 3 */\n                            public function D()\n                            {\n                            }\n                        };\n                    }\n                };\n            }\n        };\n    }\n\n    /** @inheritdoc delete 4 */\n    public function B1()\n    {\n        $a1 = new class(){ };\n    }\n\n    /** @inheritdoc delete 5 */\n    public function B2()\n    {\n        //$a1 = new class(){ use D; };\n    }\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,147 @@
+{
+    "fixer": "no_blank_lines_after_class_opening",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoBlankLinesAfterClassOpeningFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/NoBlankLinesAfterClassOpeningFixerTest.php",
+    "case_count": 10,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoBlankLinesAfterClassOpeningFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Good\n{\n    public function firstMethod()\n    {\n        //code here\n    }\n}",
+                        "<?php\nclass Good\n{\n\n    public function firstMethod()\n    {\n        //code here\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Good\n{\n    /**\n     * Also no blank line before DocBlock\n     */\n    public function firstMethod()\n    {\n        //code here\n    }\n}",
+                        "<?php\nclass Good\n{\n\n    /**\n     * Also no blank line before DocBlock\n     */\n    public function firstMethod()\n    {\n        //code here\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\ninterface Good\n{\n    /**\n     * Also no blank line before DocBlock\n     */\n    public function firstMethod();\n}",
+                        "<?php\ninterface Good\n{\n\n    /**\n     * Also no blank line before DocBlock\n     */\n    public function firstMethod();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass Good\n{public\n\n\n\n    function firstMethod()\n    {\n        //code here\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass Foo\n{\n    function bar() {}\n}\n",
+                        "<?php\nclass Foo\n{\n    \n    function bar() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nclass Foo\n{\nfunction bar() {}\n}\n",
+                        "<?php\nclass Foo\n{\n    \nfunction bar() {}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\ntrait Good\n{\n    /**\n     * Also no blank line before DocBlock\n     */\n    public function firstMethod() {}\n}",
+                        "<?php\ntrait Good\n{\n\n    /**\n     * Also no blank line before DocBlock\n     */\n    public function firstMethod() {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoBlankLinesAfterClassOpeningFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Foo\n{\r\n    public function bar() {}\n}",
+                        "<?php\nclass Foo\n{\n\n    public function bar() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\r\n    public function bar() {}\n}",
+                        "<?php\nclass Foo\n{\r\n\r\n    public function bar() {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\NoBlankLinesAfterClassOpeningFixerTest",
+            "body": "    public function testFix81(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nenum Good\n{\n    public function firstMethod()\n    {}\n}",
+                        "<?php\nenum Good\n{\n\n    public function firstMethod()\n    {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

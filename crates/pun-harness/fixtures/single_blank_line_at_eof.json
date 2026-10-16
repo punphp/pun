@@ -1,0 +1,208 @@
+{
+    "fixer": "single_blank_line_at_eof",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\SingleBlankLineAtEofFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Whitespace/SingleBlankLineAtEofFixerTest.php",
+    "case_count": 21,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\SingleBlankLineAtEofFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "Not adding an empty line in empty file.",
+                    "args": [
+                        ""
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Not adding an empty line in file with only white space.",
+                    "args": [
+                        "  "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n$a = 1;\n",
+                        "<?php\n$a = 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n$a = 2;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n$a = 3;\n",
+                        "<?php\n$a = 3;\n\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\r\n$a = 4;\n",
+                        "<?php\r\n$a = 4;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\r\n$a = 5;\n",
+                        "<?php\r\n$a = 5;\r\n    \r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n$a = 6;\n\n//test\n\n?>\n  "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$a = 7;\n\n//test\n\n?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$a = 8;\n//test\n?>\nOutside of PHP tags rendering\n\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n//test\n?>\ninline 1\n<?php\n\n?>Inline2\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php return true;\n// A comment\n",
+                        "<?php return true;\n// A comment"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php return true;\n// A comment\n",
+                        "<?php return true;\n// A comment\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php return true;\n# A comment\n",
+                        "<?php return true;\n# A comment"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php return true;\n# A comment\n",
+                        "<?php return true;\n# A comment\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php return true;\n/*\nA comment\n*/\n",
+                        "<?php return true;\n/*\nA comment\n*/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php return true;\n/*\nA comment\n*/\n",
+                        "<?php return true;\n/*\nA comment\n*/\n\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?= 1;\n",
+                        "<?= 1;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Whitespace\\SingleBlankLineAtEofFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\r\n$a = 4;\r\n",
+                        "<?php\r\n$a = 4;"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\r\n$a = 5;\r\n",
+                        "<?php\r\n$a = 5;\r\n    \r\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}
