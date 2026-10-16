@@ -1,0 +1,27 @@
+parameters:
+	featureToggles:
+		bleedingEdge: true
+		checkNonStringableDynamicAccess: true
+		checkParameterCastableToNumberFunctions: true
+		skipCheckGenericClasses!: []
+		stricterFunctionMap: true
+		reportPreciseLineForUnusedFunctionParameter: true
+		checkPrintfParameterTypes: true
+		internalTag: true
+		newStaticInAbstractClassStaticMethod: true
+		checkExtensionsForComparisonOperators: true
+		checkGenericIterableClasses: true
+		reportTooWideBool: true
+		rawMessageInBaseline: true
+		reportNestedTooWideType: false
+		assignToByRefForeachExpr: true
+		curlSetOptArrayTypes: true
+		magicDirInInclude: true
+		checkDateIntervalConstructor: true
+		reportMethodPurityOverride: true
+		checkDynamicConstantNameValues: true
+		unusedLabel: true
+		newOnNonObject: true
+		unnecessaryNullCoalesce: true
+		finiteTypesInHaystack: true
+

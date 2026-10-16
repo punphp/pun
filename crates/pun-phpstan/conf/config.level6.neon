@@ -1,0 +1,10 @@
+includes:
+	- config.level5.neon
+
+parameters:
+	checkMissingVarTagTypehint: true
+	checkMissingTypehints: true
+
+autowiredAttributeServices:
+	level: 6
+

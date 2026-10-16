@@ -1,0 +1,9 @@
+includes:
+	- config.level2.neon
+
+autowiredAttributeServices:
+	level: 3
+
+parameters:
+	checkPhpDocMethodSignatures: true
+

@@ -1,0 +1,20 @@
+includes:
+	- config.level0.neon
+
+parameters:
+	checkMaybeUndefinedVariables: true
+	checkExtraArguments: true
+	reportMagicMethods: true
+	reportMagicProperties: true
+
+autowiredAttributeServices:
+	level: 1
+
+conditionalTags:
+	PHPStan\Rules\Variables\AssignToByRefExprFromForeachRule:
+		phpstan.rules.rule: %featureToggles.assignToByRefForeachExpr%
+
+services:
+	-
+		class: PHPStan\Rules\Variables\AssignToByRefExprFromForeachRule
+

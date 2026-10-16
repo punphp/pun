@@ -1,0 +1,6 @@
+{
+    "project": "larastan",
+    "expected": {
+        "error": "Missing parameter 'featureToggles.unresolvedTemplateArguments'."
+    }
+}

@@ -1,0 +1,335 @@
+includes:
+	- parametersSchema.neon
+	- services.neon
+	- parsers.neon
+
+parameters:
+	bootstrapFiles:
+		- ../stubs/runtime/ReflectionUnionType.php
+		- ../stubs/runtime/ReflectionAttribute.php
+		- ../stubs/runtime/Attribute85.php
+		- ../stubs/runtime/ReflectionIntersectionType.php
+
+	excludePaths: []
+	level: null
+	paths: []
+	exceptions:
+		implicitThrows: true
+		reportUncheckedExceptionDeadCatch: true
+		uncheckedExceptionRegexes: []
+		uncheckedExceptionClasses: []
+		checkedExceptionRegexes: []
+		checkedExceptionClasses: []
+		check:
+			missingCheckedExceptionInThrows: false
+			tooWideThrowType: true
+			tooWideImplicitThrowType: false
+			throwTypeCovariance: false
+
+	featureToggles:
+		bleedingEdge: false
+		checkNonStringableDynamicAccess: false
+		checkParameterCastableToNumberFunctions: false
+		skipCheckGenericClasses:
+			- DOMNamedNodeMap
+
+		stricterFunctionMap: false
+		reportPreciseLineForUnusedFunctionParameter: false
+		checkPrintfParameterTypes: false
+		internalTag: false
+		newStaticInAbstractClassStaticMethod: false
+		checkExtensionsForComparisonOperators: false
+		checkGenericIterableClasses: false
+		reportTooWideBool: false
+		rawMessageInBaseline: false
+		reportNestedTooWideType: false
+		assignToByRefForeachExpr: false
+		curlSetOptArrayTypes: false
+		magicDirInInclude: false
+		checkDateIntervalConstructor: false
+		reportMethodPurityOverride: false
+		checkDynamicConstantNameValues: false
+		unusedLabel: false
+		newOnNonObject: false
+		unnecessaryNullCoalesce: false
+		finiteTypesInHaystack: false
+
+	fileExtensions:
+		- php
+
+	checkAdvancedIsset: false
+	reportAlwaysTrueInLastCondition: false
+	checkClassCaseSensitivity: false
+	checkExplicitMixed: false
+	checkImplicitMixed: false
+	checkFunctionArgumentTypes: false
+	checkFunctionNameCase: false
+	checkInternalClassCaseSensitivity: false
+	checkMissingCallableSignature: false
+	checkMissingVarTagTypehint: false
+	checkArgumentsPassedByReference: false
+	checkMaybeUndefinedVariables: false
+	checkNullables: false
+	checkThisOnly: true
+	checkUnionTypes: false
+	checkBenevolentUnionTypes: false
+	checkExplicitMixedMissingReturn: false
+	checkPhpDocMissingReturn: false
+	checkPhpDocMethodSignatures: false
+	checkExtraArguments: false
+	checkMissingTypehints: false
+	checkTooWideParameterOutInProtectedAndPublicMethods: false
+	checkTooWideReturnTypesInProtectedAndPublicMethods: false
+	checkTooWideThrowTypesInProtectedAndPublicMethods: false
+	checkUninitializedProperties: false
+	checkDynamicProperties: false
+	strictRulesInstalled: false
+	deprecationRulesInstalled: false
+	inferPrivatePropertyTypeFromConstructor: false
+	checkStrictPrintfPlaceholderTypes: false
+	reportMaybes: false
+	reportMaybesInMethodSignatures: false
+	reportMaybesInPropertyPhpDocTypes: false
+	reportStaticMethodSignatures: false
+	reportWrongPhpDocTypeInVarTag: false
+	reportAnyTypeWideningInVarTag: false
+	reportNonIntStringArrayKey: false
+	reportUnsafeArrayStringKeyCasting: null
+	reportPossiblyNonexistentGeneralArrayOffset: false
+	reportPossiblyNonexistentConstantArrayOffset: false
+	checkMissingOverrideMethodAttribute: false
+	checkMissingOverridePropertyAttribute: null
+	mixinExcludeClasses: []
+	scanFiles: []
+	scanDirectories: []
+	parallel:
+		jobSize: 20
+		processTimeout: 600.0
+		maximumNumberOfProcesses: 8
+		minimumNumberOfJobsPerProcess: 2
+		buffer: 134217728
+		loadLimit: 1.0
+
+	phpVersion: null
+	polluteScopeWithLoopInitialAssignments: true
+	polluteScopeWithAlwaysIterableForeach: true
+	polluteScopeWithBlock: true
+	propertyAlwaysWrittenTags: []
+	propertyAlwaysReadTags: []
+	additionalConstructors: []
+	treatPhpDocTypesAsCertain: true
+	usePathConstantsAsConstantString: false
+	rememberPossiblyImpureFunctionValues: true
+	tips:
+		discoveringSymbols: true
+		treatPhpDocTypesAsCertain: true
+		possiblyImpure: true
+
+	tipsOfTheDay: true
+	reportMagicMethods: false
+	reportMagicProperties: false
+	ignoreErrors: []
+	internalErrorsCountLimit: 50
+	cache:
+		nodesByStringCountMax: 256
+		nodesByStringSourceBytesMax: 4194304
+		resolvedPhpDocBlockCacheCountMax: 2048
+		nameScopeMapMemoryCacheCountMax: 512
+		phpStormStubsNodesCountMax: 128
+		memberCacheKeysMax: 2048
+		resolvedLocalTypeAliasesCountMax: 2048
+
+	reportUnmatchedIgnoredErrors: true
+	reportIgnoresWithoutComments: false
+	typeAliases: []
+	universalObjectCratesClasses:
+		- stdClass
+
+	stubFiles:
+		- ../stubs/Memcached.stub
+		- ../stubs/Redis.stub
+		- ../stubs/ReflectionAttribute.stub
+		- ../stubs/ReflectionClassConstant.stub
+		- ../stubs/ReflectionFunctionAbstract.stub
+		- ../stubs/ReflectionMethod.stub
+		- ../stubs/ReflectionParameter.stub
+		- ../stubs/ReflectionProperty.stub
+		- ../stubs/iterable.stub
+		- ../stubs/ArrayObject.stub
+		- ../stubs/WeakReference.stub
+		- ../stubs/ext-ds.stub
+		- ../stubs/ImagickPixel.stub
+		- ../stubs/PDOStatement.stub
+		- ../stubs/date.stub
+		- ../stubs/ibm_db2.stub
+		- ../stubs/mysqli.stub
+		- ../stubs/zip.stub
+		- ../stubs/dom.stub
+		- ../stubs/spl.stub
+		- ../stubs/SplObjectStorage.stub
+		- ../stubs/Exception.stub
+		- ../stubs/arrayFunctions.stub
+		- ../stubs/core.stub
+		- ../stubs/typeCheckingFunctions.stub
+		- ../stubs/Countable.stub
+		- ../stubs/file.stub
+		- ../stubs/stream_socket_client.stub
+		- ../stubs/stream_socket_server.stub
+		- ../stubs/ctype.stub
+
+	earlyTerminatingMethodCalls: []
+	earlyTerminatingFunctionCalls: []
+	resultCachePath: %tmpDir%/resultCache.php
+	resultCacheSkipIfOlderThanDays: 7
+	resultCacheChecksProjectExtensionFilesDependencies: false
+	dynamicConstantNames:
+		- ICONV_IMPL
+		- LIBXML_VERSION
+		- LIBXML_DOTTED_VERSION
+		- Memcached::HAVE_ENCODING
+		- Memcached::HAVE_IGBINARY
+		- Memcached::HAVE_JSON
+		- Memcached::HAVE_MSGPACK
+		- Memcached::HAVE_SASL
+		- Memcached::HAVE_SESSION
+		- PHP_VERSION
+		- PHP_MAJOR_VERSION
+		- PHP_MINOR_VERSION
+		- PHP_RELEASE_VERSION
+		- PHP_VERSION_ID
+		- PHP_EXTRA_VERSION
+		- PHP_WINDOWS_VERSION_MAJOR
+		- PHP_WINDOWS_VERSION_MINOR
+		- PHP_WINDOWS_VERSION_BUILD
+		- PHP_ZTS
+		- PHP_DEBUG
+		- PHP_MAXPATHLEN
+		- PHP_OS
+		- PHP_OS_FAMILY
+		- PHP_SAPI
+		- PHP_EOL
+		- PHP_INT_MAX
+		- PHP_INT_MIN
+		- PHP_INT_SIZE
+		- PHP_FLOAT_DIG
+		- PHP_FLOAT_EPSILON
+		- PHP_FLOAT_MIN
+		- PHP_FLOAT_MAX
+		- DEFAULT_INCLUDE_PATH
+		- PEAR_INSTALL_DIR
+		- PEAR_EXTENSION_DIR
+		- PHP_EXTENSION_DIR
+		- PHP_PREFIX
+		- PHP_BINDIR
+		- PHP_BINARY
+		- PHP_MANDIR
+		- PHP_LIBDIR
+		- PHP_DATADIR
+		- PHP_SYSCONFDIR
+		- PHP_LOCALSTATEDIR
+		- PHP_CONFIG_FILE_PATH
+		- PHP_CONFIG_FILE_SCAN_DIR
+		- PHP_SHLIB_SUFFIX
+		- PHP_FD_SETSIZE
+		- OPENSSL_VERSION_NUMBER
+		- ZEND_DEBUG_BUILD
+		- ZEND_THREAD_SAFE
+		- E_ALL
+
+	customRulesetUsed: null
+	editorUrl: null
+	editorUrlTitle: null
+	errorFormat: null
+	sysGetTempDir: ::sys_get_temp_dir()
+	sourceLocatorPlaygroundMode: false
+	pro:
+		dnsServers:
+			- '1.1.1.2'
+
+		tmpDir: %sysGetTempDir%/phpstan-fixer
+
+	__validate: true
+	parametersNotInvalidatingCache:
+		-
+			- parameters
+			- editorUrl
+
+		-
+			- parameters
+			- editorUrlTitle
+
+		-
+			- parameters
+			- errorFormat
+
+		-
+			- parameters
+			- ignoreErrors
+
+		-
+			- parameters
+			- reportUnmatchedIgnoredErrors
+
+		-
+			- parameters
+			- tipsOfTheDay
+
+		-
+			- parameters
+			- parallel
+
+		-
+			- parameters
+			- internalErrorsCountLimit
+
+		-
+			- parameters
+			- cache
+
+		-
+			- parameters
+			- memoryLimitFile
+
+		-
+			- parameters
+			- pro
+
+		- parametersSchema
+
+autowiredAttributeServices:
+	level: null
+
+conditionalTags:
+	PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule:
+		phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%
+
+	PHPStan\Rules\Exceptions\MissingCheckedExceptionInMethodThrowsRule:
+		phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%
+
+	PHPStan\Rules\Exceptions\MissingCheckedExceptionInPropertyHookThrowsRule:
+		phpstan.rules.rule: %exceptions.check.missingCheckedExceptionInThrows%
+
+	PHPStan\Rules\Properties\UninitializedPropertyRule:
+		phpstan.rules.rule: %checkUninitializedProperties%
+
+	PHPStan\Rules\Exceptions\MethodThrowTypeCovarianceRule:
+		phpstan.rules.rule: %exceptions.check.throwTypeCovariance%
+
+services:
+	-
+		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInFunctionThrowsRule
+
+	-
+		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInMethodThrowsRule
+
+	-
+		class: PHPStan\Rules\Exceptions\MissingCheckedExceptionInPropertyHookThrowsRule
+
+	-
+		class: PHPStan\Rules\Properties\UninitializedPropertyRule
+
+	-
+		class: PHPStan\Rules\Exceptions\MethodThrowTypeCovarianceRule
+		arguments:
+			implicitThrows: %exceptions.implicitThrows%
+
