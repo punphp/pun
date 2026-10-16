@@ -7,7 +7,7 @@
 | punphp-config | 420 | 420 | 100.00% | ok |
 | punphp-delegate | 95 | 95 | 100.00% | ok |
 | punphp-fixers | 19488 | 19488 | 100.00% | ok |
-| punphp-format | 540 | 540 | 100.00% | ok |
+| punphp-format | 669 | 669 | 100.00% | ok |
 | punphp-harness | 174 | 174 | 100.00% | ok |
 | punphp-tokens | 2893 | 2893 | 100.00% | ok |
 | punphp-workspace | 267 | 267 | 100.00% | ok |
