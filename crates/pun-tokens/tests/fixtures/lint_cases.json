@@ -1,0 +1,3154 @@
+[
+    {
+        "code": "<?php\n$x = <<<A\n\t  foo\n\t  A;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  foo\n\t  A;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n\tfoo\n  A;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n foo\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  foo\n\n  A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<'A'\n foo\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<'A'\n\t foo\n\t A;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  {$a}\n  A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  a{$a}\n b\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 4."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  a\n {$b}\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 4."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n\t\tfoo\n\t\tA;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n    foo\n\t\tA;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n\t foo\n \tA;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  \t\n  A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n \n  A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  foo\n  bar\n A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  foo $a\n  A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\nfoo\nA\n;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  A . 'x';\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  foo\n  A\n",
+        "error": "Parse error: syntax error, unexpected end of file on line 5."
+    },
+    {
+        "code": "<?php\n$x = <<<A\nfoo",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<'A'\nfoo",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  ${a}\n A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  x\n\t\n  A;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 4."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n\t\tx\n\t \n\t\tA;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 4."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  $a[1]\n A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  x {$a} y\n   z\n  A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\nA;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<  A\nfoo\nA;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<\"A\"\nfoo\nA;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = <<<A\n   x\n  \tA;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n\tx\n \tA;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n\t \tx\n\t A;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n1__0;",
+        "error": "Parse error: syntax error, unexpected identifier \"__0\" on line 2."
+    },
+    {
+        "code": "<?php\n1_;",
+        "error": "Parse error: syntax error, unexpected identifier \"_\" on line 2."
+    },
+    {
+        "code": "<?php\n0x;",
+        "error": "Parse error: syntax error, unexpected identifier \"x\" on line 2."
+    },
+    {
+        "code": "<?php\n0b;",
+        "error": "Parse error: syntax error, unexpected identifier \"b\" on line 2."
+    },
+    {
+        "code": "<?php\n0b2;",
+        "error": "Parse error: syntax error, unexpected identifier \"b2\" on line 2."
+    },
+    {
+        "code": "<?php\n08;",
+        "error": "Parse error: Invalid numeric literal on line 2."
+    },
+    {
+        "code": "<?php\n0o8;",
+        "error": "Parse error: syntax error, unexpected identifier \"o8\" on line 2."
+    },
+    {
+        "code": "<?php\n0_1;",
+        "error": null
+    },
+    {
+        "code": "<?php\n1e;",
+        "error": "Parse error: syntax error, unexpected identifier \"e\" on line 2."
+    },
+    {
+        "code": "<?php\n1e_1;",
+        "error": "Parse error: syntax error, unexpected identifier \"e_1\" on line 2."
+    },
+    {
+        "code": "<?php\n1._0;",
+        "error": "Parse error: syntax error, unexpected identifier \"_0\" on line 2."
+    },
+    {
+        "code": "<?php\n0x_1;",
+        "error": "Parse error: syntax error, unexpected identifier \"x_1\" on line 2."
+    },
+    {
+        "code": "<?php\n1_.0;",
+        "error": "Parse error: syntax error, unexpected identifier \"_\" on line 2."
+    },
+    {
+        "code": "<?php\n0o;",
+        "error": "Parse error: syntax error, unexpected identifier \"o\" on line 2."
+    },
+    {
+        "code": "<?php\n0O17;",
+        "error": null
+    },
+    {
+        "code": "<?php\n09.5;",
+        "error": null
+    },
+    {
+        "code": "<?php\n0777_;",
+        "error": "Parse error: syntax error, unexpected identifier \"_\" on line 2."
+    },
+    {
+        "code": "<?php\n07_8;",
+        "error": "Parse error: Invalid numeric literal on line 2."
+    },
+    {
+        "code": "<?php\n1_000.5_5;",
+        "error": null
+    },
+    {
+        "code": "<?php\n0x1_F;",
+        "error": null
+    },
+    {
+        "code": "<?php\n1e1_0;",
+        "error": null
+    },
+    {
+        "code": "<?php\n0b1_0;",
+        "error": null
+    },
+    {
+        "code": "<?php\n089;",
+        "error": "Parse error: Invalid numeric literal on line 2."
+    },
+    {
+        "code": "<?php\n0_8;",
+        "error": "Parse error: Invalid numeric literal on line 2."
+    },
+    {
+        "code": "<?php\n00;",
+        "error": null
+    },
+    {
+        "code": "<?php\n0o_7;",
+        "error": "Parse error: syntax error, unexpected identifier \"o_7\" on line 2."
+    },
+    {
+        "code": "<?php\n1.e3;",
+        "error": null
+    },
+    {
+        "code": "<?php\n.5e_1;",
+        "error": "Parse error: syntax error, unexpected identifier \"e_1\" on line 2."
+    },
+    {
+        "code": "<?php\n0.0_1;",
+        "error": null
+    },
+    {
+        "code": "<?php\n01e9;",
+        "error": null
+    },
+    {
+        "code": "<?php\n0xG;",
+        "error": "Parse error: syntax error, unexpected identifier \"xG\" on line 2."
+    },
+    {
+        "code": "<?php\n9223372036854775808;",
+        "error": null
+    },
+    {
+        "code": "<?php\n0b2_1;",
+        "error": "Parse error: syntax error, unexpected identifier \"b2_1\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1__2;",
+        "error": "Parse error: syntax error, unexpected identifier \"__2\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 0_;",
+        "error": "Parse error: syntax error, unexpected identifier \"_\" on line 2."
+    },
+    {
+        "code": "<?php\n07;",
+        "error": null
+    },
+    {
+        "code": "<?php\n0o777;",
+        "error": null
+    },
+    {
+        "code": "<?php\n0o_;",
+        "error": "Parse error: syntax error, unexpected identifier \"o_\" on line 2."
+    },
+    {
+        "code": "<?php\n078.5;",
+        "error": null
+    },
+    {
+        "code": "<?php\n0_8.5;",
+        "error": null
+    },
+    {
+        "code": "<?php\n08e1;",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"\\u{}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\n\"\\u{110000}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2."
+    },
+    {
+        "code": "<?php\n\"\\u{zz}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\n\"\\u{FFFFFF}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2."
+    },
+    {
+        "code": "<?php\n\"\\u\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"\\u{\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\n\"\\400\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n`\\u{zz}`;",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\n<<<A\n\\u{zz}\nA;\n",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 3."
+    },
+    {
+        "code": "<?php\n\"\\u{10FFFF}\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n'\\u{zz}';",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"$a \\u{xx}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\n\"\\u{ 41}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\n\"\\u{41\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\n\"\\u{0041}\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"\\x\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"\\xZ\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"\\777\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n<<<'A'\n\\u{zz}\nA;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"{$a}\\u{}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\nb\"\\u{zz}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\nclass list {}",
+        "error": "Parse error: syntax error, unexpected token \"list\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\nclass int {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction list(){}",
+        "error": "Parse error: syntax error, unexpected token \"list\", expecting \"(\" on line 2."
+    },
+    {
+        "code": "<?php\nconst class = 1;",
+        "error": "Parse error: syntax error, unexpected token \"class\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\nclass A { const class = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nnamespace namespace;",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse static;",
+        "error": "Parse error: syntax error, unexpected token \"static\" on line 2."
+    },
+    {
+        "code": "<?php\n$this = 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(int $a, int $a){}",
+        "error": null
+    },
+    {
+        "code": "<?php\nbreak 0;",
+        "error": null
+    },
+    {
+        "code": "<?php\nbreak $x;",
+        "error": null
+    },
+    {
+        "code": "<?php\ncontinue 0;",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A extends static {}",
+        "error": null
+    },
+    {
+        "code": "<?php\ninterface A implements B {}",
+        "error": "Parse error: syntax error, unexpected token \"implements\", expecting \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nreadonly function f(){}",
+        "error": "Parse error: syntax error, unexpected token \"function\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nabstract final class A {}",
+        "error": "Fatal error: Cannot use the final modifier on an abstract class on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public public $x; }",
+        "error": "Fatal error: Multiple access type modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(): void {return 1;}",
+        "error": null
+    },
+    {
+        "code": "<?php\nlist() = $a;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a?->b = 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\nyield 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\nmatch(1) {};",
+        "error": null
+    },
+    {
+        "code": "<?php\nmatch(1){default=>1,default=>2};",
+        "error": null
+    },
+    {
+        "code": "<?php\nisset(1);",
+        "error": null
+    },
+    {
+        "code": "<?php\nisset();",
+        "error": "Parse error: syntax error, unexpected token \")\" on line 2."
+    },
+    {
+        "code": "<?php\nnew A(...);",
+        "error": null
+    },
+    {
+        "code": "<?php\nf(a: 1, 2);",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = &new A;",
+        "error": "Parse error: syntax error, unexpected token \";\", expecting \"(\" on line 2."
+    },
+    {
+        "code": "<?php\nconst A = $x;",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(foo=1);",
+        "error": null
+    },
+    {
+        "code": "<?php\nnamespace A; namespace B {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse A\\{};",
+        "error": "Parse error: syntax error, unexpected token \"}\", expecting identifier or namespaced name or \"function\" or \"const\" on line 2."
+    },
+    {
+        "code": "<?php\nuse A\\{B,};",
+        "error": null
+    },
+    {
+        "code": "<?php\n#[A] $x = 1;",
+        "error": "Parse error: syntax error, unexpected variable \"$x\" on line 2."
+    },
+    {
+        "code": "<?php\n#[] function f(){}",
+        "error": "Parse error: syntax error, unexpected token \"]\" on line 2."
+    },
+    {
+        "code": "<?php\n#[A,] function f(){}",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\ninterface I { public $a { get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(public $a){}",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a |> f(...);",
+        "error": null
+    },
+    {
+        "code": "<?php\n(void) f();",
+        "error": null
+    },
+    {
+        "code": "<?php\nclone($a, ['x' => 1]);",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()->b();",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A->b();",
+        "error": "Parse error: syntax error, unexpected token \"->\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public private(set) int $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { private(set) int $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nif (1): else if (2): endif;",
+        "error": "Parse error: syntax error, unexpected token \"if\", expecting \":\" on line 2."
+    },
+    {
+        "code": "<?php\ntry {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(A&B|C $a){}",
+        "error": "Parse error: syntax error, unexpected token \"|\", expecting variable on line 2."
+    },
+    {
+        "code": "<?php\nfunction f((A&B)|C $a){}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(?int|string $a){}",
+        "error": "Parse error: syntax error, unexpected token \"|\", expecting variable on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(int|int $a){}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(void $a){}",
+        "error": null
+    },
+    {
+        "code": "<?php\n1 ? 2 : 3 ? 4 : 5;",
+        "error": null
+    },
+    {
+        "code": "<?php\n(real) $x;",
+        "error": "Parse error: The (real) cast has been removed, use (float) instead on line 2."
+    },
+    {
+        "code": "<?php\n(unset) $x;",
+        "error": null
+    },
+    {
+        "code": "<?php\n(integer) $x;",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { $a; }",
+        "error": "Parse error: syntax error, unexpected variable \"$a\", expecting \"function\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = [1, 2,,];",
+        "error": null
+    },
+    {
+        "code": "<?php\n[,] = $a;",
+        "error": null
+    },
+    {
+        "code": "<?php\n[$a,,$b] = $c;",
+        "error": null
+    },
+    {
+        "code": "<?php\nforeach ($a as &$k => $v) {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse A as B as C;",
+        "error": "Parse error: syntax error, unexpected token \"as\", expecting \",\" or \";\" on line 2."
+    },
+    {
+        "code": "<?php\nenum A { case B = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum A: float {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfn($x) => { };",
+        "error": "Parse error: syntax error, unexpected token \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nmatch (1) { , };",
+        "error": "Parse error: syntax error, unexpected token \",\", expecting \"}\" on line 2."
+    },
+    {
+        "code": "<?php\ndie 1;",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 2."
+    },
+    {
+        "code": "<?php\nexit(1, 2);",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { abstract function f(){} }",
+        "error": null
+    },
+    {
+        "code": "<?php\ngoto a;",
+        "error": null
+    },
+    {
+        "code": "<?php\na: goto a;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a->{};",
+        "error": "Parse error: syntax error, unexpected token \"}\" on line 2."
+    },
+    {
+        "code": "<?php\n\"{$a::B}\";",
+        "error": "Parse error: syntax error, unexpected token \"}\", expecting \"->\" or \"?->\" or \"[\" on line 2."
+    },
+    {
+        "code": "<?php\nstatic $a = f();",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { static $a = f(); }",
+        "error": null
+    },
+    {
+        "code": "<?php\nglobal $a->b;",
+        "error": "Parse error: syntax error, unexpected token \"->\", expecting \",\" or \";\" on line 2."
+    },
+    {
+        "code": "<?php\nunset($a,);",
+        "error": null
+    },
+    {
+        "code": "<?php\nisset($a,);",
+        "error": null
+    },
+    {
+        "code": "<?php\nf(,);",
+        "error": "Parse error: syntax error, unexpected token \",\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f($a,,){}",
+        "error": "Parse error: syntax error, unexpected token \",\", expecting variable on line 2."
+    },
+    {
+        "code": "<?php\nnew class {};",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew class extends {};",
+        "error": "Parse error: syntax error, unexpected token \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { use T { a as protected; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { use T { a as; } }",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { const int B = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { final const B = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\ninterface I { final const B = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function __construct(final public $a) {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nconst A = static function () {};",
+        "error": null
+    },
+    {
+        "code": "<?php\n#[A(static fn () => 1)] function f(){}",
+        "error": null
+    },
+    {
+        "code": "<?php\necho static::class;",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { const B = static::class; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nnamespace A\\class;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnamespace\\foo();",
+        "error": null
+    },
+    {
+        "code": "<?php\n\\namespace\\foo();",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::class();",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a::class;",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(never $a){}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction &f(){}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfn&($x) => $x;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$$;",
+        "error": "Parse error: syntax error, unexpected token \";\", expecting variable or \"{\" or \"$\" on line 2."
+    },
+    {
+        "code": "<?php\n${};",
+        "error": "Parse error: syntax error, unexpected token \"}\" on line 2."
+    },
+    {
+        "code": "<?php\n\"$a[ 1]\";",
+        "error": "Parse error: syntax error, unexpected string content \"\", expecting \"-\" or identifier or variable or number on line 2."
+    },
+    {
+        "code": "<?php\n\"$a[-1]\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"$a[01]\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"$a[0x1]\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"$a[-0]\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"$a[1_0]\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"$a[- 1]\";",
+        "error": "Parse error: syntax error, unexpected string content \"\", expecting number on line 2."
+    },
+    {
+        "code": "<?php\n\"$a[-a]\";",
+        "error": "Parse error: syntax error, unexpected identifier \"a\", expecting number on line 2."
+    },
+    {
+        "code": "<?php\n\"$a[1.5]\";",
+        "error": "Parse error: syntax error, unexpected token \".\", expecting \"]\" on line 2."
+    },
+    {
+        "code": "<?php\n\"$a->b->c\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"$a?->b\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"${a[1]}\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"${a::b}\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n`$a[-1]`;",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"$a[99999999999999999999]\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n\"$a[-9223372036854775808]\";",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { var public $a; }",
+        "error": "Parse error: syntax error, unexpected token \"public\", expecting variable on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public var $a; }",
+        "error": "Parse error: syntax error, unexpected token \"var\", expecting variable on line 2."
+    },
+    {
+        "code": "<?php\nclass A { readonly $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { static static $a; }",
+        "error": "Fatal error: Multiple static modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nfunction f() { return static fn() => 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\ntrait T { abstract private function f(); }",
+        "error": null
+    },
+    {
+        "code": "<?php\nswitch ($a) { case 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nswitch ($a): default: default: endswitch;",
+        "error": null
+    },
+    {
+        "code": "<?php\nswitch ($a) {;}",
+        "error": null
+    },
+    {
+        "code": "<?php\ncatch (A) {}",
+        "error": "Parse error: syntax error, unexpected token \"catch\", expecting end of file on line 2."
+    },
+    {
+        "code": "<?php\ntry {} catch (A) {}",
+        "error": null
+    },
+    {
+        "code": "<?php\ntry {} catch (A|B $e) {}",
+        "error": null
+    },
+    {
+        "code": "<?php\ntry {} catch () {}",
+        "error": "Parse error: syntax error, unexpected token \")\" on line 2."
+    },
+    {
+        "code": "<?php\ntry {} finally {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nlist('a' => $a, $b) = $c;",
+        "error": null
+    },
+    {
+        "code": "<?php\nlist($a, list()) = $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n[$a, []] = $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n[[]] = $a;",
+        "error": null
+    },
+    {
+        "code": "<?php\nlist(&$a) = $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n[...$a] = $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n[$a, ...$b] = $c;",
+        "error": null
+    },
+    {
+        "code": "<?php\nf(...$a, ...$b);",
+        "error": null
+    },
+    {
+        "code": "<?php\nf(...$a, $b);",
+        "error": null
+    },
+    {
+        "code": "<?php\nf(a: 1, ...$b);",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(...$a, $b){}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(...$a = []){}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f($a = 1, ...$b){}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(int ...$a,){}",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = function () use ($a,) {};",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = function () use () {};",
+        "error": "Parse error: syntax error, unexpected token \")\", expecting variable or \"&\" or token \"&\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = function () use ($this) {};",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = function () use (&$a) {};",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = fn() use ($a) => 1;",
+        "error": "Parse error: syntax error, unexpected token \"use\", expecting \"=>\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public function __get() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\ninterface I { function f() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\ninterface I { private function f(); }",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E { public $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E { case A; case A; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E: int { case A; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E { const A = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E { use T; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E implements I {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E extends F {}",
+        "error": "Parse error: syntax error, unexpected token \"extends\", expecting \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nenum E: int|string {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E: ?int {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew static;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew static();",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew parent;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew self;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew class(1) {};",
+        "error": null
+    },
+    {
+        "code": "<?php\ninstanceof A;",
+        "error": "Parse error: syntax error, unexpected token \"instanceof\", expecting end of file on line 2."
+    },
+    {
+        "code": "<?php\n$a instanceof 'A';",
+        "error": "Parse error: syntax error, unexpected single-quoted string \"A\" on line 2."
+    },
+    {
+        "code": "<?php\n$a instanceof A::B;",
+        "error": "Parse error: syntax error, unexpected identifier \"B\", expecting variable or \"$\" on line 2."
+    },
+    {
+        "code": "<?php\n$a instanceof (A);",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a instanceof ($b);",
+        "error": null
+    },
+    {
+        "code": "<?php\nprint print 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\necho 1, ;",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\necho;",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\ninclude;",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\nrequire 'a', 'b';",
+        "error": "Parse error: syntax error, unexpected token \",\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 'unterminated",
+        "error": "Parse error: syntax error, unexpected string content \"unterminated\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = \"unterminated",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or \"${\" or \"{$\" on line 2."
+    },
+    {
+        "code": "<?php\n/* unterminated",
+        "error": "Parse error: Unterminated comment starting line 2 on line 2."
+    },
+    {
+        "code": "<?php\n`unterminated",
+        "error": "Parse error: syntax error, unexpected end of file, expecting \"`\" on line 2."
+    },
+    {
+        "code": "<?php\n?>",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = 1 ?>\n<?php ?>",
+        "error": null
+    },
+    {
+        "code": "<?php\n\u0001;",
+        "error": "Parse error: syntax error, unexpected character 0x01, expecting end of file on line 2."
+    },
+    {
+        "code": "<?php\n;",
+        "error": "Parse error: syntax error, unexpected character 0x7F, expecting end of file on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\nï»¿;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = #comment\n1;",
+        "error": null
+    },
+    {
+        "code": "<?php\n#[A] fn() => 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = #[A] fn() => 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = #[A] static fn() => 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\n#[A] class {}",
+        "error": "Parse error: syntax error, unexpected token \"{\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\nnew #[A] class {};",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(#[A] $a){}",
+        "error": null
+    },
+    {
+        "code": "<?php\n#[A] enum E {}",
+        "error": null
+    },
+    {
+        "code": "<?php\n#[A] const X = 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { #[A] const X = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { #[A] use T; }",
+        "error": "Parse error: syntax error, unexpected token \"use\", expecting \"function\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { #[A] case X; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E { #[A] case X; }",
+        "error": null
+    },
+    {
+        "code": "<?php\n#[A] use B;",
+        "error": "Parse error: syntax error, unexpected token \"use\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = (int) (string) $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = (bool)(float)(array)(object) $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = (binary) $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = (double) $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = (boolean) $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = ( int ) $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = (\tint\t) $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = (Int) $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = $b ?: $c ?: $d;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = $b ?? $c ?? $d;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = 1 <=> 2 <=> 3;",
+        "error": "Parse error: syntax error, unexpected token \"<=>\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1 == 2 == 3;",
+        "error": "Parse error: syntax error, unexpected token \"==\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1 < 2 > 3;",
+        "error": "Parse error: syntax error, unexpected token \">\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = !$b instanceof C;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = -$b ** 2;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = $b = $c = 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = 1 + $b = 2;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a++ ++;",
+        "error": "Parse error: syntax error, unexpected token \"++\" on line 2."
+    },
+    {
+        "code": "<?php\n++$a++;",
+        "error": "Parse error: syntax error, unexpected token \"++\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = &$b[];",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a[] = &$b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = [&$b];",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = [...$b, ...$c];",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = ['a' => ...$b];",
+        "error": "Parse error: syntax error, unexpected token \"...\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = [...$b => 1];",
+        "error": "Parse error: syntax error, unexpected token \"=>\", expecting \"]\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = $b[];",
+        "error": null
+    },
+    {
+        "code": "<?php\nf($a[]);",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = $b{1};",
+        "error": "Parse error: syntax error, unexpected token \"{\" on line 2."
+    },
+    {
+        "code": "<?php\n$a{1} = 2;",
+        "error": "Parse error: syntax error, unexpected token \"{\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = \"$b{1}\";",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { function f() { $this->a::b(); } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::$b::$c();",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::{'b'}();",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a->b::c;",
+        "error": null
+    },
+    {
+        "code": "<?php\n(clone $a)->b;",
+        "error": null
+    },
+    {
+        "code": "<?php\nclone $a->b;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew $a->b;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew $a::$b;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew $a['b'];",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew ($a)();",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew (A::class);",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A::$b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = (new A)::B;",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::B::C;",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::B();",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::class::B;",
+        "error": null
+    },
+    {
+        "code": "<?php\nstatic::$a;",
+        "error": null
+    },
+    {
+        "code": "<?php\nparent::A;",
+        "error": null
+    },
+    {
+        "code": "<?php\nself::class;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = 'a'::B;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = 'a'::$b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = \"a\"::b();",
+        "error": null
+    },
+    {
+        "code": "<?php\n[1]::a();",
+        "error": null
+    },
+    {
+        "code": "<?php\n(1)::a();",
+        "error": null
+    },
+    {
+        "code": "<?php\n__LINE__ = 1;",
+        "error": "Parse error: syntax error, unexpected token \"=\" on line 2."
+    },
+    {
+        "code": "<?php\n__CLASS__::a();",
+        "error": "Parse error: syntax error, unexpected token \"::\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = __CLASS__::a;",
+        "error": "Parse error: syntax error, unexpected token \"::\" on line 2."
+    },
+    {
+        "code": "<?php\nexit;",
+        "error": null
+    },
+    {
+        "code": "<?php\nexit();",
+        "error": null
+    },
+    {
+        "code": "<?php\ndie();",
+        "error": null
+    },
+    {
+        "code": "<?php\nexit(1);",
+        "error": null
+    },
+    {
+        "code": "<?php\nexit(...);",
+        "error": null
+    },
+    {
+        "code": "<?php\ndie(...);",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = exit;",
+        "error": null
+    },
+    {
+        "code": "<?php\nf(exit);",
+        "error": null
+    },
+    {
+        "code": "<?php\nthrow;",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = throw $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a ?? throw $b;",
+        "error": null
+    },
+    {
+        "code": "<?php\nfn() => throw $a;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = yield;",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { $a = yield; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { yield $a => $b; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { $a = yield $b => $c; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { yield from; }",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f() { yield from $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { $a = (yield); }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { f(yield $a); }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { f(yield $a, 1); }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { $a = yield + 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { return yield; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() { yield yield; }",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(strict_types=1) {}",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(ticks=1): enddeclare;",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(strict_types=1, ticks=1);",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(strict_types=2);",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(encoding='UTF-8');",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare();",
+        "error": "Parse error: syntax error, unexpected token \")\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\ndeclare(strict_types);",
+        "error": "Parse error: syntax error, unexpected token \")\", expecting \"=\" on line 2."
+    },
+    {
+        "code": "<?php\ngoto 1;",
+        "error": "Parse error: syntax error, unexpected integer \"1\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\na: a: ;",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { a: }",
+        "error": "Parse error: syntax error, unexpected identifier \"a\", expecting \"function\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f() { a: }",
+        "error": null
+    },
+    {
+        "code": "<?php\nnamespace A; namespace B;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnamespace A {} namespace B {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nnamespace {} namespace {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nnamespace A {} echo 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\necho 1; namespace A;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnamespace A; use B; use C\\{D, E as F, function g, const H};",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse function A\\{b, c};",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse A\\{function b, const c};",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse function A\\{function b};",
+        "error": "Parse error: syntax error, unexpected token \"function\", expecting identifier or namespaced name on line 2."
+    },
+    {
+        "code": "<?php\nuse A\\B\\{C\\D};",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse \\A;",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse \\A\\{B};",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse A\\{\\B};",
+        "error": "Parse error: syntax error, unexpected fully qualified name \"\\B\", expecting identifier or namespaced name or \"function\" or \"const\" on line 2."
+    },
+    {
+        "code": "<?php\nuse A as list;",
+        "error": "Parse error: syntax error, unexpected token \"list\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\nuse A as class;",
+        "error": "Parse error: syntax error, unexpected token \"class\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\nuse A as int;",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse A as self;",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse A as readonly;",
+        "error": "Parse error: syntax error, unexpected token \"readonly\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\nuse A as enum;",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse A as mixed;",
+        "error": null
+    },
+    {
+        "code": "<?php\nuse function A as list;",
+        "error": "Parse error: syntax error, unexpected token \"list\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\nclass readonly {}",
+        "error": "Parse error: syntax error, unexpected token \"readonly\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\nclass enum {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass mixed {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass never {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A extends readonly {}",
+        "error": "Parse error: syntax error, unexpected token \"readonly\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction readonly() {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nreadonly();",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum();",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum::A;",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { const enum = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { function list() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { function class() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::list();",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::class;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a->class;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a->list();",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a::list;",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { const function = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::function;",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function __halt_compiler() {} }",
+        "error": "Parse error: syntax error, unexpected token \"__halt_compiler\" on line 2."
+    },
+    {
+        "code": "<?php\nA::__halt_compiler();",
+        "error": "Parse error: syntax error, unexpected token \"__halt_compiler\" on line 2."
+    },
+    {
+        "code": "<?php\n$a->__halt_compiler();",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction __halt_compiler() {}",
+        "error": "Parse error: syntax error, unexpected token \"__halt_compiler\", expecting \"(\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { use B { list as foo; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { use B { foo as list; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { use B { foo as public list; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { use B { foo as class; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { use B { B::foo insteadof C; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { use B { foo insteadof C; } }",
+        "error": "Parse error: syntax error, unexpected token \"insteadof\", expecting \"::\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { use B { B::foo as; } }",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { use B, C {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { use B, C; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { use; }",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\ninterface I extends A, B {}",
+        "error": null
+    },
+    {
+        "code": "<?php\ninterface I extends A, {}",
+        "error": "Parse error: syntax error, unexpected token \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A implements B, {}",
+        "error": "Parse error: syntax error, unexpected token \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A extends B, C {}",
+        "error": "Parse error: syntax error, unexpected token \",\", expecting \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public function f(): static {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): static {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(static $a) {}",
+        "error": "Fatal error: Cannot use the static modifier on a parameter on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(): ?static {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): null {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): false {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): true {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): ?mixed {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): ?null {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): void|null {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): (A&B)|null {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): A&B {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(): (A|B)&C {}",
+        "error": "Parse error: syntax error, unexpected token \"|\", expecting token \"&\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(): (A&B) {}",
+        "error": "Parse error: syntax error, unexpected token \"{\", expecting \"|\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(): ((A&B)|C) {}",
+        "error": "Parse error: syntax error, unexpected token \"(\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(): ?A&B {}",
+        "error": "Parse error: syntax error, unexpected token \"&\", expecting \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(): ?(A&B) {}",
+        "error": "Parse error: syntax error, unexpected token \"(\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(&...$a) {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(...&$a) {}",
+        "error": "Parse error: syntax error, unexpected token \"&\", expecting variable on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(int &...$a) {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(&$a = 1) {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nf(&$a);",
+        "error": "Parse error: syntax error, unexpected token \"&\" on line 2."
+    },
+    {
+        "code": "<?php\nf(... $a);",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f(?...$a) {}",
+        "error": "Parse error: syntax error, unexpected token \"...\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(int|...$a) {}",
+        "error": "Parse error: syntax error, unexpected token \"...\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public function __construct(public $a, public ...$b) {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function __construct(public readonly $a) {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function __construct(readonly $a) {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function __construct(public public $a) {} }",
+        "error": "Fatal error: Multiple access type modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public function __construct(protected(set) $a) {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function __construct(public $a { get => 1; }) {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { set($v) { } } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { get; set; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { foo; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { final get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { &get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { get => 1 } }",
+        "error": "Parse error: syntax error, unexpected token \"}\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public $a { get { return 1; } } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { set(int $v,) {} } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { set($v = 1) {} } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { get(); } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a, $b { get; } }",
+        "error": "Parse error: syntax error, unexpected token \"{\", expecting \",\" or \";\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { abstract public $a { get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a = 1 { get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { #[A] get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { get => 1; get => 2; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a { private get; } }",
+        "error": "Fatal error: Cannot use the private modifier on a property hook on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public $a { static get; } }",
+        "error": "Fatal error: Cannot use the static modifier on a property hook on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public readonly $a { get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { var $a { get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public static $a { get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public final $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { final $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public abstract $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { abstract $a { get; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { final public const A = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { private final const A = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function f(); }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { abstract public function f() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { abstract public function f(); }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { static function f(); }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { function f() }",
+        "error": "Parse error: syntax error, unexpected token \"}\", expecting \";\" or \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public function f() {}; }",
+        "error": "Parse error: syntax error, unexpected token \";\", expecting \"function\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { ; }",
+        "error": "Parse error: syntax error, unexpected token \";\", expecting \"function\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A {} ;",
+        "error": null
+    },
+    {
+        "code": "<?php\nfunction f() {};",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a = 1, $b = 2; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a, $b; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public $a, ; }",
+        "error": "Parse error: syntax error, unexpected token \";\", expecting variable on line 2."
+    },
+    {
+        "code": "<?php\nclass A { const A = 1, B = 2; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { const A, B; }",
+        "error": "Parse error: syntax error, unexpected token \",\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { const A; }",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public int $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public ?int $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public int|string $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public void $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public callable $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public never $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public static $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public static static $a; }",
+        "error": "Fatal error: Multiple static modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public function public() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function static() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function new() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function self() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function parent() {} }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { const self = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { const parent = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { const static = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { const new = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::new();",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::static();",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a->static;",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::self;",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::new;",
+        "error": null
+    },
+    {
+        "code": "<?php\nA::self();",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { public function f() { return new static::$b; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew static::$a;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew self::$a;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A::B;",
+        "error": "Parse error: syntax error, unexpected identifier \"B\", expecting variable or \"$\" on line 2."
+    },
+    {
+        "code": "<?php\nnew A::B();",
+        "error": "Parse error: syntax error, unexpected identifier \"B\", expecting variable or \"$\" on line 2."
+    },
+    {
+        "code": "<?php\nnew $a::B;",
+        "error": "Parse error: syntax error, unexpected identifier \"B\", expecting variable or \"$\" on line 2."
+    },
+    {
+        "code": "<?php\nnew ('A');",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew (f());",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()['b'];",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()::B;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()::$b;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()->b;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()?->b;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A->b;",
+        "error": "Parse error: syntax error, unexpected token \"->\" on line 2."
+    },
+    {
+        "code": "<?php\nnew A()();",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew class {}->a();",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew class {}::A;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A() instanceof B;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()++;",
+        "error": "Parse error: syntax error, unexpected token \"++\" on line 2."
+    },
+    {
+        "code": "<?php\nclone new A()->b;",
+        "error": null
+    },
+    {
+        "code": "<?php\n(new A)->b;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A ?? 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()->b = 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()::$b = 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A()['b'] = 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\nnew A ->b;",
+        "error": "Parse error: syntax error, unexpected token \"->\" on line 2."
+    },
+    {
+        "code": "<?php\nnew A\n->b();",
+        "error": "Parse error: syntax error, unexpected token \"->\" on line 3."
+    },
+    {
+        "code": "<?php\n$a = new A() ['b'];",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = new A() -> b();",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = new readonly class {};",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = new final class {};",
+        "error": "Fatal error: Cannot use the final modifier on an anonymous class on line 2."
+    },
+    {
+        "code": "<?php\n$a = new abstract class {};",
+        "error": "Fatal error: Cannot use the abstract modifier on an anonymous class on line 2."
+    },
+    {
+        "code": "<?php\n$a = new #[A] readonly class {};",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = new readonly #[A] class {};",
+        "error": "Parse error: syntax error, unexpected token \"#[\", expecting \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nreadonly class A {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nfinal readonly class A {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nreadonly final class A {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nabstract readonly class A {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nreadonly abstract class A {}",
+        "error": null
+    },
+    {
+        "code": "<?php\nreadonly readonly class A {}",
+        "error": "Fatal error: Multiple readonly modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nfinal final class A {}",
+        "error": "Fatal error: Multiple final modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nreadonly interface I {}",
+        "error": "Parse error: syntax error, unexpected token \"interface\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nreadonly trait T {}",
+        "error": "Parse error: syntax error, unexpected token \"trait\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nreadonly enum E {}",
+        "error": "Parse error: syntax error, unexpected token \"enum\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nfinal enum E {}",
+        "error": "Parse error: syntax error, unexpected token \"enum\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nabstract enum E {}",
+        "error": "Parse error: syntax error, unexpected token \"enum\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nfinal trait T {}",
+        "error": "Parse error: syntax error, unexpected token \"trait\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nfinal interface I {}",
+        "error": "Parse error: syntax error, unexpected token \"interface\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nreadonly function f() {}",
+        "error": "Parse error: syntax error, unexpected token \"function\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nreadonly fn() => 1;",
+        "error": "Parse error: syntax error, unexpected token \"fn\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nreadonly $a;",
+        "error": "Parse error: syntax error, unexpected variable \"$a\", expecting \"abstract\" or \"final\" or \"readonly\" or \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nreadonly class {}",
+        "error": "Parse error: syntax error, unexpected token \"{\", expecting identifier on line 2."
+    },
+    {
+        "code": "<?php\n$a = <<<A\nA . <<<B\nB;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = [<<<A\n  x\n  A, 1];\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = f(<<<A\n  x\n  A);\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n  A\n  ;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n  AB;\n",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 5."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n  A_;\n",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 5."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n  A1;\n",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 5."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n  A;B;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = <<<A\nAA\nA;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  AA\n  A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  A\n  A;\n",
+        "error": "Parse error: syntax error, unexpected identifier \"A\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n x\n  A::B;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n   x\n  A->b;\n",
+        "error": "Parse error: syntax error, unexpected token \"->\" on line 4."
+    },
+    {
+        "code": "<?php __halt_compiler",
+        "error": "Parse error: syntax error, unexpected end of file, expecting \"(\" on line 1."
+    },
+    {
+        "code": "<?php __halt_compiler();",
+        "error": null
+    },
+    {
+        "code": "<?php __halt_compiler()",
+        "error": "Parse error: syntax error, unexpected end of file, expecting \";\" on line 1."
+    },
+    {
+        "code": "<?php __halt_compiler(1);",
+        "error": "Parse error: syntax error, unexpected integer \"1\", expecting \")\" on line 1."
+    },
+    {
+        "code": "<?php function f(){ __halt_compiler(); }",
+        "error": "Fatal error: __HALT_COMPILER() can only be used from the outermost scope on line 1."
+    },
+    {
+        "code": "<?php __halt_compiler;",
+        "error": "Parse error: syntax error, unexpected token \";\", expecting \"(\" on line 1."
+    },
+    {
+        "code": "<?php __halt_compiler() ?>x",
+        "error": null
+    },
+    {
+        "code": "<?php __HALT_COMPILER();junk(",
+        "error": null
+    },
+    {
+        "code": "<?php if (1) { __halt_compiler(); }",
+        "error": "Fatal error: __HALT_COMPILER() can only be used from the outermost scope on line 1."
+    },
+    {
+        "code": "<?php namespace A { __halt_compiler(); }",
+        "error": "Parse error: Unclosed '{' on line 1."
+    },
+    {
+        "code": "<?php __halt_compiler();\n<?php ((",
+        "error": null
+    },
+    {
+        "code": "<?php __halt_compiler(); }",
+        "error": null
+    },
+    {
+        "code": "#!/usr/bin/env php\n<?php 1;",
+        "error": null
+    },
+    {
+        "code": "<?= 1 ?>",
+        "error": null
+    },
+    {
+        "code": "<?=;",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 1."
+    },
+    {
+        "code": "x<?php ",
+        "error": null
+    },
+    {
+        "code": "<?php",
+        "error": null
+    },
+    {
+        "code": "<?php\n",
+        "error": null
+    },
+    {
+        "code": "<?phpx",
+        "error": null
+    },
+    {
+        "code": "<?PHP 1;",
+        "error": null
+    },
+    {
+        "code": "<?php\r1;",
+        "error": null
+    },
+    {
+        "code": "<?php\t1;",
+        "error": null
+    },
+    {
+        "code": "<?php ?>\n<?php }",
+        "error": "Parse error: Unmatched '}' on line 2."
+    },
+    {
+        "code": "<?php if (1): ?>x<?php else: ?>y<?php endif ?>",
+        "error": null
+    },
+    {
+        "code": "<?php if (1): ?>x<?php else if (2): ?>y<?php endif ?>",
+        "error": "Parse error: syntax error, unexpected token \"if\", expecting \":\" on line 1."
+    },
+    {
+        "code": "<?php if (1) { ?>x<?php } else ?>y",
+        "error": null
+    },
+    {
+        "code": "<?php if (1) ?>x",
+        "error": null
+    },
+    {
+        "code": "<?php switch ($a): ?>\n<?php case 1: endswitch;",
+        "error": null
+    },
+    {
+        "code": "<?php switch ($a): ?>  <?php case 1: endswitch;",
+        "error": "Parse error: syntax error, unexpected T_INLINE_HTML \"  \", expecting \"endswitch\" or \"case\" or \"default\" on line 1."
+    },
+    {
+        "code": "<?php switch ($a): ?>x<?php case 1: endswitch;",
+        "error": "Parse error: syntax error, unexpected T_INLINE_HTML \"x\", expecting \"endswitch\" or \"case\" or \"default\" on line 1."
+    },
+    {
+        "code": "<?php switch ($a) { ?>\n<?php case 1: }",
+        "error": null
+    },
+    {
+        "code": "<?php switch ($a) { ?>x<?php case 1: }",
+        "error": "Parse error: syntax error, unexpected T_INLINE_HTML \"x\", expecting \"case\" or \"default\" or \"}\" on line 1."
+    },
+    {
+        "code": "<?php\r\n$a = 1\r\n\r\n}",
+        "error": "Parse error: Unmatched '}' on line 4."
+    },
+    {
+        "code": "<?php\r$a = 1\r\r}",
+        "error": "Parse error: Unmatched '}' on line 4."
+    },
+    {
+        "code": "<?php\n$a = 1 ?>\n\n<?php }",
+        "error": "Parse error: Unmatched '}' on line 4."
+    },
+    {
+        "code": "<?php\n$a = 'x\ny' 1;",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 3."
+    },
+    {
+        "code": "<?php\n$a = \"x\ny\" 1;",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 3."
+    },
+    {
+        "code": "<?php\n$a = \"a\n\\u{zz}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 3."
+    },
+    {
+        "code": "<?php\n$a = \"a\n$b\n\\u{zz}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 4."
+    },
+    {
+        "code": "<?php\n$a = `a\n\\u{110000}`;",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3."
+    },
+    {
+        "code": "<?php\n$a = \"\\u{0000000041}\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = \"\\u{00000000110000}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2."
+    },
+    {
+        "code": "<?php\n$a = \"\\\\u{zz}\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n  \\u{zz}\n  A;\n",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n  \\u{zz}\n A;\n",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x $b\n  \\u{zz}\n  A;\n",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b}\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n${b}\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n$b\n\t\tA;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n$b\n  x\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b}\n  y\n  {$c}\n z\n A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 1) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b(<<<B\n  x\n  B)}\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b(<<<B\n  x\n \tB)}\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b(<<<B\n\t B)}\n  A;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b[08]}\n  A;\n",
+        "error": "Parse error: Invalid numeric literal on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b[\"\\u{zz}\"]}\n  A;\n",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b /* x\n  A;\n",
+        "error": "Parse error: Unterminated comment starting line 3 on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b)}\n  A;\n",
+        "error": "Parse error: Unclosed '{' does not match ')' on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b(]}\n  A;\n",
+        "error": "Parse error: Unclosed '(' does not match ']' on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b(}\n  A;\n",
+        "error": "Parse error: Unclosed '(' does not match '}' on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b[`x`]}\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b ?>\n<?php }\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b}\n  x\n\t  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 3) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n{$b} \n",
+        "error": "Parse error: syntax error, unexpected end of file on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n  ",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n y",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n\t",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<'A'\n  x\n y",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<'A'\n  x\n\t  A;\n",
+        "error": "Parse error: Invalid indentation - tabs and spaces cannot be mixed on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<'A'\n x\n\n  A;\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\r\n  x\r\n y\r\n  A;\r\n",
+        "error": "Parse error: Invalid body indentation level (expecting an indentation level of at least 2) on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\r\n  x\r\n  A . 1 1;\r\n",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  x\n  A . 1 1;\n",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  $x\n  A . 1 1;\n",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<'A'\n  x\n  A . 1 1;\n",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\nA . 1 1;\n",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 3."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n\nA . 1 1;\n",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 4."
+    },
+    {
+        "code": "<?php\n$a = <<<A\n  a\n\n  A . 1 1;\n",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 5."
+    },
+    {
+        "code": "<?php\nclass A { final abstract function f(); }",
+        "error": "Fatal error: Cannot use the final modifier on an abstract method on line 2."
+    },
+    {
+        "code": "<?php\nclass A { abstract final $a { get; } }",
+        "error": "Fatal error: Cannot use the final modifier on an abstract property on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public function __construct(public private(set) protected(set) $a) {} }",
+        "error": "Fatal error: Multiple access type modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public private(set) private(set) $a; }",
+        "error": "Fatal error: Multiple access type modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nclass A { readonly function f() {} }",
+        "error": "Fatal error: Cannot use the readonly modifier on a method on line 2."
+    },
+    {
+        "code": "<?php\nclass A { abstract const X = 1; }",
+        "error": "Fatal error: Cannot use the abstract modifier on a class constant on line 2."
+    },
+    {
+        "code": "<?php\nclass A { static const X = 1; }",
+        "error": "Fatal error: Cannot use the static modifier on a class constant on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public function __construct(abstract $a) {} }",
+        "error": "Fatal error: Cannot use the abstract modifier on a parameter on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public $a { final final get; } }",
+        "error": "Fatal error: Multiple final modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public $a { abstract get; } }",
+        "error": "Fatal error: Cannot use the abstract modifier on a property hook on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public $a { readonly get; } }",
+        "error": "Fatal error: Cannot use the readonly modifier on a property hook on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public $a { public(set) get; } }",
+        "error": "Fatal error: Cannot use the public(set) modifier on a property hook on line 2."
+    },
+    {
+        "code": "<?php\nclass A { use T { f as readonly; } }",
+        "error": "Fatal error: Cannot use the readonly modifier on a method on line 2."
+    },
+    {
+        "code": "<?php\nclass A { use T { f as readonly g; } }",
+        "error": "Fatal error: Cannot use the readonly modifier on a method on line 2."
+    },
+    {
+        "code": "<?php\nclass A { use T { f as public(set); } }",
+        "error": "Fatal error: Cannot use the public(set) modifier on a method on line 2."
+    },
+    {
+        "code": "<?php\nclass A { use T { f as protected g; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { use T { f as static; } }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { protected(set) function f() {} }",
+        "error": "Fatal error: Cannot use the protected(set) modifier on a method on line 2."
+    },
+    {
+        "code": "<?php\nclass A { private(set) const X = 1; }",
+        "error": "Fatal error: Cannot use the private(set) modifier on a class constant on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public(set) static $a; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nabstract abstract class A {}",
+        "error": "Fatal error: Multiple abstract modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\nfinal abstract class A {}",
+        "error": "Fatal error: Cannot use the final modifier on an abstract class on line 2."
+    },
+    {
+        "code": "<?php\n$a = new readonly readonly class {};",
+        "error": "Fatal error: Multiple readonly modifiers are not allowed on line 2."
+    },
+    {
+        "code": "<?php\n$a = new readonly final class {};",
+        "error": "Fatal error: Cannot use the final modifier on an anonymous class on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public static function f() {} public static $a; private const X = 1; }",
+        "error": null
+    },
+    {
+        "code": "<?php\nclass A { private ?int $a; protected static ?A $b = null; }",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(encoding='UTF-8', ticks=1);",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(ticks=1, encoding=FOO);",
+        "error": "Fatal error: Encoding must be a literal on line 2."
+    },
+    {
+        "code": "<?php\ndeclare(encoding=(('a')));",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(encoding='a' . ('b' . 1));",
+        "error": null
+    },
+    {
+        "code": "<?php\ndeclare(encoding='a' . f());",
+        "error": "Fatal error: Encoding must be a literal on line 2."
+    },
+    {
+        "code": "<?php\ndeclare(encoding=<<<A\nx $b\nA);",
+        "error": "Fatal error: Encoding must be a literal on line 4."
+    },
+    {
+        "code": "<?php\ndeclare(encoding=[1, 2]);",
+        "error": "Fatal error: Encoding must be a literal on line 2."
+    },
+    {
+        "code": "<?php\ndeclare(encoding=f(1, 2));",
+        "error": "Fatal error: Encoding must be a literal on line 2."
+    },
+    {
+        "code": "<?php class A { const ?><?= = 1; }",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 1."
+    },
+    {
+        "code": "<?php class A { function ?><?= () {} }",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 1."
+    },
+    {
+        "code": "<?php class A { use T { f as ?><?= ; } }",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 1."
+    },
+    {
+        "code": "<?php A::?><?= ();",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 1."
+    },
+    {
+        "code": "<?php class A { const ECHO = 1; } A::echo();",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = \\;",
+        "error": "Parse error: syntax error, unexpected token \"\\\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = &;",
+        "error": "Parse error: syntax error, unexpected token \";\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = \"x\" \"y\";",
+        "error": "Parse error: syntax error, unexpected double-quoted string \"y\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' 1;",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' 1;",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' 1;",
+        "error": "Parse error: syntax error, unexpected integer \"1\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1 \u0001;",
+        "error": "Parse error: syntax error, unexpected character 0x01 on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1 \"\";",
+        "error": "Parse error: syntax error, unexpected double-quoted string \"\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = \"$b\" \"$c\";",
+        "error": "Parse error: syntax error, unexpected double-quote mark on line 2."
+    },
+    {
+        "code": "<?php\n$a = \"x$b\";\"",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or string content or \"${\" or \"{$\" on line 2."
+    },
+    {
+        "code": "<?php\nfunction f(int $a) { return $a }",
+        "error": "Parse error: syntax error, unexpected token \"}\", expecting \";\" on line 2."
+    },
+    {
+        "code": "<?php\nif ($a) { } else",
+        "error": "Parse error: syntax error, unexpected end of file on line 2."
+    },
+    {
+        "code": "<?php\nforeach ($a as $b) echo",
+        "error": "Parse error: syntax error, unexpected end of file on line 2."
+    },
+    {
+        "code": "<?php\n$a->",
+        "error": "Parse error: syntax error, unexpected end of file, expecting identifier or variable or \"{\" or \"$\" on line 2."
+    },
+    {
+        "code": "<?php\n$a::",
+        "error": "Parse error: syntax error, unexpected end of file on line 2."
+    },
+    {
+        "code": "<?php\nnew",
+        "error": "Parse error: syntax error, unexpected end of file, expecting \"class\" on line 2."
+    },
+    {
+        "code": "<?php\nuse",
+        "error": "Parse error: syntax error, unexpected end of file on line 2."
+    },
+    {
+        "code": "<?php\nnamespace",
+        "error": "Parse error: syntax error, unexpected end of file, expecting \"{\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A extends",
+        "error": "Parse error: syntax error, unexpected end of file on line 2."
+    },
+    {
+        "code": "<?php\n#[",
+        "error": "Parse error: Unclosed '[' on line 2."
+    },
+    {
+        "code": "<?php\n$a = [1, 2",
+        "error": "Parse error: Unclosed '[' on line 2."
+    },
+    {
+        "code": "<?php\n$a = (1",
+        "error": "Parse error: Unclosed '(' on line 2."
+    },
+    {
+        "code": "<?php\n{",
+        "error": "Parse error: Unclosed '{' on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1\n?>",
+        "error": null
+    },
+    {
+        "code": "<?php\necho 1 ?>x<?php echo 2",
+        "error": "Parse error: syntax error, unexpected end of file, expecting \",\" or \";\" on line 2."
+    },
+    {
+        "code": "x<?php echo 1",
+        "error": "Parse error: syntax error, unexpected end of file, expecting \",\" or \";\" on line 1."
+    },
+    {
+        "code": "<?php\n$a = \"\\400\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = 0b_1;",
+        "error": "Parse error: syntax error, unexpected identifier \"b_1\" on line 2."
+    },
+    {
+        "code": "<?php\n$x = 0_0;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = 0089.5;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$x = 0_8_9e1;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = (REAL) $b;",
+        "error": "Parse error: The (real) cast has been removed, use (float) instead on line 2."
+    },
+    {
+        "code": "<?php\n$a = ( Real\t) $b;",
+        "error": "Parse error: The (real) cast has been removed, use (float) instead on line 2."
+    },
+    {
+        "code": "<?php\n$a = (double) $b . (float) $c;",
+        "error": null
+    },
+    {
+        "code": "<?php\n/** doc */\nclass A {}\n/* x */ /** y",
+        "error": "Parse error: Unterminated comment starting line 4 on line 4."
+    },
+    {
+        "code": "<?php\n// x\n# y\n/*\n*/ }",
+        "error": "Parse error: Unmatched '}' on line 5."
+    },
+    {
+        "code": "<?php\n$a = \"${a}\" . \"{$b->c}\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = \"{$b}\" . `{$c}` . `${d}`;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = \"$a[1]$b->c$d?->e\";",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = b<<<A\n  x\n A;\n",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = B'x' . b\"y\\u{zz}\";",
+        "error": "Parse error: Invalid UTF-8 codepoint escape sequence on line 2."
+    },
+    {
+        "code": "<?php\n$a = b'\\u{zz}' . '\"';",
+        "error": null
+    },
+    {
+        "code": "<?php\nfn() => yield $a;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$f = fn&(array &$a): array => $a;",
+        "error": null
+    },
+    {
+        "code": "<?php\n$a = $b |> strlen(...) |> f(...);",
+        "error": null
+    },
+    {
+        "code": "<?php\nenum E: string implements I { case A = 'a'; const B = self::A; }",
+        "error": null
+    },
+    {
+        "code": "<?php\n__halt_compiler();\n\u0000ÿ",
+        "error": null
+    },
+    {
+        "code": "<?php\n__halt_compiler() ?>junk",
+        "error": null
+    },
+    {
+        "code": "<?php\n(\n]",
+        "error": "Parse error: Unclosed '(' on line 2 does not match ']' on line 3."
+    },
+    {
+        "code": "<?php\n{\n)",
+        "error": "Parse error: Unclosed '{' on line 2 does not match ')' on line 3."
+    },
+    {
+        "code": "<?php\n$a = 'x\ny",
+        "error": "Parse error: syntax error, unexpected string content \"x\" on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public $a { protected get; } }",
+        "error": "Fatal error: Cannot use the protected modifier on a property hook on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public $a { private get; } }",
+        "error": "Fatal error: Cannot use the private modifier on a property hook on line 2."
+    },
+    {
+        "code": "<?php\nclass A { public $a { public get; } }",
+        "error": "Fatal error: Cannot use the public modifier on a property hook on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1 'x\ny';",
+        "error": "Parse error: syntax error, unexpected single-quoted string \"x\" on line 3."
+    },
+    {
+        "code": "<?php\n$a = 1 b'x';",
+        "error": "Parse error: syntax error, unexpected quoted string \"b'x\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';",
+        "error": "Parse error: syntax error, unexpected single-quoted string \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1 \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\";",
+        "error": "Parse error: syntax error, unexpected double-quoted string \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\" on line 2."
+    },
+    {
+        "code": "<?php\n$a = 1 \"$x\";",
+        "error": "Parse error: syntax error, unexpected double-quote mark on line 2."
+    },
+    {
+        "code": "<?php\n__halt_compiler()\n;",
+        "error": null
+    },
+    {
+        "code": "<?php\n__halt_compiler(); (",
+        "error": null
+    },
+    {
+        "code": "<?php\n{ __halt_compiler(); }",
+        "error": "Fatal error: __HALT_COMPILER() can only be used from the outermost scope on line 2."
+    }
+]
