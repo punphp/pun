@@ -50,7 +50,7 @@ Analyzers owned: WhitespacesAnalyzer, WhitespacesFixerConfig, Preg (pcre2 wrappe
 
 Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCaseStructuresAnalyzer, GotoLabelAnalyzer, ReferenceAnalyzer, AbstractNoUselessElseFixer, AbstractFunctionReferenceFixer.
 
-- [ ] no_trailing_comma_in_singleline
+- [x] no_trailing_comma_in_singleline
 - [x] no_trailing_whitespace
 - [x] no_trailing_whitespace_in_comment
 - [x] no_unneeded_braces
@@ -63,32 +63,32 @@ Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCa
 - [x] phpdoc_single_line_var_spacing
 - [x] phpdoc_tag_type
 - [x] single_blank_line_at_eof
-- [ ] single_class_element_per_statement
-- [ ] single_import_per_statement
-- [ ] single_line_after_imports
+- [x] single_class_element_per_statement
+- [x] single_import_per_statement
+- [x] single_line_after_imports
 - [x] single_line_comment_spacing
 - [x] single_line_comment_style
 - [x] single_line_empty_body
-- [ ] single_space_around_construct
+- [x] single_space_around_construct
 - [x] space_after_semicolon
 - [x] spaces_inside_parentheses
-- [ ] statement_indentation
+- [x] statement_indentation
 - [x] switch_case_semicolon_to_colon
 - [x] switch_case_space
 - [x] ternary_operator_spaces
-- [ ] trailing_comma_in_multiline
+- [x] trailing_comma_in_multiline
 - [x] trim_array_spaces
-- [ ] type_declaration_spaces
+- [x] type_declaration_spaces
 - [x] types_spaces
 - [x] unary_operator_spaces
 - [x] whitespace_after_comma_in_array
 - [x] Pint/laravel_blade
-- [ ] array_push
+- [x] array_push
 - [x] array_syntax
 - [x] backtick_to_shell_exec
 - [x] compact_nullable_type_declaration
 - [x] control_structure_continuation_position
-- [ ] date_time_immutable
+- [x] date_time_immutable
 - [x] declare_equal_normalize
 - [x] declare_parentheses
 - [x] declare_strict_types
