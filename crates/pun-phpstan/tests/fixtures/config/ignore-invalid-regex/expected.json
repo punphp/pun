@@ -1,0 +1,3 @@
+{
+    "error": "Invalid entries in ignoreErrors:\nCompilation failed: missing closing parenthesis at offset 4 in pattern: #foo(#\n\nDelimiter must not be alphanumeric, backslash, or NUL byte in pattern: nodelim\n\nPath \"{cwd}/src/nope.php\" is neither a directory, nor a file path, nor a fnmatch pattern.\n\nTo ignore non-existent paths in ignoreErrors,\nset reportUnmatchedIgnoredErrors: false in your configuration file.\n"
+}

@@ -38,7 +38,7 @@ if (is_file($cwd.'/vendor/autoload.php')) {
     require $cwd.'/vendor/autoload.php'; // what vendor/bin/phpstan does
 }
 if ($generated !== null) {
-    require realpath($generated);
+    require str_starts_with($generated, '/') ? $generated : $cwd.'/'.$generated; // like the test, relative to <cwd>
 }
 chdir($cwd);
 

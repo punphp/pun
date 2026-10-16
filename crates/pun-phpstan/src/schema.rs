@@ -293,9 +293,8 @@ impl Message {
                     } else {
                         "item".to_string()
                     }),
-                    "path" => {
-                        (!self.path.is_empty()).then(|| format!("'{}'", self.path.join(" › ")))
-                    }
+                    "path" => (!self.path.is_empty())
+                        .then(|| format!("'{}'", self.path.join("\u{a0}›\u{a0}"))),
                     "value" => Some(format_value(&self.value)),
                     n => self
                         .vars

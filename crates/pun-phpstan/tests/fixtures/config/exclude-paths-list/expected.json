@@ -1,0 +1,3 @@
+{
+    "error": "Invalid entry in excludePaths:\nPath \"{cwd}/src/missing\" is neither a directory, nor a file path, nor a fnmatch pattern.\n\nIf the excluded path can sometimes exist, append (?)\nto its config entry to mark it as optional. Example:\n\nparameters:\n\texcludePaths:\n\t\tanalyseAndScan:\n\t\t\t- src/missing (?)\n"
+}

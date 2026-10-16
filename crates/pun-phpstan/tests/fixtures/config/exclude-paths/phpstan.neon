@@ -1,0 +1,10 @@
+parameters:
+	level: 0
+	paths: [src]
+	excludePaths:
+		analyse:
+			- src/a
+			- src/*/gen/*
+		analyseAndScan:
+			- src/b.php
+			- src/maybe (?)

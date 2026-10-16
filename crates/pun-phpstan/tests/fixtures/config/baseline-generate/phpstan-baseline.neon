@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Foo$#'
+			count: 1
+			path: src/a.php

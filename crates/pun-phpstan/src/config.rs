@@ -530,7 +530,8 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
                 .join("\n"));
         }
         validate_php_version(&params)?;
-        validate_ignore_error_entries(&params)?;
+        validate_ignore_error_entries(&params)
+            .map_err(|e| format!("Invalid configuration:\n{e}"))?;
     }
     params.remove(&Key::from("env"));
     Ok(Resolved { parameters: params })
@@ -761,7 +762,7 @@ fn validate_php_version(params: &Array) -> Result<(), String> {
         && let (Some(Value::Int(min)), Some(Value::Int(max))) = (v.get_str("min"), v.get_str("max"))
         && max < min
     {
-        return Err("Invalid PHP version range: phpVersion.max should be greater or equal to phpVersion.min.".into());
+        return Err("Invalid configuration:\nInvalid PHP version range: phpVersion.max should be greater or equal to phpVersion.min.".into());
     }
     Ok(())
 }

@@ -1,0 +1,3 @@
+{
+    "error": "Invalid configuration:\nUnexpected item 'parameters › maximumNumberOfProcesses'.\nInvalid configuration:\nThe item 'parameters › phpVersion' expects to be 70100..80599|array|null, 70000 given."
+}

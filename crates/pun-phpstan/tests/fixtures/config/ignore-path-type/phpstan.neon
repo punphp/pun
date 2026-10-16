@@ -1,0 +1,7 @@
+parameters:
+	level: 0
+	ignoreErrors:
+		- message: '#a#'
+		  path: [x]
+		- message: '#b#'
+		  paths: x

@@ -1,0 +1,1 @@
+{"args": ["-c", "phpstan.txt", "src"]}
