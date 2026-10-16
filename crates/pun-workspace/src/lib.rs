@@ -120,7 +120,7 @@ impl Finder {
 }
 
 /// Files Pint would process for `pint [paths]` (empty `paths` = no argument, i.e. the cwd default).
-/// Sorted and de-duplicated; paths are absolute under `cfg.root`.
+/// Finder order (readdir, depth-first, then appended files), de-duplicated; paths are absolute under `cfg.root`.
 pub fn discover(cfg: &Config, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
     let has_in = !cfg.finder.in_dirs.is_empty();
     let f = if paths.is_empty() && has_in {
@@ -136,10 +136,7 @@ pub fn discover(cfg: &Config, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
         }
         f
     };
-    let mut files = f.files()?;
-    files.sort();
-    files.dedup();
-    Ok(files)
+    Ok(dedup(f.files()?))
 }
 
 #[derive(Debug, Clone)]
@@ -196,10 +193,59 @@ pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
     let wanted: std::collections::HashSet<PathBuf> = names.iter().map(|n| cfg.root.join(n)).collect();
     let mut f = Finder::pint(cfg)?;
     f.dirs.push(cfg.root.clone());
-    let mut files: Vec<PathBuf> = f.files()?.into_iter().filter(|p| wanted.contains(p)).collect();
-    files.sort();
-    files.dedup();
-    Ok(files)
+    Ok(dedup(f.files()?.into_iter().filter(|p| wanted.contains(p)).collect()))
+}
+
+fn dedup(files: Vec<PathBuf>) -> Vec<PathBuf> {
+    let mut seen = std::collections::HashSet::new();
+    files.into_iter().filter(|p| seen.insert(p.clone())).collect()
+}
+
+/// ConfigurationFactory::isPathExcluded (used for `--stdin-filename`): fnmatch-based, not the finder.
+pub fn is_path_excluded(cfg: &Config, file: &Path) -> bool {
+    let base = cfg.root.to_string_lossy();
+    let full = file.to_string_lossy().replace('\\', "/");
+    let rel = full.strip_prefix(&format!("{base}/")).unwrap_or(&full).to_string();
+    let name = file.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+    let mut not_name: Vec<&str> = PINT_NOT_NAME.to_vec();
+    if !cfg.blade {
+        not_name.push("*.blade.php");
+    }
+    let under = |d: &str| {
+        let d = d.replace('\\', "/");
+        rel == d || rel.starts_with(&format!("{d}/"))
+    };
+    not_name.iter().copied().chain(cfg.finder.not_name.iter().map(String::as_str)).any(|p| fnmatch(p, &name))
+        || PINT_EXCLUDE.iter().copied().chain(cfg.finder.exclude.iter().map(String::as_str)).any(under)
+        || cfg.finder.not_path.iter().any(|p| fnmatch(p, &rel))
+}
+
+/// PHP fnmatch() with no flags: `*` and `?` also match `/`, `[...]` classes, `\\` escapes.
+fn fnmatch(pat: &str, s: &str) -> bool {
+    let mut re = String::from("^");
+    let mut chars = pat.chars().peekable();
+    while let Some(c) = chars.next() {
+        match c {
+            '*' => re.push_str("(?s:.*)"),
+            '?' => re.push_str("(?s:.)"),
+            '[' => {
+                let mut class = String::from("[");
+                if chars.peek() == Some(&'!') {
+                    chars.next();
+                    class.push('^');
+                }
+                for c in chars.by_ref() {
+                    if c == '\\' { class.push_str("\\\\") } else { class.push(c) }
+                    if c == ']' { break; }
+                }
+                re.push_str(&class);
+            }
+            '\\' => re.push_str(&preg_quote(&chars.next().map(String::from).unwrap_or_default())),
+            c => re.push_str(&preg_quote(&c.to_string())),
+        }
+    }
+    re.push('$');
+    Regex::new(&re).and_then(|r| r.is_match(s.as_bytes())).unwrap_or(false)
 }
 
 fn git(root: &Path, args: &[&str], err: &str) -> Result<String> {
@@ -340,6 +386,7 @@ mod tests {
     fn globs() {
         assert_eq!(glob_to_regex("*.blade.php"), r"#^(?=[^\.])[^/]*\.blade\.php$#");
         assert_eq!(glob_to_regex(".phpstorm.meta.php"), r"#^\.phpstorm\.meta\.php$#");
+        assert!(fnmatch("*.blade.php", "a/b.blade.php") && !fnmatch("a?c", "abbc") && fnmatch("[!x]b", "ab"));
         assert!(is_regex("/foo/i") && is_regex("#a#") && is_regex("{a}") && !is_regex("*.php") && !is_regex("a/b"));
     }
 
@@ -361,9 +408,10 @@ mod tests {
         let mut cfg = pun_config::load(&root, &Default::default()).unwrap();
         cfg.finder.not_path = vec!["skip/".into()];
         cfg.finder.not_name = vec!["notme.php".into()];
-        let rel = |v: Vec<PathBuf>| v.iter().map(|p| p.strip_prefix(&root).unwrap().to_string_lossy().into_owned()).collect::<Vec<_>>();
+        let rel = |v: Vec<PathBuf>| v.iter().map(|p| p.strip_prefix(&root).unwrap().to_string_lossy().into_owned()).collect::<std::collections::BTreeSet<_>>().into_iter().collect::<Vec<_>>();
         assert_eq!(rel(discover(&cfg, &[]).unwrap()), ["app/A.php", "app/L.php"]);
         cfg.blade = true;
+        assert!(is_path_excluded(&cfg, &root.join("storage/x.php")) && !is_path_excluded(&cfg, Path::new("app/x.php")));
         assert_eq!(rel(discover(&cfg, &["app".into(), "storage/G.php".into()]).unwrap()), ["app/A.php", "app/L.php", "app/v.blade.php", "storage/G.php"]);
     }
 }

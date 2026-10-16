@@ -8,19 +8,19 @@ use std::path::Path;
 
 pub use tokens::Tokens;
 
-/// Stand-in until `pun_tokens::Tokens` lands: replace this module with `pub use pun_tokens::Tokens` and keep
-/// the four methods below (`from_code`, `generate_code`, `is_changed`, `clear_changed`, `clear_empty_tokens`).
+/// Stand-in until `pun_tokens` exports `Tokens` (crates/pun-tokens/src/tokens.rs, same byte-based signatures):
+/// then replace this module with `pub use pun_tokens::Tokens`.
 mod tokens {
     pub struct Tokens {
-        code: String,
+        code: Vec<u8>,
         changed: bool,
     }
 
     impl Tokens {
-        pub fn from_code(code: &str) -> Self {
-            Tokens { code: code.to_string(), changed: false }
+        pub fn from_code(code: &[u8]) -> Self {
+            Tokens { code: code.to_vec(), changed: false }
         }
-        pub fn generate_code(&self) -> String {
+        pub fn generate_code(&self) -> Vec<u8> {
             self.code.clone()
         }
         pub fn is_changed(&self) -> bool {
@@ -61,7 +61,7 @@ pub struct Pipeline {
 }
 
 pub struct Fixed {
-    pub code: String,
+    pub code: Vec<u8>,
     pub applied: Vec<&'static str>,
 }
 
@@ -89,7 +89,7 @@ impl Pipeline {
     }
 
     /// Runner::fixFile: lint, run each fixer once, return `None` when the code did not change.
-    pub fn run(&self, file: &Path, code: &str) -> Result<Option<Fixed>, LintError> {
+    pub fn run(&self, file: &Path, code: &[u8]) -> Result<Option<Fixed>, LintError> {
         lint(code)?;
         let mut tokens = Tokens::from_code(code);
         let mut applied = Vec::new();
@@ -125,30 +125,29 @@ pub struct LintError {
 
 /// Syntax check standing in for `token_get_all(TOKEN_PARSE)`. Message shape matches PHP-CS-Fixer's
 /// TokenizerLintingResult; the wording after "Parse error:" is mago's, not PHP's.
-pub fn lint(code: &str) -> Result<(), LintError> {
+pub fn lint(code: &[u8]) -> Result<(), LintError> {
     let arena = mago_allocator::LocalArena::new();
-    let program = mago_syntax::parser::parse_file_content(&arena, mago_database::file::FileId::zero(), code.as_bytes());
+    let program = mago_syntax::parser::parse_file_content(&arena, mago_database::file::FileId::zero(), code);
     match program.errors.first() {
         None => Ok(()),
         Some(e) => {
             let offset = e.span().start.offset as usize;
-            let line = code.as_bytes()[..offset.min(code.len())].iter().filter(|&&b| b == b'\n').count() + 1;
+            let line = code[..offset.min(code.len())].iter().filter(|&&b| b == b'\n').count() + 1;
             Err(LintError { message: format!("Parse error: {e} on line {line}."), after_fix: false })
         }
     }
 }
 
 /// `--engine=pun`: mago-formatter with its Pint preset (whole-file reprint, not byte-identical to Pint).
-pub fn format_pun(code: &str, php: &str) -> Result<Option<String>, LintError> {
+pub fn format_pun(code: &[u8], php: &str) -> Result<Option<Vec<u8>>, LintError> {
     let (major, minor) = php.split_once('.').unwrap_or(("8", "4"));
     let version = mago_php_version::PHPVersion::new(major.parse().unwrap_or(8), minor.parse().unwrap_or(4), 0);
     let arena = mago_allocator::LocalArena::new();
     let settings = mago_formatter::presets::FormatterPreset::Pint.settings();
     let out = mago_formatter::Formatter::new(&arena, version, settings)
-        .format_code("stdin.php".as_bytes().into(), code.as_bytes().to_vec().into())
+        .format_code("stdin.php".as_bytes().into(), code.to_vec().into())
         .map_err(|e| LintError { message: format!("Parse error: {e}."), after_fix: false })?;
-    let out = String::from_utf8_lossy(out).into_owned();
-    Ok((out != code).then_some(out))
+    Ok((out != code).then(|| out.to_vec()))
 }
 
 #[cfg(test)]
@@ -176,8 +175,8 @@ mod tests {
         let p = Pipeline::new(&rules, vec![Box::new(F("z", 1)), Box::new(F("b", 5)), Box::new(F("a", 5)), Box::new(F("unused", 9))]).unwrap();
         assert_eq!(p.fixers().map(|f| f.name()).collect::<Vec<_>>(), ["a", "b", "z"]);
         assert_eq!(p.not_ported, ["missing"]);
-        assert!(p.run(Path::new("x.php"), "<?php\nfunction (\n").is_err());
-        assert!(p.run(Path::new("x.php"), "<?php\necho 1;\n").unwrap().is_none());
-        assert!(format_pun("<?php\necho   1;", "8.4").unwrap().is_some());
+        assert!(p.run(Path::new("x.php"), b"<?php\nfunction (\n").is_err());
+        assert!(p.run(Path::new("x.php"), b"<?php\necho 1;\n").unwrap().is_none());
+        assert!(format_pun(b"<?php\necho   1;", "8.4").unwrap().is_some());
     }
 }
