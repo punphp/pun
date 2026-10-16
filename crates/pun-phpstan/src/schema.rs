@@ -165,7 +165,10 @@ fn expect(name: &str, args: Vec<Arg>) -> Result<Schema, String> {
             };
             let items = items
                 .into_iter()
-                .map(|(k, a)| Ok((k, a.schema()?)))
+                .map(|(k, a)| match a {
+                    Arg::Schema(s) => Ok((k, s)),
+                    _ => Err("Structure items must be schemas (PHP's TypeError)".to_string()),
+                })
                 .collect::<Result<_, String>>()?;
             let mut s = new(Kind::Structure { items, other: None });
             s.required = true;
@@ -301,24 +304,19 @@ impl Message {
             if let Some(n) = name_len.filter(|n| *n > 0 && t[start + 1 + n..].starts_with('%')) {
                 let name = &t[start + 1..start + 1 + n];
                 let val = match name {
-                    "label" => Some(if self.is_key {
-                        "key of item".to_string()
-                    } else {
-                        "item".to_string()
-                    }),
-                    "path" => (!self.path.is_empty())
-                        .then(|| format!("'{}'", self.path.join("\u{a0}›\u{a0}"))),
-                    "value" => Some(format_value(&self.value)),
+                    "label" => (if self.is_key { "key of item" } else { "item" }).to_string(),
+                    // (the path always starts with `parameters`)
+                    "path" => format!("'{}'", self.path.join("\u{a0}›\u{a0}")),
+                    "value" => format_value(&self.value),
                     n => self
                         .vars
                         .iter()
                         .find(|(k, _)| *k == n)
-                        .map(|(_, v)| v.clone()),
+                        .map(|(_, v)| v.clone())
+                        .unwrap_or_default(),
                 };
-                if let Some(v) = val {
-                    out.push_str(if space { " " } else { "" });
-                    out.push_str(&v);
-                }
+                out.push_str(if space { " " } else { "" });
+                out.push_str(&val);
                 i = start + n + 2;
                 continue;
             }
@@ -370,9 +368,9 @@ pub fn format_value(v: &Value) -> String {
     }
 }
 
+/// (OptionalPath values are unwrapped before validation.)
 fn object_class(v: &Value) -> &'static str {
     match v {
-        Value::OptionalPath(_) => "PHPStan\\DependencyInjection\\Neon\\OptionalPath",
         Value::DateTime(_) => "DateTimeImmutable",
         _ => "_PHPStan_88a9c7bcc\\Nette\\DI\\Definitions\\Statement",
     }
@@ -753,12 +751,11 @@ fn validate_range(v: &Value, range: (Option<f64>, Option<f64>), ctx: &mut Contex
                 vec![("length", n.to_string()), ("expected", range_text(range))],
             );
         }
-    } else if let Value::Int(_) | Value::Float(_) = v {
-        let n = match v {
-            Value::Int(i) => *i as f64,
-            Value::Float(f) => *f,
-            _ => unreachable!(),
-        };
+    } else if let Some(n) = match v {
+        Value::Int(i) => Some(*i as f64),
+        Value::Float(f) => Some(*f),
+        _ => None,
+    } {
         if !in_range(n, range) {
             ctx.error(
                 "The %label% %path% expects to be in range %expected%, %value% given.",
@@ -772,12 +769,6 @@ fn validate_range(v: &Value, range: (Option<f64>, Option<f64>), ctx: &mut Contex
 /// PHP `levenshtein($a, $b, $insert, $replace, $delete)`.
 pub fn levenshtein(a: &str, b: &str, ins: usize, rep: usize, del: usize) -> usize {
     let (a, b) = (a.as_bytes(), b.as_bytes());
-    if a.is_empty() {
-        return b.len() * ins;
-    }
-    if b.is_empty() {
-        return a.len() * del;
-    }
     let mut p1: Vec<usize> = (0..=b.len()).map(|i| i * ins).collect();
     let mut p2 = vec![0; b.len() + 1];
     for ca in a {
@@ -808,15 +799,8 @@ pub fn suggestion(possibilities: &[String], value: &str) -> Option<String> {
     let norm = prefix(value, "+");
     let mut best = None;
     let mut min = (value.len() as f64 / 4.0 + 1.0) * 10.0 + 0.1;
-    let mut seen: Vec<&String> = Vec::new();
+    // (array_unique() and the `$item === $value` skip change nothing here: `value` is never a possibility)
     for item in possibilities {
-        if seen.contains(&item) {
-            continue;
-        }
-        seen.push(item);
-        if item == value {
-            continue;
-        }
         let len = levenshtein(item, value, 10, 11, 10);
         let len = if (len as f64) < min {
             Some(len)
