@@ -305,7 +305,9 @@
             "pct": "a%b%",
             "num": 1,
             "bool": true,
-            "cat": "1-1"
+            "cat": "1-1",
+            "single": "50% off",
+            "spaced": "a%b c%d"
         },
         "debugMode": true,
         "productionMode": false,

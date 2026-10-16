@@ -437,6 +437,24 @@
             "matched": true
         }
     ],
+    "string_cast": {
+        "neon": "[1, -1.5, 1e999, -1e999, 0.1, 1e20, true, false, null, \"s\", [1], Foo(1), 2024-01-02]",
+        "casts": [
+            "1",
+            "-1.5",
+            "INF",
+            "-INF",
+            "0.1",
+            "1.0E+20",
+            "1",
+            "",
+            "",
+            "s",
+            "Array",
+            null,
+            null
+        ]
+    },
     "phpfile": {
         "ok-arrays.php": {
             "array": [

@@ -12,6 +12,7 @@ declare(strict_types=1);
  *   absolutize_path FileHelper(cwd)->absolutizePath()
  *   relative_path   ParentDirectoryRelativePathHelper($parent)->getRelativePath($file)
  *   fnmatch         fnmatch($pattern, $string)
+ *   string_cast     (string) of each item of a NEON list (null where PHP throws)
  *   phpfile         `require` of tests/fixtures/phpfile/ok-*.php (literal-array configs, as baselines are), __DIR__
  *                   as {dir}
  *
@@ -84,10 +85,19 @@ function tagged(mixed $v): mixed
 
     return is_string($v) ? str_replace(dirname(__DIR__).'/crates/pun-phpstan/tests/fixtures/phpfile', '{dir}', $v) : $v;
 }
+$string_cast = ['neon' => '[1, -1.5, 1e999, -1e999, 0.1, 1e20, true, false, null, "s", [1], Foo(1), 2024-01-02]', 'casts' => []];
+foreach (_PHPStan_88a9c7bcc\Nette\Neon\Neon::decode($string_cast['neon']) as $v) {
+    try {
+        $cast = @(string) $v;
+    } catch (Error) {
+        $cast = null;
+    }
+    $string_cast['casts'][] = $cast;
+}
 $phpfile = [];
 foreach (glob($root.'/crates/pun-phpstan/tests/fixtures/phpfile/ok-*.php') as $file) {
     $phpfile[basename($file)] = tagged(require $file);
 }
 
-file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/php.json', json_encode(compact('regex', 'quote', 'normalize', 'absolutize', 'relative', 'fnmatch', 'phpfile'), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n");
+file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/php.json', json_encode(compact('regex', 'quote', 'normalize', 'absolutize', 'relative', 'fnmatch', 'string_cast', 'phpfile'), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)."\n");
 echo count($regex), " regexes\n";

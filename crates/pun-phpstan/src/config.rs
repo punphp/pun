@@ -437,16 +437,12 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
             Some(base) => merge(data.clone(), base),
         });
     }
-    let mut params = match flat.unwrap_or(Value::Null) {
-        Value::Null => Array::new(),
-        Value::Array(a) => merge_arrays(a, Array::new()),
-        other => {
-            return Err(format!(
-                "Invalid configuration:\nThe item 'parameters' expects to be array, {} given.",
-                schema::format_value(&other)
-            ));
-        }
-    };
+    // The escaped static parameters are the last section and an array, so the merge is one too (a scalar
+    // `parameters:` in a config is dropped, and its expansion fails later as in PHPStan).
+    let flat = flat
+        .and_then(|f| f.as_array().cloned())
+        .expect("static parameters merged last");
+    let mut params = merge_arrays(flat, Array::new());
     for (k, v) in dynamic {
         params.set(k, escape_percent(v));
     }
@@ -469,14 +465,12 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
         .map(|s| s.to_string())
         .collect();
     known.extend(ATTRIBUTE_EXTENSIONS.iter().map(|s| s.to_string()));
-    for ext in section("extensions") {
-        if let Value::Array(a) = ext {
-            known.extend(
-                a.keys()
-                    .filter(|k| matches!(k, Key::Str(_)))
-                    .map(Key::as_string),
-            );
-        }
+    for ext in section("extensions").iter().filter_map(Value::as_array) {
+        known.extend(
+            ext.keys()
+                .filter(|k| matches!(k, Key::Str(_)))
+                .map(Key::as_string),
+        );
     }
 
     let validate = params.get_str("__validate").is_some_and(truthy);
@@ -484,11 +478,9 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
     if validate {
         validate_ignored_errors(&params)?;
     }
-    for d in section("services") {
-        if let Value::Array(defs) = d {
-            for def in defs.values() {
-                expand(def, &params, None)?;
-            }
+    for defs in section("services").iter().filter_map(Value::as_array) {
+        for def in defs.values() {
+            expand(def, &params, None)?;
         }
     }
     // `elseif ($extra = key(array_diff_key(...)))`: only the first unknown section counts, and section 0 is falsy.
@@ -607,9 +599,12 @@ fn validate_exclude_paths(
     validate: bool,
     config: Option<&str>,
 ) -> Result<(), String> {
-    let Some(Value::Array(exclude)) = params.get_str("excludePaths").cloned() else {
-        return Ok(());
-    };
+    // (always an array: PHPStan's default merged with the project's; anything else crashes PHPStan)
+    let exclude = params
+        .get_str("excludePaths")
+        .and_then(Value::as_array)
+        .cloned()
+        .unwrap_or_default();
     let mut new = Array::new();
     for key in ["analyseAndScan", "analyse"] {
         if let Some(v) = exclude.get_str(key) {
@@ -662,26 +657,35 @@ fn validate_exclude_paths(
     }
     let mut unwrapped = Array::new();
     for (k, paths) in new {
-        let paths = match paths {
-            Value::Array(a) => Value::Array(Array::list(a.into_iter().map(|(_, p)| match p {
+        let paths = paths
+            .as_array()
+            .cloned()
+            .unwrap_or_default()
+            .into_iter()
+            .map(|(_, p)| match p {
                 Value::OptionalPath(p) => Value::Str(p),
                 p => p,
-            }))),
-            p => p,
-        };
-        unwrapped.set(k, paths);
+            });
+        unwrapped.set(k, Value::Array(Array::list(paths)));
     }
     params.set(Key::from("excludePaths"), Value::Array(unwrapped));
     Ok(())
+}
+
+/// `ignoreErrors` (always an array: PHPStan's default `[]` merged with the project's).
+fn ignore_errors(params: &Array) -> Array {
+    params
+        .get_str("ignoreErrors")
+        .and_then(Value::as_array)
+        .cloned()
+        .unwrap_or_default()
 }
 
 /// `ValidateIgnoredErrorsExtension` (regex compilation and, with `reportUnmatchedIgnoredErrors`, paths).
 /// ponytail: IgnoredRegexValidator's "unescaped `|` ignores types" / "anchor in the middle" checks need PHPStan's
 /// type parser and are not ported yet.
 fn validate_ignored_errors(params: &Array) -> Result<(), String> {
-    let Some(Value::Array(ignore)) = params.get_str("ignoreErrors") else {
-        return Ok(());
-    };
+    let ignore = ignore_errors(params);
     if ignore.is_empty() {
         return Ok(());
     }
@@ -761,9 +765,7 @@ fn validate_php_version(params: &Array) -> Result<(), String> {
 
 /// `ContainerFactory::validateParameters()`'s `ignoreErrors` entry rules.
 fn validate_ignore_error_entries(params: &Array) -> Result<(), String> {
-    let Some(Value::Array(ignore)) = params.get_str("ignoreErrors") else {
-        return Ok(());
-    };
+    let ignore = ignore_errors(params);
     let at_least = [
         "message",
         "messages",

@@ -105,12 +105,9 @@ pub fn expand(var: &Value, params: &Array, recursive: Option<&[String]>) -> Resu
             expand(&e.value, params, recursive)?,
             expand_array(&e.attributes, params, recursive)?,
         )),
+        // (Nette expands them again when recursive, which never ends: PHPStan dies, Pun keeps them as they are)
         Value::Str(s) if s == "%parameters%" && !params.contains(&Key::from("parameters")) => {
-            if recursive.is_some() {
-                expand(&Value::Array(params.clone()), params, recursive)
-            } else {
-                Ok(Value::Array(params.clone()))
-            }
+            Ok(Value::Array(params.clone()))
         }
         Value::Str(s) => expand_string(s, params, recursive, false),
         v => Ok(v.clone()),
@@ -384,8 +381,8 @@ pub fn assert_list(v: &Value, label: &str) -> Result<(), String> {
     {
         return Ok(());
     }
+    // (`includes: null` is skipped before)
     let ty = match v {
-        Value::Null => "null".to_string(),
         Value::Bool(_) => "bool".to_string(),
         Value::Int(_) | Value::Float(_) => format!(
             "{} {}",

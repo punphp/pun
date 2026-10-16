@@ -102,3 +102,13 @@ fn php_config_files() {
         assert!(pun_phpstan::phpfile::generated_config_extensions(not_generated, "/").is_err());
     }
 }
+
+#[test]
+fn php_string_cast() {
+    let f = &fixture("php.json")["string_cast"];
+    let pun_phpstan::Value::Array(items) = pun_phpstan::neon::decode(s(&f["neon"])).unwrap() else {
+        panic!()
+    };
+    let got: Vec<J> = items.values().map(|v| json!(v.to_php_string())).collect();
+    assert_eq!(J::Array(got), f["casts"]);
+}
