@@ -1,0 +1,6 @@
+extensions:
+	myRules: PHPStan\DependencyInjection\StubValidatorRuleServicesExtension
+	- PHPStan\DependencyInjection\StubValidatorRuleServicesExtension
+myRules: []
+parameters:
+	level: 1

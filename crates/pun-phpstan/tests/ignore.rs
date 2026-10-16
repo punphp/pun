@@ -219,7 +219,11 @@ fn phpstan_analyse_local_ignores() {
 fn local_ignores_processor() {
     for case in fixture("local-processor.json").as_array().unwrap() {
         let (mut lines, _) = comments::lines_to_ignore(case["code"].as_str().unwrap().as_bytes());
-        let mut unmatched = lines.clone();
+        let mut unmatched = if case["noUnmatched"] == true {
+            LinesToIgnore::new()
+        } else {
+            lines.clone()
+        };
         let errors = case["errors"]
             .as_array()
             .unwrap()

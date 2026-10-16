@@ -19,32 +19,34 @@ fn has_prevent(a: &Array) -> bool {
 
 /// `Nette\Schema\Helpers::merge($value, $base)`: `$value` wins; its list items are appended to `$base`.
 pub fn merge(value: Value, base: Value) -> Value {
-    if let Value::Array(mut v) = value {
-        if has_prevent(&v) {
-            v.remove(&prevent_key());
-            return Value::Array(v);
-        }
-        return match base {
-            Value::Array(mut b) => {
-                let mut index = 0;
-                for (k, val) in v {
-                    if k == Key::Int(index) {
-                        b.push(val);
-                        index += 1;
-                    } else {
-                        let old = b.get_mut(&k).map(std::mem::take).unwrap_or(Value::Null);
-                        b.set(k, merge(val, old));
-                    }
-                }
-                Value::Array(b)
-            }
-            _ => Value::Array(v),
-        };
-    }
     match (value, base) {
+        (Value::Array(v), Value::Array(b)) => Value::Array(merge_arrays(v, b)),
+        (Value::Array(mut v), _) => {
+            v.remove(&prevent_key());
+            Value::Array(v)
+        }
         (Value::Null, Value::Array(b)) => Value::Array(b),
         (v, _) => v,
     }
+}
+
+/// [`merge`] of two arrays.
+pub fn merge_arrays(mut v: Array, mut b: Array) -> Array {
+    if has_prevent(&v) {
+        v.remove(&prevent_key());
+        return v;
+    }
+    let mut index = 0;
+    for (k, val) in v {
+        if k == Key::Int(index) {
+            b.push(val);
+            index += 1;
+        } else {
+            let old = b.get_mut(&k).map(std::mem::take).unwrap_or(Value::Null);
+            b.set(k, merge(val, old));
+        }
+    }
+    b
 }
 
 /// `Nette\DI\Helpers::escape()`.
@@ -98,28 +100,11 @@ fn statement(entity: Value, arguments: Array) -> Value {
 /// `Nette\DI\Helpers::expand($var, $params, $recursive)`; `recursive` is `None` for a plain expansion.
 pub fn expand(var: &Value, params: &Array, recursive: Option<&[String]>) -> Result<Value, String> {
     match var {
-        Value::Array(a) => {
-            let mut res = Array::new();
-            for (k, v) in a.iter() {
-                let k = match k {
-                    Key::Str(s) => match expand_string(s, params, recursive, false)? {
-                        Value::Int(i) => Key::Int(i),
-                        other => Key::from_string(other.to_php_string().unwrap_or_default()),
-                    },
-                    k => k.clone(),
-                };
-                res.set(k, expand(v, params, recursive)?);
-            }
-            Ok(Value::Array(res))
-        }
-        Value::Entity(e) => {
-            let Value::Array(args) =
-                expand(&Value::Array(e.attributes.clone()), params, recursive)?
-            else {
-                unreachable!()
-            };
-            Ok(statement(expand(&e.value, params, recursive)?, args))
-        }
+        Value::Array(a) => Ok(Value::Array(expand_array(a, params, recursive)?)),
+        Value::Entity(e) => Ok(statement(
+            expand(&e.value, params, recursive)?,
+            expand_array(&e.attributes, params, recursive)?,
+        )),
         Value::Str(s) if s == "%parameters%" && !params.contains(&Key::from("parameters")) => {
             if recursive.is_some() {
                 expand(&Value::Array(params.clone()), params, recursive)
@@ -228,11 +213,9 @@ fn expand_parameter(
                 }
                 let mut rec = rec.to_vec();
                 rec.push(path_str);
-                val = if full_expand {
-                    expand(&val, params, Some(&rec))?
-                } else {
-                    let Value::Str(s) = &val else { unreachable!() };
-                    expand_string(s, params, Some(&rec), true)?
+                val = match &val {
+                    Value::Str(s) if !full_expand => expand_string(s, params, Some(&rec), true)?,
+                    v => expand(v, params, Some(&rec))?,
                 };
             }
         } else if matches!(val, Value::Entity(_)) {
@@ -244,23 +227,33 @@ fn expand_parameter(
     Ok(val)
 }
 
+/// [`expand`] of an array (keys are expanded too).
+pub fn expand_array(
+    a: &Array,
+    params: &Array,
+    recursive: Option<&[String]>,
+) -> Result<Array, String> {
+    let mut res = Array::new();
+    for (k, v) in a.iter() {
+        let k = match k {
+            Key::Str(s) => match expand_string(s, params, recursive, false)? {
+                Value::Int(i) => Key::Int(i),
+                other => Key::from_string(other.to_php_string().unwrap_or_default()),
+            },
+            k => k.clone(),
+        };
+        res.set(k, expand(v, params, recursive)?);
+    }
+    Ok(res)
+}
+
 /// PHP `dirname()` for `/`-separated paths.
 pub fn dirname(path: &str) -> String {
-    let t = path.trim_end_matches('/');
-    if t.is_empty() {
-        return if path.is_empty() {
-            ".".into()
-        } else {
-            "/".into()
-        };
-    }
-    match t.rfind('/') {
-        None => ".".into(),
-        Some(i) => {
-            let d = t[..i].trim_end_matches('/');
-            if d.is_empty() { "/".into() } else { d.into() }
-        }
-    }
+    // (only ever given absolute file paths: no trailing slash, no bare name)
+    let parent = std::path::Path::new(path)
+        .parent()
+        .map(|p| p.to_string_lossy().into_owned());
+    parent.unwrap_or_else(|| "/".into())
 }
 
 /// Source of config files: the filesystem, plus PHPStan's own `conf/` inside the PHAR (embedded in Pun).
@@ -501,25 +494,23 @@ impl<'a> Loader<'a> {
         self.loaded.push(file.to_string());
         let mut data = load_file(self.files, file, &self.expand_relative)?;
         let mut list = Vec::new();
-        let mut res = Value::Array(Array::new());
+        let mut res = Array::new();
         if let Some(includes) = data
             .get_str("includes")
             .filter(|v| **v != Value::Null)
             .cloned()
         {
             assert_list(&includes, &format!("section 'includes' in file '{file}'"))?;
-            let Value::Array(includes) = expand(&includes, &self.parameters, None)? else {
-                unreachable!()
-            };
-            for include in includes.values() {
+            for include in expand(&includes, &self.parameters, None)?
+                .as_array()
+                .expect("a list")
+                .values()
+            {
                 let include =
                     expand_included_file(&include.to_php_string().unwrap_or_default(), file);
                 let loaded = self.load_inner(&include, merged)?;
                 if merged {
-                    res = merge(
-                        Value::Array(loaded.into_iter().next().unwrap_or_default()),
-                        res,
-                    );
+                    res = merge_arrays(loaded.into_iter().next().unwrap_or_default(), res);
                 } else {
                     list.extend(loaded);
                 }
@@ -528,10 +519,7 @@ impl<'a> Loader<'a> {
         data.remove(&Key::from("includes"));
         self.loaded.retain(|f| f != file);
         if merged {
-            let Value::Array(a) = merge(Value::Array(data), res) else {
-                unreachable!()
-            };
-            return Ok(vec![a]);
+            return Ok(vec![merge_arrays(data, res)]);
         }
         list.push(data);
         Ok(list)

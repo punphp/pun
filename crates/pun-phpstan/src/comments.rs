@@ -21,6 +21,7 @@ pub type LinesToIgnore = IndexMap<i64, Option<Vec<Identifier>>>;
 pub type ParseErrors = IndexMap<i64, Vec<String>>;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[repr(usize)]
 enum T {
     Whitespace,
     End,
@@ -33,15 +34,16 @@ enum T {
 
 impl T {
     fn label(self) -> &'static str {
-        match self {
-            T::Whitespace => "T_WHITESPACE",
-            T::End => "end",
-            T::Identifier => "identifier",
-            T::Comma => "comma (,)",
-            T::Open => "T_OPEN_PARENTHESIS",
-            T::Close => "T_CLOSE_PARENTHESIS",
-            T::Other => "T_OTHER",
-        }
+        // IgnoreLexer::LABELS, in TYPES order (whitespace is always allowed, so never named in a message)
+        [
+            "T_WHITESPACE",
+            "end",
+            "identifier",
+            "comma (,)",
+            "T_OPEN_PARENTHESIS",
+            "T_CLOSE_PARENTHESIS",
+            "T_OTHER",
+        ][self as usize]
     }
 }
 
@@ -169,9 +171,7 @@ fn parse_identifiers(text: &[u8], ignore_pos: usize) -> Result<Vec<Identifier>, 
             token_line,
         ));
     }
-    if identifiers.is_empty() {
-        return Err(("Missing identifier".into(), 1));
-    }
+    // (PHPStan's "Missing identifier" cannot happen: the first token must already be an identifier.)
     Ok(identifiers)
 }
 

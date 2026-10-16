@@ -1,6 +1,7 @@
 [
     {
         "code": "<?php\na(); // @phpstan-ignore x.a, x.b\nb(); // @phpstan-ignore-line\nc(); // @phpstan-ignore x.c (why)\n",
+        "noUnmatched": false,
         "errors": [
             {
                 "message": "E",
@@ -241,6 +242,7 @@
     },
     {
         "code": "<?php\na(); // @phpstan-ignore x.a, x.a, x.b\n",
+        "noUnmatched": false,
         "errors": [
             {
                 "message": "E",
@@ -358,6 +360,41 @@
                     }
                 ]
             ]
+        }
+    },
+    {
+        "code": "<?php\na(); // @phpstan-ignore x.a\n",
+        "noUnmatched": true,
+        "errors": [
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            }
+        ],
+        "kept": [],
+        "ignored": [
+            {
+                "message": "E",
+                "file": "f.php",
+                "line": 2,
+                "canBeIgnored": true,
+                "filePath": "f.php",
+                "traitFilePath": null,
+                "tip": null,
+                "identifier": "x.a"
+            }
+        ],
+        "lines": {
+            "array": []
+        },
+        "unmatched": {
+            "array": []
         }
     }
 ]

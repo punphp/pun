@@ -120,14 +120,13 @@ pub fn preg_quote(s: &str, delimiter: Option<char>) -> String {
 
 /// PHP `fnmatch($pattern, $string, 0)`: the C library's fnmatch.
 pub fn fnmatch(pattern: &str, string: &str) -> bool {
-    let (Ok(p), Ok(s)) = (
-        std::ffi::CString::new(pattern),
-        std::ffi::CString::new(string),
-    ) else {
-        return false;
-    };
-    // SAFETY: both are valid NUL-terminated C strings for the duration of the call.
-    unsafe { libc::fnmatch(p.as_ptr(), s.as_ptr(), 0) == 0 }
+    use std::ffi::CString;
+    // (PHP refuses NUL bytes; nothing matches them here)
+    CString::new(pattern)
+        .ok()
+        .zip(CString::new(string).ok())
+        // SAFETY: both are valid NUL-terminated C strings for the duration of the call.
+        .is_some_and(|(p, s)| unsafe { libc::fnmatch(p.as_ptr(), s.as_ptr(), 0) == 0 })
 }
 
 /// `FileHelper::normalizePath()` with `/` as the directory separator.

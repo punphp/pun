@@ -4,7 +4,7 @@
 
 use crate::di::{
     self, Files, Loader, assert_list, dirname, escape, escape_percent, expand,
-    expand_included_file, merge,
+    expand_included_file, merge, merge_arrays,
 };
 use crate::php::{absolutize_path, is_fnmatch_pattern, normalize_path, parent_relative_path, preg};
 use crate::schema;
@@ -361,9 +361,7 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
                 .join("\n- ")
         ));
     }
-    let Value::Array(project_config) = project_config else {
-        unreachable!()
-    };
+    let project_config = project_config.as_array().cloned().expect("merged arrays");
     let expand_relative: Vec<String> = project_config
         .get_str("expandRelativePaths")
         .and_then(Value::as_array)
@@ -441,12 +439,7 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
     }
     let mut params = match flat.unwrap_or(Value::Null) {
         Value::Null => Array::new(),
-        Value::Array(a) => {
-            let Value::Array(a) = merge(Value::Array(a), Value::Array(Array::new())) else {
-                unreachable!()
-            };
-            a
-        }
+        Value::Array(a) => merge_arrays(a, Array::new()),
         other => {
             return Err(format!(
                 "Invalid configuration:\nThe item 'parameters' expects to be array, {} given.",
@@ -457,14 +450,10 @@ pub fn resolve_with(o: &Options, files: &dyn Files) -> Result<Resolved, String> 
     for (k, v) in dynamic {
         params.set(k, escape_percent(v));
     }
-    let params = sys_get_temp_dir_calls(Value::Array(params), &o.sys_temp_dir);
-    let Value::Array(params) = params else {
-        unreachable!()
-    };
-    let Value::Array(mut params) = expand(&Value::Array(params.clone()), &params, Some(&[]))?
-    else {
-        unreachable!()
-    };
+    for v in params.values_mut() {
+        sys_get_temp_dir_calls(v, &o.sys_temp_dir);
+    }
+    let mut params = di::expand_array(&params, &params, Some(&[]))?;
     // ParametersExtension then expands every other section with them (services later, per definition); only the
     // errors matter here.
     for (name, datas) in &sections {
@@ -566,9 +555,7 @@ fn config_files(
     file: &str,
     loader_params: &Array,
 ) -> Result<(Vec<String>, Array), String> {
-    if !files.is_file(file) {
-        return Ok((Vec::new(), Array::new()));
-    }
+    // (getConfigFiles() skips missing files, but the project config was loaded before: none is missing here)
     let mut data = if file.ends_with(".php") {
         di::load_file(files, file, &[])?
     } else {
@@ -581,17 +568,12 @@ fn config_files(
         .cloned()
     {
         assert_list(&includes, &format!("section 'includes' in file '{file}'"))?;
-        let Value::Array(includes) = expand(&includes, loader_params, None)? else {
-            unreachable!()
-        };
-        for include in includes.values() {
+        let includes = expand(&includes, loader_params, None)?;
+        for include in includes.as_array().expect("a list").values() {
             let include = expand_included_file(&include.to_php_string().unwrap_or_default(), file);
             let (found, inc) = config_files(files, &include, loader_params)?;
             all.extend(found);
-            let Value::Array(d) = merge(Value::Array(inc), Value::Array(data)) else {
-                unreachable!()
-            };
-            data = d;
+            data = merge_arrays(inc, data);
         }
     }
     Ok((all, data))
@@ -599,21 +581,15 @@ fn config_files(
 
 /// `sysGetTempDir: ::sys_get_temp_dir()` is the one statement among PHPStan's own parameters; it is evaluated like the
 /// container does at runtime.
-fn sys_get_temp_dir_calls(v: Value, tmp: &str) -> Value {
+fn sys_get_temp_dir_calls(v: &mut Value, tmp: &str) {
     match v {
         Value::Entity(e)
             if e.value == Value::str("::sys_get_temp_dir") && e.attributes.is_empty() =>
         {
-            Value::Str(tmp.replace('%', "%%"))
+            *v = Value::Str(tmp.replace('%', "%%"));
         }
-        Value::Array(a) => {
-            let mut res = Array::new();
-            for (k, x) in a {
-                res.set(k, sys_get_temp_dir_calls(x, tmp));
-            }
-            Value::Array(res)
-        }
-        v => v,
+        Value::Array(a) => a.values_mut().for_each(|x| sys_get_temp_dir_calls(x, tmp)),
+        _ => {}
     }
 }
 

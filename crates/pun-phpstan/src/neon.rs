@@ -382,16 +382,8 @@ impl Parser {
         }
     }
 
-    /// `$key->startTokenPos` is the token after any whitespace/comments before the key.
-    fn check_key(
-        &mut self,
-        key: &Node,
-        mut pos: usize,
-        keys: &mut Vec<String>,
-    ) -> Result<(), Error> {
-        while matches!(self.s.kind_at(pos), Some(T::Comment | T::Whitespace)) {
-            pos += 1;
-        }
+    /// `pos` is `$key->startTokenPos` (the stream position is never on whitespace or a comment).
+    fn check_key(&mut self, key: &Node, pos: usize, keys: &mut Vec<String>) -> Result<(), Error> {
         let k = match key {
             Node::Str(s) => s.clone(),
             Node::Literal(v) if v.is_scalar() => v.to_php_string().expect("scalar"),
