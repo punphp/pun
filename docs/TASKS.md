@@ -32,6 +32,12 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | Publish v0.1 (tag, LICENSE, crates, npm @punphp, Homebrew, Packagist, public repo) | user | needs approval |
 | After v0.1 ships: make pun-harness local dev tooling, not a shipped crate. Move to `tools/harness` (or an `xtask`), `publish = false`, drop it from release/dist. Move `crates/pun-harness/fixtures/` to `crates/pun-fixers/tests/fixtures/` (pun-fixers tests read them). Keep the CI parity job calling it | - | todo (after release) |
 
+### Phase 2 (pun lint)
+
+| Task | Owner | Status |
+| --- | --- | --- |
+| Phase 2 M2.1: PHPStan config + baseline (crates/pun-phpstan, .oracle/phpstan) | lint-config agent (target-lintcfg/) | doing |
+
 ### Later phases
 
 Phases 2–7 (lint/PHPStan, refactor/Rector, migrate, install/Composer, run/FrankenPHP, test/Pest): todo.
