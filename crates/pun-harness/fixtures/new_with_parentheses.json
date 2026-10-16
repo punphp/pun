@@ -1,0 +1,1215 @@
+{
+    "fixer": "new_with_parentheses",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\NewWithParenthesesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/NewWithParenthesesFixerTest.php",
+    "case_count": 119,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NewWithParenthesesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = new X(foo(/**/));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $xyz = new X(new Y(new Z(/**/ foo())));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $self = new self(a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php class A { public function B(){ $static = new static(new \\SplFileInfo(__FILE__)); }}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $static = new self(new \\SplFileInfo(__FILE__));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $x = new X/**/ /**/ /**//**//**/ /**//**/   (/**/ /**/ /**//**//**/ /**//**/)/**/ /**/ /**//**//**/ /**//**/;/**/ /**/ /**//**//**/ /**//**/"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $x = new X();",
+                        "<?php $x = new X;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $y = new Y() ;",
+                        "<?php $y = new Y ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $x = new Z() /**/;//",
+                        "<?php $x = new Z /**/;//"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $foo = new $foo();",
+                        "<?php $foo = new $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                    $bar1 = new $foo[0]->bar();\n                    $bar2 = new $foo[0][1]->bar();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $xyz = new X(new Y(new Z()));",
+                        "<?php $xyz = new X(new Y(new Z));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $foo = (new $bar())->foo;",
+                        "<?php $foo = (new $bar)->foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $foo = (new $bar((new Foo())->bar))->foo;",
+                        "<?php $foo = (new $bar((new Foo)->bar))->foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $self = new self();",
+                        "<?php $self = new self;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $static = new static();",
+                        "<?php $static = new static;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $a = array( \"key\" => new DateTime(), );",
+                        "<?php $a = array( \"key\" => new DateTime, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $a = array( \"key\" => new DateTime() );",
+                        "<?php $a = array( \"key\" => new DateTime );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $a = new $b[$c]();",
+                        "<?php $a = new $b[$c];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $a = new $b[$c][0]();",
+                        "<?php $a = new $b[$c][0];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $a = new $b[$c[$d ? foo() : bar(\"bar[...]\") - 1]]();",
+                        "<?php $a = new $b[$c[$d ? foo() : bar(\"bar[...]\") - 1]];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $a = new $b['class']();",
+                        "<?php $a = new $b['class'];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $a = new $b['class'] ($foo['bar']);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $a = new $b['class'] () ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $a = new $b[$c] ($hello[$world]) ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $a = new $b['class']()\r\n\t ;",
+                        "<?php $a = new $b['class']\r\n\t ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $a = $b ? new DateTime() : $b;",
+                        "<?php $a = $b ? new DateTime : $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php new self::$adapters[$name][\"adapter\"]();",
+                        "<?php new self::$adapters[$name][\"adapter\"];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $a = new \\Exception()?> <?php echo 1;",
+                        "<?php $a = new \\Exception?> <?php echo 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php $b = new \\StdClass() /**/?>",
+                        "<?php $b = new \\StdClass /**/?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $a = new Foo() instanceof Foo;",
+                        "<?php $a = new Foo instanceof Foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n                    $a = new Foo() + 1;\n                    $a = new Foo() - 1;\n                    $a = new Foo() * 1;\n                    $a = new Foo() / 1;\n                    $a = new Foo() % 1;\n                ",
+                        "<?php\n                    $a = new Foo + 1;\n                    $a = new Foo - 1;\n                    $a = new Foo * 1;\n                    $a = new Foo / 1;\n                    $a = new Foo % 1;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n                    $a = new Foo() & 1;\n                    $a = new Foo() | 1;\n                    $a = new Foo() ^ 1;\n                    $a = new Foo() << 1;\n                    $a = new Foo() >> 1;\n                ",
+                        "<?php\n                    $a = new Foo & 1;\n                    $a = new Foo | 1;\n                    $a = new Foo ^ 1;\n                    $a = new Foo << 1;\n                    $a = new Foo >> 1;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n                    $a = new Foo() and 1;\n                    $a = new Foo() or 1;\n                    $a = new Foo() xor 1;\n                    $a = new Foo() && 1;\n                    $a = new Foo() || 1;\n                ",
+                        "<?php\n                    $a = new Foo and 1;\n                    $a = new Foo or 1;\n                    $a = new Foo xor 1;\n                    $a = new Foo && 1;\n                    $a = new Foo || 1;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n                    if (new DateTime() > $this->startDate) {}\n                    if (new DateTime() >= $this->startDate) {}\n                    if (new DateTime() < $this->startDate) {}\n                    if (new DateTime() <= $this->startDate) {}\n                    if (new DateTime() == $this->startDate) {}\n                    if (new DateTime() != $this->startDate) {}\n                    if (new DateTime() <> $this->startDate) {}\n                    if (new DateTime() === $this->startDate) {}\n                    if (new DateTime() !== $this->startDate) {}\n                ",
+                        "<?php\n                    if (new DateTime > $this->startDate) {}\n                    if (new DateTime >= $this->startDate) {}\n                    if (new DateTime < $this->startDate) {}\n                    if (new DateTime <= $this->startDate) {}\n                    if (new DateTime == $this->startDate) {}\n                    if (new DateTime != $this->startDate) {}\n                    if (new DateTime <> $this->startDate) {}\n                    if (new DateTime === $this->startDate) {}\n                    if (new DateTime !== $this->startDate) {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $a = new \\stdClass() ? $b : $c;",
+                        "<?php $a = new \\stdClass ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php foreach (new Collection() as $x) {}",
+                        "<?php foreach (new Collection as $x) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $a = [(string) new Foo() => 1];",
+                        "<?php $a = [(string) new Foo => 1];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php $a = [ \"key\" => new DateTime(), ];",
+                        "<?php $a = [ \"key\" => new DateTime, ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $a = [ \"key\" => new DateTime() ];",
+                        "<?php $a = [ \"key\" => new DateTime ];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n                    $a = new Foo() ** 1;\n                ",
+                        "<?php\n                    $a = new Foo ** 1;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n                    $a = new Foo() <=> 1;\n                ",
+                        "<?php\n                    $a = new Foo <=> 1;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php $a = new $b['class']/* */()\r\n\t ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php $a = new $b['class'] /* */()\r\n\t ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php $a = new $b['class']()/* */;",
+                        "<?php $a = new $b['class']/* */;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php $a = new $b['class']() /* */;",
+                        "<?php $a = new $b['class'] /* */;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php $x = new X(foo(/**/));",
+                        null,
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php $xyz = new X(new Y(new Z(/**/ foo())));",
+                        null,
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php $self = new self(a);",
+                        null,
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php $bar1 = new $foo->bar[\"baz\"];",
+                        "<?php $bar1 = new $foo->bar[\"baz\"]();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php class A { public function B(){ $static = new static(new \\SplFileInfo(__FILE__)); }}",
+                        null,
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php $static = new self(new \\SplFileInfo(__FILE__));",
+                        null,
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php $x = new X/**/ /**/ /**//**//**/ /**//**/   /**/ /**/ /**//**//**/ /**//**//**/ /**/ /**//**//**/ /**//**/;/**/ /**/ /**//**//**/ /**//**/",
+                        "<?php $x = new X/**/ /**/ /**//**//**/ /**//**/   (/**/ /**/ /**//**//**/ /**//**/)/**/ /**/ /**//**//**/ /**//**/;/**/ /**/ /**//**//**/ /**//**/",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php $x = new X;",
+                        "<?php $x = new X();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php $y = new Y ;",
+                        "<?php $y = new Y() ;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php $x = new Z /**/;//",
+                        "<?php $x = new Z() /**/;//",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php $foo = new $foo;",
+                        "<?php $foo = new $foo();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php $xyz = new X(new Y(new Z));",
+                        "<?php $xyz = new X(new Y(new Z()));",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php $foo = (new $bar)->foo;",
+                        "<?php $foo = (new $bar())->foo;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php $foo = (new $bar((new Foo)->bar))->foo;",
+                        "<?php $foo = (new $bar((new Foo())->bar))->foo;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php $self = new self;",
+                        "<?php $self = new self();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php $static = new static;",
+                        "<?php $static = new static();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php $a = array( \"key\" => new DateTime, );",
+                        "<?php $a = array( \"key\" => new DateTime(), );",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php $a = array( \"key\" => new DateTime );",
+                        "<?php $a = array( \"key\" => new DateTime() );",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php $a = new $b[$c];",
+                        "<?php $a = new $b[$c]();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php $a = new $b[$c][0];",
+                        "<?php $a = new $b[$c][0]();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php $a = new $b[$c[$d ? foo() : bar(\"bar[...]\") - 1]];",
+                        "<?php $a = new $b[$c[$d ? foo() : bar(\"bar[...]\") - 1]]();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php $a = new $b['class'];",
+                        "<?php $a = new $b['class']();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php $a = new $b['class'] ($foo['bar']);",
+                        null,
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php $a = new $b['class']  ;",
+                        "<?php $a = new $b['class'] () ;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php $a = new $b[$c] ($hello[$world]) ;",
+                        null,
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php $a = new $b['class']\r\n\t ;",
+                        "<?php $a = new $b['class']()\r\n\t ;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php $a = $b ? new DateTime : $b;",
+                        "<?php $a = $b ? new DateTime() : $b;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php new self::$adapters[$name][\"adapter\"];",
+                        "<?php new self::$adapters[$name][\"adapter\"]();",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php $a = new \\Exception?> <?php echo 1;",
+                        "<?php $a = new \\Exception()?> <?php echo 1;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php $b = new \\StdClass /**/?>",
+                        "<?php $b = new \\StdClass() /**/?>",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php $a = new Foo instanceof Foo;",
+                        "<?php $a = new Foo() instanceof Foo;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php\n                    $a = new Foo + 1;\n                    $a = new Foo - 1;\n                    $a = new Foo * 1;\n                    $a = new Foo / 1;\n                    $a = new Foo % 1;\n                ",
+                        "<?php\n                    $a = new Foo() + 1;\n                    $a = new Foo() - 1;\n                    $a = new Foo() * 1;\n                    $a = new Foo() / 1;\n                    $a = new Foo() % 1;\n                ",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php\n                    $a = new Foo & 1;\n                    $a = new Foo | 1;\n                    $a = new Foo ^ 1;\n                    $a = new Foo << 1;\n                    $a = new Foo >> 1;\n                ",
+                        "<?php\n                    $a = new Foo() & 1;\n                    $a = new Foo() | 1;\n                    $a = new Foo() ^ 1;\n                    $a = new Foo() << 1;\n                    $a = new Foo() >> 1;\n                ",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php\n                    $a = new Foo and 1;\n                    $a = new Foo or 1;\n                    $a = new Foo xor 1;\n                    $a = new Foo && 1;\n                    $a = new Foo || 1;\n                ",
+                        "<?php\n                    $a = new Foo() and 1;\n                    $a = new Foo() or 1;\n                    $a = new Foo() xor 1;\n                    $a = new Foo() && 1;\n                    $a = new Foo() || 1;\n                ",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php\n                    if (new DateTime > $this->startDate) {}\n                    if (new DateTime >= $this->startDate) {}\n                    if (new DateTime < $this->startDate) {}\n                    if (new DateTime <= $this->startDate) {}\n                    if (new DateTime == $this->startDate) {}\n                    if (new DateTime != $this->startDate) {}\n                    if (new DateTime <> $this->startDate) {}\n                    if (new DateTime === $this->startDate) {}\n                    if (new DateTime !== $this->startDate) {}\n                ",
+                        "<?php\n                    if (new DateTime() > $this->startDate) {}\n                    if (new DateTime() >= $this->startDate) {}\n                    if (new DateTime() < $this->startDate) {}\n                    if (new DateTime() <= $this->startDate) {}\n                    if (new DateTime() == $this->startDate) {}\n                    if (new DateTime() != $this->startDate) {}\n                    if (new DateTime() <> $this->startDate) {}\n                    if (new DateTime() === $this->startDate) {}\n                    if (new DateTime() !== $this->startDate) {}\n                ",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php $a = new \\stdClass ? $b : $c;",
+                        "<?php $a = new \\stdClass() ? $b : $c;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php foreach (new Collection as $x) {}",
+                        "<?php foreach (new Collection() as $x) {}",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php $a = [(string) new Foo => 1];",
+                        "<?php $a = [(string) new Foo() => 1];",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php $a = [ \"key\" => new DateTime, ];",
+                        "<?php $a = [ \"key\" => new DateTime(), ];",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php $a = [ \"key\" => new DateTime ];",
+                        "<?php $a = [ \"key\" => new DateTime() ];",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php\n                    $a = new Foo ** 1;\n                ",
+                        "<?php\n                    $a = new Foo() ** 1;\n                ",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php\n                    $a = new Foo <=> 1;\n                ",
+                        "<?php\n                    $a = new Foo() <=> 1;\n                ",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 88,
+                    "args": [
+                        "<?php $a = new $b['class']/* */\r\n\t ;",
+                        "<?php $a = new $b['class']/* */()\r\n\t ;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 89,
+                    "args": [
+                        "<?php $a = new $b['class'] /* */\r\n\t ;",
+                        "<?php $a = new $b['class'] /* */()\r\n\t ;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 90,
+                    "args": [
+                        "<?php $a = new $b['class']/* */;",
+                        "<?php $a = new $b['class']()/* */;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 91,
+                    "args": [
+                        "<?php $a = new $b['class'] /* */;",
+                        "<?php $a = new $b['class']() /* */;",
+                        {
+                            "named_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 92,
+                    "args": [
+                        "<?php $a = new class($a) {use SomeTrait;};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 93,
+                    "args": [
+                        "<?php $a = new class(foo(/**/)) implements Foo{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 94,
+                    "args": [
+                        "<?php $a = new class($c[\"d\"]) /**/ extends Bar1{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 95,
+                    "args": [
+                        "<?php $a = new class($e->f  )  extends Bar2 implements Foo{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 96,
+                    "args": [
+                        "<?php $a = new class( /**/ $g )    extends Bar3 implements Foo, Foo2{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 97,
+                    "args": [
+                        "<?php $a = new class( $h  /**/) {}?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 98,
+                    "args": [
+                        "<?php\n                    $a = new Foo() <=> 1;\n                ",
+                        "<?php\n                    $a = new Foo <=> 1;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 99,
+                    "args": [
+                        "<?php\n                    $a = new class() {use SomeTrait;};\n                    $a = new class() implements Foo{};\n                    $a = new class() /**/ extends Bar1{};\n                    $a = new class()  extends Bar2 implements Foo{};\n                    $a = new class()    extends Bar3 implements Foo, Foo2{};\n                    $a = new class() {}?>\n                ",
+                        "<?php\n                    $a = new class {use SomeTrait;};\n                    $a = new class implements Foo{};\n                    $a = new class /**/ extends Bar1{};\n                    $a = new class  extends Bar2 implements Foo{};\n                    $a = new class    extends Bar3 implements Foo, Foo2{};\n                    $a = new class {}?>\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 100,
+                    "args": [
+                        "<?php\n                    class A {\n                        public function B() {\n                            $static = new static(new class(){});\n                        }\n                    }\n                ",
+                        "<?php\n                    class A {\n                        public function B() {\n                            $static = new static(new class{});\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 101,
+                    "args": [
+                        "<?php $a = new class($a) {use SomeTrait;};",
+                        null,
+                        {
+                            "anonymous_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 102,
+                    "args": [
+                        "<?php $a = new class(foo(/**/)) implements Foo{};",
+                        null,
+                        {
+                            "anonymous_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 103,
+                    "args": [
+                        "<?php $a = new class($c[\"d\"]) /**/ extends Bar1{};",
+                        null,
+                        {
+                            "anonymous_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 104,
+                    "args": [
+                        "<?php $a = new class($e->f  )  extends Bar2 implements Foo{};",
+                        null,
+                        {
+                            "anonymous_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 105,
+                    "args": [
+                        "<?php $a = new class( /**/ $g )    extends Bar3 implements Foo, Foo2{};",
+                        null,
+                        {
+                            "anonymous_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 106,
+                    "args": [
+                        "<?php $a = new class( $h  /**/) {}?>",
+                        null,
+                        {
+                            "anonymous_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 107,
+                    "args": [
+                        "<?php\n                    $a = new class {use SomeTrait;};\n                    $a = new class implements Foo{};\n                    $a = new class /**/ extends Bar1{};\n                    $a = new class  extends Bar2 implements Foo{};\n                    $a = new class    extends Bar3 implements Foo, Foo2{};\n                    $a = new class    {}?>\n                ",
+                        "<?php\n                    $a = new class() {use SomeTrait;};\n                    $a = new class() implements Foo{};\n                    $a = new class() /**/ extends Bar1{};\n                    $a = new class()  extends Bar2 implements Foo{};\n                    $a = new class()    extends Bar3 implements Foo, Foo2{};\n                    $a = new class ( )  {}?>\n                ",
+                        {
+                            "anonymous_class": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 108,
+                    "args": [
+                        "<?php\n                    class A {\n                        public function B() {\n                            $static = new static(new class{});\n                        }\n                    }\n                ",
+                        "<?php\n                    class A {\n                        public function B() {\n                            $static = new static(new class(){});\n                        }\n                    }\n                ",
+                        {
+                            "anonymous_class": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NewWithParenthesesFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = new $b{$c}();",
+                        "<?php $a = new $b{$c};"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = new $b{$c}{0}{1}() ?>",
+                        "<?php $a = new $b{$c}{0}{1} ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = new $b{$c}[1]{0}[2]();",
+                        "<?php $a = new $b{$c}[1]{0}[2];"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NewWithParenthesesFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = new (foo());"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nclass Bar {\n    public function __construct(int $a = null) {\n        echo $a;\n    }\n};\n\n$foo = \"B\";\n\n$a = new ($foo.\"ar\");"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n                $bar1 = new $foo[0]?->bar();\n                $bar2 = new $foo[0][1]?->bar();\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a = new\n                #[Internal]\n                class(){};\n            ",
+                        "<?php $a = new\n                #[Internal]\n                class{};\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NewWithParenthesesFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nfunction test(\n    $foo = new A(),\n    $baz = new C(x: 2),\n) {\n}\n\nclass Test {\n    public function __construct(\n        public $prop = new Foo(),\n    ) {}\n}\n\nstatic $x = new Foo();\n\nconst C = new Foo();\n\nfunction test2($param = new Foo()) {}\n",
+                        "<?php\nfunction test(\n    $foo = new A,\n    $baz = new C(x: 2),\n) {\n}\n\nclass Test {\n    public function __construct(\n        public $prop = new Foo,\n    ) {}\n}\n\nstatic $x = new Foo;\n\nconst C = new Foo;\n\nfunction test2($param = new Foo) {}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\NewWithParenthesesFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n            class A {public function test(): void {}}\n\n            new A()->test();\n            (new A())->test();\n            ",
+                        "<?php\n            class A {public function test(): void {}}\n\n            new A()->test();\n            (new A)->test();\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n            class A {public function test(): void {}}\n\n            new A()->test();\n            (new A)->test();\n            ",
+                        "<?php\n            class A {public function test(): void {}}\n\n            new A()->test();\n            (new A())->test();\n            ",
+                        {
+                            "anonymous_class": false,
+                            "named_class": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

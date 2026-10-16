@@ -1,0 +1,538 @@
+[
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// This is a comment\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n# This is a hash comment\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/* This is a block comment */\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n$x = 1; // trailing comment",
+        "expected": "<?php\n\n$x = 1; "
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/*\n * Multi-line\n * comment.\n */\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * Just a description.\n * No annotations.\n */\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// TODO: refactor this\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// $old = new Thing();\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * This class is amazing.\n *\n * It handles everything.\n */\nclass Foo {}",
+        "expected": "<?php\n\nclass Foo {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n *\n */\nclass Foo {}",
+        "expected": "<?php\n\nclass Foo {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// First comment\n// Second comment\n// Third comment\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass UserController extends Controller\n{\n    /**\n     * Display a listing of users.\n     */\n    public function index()\n    {\n        return User::all();\n    }\n}",
+        "expected": "<?php\n\nclass UserController extends Controller\n{\n    public function index()\n    {\n        return User::all();\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass AppServiceProvider extends ServiceProvider\n{\n    /**\n     * Register any application services.\n     */\n    public function register()\n    {\n    }\n\n    /**\n     * Bootstrap any application services.\n     */\n    public function boot()\n    {\n    }\n}",
+        "expected": "<?php\n\nclass AppServiceProvider extends ServiceProvider\n{\n    public function register()\n    {\n    }\n\n    public function boot()\n    {\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nreturn new class extends Migration\n{\n    /**\n     * Run the migrations.\n     */\n    public function up()\n    {\n        // Create the users table\n        Schema::create('users', function (Blueprint $table) {\n            $table->id();\n            $table->string('name');\n            $table->timestamps();\n        });\n    }\n};",
+        "expected": "<?php\n\nreturn new class extends Migration\n{\n    public function up()\n    {\n        Schema::create('users', function (Blueprint $table) {\n            $table->id();\n            $table->string('name');\n            $table->timestamps();\n        });\n    }\n};"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nreturn [\n    /*\n    |--------------------------------------------------------------------------\n    | Application Name\n    |--------------------------------------------------------------------------\n    |\n    | This value is the name of your application.\n    |\n    */\n\n    'name' => env('APP_NAME', 'Laravel'),\n\n    // The application URL\n    'url' => env('APP_URL', 'http://localhost'),\n];",
+        "expected": "<?php\n\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n\n    'url' => env('APP_URL', 'http://localhost'),\n];"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// Authentication routes\nRoute::post('/login', [AuthController::class, 'login']);\nRoute::post('/logout', [AuthController::class, 'logout']);\n\n// User management\nRoute::resource('users', UserController::class);",
+        "expected": "<?php\n\nRoute::post('/login', [AuthController::class, 'login']);\nRoute::post('/logout', [AuthController::class, 'logout']);\n\nRoute::resource('users', UserController::class);"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass UserController extends Controller\n{\n    // ==================\n    // Authentication\n    // ==================\n\n    public function login() {}\n\n    // ==================\n    // Profile\n    // ==================\n\n    public function profile() {}\n}",
+        "expected": "<?php\n\nclass UserController extends Controller\n{\n    public function login() {}\n\n    public function profile() {}\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// @phpstan-ignore-next-line\n$x = 1;",
+        "expected": "<?php\n\n// @phpstan-ignore-next-line\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n$x = someDynamicCall(); // @phpstan-ignore-line",
+        "expected": "<?php\n\n$x = someDynamicCall(); // @phpstan-ignore-line"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/** @var array<int, string> $items */\n$items = [];",
+        "expected": "<?php\n\n/** @var array<int, string> $items */\n$items = [];"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @param  string  $value\n */\nfunction clean($value) {}",
+        "expected": "<?php\n\n/**\n * @param  string  $value\n */\nfunction clean($value) {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @phpstan-type UserData array{name: string, age: int}\n */\nclass User {}",
+        "expected": "<?php\n\n/**\n * @phpstan-type UserData array{name: string, age: int}\n */\nclass User {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @psalm-type UserId = int\n */\nclass User {}",
+        "expected": "<?php\n\n/**\n * @psalm-type UserId = int\n */\nclass User {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * {@inheritDoc}\n */\nfunction greet() {}",
+        "expected": "<?php\n\n/**\n * {@inheritDoc}\n */\nfunction greet() {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @property int $id\n * @property string $name\n * @property string $email\n * @property \\Carbon\\Carbon $created_at\n */\nclass User extends Model {}",
+        "expected": "<?php\n\n/**\n * @property int $id\n * @property string $name\n * @property string $email\n * @property \\Carbon\\Carbon $created_at\n */\nclass User extends Model {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @mixin \\Illuminate\\Database\\Eloquent\\Builder<User>\n */\nclass User extends Model {}",
+        "expected": "<?php\n\n/**\n * @mixin \\Illuminate\\Database\\Eloquent\\Builder<User>\n */\nclass User extends Model {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @property-read float $total\n * @property-read string $status_label\n * @property-write string $raw_status\n */\nclass Order extends Model {}",
+        "expected": "<?php\n\n/**\n * @property-read float $total\n * @property-read string $status_label\n * @property-write string $raw_status\n */\nclass Order extends Model {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @template TModel of \\Illuminate\\Database\\Eloquent\\Model\n */\nabstract class Repository {}",
+        "expected": "<?php\n\n/**\n * @template TModel of \\Illuminate\\Database\\Eloquent\\Model\n */\nabstract class Repository {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @extends Repository<User>\n * @implements Countable\n */\nclass UserRepository extends Repository implements Countable {}",
+        "expected": "<?php\n\n/**\n * @extends Repository<User>\n * @implements Countable\n */\nclass UserRepository extends Repository implements Countable {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass UserService\n{\n    public function getActive()\n    {\n        /** @var \\Illuminate\\Support\\Collection<int, User> $users */\n        $users = User::where('active', true)->get();\n\n        return $users;\n    }\n}",
+        "expected": "<?php\n\nclass UserService\n{\n    public function getActive()\n    {\n        /** @var \\Illuminate\\Support\\Collection<int, User> $users */\n        $users = User::where('active', true)->get();\n\n        return $users;\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @phpstan-assert string $value\n */\nfunction assertString($value) {}",
+        "expected": "<?php\n\n/**\n * @phpstan-assert string $value\n */\nfunction assertString($value) {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @phpstan-param callable(TValue, TKey): TMapValue $callback\n * @phpstan-return static<TKey, TMapValue>\n */\nfunction map(callable $callback) {}",
+        "expected": "<?php\n\n/**\n * @phpstan-param callable(TValue, TKey): TMapValue $callback\n * @phpstan-return static<TKey, TMapValue>\n */\nfunction map(callable $callback) {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @param  array{\n *     name?: string,\n *     email?: string,\n *     email_verified_at?: DateTimeInterface|null,\n *     has_ever_verified_email?: bool\n * }  $attributes\n * @return User\n */\nfunction updateUser(User $user, array $attributes): User {}",
+        "expected": "<?php\n\n/**\n * @param  array{\n *     name?: string,\n *     email?: string,\n *     email_verified_at?: DateTimeInterface|null,\n *     has_ever_verified_email?: bool\n * }  $attributes\n * @return User\n */\nfunction updateUser(User $user, array $attributes): User {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * Update the user attributes.\n *\n * @param  array{\n *     name?: string,\n *     email?: string,\n * }  $attributes\n */\nfunction updateUser(User $user, array $attributes): User {}",
+        "expected": "<?php\n\n/**\n * @param  array{\n *     name?: string,\n *     email?: string,\n * }  $attributes\n */\nfunction updateUser(User $user, array $attributes): User {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * A helper.\n *\n * It does math.\n *\n * @param  int  $a\n * @param  int  $b\n * @return int\n */\nfunction add($a, $b) {}",
+        "expected": "<?php\n\n/**\n * @param  int  $a\n * @param  int  $b\n * @return int\n */\nfunction add($a, $b) {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n    /**\n     * This does something.\n     *\n     * @param  string  $name\n     * @return void\n     */\n    public function bar($name) {}\n}",
+        "expected": "<?php\n\nclass Foo\n{\n    /**\n     * @param  string  $name\n     * @return void\n     */\n    public function bar($name) {}\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * The User model.\n *\n * @property int $id\n * @property string $name\n * @property string $email\n * @property \\Carbon\\Carbon $created_at\n */\nclass User extends Model {}",
+        "expected": "<?php\n\n/**\n * @property int $id\n * @property string $name\n * @property string $email\n * @property \\Carbon\\Carbon $created_at\n */\nclass User extends Model {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * The User model represents an authenticated user.\n *\n * @mixin \\Illuminate\\Database\\Eloquent\\Builder<User>\n */\nclass User extends Model {}",
+        "expected": "<?php\n\n/**\n * @mixin \\Illuminate\\Database\\Eloquent\\Builder<User>\n */\nclass User extends Model {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass User extends Model\n{\n    /**\n     * Get the posts for the user.\n     *\n     * @return \\Illuminate\\Database\\Eloquent\\Relations\\HasMany<Post, $this>\n     */\n    public function posts()\n    {\n        return $this->hasMany(Post::class);\n    }\n}",
+        "expected": "<?php\n\nclass User extends Model\n{\n    /**\n     * @return \\Illuminate\\Database\\Eloquent\\Relations\\HasMany<Post, $this>\n     */\n    public function posts()\n    {\n        return $this->hasMany(Post::class);\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass StoreUserRequest extends FormRequest\n{\n    /**\n     * Determine if the user is authorized.\n     *\n     * @return bool\n     */\n    public function authorize()\n    {\n        return true;\n    }\n\n    /**\n     * Get the validation rules.\n     *\n     * @return array<string, \\Illuminate\\Contracts\\Validation\\ValidationRule|array<mixed>|string>\n     */\n    public function rules()\n    {\n        return [\n            'name' => 'required|string|max:255',\n        ];\n    }\n}",
+        "expected": "<?php\n\nclass StoreUserRequest extends FormRequest\n{\n    /**\n     * @return bool\n     */\n    public function authorize()\n    {\n        return true;\n    }\n\n    /**\n     * @return array<string, \\Illuminate\\Contracts\\Validation\\ValidationRule|array<mixed>|string>\n     */\n    public function rules()\n    {\n        return [\n            'name' => 'required|string|max:255',\n        ];\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * The Cache facade.\n *\n * @method static bool has(string $key)\n * @method static mixed get(string $key, mixed $default = null)\n * @method static bool put(string $key, mixed $value, int $ttl = null)\n *\n * @see \\Illuminate\\Cache\\CacheManager\n */\nclass Cache extends Facade {}",
+        "expected": "<?php\n\n/**\n * @method static bool has(string $key)\n * @method static mixed get(string $key, mixed $default = null)\n * @method static bool put(string $key, mixed $value, int $ttl = null)\n * @see \\Illuminate\\Cache\\CacheManager\n */\nclass Cache extends Facade {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass EnsureTokenIsValid\n{\n    /**\n     * Handle an incoming request.\n     *\n     * Check if the token is valid before proceeding.\n     * This is critical for API security.\n     *\n     * @param  \\Illuminate\\Http\\Request  $request\n     * @param  \\Closure(\\Illuminate\\Http\\Request): (\\Symfony\\Component\\HttpFoundation\\Response)  $next\n     * @return \\Symfony\\Component\\HttpFoundation\\Response\n     */\n    public function handle($request, $next)\n    {\n        return $next($request);\n    }\n}",
+        "expected": "<?php\n\nclass EnsureTokenIsValid\n{\n    /**\n     * @param  \\Illuminate\\Http\\Request  $request\n     * @param  \\Closure(\\Illuminate\\Http\\Request): (\\Symfony\\Component\\HttpFoundation\\Response)  $next\n     * @return \\Symfony\\Component\\HttpFoundation\\Response\n     */\n    public function handle($request, $next)\n    {\n        return $next($request);\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass PaymentService\n{\n    /**\n     * Process a payment.\n     *\n     * @param  float  $amount\n     * @throws \\App\\Exceptions\\PaymentFailedException\n     * @throws \\InvalidArgumentException\n     */\n    public function charge($amount)\n    {\n    }\n}",
+        "expected": "<?php\n\nclass PaymentService\n{\n    /**\n     * @param  float  $amount\n     * @throws \\App\\Exceptions\\PaymentFailedException\n     * @throws \\InvalidArgumentException\n     */\n    public function charge($amount)\n    {\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass LegacyService\n{\n    /**\n     * Use NewService::handle() instead.\n     *\n     * @deprecated\n     * @return void\n     */\n    public function oldMethod()\n    {\n    }\n}",
+        "expected": "<?php\n\nclass LegacyService\n{\n    /**\n     * @deprecated\n     * @return void\n     */\n    public function oldMethod()\n    {\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * A generic repository pattern.\n *\n * @template TModel of \\Illuminate\\Database\\Eloquent\\Model\n */\nabstract class Repository\n{\n    /**\n     * Find a model by its primary key.\n     *\n     * @param  int  $id\n     * @return TModel|null\n     */\n    abstract public function find($id);\n}",
+        "expected": "<?php\n\n/**\n * @template TModel of \\Illuminate\\Database\\Eloquent\\Model\n */\nabstract class Repository\n{\n    /**\n     * @param  int  $id\n     * @return TModel|null\n     */\n    abstract public function find($id);\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * User repository implementation.\n *\n * @extends Repository<User>\n * @implements Countable\n */\nclass UserRepository extends Repository implements Countable {}",
+        "expected": "<?php\n\n/**\n * @extends Repository<User>\n * @implements Countable\n */\nclass UserRepository extends Repository implements Countable {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * The order model with computed properties.\n *\n * @property-read float $total\n * @property-read string $status_label\n * @property-write string $raw_status\n */\nclass Order extends Model {}",
+        "expected": "<?php\n\n/**\n * @property-read float $total\n * @property-read string $status_label\n * @property-write string $raw_status\n */\nclass Order extends Model {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Pipeline\n{\n    /**\n     * Send the item through the pipeline.\n     *\n     * @param  \\Closure(mixed): mixed  $callback\n     * @return $this\n     */\n    public function pipe($callback)\n    {\n        return $this;\n    }\n}",
+        "expected": "<?php\n\nclass Pipeline\n{\n    /**\n     * @param  \\Closure(mixed): mixed  $callback\n     * @return $this\n     */\n    public function pipe($callback)\n    {\n        return $this;\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass TypeGuard\n{\n    /**\n     * Assert the value is a string.\n     *\n     * @phpstan-assert string $value\n     */\n    public static function string($value) {}\n}",
+        "expected": "<?php\n\nclass TypeGuard\n{\n    /**\n     * @phpstan-assert string $value\n     */\n    public static function string($value) {}\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Collection\n{\n    /**\n     * Map the collection.\n     *\n     * @phpstan-param callable(TValue, TKey): TMapValue $callback\n     * @phpstan-return static<TKey, TMapValue>\n     */\n    public function map(callable $callback) {}\n}",
+        "expected": "<?php\n\nclass Collection\n{\n    /**\n     * @phpstan-param callable(TValue, TKey): TMapValue $callback\n     * @phpstan-return static<TKey, TMapValue>\n     */\n    public function map(callable $callback) {}\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n//no space after delimiter\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n//    lots of spaces\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n//\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n#\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/* */\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/** */\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**@var int $x*/\n$x = 1;",
+        "expected": "<?php\n\n/**@var int $x*/\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**@var int*/\n$x = 1;",
+        "expected": "<?php\n\n/**@var int*/\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n$ecrUri = sprintf('%s.dkr.ecr.%s', $ecrAccountId, $ecrRegion);\n\n// While today, the ECR Account is shared across\n// organizations, we may want to change this in the\n// future. As such we are storing it per application.\n\n$application->update([\n    'ecr_account_id' => $ecrAccountId,\n]);",
+        "expected": "<?php\n\n$ecrUri = sprintf('%s.dkr.ecr.%s', $ecrAccountId, $ecrRegion);\n\n$application->update([\n    'ecr_account_id' => $ecrAccountId,\n]);"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n$usageBytes = DataSize::from($usage);\n\n// This is to make sure we don't exceed the limit\nif ($usageBytes > $allowedBytes) {\n    $allowanceBytes = $allowedBytes;\n}",
+        "expected": "<?php\n\n$usageBytes = DataSize::from($usage);\n\nif ($usageBytes > $allowedBytes) {\n    $allowanceBytes = $allowedBytes;\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n$x = 1;\n// a comment\n$y = 2;",
+        "expected": "<?php\n\n$x = 1;\n$y = 2;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n    /**\n     * Create something.\n     */\n    public function create() {}\n\n    /**\n     * Update something.\n     */\n    public function update() {}\n}",
+        "expected": "<?php\n\nclass Foo\n{\n    public function create() {}\n\n    public function update() {}\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// Contact john@example.com for help\n$x = 1;",
+        "expected": "<?php\n\n// Contact john@example.com for help\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/* Author: jane@company.org */\n$x = 1;",
+        "expected": "<?php\n\n/* Author: jane@company.org */\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// See https://user@github.com/repo\n$x = 1;",
+        "expected": "<?php\n\n// See https://user@github.com/repo\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// @\n$x = 1;",
+        "expected": "<?php\n\n// @\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// something @\n$x = 1;",
+        "expected": "<?php\n\n// something @\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * Contact support@example.com\n * @param  string  $email\n */\nfunction notify($email) {}",
+        "expected": "<?php\n\n/**\n * Contact support@example.com\n * @param  string  $email\n */\nfunction notify($email) {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @todo Refactor this method.\n */\nfunction foo() {}",
+        "expected": "<?php\n\n/**\n * @todo Refactor this method.\n */\nfunction foo() {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @codeCoverageIgnore\n */\nclass Foo {}",
+        "expected": "<?php\n\n/**\n * @codeCoverageIgnore\n */\nclass Foo {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @api\n */\nfunction publicApi() {}",
+        "expected": "<?php\n\n/**\n * @api\n */\nfunction publicApi() {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @internal\n */\nclass Internal {}",
+        "expected": "<?php\n\n/**\n * @internal\n */\nclass Internal {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @SuppressWarnings(PHPMD.ExcessiveMethodLength)\n */\nfunction longMethod() {}",
+        "expected": "<?php\n\n/**\n * @SuppressWarnings(PHPMD.ExcessiveMethodLength)\n */\nfunction longMethod() {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @deprecated\n * @internal\n * @api\n */\nfunction foo() {}",
+        "expected": "<?php\n\n/**\n * @deprecated\n * @internal\n * @api\n */\nfunction foo() {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// @phpstan-ignore argument.type (expected strict type)\n$x = something();",
+        "expected": "<?php\n\n// @phpstan-ignore argument.type (expected strict type)\n$x = something();"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @param  int  $a\n *\n *\n * @return int\n */\nfunction foo($a) { return $a; }",
+        "expected": "<?php\n\n/**\n * @param  int  $a\n * @return int\n */\nfunction foo($a) { return $a; }"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * @param  string  $name\n *\n * @return void\n */\nfunction greet($name) {}",
+        "expected": "<?php\n\n/**\n * @param  string  $name\n * @return void\n */\nfunction greet($name) {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        $fn = function () {\n            /**\n             * Some docs.\n             *\n             * @var int $val\n             */\n            $val = 42;\n        };\n    }\n}",
+        "expected": "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        $fn = function () {\n            /**\n             * @var int $val\n             */\n            $val = 42;\n        };\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * First docblock.\n */\n/**\n * @param  int  $x\n */\nfunction foo($x) {}",
+        "expected": "<?php\n\n/**\n * @param  int  $x\n */\nfunction foo($x) {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n    /**\n     * The name.\n     *\n     * @var string\n     */\n    protected $name;\n}",
+        "expected": "<?php\n\nclass Foo\n{\n    /**\n     * @var string\n     */\n    protected $name;\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n    /**\n     * Max retry count.\n     *\n     * @var int\n     */\n    const MAX_RETRIES = 3;\n}",
+        "expected": "<?php\n\nclass Foo\n{\n    /**\n     * @var int\n     */\n    const MAX_RETRIES = 3;\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n    // Include soft deletes\n    use SoftDeletes;\n}",
+        "expected": "<?php\n\nclass Foo\n{\n    use SoftDeletes;\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/** @var int $a */\n$a = 1;\n\n/** @var string $b */\n$b = \"hello\";\n\n/** @var bool $c */\n$c = true;",
+        "expected": "<?php\n\n/** @var int $a */\n$a = 1;\n\n/** @var string $b */\n$b = \"hello\";\n\n/** @var bool $c */\n$c = true;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n// A note\n/* Another note */\n/**\n * @param  int  $x\n */\nfunction foo($x) {}",
+        "expected": "<?php\n\n/**\n * @param  int  $x\n */\nfunction foo($x) {}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n/**\n * Description line.\n * @param  int  $a\n * More prose here.\n * @param  int  $b\n * Final prose.\n * @return int\n */\nfunction foo($a, $b) { return $a + $b; }",
+        "expected": "<?php\n\n/**\n * @param  int  $a\n * @param  int  $b\n * @return int\n */\nfunction foo($a, $b) { return $a + $b; }"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n\t/**\n\t * Some description.\n\t *\n\t * @param  string  $x\n\t * @return void\n\t */\n\tpublic function bar($x) {}\n}",
+        "expected": "<?php\n\nclass Foo\n{\n\t/**\n\t * @param  string  $x\n\t * @return void\n\t */\n\tpublic function bar($x) {}\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\ninterface DatabaseSize\n{\n    //\n}",
+        "expected": "<?php\n\ninterface DatabaseSize\n{\n    //\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        //\n    }\n}",
+        "expected": "<?php\n\nclass Foo\n{\n    public function bar()\n    {\n        //\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n    //\n}",
+        "expected": "<?php\n\nclass Foo\n{\n    //\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n$fn = function () {\n    //\n};",
+        "expected": "<?php\n\n$fn = function () {\n    //\n};"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\ninterface Foo\n{\n    #\n}",
+        "expected": "<?php\n\ninterface Foo\n{\n    #\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Foo\n{\n    // some comment\n    public function bar() {}\n}",
+        "expected": "<?php\n\nclass Foo\n{\n    public function bar() {}\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass Migration\n{\n    public function up(): void\n    {\n        // Moved to a seeder...\n    }\n}",
+        "expected": "<?php\n\nclass Migration\n{\n    public function up(): void\n    {\n        //\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nfunction foo()\n{\n    # not needed anymore\n}",
+        "expected": "<?php\n\nfunction foo()\n{\n    #\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nfunction foo()\n{\n    //\n}",
+        "expected": "<?php\n\nfunction foo()\n{\n    //\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass AppServiceProvider extends ServiceProvider\n{\n    /**\n     * Register any application services.\n     */\n    public function register()\n    {\n        //\n    }\n\n    /**\n     * Bootstrap any application services.\n     */\n    public function boot()\n    {\n        //\n    }\n}",
+        "expected": "<?php\n\nclass AppServiceProvider extends ServiceProvider\n{\n    public function register()\n    {\n        //\n    }\n\n    public function boot()\n    {\n        //\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\n$x = 1;",
+        "expected": "<?php\n\n$x = 1;"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n\nclass User extends Model\n{\n    protected $fillable = ['name', 'email'];\n\n    public function posts()\n    {\n        return $this->hasMany(Post::class);\n    }\n}",
+        "expected": "<?php\n\nclass User extends Model\n{\n    protected $fillable = ['name', 'email'];\n\n    public function posts()\n    {\n        return $this->hasMany(Post::class);\n    }\n}"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "path": "/project/config/app.php",
+        "input": "<?php\n\n// This comment should be preserved in config files\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];",
+        "expected": "<?php\n\n// This comment should be preserved in config files\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "path": "/project/config/database.php",
+        "input": "<?php\n\n// This comment should be preserved in config files\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];",
+        "expected": "<?php\n\n// This comment should be preserved in config files\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "path": "/project/config/nested/services.php",
+        "input": "<?php\n\n// This comment should be preserved in config files\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];",
+        "expected": "<?php\n\n// This comment should be preserved in config files\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "path": "/project/app/Models/User.php",
+        "input": "<?php\n\n// This comment should be preserved in config files\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];",
+        "expected": "<?php\n\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "path": "/project/app/Configurable.php",
+        "input": "<?php\n\n// This comment should be preserved in config files\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];",
+        "expected": "<?php\n\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "path": "/project/src/config.php",
+        "input": "<?php\n\n// This comment should be preserved in config files\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];",
+        "expected": "<?php\n\nreturn [\n    'name' => env('APP_NAME', 'Laravel'),\n];"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n$a = 1;/* x */$b = 2;\n",
+        "expected": "<?php\n$a = 1;$b = 2;\n"
+    },
+    {
+        "fixer": "Pint/phpdoc_type_annotations_only",
+        "input": "<?php\n/**\n@var int $x\n*/\n$x = 1;\n",
+        "expected": "<?php\n/**\n@var int $x\n */\n$x = 1;\n"
+    }
+]
