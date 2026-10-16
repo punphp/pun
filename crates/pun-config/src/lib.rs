@@ -225,7 +225,8 @@ fn check_composer(root: &Path, sources: &mut Vec<PathBuf>) -> Result<()> {
     let v: Value = serde_json::from_slice(&bytes).with_context(|| format!("invalid {}", path.display()))?;
     sources.push(path);
     if let Some(c) = v.pointer("/require/php").and_then(Value::as_str) {
-        if allows_below(c, (8, 4, 0)).map_err(anyhow::Error::msg)? {
+        // PUN_IGNORE_PHP_CONSTRAINT=1: harness-only escape hatch so pre-8.4 corpora (laravel/framework...) can be diffed.
+        if allows_below(c, (8, 4, 0)).map_err(anyhow::Error::msg)? && std::env::var_os("PUN_IGNORE_PHP_CONSTRAINT").is_none() {
             bail!(
                 "composer.json requires PHP \"{c}\", which allows PHP < 8.4. Pun only supports projects on PHP 8.4+; raise the constraint (for example \"^8.4\") or keep using Pint."
             );

@@ -80,10 +80,14 @@ fn main() -> Result<()> {
             let cfg = tmp.join(&p.name).join("single-fixer.json");
             fs::write(&cfg, single_fixer_config(&root, &src, name)?)?;
             args = vec!["--config".into(), cfg.display().to_string()];
+            // Single-fixer mode judges the fixer, not pun's PHP >= 8.4 gate: raise the constraint in both copies.
+            for dir in [&oracle_dir, &pun_dir] {
+                raise_php_constraint(&dir.join("composer.json"))?;
+            }
         }
         run(Command::new("php").arg(&pint).args(&args).current_dir(&oracle_dir), "pint")?;
         if pun.exists() {
-            run(Command::new(&pun).arg("format").args(&args).current_dir(&pun_dir), "pun")?;
+            run(Command::new(&pun).env("PUN_IGNORE_PHP_CONSTRAINT", "1").arg("format").args(&args).current_dir(&pun_dir), "pun")?;
         }
 
         let o = compare(&p.name, &src, &oracle_dir, &pun_dir)?;
@@ -111,6 +115,18 @@ fn main() -> Result<()> {
     }
     if outcomes.iter().any(|o| !o.differing.is_empty()) {
         std::process::exit(1);
+    }
+    Ok(())
+}
+
+/// Rewrites `"php": "<constraint>"` under `require` to `"^8.4"` textually (keeps the file's formatting).
+fn raise_php_constraint(path: &Path) -> Result<()> {
+    let Ok(text) = fs::read_to_string(path) else { return Ok(()) };
+    let v: serde_json::Value = serde_json::from_str(&text)?;
+    let Some(c) = v.pointer("/require/php").and_then(|c| c.as_str()) else { return Ok(()) };
+    let needle = format!("\"php\": \"{}\"", c.replace('\\', "\\\\"));
+    if text.contains(&needle) {
+        fs::write(path, text.replacen(&needle, "\"php\": \"^8.4\"", 1))?;
     }
     Ok(())
 }
