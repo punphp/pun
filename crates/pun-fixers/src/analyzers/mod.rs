@@ -23,3 +23,7 @@ pub mod abstract_no_useless_else_fixer;
 pub mod abstract_function_reference_fixer;
 pub mod constant_invocation
 pub mod import_processor
+pub mod fully_qualified_name_analyzer;
+pub mod php_unit_test_case_analyzer;
+pub mod abstract_php_unit_fixer;
+pub mod php_functions;
