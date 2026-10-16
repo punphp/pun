@@ -698,11 +698,22 @@ dependencies = [
 ]
 
 [[package]]
-name = "pun-cli"
+name = "punphp"
 version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "clap",
+ "punphp-config",
+ "punphp-format",
+ "punphp-workspace",
+ "rayon",
+ "serde_json",
+ "similar",
+ "toml",
+]
 
 [[package]]
-name = "pun-config"
+name = "punphp-config"
 version = "0.0.1"
 dependencies = [
  "anyhow",
@@ -712,11 +723,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "pun-fixers"
+name = "punphp-fixers"
 version = "0.0.1"
 
 [[package]]
-name = "pun-format"
+name = "punphp-format"
 version = "0.0.1"
 dependencies = [
  "anyhow",
@@ -726,12 +737,12 @@ dependencies = [
  "mago-php-version",
  "mago-span",
  "mago-syntax",
- "pun-config",
+ "punphp-config",
  "serde_json",
 ]
 
 [[package]]
-name = "pun-harness"
+name = "punphp-harness"
 version = "0.0.1"
 dependencies = [
  "anyhow",
@@ -743,16 +754,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "pun-tokens"
+name = "punphp-tokens"
 version = "0.0.1"
 
 [[package]]
-name = "pun-workspace"
+name = "punphp-workspace"
 version = "0.0.1"
 dependencies = [
  "anyhow",
  "pcre2",
- "pun-config",
+ "punphp-config",
  "walkdir",
 ]
 

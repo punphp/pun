@@ -2,7 +2,7 @@
 # Publishes 0.0.0 placeholders to reserve Pun's crate names on crates.io.
 # Needs a crates.io token: run `cargo login` first. Publishing is permanent.
 set -euo pipefail
-names=(punphp pun-tokens pun-fixers pun-format pun-config pun-workspace pun-harness pun-php)
+names=(punphp punphp-tokens punphp-fixers punphp-format punphp-config punphp-workspace punphp-harness punphp-php)
 work=$(mktemp -d)
 for n in "${names[@]}"; do
   mkdir -p "$work/$n/src"
