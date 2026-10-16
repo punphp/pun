@@ -142,19 +142,19 @@ Analyzers owned: NamespaceUsesAnalyzer, NamespacesAnalyzer, ClassyAnalyzer, Attr
 Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeExpression), AbstractPhpdocTypesFixer, AbstractProxyFixer.
 
 - [x] final_public_method_for_abstract_class
-- [ ] fully_qualified_strict_types (handed to agent 3)
+- [x] fully_qualified_strict_types (handed to agent 3)
 - [x] lambda_not_used_import
 - [x] magic_constant_casing
 - [x] modifier_keywords
 - [x] no_leading_import_slash
-- [ ] no_unneeded_import_alias (handed to agent 3)
-- [ ] no_unused_imports (handed to agent 3)
+- [x] no_unneeded_import_alias (handed to agent 3)
+- [x] no_unused_imports (handed to agent 3)
 - [x] no_useless_else
 - [x] no_useless_return
-- [ ] ordered_class_elements (handed to agent 3)
-- [ ] ordered_imports (handed to agent 3)
-- [ ] ordered_interfaces (handed to agent 3)
-- [ ] ordered_traits (handed to agent 3)
+- [x] ordered_class_elements (handed to agent 3)
+- [x] ordered_imports (handed to agent 3)
+- [x] ordered_interfaces (handed to agent 3)
+- [x] ordered_traits (handed to agent 3)
 - [x] php_unit_set_up_tear_down_visibility
 - [x] protected_to_private
 - [x] self_accessor
