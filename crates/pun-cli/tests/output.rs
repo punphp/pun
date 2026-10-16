@@ -210,9 +210,10 @@ fn ignore_annotations_like_pint() {
     for args in [&[][..], &["--test"], &["-v"]] {
         cx.same(&t, args, PLAIN);
     }
-    for bad in ["nope,@Foo,", "single_quote,a,a", "\tsingle_quote"] {
+    // A tab right after the name: FixerAnnotationAnalyzer's "Undefined array key 1".
+    for bad in [" nope,@Foo,", " single_quote,a,a", " \tsingle_quote", "\tsingle_quote"] {
         let mut t = t.clone();
-        t.push(("app/Zbad.php", Box::leak(format!("<?php\n// @php-cs-fixer-ignore {bad}\n$a = \"x\";\n").into_boxed_str())));
+        t.push(("app/Zbad.php", Box::leak(format!("<?php\n// @php-cs-fixer-ignore{bad}\n$a = \"x\";\n").into_boxed_str())));
         let r = cx.same(&t, &["--test"], PLAIN);
         assert_eq!(r.code, Some(1), "{bad}");
     }
