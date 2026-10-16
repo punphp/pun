@@ -161,7 +161,7 @@ fn show_config(fmt: &str, config: Option<PathBuf>, preset: Option<String>) -> Re
 
 /// Native fixers. TODO: `pun_fixers::all()` once pun-fixers exports it (see docs/REQUESTS.md).
 fn native_fixers() -> Vec<Box<dyn Fixer>> {
-    vec![]
+    pun_fixers::all()
 }
 
 enum Engine2 {

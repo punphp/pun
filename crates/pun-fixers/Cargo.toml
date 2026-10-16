@@ -5,3 +5,8 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+anyhow.workspace = true
+serde_json.workspace = true
+pcre2 = "0.2"
+pun-tokens.workspace = true
+pun-format.workspace = true

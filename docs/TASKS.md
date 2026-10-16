@@ -24,7 +24,7 @@ Owner = agent working on it. Status: todo / doing / done / blocked.
 
 | Task | Crate | Status |
 | --- | --- | --- |
-| Port laravel preset fixers in ranking order, fixtures green | pun-fixers | todo |
+| Port fixers, split A/B in docs/FIXERS.md | pun-fixers | doing |
 | Delegate mode: unported fixers via system PHP-CS-Fixer | pun-format | todo |
 | Content-hash cache (blake3) | pun-workspace | todo |
 
