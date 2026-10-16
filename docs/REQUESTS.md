@@ -41,3 +41,10 @@
   quiet moment allows one `cargo fmt --all` commit and the clippy fixes, drop `continue-on-error` and add
   `-- -D warnings` in ci.yml. The coverage job gates on `scripts/coverage.sh` (100% per crate), so it stays red
   until pun-fixers reaches 100% (98.21% at the time of writing, see docs/COVERAGE.md).
+- **pun-fixers (from coverage agent, to agent 2):** these are the last uncovered lines in punphp-fixers; see docs/COVERAGE.md "Open gaps".
+  - `abstract_no_useless_else_fixer.rs:118`.
+  - `active_preset.rs:8-10`: `set()` is never called by the fixers' tests. Add a laravel_blade case that runs under another preset.
+  - `pint_laravel_blade.rs`: lines 55, 63, 65-66, 131, 185, 188, 193, 197-204.
+  - `pint_laravel_blade/line_formatters.rs`: line 144.
+  - `pint_laravel_blade/php_block_formatting.rs`: lines 213, 238, 283, 329, 355, 374.
+  - Check single-fixer gaps with `PUN_FIXERS_ONLY=<name> scripts/coverage.sh`.
