@@ -1,5 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocTagTypeFixer`.
-use crate::analyzers::preg::{Preg, PREG_SPLIT_DELIM_CAPTURE};
+use crate::analyzers::preg::{preg_quote, Preg, PREG_SPLIT_DELIM_CAPTURE};
 use anyhow::{bail, Result};
 use pun_format::Fixer;
 use pun_tokens::{Kind::*, Token, Tokens};
@@ -30,22 +30,6 @@ pub fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpdocTagTypeFixer { tags: DEFAULT_TAGS.iter().map(|t| (t.to_ascii_lowercase(), false)).collect() })
 }
 
-/// PHP `preg_quote($str, $delimiter)`.
-fn preg_quote(s: &str, delimiter: u8) -> String {
-    let mut out = String::new();
-    for c in s.chars() {
-        if c == '\0' {
-            out.push_str("\\000");
-            continue;
-        }
-        if ".\\+*?[^]$(){}=!<>|:-#".contains(c) || (c.is_ascii() && c as u8 == delimiter) {
-            out.push('\\');
-        }
-        out.push(c);
-    }
-    out
-}
-
 impl Fixer for PhpdocTagTypeFixer {
     fn name(&self) -> &'static str {
         "phpdoc_tag_type"
@@ -62,18 +46,25 @@ impl Fixer for PhpdocTagTypeFixer {
             *self = PhpdocTagTypeFixer { tags: DEFAULT_TAGS.iter().map(|t| (t.to_ascii_lowercase(), false)).collect() };
             return Ok(());
         };
-        let map = match v {
-            Value::Object(m) => m.clone(),
-            Value::Array(a) if a.is_empty() => Default::default(),
-            _ => bail!("[phpdoc_tag_type] Invalid configuration: The option \"tags\" with value {v} is expected to be of type \"array<string, 'annotation'|'inline'>\"."),
+        o.check_types("tags", &["string[]"])?;
+        // a list's values are its elements (keyed by position)
+        let entries: Vec<(&str, &Value)> = match v.as_object() {
+            Some(m) => m.iter().map(|(k, t)| (k.as_str(), t)).collect(),
+            None => v.as_array().unwrap().iter().map(|t| ("", t)).collect(),
         };
+        // setAllowedValues runs before the normalizer
+        for (_, ty) in &entries {
+            if !matches!(ty.as_str(), Some("annotation" | "inline")) {
+                bail!("[phpdoc_tag_type] Invalid configuration: Unknown tag type \"{}\".", ty.as_str().unwrap());
+            }
+        }
+        if v.is_array() && !entries.is_empty() {
+            // the normalizer strtolower()s a list's int keys: a TypeError under strict_types
+            bail!("strtolower(): Argument #1 ($string) must be of type string, int given");
+        }
         let mut tags: Vec<(String, bool)> = Vec::new();
-        for (tag, ty) in &map {
-            let inline = match ty.as_str() {
-                Some("annotation") => false,
-                Some("inline") => true,
-                _ => bail!("[phpdoc_tag_type] Invalid configuration: Unknown tag type \"{}\".", ty.as_str().map_or(ty.to_string(), String::from)),
-            };
+        for (tag, ty) in entries {
+            let inline = ty == "inline";
             // normalizer: strtolower keys, later duplicates overwrite earlier ones in place
             let key = tag.to_ascii_lowercase();
             match tags.iter_mut().find(|(k, _)| *k == key) {
@@ -90,7 +81,7 @@ impl Fixer for PhpdocTagTypeFixer {
         }
         let regular_expression = format!(
             "/({{?@(?:{}).*?(?:(?=\\s\\*\\/)|(?=\\n)}}?))/i",
-            self.tags.iter().map(|(t, _)| preg_quote(t, b'/')).collect::<Vec<_>>().join("|")
+            self.tags.iter().map(|(t, _)| String::from_utf8_lossy(&preg_quote(t.as_bytes(), Some(b'/'))).into_owned()).collect::<Vec<_>>().join("|")
         );
         for index in 0..tokens.count() {
             if !tokens[index].is_kind(T_DOC_COMMENT) {

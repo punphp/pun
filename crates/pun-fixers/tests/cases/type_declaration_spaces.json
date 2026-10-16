@@ -1,0 +1,12 @@
+[
+    {
+        "fixer": "type_declaration_spaces",
+        "config": {
+            "elements": [
+                "constant"
+            ]
+        },
+        "input": "<?php\nclass A {\n    const int  PRINT = 1;\n    const  FOO = 2;\n    const string  CLASS_NAME = \"x\";\n}\n",
+        "expected": "<?php\nclass A {\n    const int PRINT = 1;\n    const  FOO = 2;\n    const string CLASS_NAME = \"x\";\n}\n"
+    }
+]

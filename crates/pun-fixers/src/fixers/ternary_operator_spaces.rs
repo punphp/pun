@@ -57,14 +57,13 @@ impl Fixer for TernaryOperatorSpacesFixer {
                 ensure_whitespace_existence(tokens, index - 1, false);
                 continue;
             }
-            if tokens[index].equals(":", true) {
-                // for `$a ? $b : $c` ensure space after `:`
-                ensure_whitespace_existence(tokens, index + 1, true);
-                let prev = tokens.get_prev_non_whitespace(index, None).unwrap();
-                if !tokens[prev].equals("?", true) {
-                    // for `$a ? $b : $c` ensure space before `:`
-                    ensure_whitespace_existence(tokens, index - 1, false);
-                }
+            // only `:` is left
+            // for `$a ? $b : $c` ensure space after `:`
+            ensure_whitespace_existence(tokens, index + 1, true);
+            let prev = tokens.get_prev_non_whitespace(index, None).unwrap();
+            if !tokens[prev].equals("?", true) {
+                // for `$a ? $b : $c` ensure space before `:`
+                ensure_whitespace_existence(tokens, index - 1, false);
             }
         }
     }

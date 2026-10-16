@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_indent",
+        "input": "<?php\nif ($a) {\n}/** @var int $b */$b = 1;\n",
+        "expected": "<?php\nif ($a) {\n}/** @var int $b */$b = 1;\n"
+    }
+]

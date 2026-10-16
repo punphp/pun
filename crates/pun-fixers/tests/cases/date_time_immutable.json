@@ -1,0 +1,12 @@
+[
+    {
+        "fixer": "date_time_immutable",
+        "input": "<?php\n$a = DateTime::ATOM;\n$b = DateTime::createFromFormat(\"Y\", \"2000\");\n",
+        "expected": "<?php\n$a = DateTime::ATOM;\n$b = DateTimeImmutable::createFromFormat(\"Y\", \"2000\");\n"
+    },
+    {
+        "fixer": "date_time_immutable",
+        "input": "<?php\n$a = DateTime::class;\n",
+        "expected": "<?php\n$a = DateTimeImmutable::class;\n"
+    }
+]

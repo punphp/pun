@@ -1,0 +1,10 @@
+[
+    {
+        "fixer": "phpdoc_inline_tag_normalizer",
+        "config": {
+            "tags": []
+        },
+        "input": "<?php\n/** {@inheritdoc} */\n",
+        "expected": "<?php\n/** {@inheritdoc} */\n"
+    }
+]

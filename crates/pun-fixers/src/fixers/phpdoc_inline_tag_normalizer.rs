@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocInlineTagNormalizerFixer`.
 use crate::analyzers::fixer_configuration_resolver::resolve;
-use crate::analyzers::preg::Preg;
+use crate::analyzers::preg::{preg_quote, Preg};
 use anyhow::Result;
 use pun_format::Fixer;
 use pun_tokens::{php_compat, Kind::*, Token, Tokens};
@@ -15,22 +15,6 @@ struct PhpdocInlineTagNormalizerFixer {
 
 pub fn fixer() -> Box<dyn Fixer> {
     Box::new(PhpdocInlineTagNormalizerFixer { tags: DEFAULT_TAGS.iter().map(|s| s.to_string()).collect() })
-}
-
-/// PHP `preg_quote($str, $delimiter)`.
-fn preg_quote(s: &str, delimiter: u8) -> String {
-    let mut out = String::new();
-    for c in s.chars() {
-        if c == '\0' {
-            out.push_str("\\000");
-            continue;
-        }
-        if ".\\+*?[^]$(){}=!<>|:-#".contains(c) || (c.is_ascii() && c as u8 == delimiter) {
-            out.push('\\');
-        }
-        out.push(c);
-    }
-    out
 }
 
 impl Fixer for PhpdocInlineTagNormalizerFixer {
@@ -54,7 +38,7 @@ impl Fixer for PhpdocInlineTagNormalizerFixer {
         }
         let pattern = format!(
             "#(?:@{{+|{{+\\h*@)\\h*({})\\b([^}}]*)(?:}}+)#i",
-            self.tags.iter().map(|t| preg_quote(t, b'/')).collect::<Vec<_>>().join("|")
+            self.tags.iter().map(|t| String::from_utf8_lossy(&preg_quote(t.as_bytes(), Some(b'/'))).into_owned()).collect::<Vec<_>>().join("|")
         );
         for index in 0..tokens.count() {
             if !tokens[index].is_kind(T_DOC_COMMENT) {

@@ -1,0 +1,12 @@
+[
+    {
+        "fixer": "single_line_after_imports",
+        "input": "<?php\nnamespace A;\n/* c */ use B;\nclass C {}\n",
+        "expected": "<?php\nnamespace A;\n/* c */ use B;\n\n class C {}\n"
+    },
+    {
+        "fixer": "single_line_after_imports",
+        "input": "<?php\nnamespace A;\nuse B ?>\nx",
+        "expected": "<?php\nnamespace A;\nuse B;\n\n?>\nx"
+    }
+]

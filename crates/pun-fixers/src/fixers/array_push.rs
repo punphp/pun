@@ -50,10 +50,11 @@ impl Fixer for ArrayPushFixer {
             // figure out where the arguments list closes
             let close_brace_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_brace_index);
             // meaningful after `)` must be `;`, `? >` or nothing
-            if let Some(after) = tokens.get_next_meaningful_token(close_brace_index) {
-                if !tokens[after].equals_any(&[";".into(), T_CLOSE_TAG.into()], true) {
-                    continue;
-                }
+            if tokens
+                .get_next_meaningful_token(close_brace_index)
+                .is_some_and(|after| !tokens[after].equals_any(&[";".into(), T_CLOSE_TAG.into()], true))
+            {
+                continue;
             }
 
             // must have 2 arguments

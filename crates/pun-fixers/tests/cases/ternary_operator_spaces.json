@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "ternary_operator_spaces",
+        "input": "<?php\n$a = $b ? : $c;\n$d = $e ?\n: $f;\n",
+        "expected": "<?php\n$a = $b ?: $c;\n$d = $e ?: $f;\n"
+    }
+]

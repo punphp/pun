@@ -53,7 +53,7 @@ impl Fixer for DeclareStrictTypesFixer {
         let preserve = o.bool("preserve_existing_declaration", false)?;
         if preserve && strategy != Strategy::Enforce {
             bail!(
-                "[declare_strict_types] Invalid configuration: Cannot configure \"strategy\" in parallel to configuring \"preserve_existing_declaration\"."
+                "[declare_strict_types] Cannot configure \"strategy\" in parallel to configuring \"preserve_existing_declaration\"."
             );
         }
         self.strategy = if strategy == Strategy::Enforce && preserve { Strategy::AddWhenMissing } else { strategy };
@@ -111,10 +111,8 @@ fn remove_strict_types_declaration(tokens: &mut Tokens, declaration: &Declaratio
         return;
     }
 
+    // Backwards, clearing a token only ever merges away whitespace after it, so nothing ahead is empty yet.
     for index in (sequence_start..=sequence_end).rev() {
-        if tokens.is_empty_at(index) {
-            continue;
-        }
         tokens.clear_token_and_merge_surrounding_whitespace(index);
     }
 
@@ -126,12 +124,11 @@ fn remove_strict_types_declaration(tokens: &mut Tokens, declaration: &Declaratio
         return;
     }
 
-    if let Some(next_meaningful) = tokens.get_next_meaningful_token(sequence_end).filter(|&n| tokens[n].equals(",", true)) {
-        tokens.clear_token_and_merge_surrounding_whitespace(next_meaningful);
-        if let Some(after_comma) = tokens.get_next_meaningful_token(next_meaningful) {
-            tokens.remove_leading_whitespace(after_comma, Some(b" \t"));
-        }
-    }
+    // Another option follows, so the next meaningful token is its `,` and something comes after it.
+    let next_meaningful = tokens.get_next_meaningful_token(sequence_end).unwrap();
+    tokens.clear_token_and_merge_surrounding_whitespace(next_meaningful);
+    let after_comma = tokens.get_next_meaningful_token(next_meaningful).unwrap();
+    tokens.remove_leading_whitespace(after_comma, Some(b" \t"));
 }
 
 fn has_other_declare_options(tokens: &Tokens, open_parenthesis: usize, close_parenthesis: usize, sequence: &[usize]) -> bool {
@@ -148,9 +145,6 @@ fn has_other_declare_options(tokens: &Tokens, open_parenthesis: usize, close_par
 fn remove_declare_statement(tokens: &mut Tokens, declare_index: usize, close_parenthesis: usize) {
     let Some(semicolon_index) = tokens.get_next_meaningful_token(close_parenthesis) else { return };
     for index in (declare_index..=semicolon_index).rev() {
-        if tokens.is_empty_at(index) {
-            continue;
-        }
         tokens.clear_token_and_merge_surrounding_whitespace(index);
     }
 }

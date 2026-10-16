@@ -1,0 +1,69 @@
+[
+    {
+        "fixer": "phpdoc_tag_type",
+        "config": {
+            "tags": "foo"
+        },
+        "error": "[phpdoc_tag_type] Invalid configuration: The option \"tags\" with value \"foo\" is expected to be of type \"string[]\", but is of type \"string\"."
+    },
+    {
+        "fixer": "phpdoc_tag_type",
+        "config": {
+            "tags": {
+                "param": "foo"
+            }
+        },
+        "error": "[phpdoc_tag_type] Invalid configuration: Unknown tag type \"foo\"."
+    },
+    {
+        "fixer": "phpdoc_tag_type",
+        "input": "<?php\n/**\n * {@param int $a\n * @params int $b\n * {@see Foo}\n */\n",
+        "expected": "<?php\n/**\n * {@param int $a\n * @params int $b\n * @see Foo\n */\n"
+    },
+    {
+        "fixer": "phpdoc_tag_type",
+        "config": {
+            "tags": {
+                "see": "annotation",
+                "SEE": "inline"
+            }
+        },
+        "input": "<?php\n/** {@see Foo} @param int $a */\n",
+        "expected": "<?php\n/** {@see Foo} @param int $a */\n"
+    },
+    {
+        "fixer": "phpdoc_tag_type",
+        "config": {
+            "tags": []
+        },
+        "input": "<?php\n/** {@see Foo} */\n",
+        "expected": "<?php\n/** {@see Foo} */\n"
+    },
+    {
+        "fixer": "phpdoc_tag_type",
+        "config": {
+            "tags": {
+                "param": 1
+            }
+        },
+        "error": "[phpdoc_tag_type] Invalid configuration: The option \"tags\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+    },
+    {
+        "fixer": "phpdoc_tag_type",
+        "config": {
+            "tags": [
+                "inline"
+            ]
+        },
+        "error": "strtolower(): Argument #1 ($string) must be of type string, int given"
+    },
+    {
+        "fixer": "phpdoc_tag_type",
+        "config": {
+            "tags": [
+                "foo"
+            ]
+        },
+        "error": "[phpdoc_tag_type] Invalid configuration: Unknown tag type \"foo\"."
+    }
+]

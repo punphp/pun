@@ -63,11 +63,9 @@ impl Fixer for SingleLineAfterImportsFixer {
                 added += 1;
             } else {
                 let mut newline = ending.to_vec();
-                if tokens[semicolon_index].is_kind(T_CLOSE_TAG) {
-                    insert_index -= 1;
-                } else {
-                    insert_index += 1;
-                }
+                // upstream decrements when tokens[semicolonIndex] is `?>`, but a `;` was inserted at or before
+                // that index, shifting `?>` past it
+                insert_index += 1;
                 if tokens[insert_index].is_whitespace(Some(b" \t")) && tokens[insert_index + 1].is_comment() {
                     insert_index += 1;
                 }

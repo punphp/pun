@@ -1,0 +1,14 @@
+[
+    {
+        "fixer": "single_space_around_construct",
+        "input": "<?php\nfunction f() {\n    return\n        1;\n}\n",
+        "expected": "<?php\nfunction f() {\n    return 1;\n}\n"
+    },
+    {
+        "fixer": "single_space_around_construct",
+        "config": {
+            "foo": 1
+        },
+        "error": "[single_space_around_construct] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"constructs_contain_a_single_space\", \"constructs_followed_by_a_single_space\", \"constructs_preceded_by_a_single_space\"."
+    }
+]

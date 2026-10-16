@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "types_spaces",
+        "config": {
+            "space_multiple_catch": "foo"
+        },
+        "error": "[types_spaces] Invalid configuration: The option \"space_multiple_catch\" with value \"foo\" is invalid. Accepted values are: \"none\", \"single\", null."
+    }
+]

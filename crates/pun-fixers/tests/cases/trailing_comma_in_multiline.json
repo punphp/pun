@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "trailing_comma_in_multiline",
+        "input": "<?php\n$a = [\n    'a\nb'];\n",
+        "expected": "<?php\n$a = [\n    'a\nb', ];\n"
+    }
+]

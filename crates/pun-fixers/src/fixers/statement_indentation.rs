@@ -2,7 +2,7 @@
 use crate::analyzers::alternative_syntax_analyzer::AlternativeSyntaxAnalyzer;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::indentation_trait::{compute_new_line_content, extract_indent, is_new_line_token};
-use crate::analyzers::preg::Preg;
+use crate::analyzers::preg::{preg_quote, Preg};
 use anyhow::Result;
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use pun_tokens::{Kind, Kind::*, Proto, Token, Tokens};
@@ -34,7 +34,6 @@ enum ScopeType {
 
 struct Scope {
     type_: ScopeType,
-    skip: bool,
     end_index: usize,
     end_index_inclusive: bool,
     initial_indent: Vec<u8>,
@@ -43,23 +42,16 @@ struct Scope {
 }
 
 pub struct StatementIndentationFixer {
-    braces_fixer_compatibility: bool,
     stick_comment_to_next_continuous_control_statement: bool,
     whitespaces_config: WhitespacesFixerConfig,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(StatementIndentationFixer::new(false))
-}
-
-impl StatementIndentationFixer {
-    pub fn new(braces_fixer_compatibility: bool) -> Self {
-        StatementIndentationFixer {
-            braces_fixer_compatibility,
-            stick_comment_to_next_continuous_control_statement: false,
-            whitespaces_config: WhitespacesFixerConfig::default(),
-        }
-    }
+    // Upstream's `bracesFixerCompatibility` mode is only used by the deprecated `braces` fixer, which Pun refuses.
+    Box::new(StatementIndentationFixer {
+        stick_comment_to_next_continuous_control_statement: false,
+        whitespaces_config: WhitespacesFixerConfig::default(),
+    })
 }
 
 impl Fixer for StatementIndentationFixer {
@@ -96,15 +88,10 @@ impl StatementIndentationFixer {
             end_index -= 1;
         }
 
-        let mut last_indent = self.get_line_indentation_with_braces_compatibility(
-            tokens,
-            0,
-            &extract_indent(&compute_new_line_content(tokens, 0)),
-        );
+        let mut last_indent = extract_indent(&compute_new_line_content(tokens, 0));
 
         let mut scopes = vec![Scope {
             type_: ScopeType::Block,
-            skip: false,
             end_index,
             end_index_inclusive: true,
             initial_indent: last_indent.clone(),
@@ -123,10 +110,9 @@ impl StatementIndentationFixer {
             let token = tokens[index].clone();
 
             if no_braces_block_starts.contains(&index) {
-                let initial_indent = self.get_line_indentation_with_braces_compatibility(tokens, index, &last_indent);
+                let initial_indent = last_indent.clone();
                 scopes.push(Scope {
                     type_: ScopeType::Block,
-                    skip: false,
                     end_index: find_statement_end_index(tokens, index, tokens.count() - 1) + 1,
                     end_index_inclusive: true,
                     initial_indent,
@@ -146,9 +132,8 @@ impl StatementIndentationFixer {
             {
                 let mut end_index_inclusive = true;
 
-                if token.is_given_kind(&[T_EXTENDS, T_IMPLEMENTS]) {
-                    end_index = tokens.get_next_token_of_kind(index, &["{".into()], true).unwrap();
-                } else if token.is_kind(CT_USE_TRAIT) {
+                // upstream first checks T_EXTENDS/T_IMPLEMENTS, which never start a block here
+                if token.is_kind(CT_USE_TRAIT) {
                     end_index = tokens.get_next_token_of_kind(index, &[";".into()], true).unwrap();
                 } else if token.equals(":", true) {
                     if case_block_starts.contains(&index) {
@@ -174,20 +159,11 @@ impl StatementIndentationFixer {
                 let initial_indent = if current.type_ == ScopeType::BlockSignature {
                     current.initial_indent.clone()
                 } else {
-                    self.get_line_indentation_with_braces_compatibility(tokens, index, &last_indent)
+                    last_indent.clone()
                 };
-
-                let mut skip = false;
-                if self.braces_fixer_compatibility {
-                    let prev_index = tokens.get_prev_meaningful_token(index).and_then(|p| tokens.get_prev_meaningful_token(p));
-                    if prev_index.is_some_and(|p| tokens[p].is_given_kind(&[T_FUNCTION, T_FN])) {
-                        skip = true;
-                    }
-                }
 
                 scopes.push(Scope {
                     type_: ScopeType::Block,
-                    skip,
                     end_index,
                     end_index_inclusive,
                     initial_indent,
@@ -206,7 +182,6 @@ impl StatementIndentationFixer {
                 let block_type = if token.equals("(", true) { Tokens::BLOCK_TYPE_PARENTHESIS } else { Tokens::BLOCK_TYPE_ARRAY_BRACKET };
                 scopes.push(Scope {
                     type_: ScopeType::Statement,
-                    skip: true,
                     end_index: tokens.find_block_end(block_type, index),
                     end_index_inclusive: true,
                     initial_indent: previous_line_initial_indent.clone(),
@@ -265,10 +240,9 @@ impl StatementIndentationFixer {
                     end_index += 1;
                 }
 
-                let initial_indent = self.get_line_indentation_with_braces_compatibility(tokens, index, &last_indent);
+                let initial_indent = last_indent.clone();
                 scopes.push(Scope {
                     type_: ScopeType::BlockSignature,
-                    skip: false,
                     end_index,
                     end_index_inclusive: true,
                     initial_indent,
@@ -292,10 +266,9 @@ impl StatementIndentationFixer {
                     }
                     end_index += 1;
                 }
-                let initial_indent = self.get_line_indentation_with_braces_compatibility(tokens, index, &last_indent);
+                let initial_indent = last_indent.clone();
                 scopes.push(Scope {
                     type_: ScopeType::BlockSignature,
-                    skip: false,
                     end_index,
                     end_index_inclusive: true,
                     initial_indent,
@@ -320,14 +293,6 @@ impl StatementIndentationFixer {
                 }
 
                 let next_token = (index + 1 < tokens.count()).then(|| tokens[index + 1].clone());
-
-                if self.braces_fixer_compatibility
-                    && next_token.as_ref().is_some_and(|t| t.is_comment())
-                    && !self.is_comment_with_fixable_indentation(tokens, index + 1)
-                {
-                    index += 1;
-                    continue;
-                }
 
                 let current = scopes.last().unwrap();
                 if current.type_ == ScopeType::Block || current.type_ == ScopeType::BlockSignature {
@@ -388,11 +353,9 @@ impl StatementIndentationFixer {
 
                     previous_line_initial_indent = extract_indent(&content);
 
-                    let whitespaces = if current.skip {
-                        previous_line_initial_indent.clone()
-                    } else {
-                        [&current.initial_indent[..], if indent { self.whitespaces_config.get_indent().as_bytes() } else { b"" }].concat()
-                    };
+                    // Only array statement scopes (never reaching here) and bracesFixerCompatibility blocks are `skip`.
+                    let whitespaces =
+                        [&current.initial_indent[..], if indent { self.whitespaces_config.get_indent().as_bytes() } else { b"" }].concat();
 
                     content = Preg::replace("/(\\R+)\\h*$/", [&b"$1"[..], &whitespaces].concat(), &content);
 
@@ -415,7 +378,7 @@ impl StatementIndentationFixer {
                 }
 
                 if let Some(next_token) = next_token.filter(|t| t.is_comment()) {
-                    let pattern = [&b"/(\\R)"[..], &preg_quote(&previous_line_initial_indent), b"(\\h*\\S+.*)/"].concat();
+                    let pattern = [&b"/(\\R)"[..], &preg_quote(&previous_line_initial_indent, Some(b'/')), b"(\\h*\\S+.*)/"].concat();
                     let replaced = Preg::replace(pattern, [&b"$1"[..], &previous_line_new_indent, b"$2"].concat(), &next_token.content);
                     tokens.set(index + 1, Token { id: next_token.id, content: replaced });
                 }
@@ -453,7 +416,6 @@ impl StatementIndentationFixer {
                 }
                 scopes.push(Scope {
                     type_: ScopeType::Statement,
-                    skip: false,
                     end_index,
                     end_index_inclusive: false,
                     initial_indent: previous_line_initial_indent.clone(),
@@ -464,65 +426,6 @@ impl StatementIndentationFixer {
             index += 1;
         }
     }
-
-    fn get_line_indentation_with_braces_compatibility(&self, tokens: &Tokens, index: usize, regular_indent: &[u8]) -> Vec<u8> {
-        if self.braces_fixer_compatibility
-            && tokens[index].is_kind(T_OPEN_TAG)
-            && Preg::r#match("/\\R/", &tokens[index].content)
-            && index + 1 < tokens.count()
-            && tokens[index + 1].is_whitespace(None)
-            && Preg::r#match("/\\h+$/D", &tokens[index + 1].content)
-        {
-            return Preg::replace("/.*?(\\h+)$/sD", "$1", &tokens[index + 1].content);
-        }
-        regular_indent.to_vec()
-    }
-
-    fn is_comment_with_fixable_indentation(&self, tokens: &Tokens, index: usize) -> bool {
-        if !tokens[index].is_comment() {
-            return false;
-        }
-        if tokens[index].content.starts_with(b"/*") {
-            return true;
-        }
-        let indent = preg_quote(self.whitespaces_config.get_indent().as_bytes());
-        if Preg::r#match([&b"~^(//|#)("[..], &indent, b".*)?$~"].concat(), &tokens[index].content) {
-            return false;
-        }
-        let mut first_comment_index = index;
-        while let Some(c) = get_sibling_continuous_single_line_comment(tokens, first_comment_index, false) {
-            first_comment_index = c;
-        }
-        let mut last_comment_index = index;
-        while let Some(c) = get_sibling_continuous_single_line_comment(tokens, last_comment_index, true) {
-            last_comment_index = c;
-        }
-        if first_comment_index == last_comment_index {
-            return true;
-        }
-        for i in first_comment_index + 1..last_comment_index {
-            if !tokens[i].is_whitespace(None) && !tokens[i].is_comment() {
-                return false;
-            }
-        }
-        true
-    }
-}
-
-/// PHP `preg_quote` (delimiters `/` and `~`, as used by the callers).
-fn preg_quote(s: &[u8]) -> Vec<u8> {
-    let mut out = Vec::new();
-    for &c in s {
-        if b".\\+*?[^]$(){}=!<>|:-#/~".contains(&c) {
-            out.push(b'\\');
-        }
-        if c == 0 {
-            out.extend_from_slice(b"\\000");
-            continue;
-        }
-        out.push(c);
-    }
-    out
 }
 
 fn find_statement_end_index(tokens: &Tokens, index: usize, parent_scope_end_index: usize) -> usize {
@@ -581,8 +484,8 @@ fn find_statement_end_index(tokens: &Tokens, index: usize, parent_scope_end_inde
 }
 
 fn find_case_block_end(alternative_syntax_analyzer: &AlternativeSyntaxAnalyzer, tokens: &Tokens, mut index: usize) -> (usize, bool) {
-    let max = tokens.count();
-    while index < max {
+    // A case block always ends at the next case/default or the switch's closing `}` / `endswitch`.
+    loop {
         if tokens[index].is_kind(T_SWITCH) {
             let brace_index = tokens
                 .get_next_meaningful_token(
@@ -609,7 +512,6 @@ fn find_case_block_end(alternative_syntax_analyzer: &AlternativeSyntaxAnalyzer, 
         }
         index += 1;
     }
-    panic!("End of case block not found.");
 }
 
 fn is_property_start(tokens: &Tokens, mut index: usize) -> bool {
@@ -626,28 +528,4 @@ fn is_property_start(tokens: &Tokens, mut index: usize) -> bool {
         index = tokens.get_prev_meaningful_token(index).unwrap();
     }
     false
-}
-
-fn get_sibling_continuous_single_line_comment(tokens: &Tokens, index: usize, after: bool) -> Option<usize> {
-    let mut sibling_index = index;
-    loop {
-        sibling_index = if after {
-            tokens.get_next_token_of_kind(sibling_index, &[T_COMMENT.into()], true)?
-        } else {
-            tokens.get_prev_token_of_kind(sibling_index, &[T_COMMENT.into()], true)?
-        };
-        if !tokens[sibling_index].content.starts_with(b"/*") {
-            break;
-        }
-    }
-    let mut new_lines = 0;
-    for i in sibling_index.min(index) + 1..sibling_index.max(index) {
-        if tokens[i].is_whitespace(None) && Preg::r#match("/\\R/", &tokens[i].content) {
-            if new_lines == 1 || Preg::r#match("/\\R.*\\R/", &tokens[i].content) {
-                return None;
-            }
-            new_lines += 1;
-        }
-    }
-    Some(sibling_index)
 }

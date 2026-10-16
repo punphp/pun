@@ -93,10 +93,8 @@ fn ensure_single_space_at_property_typehint(tokens: &mut Tokens, mut index: usiz
 fn ensure_single_space_at_constant_typehint(tokens: &mut Tokens, index: usize) {
     let const_index = index;
     let Some(equals_index) = tokens.get_next_token_of_kind(const_index, &["=".into()], true) else { return };
+    // upstream returns unless this is T_STRING; the tokenizer turns keyword-named constants into T_STRING too
     let name_index = tokens.get_prev_meaningful_token(equals_index).unwrap();
-    if !tokens[name_index].is_kind(T_STRING) {
-        return;
-    }
     let Some(type_end_index) = tokens.get_prev_meaningful_token(name_index) else { return };
     if tokens[type_end_index].is_kind(T_CONST) {
         return;
