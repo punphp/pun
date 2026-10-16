@@ -113,7 +113,6 @@ fn keyword(lower: &[u8]) -> Option<Kind> {
         b"function" => T_FUNCTION,
         b"const" => T_CONST,
         b"return" => T_RETURN,
-        b"yield" => T_YIELD,
         b"try" => T_TRY,
         b"catch" => T_CATCH,
         b"finally" => T_FINALLY,

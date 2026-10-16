@@ -149,9 +149,6 @@ pub fn run(mode: &str, paths: &[String], verbose: bool) -> usize {
     let (mut same, mut diff, mut skipped, mut tokens, mut bad_tokens) = (0, 0, 0, 0usize, 0usize);
     let mut rust_time = Duration::ZERO;
     for (path, expected) in &dump {
-        let code = std::fs::read(path).unwrap();
-        let (got, d) = ours(mode, &code);
-        rust_time += d;
         let expected = match expected {
             Ok(s) => s,
             Err(e) => {
@@ -162,6 +159,10 @@ pub fn run(mode: &str, paths: &[String], verbose: bool) -> usize {
                 continue;
             }
         };
+        // Only for code PHP accepts: like upstream, Tokens::fromCode isn't defined on unparsable input.
+        let code = std::fs::read(path).unwrap();
+        let (got, d) = ours(mode, &code);
+        rust_time += d;
         tokens += expected.len();
         let first = (0..expected.len().max(got.len())).find(|&i| expected.get(i) != got.get(i));
         match first {

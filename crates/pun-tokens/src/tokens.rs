@@ -190,11 +190,6 @@ impl Tokens {
         self.tokens[index] = token;
     }
 
-    /// Old upstream name for `$tokens[$index] = new Token(...)`.
-    pub fn override_at(&mut self, index: usize, token: Token) {
-        self.set(index, token);
-    }
-
     pub fn clear_changed(&mut self) {
         self.changed = false;
     }
@@ -464,9 +459,8 @@ impl Tokens {
         self.changed = true;
         *self.blocks.get_mut() = BlockCache::default();
         let old_size = self.tokens.len();
-        if let Some((&far, _)) = slices.iter().next_back() {
-            assert!(far <= old_size, "Cannot insert index \"{far}\" outside of collection.");
-        }
+        let far = *slices.keys().next_back().unwrap();
+        assert!(far <= old_size, "Cannot insert index \"{far}\" outside of collection.");
         for t in slices.values().flatten() {
             assert!(!t.content.is_empty(), "Must not add empty token to collection.");
             self.register_found_token(t);
@@ -582,7 +576,8 @@ impl Tokens {
     }
 
     fn remove_whitespace_safely(&mut self, index: usize, direction: isize, whitespaces: Option<&[u8]>) {
-        let Some(wi) = self.get_non_empty_sibling(index, direction) else { return };
+        // isset($this[null]) throws upstream when there is no sibling.
+        let wi = self.get_non_empty_sibling(index, direction).expect("Cannot access offset of type null on SplFixedArray");
         if !self.tokens[wi].is_whitespace(None) {
             return;
         }
@@ -596,8 +591,8 @@ impl Tokens {
             } else if matches!(c.first(), Some(b'\n' | b'\r' | b'\x0b' | b'\x0c')) {
                 1
             } else {
-                // ponytail: upstream would throw building a Token from null here; no-op instead.
-                return;
+                // Preg::split found no leading line break: upstream builds a Token from null and throws.
+                panic!("Undefined array key 1");
             };
             new_content = c[..nl].to_vec();
             let rest = c[nl..].to_vec();

@@ -119,13 +119,6 @@ impl Token {
         self.id.map(Kind::name)
     }
 
-    pub fn found_key(&self) -> FoundKey<'_> {
-        match self.id {
-            Some(k) => FoundKey::Kind(k),
-            None => FoundKey::Content(&self.content),
-        }
-    }
-
     fn is_amp(&self) -> bool {
         self.content == b"&"
             && matches!(self.id, None | Some(T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG | T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG))
@@ -154,9 +147,6 @@ impl Token {
 
     /// `equals` with a Token instance (`$other instanceof self` branch).
     pub fn equals_token(&self, other: &Token, case_sensitive: bool) -> bool {
-        if other.id.is_none() && other.content == b"&" {
-            return self.is_amp();
-        }
         if self.id.is_none() && self.content == b"&" {
             return other.is_amp();
         }

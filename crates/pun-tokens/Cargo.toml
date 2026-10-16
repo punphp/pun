@@ -8,3 +8,6 @@ license.workspace = true
 name = "pun_tokens"
 
 [dependencies]
+
+[dev-dependencies]
+serde_json.workspace = true
