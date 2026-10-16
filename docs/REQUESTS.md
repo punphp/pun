@@ -19,3 +19,14 @@
   functions), `constant_invocation::is_constant_invocation` (TokensAnalyzer::isConstantInvocation), `import_processor`
   (ImportProcessor::insertImports, for fully_qualified_strict_types). Whitespace-aware fixers implement
   `Fixer::set_whitespaces_config(&WhitespacesFixerConfig)` (pun-format); the fixture runner sets it per case.
+- **pun-cli (from agent 2, Pint/laravel_blade):** after `pun_config::load`, call
+  `pun_fixers::analyzers::active_preset::set(&cfg.preset);` — the blade fixer formats embedded PHP with the *preset's*
+  rules (Pint's PhpFragmentFormatter), and defaults to "laravel" otherwise (wrong for the harness's `preset: empty`).
+  Also: Pint's EnsurePrettierIsConfigured (node + prettier deps check/install) is not ported; the fixer just spawns
+  `node worker.cjs` resolving prettier from cwd's node_modules, and on a worker error leaves the file untouched.
+- **pun-format (from agent 2):** `Pipeline::run` must skip fixers when `tokens.count() == 0` (AbstractFixer::fix's
+  `0 < $tokens->count()` guard). Pint/laravel_blade empties tokens for whitespace-only Blade files and later fixers
+  (e.g. statement_indentation) then panic, killing the whole run. One-line fix:
+  `if tokens.count() == 0 || !f.supports(file) || !f.is_candidate(&tokens) {`.
+  With both patches applied locally, all 146 Pint blade fixtures (input->expected and expected idempotent, preset laravel,
+  full fixer set) and pinkary/pinkary-dirty are byte-identical to Pint.

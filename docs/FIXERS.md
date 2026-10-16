@@ -75,14 +75,14 @@ Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCa
 - [ ] statement_indentation
 - [x] switch_case_semicolon_to_colon
 - [x] switch_case_space
-- [ ] ternary_operator_spaces
+- [x] ternary_operator_spaces
 - [ ] trailing_comma_in_multiline
 - [x] trim_array_spaces
 - [ ] type_declaration_spaces
 - [ ] types_spaces
 - [ ] unary_operator_spaces
 - [x] whitespace_after_comma_in_array
-- [ ] Pint/laravel_blade
+- [x] Pint/laravel_blade
 - [ ] array_push
 - [x] array_syntax
 - [ ] backtick_to_shell_exec
