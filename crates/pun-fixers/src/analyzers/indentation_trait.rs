@@ -11,7 +11,20 @@ pub fn get_line_indentation(tokens: &Tokens, index: usize) -> Vec<u8> {
 }
 
 pub fn extract_indent(content: &[u8]) -> Vec<u8> {
-    Preg::match_groups("/\\R(\\h*)[^\\r\\n]*$/D", content, 0).map(|m| m.str(1).to_vec()).unwrap_or_default()
+    if !content.is_ascii() {
+        return Preg::match_groups("/\\R(\\h*)[^\\r\\n]*$/D", content, 0).map(|m| m.str(1).to_vec()).unwrap_or_default();
+    }
+    // ASCII: the leftmost (atomic) `\R` with no CR/LF after it is the one covering the last CR/LF (a CRLF pair counts
+    // from its CR), else the first VT/FF; group 1 is the run of spaces and tabs after it.
+    let after = match content.iter().rposition(|b| matches!(b, b'\r' | b'\n')) {
+        Some(l) => l + 1,
+        None => match content.iter().position(|b| matches!(b, 0x0b | 0x0c)) {
+            Some(p) => p + 1,
+            None => return Vec::new(),
+        },
+    };
+    let rest = &content[after..];
+    rest[..rest.iter().position(|b| !matches!(b, b' ' | b'\t')).unwrap_or(rest.len())].to_vec()
 }
 
 pub fn get_previous_newline_token_index(tokens: &Tokens, mut index: usize) -> Option<usize> {
@@ -41,4 +54,20 @@ pub fn is_new_line_token(tokens: &Tokens, index: usize) -> bool {
         return false;
     }
     Preg::r#match("/\\R/", compute_new_line_content(tokens, index))
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn extract_indent_matches_php() {
+        // PhpCsFixer\Preg::match('/\R(\h*)[^\r\n]*$/D', $s, $m) ? $m[1] : '' on PHP 8.5.
+        let cases: &[(&str, &str)] = &[
+            ("", ""), ("abc", ""), ("\n    x", "    "), ("\r\n\t y", "\t "), ("a\n  b\n    ", "    "), ("\x0b  a", "  "),
+            ("\x0c\t\n  z", "  "), ("a\x0b \n\t\tq", "\t\t"), ("\r", ""), ("  \r\n", ""), ("x\n\x0b  y", ""),
+            ("\n \x0c  \t", " "), ("\r\r\n  w", "  "), ("é\n  x", "  "),
+        ];
+        for &(s, want) in cases {
+            assert_eq!(super::extract_indent(s.as_bytes()), want.as_bytes(), "{s:?}");
+        }
+    }
 }

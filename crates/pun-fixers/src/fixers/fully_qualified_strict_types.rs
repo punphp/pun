@@ -83,6 +83,8 @@ struct State {
     /// short name => FQCN
     symbols_for_import: OMap,
     reserved_identifiers_by_level: BTreeMap<i64, HashSet<Vec<u8>>>,
+    /// `cacheUsesLast` and the maps built from it (upstream rebuilds only when `$uses` differs).
+    uses_cache: RefCell<Option<(OMap, std::rc::Rc<UsesCache>)>>,
 }
 
 /// `refreshUsesCache()` output.
@@ -237,7 +239,18 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
     }
 }
 
-fn refresh_uses_cache(uses: &OMap) -> UsesCache {
+fn refresh_uses_cache(st: &State, uses: &OMap) -> std::rc::Rc<UsesCache> {
+    if let Some((last, c)) = &*st.uses_cache.borrow() {
+        if last == uses {
+            return c.clone();
+        }
+    }
+    let c = std::rc::Rc::new(build_uses_cache(uses));
+    *st.uses_cache.borrow_mut() = Some((uses.clone(), c.clone()));
+    c
+}
+
+fn build_uses_cache(uses: &OMap) -> UsesCache {
     let mut c = UsesCache {
         use_name_by_short_name_lower: HashMap::new(),
         use_short_name_by_name: HashMap::new(),
@@ -303,7 +316,7 @@ impl FullyQualifiedStrictTypesFixer {
         if self.is_reserved_identifier(st, symbol) {
             return symbol.to_vec();
         }
-        let cache = refresh_uses_cache(uses);
+        let cache = refresh_uses_cache(st, uses);
         let mut symbol_arr = symbol.splitn(2, |&c| c == b'\\');
         let short_start_name_lower = strtolower(symbol_arr.next().unwrap());
         if let Some(long) = cache.use_name_by_short_name_lower.get(&short_start_name_lower) {
@@ -319,7 +332,7 @@ impl FullyQualifiedStrictTypesFixer {
         if self.is_reserved_identifier(st, fqcn) {
             return fqcn.to_vec();
         }
-        let cache = refresh_uses_cache(uses);
+        let cache = refresh_uses_cache(st, uses);
         let mut res: Option<Vec<u8>> = None;
 
         // try to shorten the name using namespace

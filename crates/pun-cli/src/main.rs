@@ -302,7 +302,10 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
             }
             Ok(None) => clean = hash,
             Ok(Some((new, applied))) => {
-                r.diff = report::diff(&String::from_utf8_lossy(&code), &String::from_utf8_lossy(&new), path);
+                // Reports show diffs only with -v (sebastian/diff's LCS is quadratic, so skip it otherwise).
+                if a.verbose > 0 {
+                    r.diff = report::diff(&String::from_utf8_lossy(&code), &String::from_utf8_lossy(&new), path);
+                }
                 r.applied = applied;
                 r.status = Status::Fixed;
                 if !dry_run {
