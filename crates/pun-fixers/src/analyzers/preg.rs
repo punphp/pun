@@ -460,6 +460,26 @@ impl Preg {
     }
 }
 
+/// `preg_quote($str, $delimiter)`.
+pub fn preg_quote(s: &[u8], delimiter: Option<u8>) -> Vec<u8> {
+    let mut out = Vec::with_capacity(s.len());
+    for &b in s {
+        match b {
+            b'.' | b'\\' | b'+' | b'*' | b'?' | b'[' | b'^' | b']' | b'$' | b'(' | b')' | b'{' | b'}' | b'=' | b'!' | b'>' | b'<' | b'|' | b':' | b'-' | b'#' => {
+                out.push(b'\\');
+                out.push(b);
+            }
+            0 => out.extend_from_slice(b"\\000"),
+            _ if Some(b) == delimiter => {
+                out.push(b'\\');
+                out.push(b);
+            }
+            _ => out.push(b),
+        }
+    }
+    out
+}
+
 /// php_pcre_split_impl.
 fn split_impl(re: &Regex, subject: &[u8], limit: isize, flags: u32) -> Result<Vec<Piece>, i32> {
     let no_empty = flags & PREG_SPLIT_NO_EMPTY != 0;
@@ -597,5 +617,6 @@ mod tests {
         assert_eq!(Preg::match_all("/\\d/", b"a1b2", 0).len(), 2);
         assert_eq!(Preg::replace("/^/m", ">", "a\nb"), b">a\n>b");
         assert_eq!(Preg::replace("/\\R/", "|", "a\r\nb\nc"), b"a|b|c");
+        assert_eq!(preg_quote(b"a.b/c\0", Some(b'/')), b"a\\.b\\/c\\000");
     }
 }
