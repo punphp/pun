@@ -11,33 +11,33 @@ TokensAnalyzer lives in pun-tokens (already committed) — extend it there with 
 
 Analyzers owned: WhitespacesAnalyzer, WhitespacesFixerConfig, Preg (pcre2 wrapper with PHP preg_* semantics — do first, everyone needs it), Utils, CommentsAnalyzer, AlternativeSyntaxAnalyzer, BlocksAnalyzer.
 
-- [ ] array_indentation
-- [ ] binary_operator_spaces
+- [x] array_indentation
+- [x] binary_operator_spaces
 - [x] blank_line_after_namespace
 - [x] blank_line_after_opening_tag
-- [ ] blank_line_before_statement
-- [ ] blank_line_between_import_groups
-- [ ] blank_lines_before_namespace
-- [ ] braces_position
+- [x] blank_line_before_statement
+- [x] blank_line_between_import_groups
+- [x] blank_lines_before_namespace
+- [x] braces_position
 - [x] cast_spaces
-- [ ] clean_namespace
+- [x] clean_namespace
 - [x] concat_space
-- [ ] control_structure_braces
+- [x] control_structure_braces
 - [x] encoding
 - [x] full_opening_tag
-- [ ] general_phpdoc_tag_rename
+- [x] general_phpdoc_tag_rename
 - [ ] global_namespace_import
 - [x] indentation_type
 - [x] line_ending
 - [x] linebreak_after_opening_tag
-- [ ] method_argument_space
-- [ ] method_chaining_indentation
-- [ ] multiline_whitespace_before_semicolons
+- [x] method_argument_space
+- [x] method_chaining_indentation
+- [x] multiline_whitespace_before_semicolons
 - [x] no_blank_lines_after_class_opening
 - [x] no_blank_lines_after_phpdoc
 - [x] no_closing_tag (6 `testWithShortOpenTag` cases are skipped upstream too: need `short_open_tag=On`)
 - [x] no_empty_statement (1 `testWithShortOpenTag` case is skipped upstream too: needs `short_open_tag=On`)
-- [ ] no_extra_blank_lines
+- [x] no_extra_blank_lines
 - [x] no_leading_namespace_whitespace
 - [x] no_multiline_whitespace_around_double_arrow
 - [x] no_multiple_statements_per_line
