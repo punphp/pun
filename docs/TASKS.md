@@ -15,10 +15,10 @@ Owner = agent working on it. Status: todo / doing / done / blocked.
 | Laravel preset + Pinkary effective rules + priorities | docs/presets | harness agent | doing |
 | Fixer impact ranking | docs/presets/ranking.md | harness agent | doing |
 | Upstream fixer fixtures → JSON | pun-harness/fixtures | harness agent | doing |
-| pint.json / pun.toml / composer.json (PHP >= 8.4 gate) | pun-config | cli agent | doing |
-| Pint-identical file discovery, --dirty/--diff/--staged | pun-workspace | cli agent | doing |
-| Fixer trait, registry, priority pipeline | pun-format | cli agent | doing |
-| `pun` CLI + `pint` alias, `config --show`, `--engine=pun` | pun-cli | cli agent | doing |
+| pint.json / pun.toml / composer.json (PHP >= 8.4 gate) | pun-config | cli agent | done |
+| Pint-identical file discovery, --dirty/--diff/--staged | pun-workspace | cli agent | done |
+| Fixer trait, registry, priority pipeline | pun-format | cli agent | done |
+| `pun` CLI + `pint` alias, `config --show`, `--engine=pun` | punphp (crates/pun-cli) | cli agent | done |
 
 ## Wave 2 (after token layer lands)
 
