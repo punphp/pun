@@ -9,11 +9,11 @@ license = "MIT"
 repository = "https://github.com/punphp/pun"
 
 [workspace.dependencies]
-pun-tokens = { path = "crates/pun-tokens" }
-pun-fixers = { path = "crates/pun-fixers" }
-pun-format = { path = "crates/pun-format" }
-pun-config = { path = "crates/pun-config" }
-pun-workspace = { path = "crates/pun-workspace" }
+pun-tokens = { path = "crates/pun-tokens", package = "punphp-tokens" }
+pun-fixers = { path = "crates/pun-fixers", package = "punphp-fixers" }
+pun-format = { path = "crates/pun-format", package = "punphp-format" }
+pun-config = { path = "crates/pun-config", package = "punphp-config" }
+pun-workspace = { path = "crates/pun-workspace", package = "punphp-workspace" }
 mago-syntax = "=1.57.0"
 mago-database = "=1.57.0"
 serde = { version = "1", features = ["derive"] }

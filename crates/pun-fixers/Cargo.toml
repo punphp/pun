@@ -1,5 +1,5 @@
 [package]
-name = "pun-fixers"
+name = "punphp-fixers"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

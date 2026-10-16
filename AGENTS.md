@@ -2,6 +2,7 @@
 
 Plan: docs/PLAN.md. Home: github.com/punphp/pun (npm: @punphp/pun). Current scope: Phase 0 + Phase 1 (`pun format`, byte-identical to Pint).
 
+- Package names are `punphp-<x>` (dirs stay crates/pun-<x>, Rust import names stay `pun_<x>` via workspace `package =` aliases). Use `cargo test -p punphp-<x>`.
 - Rust toolchain: `source ~/.cargo/env`. Machine has 2 cores / 7 GB: build only your crate (`cargo test -p <crate>`), never `cargo clean`.
 - Crate ownership is per agent. Don't edit another agent's crate; if you need an API from it, read it and adapt, or note the request in docs/REQUESTS.md.
 - Root Cargo.toml: you may append to `[workspace.dependencies]`; don't reorder or remove.

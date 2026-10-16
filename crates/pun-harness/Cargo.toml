@@ -1,5 +1,5 @@
 [package]
-name = "pun-harness"
+name = "punphp-harness"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
