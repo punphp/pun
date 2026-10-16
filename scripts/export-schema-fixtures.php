@@ -92,6 +92,7 @@ $cases = [
     [['a: structure([b: int()])'], ['a!: {b: 1}'], ['a!: {b: x}']],
     [['a: arrayOf(int())'], ['a: null']],
     [['?a: structure([b: int()])'], []],
+    [['?a: schema(structure([b: int()]), required(false))'], []],
     [['"": int()', 'b: int()'], ['b: 1', '"": x']],
     [['a: anyOf({x: 1, y: 2})'], ['a: {y: 2, x: 1}'], ['a: {x: 1, y: 2}']],
     [['abc: int()'], ['ab: 1'], ['abcdefghijk: 1'], ['x: 1']],
