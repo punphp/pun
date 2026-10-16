@@ -165,7 +165,11 @@ fn plain_arguments(tokens: &Tokens, open: usize, close: usize) -> Option<Vec<(us
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -209,6 +213,7 @@ mod tests {
             "<?php expect($user->name)->not->toEndWith(\"son\");"
         );
         assert_eq!(fix("<?php expect(is_callable([$a, 'b']))->toBeTrue();"), "<?php expect([$a, 'b'])->toBeCallable();");
+        assert_eq!(fix("<?php \\expect(is_array($x))->toBeTrue();"), "<?php \\expect($x)->toBeArray();");
         for same in [
             "<?php expect(is_callable($x, true))->toBeTrue();",
             "<?php expect(is_array($x), 'msg')->toBeTrue();",
@@ -224,6 +229,8 @@ mod tests {
             "<?php expect(property_exists(Foo::class, 'x'))->toBeTrue();",
             "<?php expect(property_exists('Foo', 'x'))->toBeTrue();",
             "<?php $this->expect(is_array($x))->toBeTrue();",
+            "<?php Foo\\expect(is_array($x))->toBeTrue();",
+            "<?php $e->toBeTrue();",
         ] {
             assert_eq!(fix(same), same);
         }

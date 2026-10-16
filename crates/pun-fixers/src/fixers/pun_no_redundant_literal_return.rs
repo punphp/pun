@@ -172,7 +172,11 @@ fn literal(tokens: &Tokens, ks: &[usize]) -> Option<Vec<Vec<u8>>> {
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -224,6 +228,7 @@ mod tests {
         assert_eq!(fix(&func("    if ($x === NULL) return null;\n    return $x;")), ret);
         assert_eq!(fix(&func("    if ($x === ['a' => \"b\",]) {\n        return ['a' => 'b'];\n    }\n    return $x;")), ret);
         assert_eq!(fix(&func("    if ($x === [1]) {\n        return array(1);\n    }\n    return $x;")), ret);
+        assert_eq!(fix(&func("    if ($x === \"a\\n\") {\n        return \"a\\n\";\n    }\n    return $x;")), ret);
         for same in [
             func("    if ($x === 0.0) {\n        return 0.0;\n    }\n    return $x;"),
             func("    if ($x === -1) {\n        return -1;\n    }\n    return $x;"),
@@ -232,6 +237,8 @@ mod tests {
             func("    if ($x === null) {\n        return null; // why\n    }\n    return $x;"),
             func("    if ($x === null) {\n        return null;\n    } else if ($x === '') {\n        return '';\n    }\n    return $x;"),
             func("    if ($x === null) {\n        return null;\n    }\n    return $x + 1;"),
+            // Escaped strings are compared by their source text only, so equal values spelled differently are kept.
+            func("    if ($x === 'a\\'b') {\n        return \"a'b\";\n    }\n    return $x;"),
         ] {
             assert_eq!(fix(&same), same);
         }

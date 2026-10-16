@@ -98,7 +98,11 @@ fn replacement(tokens: &Tokens, i: usize) -> Option<Vec<Token>> {
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -142,6 +146,8 @@ mod tests {
             class("R", "rules", "            'a' => fn () => ['b' => 'x|y'],\n"),
             class("R", "rules", "            'a' => function () { return ['b' => 'x|y']; },\n"),
             "<?php function rules() { return ['a' => 'x|y']; }".into(),
+            "<?php abstract class R { abstract public function rules(); public function x() { return ['a' => 'x|y']; } }".into(),
+            class("R", "rules", "            'a' => b'x|y',\n"),
         ] {
             assert_eq!(fix(&same), same);
         }

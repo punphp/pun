@@ -43,9 +43,6 @@ impl Fixer for UseSimplerExpectation {
             if tokens[rhs_end].equals(",", true) {
                 rhs_end = tokens.get_prev_meaningful_token(rhs_end).unwrap();
             }
-            if lhs_end == expect_open || rhs_start > rhs_end {
-                continue;
-            }
             let instanceof = tokens[op].is_kind(T_INSTANCEOF);
             if instanceof && !(rhs_start..=rhs_end).all(|k| tokens[k].is_given_kind(&[T_STRING, T_NS_SEPARATOR, T_STATIC]) || tokens[k].is_whitespace(None)) {
                 continue;
@@ -141,7 +138,11 @@ fn single_comparison(tokens: &Tokens, open: usize, close: usize) -> Option<(usiz
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -182,6 +183,7 @@ mod tests {
         assert_eq!(fix("<?php expect($u->role === Role::Admin)->toBeTrue();"), "<?php expect($u->role)->toBe(Role::Admin);");
         assert_eq!(fix("<?php expect($x instanceof static)->toBeTrue();"), "<?php expect($x)->toBeInstanceOf(static::class);");
         assert_eq!(fix("<?php expect(!$a === $b)->toBeTrue();"), "<?php expect(!$a)->toBe($b);");
+        assert_eq!(fix("<?php \\expect($a > $b)->toBeTrue();"), "<?php \\expect($a)->toBeGreaterThan($b);");
         for same in [
             "<?php expect($a > $b)->not->toBeTrue();",
             "<?php expect($x)->and($a > $b)->toBeTrue();",
@@ -196,6 +198,7 @@ mod tests {
             "<?php expect(fn () => $a > $b)->toBeTrue();",
             "<?php expect($a > $b)->toBeTrue('message');",
             "<?php $this->expect($a > $b)->toBeTrue();",
+            "<?php Foo\\expect($a > $b)->toBeTrue();",
         ] {
             assert_eq!(fix(same), same);
         }

@@ -84,9 +84,6 @@ fn access_path(tokens: &Tokens, s: usize, e: usize) -> Option<Vec<Vec<u8>>> {
         } else {
             return None;
         }
-        if k > e {
-            return None;
-        }
     }
     Some(path)
 }
@@ -117,7 +114,11 @@ fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)>
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -158,6 +159,7 @@ mod tests {
             "<?php isset($a['x'], $a[\"x\"]);",
             "<?php isset($a, /* c */ $a['b']);",
             "<?php isset($a, $a->b());",
+            "<?php isset(Foo::$a, $a);",
         ] {
             assert_eq!(fix(same), same);
         }
