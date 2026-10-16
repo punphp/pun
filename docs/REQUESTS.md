@@ -30,3 +30,7 @@
   `if tokens.count() == 0 || !f.supports(file) || !f.is_candidate(&tokens) {`.
   With both patches applied locally, all 146 Pint blade fixtures (input->expected and expected idempotent, preset laravel,
   full fixer set) and pinkary/pinkary-dirty are byte-identical to Pint.
+- **scripts/coverage.sh (from agent 3):** with `PUN_FIXERS_ONLY` the test filter is `upstream_fixtures <name>::`, so the
+  oracle-derived cases in `tests/cases.rs` (`oracle_cases`: tests/cases/<fixer>.json, written by scripts/oracle-case.php;
+  `oracle_metadata`: priority/is_risky of every fixer vs tests/metadata.json from scripts/fixer-metadata.php) don't count.
+  Please add `oracle_` to that filter.
