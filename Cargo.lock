@@ -1078,6 +1078,7 @@ dependencies = [
  "pcre2",
  "pprof",
  "punphp-config",
+ "punphp-delegate",
  "punphp-fixers",
  "punphp-format",
  "punphp-tokens",
@@ -1097,6 +1098,14 @@ dependencies = [
  "serde",
  "serde_json",
  "toml",
+]
+
+[[package]]
+name = "punphp-delegate"
+version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "serde_json",
 ]
 
 [[package]]

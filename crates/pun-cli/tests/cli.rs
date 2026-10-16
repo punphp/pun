@@ -303,7 +303,11 @@ fn diffs_like_pint() {
 }
 
 fn pun(dir: &Path, args: &[&str]) -> (String, String, Option<i32>) {
-    let out = Command::new(env!("CARGO_BIN_EXE_pun")).args(args).current_dir(dir).env_clear().envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE")).env("COLUMNS", "80").output().unwrap();
+    pun_env(dir, args, &[])
+}
+
+fn pun_env(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, String, Option<i32>) {
+    let out = Command::new(env!("CARGO_BIN_EXE_pun")).args(args).current_dir(dir).env_clear().envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE")).env("COLUMNS", "80").envs(env.iter().copied()).output().unwrap();
     (String::from_utf8_lossy(&out.stdout).into_owned(), String::from_utf8_lossy(&out.stderr).into_owned(), out.status.code())
 }
 
@@ -328,13 +332,26 @@ fn pun_only_behaviour() {
         assert!(lines.iter().any(|l| l.ends_with(&format!("  {rule}"))), "{err}");
     }
 
-    // Unported rules make the run fail loudly, whatever the files look like.
+    // -v alone explains only delegation; a native run prints nothing extra.
+    let (_, err, _) = pun(&dir, &["format", "--test", "-v", "app/Clean.php"]);
+    assert_eq!(err, "");
+
+    // A rule Pun hasn't ported is delegated to PHP-CS-Fixer, which needs one to delegate to.
     std::fs::write(dir.join("pint.json"), r#"{"preset":"empty","rules":{"array_syntax":true,"not_a_real_rule":true}}"#).unwrap();
-    let (out, err, code) = pun(&dir, &["format", "--test", "--explain", "app/Clean.php"]);
-    assert_eq!(code, Some(1));
+    let (out, err, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
+    assert_eq!((out.as_str(), code), ("", Some(1)));
+    assert_eq!(err, "\n  no PHP-CS-Fixer to delegate to: run `composer require --dev laravel/pint`, set PUN_PINT to a Pint PHAR, or pass --native-only\n\n");
+    // ...whose own validation then rejects it (Pint's message for this pint.json).
+    if let Some(o) = oracle() {
+        let (_, err, code) = pun_env(&dir, &["format", "--test", "app/Clean.php"], &[("PUN_PINT", o.to_str().unwrap())]);
+        assert_eq!((err.as_str(), code), ("\n  The rules contain unknown fixers: \"not_a_real_rule\".\n\n", Some(1)));
+    }
+    // --native-only: native rules only, the rest listed (and the run is not failed for it).
+    let (out, err, code) = pun(&dir, &["format", "--test", "--explain", "--native-only", "app/Clean.php"]);
+    assert_eq!(code, Some(0));
     assert!(out.contains("PASS"), "{out}");
-    assert!(err.contains("  not ported        not_a_real_rule\n"), "{err}");
-    assert!(err.contains("pun: 1 of 2 enabled rules are not ported yet, so this result is not Pint-identical (see --explain).\n"), "{err}");
+    assert!(err.contains("  skipped           not_a_real_rule\n"), "{err}");
+    assert!(err.ends_with("pun: --native-only skipped 1 rules that are not ported: not_a_real_rule\n"), "{err}");
 
     // --engine=pun: mago-formatter, blade files skipped; --explain says so.
     reset(&dir, &files());
@@ -372,4 +389,97 @@ fn pun_only_behaviour() {
     assert_eq!(t["format"]["preset"].as_str(), Some("psr12"));
     let (_, err, code) = pun(&dir, &["config", "--show", "--preset=nope"]);
     assert_eq!((err.as_str(), code), ("\n  Preset not found.\n\n", Some(1)));
+}
+
+/// Delegate mode against the real Pint: rules Pun hasn't ported (combine_consecutive_unsets, align_multiline_comment,
+/// interleaved with native ones by priority) send every file through PHP-CS-Fixer, so stdout, exit code and files
+/// equal Pint's in every mode, including syntax errors, which stay native.
+#[test]
+fn delegated_rules_match_pint() {
+    let Some(oracle) = oracle() else { return };
+    let cx = Ctx { oracle: oracle.clone(), alias: pint_alias() };
+    let dir = tmp("delegate");
+    let tree = [
+        ("composer.json", r#"{"require":{"php":"^8.4"}}"#),
+        ("pint.json", r#"{"preset":"laravel","rules":{"combine_consecutive_unsets":true,"align_multiline_comment":true}}"#),
+        ("app/Unsets.php", "<?php\nunset($a);\nunset($b);\n$c = array(\"x\");\n"),
+        ("app/Doc.php", "<?php\n\n/**\n   * A\n     */\nfunction a() {}\n"),
+        ("app/Clean.php", "<?php\n\n$a = [1];\n"),
+        ("app/Fix.php", "<?php\n$a = array(1,2);   \n"),
+        ("app/Bad.php", "<?php\n$a = ;\n"),
+    ];
+    let env = [("PUN_PINT", oracle.to_str().unwrap())];
+    for args in [&[][..], &["--test"], &["-v", "--test"], &["--format=json"], &["--test", "app/Unsets.php"]] {
+        cx.same(&dir, &tree, &[], args, &env, b"");
+    }
+    cx.same(&dir, &tree, &["format"], &["--test"], &env, b"");
+    // stdin goes through the same workers.
+    reset(&dir, &tree);
+    let (r, _) = run(Path::new(env!("CARGO_BIN_EXE_pun")), &["format", "--stdin"], &dir, &[], &env, b"<?php\nunset($a);\nunset($b);\n");
+    assert_eq!(r.stdout, "<?php\n\nunset($a, $b);\n");
+    // -v and --explain say why and list what ran in PHP; the `pint` alias stays silent like Pint.
+    reset(&dir, &tree);
+    let (_, err, _) = pun_env(&dir, &["format", "--test", "-v", "app/Clean.php"], &env);
+    let why = format!(
+        "delegate: 2 of {} rules are not ported (combine_consecutive_unsets, align_multiline_comment), so every file runs through PHP-CS-Fixer in `php` ({})\n",
+        pun_config_rules(&dir),
+        oracle.display()
+    );
+    assert_eq!(err, why);
+    let (_, err, _) = pun_env(&dir, &["format", "--test", "--explain", "app/Clean.php"], &env);
+    assert!(err.starts_with(&why) && err.contains("\n  delegated     24  combine_consecutive_unsets\n") && err.contains("\n  delegated    -20  no_extra_blank_lines\n"), "{err}");
+    let (_, err) = run(&cx.alias, &[], &dir, &["--test", "-v", "app/Clean.php"], &env, b"");
+    assert_eq!(err, "");
+}
+
+/// The number of rules `pun config --show` resolves for `dir` (the laravel preset plus two).
+fn pun_config_rules(dir: &Path) -> usize {
+    let (out, _, _) = pun(dir, &["config", "--show", "--format=json"]);
+    let v: serde_json::Value = serde_json::from_str(&out).unwrap();
+    v["format"]["rules"].as_object().unwrap().len()
+}
+
+/// A .php-cs-fixer.php with a project fixer class (pun-delegate's fixture, expectations from php-cs-fixer): its Finder
+/// picks the files, its rules and fixer fix them; --native-only can't read it.
+#[test]
+fn php_cs_fixer_config() {
+    let Some(oracle) = oracle() else { return };
+    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../pun-delegate/tests/custom");
+    let dir = tmp("pcf");
+    let read = |f: &str| std::fs::read_to_string(src.join(f)).unwrap();
+    let autoload = format!("<?php\nreturn require '{}';\n", oracle.parent().unwrap().parent().unwrap().parent().unwrap().join("php-cs-fixer/vendor/autoload.php").display());
+    let tree: Vec<(&str, String)> = vec![
+        ("composer.json", r#"{"require":{"php":"^8.4"}}"#.into()),
+        (".php-cs-fixer.php", read(".php-cs-fixer.php")),
+        ("UpperTodoFixer.php", read("UpperTodoFixer.php")),
+        ("app/A.php", read("app/A.php")),
+        ("app/b.skip.php", read("app/b.skip.php")),
+        ("app/Clean.php", read("app/Clean.php")),
+        ("outside/C.php", "<?php\n$a = \"x\";\n".into()),
+        ("vendor/autoload.php", autoload),
+        ("vendor/friendsofphp/php-cs-fixer/.keep", String::new()),
+    ];
+    let tree: Vec<(&str, &str)> = tree.iter().map(|(a, b)| (*a, b.as_str())).collect();
+    reset(&dir, &tree);
+    let (out, _, code) = pun(&dir, &["format", "--list-files"]);
+    let mut listed: Vec<&str> = out.lines().collect();
+    listed.sort();
+    assert_eq!((listed, code), (vec!["app/A.php", "app/Clean.php", "app/b.skip.php"], Some(0)));
+    let (_, _, code) = pun(&dir, &["format"]);
+    assert_eq!(code, Some(0));
+    for f in ["A.php", "b.skip.php"] {
+        assert_eq!(std::fs::read_to_string(dir.join("app").join(f)).unwrap(), read(&format!("expected/{f}")));
+    }
+    assert_eq!(std::fs::read_to_string(dir.join("outside/C.php")).unwrap(), "<?php\n$a = \"x\";\n");
+    let (_, err, _) = pun(&dir, &["format", "--test", "-v"]);
+    assert!(err.starts_with(&format!("delegate: {} configures the run, ", dir.join(".php-cs-fixer.php").display())), "{err}");
+    // A fixer exception and a fixer that breaks the code fail only their file, with php-cs-fixer's messages.
+    std::fs::write(dir.join("app/T.php"), "<?php\n\n// THROW\n").unwrap();
+    std::fs::write(dir.join("app/B.php"), "<?php\n\n// BREAK\n$a = 1;\n").unwrap();
+    let (out, _, code) = pun(&dir, &["format", "--test", "--format=agent"]);
+    assert_eq!(code, Some(1));
+    assert!(out.contains(r#"{"path":"app\/T.php","message":"boom"}"#), "{out}");
+    assert!(out.contains(r#"{"path":"app\/B.php","message":"Parse error: Unmatched ')' on line 4."}"#), "{out}");
+    let (_, err, code) = pun(&dir, &["format", "--native-only"]);
+    assert_eq!((err.as_str(), code), ("\n  --native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead.\n\n", Some(1)));
 }

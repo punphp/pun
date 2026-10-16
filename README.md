@@ -38,6 +38,12 @@ pun format app/Models   # specific paths; Pint's flags (--dirty, --diff=main, --
 only config file; `pun config --show` prints the resolved configuration. `pun.toml` settings override
 `pint.json`.
 
+**Rules Pun hasn't ported, custom fixers.** If an enabled rule has no native port, or the project configures
+PHP-CS-Fixer with `.php-cs-fixer.php` (custom fixer classes), Pun runs every file through the real PHP-CS-Fixer in
+long-lived `php` workers, using the project's `vendor/laravel/pint` (or `vendor/friendsofphp/php-cs-fixer`, or a Pint
+PHAR in `$PUN_PINT`), so output stays identical to Pint while discovery, caching and reporting stay Pun's. `--explain`
+(or `-v`) says why; `--native-only` skips those rules and lists them. Details: [docs/oracle.md](docs/oracle.md#delegate-mode).
+
 **Extra rules.** Opt-in `Pun/` rules ported from Mago (Laravel and Pest idioms, redundant code, ...) are
 listed in [docs/MAGO-EXTRAS.md](docs/MAGO-EXTRAS.md). None is in a preset, so default output stays identical
 to Pint; enable them in `pun.toml`.

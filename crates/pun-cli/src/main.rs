@@ -107,9 +107,12 @@ pub struct FormatArgs {
     /// Formatting engine: compat (Pint-identical) or pun (mago-formatter).
     #[arg(long, value_parser = ["compat", "pun"])]
     engine: Option<String>,
-    /// Print which rules run natively and which are not ported (to stderr).
+    /// Print which rules run natively and which are delegated to PHP-CS-Fixer (to stderr).
     #[arg(long)]
     explain: bool,
+    /// Run only Pun's native fixers: skip (and list) rules that would be delegated to PHP.
+    #[arg(long)]
+    native_only: bool,
     /// The path to the cache file (default: a per-project file under ~/.cache/pun).
     #[arg(long)]
     cache_file: Option<String>,
@@ -201,14 +204,32 @@ fn show_config(fmt: &str, config: Option<PathBuf>, preset: Option<String>) -> Re
 enum Engine2 {
     Compat(Pipeline),
     Pun(String),
+    /// Every file through real PHP-CS-Fixer (pun-delegate): unported rules or a .php-cs-fixer.php config.
+    /// With the enabled rules Pun hasn't ported (empty for a .php-cs-fixer.php run).
+    Delegate(pun_delegate::Delegate, Vec<String>),
 }
 
+type Run = Result<Option<(Vec<u8>, Vec<&'static str>)>, LintError>;
+
 impl Engine2 {
-    fn run(&self, file: &Path, code: &[u8]) -> Result<Option<(Vec<u8>, Vec<&'static str>)>, LintError> {
-        match self {
-            Engine2::Compat(p) => Ok(p.run(file, code)?.map(|f| (f.code, f.applied))),
-            Engine2::Pun(php) => Ok(pun_format::format_pun(code, php)?.map(|c| (c, vec!["pun"]))),
-        }
+    /// The outer error aborts the run (a dead PHP worker, PHP-CS-Fixer's own run-level exceptions).
+    fn run(&self, file: &Path, code: &[u8]) -> Result<Run> {
+        Ok(match self {
+            Engine2::Compat(p) => p.run(file, code).map(|f| f.map(|f| (f.code, f.applied))),
+            Engine2::Pun(php) => pun_format::format_pun(code, php).map(|c| c.map(|c| (c, vec!["pun"]))),
+            // Linting stays native (TokenizerLinter's messages), as on the native path.
+            Engine2::Delegate(d, _) => match pun_format::lint(code) {
+                Err(e) => Err(e),
+                Ok(()) => match d.fix(file, code)? {
+                    pun_delegate::Outcome::Unchanged => Ok(None),
+                    pun_delegate::Outcome::Failed(message) => Err(LintError { message, after_fix: true }),
+                    pun_delegate::Outcome::Fixed(new, applied) => match pun_format::lint(&new) {
+                        Ok(()) => Ok(Some((new, applied))),
+                        Err(e) => Err(LintError { after_fix: true, ..e }),
+                    },
+                },
+            },
+        })
     }
 }
 
@@ -232,12 +253,26 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
             if std::env::var_os("PUN_PROFILE").is_some() {
                 p.enable_profile();
             }
-            Engine2::Compat(p)
+            let source = match &cfg.php_cs_fixer {
+                Some(f) => Some(pun_delegate::Source::Config(f.clone())),
+                None => (!p.not_ported.is_empty()).then(|| pun_delegate::Source::Rules(cfg.configured_rules.clone().into())),
+            };
+            match source {
+                Some(_) if a.native_only && cfg.php_cs_fixer.is_some() => {
+                    anyhow::bail!("--native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead.")
+                }
+                Some(s) if !a.native_only => {
+                    // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
+                    let d = pun_delegate::Delegate::start(&root, s, std::env::var_os("PUN_PINT").map(PathBuf::from))?;
+                    Engine2::Delegate(d, p.not_ported)
+                }
+                _ => Engine2::Compat(p),
+            }
         }
         Engine::Pun => Engine2::Pun(cfg.php.clone()),
     };
-    if a.explain {
-        explain(&cfg, &engine);
+    if a.explain || (a.verbose > 0 && !pint_mode) {
+        explain(&cfg, &engine, a.explain);
     }
 
     let stdin_path = a.paths.first().is_some_and(|p| p.as_os_str() == "-");
@@ -255,10 +290,12 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     } else {
         None
     };
-    let files = match &selection {
+    let files = match (&selection, &engine) {
         // Pint swallows the "no dirty files" / "not a git repo" aborts and reports an empty run.
-        Some(sel) => pun_workspace::git_paths(&cfg, sel).unwrap_or_default(),
-        None => pun_workspace::discover(&cfg, &a.paths)?,
+        (Some(sel), _) => pun_workspace::git_paths(&cfg, sel).unwrap_or_default(),
+        // A .php-cs-fixer.php brings its own Finder.
+        (None, Engine2::Delegate(d, _)) if cfg.php_cs_fixer.is_some() && a.paths.is_empty() => d.files()?,
+        (None, _) => pun_workspace::discover(&cfg, &a.paths)?,
     };
 
     if a.list_files {
@@ -271,7 +308,13 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     let cache = if a.no_cache {
         None
     } else {
-        a.cache_file.as_ref().map(|f| root.join(f)).or_else(|| cache::default_path(&root)).map(|p| cache::Cache::load(p, cache::signature(&cfg)))
+        a.cache_file.as_ref().map(|f| root.join(f)).or_else(|| cache::default_path(&root)).map(|p| {
+            let mut sig = cache::signature(&cfg);
+            if let Engine2::Delegate(d, _) = &engine {
+                sig["delegate"] = d.signature();
+            }
+            cache::Cache::load(p, sig)
+        })
     };
     // Unreadable / unwritable files abort the whole run, like Pint (FileReader / Runner exceptions).
     // Besides the result: the content hash when the file is clean (for the cache), and whether the cache said so.
@@ -295,7 +338,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
             }
         }
         let mut clean = None;
-        match engine.run(path, &code) {
+        match engine.run(path, &code)? {
             Err(e) => {
                 r.status = if e.after_fix { Status::Lint } else { Status::Invalid };
                 r.message = e.message;
@@ -349,20 +392,27 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     if let Engine2::Compat(p) = &engine {
         eprint!("{}", p.profile_report());
         if !p.not_ported.is_empty() {
-            eprintln!(
-                "pun: {} of {} enabled rules are not ported yet, so this result is not Pint-identical (see --explain).",
-                p.not_ported.len(),
-                cfg.rules.len()
-            );
-            return Ok(1);
+            eprintln!("pun: --native-only skipped {} rules that are not ported: {}", p.not_ported.len(), p.not_ported.join(", "));
         }
     }
     Ok(code.max(u8::from(failed)))
 }
 
-fn explain(cfg: &Config, engine: &Engine2) {
+/// `full` (--explain): the rule list too; `-v` prints only why a run is delegated.
+fn explain(cfg: &Config, engine: &Engine2, full: bool) {
     let mut err = std::io::stderr().lock();
     match engine {
+        Engine2::Delegate(d, not_ported) => {
+            let why = match &cfg.php_cs_fixer {
+                Some(f) => format!("{} configures the run", f.display()),
+                None => format!("{} of {} rules are not ported ({})", not_ported.len(), cfg.rules.len(), not_ported.join(", ")),
+            };
+            let _ = writeln!(err, "delegate: {why}, so every file runs through PHP-CS-Fixer in `php` ({})", d.runtime.display());
+            for (name, priority) in d.fixers.iter().filter(|_| full) {
+                let _ = writeln!(err, "  delegated   {priority:>4}  {name}");
+            }
+        }
+        _ if !full => {}
         Engine2::Pun(php) => {
             let _ = writeln!(err, "engine: pun (mago-formatter, pint preset, PHP {php}); pint.json rules are ignored");
         }
@@ -372,7 +422,7 @@ fn explain(cfg: &Config, engine: &Engine2) {
                 let _ = writeln!(err, "  native      {:>4}  {}", f.priority(), f.name());
             }
             for n in &p.not_ported {
-                let _ = writeln!(err, "  not ported        {n}");
+                let _ = writeln!(err, "  skipped           {n}");
             }
         }
     }
@@ -388,7 +438,7 @@ fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine2) -> Result<u8> {
         out.write_all(&code)?;
         return Ok(0);
     }
-    match engine.run(&ctx, &code) {
+    match engine.run(&ctx, &code)? {
         Ok(Some((new, _))) => out.write_all(&new)?,
         // Pint reports syntax errors through its (unshown) JSON report and echoes the file unchanged.
         Ok(None) | Err(_) => out.write_all(&code)?,

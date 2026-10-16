@@ -197,7 +197,13 @@ fn emit_inner(ctx: &Ctx, results: &[FileResult], format: Option<&str>, quiet: bo
     print!("{}", fmt(&out, out_dec));
     std::io::Write::flush(&mut std::io::stdout())?;
     if let (Some(path), Some(f)) = (to_file, file_format.or(format)) {
-        std::fs::write(path, reporter(ctx, results, f, out_dec)?)?;
+        if let Err(e) = std::fs::write(path, reporter(ctx, results, f, out_dec)?) {
+            // PHP's warning, rendered as an uncaught ErrorException. Rust adds " (os error N)" after the same strerror.
+            let e = e.to_string();
+            let msg = format!("file_put_contents({}): Failed to open stream: {}", path.display(), e.split(" (os error").next().unwrap_or(&e));
+            print!("{}{}", fmt("\n<comment>In ElaborateSummary.php line 106:</comment>", out_dec), abort_box(&msg, out_dec));
+            return Ok(1);
+        }
     }
     if format.is_some() {
         for r in errors(results) {

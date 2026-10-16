@@ -210,9 +210,10 @@ fn git_selection_matches_pint() {
     let ours = |sel: &GitSelect| listing(&root, git_paths(&pun_config::load(&root, &Default::default()).unwrap(), sel));
     // Not a repository.
     assert!(pint(&root, &["--dirty"]).is_err() || pint(&root, &["--dirty"]).unwrap().1 == 0);
-    assert_eq!(ours(&GitSelect::Dirty).unwrap_err(), "The [--dirty] option is only available when using Git.");
-    assert_eq!(ours(&GitSelect::Diff("main".into())).unwrap_err(), "The [--diff] option is only available when using Git.");
-    assert_eq!(ours(&GitSelect::Staged).unwrap_err(), "The [--staged] option is only available when using Git.");
+    // Pint swallows the "only available when using Git" abort: nothing selected.
+    for sel in [GitSelect::Dirty, GitSelect::Diff("main".into()), GitSelect::Staged, GitSelect::Since("main".into())] {
+        assert_eq!(ours(&sel).unwrap(), (BTreeSet::new(), 0));
+    }
 
     git(&root, &["init", "-q"]);
     git(&root, &["add", "."]);
@@ -236,8 +237,11 @@ fn git_selection_matches_pint() {
     std::fs::write(root.join("app/Clean.php"), "<?PHP\necho 6;\n").unwrap();
     std::fs::write(root.join("app/Untracked.php"), BAD).unwrap();
     assert_eq!(ours(&GitSelect::Diff("main".into())), pint(&root, &["--diff=main"]));
-    assert_eq!(ours(&GitSelect::Diff("nope".into())).unwrap_err(), "The [--diff] option is only available when using Git.");
+    assert_eq!(ours(&GitSelect::Diff("nope".into())), pint(&root, &["--diff=nope"]));
     git(&root, &["add", "app/Clean.php"]);
     let staged = ours(&GitSelect::Staged).unwrap();
     assert_eq!(staged, (["app/Clean.php".to_string()].into(), 1));
+    // --since=main: everything feature changed (the commit, the staged Clean.php) plus untracked; Del.php is gone.
+    let since: BTreeSet<String> = ["app/Clean.php", "app/Mod.php", "app/New.php", "app/Renamed.php", "app/Staged.php", "app/Untracked.php"].map(String::from).into();
+    assert_eq!(ours(&GitSelect::Since("main".into())).unwrap(), (since, 6));
 }

@@ -64,6 +64,10 @@ pub struct Config {
     pub blade: bool,
     /// Files that contributed, in load order.
     pub sources: Vec<PathBuf>,
+    /// The merged rule map before set expansion and `false` filtering: what Pint's Config gets (delegate mode).
+    pub configured_rules: Map<String, Value>,
+    /// `.php-cs-fixer(.dist).php` that replaces pint.json (`pun format` without pint.json): run by delegate mode.
+    pub php_cs_fixer: Option<PathBuf>,
 }
 
 #[derive(Debug, Default, Clone)]
@@ -119,13 +123,11 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
     };
     let pint = if opts.no_config { Map::new() } else { read_pint_json(&pint_path, &mut sources)? };
 
-    if !opts.pint_mode && !opts.no_config && opts.config.is_none() && !pint_path.exists() {
-        for f in [".php-cs-fixer.php", ".php-cs-fixer.dist.php"] {
-            if root.join(f).exists() {
-                bail!("{f} found: evaluating PHP-CS-Fixer configs is not yet supported. Add a pint.json or pun.toml instead.");
-            }
-        }
-    }
+    let php_cs_fixer = [".php-cs-fixer.php", ".php-cs-fixer.dist.php"]
+        .iter()
+        .map(|f| root.join(f))
+        .find(|f| f.exists())
+        .filter(|_| !opts.pint_mode && !opts.no_config && opts.config.is_none() && !pint_path.exists() && !root.join("pun.toml").exists());
 
     let toml_path = root.join("pun.toml");
     let toml = if !opts.pint_mode && toml_path.exists() {
@@ -177,6 +179,7 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
         }
     }
 
+    let configured_rules = rules.clone();
     let rules = resolve_set(rules);
     let blade = rules.get("Pint/laravel_blade").is_some_and(|v| *v != Value::Bool(false));
     let rules = rules
@@ -197,7 +200,7 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
         not_path: f.not_path.unwrap_or_else(|| list("notPath")),
     };
 
-    Ok(Config { root: root.to_path_buf(), preset, engine, php, rules, finder, blade, sources })
+    Ok(Config { root: root.to_path_buf(), preset, engine, php, rules, finder, blade, sources, configured_rules, php_cs_fixer })
 }
 
 /// Pint's ConfigurationJsonRepository::get(): a missing file means "no config"; `extend` is one level deep.
@@ -381,9 +384,26 @@ mod tests {
     fn gates() {
         let d = dir(&[("composer.json", r#"{"require":{"php":"^8.2"}}"#)]);
         assert!(load(&d, &Options::default()).unwrap_err().to_string().contains("PHP < 8.4"));
+        // A PHP-CS-Fixer config replaces pint.json for `pun format` (php-cs-fixer's lookup order); `pint`, pint.json,
+        // pun.toml and --config keep Pint's behaviour of ignoring it.
         let d = dir(&[("composer.json", "{}"), (".php-cs-fixer.dist.php", "<?php")]);
-        assert!(load(&d, &Options::default()).unwrap_err().to_string().contains("not yet supported"));
-        assert!(load(&d, &Options { pint_mode: true, ..Default::default() }).is_ok());
+        assert_eq!(load(&d, &Options::default()).unwrap().php_cs_fixer, Some(d.join(".php-cs-fixer.dist.php")));
+        std::fs::write(d.join(".php-cs-fixer.php"), "<?php").unwrap();
+        assert_eq!(load(&d, &Options::default()).unwrap().php_cs_fixer, Some(d.join(".php-cs-fixer.php")));
+        assert_eq!(load(&d, &Options { pint_mode: true, ..Default::default() }).unwrap().php_cs_fixer, None);
+        assert_eq!(load(&d, &Options { config: Some("x.json".into()), ..Default::default() }).unwrap().php_cs_fixer, None);
+        std::fs::write(d.join("pun.toml"), "").unwrap();
+        assert_eq!(load(&d, &Options::default()).unwrap().php_cs_fixer, None);
+        std::fs::remove_file(d.join("pun.toml")).unwrap();
+        std::fs::write(d.join("pint.json"), r#"{"preset":"psr12","rules":{"braces_position":false,"single_quote":true}}"#).unwrap();
+        let c = load(&d, &Options::default()).unwrap();
+        assert_eq!(c.php_cs_fixer, None);
+        // Delegate mode gets the map Pint builds: sets unexpanded, `false` kept, in merge order.
+        assert_eq!(
+            serde_json::Value::Object(c.configured_rules),
+            serde_json::json!({"@PSR12": true, "no_unused_imports": true, "braces_position": false, "single_quote": true})
+        );
+        assert!(!c.rules.iter().any(|r| r.name == "braces_position" || r.name.starts_with('@')));
     }
 
     fn err(d: &Path, o: Options) -> String {
