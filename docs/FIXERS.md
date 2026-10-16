@@ -107,35 +107,35 @@ Analyzers owned: NamespaceUsesAnalyzer, NamespacesAnalyzer, ClassyAnalyzer, Attr
 - [x] lowercase_keywords
 - [x] lowercase_static_reference
 - [x] magic_method_casing
-- [ ] mb_str_functions
-- [ ] modernize_types_casting
-- [ ] native_function_casing
-- [ ] native_type_declaration_casing
-- [ ] no_alias_functions
+- [x] mb_str_functions
+- [x] modernize_types_casting
+- [x] native_function_casing
+- [x] native_type_declaration_casing
+- [x] no_alias_functions
 - [x] no_alias_language_construct_call
-- [ ] no_alternative_syntax
+- [x] no_alternative_syntax
 - [x] no_binary_string
 - [x] no_mixed_echo_print
 - [x] no_short_bool_cast
-- [ ] no_superfluous_elseif
-- [ ] no_unneeded_control_parentheses
-- [ ] no_unreachable_default_argument_value
+- [x] no_superfluous_elseif
+- [x] no_unneeded_control_parentheses
+- [x] no_unreachable_default_argument_value
 - [x] no_unset_cast
 - [x] normalize_index_brace
-- [ ] nullable_type_declaration
-- [ ] nullable_type_declaration_for_default_null_value
-- [ ] php_unit_method_casing
+- [x] nullable_type_declaration
+- [x] nullable_type_declaration_for_default_null_value
+- [x] php_unit_method_casing
 - [x] return_type_declaration
 - [x] short_scalar_cast
 - [x] single_quote
 - [x] standardize_not_equals
 - [x] strict_comparison
-- [ ] yoda_style
-- [ ] class_attributes_separation
-- [ ] class_definition
+- [x] yoda_style
+- [x] class_attributes_separation
+- [x] class_definition
 - [x] constant_case
-- [ ] final_class
-- [ ] final_internal_class
+- [x] final_class
+- [x] final_internal_class
 
 ## Agent 4: class modifiers, phpdoc, comments
 
