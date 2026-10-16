@@ -8,7 +8,6 @@ use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
 use pun_tokens::php_compat::{ltrim_chars, rtrim_chars, strcasecmp};
 use pun_tokens::{Kind, Token, Tokens};
-use std::collections::BTreeMap;
 use std::path::Path;
 
 const TOKENS_NOT_BEFORE_FUNCTION_CALL: &[Kind] = &[Kind::T_NEW, Kind::T_ATTRIBUTE];
@@ -38,7 +37,12 @@ impl Fixer for NoUnusedImportsFixer {
                 .iter()
                 .filter(|u| u.start_index >= namespace.scope_start_index && u.end_index <= namespace.scope_end_index)
                 .collect();
-            let indices: BTreeMap<usize, usize> = current.iter().map(|u| (u.start_index, u.end_index)).collect();
+            // `$ignoredIndices` (use statement start => end) as a dense jump table: looked up for every token of
+            // the namespace once per import.
+            let mut indices = vec![0usize; tokens.count()];
+            for u in &current {
+                indices[u.start_index] = u.end_index + 1;
+            }
             for u in &current {
                 if !is_import_used(tokens, &namespace, u, &indices) {
                     remove_use_declaration(tokens, u, false);
@@ -49,7 +53,7 @@ impl Fixer for NoUnusedImportsFixer {
     }
 }
 
-fn is_import_used(tokens: &Tokens, namespace: &NamespaceAnalysis, import: &NamespaceUseAnalysis, ignored: &BTreeMap<usize, usize>) -> bool {
+fn is_import_used(tokens: &Tokens, namespace: &NamespaceAnalysis, import: &NamespaceUseAnalysis, ignored: &[usize]) -> bool {
     let end = namespace.scope_end_index;
     let mut in_attribute = false;
     let mut index = namespace.scope_start_index;
@@ -66,8 +70,8 @@ fn is_import_used(tokens: &Tokens, namespace: &NamespaceAnalysis, import: &Names
             index += 1;
             continue;
         }
-        if let Some(&e) = ignored.get(&index) {
-            index = e + 1;
+        if ignored[index] != 0 {
+            index = ignored[index];
             continue;
         }
         if token.is_kind(Kind::T_STRING) {
@@ -109,7 +113,7 @@ fn is_import_used(tokens: &Tokens, namespace: &NamespaceAnalysis, import: &Names
             index += 1;
             continue;
         }
-        if token.is_comment() && Preg::r#match(&comment_pattern, &token.content) {
+        if token.is_comment() && may_mention(&token.content, &import.short_name) && Preg::r#match(&comment_pattern, &token.content) {
             return true;
         }
         index += 1;
@@ -263,4 +267,12 @@ fn scan_for_non_empty_tokens_until_new_line_found(tokens: &Tokens, index: usize,
         }
     }
     (None, has_non_empty)
+}
+
+/// False only when the `/i` comment pattern cannot match: an all-ASCII comment without the name in any ASCII case.
+/// (Non-ASCII text goes to the regex, whose `/iu` folding also matches e.g. the Kelvin sign for `k`.)
+fn may_mention(comment: &[u8], name: &[u8]) -> bool {
+    !comment.is_ascii()
+        || name.is_empty()
+        || comment.windows(name.len()).any(|w| w[0].eq_ignore_ascii_case(&name[0]) && w.eq_ignore_ascii_case(name))
 }

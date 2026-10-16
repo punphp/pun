@@ -29,10 +29,13 @@ impl PhpdocTypesFixer {
     /// normalize() only lowercases a type whose lowercase form is in the set, so a docblock where every
     /// case-insensitive occurrence of those names is already lowercase comes out unchanged.
     fn may_change(&self, doc: &[u8]) -> bool {
-        let lower = doc.to_ascii_lowercase();
-        self.types_set_to_fix.iter().any(|t| {
-            let t = t.as_bytes();
-            lower.windows(t.len()).enumerate().any(|(i, w)| w == t && &doc[i..i + t.len()] != t)
+        // Only an uppercase ASCII letter can start or sit inside such an occurrence.
+        doc.iter().enumerate().filter(|(_, b)| b.is_ascii_uppercase()).any(|(i, _)| {
+            self.types_set_to_fix.iter().any(|t| {
+                let t = t.as_bytes();
+                t.contains(&doc[i].to_ascii_lowercase())
+                    && (i.saturating_sub(t.len() - 1)..=i).any(|s| doc.get(s..s + t.len()).is_some_and(|w| w.eq_ignore_ascii_case(t)))
+            })
         })
     }
     fn normalize(&self, t: &[u8]) -> Vec<u8> {
