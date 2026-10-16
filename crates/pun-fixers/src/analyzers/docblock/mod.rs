@@ -40,7 +40,8 @@ impl DocBlock {
     }
 
     pub fn with_context(content: &[u8], ctx: Rc<Context>) -> Self {
-        let lines = preg::split(r"/([^\n\r]+\R*)/", content, preg::SPLIT_NO_EMPTY | preg::SPLIT_DELIM_CAPTURE)
+        let lines = split_lines_ascii(content)
+            .unwrap_or_else(|| preg::split(r"/([^\n\r]+\R*)/", content, preg::SPLIT_NO_EMPTY | preg::SPLIT_DELIM_CAPTURE))
             .into_iter()
             .map(Line::shared)
             .collect();
@@ -162,4 +163,25 @@ pub fn replace_all(s: &[u8], from: &[u8], to: &[u8]) -> Vec<u8> {
         }
     }
     out
+}
+
+/// `preg_split('/([^\n\r]+\R*)/', ..., NO_EMPTY | DELIM_CAPTURE)` for ASCII content not starting with CR/LF:
+/// each piece is a run without CR/LF (VT and FF included) plus the run of CR, LF, VT and FF after it.
+fn split_lines_ascii(content: &[u8]) -> Option<Vec<Vec<u8>>> {
+    if !content.is_ascii() || matches!(content.first(), Some(b'\n' | b'\r')) {
+        return None;
+    }
+    let mut lines = Vec::new();
+    let mut i = 0;
+    while i < content.len() {
+        let start = i;
+        while i < content.len() && !matches!(content[i], b'\n' | b'\r') {
+            i += 1;
+        }
+        while i < content.len() && matches!(content[i], b'\n' | b'\r' | 0x0b | 0x0c) {
+            i += 1;
+        }
+        lines.push(content[start..i].to_vec());
+    }
+    Some(lines)
 }

@@ -450,3 +450,33 @@ fn annotation_get_types_is_cached() {
     assert_eq!(a.get_types(), [b"int".to_vec()]);
     assert_eq!(a.get_content(), b" * @param string $a\n");
 }
+
+#[test]
+fn ascii_fast_paths_match_php() {
+    // Expected values: PHP 8.5 preg_split / preg_match_all / preg_match with the upstream patterns on the same input.
+    let split = |c: &str| super::split_lines_ascii(c.as_bytes()).map(|v| v.into_iter().map(|l| String::from_utf8(l).unwrap()).collect::<Vec<_>>());
+    assert_eq!(split("/**\n * a\x0bb\r\n\x0c\n * c\n */").unwrap(), ["/**\n", " * a\x0bb\r\n\x0c\n", " * c\n", " */"]);
+    assert_eq!(split("/** x */").unwrap(), ["/** x */"]);
+    assert_eq!(split("/**\r\r\n *\n\n\n */\n").unwrap(), ["/**\r\r\n", " *\n\n\n", " */\n"]);
+    assert_eq!(split("/**\n * @a\x0c").unwrap(), ["/**\n", " * @a\x0c"]);
+    assert_eq!(split("\n/** */"), None);
+    assert_eq!(split("/** \u{e9} */"), None);
+    let tag = |c: &str| super::tag::tag_name_ascii(c.as_bytes()).map(|v| String::from_utf8(v).unwrap());
+    for (c, name) in [
+        (" * @param int $a", "param"),
+        (" * @a@b c", "b"),
+        (" * @foo.bar @baz", "baz"),
+        (" * @foo", "foo"),
+        (" * @-x\t", "-x"),
+        (" * email@example.com", "other"),
+        (" * @", "other"),
+        (" * @@ @x\n", "x"),
+    ] {
+        assert_eq!(tag(c).unwrap(), name, "{c:?}");
+    }
+    assert_eq!(tag(" * @\u{e9}"), None);
+    for (c, has) in [(" * @param", true), (" *\t\x0b@x", true), (" * x @y", false), ("**@", true), (" * text", false), (" */", false), ("*a@", false)] {
+        assert_eq!(Line::new(c).contains_a_tag(), has, "{c:?}");
+    }
+    assert!(Line::new("*\u{a0}@").contains_a_tag());
+}
