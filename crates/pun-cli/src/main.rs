@@ -7,6 +7,7 @@ mod console;
 mod fix_report;
 mod highlight;
 mod php_diff;
+mod pint_error;
 mod report;
 #[cfg(feature = "pprof")]
 mod sampler;
@@ -155,7 +156,10 @@ fn main() -> ExitCode {
             #[command(flatten)]
             args: FormatArgs,
         }
-        format(Pint::parse().args, true)
+        match Pint::try_parse() {
+            Ok(p) => format(p.args, true),
+            Err(e) => Err(anyhow::anyhow!(pint_error::from_clap(&e).unwrap_or_else(|| e.exit()))),
+        }
     } else {
         match Cli::parse().cmd {
             Cmd::Format(a) => format(a, false),
@@ -171,6 +175,10 @@ fn main() -> ExitCode {
     }
     match result {
         Ok(code) => ExitCode::from(code),
+        Err(e) if pint_mode => {
+            print!("{}", pint_error::render(&e.to_string()));
+            ExitCode::FAILURE
+        }
         Err(e) => {
             eprintln!("\n  {e}\n");
             ExitCode::FAILURE
@@ -219,7 +227,14 @@ impl Engine2 {
     /// The outer error aborts the run (a dead PHP worker, PHP-CS-Fixer's own run-level exceptions).
     fn run(&self, file: &Path, code: &[u8]) -> Result<Run> {
         Ok(match self {
-            Engine2::Compat(p) => p.run(file, code).map(|f| f.map(|f| (f.code, f.applied))),
+            Engine2::Compat(p) => {
+                let r = p.run(file, code);
+                // Runner::fixFile analyses annotations after linting the input, before any fixer runs.
+                if !matches!(r, Err(LintError { after_fix: false, .. })) {
+                    p.check_annotations(file, code)?;
+                }
+                r.map(|f| f.map(|f| (f.code, f.applied)))
+            }
             Engine2::Pun(php) => pun_format::format_pun(code, php).map(|c| c.map(|c| (c, vec!["pun"]))),
             // Linting stays native (TokenizerLinter's messages), as on the native path.
             Engine2::Delegate(d, _) => match pun_format::lint(code) {
@@ -377,7 +392,11 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         }
         out
     } else {
-        files.par_iter().map(process).collect::<Result<_>>()?
+        let all: Vec<Result<_>> = files.par_iter().map(process).collect();
+        if pint_mode && a.format.is_none() && !a.quiet && !a.parallel {
+            pint_error::progress_before_abort(&all, dry_run, a.ansi, a.no_ansi);
+        }
+        all.into_iter().collect::<Result<_>>()?
     };
 
     let hits = results.iter().filter(|r| r.2).count();

@@ -49,7 +49,7 @@ pub struct Ctx<'a> {
 pub const ABOUT: &str = "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.";
 
 /// laravel/agent-detector: Pint switches to its agent reporter under coding agents.
-fn running_in_agent() -> bool {
+pub fn running_in_agent() -> bool {
     const VARS: [&str; 19] = [
         "CURSOR_AGENT", "GEMINI_CLI", "CODEX_SANDBOX", "CODEX_CI", "CODEX_THREAD_ID", "AUGMENT_AGENT", "OPENCODE_CLIENT",
         "OPENCODE", "AMP_CURRENT_THREAD_ID", "CLAUDECODE", "CLAUDE_CODE", "REPL_ID", "COPILOT_MODEL", "COPILOT_ALLOW_ALL",
@@ -246,19 +246,23 @@ fn issues(results: &[FileResult]) -> Vec<&FileResult> {
     v
 }
 
-fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
-    let w = console::width();
-    let inner = w.saturating_sub(4);
+/// ProgressOutput: one symbol per processed file, `width - 4` per line.
+pub fn progress<'a>(results: impl Iterator<Item = &'a FileResult>, width: usize, dry_run: bool, decorated: bool) -> String {
+    let per_line = width.saturating_sub(4).max(1);
     let mut o = String::new();
-
-    // ProgressOutput
-    let per_line = w.saturating_sub(4).max(1);
-    for (n, r) in results.iter().filter(|r| r.status != Status::Link).enumerate() {
+    for (n, r) in results.filter(|r| r.status != Status::Link).enumerate() {
         if n % per_line == 0 {
             o.push_str("\n  ");
         }
-        o.push_str(&symbol(r.status, ctx.dry_run, decorated));
+        o.push_str(&symbol(r.status, dry_run, decorated));
     }
+    o
+}
+
+fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
+    let w = console::width();
+    let inner = w.saturating_sub(4);
+    let mut o = progress(results.iter(), w, ctx.dry_run, decorated);
 
     let issues = issues(results);
     let errors = issues.iter().filter(|i| i.is_error()).count();
