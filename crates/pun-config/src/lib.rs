@@ -76,6 +76,7 @@ pub struct Options {
 }
 
 #[derive(Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 struct PunToml {
     #[serde(default)]
     format: PunFormat,
@@ -83,14 +84,22 @@ struct PunToml {
     compat: PunCompat,
 }
 
+/// `[format]`: everything pint.json holds, so pun.toml can replace it. Keys set here win over pint.json's.
 #[derive(Deserialize, Default)]
+#[serde(rename_all = "kebab-case", deny_unknown_fields)]
 struct PunFormat {
     engine: Option<Engine>,
+    preset: Option<String>,
+    paths: Option<Vec<String>>,
+    exclude: Option<Vec<String>>,
+    not_name: Option<Vec<String>>,
+    not_path: Option<Vec<String>>,
     #[serde(default)]
     rules: Map<String, Value>,
 }
 
 #[derive(Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 struct PunCompat {
     php: Option<String>,
 }
@@ -114,9 +123,20 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
         }
     }
 
+    let toml_path = root.join("pun.toml");
+    let toml = if !opts.pint_mode && toml_path.exists() {
+        let t: PunToml = toml::from_str(&std::fs::read_to_string(&toml_path)?)
+            .with_context(|| format!("invalid {}", toml_path.display()))?;
+        sources.push(toml_path);
+        t
+    } else {
+        PunToml::default()
+    };
+
     let preset = opts
         .preset
         .clone()
+        .or_else(|| toml.format.preset.clone())
         .or_else(|| pint.get("preset").and_then(Value::as_str).map(String::from))
         .unwrap_or_else(|| "laravel".into());
     let Some((_, preset_json)) = PRESETS.iter().find(|(n, _)| *n == preset) else {
@@ -135,18 +155,10 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
         rules.insert("Pint/laravel_blade".into(), Value::Bool(true));
     }
 
-    let mut engine = Engine::Compat;
-    let mut php = "8.4".to_string();
-    let toml_path = root.join("pun.toml");
-    if !opts.pint_mode && toml_path.exists() {
-        let t: PunToml = toml::from_str(&std::fs::read_to_string(&toml_path)?)
-            .with_context(|| format!("invalid {}", toml_path.display()))?;
-        rules.extend(t.format.rules);
-        engine = t.format.engine.unwrap_or(engine);
-        php = t.compat.php.unwrap_or(php);
-        sources.push(toml_path);
-    }
-    engine = opts.engine.unwrap_or(engine);
+    let PunToml { format: f, compat } = toml;
+    rules.extend(f.rules);
+    let engine = opts.engine.or(f.engine).unwrap_or(Engine::Compat);
+    let php = compat.php.unwrap_or_else(|| "8.4".into());
 
     let blade = rules.get("Pint/laravel_blade").is_some_and(|v| *v != Value::Bool(false));
     let rules = rules
@@ -160,7 +172,12 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
         Some(Value::String(s)) => vec![s.clone()],
         _ => vec![],
     };
-    let finder = Finder { in_dirs: list("in"), exclude: list("exclude"), not_name: list("notName"), not_path: list("notPath") };
+    let finder = Finder {
+        in_dirs: f.paths.unwrap_or_else(|| list("in")),
+        exclude: f.exclude.unwrap_or_else(|| list("exclude")),
+        not_name: f.not_name.unwrap_or_else(|| list("notName")),
+        not_path: f.not_path.unwrap_or_else(|| list("notPath")),
+    };
 
     Ok(Config { root: root.to_path_buf(), preset, engine, php, rules, finder, blade, sources })
 }
@@ -237,6 +254,26 @@ fn check_composer(root: &Path, sources: &mut Vec<PathBuf>) -> Result<()> {
         }
     }
     Ok(())
+}
+
+/// `pun config --init`: pint.json rewritten as a standalone pun.toml (same preset, rule overrides and finder keys).
+pub fn init_toml(root: &Path) -> Result<String> {
+    let pint = read_pint_json(&root.join("pint.json"), &mut Vec::new())?;
+    let mut format = toml::Table::new();
+    format.insert("preset".into(), pint.get("preset").and_then(Value::as_str).unwrap_or("laravel").into());
+    for (json, key) in [("in", "paths"), ("exclude", "exclude"), ("notName", "not-name"), ("notPath", "not-path")] {
+        match pint.get(json) {
+            Some(Value::String(s)) => drop(format.insert(key.into(), vec![s.clone()].into())),
+            Some(v @ Value::Array(_)) => drop(format.insert(key.into(), toml::Value::try_from(v)?)),
+            _ => {}
+        }
+    }
+    if let Some(r) = pint.get("rules") {
+        format.insert("rules".into(), toml::Value::try_from(r)?);
+    }
+    let mut doc = toml::Table::new();
+    doc.insert("format".into(), format.into());
+    Ok(toml::to_string(&doc)?)
 }
 
 impl Config {
@@ -347,5 +384,35 @@ mod tests {
         let d = dir(&[("pint.json", r#"{"preset":"nope"}"#)]);
         let c = load(&d, &Options { no_config: true, preset: Some("psr12".into()), ..Default::default() }).unwrap();
         assert_eq!((c.preset.as_str(), c.sources.len()), ("psr12", 0));
+    }
+
+    #[test]
+    fn pun_toml_replaces_pint_json() {
+        // pun.toml keys win key by key; pint.json keys pun.toml doesn't set still apply.
+        let d = dir(&[
+            ("pint.json", r#"{"preset":"psr12","exclude":["a"],"notName":["n.php"],"rules":{"single_quote":true}}"#),
+            ("pun.toml", "[format]\npreset = \"empty\"\npaths = [\"src\"]\nexclude = [\"vendor2\"]\nnot-path = [\"p\"]\n[format.rules]\nfinal_class = true\n"),
+        ]);
+        let c = load(&d, &Options::default()).unwrap();
+        assert_eq!(c.preset, "empty");
+        assert_eq!(c.rules.iter().map(|r| r.name.as_str()).collect::<Vec<_>>(), ["single_quote", "final_class"]);
+        assert_eq!((c.finder.in_dirs, c.finder.exclude, c.finder.not_name, c.finder.not_path), (vec!["src".to_string()], vec!["vendor2".to_string()], vec!["n.php".to_string()], vec!["p".to_string()]));
+        // --preset still beats pun.toml; pint mode ignores pun.toml entirely.
+        assert_eq!(load(&d, &Options { preset: Some("laravel".into()), ..Default::default() }).unwrap().preset, "laravel");
+        assert_eq!(load(&d, &Options { pint_mode: true, ..Default::default() }).unwrap().preset, "psr12");
+        let d = dir(&[("pun.toml", "[format]\nexlude = [\"typo\"]\n")]);
+        assert!(format!("{:#}", load(&d, &Options::default()).unwrap_err()).contains("unknown field `exlude`"));
+    }
+
+    #[test]
+    fn init_toml_round_trips() {
+        // The generated pun.toml alone must resolve to exactly what pint.json resolved to.
+        let pint = r#"{"preset":"psr12","in":"app","exclude":["a","b"],"notPath":"y","rules":{"concat_space":{"spacing":"one"},"array_syntax":false,"final_class":true}}"#;
+        let from_pint = load(&dir(&[("pint.json", pint)]), &Options::default()).unwrap();
+        let toml = init_toml(&dir(&[("pint.json", pint)])).unwrap();
+        let from_toml = load(&dir(&[("pun.toml", &toml)]), &Options::default()).unwrap();
+        assert_eq!(from_toml.show()["format"], from_pint.show()["format"]);
+        assert_eq!(from_toml.show()["finder"], from_pint.show()["finder"]);
+        assert_eq!(init_toml(&dir(&[])).unwrap(), "[format]\npreset = \"laravel\"\n");
     }
 }
