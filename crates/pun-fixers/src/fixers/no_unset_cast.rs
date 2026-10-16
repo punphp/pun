@@ -32,16 +32,14 @@ impl Fixer for NoUnsetCastFixer {
 }
 
 fn fix_unset_cast(tokens: &mut Tokens, index: usize) {
-    let Some(mut assignment_index) = tokens.get_prev_meaningful_token(index) else { return };
-    if !tokens[assignment_index].equals("=", true) {
+    let Some(mut assignment_index) = tokens.get_prev_meaningful_token(index).filter(|&i| tokens[i].equals("=", true)) else {
         return;
-    }
-    let Some(var_index) = tokens.get_next_meaningful_token(index) else { return };
-    if !tokens[var_index].is_kind(T_VARIABLE) {
+    };
+    let Some(var_index) = tokens.get_next_meaningful_token(index).filter(|&i| tokens[i].is_kind(T_VARIABLE)) else {
         return;
-    }
-    let Some(after_var) = tokens.get_next_meaningful_token(var_index) else { return };
-    if !tokens[after_var].equals_any(&[";".into(), T_CLOSE_TAG.into()], true) {
+    };
+    let after_var = tokens.get_next_meaningful_token(var_index);
+    if !after_var.is_some_and(|i| tokens[i].equals_any(&[";".into(), T_CLOSE_TAG.into()], true)) {
         return;
     }
     let next_is_white_space = tokens[assignment_index + 1].is_whitespace(None);

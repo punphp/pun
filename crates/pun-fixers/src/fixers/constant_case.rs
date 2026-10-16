@@ -50,10 +50,8 @@ impl Fixer for ConstantCaseFixer {
             if tokens[prev_index].is_given_kind(&forbidden_prev_kinds) {
                 continue;
             }
-            let Some(next_index) = tokens.get_next_meaningful_token(index) else {
-                // ponytail: upstream reads $tokens[null] here; only reachable for a file ending in `true`.
-                continue;
-            };
+            // Upstream reads `$tokens[null]` (= token 0) when nothing follows; valid code always has `;` or `?>`.
+            let next_index = tokens.get_next_meaningful_token(index).unwrap_or(0);
             if tokens[next_index].is_given_kind(&[T_DOUBLE_COLON, T_NS_SEPARATOR]) || tokens[next_index].equals("=", false) {
                 continue;
             }

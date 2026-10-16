@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_superfluous_elseif",
+        "input": "<?php\nif ($a) {\n    return 1;\n}elseif ($b) {\n    return 2;\n}\n",
+        "expected": "<?php\nif ($a) {\n    return 1;\n}\nif ($b) {\n    return 2;\n}\n"
+    }
+]

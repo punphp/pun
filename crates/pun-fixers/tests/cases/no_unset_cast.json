@@ -1,0 +1,12 @@
+[
+    {
+        "fixer": "no_unset_cast",
+        "input": "<?php\n$a = (unset) $b;\n$a =(unset)$b ?>\n<?php $a = (unset) $b->c; $x = (unset) $b; f($a = (unset) $b);\n(unset) $a;\n",
+        "expected": "<?php\n$a =  null;\n$a = null ?>\n<?php $a = (unset) $b->c; $x =  null; f($a = (unset) $b);\n(unset) $a;\n"
+    },
+    {
+        "fixer": "no_unset_cast",
+        "input": "<?php $a = (unset) 1;\n",
+        "expected": "<?php $a = (unset) 1;\n"
+    }
+]

@@ -1,0 +1,83 @@
+[
+    {
+        "fixer": "class_attributes_separation",
+        "config": {
+            "elements": {
+                "foo": "one"
+            }
+        },
+        "error": "[class_attributes_separation] Invalid configuration: Unexpected element type, expected any of \"const\", \"method\", \"property\", \"trait_import\" and \"case\", got \"string#foo\"."
+    },
+    {
+        "fixer": "class_attributes_separation",
+        "config": {
+            "elements": {
+                "method": "two"
+            }
+        },
+        "error": "[class_attributes_separation] Invalid configuration: Unexpected spacing for element type \"two\", expected any of \"none\", \"one\" and \"only_if_meta\", got \"string#two\"."
+    },
+    {
+        "fixer": "class_attributes_separation",
+        "config": {
+            "elements": {
+                "method": 1
+            }
+        },
+        "error": "[class_attributes_separation] Invalid configuration: The option \"elements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+    },
+    {
+        "fixer": "class_attributes_separation",
+        "config": {
+            "elements": "x"
+        },
+        "error": "[class_attributes_separation] Invalid configuration: The option \"elements\" with value \"x\" is expected to be of type \"string[]\", but is of type \"string\"."
+    },
+    {
+        "fixer": "class_attributes_separation",
+        "config": {
+            "elements": [
+                "method"
+            ]
+        },
+        "error": "[class_attributes_separation] Invalid configuration: Unexpected element type, expected any of \"const\", \"method\", \"property\", \"trait_import\" and \"case\", got \"integer#0\"."
+    },
+    {
+        "fixer": "class_attributes_separation",
+        "config": {
+            "elements": {
+                "const": "one",
+                "method": [
+                    "x"
+                ]
+            }
+        },
+        "error": "[class_attributes_separation] Invalid configuration: The option \"elements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"array\"."
+    },
+    {
+        "fixer": "class_attributes_separation",
+        "config": {
+            "elements": {
+                "method": null
+            }
+        },
+        "error": "[class_attributes_separation] Invalid configuration: The option \"elements\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"null\"."
+    },
+    {
+        "fixer": "class_attributes_separation",
+        "config": {
+            "elements": []
+        },
+        "input": "<?php\nclass A {\n    const A = 1;\n    const B = 2;\n    public function a() {}\n    public function b() {}\n}\n",
+        "expected": "<?php\nclass A {\n    const A = 1;\n    const B = 2;\n    public function a() {}\n    public function b() {}\n}\n"
+    },
+    {
+        "fixer": "class_attributes_separation",
+        "config": {
+            "elements": {
+                "1": "one"
+            }
+        },
+        "error": "[class_attributes_separation] Invalid configuration: Unexpected element type, expected any of \"const\", \"method\", \"property\", \"trait_import\" and \"case\", got \"integer#1\"."
+    }
+]

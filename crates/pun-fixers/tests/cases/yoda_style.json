@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "yoda_style",
+        "input": "<?php\nif ($a ->b /* c */ === 1) {}\nif ($a === -FOO) {}\n",
+        "expected": "<?php\nif (1 /* c */ === $a ->b) {}\nif ($a === -FOO) {}\n"
+    }
+]

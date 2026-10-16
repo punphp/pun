@@ -47,11 +47,9 @@ impl Fixer for FunctionDeclarationFixer {
             if !token.is_given_kind(&[T_FUNCTION, T_FN]) {
                 continue;
             }
-            let start_parenthesis_index =
-                tokens.get_next_token_of_kind(index, &["(".into(), ";".into(), T_CLOSE_TAG.into()], true).unwrap();
-            if !tokens[start_parenthesis_index].equals("(", true) {
-                continue;
-            }
+            // Upstream also stops at `;`/`?>` and skips; in valid code a T_FUNCTION/T_FN always reaches its `(` first
+            // (`use function` is CT_FUNCTION_IMPORT).
+            let start_parenthesis_index = tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap();
             let end_parenthesis_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_parenthesis_index);
             if !self.trailing_comma_single_line && !tokens.is_partial_code_multiline(index, end_parenthesis_index) {
                 let comma_index = tokens.get_prev_meaningful_token(end_parenthesis_index).unwrap();

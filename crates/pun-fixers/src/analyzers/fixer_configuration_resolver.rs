@@ -34,9 +34,44 @@ pub fn resolve(fixer: &'static str, options: &Value, defined: &[&str]) -> Result
     Ok(Resolved { fixer, map })
 }
 
+/// Symfony OptionsResolver's `formatValue`: strings quoted, arrays as `array`.
+fn format_value(v: &Value) -> String {
+    match v {
+        Value::String(s) => format!("\"{s}\""),
+        Value::Array(_) | Value::Object(_) => "array".into(),
+        v => v.to_string(),
+    }
+}
+
+/// PHP `get_debug_type` of a decoded JSON value.
+fn debug_type(v: &Value) -> &'static str {
+    match v {
+        Value::Null => "null",
+        Value::Bool(_) => "bool",
+        Value::Number(n) if n.is_f64() => "float",
+        Value::Number(_) => "int",
+        Value::String(_) => "string",
+        Value::Array(_) | Value::Object(_) => "array",
+    }
+}
+
 impl Resolved {
-    fn invalid(&self, key: &str, v: &Value) -> anyhow::Error {
-        anyhow::anyhow!("[{}] Invalid configuration: The option \"{key}\" with value {v} is invalid.", self.fixer)
+    fn error(&self, key: &str, v: &Value, problem: &str) -> anyhow::Error {
+        anyhow::anyhow!("[{}] Invalid configuration: The option \"{key}\" with value {} {problem}.", self.fixer, format_value(v))
+    }
+
+    /// `setAllowedTypes` failure, e.g. `"bool" or "null"`.
+    fn type_error(&self, key: &str, v: &Value, expected: &str) -> anyhow::Error {
+        self.error(key, v, &format!("is expected to be of type {expected}, but is of type \"{}\"", debug_type(v)))
+    }
+
+    /// `setAllowedValues` failure: the accepted values are listed unless the check is a closure (`allowed` empty).
+    fn invalid(&self, key: &str, v: &Value, allowed: &[&str]) -> anyhow::Error {
+        if allowed.is_empty() {
+            return self.error(key, v, "is invalid");
+        }
+        let list = allowed.iter().map(|a| format!("\"{a}\"")).collect::<Vec<_>>().join(", ");
+        self.error(key, v, &format!("is invalid. Accepted values are: {list}"))
     }
 
     pub fn get(&self, key: &str) -> Option<&Value> {
@@ -47,16 +82,17 @@ impl Resolved {
         match self.map.get(key) {
             None => Ok(default),
             Some(Value::Bool(b)) => Ok(*b),
-            Some(v) => Err(self.invalid(key, v)),
+            Some(v) => Err(self.type_error(key, v, "\"bool\"")),
         }
     }
 
-    /// A string restricted to `allowed` (empty = any string).
+    /// A string restricted to `allowed` (`setAllowedValues`), or any string when `allowed` is empty (`setAllowedTypes(['string'])`).
     pub fn string(&self, key: &str, default: &str, allowed: &[&str]) -> Result<String> {
         match self.map.get(key) {
             None => Ok(default.to_string()),
             Some(Value::String(s)) if allowed.is_empty() || allowed.contains(&s.as_str()) => Ok(s.clone()),
-            Some(v) => Err(self.invalid(key, v)),
+            Some(v) if allowed.is_empty() => Err(self.type_error(key, v, "\"string\"")),
+            Some(v) => Err(self.invalid(key, v, allowed)),
         }
     }
 
@@ -66,24 +102,28 @@ impl Resolved {
             None => Ok(default),
             Some(Value::Null) => Ok(None),
             Some(Value::Bool(b)) => Ok(Some(*b)),
-            Some(v) => Err(self.invalid(key, v)),
+            Some(v) => Err(self.type_error(key, v, "\"bool\" or \"null\"")),
         }
     }
 
-    /// A list of strings, each restricted to `allowed` (empty = any). JSON objects count as PHP arrays (values taken).
+    /// A `string[]`, each item in `allowed` (an `AllowedValueSubset`; empty = any). JSON objects count as PHP arrays.
     pub fn strings(&self, key: &str, default: &[&str], allowed: &[&str]) -> Result<Vec<String>> {
-        let items: Vec<&Value> = match self.map.get(key) {
+        let v = match self.map.get(key) {
             None => return Ok(default.iter().map(|s| s.to_string()).collect()),
-            Some(Value::Array(a)) => a.iter().collect(),
-            Some(Value::Object(o)) => o.values().collect(),
-            Some(v) => return Err(self.invalid(key, v)),
+            Some(v) => v,
         };
-        items
-            .into_iter()
-            .map(|v| match v {
-                Value::String(s) if allowed.is_empty() || allowed.contains(&s.as_str()) => Ok(s.clone()),
-                v => Err(self.invalid(key, v)),
-            })
-            .collect()
+        let items: Vec<&Value> = match v {
+            Value::Array(a) => a.iter().collect(),
+            Value::Object(o) => o.values().collect(),
+            v => return Err(self.type_error(key, v, "\"string[]\"")),
+        };
+        if let Some(bad) = items.iter().find(|i| !i.is_string()) {
+            return Err(self.error(key, v, &format!("is expected to be of type \"string[]\", but one of the elements is of type \"{}\"", debug_type(bad))));
+        }
+        let items: Vec<String> = items.iter().map(|i| i.as_str().unwrap().to_string()).collect();
+        if !allowed.is_empty() && items.iter().any(|i| !allowed.contains(&i.as_str())) {
+            return Err(self.invalid(key, v, &[]));
+        }
+        Ok(items)
     }
 }

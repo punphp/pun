@@ -13,9 +13,6 @@ pub fn fixer() -> Box<dyn Fixer> {
 
 /// PHP `str_replace($search, $replace, $subject)` for one non-empty needle.
 fn str_replace(search: &[u8], replace: &[u8], subject: &[u8]) -> Vec<u8> {
-    if search.is_empty() {
-        return subject.to_vec();
-    }
     let mut out = Vec::with_capacity(subject.len());
     let mut i = 0;
     while i < subject.len() {
