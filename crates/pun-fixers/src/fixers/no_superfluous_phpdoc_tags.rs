@@ -12,6 +12,7 @@ use pun_tokens::{Kind, Kind::*, Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::collections::BTreeMap;
 use std::path::Path;
+use std::sync::LazyLock;
 
 const SYMBOL_KINDS: &[Kind] = &[T_CLASS, T_INTERFACE, T_ENUM];
 const MODIFIER_KINDS: &[Kind] =
@@ -264,15 +265,22 @@ impl NoSuperfluousPhpdocTagsFixer {
 
     fn annotation_is_superfluous(&self, annotation: &Annotation, info: &TypeInfo, ctx: &Ctx) -> bool {
         let tag = annotation.get_tag().get_name();
-        let regex = if tag == b"param" {
+        static PARAM: LazyLock<String> = LazyLock::new(|| {
             format!(r"{{\*\h*@param(?:\h+{REGEX_TYPES})?(?!\S)(?:\h+(?:\&\h*)?(?:\.{{3}}\h*)?\$\S+)?(?:\s+(?<description>(?!\*+\/)\S+))?}}s")
+        });
+        static VAR: LazyLock<String> =
+            LazyLock::new(|| format!(r"{{\*\h*@var(?:\h+{REGEX_TYPES})?(?!\S)(?:\h+\$\S+)?(?:\s+(?<description>(?!\*\/)\S+))?}}s"));
+        static RETURN: LazyLock<String> =
+            LazyLock::new(|| format!(r"{{\*\h*@return(?:\h+{REGEX_TYPES})?(?!\S)(?:\s+(?<description>(?!\*\/)\S+))?}}s"));
+        let regex: &str = if tag == b"param" {
+            &PARAM
         } else if tag == b"var" {
-            format!(r"{{\*\h*@var(?:\h+{REGEX_TYPES})?(?!\S)(?:\h+\$\S+)?(?:\s+(?<description>(?!\*\/)\S+))?}}s")
+            &VAR
         } else {
-            format!(r"{{\*\h*@return(?:\h+{REGEX_TYPES})?(?!\S)(?:\s+(?<description>(?!\*\/)\S+))?}}s")
+            &RETURN
         };
         let content = annotation.get_content();
-        let Some(matches) = Preg::match_groups(&regex, &content, 0) else {
+        let Some(matches) = Preg::match_groups(regex, &content, 0) else {
             // Unable to match the annotation, it must be malformed or has unsupported format.
             return false;
         };
@@ -395,6 +403,10 @@ fn fix_class_doc_comment(content: &[u8], element: &Element) -> Vec<u8> {
 }
 
 fn remove_superfluous_inherit_doc(doc_comment: &[u8]) -> Vec<u8> {
+    // The pattern needs the tag; without it the replacement returns the comment unchanged.
+    if !doc_comment.windows(10).any(|w| w.eq_ignore_ascii_case(b"inheritdoc")) {
+        return doc_comment.to_vec();
+    }
     Preg::replace(
         r"~
             # $1: before @inheritDoc tag
