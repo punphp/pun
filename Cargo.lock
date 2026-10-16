@@ -1196,6 +1196,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "punphp-phpstan"
+version = "0.0.1"
+dependencies = [
+ "indexmap",
+ "libc",
+ "pcre2",
+ "serde_json",
+]
+
+[[package]]
 name = "punphp-tokens"
 version = "0.0.1"
 dependencies = [

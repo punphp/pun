@@ -1,0 +1,9 @@
+includes:
+	- config.level7.neon
+
+parameters:
+	checkNullables: true
+
+autowiredAttributeServices:
+	level: 8
+

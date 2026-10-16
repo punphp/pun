@@ -1,0 +1,2863 @@
+[
+    {
+        "input": "\na: {1, 2, }\nb: 1",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "array": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                1,
+                                2
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    "b",
+                    1
+                ]
+            ]
+        }
+    },
+    {
+        "input": " a: 1\n b: 2",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    1
+                ],
+                [
+                    "b",
+                    2
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\na: x\n- x",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    "x"
+                ],
+                [
+                    0,
+                    "x"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n- x\na: x\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    "x"
+                ],
+                [
+                    "a",
+                    "x"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\na:\n- 1\n-\n - 2\nb:\n- 3\nc: null\n- 4",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    {
+                        "array": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                1,
+                                {
+                                    "array": [
+                                        [
+                                            0,
+                                            2
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    "b",
+                    {
+                        "array": [
+                            [
+                                0,
+                                3
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    "c",
+                    null
+                ],
+                [
+                    0,
+                    4
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\nx:\n\t- x\n\ta: x\n",
+        "value": {
+            "array": [
+                [
+                    "x",
+                    {
+                        "array": [
+                            [
+                                0,
+                                "x"
+                            ],
+                            [
+                                "a",
+                                "x"
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "x:\n\ty:\n\t\t-\na: x\n",
+        "value": {
+            "array": [
+                [
+                    "x",
+                    {
+                        "array": [
+                            [
+                                "y",
+                                {
+                                    "array": [
+                                        [
+                                            0,
+                                            null
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    "a",
+                    "x"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\nx: {\n\ta: 1\nb: 2\n}\n",
+        "value": {
+            "array": [
+                [
+                    "x",
+                    {
+                        "array": [
+                            [
+                                "a",
+                                1
+                            ],
+                            [
+                                "b",
+                                2
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n{\n\tone\ntwo\n}\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    "one"
+                ],
+                [
+                    1,
+                    "two"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n- x: 20\n  - a: 10\n    b: 10\n- arr:\n  - 10\n  - 20\n- y\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "array": [
+                            [
+                                "x",
+                                20
+                            ],
+                            [
+                                0,
+                                {
+                                    "array": [
+                                        [
+                                            "a",
+                                            10
+                                        ],
+                                        [
+                                            "b",
+                                            10
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    1,
+                    {
+                        "array": [
+                            [
+                                "arr",
+                                {
+                                    "array": [
+                                        [
+                                            0,
+                                            10
+                                        ],
+                                        [
+                                            1,
+                                            20
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    2,
+                    "y"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\nroot:\n\t- key1:\n\t  key3: 123\n\t",
+        "value": {
+            "array": [
+                [
+                    "root",
+                    {
+                        "array": [
+                            [
+                                0,
+                                {
+                                    "array": [
+                                        [
+                                            "key1",
+                                            null
+                                        ],
+                                        [
+                                            "key3",
+                                            123
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n- x:\n    a: 10\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "array": [
+                            [
+                                "x",
+                                {
+                                    "array": [
+                                        [
+                                            "a",
+                                            10
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\nx:\n\t a: 10\ny:\n \tb: 20\n",
+        "value": {
+            "array": [
+                [
+                    "x",
+                    {
+                        "array": [
+                            [
+                                "a",
+                                10
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    "y",
+                    {
+                        "array": [
+                            [
+                                "b",
+                                20
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n- {null= 42}\nnull : 42\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "array": [
+                            [
+                                "null",
+                                42
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    "null",
+                    42
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\nx:\n\ty\n",
+        "value": {
+            "array": [
+                [
+                    "x",
+                    "y"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n-\n\tx:\n\t y\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "array": [
+                            [
+                                "x",
+                                "y"
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\nx:\n\t[1, 2, 3]\n",
+        "value": {
+            "array": [
+                [
+                    "x",
+                    {
+                        "array": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                1,
+                                2
+                            ],
+                            [
+                                2,
+                                3
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n-\n\ta\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    "a"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\none:\ntwo:\n",
+        "value": {
+            "array": [
+                [
+                    "one",
+                    null
+                ],
+                [
+                    "two",
+                    null
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n-\n-",
+        "value": {
+            "array": [
+                [
+                    0,
+                    null
+                ],
+                [
+                    1,
+                    null
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n- 2016-06-03\n2016-06-03: b\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "datetime": "2016-06-03 00:00:00.000000 +00:00"
+                    }
+                ],
+                [
+                    "2016-06-03",
+                    "b"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a: a b",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    "a b"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n  - - a\n    - b: 1\n  - - c\n    - d: 1\n      e: 1\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "array": [
+                            [
+                                0,
+                                "a"
+                            ],
+                            [
+                                1,
+                                {
+                                    "array": [
+                                        [
+                                            "b",
+                                            1
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    1,
+                    {
+                        "array": [
+                            [
+                                0,
+                                "c"
+                            ],
+                            [
+                                1,
+                                {
+                                    "array": [
+                                        [
+                                            "d",
+                                            1
+                                        ],
+                                        [
+                                            "e",
+                                            1
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "[On, on, Off, off]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    true
+                ],
+                [
+                    1,
+                    true
+                ],
+                [
+                    2,
+                    false
+                ],
+                [
+                    3,
+                    false
+                ]
+            ]
+        }
+    },
+    {
+        "input": "Hello\nWorld",
+        "error": "Unexpected 'World' on line 2, column 1."
+    },
+    {
+        "input": "\"\\uD801\"",
+        "error": "Invalid UTF-8 sequence \\uD801 on line 1, column 1."
+    },
+    {
+        "input": "- Dave,\n- Rimmer,\n- Kryten,\n",
+        "error": "Unexpected ',' on line 1, column 7."
+    },
+    {
+        "input": "item [a, b]",
+        "error": "Unexpected ',' on line 1, column 8."
+    },
+    {
+        "input": "{,}",
+        "error": "Unexpected ',' on line 1, column 2."
+    },
+    {
+        "input": "{a, ,}",
+        "error": "Unexpected ',' on line 1, column 5."
+    },
+    {
+        "input": "\"",
+        "error": "Unexpected '\"' on line 1, column 1."
+    },
+    {
+        "input": "\ta:\n b:",
+        "error": "Invalid combination of tabs and spaces on line 2, column 2."
+    },
+    {
+        "input": "- x: 20\n  - a: 10\n\tb: 10",
+        "error": "Invalid combination of tabs and spaces on line 3, column 2."
+    },
+    {
+        "input": "\na:\n  b:\n c: x\n",
+        "error": "Bad indentation on line 4, column 2."
+    },
+    {
+        "input": "\na: 1\n  b:\n",
+        "error": "Bad indentation on line 3, column 3."
+    },
+    {
+        "input": "\n- x:\n a: 10\n",
+        "error": "Bad indentation on line 3, column 2."
+    },
+    {
+        "input": "\n- x: 20\n   a: 10\n",
+        "error": "Bad indentation on line 3, column 4."
+    },
+    {
+        "input": "\n- x: 20\n a: 10\n",
+        "error": "Bad indentation on line 3, column 2."
+    },
+    {
+        "input": "- x: y:",
+        "error": "Unexpected ':' on line 1, column 7."
+    },
+    {
+        "input": "\nfoo:\nbar\n",
+        "error": "Unexpected '<new line>' on line 3, column 4."
+    },
+    {
+        "input": "\na: 1\na: 2\n",
+        "error": "Duplicated key 'a' on line 3, column 1."
+    },
+    {
+        "input": "{ []: foo }",
+        "error": "Unacceptable key on line 1, column 3."
+    },
+    {
+        "input": "[]: foo",
+        "error": "Unacceptable key on line 1, column 1."
+    },
+    {
+        "input": "{ - 1}",
+        "error": "Unexpected '-' on line 1, column 3."
+    },
+    {
+        "input": "{\"foo\":\"bar\"}",
+        "value": {
+            "array": [
+                [
+                    "foo",
+                    "bar"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "[true, tRuE, TRUE, false, FALSE, yes, YES, no, NO, null, NULL,]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    true
+                ],
+                [
+                    1,
+                    "tRuE"
+                ],
+                [
+                    2,
+                    true
+                ],
+                [
+                    3,
+                    false
+                ],
+                [
+                    4,
+                    false
+                ],
+                [
+                    5,
+                    true
+                ],
+                [
+                    6,
+                    true
+                ],
+                [
+                    7,
+                    false
+                ],
+                [
+                    8,
+                    false
+                ],
+                [
+                    9,
+                    null
+                ],
+                [
+                    10,
+                    null
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{false: no, \"on\": true, -5: 1, 5.3: 1}",
+        "value": {
+            "array": [
+                [
+                    "false",
+                    false
+                ],
+                [
+                    "on",
+                    true
+                ],
+                [
+                    -5,
+                    1
+                ],
+                [
+                    "5.3",
+                    1
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{a, b, {c: d}, e: f, g:,h:}",
+        "value": {
+            "array": [
+                [
+                    0,
+                    "a"
+                ],
+                [
+                    1,
+                    "b"
+                ],
+                [
+                    2,
+                    {
+                        "array": [
+                            [
+                                "c",
+                                "d"
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    "e",
+                    "f"
+                ],
+                [
+                    "g",
+                    null
+                ],
+                [
+                    "h",
+                    null
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{a,\nb\nc: 1,\nd: 1,\n\ne: 1\nf:\n}",
+        "value": {
+            "array": [
+                [
+                    0,
+                    "a"
+                ],
+                [
+                    1,
+                    "b"
+                ],
+                [
+                    "c",
+                    1
+                ],
+                [
+                    "d",
+                    1
+                ],
+                [
+                    "e",
+                    1
+                ],
+                [
+                    "f",
+                    null
+                ]
+            ]
+        }
+    },
+    {
+        "input": "@item(a, b)",
+        "value": {
+            "entity": "@item",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        "a"
+                    ],
+                    [
+                        1,
+                        "b"
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "input": "@item<item>(a, b)",
+        "value": {
+            "entity": "@item<item>",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        "a"
+                    ],
+                    [
+                        1,
+                        "b"
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "input": "item (a, b)",
+        "value": {
+            "entity": "item",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        "a"
+                    ],
+                    [
+                        1,
+                        "b"
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "input": "[]()",
+        "value": {
+            "entity": {
+                "array": []
+            },
+            "attributes": {
+                "array": []
+            }
+        }
+    },
+    {
+        "input": "first(a, b)second",
+        "value": {
+            "entity": "!!chain",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        {
+                            "entity": "first",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        "a"
+                                    ],
+                                    [
+                                        1,
+                                        "b"
+                                    ]
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        1,
+                        {
+                            "entity": "second",
+                            "attributes": {
+                                "array": []
+                            }
+                        }
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "input": "first(a, b)second(1, 2)",
+        "value": {
+            "entity": "!!chain",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        {
+                            "entity": "first",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        "a"
+                                    ],
+                                    [
+                                        1,
+                                        "b"
+                                    ]
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        1,
+                        {
+                            "entity": "second",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        1
+                                    ],
+                                    [
+                                        1,
+                                        2
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "input": "1() 2()",
+        "value": {
+            "entity": "!!chain",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        {
+                            "entity": 1,
+                            "attributes": {
+                                "array": []
+                            }
+                        }
+                    ],
+                    [
+                        1,
+                        {
+                            "entity": 2,
+                            "attributes": {
+                                "array": []
+                            }
+                        }
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "input": "{\"a\":true}",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    true
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\"\"\"\nmulti\nlines\n\"\"\"",
+        "value": "multi\nlines"
+    },
+    {
+        "input": "\"\"\"\nmulti\"\"\"\nlines'''\n\"\"\"",
+        "value": "multi\"\"\"\nlines'''"
+    },
+    {
+        "input": "'''\nmulti\"\"\"\nlines'''\n'''",
+        "value": "multi\"\"\"\nlines'''"
+    },
+    {
+        "input": "'''\nmulti\nlines\n\t '''",
+        "value": "multi\nlines"
+    },
+    {
+        "input": "'''multi\nlines\n'''",
+        "error": "Unexpected ''''multi\\nlines\\n'''' on line 1, column 1."
+    },
+    {
+        "input": "''' multi\nlines\n'''",
+        "error": "Unexpected '''' multi\\nlines\\n'''' on line 1, column 1."
+    },
+    {
+        "input": "'''\nmulti\nlines'''",
+        "error": "Unexpected ''''\\nmulti\\nlines'''' on line 1, column 1."
+    },
+    {
+        "input": "'''\nmulti\nlines\t '''",
+        "error": "Unexpected ''''\\nmulti\\nlines\t '''' on line 1, column 1."
+    },
+    {
+        "input": "'''\n\tmulti\nlines\n\t\tstring\n'''",
+        "value": "multi\nlines\n\tstring"
+    },
+    {
+        "input": "'''\n\t multi\n\t lines\n\t\t string\n\t\t'''",
+        "value": "multi\nlines\n\t\t string"
+    },
+    {
+        "input": "'''\n\n\t multi\n\t lines\n\t\t'''",
+        "value": "\nmulti\nlines"
+    },
+    {
+        "input": "'''\n\t multi\n\t lines\n\n\t\t'''",
+        "value": "multi\nlines\n"
+    },
+    {
+        "input": "\"\"\"\n\\t multi\n\\t lines\n\"\"\"",
+        "value": "\t multi\n\t lines"
+    },
+    {
+        "input": "\"\"\"\n\"\"\"",
+        "value": ""
+    },
+    {
+        "input": "'''\n'''",
+        "value": ""
+    },
+    {
+        "input": "\"\"\"\n\\t multi\n\\t lines\n\\t\\t\"\"\"",
+        "error": "Unexpected '\"\\n\\t multi\\n\\t lines\\n\\t\\t\"\"\"' on line 1, column 3."
+    },
+    {
+        "input": "\na: '''\n\tmulti\n\tlines\n\t'''\n",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    "multi\nlines"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "\n'''\n\tmulti\n\tlines\n\t''': '''\n\tmulti\n\tlines\n\t'''\n",
+        "value": {
+            "array": [
+                [
+                    "multi\nlines",
+                    "multi\nlines"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "0",
+        "value": 0
+    },
+    {
+        "input": "1",
+        "value": 1
+    },
+    {
+        "input": "0.1",
+        "value": {
+            "float": "0.1"
+        }
+    },
+    {
+        "input": "1.1",
+        "value": {
+            "float": "1.1"
+        }
+    },
+    {
+        "input": "1.100000",
+        "value": {
+            "float": "1.1"
+        }
+    },
+    {
+        "input": "1.111111",
+        "value": {
+            "float": "1.111111"
+        }
+    },
+    {
+        "input": "-0",
+        "value": 0
+    },
+    {
+        "input": "-1",
+        "value": -1
+    },
+    {
+        "input": "-0.1",
+        "value": {
+            "float": "-0.1"
+        }
+    },
+    {
+        "input": "-1.1",
+        "value": {
+            "float": "-1.1"
+        }
+    },
+    {
+        "input": "-1.100000",
+        "value": {
+            "float": "-1.1"
+        }
+    },
+    {
+        "input": "-1.111111",
+        "value": {
+            "float": "-1.111111"
+        }
+    },
+    {
+        "input": "1.1e1",
+        "value": {
+            "float": "11.0"
+        }
+    },
+    {
+        "input": "1.1e+1",
+        "value": {
+            "float": "11.0"
+        }
+    },
+    {
+        "input": "1.1e-1",
+        "value": {
+            "float": "0.11"
+        }
+    },
+    {
+        "input": "1.1E1",
+        "value": {
+            "float": "11.0"
+        }
+    },
+    {
+        "input": "1.1E+1",
+        "value": {
+            "float": "11.0"
+        }
+    },
+    {
+        "input": "1.1E-1",
+        "value": {
+            "float": "0.11"
+        }
+    },
+    {
+        "input": "null",
+        "value": null
+    },
+    {
+        "input": "true",
+        "value": true
+    },
+    {
+        "input": "false",
+        "value": false
+    },
+    {
+        "input": "''",
+        "value": ""
+    },
+    {
+        "input": "'foo'",
+        "value": "foo"
+    },
+    {
+        "input": "'fo''o'",
+        "value": "fo'o"
+    },
+    {
+        "input": "\"\"",
+        "value": ""
+    },
+    {
+        "input": "\"foo\"",
+        "value": "foo"
+    },
+    {
+        "input": "\"f\\no\"",
+        "value": "f\no"
+    },
+    {
+        "input": "\"\\b\\f\\n\\r\\t\\\"\\/\\\\\"",
+        "value": "\b\f\n\r\t\"/\\"
+    },
+    {
+        "input": "\"\\u0040\"",
+        "value": "@"
+    },
+    {
+        "input": "\"\\u011B\"",
+        "value": "ě"
+    },
+    {
+        "input": "\"\\uD801\\uDC01\"",
+        "value": "𐐁"
+    },
+    {
+        "input": "0777",
+        "value": 777
+    },
+    {
+        "input": "00000777",
+        "value": 777
+    },
+    {
+        "input": "0xff",
+        "value": 255
+    },
+    {
+        "input": ".1",
+        "value": {
+            "float": "0.1"
+        }
+    },
+    {
+        "input": "-.1",
+        "value": {
+            "float": "-0.1"
+        }
+    },
+    {
+        "input": "[1.]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "float": "1.0"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "[1.e1]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "float": "10.0"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "[-1.]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "float": "-1.0"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "[-1.e-1]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "float": "-0.1"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "",
+        "value": null
+    },
+    {
+        "input": "  ",
+        "value": null
+    },
+    {
+        "input": "[0777]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    777
+                ]
+            ]
+        }
+    },
+    {
+        "input": "[00000777]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    777
+                ]
+            ]
+        }
+    },
+    {
+        "input": "[0xff]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    255
+                ]
+            ]
+        }
+    },
+    {
+        "input": "0b00010111",
+        "value": 23
+    },
+    {
+        "input": "0o777",
+        "value": 511
+    },
+    {
+        "input": "[.1]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "float": "0.1"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "[-.1]",
+        "value": {
+            "array": [
+                [
+                    0,
+                    {
+                        "float": "-0.1"
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "input": "Null",
+        "value": null
+    },
+    {
+        "input": "NULL",
+        "value": null
+    },
+    {
+        "input": "True",
+        "value": true
+    },
+    {
+        "input": "TRUE",
+        "value": true
+    },
+    {
+        "input": "yes",
+        "value": true
+    },
+    {
+        "input": "Yes",
+        "value": true
+    },
+    {
+        "input": "YES",
+        "value": true
+    },
+    {
+        "input": "False",
+        "value": false
+    },
+    {
+        "input": "FALSE",
+        "value": false
+    },
+    {
+        "input": "no",
+        "value": false
+    },
+    {
+        "input": "No",
+        "value": false
+    },
+    {
+        "input": "NO",
+        "value": false
+    },
+    {
+        "input": "'single \\n quote'",
+        "value": "single \\n quote"
+    },
+    {
+        "input": "a",
+        "value": "a"
+    },
+    {
+        "input": "abc",
+        "value": "abc"
+    },
+    {
+        "input": "\nabc\n",
+        "value": "abc"
+    },
+    {
+        "input": "  abc  ",
+        "value": "abc"
+    },
+    {
+        "input": ":abc",
+        "value": ":abc"
+    },
+    {
+        "input": "a:bc",
+        "value": "a:bc"
+    },
+    {
+        "input": "-abc",
+        "value": "-abc"
+    },
+    {
+        "input": "a-bc",
+        "value": "a-bc"
+    },
+    {
+        "input": "abc-",
+        "value": "abc-"
+    },
+    {
+        "input": "the\"string#literal",
+        "value": "the\"string#literal"
+    },
+    {
+        "input": "the\"string #literal",
+        "value": "the\"string"
+    },
+    {
+        "input": "<literal> <literal>",
+        "value": "<literal> <literal>"
+    },
+    {
+        "input": "true \"\"",
+        "value": "true \"\""
+    },
+    {
+        "input": "false \"\"",
+        "value": "false \"\""
+    },
+    {
+        "input": "null \"\"",
+        "value": "null \"\""
+    },
+    {
+        "input": "@x",
+        "value": "@x"
+    },
+    {
+        "input": "@true",
+        "value": "@true"
+    },
+    {
+        "input": "!hello",
+        "value": "!hello"
+    },
+    {
+        "input": "::",
+        "value": "::"
+    },
+    {
+        "input": ":0",
+        "value": ":0"
+    },
+    {
+        "input": ":-1",
+        "value": ":-1"
+    },
+    {
+        "input": ":true",
+        "value": ":true"
+    },
+    {
+        "input": ":false",
+        "value": ":false"
+    },
+    {
+        "input": ":null",
+        "value": ":null"
+    },
+    {
+        "input": ":NULL",
+        "value": ":NULL"
+    },
+    {
+        "input": "-:",
+        "value": "-:"
+    },
+    {
+        "input": "-true",
+        "value": "-true"
+    },
+    {
+        "input": "42 px",
+        "value": "42 px"
+    },
+    {
+        "input": "42 .2",
+        "value": "42 .2"
+    },
+    {
+        "input": "42 2",
+        "value": "42 2"
+    },
+    {
+        "input": "42 e1",
+        "value": "42 e1"
+    },
+    {
+        "input": "--1",
+        "value": "--1"
+    },
+    {
+        "input": "-1e",
+        "value": "-1e"
+    },
+    {
+        "input": "1e+-1",
+        "value": "1e+-1"
+    },
+    {
+        "input": "{true: 42}",
+        "value": {
+            "array": [
+                [
+                    "true",
+                    42
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{false: 42}",
+        "value": {
+            "array": [
+                [
+                    "false",
+                    42
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{null: 42}",
+        "value": {
+            "array": [
+                [
+                    "null",
+                    42
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{yes: 42}",
+        "value": {
+            "array": [
+                [
+                    "yes",
+                    42
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{no: 42}",
+        "value": {
+            "array": [
+                [
+                    "no",
+                    42
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{42: 42}",
+        "value": {
+            "array": [
+                [
+                    42,
+                    42
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{0: 42}",
+        "value": {
+            "array": [
+                [
+                    0,
+                    42
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{-1: 42}",
+        "value": {
+            "array": [
+                [
+                    -1,
+                    42
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{a: b}",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    "b"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{a:b}",
+        "value": {
+            "array": [
+                [
+                    0,
+                    "a:b"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{:a : b}",
+        "value": {
+            "array": [
+                [
+                    ":a",
+                    "b"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{a= b}",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    "b"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{a=b}",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    "b"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "{a =b}",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    "b"
+                ]
+            ]
+        }
+    },
+    {
+        "input": "#abc",
+        "value": null
+    },
+    {
+        "input": "a: #abc",
+        "value": {
+            "array": [
+                [
+                    "a",
+                    null
+                ]
+            ]
+        }
+    },
+    {
+        "input": "a:#abc",
+        "value": "a:#abc"
+    },
+    {
+        "input": "abc#",
+        "value": "abc#"
+    },
+    {
+        "input": "\"the'string #literal\"",
+        "value": "the'string #literal"
+    },
+    {
+        "input": "'the\"string #literal'",
+        "value": "the\"string #literal"
+    },
+    {
+        "input": "\"the\\\"string #literal\"",
+        "value": "the\"string #literal"
+    },
+    {
+        "input": "a                                     ",
+        "value": "a"
+    },
+    {
+        "input": "on",
+        "value": true
+    },
+    {
+        "input": "On",
+        "value": true
+    },
+    {
+        "input": "ON",
+        "value": true
+    },
+    {
+        "input": "off",
+        "value": false
+    },
+    {
+        "input": "Off",
+        "value": false
+    },
+    {
+        "input": "OFF",
+        "value": false
+    },
+    {
+        "input": "\"\\x42 hex escape\"",
+        "value": "B hex escape"
+    },
+    {
+        "input": "\"\\a invalid escape\"",
+        "error": "Invalid escaping sequence \\a on line 1, column 1."
+    },
+    {
+        "input": "\"\\v invalid escape\"",
+        "error": "Invalid escaping sequence \\v on line 1, column 1."
+    },
+    {
+        "input": "\"\\u202 invalid escape\"",
+        "error": "Invalid escaping sequence \\u on line 1, column 1."
+    },
+    {
+        "input": "\"\\012 invalid escape\"",
+        "error": "Invalid escaping sequence \\0 on line 1, column 1."
+    },
+    {
+        "input": "\"\\' invalid escape\"",
+        "error": "Invalid escaping sequence \\' on line 1, column 1."
+    },
+    {
+        "input": "\"Unterminated string",
+        "error": "Unexpected '\"Unterminated string' on line 1, column 1."
+    },
+    {
+        "input": "\"Unterminated string\\\"",
+        "error": "Unexpected '\"Unterminated string\\\"' on line 1, column 1."
+    },
+    {
+        "input": "\"Unterminated string\\\\\\\"",
+        "error": "Unexpected '\"Unterminated string\\\\\\\"' on line 1, column 1."
+    },
+    {
+        "input": "\"42\" \"\"",
+        "error": "Unexpected '\"\"' on line 1, column 6."
+    },
+    {
+        "input": "\"\" \"\"",
+        "error": "Unexpected '\"\"' on line 1, column 4."
+    },
+    {
+        "input": "[] \"\"",
+        "error": "Unexpected '\"\"' on line 1, column 4."
+    },
+    {
+        "input": "[true] \"\"",
+        "error": "Unexpected '\"\"' on line 1, column 8."
+    },
+    {
+        "input": "{} \"\"",
+        "error": "Unexpected '\"\"' on line 1, column 4."
+    },
+    {
+        "input": "{\"x\":true} \"\"",
+        "error": "Unexpected '\"\"' on line 1, column 12."
+    },
+    {
+        "input": "\"Garbage\"\"After string\"",
+        "error": "Unexpected '\"After string\"' on line 1, column 10."
+    },
+    {
+        "input": "function () { return 0; }",
+        "error": "Unexpected '{' on line 1, column 13."
+    },
+    {
+        "input": "[1, 2",
+        "error": "Unexpected end on line 1, column 6."
+    },
+    {
+        "input": "{\"x\": 3",
+        "error": "Unexpected end on line 1, column 8."
+    },
+    {
+        "input": "1e--1]",
+        "error": "Unexpected ']' on line 1, column 6."
+    },
+    {
+        "input": "=abc",
+        "error": "Unexpected '=' on line 1, column 1."
+    },
+    {
+        "input": "{a :b}",
+        "error": "Unexpected ':b' on line 1, column 4."
+    },
+    {
+        "input": "a :b",
+        "error": "Unexpected ':b' on line 1, column 3."
+    },
+    {
+        "input": "-[",
+        "error": "Unexpected end on line 1, column 3."
+    },
+    {
+        "input": "-{",
+        "error": "Unexpected end on line 1, column 3."
+    },
+    {
+        "input": "-(",
+        "error": "Unexpected end on line 1, column 3."
+    },
+    {
+        "input": ":[",
+        "error": "Unexpected ':' on line 1, column 1."
+    },
+    {
+        "input": ":{",
+        "error": "Unexpected ':' on line 1, column 1."
+    },
+    {
+        "input": ":(",
+        "error": "Unexpected ':' on line 1, column 1."
+    },
+    {
+        "input": "\"XXX\\uD801YYY\\uDC01ZZZ\"",
+        "error": "Invalid UTF-8 sequence \\uD801 on line 1, column 1."
+    },
+    {
+        "input": "\"XXX\\uD801\\uD801YYY\"",
+        "error": "Invalid UTF-8 sequence \\uD801 on line 1, column 1."
+    },
+    {
+        "input": "\"XXX\\uDC01\\uDC01YYY\"",
+        "error": "Invalid UTF-8 sequence \\uDC01 on line 1, column 1."
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J8MoJw=="
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J6ChJw=="
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J+IooSc="
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J+KCKCc="
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J/AojLwn"
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J/CQKLwn"
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J/AojCgn"
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J/ihoaGhJw=="
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J/yhoaGhoSc="
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J+2ggCc="
+    },
+    {
+        "error": "Invalid UTF-8 sequence.",
+        "input_base64": "J/CCgqwn"
+    },
+    {
+        "input": "2016-06-03 19:00:00 +0200",
+        "value": {
+            "datetime": "2016-06-03 19:00:00.000000 +02:00"
+        }
+    },
+    {
+        "input": "2016-06-03 19:00:00 +02:00",
+        "value": {
+            "datetime": "2016-06-03 19:00:00.000000 +02:00"
+        }
+    },
+    {
+        "input": "2016-06-03 19:00:00",
+        "value": {
+            "datetime": "2016-06-03 19:00:00.000000 +00:00"
+        }
+    },
+    {
+        "input": "2016-06-03",
+        "value": {
+            "datetime": "2016-06-03 00:00:00.000000 +00:00"
+        }
+    },
+    {
+        "input": "\nperson:\n\tid:   \t100\n\tdata:   Andares(gender=male, married=yes)\n",
+        "value": {
+            "array": [
+                [
+                    "person",
+                    {
+                        "array": [
+                            [
+                                "id",
+                                100
+                            ],
+                            [
+                                "data",
+                                {
+                                    "entity": "Andares",
+                                    "attributes": {
+                                        "array": [
+                                            [
+                                                "gender",
+                                                "male"
+                                            ],
+                                            [
+                                                "married",
+                                                true
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        }
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    0,
+                    true
+                ],
+                [
+                    1,
+                    "TRUE"
+                ],
+                [
+                    2,
+                    "tRuE"
+                ],
+                [
+                    3,
+                    "true"
+                ],
+                [
+                    4,
+                    false
+                ],
+                [
+                    5,
+                    "FALSE"
+                ],
+                [
+                    6,
+                    "fAlSe"
+                ],
+                [
+                    7,
+                    "false"
+                ],
+                [
+                    8,
+                    null
+                ],
+                [
+                    9,
+                    "NULL"
+                ],
+                [
+                    10,
+                    "nUlL"
+                ],
+                [
+                    11,
+                    "null"
+                ],
+                [
+                    12,
+                    "yes"
+                ],
+                [
+                    13,
+                    "no"
+                ],
+                [
+                    14,
+                    "on"
+                ],
+                [
+                    15,
+                    "off"
+                ]
+            ]
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "[true, 'TRUE', 'tRuE', 'true', false, 'FALSE', 'fAlSe', 'false', null, 'NULL', 'nUlL', 'null', 'yes', 'no', 'on', 'off']"
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    {
+                        "float": "1.0"
+                    }
+                ],
+                [
+                    2,
+                    0
+                ],
+                [
+                    3,
+                    {
+                        "float": "0.0"
+                    }
+                ],
+                [
+                    4,
+                    -1
+                ],
+                [
+                    5,
+                    {
+                        "float": "-1.2"
+                    }
+                ],
+                [
+                    6,
+                    "1"
+                ],
+                [
+                    7,
+                    "1.0"
+                ],
+                [
+                    8,
+                    "-1"
+                ]
+            ]
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "[1, 1.0, 0, 0.0, -1, -1.2, '1', '1.0', '-1']"
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    0,
+                    "1"
+                ],
+                [
+                    1,
+                    "0xAA"
+                ],
+                [
+                    2,
+                    "0o12"
+                ],
+                [
+                    3,
+                    "0b110"
+                ],
+                [
+                    4,
+                    "+1"
+                ],
+                [
+                    5,
+                    "-1"
+                ],
+                [
+                    6,
+                    ".50"
+                ],
+                [
+                    7,
+                    "1e10"
+                ]
+            ]
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "['1', '0xAA', '0o12', '0b110', '+1', '-1', '.50', '1e10']"
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    0,
+                    "\\"
+                ],
+                [
+                    1,
+                    "'"
+                ],
+                [
+                    2,
+                    "\""
+                ],
+                [
+                    3,
+                    "\n"
+                ],
+                [
+                    4,
+                    "\\ \n"
+                ]
+            ]
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "[\\, '''', '\"', '''\n\n\n''', '''\n\t\\ \n\n''']"
+    },
+    {
+        "encode": "aaa\n'''bbb",
+        "block": false,
+        "indentation": "\t",
+        "output": "'''\n\taaa\n\t'''bbb\n'''"
+    },
+    {
+        "encode": "aaa\n \t'''bbb",
+        "block": false,
+        "indentation": "\t",
+        "output": "\"\"\"\n\taaa\n\t \t'''bbb\n\"\"\""
+    },
+    {
+        "encode": "aaa'''\nbbb",
+        "block": false,
+        "indentation": "\t",
+        "output": "'''\n\taaa'''\n\tbbb\n'''"
+    },
+    {
+        "encode": "aaa\n \t'''bbb\n \t\"\"\"ccc",
+        "block": false,
+        "indentation": "\t",
+        "output": "\"\"\"\n\taaa\n\t \t'''bbb\n\t \t\"\"\\\"ccc\n\"\"\""
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    "multi",
+                    {
+                        "array": [
+                            [
+                                0,
+                                "one\ntwo\nthree\\ne \"'\t"
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "{multi: ['''\n\tone\n\ttwo\n\tthree\\ne \"'\t\n''']}"
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    0,
+                    "["
+                ],
+                [
+                    1,
+                    "]"
+                ],
+                [
+                    2,
+                    "{"
+                ],
+                [
+                    3,
+                    "}"
+                ],
+                [
+                    4,
+                    ":"
+                ],
+                [
+                    5,
+                    ": "
+                ],
+                [
+                    6,
+                    "="
+                ],
+                [
+                    7,
+                    "#"
+                ]
+            ]
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "['[', ']', '{', '}', ':', ': ', '=', '#']"
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    2
+                ],
+                [
+                    2,
+                    3
+                ]
+            ]
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "[1, 2, 3]"
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    1,
+                    1
+                ],
+                [
+                    2,
+                    2
+                ],
+                [
+                    3,
+                    3
+                ]
+            ]
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "{1: 1, 2: 2, 3: 3}"
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    "foo",
+                    1
+                ],
+                [
+                    "bar",
+                    {
+                        "array": [
+                            [
+                                0,
+                                2
+                            ],
+                            [
+                                1,
+                                3
+                            ]
+                        ]
+                    }
+                ]
+            ]
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "{foo: 1, bar: [2, 3]}"
+    },
+    {
+        "input": "item(a, b)",
+        "value": {
+            "entity": "item",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        "a"
+                    ],
+                    [
+                        1,
+                        "b"
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "encode": {
+            "entity": "item",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        "a"
+                    ],
+                    [
+                        1,
+                        "b"
+                    ]
+                ]
+            }
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "item(a, b)"
+    },
+    {
+        "input": "item<item>(a, b)",
+        "value": {
+            "entity": "item<item>",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        "a"
+                    ],
+                    [
+                        1,
+                        "b"
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "encode": {
+            "entity": "item<item>",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        "a"
+                    ],
+                    [
+                        1,
+                        "b"
+                    ]
+                ]
+            }
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "item<item>(a, b)"
+    },
+    {
+        "input": "item(foo: a, bar: b)",
+        "value": {
+            "entity": "item",
+            "attributes": {
+                "array": [
+                    [
+                        "foo",
+                        "a"
+                    ],
+                    [
+                        "bar",
+                        "b"
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "encode": {
+            "entity": "item",
+            "attributes": {
+                "array": [
+                    [
+                        "foo",
+                        "a"
+                    ],
+                    [
+                        "bar",
+                        "b"
+                    ]
+                ]
+            }
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "item(foo: a, bar: b)"
+    },
+    {
+        "encode": {
+            "entity": {
+                "array": []
+            },
+            "attributes": {
+                "array": []
+            }
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "[]()"
+    },
+    {
+        "encode": {
+            "entity": "ent",
+            "attributes": null
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "ent()"
+    },
+    {
+        "encode": ",žlu/ťoučký",
+        "block": false,
+        "indentation": "\t",
+        "output": "',žlu/ťoučký'"
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    "foo",
+                    1
+                ],
+                [
+                    "bar",
+                    {
+                        "array": [
+                            [
+                                "x",
+                                {
+                                    "array": [
+                                        [
+                                            0,
+                                            1
+                                        ],
+                                        [
+                                            1,
+                                            2
+                                        ]
+                                    ]
+                                }
+                            ],
+                            [
+                                "y",
+                                {
+                                    "array": [
+                                        [
+                                            0,
+                                            3
+                                        ],
+                                        [
+                                            1,
+                                            4
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    "baz",
+                    null
+                ]
+            ]
+        },
+        "block": true,
+        "indentation": "\t",
+        "output": "foo: 1\nbar:\n\tx:\n\t\t- 1\n\t\t- 2\n\n\ty:\n\t\t- 3\n\t\t- 4\n\nbaz: null\n"
+    },
+    {
+        "encode": {
+            "array": [
+                [
+                    "foo",
+                    1
+                ],
+                [
+                    "bar",
+                    {
+                        "array": [
+                            [
+                                "x",
+                                {
+                                    "array": [
+                                        [
+                                            0,
+                                            1
+                                        ],
+                                        [
+                                            1,
+                                            2
+                                        ]
+                                    ]
+                                }
+                            ],
+                            [
+                                "y",
+                                {
+                                    "array": [
+                                        [
+                                            0,
+                                            3
+                                        ],
+                                        [
+                                            1,
+                                            4
+                                        ]
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                ],
+                [
+                    "baz",
+                    null
+                ]
+            ]
+        },
+        "block": true,
+        "indentation": "  ",
+        "output": "foo: 1\nbar:\n  x:\n    - 1\n    - 2\n\n  y:\n    - 3\n    - 4\n\nbaz: null\n"
+    },
+    {
+        "input": "ent(1)inner(2, 3)",
+        "value": {
+            "entity": "!!chain",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        {
+                            "entity": "ent",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        1
+                                    ]
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        1,
+                        {
+                            "entity": "inner",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        2
+                                    ],
+                                    [
+                                        1,
+                                        3
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "encode": {
+            "entity": "!!chain",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        {
+                            "entity": "ent",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        1
+                                    ]
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        1,
+                        {
+                            "entity": "inner",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        2
+                                    ],
+                                    [
+                                        1,
+                                        3
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                ]
+            }
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "ent(1)inner(2, 3)"
+    },
+    {
+        "input": "foo(1,2)::bar(3)",
+        "value": {
+            "entity": "!!chain",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        {
+                            "entity": "foo",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        1
+                                    ],
+                                    [
+                                        1,
+                                        2
+                                    ]
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        1,
+                        {
+                            "entity": "::bar",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        3
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "encode": {
+            "entity": "!!chain",
+            "attributes": {
+                "array": [
+                    [
+                        0,
+                        {
+                            "entity": "foo",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        1
+                                    ],
+                                    [
+                                        1,
+                                        2
+                                    ]
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        1,
+                        {
+                            "entity": "::bar",
+                            "attributes": {
+                                "array": [
+                                    [
+                                        0,
+                                        3
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                ]
+            }
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "foo(1, 2)::bar(3)"
+    },
+    {
+        "encode": {
+            "datetime": "2016-06-03 19:00:00.000000 +02:00"
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "2016-06-03 19:00:00 +0200"
+    },
+    {
+        "encode": {
+            "object": "stdClass",
+            "props": {
+                "array": [
+                    [
+                        "foo",
+                        "bar"
+                    ]
+                ]
+            }
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "{foo: bar}"
+    },
+    {
+        "encode": {
+            "object": "stdClass",
+            "props": {
+                "array": []
+            }
+        },
+        "block": false,
+        "indentation": "\t",
+        "output": "{}"
+    },
+    {
+        "encode": {
+            "array": []
+        },
+        "block": true,
+        "indentation": "\t",
+        "output": "[]"
+    },
+    {
+        "encode": "special \u0000 chars",
+        "block": true,
+        "indentation": "\t",
+        "output": "\"special \\u0000 chars\""
+    },
+    {
+        "encode": "special\r\nchars",
+        "block": true,
+        "indentation": "\t",
+        "output": "\"\"\"\n\tspecial\\r\n\tchars\n\"\"\""
+    },
+    {
+        "input": "- a\n- b\n",
+        "value": {
+            "array": [
+                [
+                    0,
+                    "a"
+                ],
+                [
+                    1,
+                    "b"
+                ]
+            ]
+        }
+    }
+]

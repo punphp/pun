@@ -1,0 +1,9 @@
+includes:
+	- config.level8.neon
+
+parameters:
+	checkExplicitMixed: true
+
+autowiredAttributeServices:
+	level: 9
+

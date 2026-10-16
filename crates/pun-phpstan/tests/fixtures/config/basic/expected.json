@@ -1,0 +1,339 @@
+{
+    "parameters": {
+        "singleReflectionFile": null,
+        "singleReflectionInsteadOfFile": null,
+        "analysedPaths": [
+            "{cwd}/src"
+        ],
+        "analysedPathsFromConfig": [
+            "{cwd}/src"
+        ],
+        "bootstrapFiles": [
+            "phar://{root}/phpstan.phar/stubs/runtime/ReflectionUnionType.php",
+            "phar://{root}/phpstan.phar/stubs/runtime/ReflectionAttribute.php",
+            "phar://{root}/phpstan.phar/stubs/runtime/Attribute85.php",
+            "phar://{root}/phpstan.phar/stubs/runtime/ReflectionIntersectionType.php"
+        ],
+        "excludePaths": {
+            "analyseAndScan": [],
+            "analyse": []
+        },
+        "level": 5,
+        "paths": [
+            "{cwd}/src"
+        ],
+        "exceptions": {
+            "implicitThrows": true,
+            "reportUncheckedExceptionDeadCatch": true,
+            "uncheckedExceptionRegexes": [],
+            "uncheckedExceptionClasses": [],
+            "checkedExceptionRegexes": [],
+            "checkedExceptionClasses": [],
+            "check": {
+                "missingCheckedExceptionInThrows": false,
+                "tooWideThrowType": true,
+                "tooWideImplicitThrowType": false,
+                "throwTypeCovariance": false
+            }
+        },
+        "featureToggles": {
+            "bleedingEdge": false,
+            "checkNonStringableDynamicAccess": false,
+            "checkParameterCastableToNumberFunctions": false,
+            "skipCheckGenericClasses": [
+                "DOMNamedNodeMap"
+            ],
+            "stricterFunctionMap": false,
+            "reportPreciseLineForUnusedFunctionParameter": false,
+            "checkPrintfParameterTypes": false,
+            "internalTag": false,
+            "newStaticInAbstractClassStaticMethod": false,
+            "checkExtensionsForComparisonOperators": false,
+            "checkGenericIterableClasses": false,
+            "reportTooWideBool": false,
+            "rawMessageInBaseline": false,
+            "reportNestedTooWideType": false,
+            "assignToByRefForeachExpr": false,
+            "curlSetOptArrayTypes": false,
+            "magicDirInInclude": false,
+            "checkDateIntervalConstructor": false,
+            "reportMethodPurityOverride": false,
+            "checkDynamicConstantNameValues": false,
+            "unusedLabel": false,
+            "newOnNonObject": false,
+            "unnecessaryNullCoalesce": false,
+            "finiteTypesInHaystack": false
+        },
+        "fileExtensions": [
+            "php"
+        ],
+        "checkAdvancedIsset": true,
+        "reportAlwaysTrueInLastCondition": false,
+        "checkClassCaseSensitivity": true,
+        "checkExplicitMixed": false,
+        "checkImplicitMixed": false,
+        "checkFunctionArgumentTypes": true,
+        "checkFunctionNameCase": false,
+        "checkInternalClassCaseSensitivity": false,
+        "checkMissingCallableSignature": false,
+        "checkMissingVarTagTypehint": false,
+        "checkArgumentsPassedByReference": true,
+        "checkMaybeUndefinedVariables": true,
+        "checkNullables": false,
+        "checkThisOnly": false,
+        "checkUnionTypes": false,
+        "checkBenevolentUnionTypes": false,
+        "checkExplicitMixedMissingReturn": false,
+        "checkPhpDocMissingReturn": true,
+        "checkPhpDocMethodSignatures": true,
+        "checkExtraArguments": true,
+        "checkMissingTypehints": false,
+        "checkTooWideParameterOutInProtectedAndPublicMethods": false,
+        "checkTooWideReturnTypesInProtectedAndPublicMethods": false,
+        "checkTooWideThrowTypesInProtectedAndPublicMethods": false,
+        "checkUninitializedProperties": false,
+        "checkDynamicProperties": false,
+        "strictRulesInstalled": false,
+        "deprecationRulesInstalled": false,
+        "inferPrivatePropertyTypeFromConstructor": false,
+        "checkStrictPrintfPlaceholderTypes": false,
+        "reportMaybes": false,
+        "reportMaybesInMethodSignatures": false,
+        "reportMaybesInPropertyPhpDocTypes": false,
+        "reportStaticMethodSignatures": false,
+        "reportWrongPhpDocTypeInVarTag": false,
+        "reportAnyTypeWideningInVarTag": false,
+        "reportNonIntStringArrayKey": false,
+        "reportUnsafeArrayStringKeyCasting": null,
+        "reportPossiblyNonexistentGeneralArrayOffset": false,
+        "reportPossiblyNonexistentConstantArrayOffset": false,
+        "checkMissingOverrideMethodAttribute": false,
+        "checkMissingOverridePropertyAttribute": null,
+        "mixinExcludeClasses": [],
+        "scanFiles": [],
+        "scanDirectories": [],
+        "parallel": {
+            "jobSize": 20,
+            "processTimeout": {
+                "@float": "600.0"
+            },
+            "maximumNumberOfProcesses": 8,
+            "minimumNumberOfJobsPerProcess": 2,
+            "buffer": 134217728,
+            "loadLimit": {
+                "@float": "1.0"
+            }
+        },
+        "phpVersion": null,
+        "polluteScopeWithLoopInitialAssignments": true,
+        "polluteScopeWithAlwaysIterableForeach": true,
+        "polluteScopeWithBlock": true,
+        "propertyAlwaysWrittenTags": [],
+        "propertyAlwaysReadTags": [],
+        "additionalConstructors": [],
+        "treatPhpDocTypesAsCertain": true,
+        "usePathConstantsAsConstantString": false,
+        "rememberPossiblyImpureFunctionValues": true,
+        "tips": {
+            "discoveringSymbols": true,
+            "treatPhpDocTypesAsCertain": true,
+            "possiblyImpure": true
+        },
+        "tipsOfTheDay": true,
+        "reportMagicMethods": true,
+        "reportMagicProperties": true,
+        "ignoreErrors": [],
+        "internalErrorsCountLimit": 50,
+        "cache": {
+            "nodesByStringCountMax": 256,
+            "nodesByStringSourceBytesMax": 4194304,
+            "resolvedPhpDocBlockCacheCountMax": 2048,
+            "nameScopeMapMemoryCacheCountMax": 512,
+            "phpStormStubsNodesCountMax": 128,
+            "memberCacheKeysMax": 2048,
+            "resolvedLocalTypeAliasesCountMax": 2048
+        },
+        "reportUnmatchedIgnoredErrors": true,
+        "reportIgnoresWithoutComments": false,
+        "typeAliases": [],
+        "universalObjectCratesClasses": [
+            "stdClass"
+        ],
+        "stubFiles": [
+            "phar://{root}/phpstan.phar/stubs/Memcached.stub",
+            "phar://{root}/phpstan.phar/stubs/Redis.stub",
+            "phar://{root}/phpstan.phar/stubs/ReflectionAttribute.stub",
+            "phar://{root}/phpstan.phar/stubs/ReflectionClassConstant.stub",
+            "phar://{root}/phpstan.phar/stubs/ReflectionFunctionAbstract.stub",
+            "phar://{root}/phpstan.phar/stubs/ReflectionMethod.stub",
+            "phar://{root}/phpstan.phar/stubs/ReflectionParameter.stub",
+            "phar://{root}/phpstan.phar/stubs/ReflectionProperty.stub",
+            "phar://{root}/phpstan.phar/stubs/iterable.stub",
+            "phar://{root}/phpstan.phar/stubs/ArrayObject.stub",
+            "phar://{root}/phpstan.phar/stubs/WeakReference.stub",
+            "phar://{root}/phpstan.phar/stubs/ext-ds.stub",
+            "phar://{root}/phpstan.phar/stubs/ImagickPixel.stub",
+            "phar://{root}/phpstan.phar/stubs/PDOStatement.stub",
+            "phar://{root}/phpstan.phar/stubs/date.stub",
+            "phar://{root}/phpstan.phar/stubs/ibm_db2.stub",
+            "phar://{root}/phpstan.phar/stubs/mysqli.stub",
+            "phar://{root}/phpstan.phar/stubs/zip.stub",
+            "phar://{root}/phpstan.phar/stubs/dom.stub",
+            "phar://{root}/phpstan.phar/stubs/spl.stub",
+            "phar://{root}/phpstan.phar/stubs/SplObjectStorage.stub",
+            "phar://{root}/phpstan.phar/stubs/Exception.stub",
+            "phar://{root}/phpstan.phar/stubs/arrayFunctions.stub",
+            "phar://{root}/phpstan.phar/stubs/core.stub",
+            "phar://{root}/phpstan.phar/stubs/typeCheckingFunctions.stub",
+            "phar://{root}/phpstan.phar/stubs/Countable.stub",
+            "phar://{root}/phpstan.phar/stubs/file.stub",
+            "phar://{root}/phpstan.phar/stubs/stream_socket_client.stub",
+            "phar://{root}/phpstan.phar/stubs/stream_socket_server.stub",
+            "phar://{root}/phpstan.phar/stubs/ctype.stub"
+        ],
+        "earlyTerminatingMethodCalls": [],
+        "earlyTerminatingFunctionCalls": [],
+        "resultCachePath": "{tmp}/phpstan/resultCache.php",
+        "resultCacheSkipIfOlderThanDays": 7,
+        "resultCacheChecksProjectExtensionFilesDependencies": false,
+        "dynamicConstantNames": [
+            "ICONV_IMPL",
+            "LIBXML_VERSION",
+            "LIBXML_DOTTED_VERSION",
+            "Memcached::HAVE_ENCODING",
+            "Memcached::HAVE_IGBINARY",
+            "Memcached::HAVE_JSON",
+            "Memcached::HAVE_MSGPACK",
+            "Memcached::HAVE_SASL",
+            "Memcached::HAVE_SESSION",
+            "PHP_VERSION",
+            "PHP_MAJOR_VERSION",
+            "PHP_MINOR_VERSION",
+            "PHP_RELEASE_VERSION",
+            "PHP_VERSION_ID",
+            "PHP_EXTRA_VERSION",
+            "PHP_WINDOWS_VERSION_MAJOR",
+            "PHP_WINDOWS_VERSION_MINOR",
+            "PHP_WINDOWS_VERSION_BUILD",
+            "PHP_ZTS",
+            "PHP_DEBUG",
+            "PHP_MAXPATHLEN",
+            "PHP_OS",
+            "PHP_OS_FAMILY",
+            "PHP_SAPI",
+            "PHP_EOL",
+            "PHP_INT_MAX",
+            "PHP_INT_MIN",
+            "PHP_INT_SIZE",
+            "PHP_FLOAT_DIG",
+            "PHP_FLOAT_EPSILON",
+            "PHP_FLOAT_MIN",
+            "PHP_FLOAT_MAX",
+            "DEFAULT_INCLUDE_PATH",
+            "PEAR_INSTALL_DIR",
+            "PEAR_EXTENSION_DIR",
+            "PHP_EXTENSION_DIR",
+            "PHP_PREFIX",
+            "PHP_BINDIR",
+            "PHP_BINARY",
+            "PHP_MANDIR",
+            "PHP_LIBDIR",
+            "PHP_DATADIR",
+            "PHP_SYSCONFDIR",
+            "PHP_LOCALSTATEDIR",
+            "PHP_CONFIG_FILE_PATH",
+            "PHP_CONFIG_FILE_SCAN_DIR",
+            "PHP_SHLIB_SUFFIX",
+            "PHP_FD_SETSIZE",
+            "OPENSSL_VERSION_NUMBER",
+            "ZEND_DEBUG_BUILD",
+            "ZEND_THREAD_SAFE",
+            "E_ALL"
+        ],
+        "customRulesetUsed": false,
+        "editorUrl": null,
+        "editorUrlTitle": null,
+        "errorFormat": null,
+        "sourceLocatorPlaygroundMode": false,
+        "__validate": true,
+        "parametersNotInvalidatingCache": [
+            [
+                "parameters",
+                "editorUrl"
+            ],
+            [
+                "parameters",
+                "editorUrlTitle"
+            ],
+            [
+                "parameters",
+                "errorFormat"
+            ],
+            [
+                "parameters",
+                "ignoreErrors"
+            ],
+            [
+                "parameters",
+                "reportUnmatchedIgnoredErrors"
+            ],
+            [
+                "parameters",
+                "tipsOfTheDay"
+            ],
+            [
+                "parameters",
+                "parallel"
+            ],
+            [
+                "parameters",
+                "internalErrorsCountLimit"
+            ],
+            [
+                "parameters",
+                "cache"
+            ],
+            [
+                "parameters",
+                "memoryLimitFile"
+            ],
+            [
+                "parameters",
+                "pro"
+            ],
+            "parametersSchema"
+        ],
+        "debugMode": true,
+        "productionMode": false,
+        "tempDir": "{tmp}/phpstan",
+        "rootDir": "{root}",
+        "currentWorkingDirectory": "{cwd}",
+        "cliArgumentsVariablesRegistered": false,
+        "tmpDir": "{tmp}/phpstan",
+        "additionalConfigFiles": [
+            "phar://{root}/phpstan.phar/conf/config.level5.neon",
+            "{cwd}/phpstan.neon"
+        ],
+        "allConfigFiles": [
+            "phar://{root}/phpstan.phar/conf/parametersSchema.neon",
+            "phar://{root}/phpstan.phar/conf/config.level5.neon",
+            "phar://{root}/phpstan.phar/conf/config.level4.neon",
+            "phar://{root}/phpstan.phar/conf/config.level3.neon",
+            "phar://{root}/phpstan.phar/conf/config.level2.neon",
+            "phar://{root}/phpstan.phar/conf/config.level1.neon",
+            "phar://{root}/phpstan.phar/conf/config.level0.neon",
+            "{cwd}/phpstan.neon"
+        ],
+        "composerAutoloaderProjectPaths": [],
+        "generateBaselineFile": null,
+        "usedLevel": "5",
+        "cliAutoloadFile": null,
+        "sysGetTempDir": "{tmp}",
+        "pro": {
+            "dnsServers": [
+                "1.1.1.2"
+            ],
+            "tmpDir": "{tmp}/phpstan-fixer"
+        }
+    }
+}

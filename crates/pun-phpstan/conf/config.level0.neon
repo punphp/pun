@@ -1,0 +1,32 @@
+parameters:
+	customRulesetUsed: false
+
+autowiredAttributeServices:
+	level: 0
+
+conditionalTags:
+	PHPStan\Rules\InternalTag\RestrictedInternalClassConstantUsageExtension:
+		phpstan.restrictedClassConstantUsageExtension: %featureToggles.internalTag%
+
+	PHPStan\Rules\InternalTag\RestrictedInternalClassNameUsageExtension:
+		phpstan.restrictedClassNameUsageExtension: %featureToggles.internalTag%
+
+	PHPStan\Rules\InternalTag\RestrictedInternalFunctionUsageExtension:
+		phpstan.restrictedFunctionUsageExtension: %featureToggles.internalTag%
+
+	PHPStan\Rules\Classes\NewStaticInAbstractClassStaticMethodRule:
+		phpstan.rules.rule: %featureToggles.newStaticInAbstractClassStaticMethod%
+
+services:
+	-
+		class: PHPStan\Rules\Classes\NewStaticInAbstractClassStaticMethodRule
+
+	-
+		class: PHPStan\Rules\InternalTag\RestrictedInternalClassConstantUsageExtension
+
+	-
+		class: PHPStan\Rules\InternalTag\RestrictedInternalClassNameUsageExtension
+
+	-
+		class: PHPStan\Rules\InternalTag\RestrictedInternalFunctionUsageExtension
+

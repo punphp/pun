@@ -1,0 +1,196 @@
+services:
+	-
+		class: PhpParser\BuilderFactory
+
+	-
+		class: PhpParser\NodeVisitor\NameResolver
+		arguments:
+			options:
+				preserveOriginalNames: true
+
+	-
+		class: PHPStan\PhpDocParser\ParserConfig
+		arguments:
+			usedAttributes:
+				lines: true
+
+	-
+		class: PHPStan\PhpDocParser\Lexer\Lexer
+
+	-
+		class: PHPStan\PhpDocParser\Parser\TypeParser
+
+	-
+		class: PHPStan\PhpDocParser\Parser\ConstExprParser
+
+	-
+		class: PHPStan\PhpDocParser\Parser\PhpDocParser
+
+	-
+		class: PHPStan\PhpDocParser\Printer\Printer
+
+	-
+		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\PhpStormStubsSourceStubberFactory::create()
+		autowired:
+			- PHPStan\BetterReflection\SourceLocator\SourceStubber\PhpStormStubsSourceStubber
+
+	-
+		factory: @PHPStan\Reflection\BetterReflection\SourceStubber\ReflectionSourceStubberFactory::create()
+		autowired:
+			- PHPStan\BetterReflection\SourceLocator\SourceStubber\ReflectionSourceStubber
+
+	-
+		class: PHPStan\Type\Php\ReflectionGetAttributesMethodReturnTypeExtension
+		arguments:
+			className: ReflectionClass
+
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+	-
+		class: PHPStan\Type\Php\ReflectionGetAttributesMethodReturnTypeExtension
+		arguments:
+			className: ReflectionClassConstant
+
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+	-
+		class: PHPStan\Type\Php\ReflectionGetAttributesMethodReturnTypeExtension
+		arguments:
+			className: ReflectionFunctionAbstract
+
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+	-
+		class: PHPStan\Type\Php\ReflectionGetAttributesMethodReturnTypeExtension
+		arguments:
+			className: ReflectionParameter
+
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+	-
+		class: PHPStan\Type\Php\ReflectionGetAttributesMethodReturnTypeExtension
+		arguments:
+			className: ReflectionProperty
+
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+	-
+		class: PHPStan\Type\Php\DateTimeModifyReturnTypeExtension
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+		arguments:
+			dateTimeClass: DateTime
+
+	-
+		class: PHPStan\Type\Php\DateTimeModifyReturnTypeExtension
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+		arguments:
+			dateTimeClass: DateTimeImmutable
+
+	-
+		class: PHPStan\Reflection\PHPStan\NativeReflectionEnumReturnDynamicReturnTypeExtension
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+		arguments:
+			className: PHPStan\Reflection\ClassReflection
+			methodName: getNativeReflection
+
+	-
+		class: PHPStan\Reflection\PHPStan\NativeReflectionEnumReturnDynamicReturnTypeExtension
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+		arguments:
+			className: PHPStan\Reflection\Php\BuiltinMethodReflection
+			methodName: getDeclaringClass
+
+	-
+		class: PHPStan\Reflection\BetterReflection\Type\AdapterReflectionEnumCaseDynamicReturnTypeExtension
+		arguments:
+			class: PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnumBackedCase
+
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+	-
+		class: PHPStan\Reflection\BetterReflection\Type\AdapterReflectionEnumCaseDynamicReturnTypeExtension
+		arguments:
+			class: PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnumUnitCase
+
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+	errorFormatter.json:
+		class: PHPStan\Command\ErrorFormatter\JsonErrorFormatter
+		arguments:
+			pretty: false
+
+	errorFormatter.prettyJson:
+		class: PHPStan\Command\ErrorFormatter\JsonErrorFormatter
+		arguments:
+			pretty: true
+
+	stubFileTypeMapper:
+		class: PHPStan\Type\FileTypeMapper
+		arguments:
+			phpParser: @stubParser
+			resolvedPhpDocBlockCacheCountMax: %cache.resolvedPhpDocBlockCacheCountMax%
+			nameScopeMapMemoryCacheCountMax: %cache.nameScopeMapMemoryCacheCountMax%
+
+		autowired: false
+
+	fileExcluderAnalyse:
+		class: PHPStan\File\FileExcluder
+		factory: @PHPStan\File\FileExcluderFactory::createAnalyseFileExcluder()
+		autowired: false
+
+	fileExcluderScan:
+		class: PHPStan\File\FileExcluder
+		factory: @PHPStan\File\FileExcluderFactory::createScanFileExcluder()
+		autowired: false
+
+	fileFinderAnalyse:
+		class: PHPStan\File\FileFinder
+		arguments:
+			fileExcluder: @fileExcluderAnalyse
+			fileExtensions: %fileExtensions%
+
+		autowired: false
+
+	fileFinderScan:
+		class: PHPStan\File\FileFinder
+		arguments:
+			fileExcluder: @fileExcluderScan
+			fileExtensions: %fileExtensions%
+
+		autowired: false
+
+	cacheStorage:
+		class: PHPStan\Cache\FileCacheStorage
+		arguments:
+			directory: %tmpDir%/cache/PHPStan
+
+		autowired: false
+
+	betterReflectionSourceLocator:
+		factory: @PHPStan\Reflection\BetterReflection\BetterReflectionSourceLocatorFactory::create
+		autowired: false
+
+	reflectionProvider:
+		factory: @PHPStan\Reflection\ReflectionProvider\ReflectionProviderFactory::create
+		autowired:
+			- PHPStan\Reflection\ReflectionProvider
+
+	exceptionTypeResolver:
+		class: PHPStan\Rules\Exceptions\ExceptionTypeResolver
+		factory: @PHPStan\Rules\Exceptions\DefaultExceptionTypeResolver
+

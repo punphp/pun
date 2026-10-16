@@ -1,0 +1,10 @@
+includes:
+	- config.level6.neon
+
+parameters:
+	checkUnionTypes: true
+	reportMaybes: true
+
+autowiredAttributeServices:
+	level: 7
+

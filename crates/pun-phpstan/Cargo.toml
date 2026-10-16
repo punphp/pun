@@ -1,0 +1,21 @@
+[package]
+name = "punphp-phpstan"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Pun's PHPStan compatibility layer: NEON, phpstan.neon loading, baselines, ignoreErrors"
+repository.workspace = true
+homepage = "https://github.com/punphp/pun"
+keywords = ["php", "phpstan", "neon", "static-analysis", "laravel"]
+categories = ["development-tools"]
+
+[lib]
+name = "pun_phpstan"
+
+[dependencies]
+indexmap.workspace = true
+pcre2.workspace = true
+libc.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true

@@ -1,0 +1,393 @@
+{
+    "project": "pinkary",
+    "expected": {
+        "parameters": {
+            "singleReflectionFile": null,
+            "singleReflectionInsteadOfFile": null,
+            "analysedPaths": [
+                "{cwd}/app",
+                "{cwd}/config",
+                "{cwd}/bootstrap",
+                "{cwd}/database/factories",
+                "{cwd}/routes"
+            ],
+            "analysedPathsFromConfig": [
+                "{cwd}/app",
+                "{cwd}/config",
+                "{cwd}/bootstrap",
+                "{cwd}/database/factories",
+                "{cwd}/routes"
+            ],
+            "bootstrapFiles": [
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/ReflectionUnionType.php",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/ReflectionAttribute.php",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/Attribute85.php",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/ReflectionIntersectionType.php",
+                "{cwd}/vendor/larastan/larastan/bootstrap.php"
+            ],
+            "excludePaths": {
+                "analyseAndScan": [],
+                "analyse": []
+            },
+            "level": "max",
+            "paths": [
+                "{cwd}/app",
+                "{cwd}/config",
+                "{cwd}/bootstrap",
+                "{cwd}/database/factories",
+                "{cwd}/routes"
+            ],
+            "exceptions": {
+                "implicitThrows": true,
+                "reportUncheckedExceptionDeadCatch": true,
+                "uncheckedExceptionRegexes": [],
+                "uncheckedExceptionClasses": [],
+                "checkedExceptionRegexes": [],
+                "checkedExceptionClasses": [],
+                "check": {
+                    "missingCheckedExceptionInThrows": false,
+                    "tooWideThrowType": true,
+                    "tooWideImplicitThrowType": false,
+                    "throwTypeCovariance": false
+                }
+            },
+            "featureToggles": {
+                "bleedingEdge": true,
+                "checkNonStringableDynamicAccess": true,
+                "checkParameterCastableToNumberFunctions": true,
+                "skipCheckGenericClasses": [],
+                "stricterFunctionMap": true,
+                "reportPreciseLineForUnusedFunctionParameter": true,
+                "checkPrintfParameterTypes": true,
+                "internalTag": true,
+                "newStaticInAbstractClassStaticMethod": true,
+                "checkExtensionsForComparisonOperators": true,
+                "checkGenericIterableClasses": true,
+                "reportTooWideBool": true,
+                "rawMessageInBaseline": true,
+                "reportNestedTooWideType": false,
+                "assignToByRefForeachExpr": true,
+                "curlSetOptArrayTypes": true,
+                "magicDirInInclude": true,
+                "checkDateIntervalConstructor": true,
+                "reportMethodPurityOverride": true,
+                "checkDynamicConstantNameValues": true,
+                "unusedLabel": true,
+                "newOnNonObject": true,
+                "unnecessaryNullCoalesce": true,
+                "finiteTypesInHaystack": true
+            },
+            "fileExtensions": [
+                "php"
+            ],
+            "checkAdvancedIsset": true,
+            "reportAlwaysTrueInLastCondition": false,
+            "checkClassCaseSensitivity": true,
+            "checkExplicitMixed": true,
+            "checkImplicitMixed": true,
+            "checkFunctionArgumentTypes": true,
+            "checkFunctionNameCase": false,
+            "checkInternalClassCaseSensitivity": false,
+            "checkMissingCallableSignature": false,
+            "checkMissingVarTagTypehint": true,
+            "checkArgumentsPassedByReference": true,
+            "checkMaybeUndefinedVariables": true,
+            "checkNullables": true,
+            "checkThisOnly": false,
+            "checkUnionTypes": true,
+            "checkBenevolentUnionTypes": false,
+            "checkExplicitMixedMissingReturn": false,
+            "checkPhpDocMissingReturn": true,
+            "checkPhpDocMethodSignatures": true,
+            "checkExtraArguments": true,
+            "checkMissingTypehints": true,
+            "checkTooWideParameterOutInProtectedAndPublicMethods": false,
+            "checkTooWideReturnTypesInProtectedAndPublicMethods": false,
+            "checkTooWideThrowTypesInProtectedAndPublicMethods": false,
+            "checkUninitializedProperties": false,
+            "checkDynamicProperties": false,
+            "strictRulesInstalled": false,
+            "deprecationRulesInstalled": false,
+            "inferPrivatePropertyTypeFromConstructor": false,
+            "checkStrictPrintfPlaceholderTypes": false,
+            "reportMaybes": true,
+            "reportMaybesInMethodSignatures": false,
+            "reportMaybesInPropertyPhpDocTypes": false,
+            "reportStaticMethodSignatures": false,
+            "reportWrongPhpDocTypeInVarTag": false,
+            "reportAnyTypeWideningInVarTag": false,
+            "reportNonIntStringArrayKey": false,
+            "reportUnsafeArrayStringKeyCasting": null,
+            "reportPossiblyNonexistentGeneralArrayOffset": false,
+            "reportPossiblyNonexistentConstantArrayOffset": false,
+            "checkMissingOverrideMethodAttribute": false,
+            "checkMissingOverridePropertyAttribute": null,
+            "mixinExcludeClasses": [
+                "Eloquent"
+            ],
+            "scanFiles": [],
+            "scanDirectories": [],
+            "parallel": {
+                "jobSize": 20,
+                "processTimeout": {
+                    "@float": "600.0"
+                },
+                "maximumNumberOfProcesses": 8,
+                "minimumNumberOfJobsPerProcess": 2,
+                "buffer": 134217728,
+                "loadLimit": {
+                    "@float": "1.0"
+                }
+            },
+            "phpVersion": null,
+            "polluteScopeWithLoopInitialAssignments": true,
+            "polluteScopeWithAlwaysIterableForeach": true,
+            "polluteScopeWithBlock": true,
+            "propertyAlwaysWrittenTags": [],
+            "propertyAlwaysReadTags": [],
+            "additionalConstructors": [],
+            "treatPhpDocTypesAsCertain": true,
+            "usePathConstantsAsConstantString": false,
+            "rememberPossiblyImpureFunctionValues": true,
+            "tips": {
+                "discoveringSymbols": true,
+                "treatPhpDocTypesAsCertain": true,
+                "possiblyImpure": true
+            },
+            "tipsOfTheDay": true,
+            "reportMagicMethods": true,
+            "reportMagicProperties": true,
+            "ignoreErrors": [],
+            "internalErrorsCountLimit": 50,
+            "cache": {
+                "nodesByStringCountMax": 256,
+                "nodesByStringSourceBytesMax": 4194304,
+                "resolvedPhpDocBlockCacheCountMax": 2048,
+                "nameScopeMapMemoryCacheCountMax": 512,
+                "phpStormStubsNodesCountMax": 128,
+                "memberCacheKeysMax": 2048,
+                "resolvedLocalTypeAliasesCountMax": 2048
+            },
+            "reportUnmatchedIgnoredErrors": true,
+            "reportIgnoresWithoutComments": false,
+            "typeAliases": [],
+            "universalObjectCratesClasses": [
+                "stdClass",
+                "Illuminate\\Http\\Request",
+                "Illuminate\\Support\\Optional"
+            ],
+            "stubFiles": [
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/Memcached.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/Redis.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionAttribute.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionClassConstant.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionFunctionAbstract.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionMethod.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionParameter.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ReflectionProperty.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/iterable.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ArrayObject.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/WeakReference.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ext-ds.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ImagickPixel.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/PDOStatement.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/date.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ibm_db2.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/mysqli.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/zip.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/dom.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/spl.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/SplObjectStorage.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/Exception.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/arrayFunctions.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/core.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/typeCheckingFunctions.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/Countable.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/file.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/stream_socket_client.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/stream_socket_server.stub",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/stubs/ctype.stub"
+            ],
+            "earlyTerminatingMethodCalls": [],
+            "earlyTerminatingFunctionCalls": [
+                "abort",
+                "dd"
+            ],
+            "resultCachePath": "{tmp}/phpstan/resultCache.php",
+            "resultCacheSkipIfOlderThanDays": 7,
+            "resultCacheChecksProjectExtensionFilesDependencies": false,
+            "dynamicConstantNames": [
+                "ICONV_IMPL",
+                "LIBXML_VERSION",
+                "LIBXML_DOTTED_VERSION",
+                "Memcached::HAVE_ENCODING",
+                "Memcached::HAVE_IGBINARY",
+                "Memcached::HAVE_JSON",
+                "Memcached::HAVE_MSGPACK",
+                "Memcached::HAVE_SASL",
+                "Memcached::HAVE_SESSION",
+                "PHP_VERSION",
+                "PHP_MAJOR_VERSION",
+                "PHP_MINOR_VERSION",
+                "PHP_RELEASE_VERSION",
+                "PHP_VERSION_ID",
+                "PHP_EXTRA_VERSION",
+                "PHP_WINDOWS_VERSION_MAJOR",
+                "PHP_WINDOWS_VERSION_MINOR",
+                "PHP_WINDOWS_VERSION_BUILD",
+                "PHP_ZTS",
+                "PHP_DEBUG",
+                "PHP_MAXPATHLEN",
+                "PHP_OS",
+                "PHP_OS_FAMILY",
+                "PHP_SAPI",
+                "PHP_EOL",
+                "PHP_INT_MAX",
+                "PHP_INT_MIN",
+                "PHP_INT_SIZE",
+                "PHP_FLOAT_DIG",
+                "PHP_FLOAT_EPSILON",
+                "PHP_FLOAT_MIN",
+                "PHP_FLOAT_MAX",
+                "DEFAULT_INCLUDE_PATH",
+                "PEAR_INSTALL_DIR",
+                "PEAR_EXTENSION_DIR",
+                "PHP_EXTENSION_DIR",
+                "PHP_PREFIX",
+                "PHP_BINDIR",
+                "PHP_BINARY",
+                "PHP_MANDIR",
+                "PHP_LIBDIR",
+                "PHP_DATADIR",
+                "PHP_SYSCONFDIR",
+                "PHP_LOCALSTATEDIR",
+                "PHP_CONFIG_FILE_PATH",
+                "PHP_CONFIG_FILE_SCAN_DIR",
+                "PHP_SHLIB_SUFFIX",
+                "PHP_FD_SETSIZE",
+                "OPENSSL_VERSION_NUMBER",
+                "ZEND_DEBUG_BUILD",
+                "ZEND_THREAD_SAFE",
+                "E_ALL"
+            ],
+            "customRulesetUsed": false,
+            "editorUrl": null,
+            "editorUrlTitle": null,
+            "errorFormat": null,
+            "sourceLocatorPlaygroundMode": false,
+            "__validate": true,
+            "parametersNotInvalidatingCache": [
+                [
+                    "parameters",
+                    "editorUrl"
+                ],
+                [
+                    "parameters",
+                    "editorUrlTitle"
+                ],
+                [
+                    "parameters",
+                    "errorFormat"
+                ],
+                [
+                    "parameters",
+                    "ignoreErrors"
+                ],
+                [
+                    "parameters",
+                    "reportUnmatchedIgnoredErrors"
+                ],
+                [
+                    "parameters",
+                    "tipsOfTheDay"
+                ],
+                [
+                    "parameters",
+                    "parallel"
+                ],
+                [
+                    "parameters",
+                    "internalErrorsCountLimit"
+                ],
+                [
+                    "parameters",
+                    "cache"
+                ],
+                [
+                    "parameters",
+                    "memoryLimitFile"
+                ],
+                [
+                    "parameters",
+                    "pro"
+                ],
+                "parametersSchema"
+            ],
+            "checkOctaneCompatibility": false,
+            "noEnvCallsOutsideOfConfig": true,
+            "noModelMake": true,
+            "noUnnecessaryCollectionCall": true,
+            "noUnnecessaryCollectionCallOnly": [],
+            "noUnnecessaryCollectionCallExcept": [],
+            "noUnnecessaryEnumerableToArrayCalls": false,
+            "squashedMigrationsPath": [],
+            "databaseMigrationsPath": [],
+            "disableMigrationScan": false,
+            "disableSchemaScan": false,
+            "configDirectories": [],
+            "viewDirectories": [],
+            "translationDirectories": [],
+            "checkModelProperties": false,
+            "checkUnusedViews": false,
+            "checkMissingTranslations": false,
+            "checkModelAppends": true,
+            "checkModelMethodVisibility": false,
+            "generalizeEnvReturnType": false,
+            "checkConfigTypes": false,
+            "checkAuthCallsWhenInRequestScope": false,
+            "parseModelCastsMethod": false,
+            "enableMigrationCache": false,
+            "debugMode": true,
+            "productionMode": false,
+            "tempDir": "{tmp}/phpstan",
+            "rootDir": "/home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan",
+            "currentWorkingDirectory": "{cwd}",
+            "cliArgumentsVariablesRegistered": false,
+            "tmpDir": "{tmp}/phpstan",
+            "additionalConfigFiles": [
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.levelmax.neon",
+                "{cwd}/phpstan.neon"
+            ],
+            "allConfigFiles": [
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/parametersSchema.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.levelmax.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level10.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level9.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level8.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level7.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level6.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level5.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level4.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level3.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level2.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level1.neon",
+                "phar:///home/forge/projects/pun/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar/conf/config.level0.neon",
+                "{cwd}/phpstan.neon",
+                "{cwd}/vendor/larastan/larastan/extension.neon",
+                "{cwd}/vendor/phpstan/phpstan/conf/bleedingEdge.neon",
+                "phar://phpstan.phar/conf/bleedingEdge.neon"
+            ],
+            "composerAutoloaderProjectPaths": [],
+            "generateBaselineFile": null,
+            "usedLevel": "max",
+            "cliAutoloadFile": null,
+            "sysGetTempDir": "{tmp}",
+            "pro": {
+                "dnsServers": [
+                    "1.1.1.2"
+                ],
+                "tmpDir": "{tmp}/phpstan-fixer"
+            }
+        }
+    }
+}
