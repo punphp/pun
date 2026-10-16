@@ -89,6 +89,9 @@ pub struct FormatArgs {
     /// Only fix files with staged changes (Pun).
     #[arg(long)]
     staged: bool,
+    /// Only fix files changed since the given commit, plus untracked files (Pun).
+    #[arg(long, value_name = "REF")]
+    since: Option<String>,
     /// The output format that should be used (json, txt, agent).
     #[arg(long)]
     format: Option<String>,
@@ -122,8 +125,9 @@ pub struct FormatArgs {
     /// Accepted for Pint compatibility; Pun always runs in parallel.
     #[arg(short, long)]
     parallel: bool,
+    /// Accepted for Pint compatibility, unparsed (Pint's intval() takes any value).
     #[arg(long)]
-    max_processes: Option<usize>,
+    max_processes: Option<String>,
     /// Print the discovered files and exit (debugging finder parity).
     #[arg(long, hide = true)]
     list_files: bool,
@@ -287,12 +291,13 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         Some(pun_workspace::GitSelect::Diff(b.clone()))
     } else if a.staged {
         Some(pun_workspace::GitSelect::Staged)
+    } else if let Some(r) = &a.since {
+        Some(pun_workspace::GitSelect::Since(r.clone()))
     } else {
         None
     };
     let files = match (&selection, &engine) {
-        // Pint swallows the "no dirty files" / "not a git repo" aborts and reports an empty run.
-        (Some(sel), _) => pun_workspace::git_paths(&cfg, sel).unwrap_or_default(),
+        (Some(sel), _) => pun_workspace::git_paths(&cfg, sel)?,
         // A .php-cs-fixer.php brings its own Finder.
         (None, Engine2::Delegate(d, _)) if cfg.php_cs_fixer.is_some() && a.paths.is_empty() => d.files()?,
         (None, _) => pun_workspace::discover(&cfg, &a.paths)?,
@@ -434,7 +439,8 @@ fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine2) -> Result<u8> {
     std::io::stdin().read_to_end(&mut code)?;
     let mut out = std::io::stdout().lock();
     let ctx = a.stdin_filename.clone().unwrap_or_else(|| "stdin.php".into());
-    if a.stdin_filename.is_some() && pun_workspace::is_path_excluded(cfg, &ctx) {
+    // --test/--bail: the dry run leaves Pint's temp file untouched, so the input comes back as is.
+    if a.test || a.bail || (a.stdin_filename.is_some() && pun_workspace::is_path_excluded(cfg, &ctx)) {
         out.write_all(&code)?;
         return Ok(0);
     }
