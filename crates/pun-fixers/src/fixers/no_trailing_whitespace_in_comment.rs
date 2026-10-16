@@ -34,7 +34,7 @@ impl Fixer for NoTrailingWhitespaceInCommentFixer {
                     continue;
                 }
                 tokens.set(index, Token::new(T_DOC_COMMENT, Preg::replace("/(*ANY)[\\h]+$/m", "", &token.content)));
-            } else if token.is_kind(T_COMMENT) {
+            } else {
                 if token.content.starts_with(b"/*") {
                     if !may_have_trailing_h(&token.content) {
                         index += 1;

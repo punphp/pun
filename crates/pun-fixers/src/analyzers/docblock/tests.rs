@@ -475,6 +475,9 @@ fn ascii_fast_paths_match_php() {
         assert_eq!(tag(c).unwrap(), name, "{c:?}");
     }
     assert_eq!(tag(" * @\u{e9}"), None);
+    // Non-ASCII lines take the regex: no `@name` followed by whitespace or the end is upstream's "other".
+    assert_eq!(Tag::new(Line::shared(" * @caf\u{e9}")).get_name(), b"other");
+    assert_eq!(Tag::new(Line::shared(" * caf\u{e9} @see\u{a0}x")).get_name(), b"see");
     for (c, has) in [(" * @param", true), (" *\t\x0b@x", true), (" * x @y", false), ("**@", true), (" * text", false), (" */", false), ("*a@", false)] {
         assert_eq!(Line::new(c).contains_a_tag(), has, "{c:?}");
     }
