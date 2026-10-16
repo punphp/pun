@@ -32,3 +32,12 @@ Owner = agent working on it. Status: todo / doing / done / blocked.
 
 - pun-php embedded static libphp (static-php-cli build is heavy on this 2-core box); system `php` used for oracle + delegate meanwhile.
 - Phases 2–7 (lint, refactor, migrate, install, run, test).
+
+## Wave 3 (queued — starts when all fixers are ticked and coverage is 100%)
+
+| Task | Status |
+| --- | --- |
+| `/code-review --fix` over the entire codebase, findings applied | todo |
+| Architecture pass: dedupe helpers across fixers/analyzers, tighten crate boundaries | todo |
+| Remove comments that restate code; keep only non-obvious "why" (upstream parity quirks) | todo |
+| Re-run fixtures, corpus harness and coverage gate after the cleanup | todo |
