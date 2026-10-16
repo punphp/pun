@@ -153,8 +153,9 @@ pub struct Entity {
     pub attributes: Array,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub enum Value {
+    #[default]
     Null,
     Bool(bool),
     Int(i64),
@@ -382,7 +383,7 @@ pub fn base_dec(digits: &str, base: u32) -> Value {
 pub fn datetime_format(raw: &str, format: &str) -> String {
     let num = |s: &str| s.parse::<i64>().unwrap_or(0);
     let (date, rest) = raw.split_at(
-        raw.find(|c: char| c == 'T' || c == 't' || c == ' ')
+        raw.find(['T', 't', ' '])
             .unwrap_or(raw.len()),
     );
     let mut d = date.split('-').map(num);
