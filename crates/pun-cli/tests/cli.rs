@@ -205,11 +205,8 @@ fn matches_pint() {
     cx.same_error(&dir, &bad_in, &[]);
     let mut bad_preset = tree.clone();
     bad_preset[1] = ("pint.json", r#"{"preset":"psr13"}"#);
-    // Pint 1.29's phar crashes ("Undefined array key") instead of printing its "Preset not found." abort; Pun prints
-    // the abort's box (hand-derived from ConfigurationResolverFactory + renderThrowable).
-    reset(&dir, &bad_preset);
-    let (got, err) = run(&cx.alias, &[], &dir, &[], &[], b"");
-    assert_eq!((got.code, got.stdout.as_str(), err.as_str()), (Some(1), "\n                     \n  Preset not found.  \n                     \n\n", ""));
+    // Pint 1.29 runs no files, then its summary crashes on the preset's name ("Undefined array key").
+    cx.same_error(&dir, &bad_preset, &[]);
     // Unreadable / unwritable files: same box (see output.rs error_boxes_like_pint for the byte-exact cases).
     for (mode, args, env) in [(0o444, &[][..], &[][..]), (0o000, &["--test"], &[]), (0o000, &["--test"], &[("AI_AGENT", "x")])] {
         let locked = || {

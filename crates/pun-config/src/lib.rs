@@ -145,8 +145,11 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
         .or_else(|| toml.format.preset.clone())
         .or_else(|| pint.get("preset").and_then(Value::as_str).map(String::from))
         .unwrap_or_else(|| "laravel".into());
-    let Some((_, preset_json)) = PRESETS.iter().find(|(n, _)| *n == preset) else {
-        bail!("Preset not found.");
+    // Pint 1.29 runs an unknown preset on no files and then fails rendering its name (the CLI does that part).
+    let preset_json = match PRESETS.iter().find(|(n, _)| *n == preset) {
+        Some((_, json)) => *json,
+        None if opts.pint_mode => "{}",
+        None => bail!("Preset not found."),
     };
     let mut rules: Map<String, Value> = serde_json::from_str(preset_json)?;
     if let Some(Value::Object(r)) = rules.remove("rules_as_configured") {
@@ -232,6 +235,8 @@ fn read_pint_json(path: &Path, shown: &Path, sources: &mut Vec<PathBuf>) -> Resu
     sources.push(path.to_path_buf());
     match v {
         Value::Object(m) => Ok(m),
+        // json_decode(..., true) makes a list a PHP array with only int keys, so no setting is found.
+        Value::Array(_) => Ok(Map::new()),
         _ => bail!(invalid()),
     }
 }
@@ -417,6 +422,12 @@ mod tests {
     fn pint_errors() {
         let d = dir(&[("pint.json", r#"{"preset":"nope"}"#)]);
         assert_eq!(err(&d, Options::default()), "Preset not found.");
+        // Real Pint 1.29: an unknown preset runs no rules (on no files; the CLI then fails on the summary).
+        let c = load(&d, &Options { pint_mode: true, ..Default::default() }).unwrap();
+        assert_eq!((c.preset.as_str(), c.rules.len()), ("nope", 0));
+        // Real Pint: a top-level JSON list is an empty config (laravel preset), not invalid JSON.
+        let d = dir(&[("pint.json", "[1]")]);
+        assert_eq!(load(&d, &Options::default()).unwrap().preset, "laravel");
         // Real Pint: `pint --config=http://x/pint.json` prints this and exits 1.
         let o = |c: &str| Options { config: Some(c.into()), ..Default::default() };
         assert_eq!(err(&d, o("http://x/pint.json")), "Loading the configuration over plaintext HTTP is not allowed. Use HTTPS.");

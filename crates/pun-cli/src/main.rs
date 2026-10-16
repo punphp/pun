@@ -34,7 +34,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Cmd {
     /// Fix (or check) the coding style of the given paths.
-    Format(FormatArgs),
+    Format(FormatCmd),
     /// Report Mago's lint-only rules (`--mago`); never edits files. Needs the `mago-lint` build feature.
     #[cfg(feature = "mago-lint")]
     Lint(lint::LintArgs),
@@ -58,7 +58,7 @@ enum Cmd {
     },
 }
 
-/// Pint's DefaultCommand flags plus Pun's own.
+/// Pint's DefaultCommand flags.
 #[derive(Args, Default, Clone)]
 #[command(about = "Fix the coding style of the given path")]
 pub struct FormatArgs {
@@ -91,12 +91,6 @@ pub struct FormatArgs {
     /// Only fix files that have uncommitted changes.
     #[arg(long)]
     dirty: bool,
-    /// Only fix files with staged changes (Pun).
-    #[arg(long)]
-    staged: bool,
-    /// Only fix files changed since the given commit, plus untracked files (Pun).
-    #[arg(long, value_name = "REF")]
-    since: Option<String>,
     /// The output format that should be used (json, txt, agent).
     #[arg(long)]
     format: Option<String>,
@@ -106,39 +100,18 @@ pub struct FormatArgs {
     /// The format that should be used when outputting the test results to a file.
     #[arg(long)]
     output_format: Option<String>,
-    /// Read code from stdin (Pun); `--stdin-filename` gives it a path for exclusion rules.
-    #[arg(long)]
-    stdin: bool,
     /// File path context for stdin input.
     #[arg(long)]
     stdin_filename: Option<PathBuf>,
-    /// Formatting engine: compat (Pint-identical) or pun (mago-formatter).
-    #[arg(long, value_parser = ["compat", "pun"])]
-    engine: Option<String>,
-    /// Print which rules run natively and which are delegated to PHP-CS-Fixer (to stderr).
-    #[arg(long)]
-    explain: bool,
-    /// Run only Pun's native fixers: skip (and list) rules that would be delegated to PHP.
-    #[arg(long)]
-    native_only: bool,
     /// The path to the cache file (default: a per-project file under ~/.cache/pun).
     #[arg(long)]
     cache_file: Option<String>,
-    /// Check every file, ignoring and not writing the cache (Pun).
-    #[arg(long)]
-    no_cache: bool,
     /// Accepted for Pint compatibility; Pun always runs in parallel.
     #[arg(short, long)]
     parallel: bool,
     /// Accepted for Pint compatibility, unparsed (Pint's intval() takes any value).
     #[arg(long)]
     max_processes: Option<String>,
-    /// Keep running and re-format files as they change (Pun).
-    #[arg(long, conflicts_with_all = ["stdin", "stdin_filename"])]
-    watch: bool,
-    /// Print the discovered files and exit (debugging finder parity).
-    #[arg(long, hide = true)]
-    list_files: bool,
     #[arg(short, long, action = clap::ArgAction::Count)]
     verbose: u8,
     #[arg(short, long)]
@@ -149,6 +122,49 @@ pub struct FormatArgs {
     no_ansi: bool,
     #[arg(short = 'n', long, hide = true)]
     no_interaction: bool,
+    /// Set from `pun format`'s own flags; `pint` mode doesn't parse them, so they are unknown options there.
+    #[arg(skip)]
+    pun: PunArgs,
+}
+
+/// `pun format`'s flags that Pint doesn't have.
+#[derive(Args, Default, Clone)]
+pub struct PunArgs {
+    /// Only fix files with staged changes (Pun).
+    #[arg(long)]
+    staged: bool,
+    /// Only fix files changed since the given commit, plus untracked files (Pun).
+    #[arg(long, value_name = "REF")]
+    since: Option<String>,
+    /// Read code from stdin (Pun); `--stdin-filename` gives it a path for exclusion rules.
+    #[arg(long)]
+    stdin: bool,
+    /// Formatting engine: compat (Pint-identical) or pun (mago-formatter).
+    #[arg(long, value_parser = ["compat", "pun"])]
+    engine: Option<String>,
+    /// Print which rules run natively and which are delegated to PHP-CS-Fixer (to stderr).
+    #[arg(long)]
+    explain: bool,
+    /// Run only Pun's native fixers: skip (and list) rules that would be delegated to PHP.
+    #[arg(long)]
+    native_only: bool,
+    /// Check every file, ignoring and not writing the cache (Pun).
+    #[arg(long)]
+    no_cache: bool,
+    /// Keep running and re-format files as they change (Pun).
+    #[arg(long, conflicts_with_all = ["stdin", "stdin_filename"])]
+    watch: bool,
+    /// Print the discovered files and exit (debugging finder parity).
+    #[arg(long, hide = true)]
+    list_files: bool,
+}
+
+#[derive(Args)]
+struct FormatCmd {
+    #[command(flatten)]
+    args: FormatArgs,
+    #[command(flatten)]
+    pun: PunArgs,
 }
 
 fn main() -> ExitCode {
@@ -158,7 +174,8 @@ fn main() -> ExitCode {
     let sampler = sampler::start();
     let result = if pint_mode {
         #[derive(Parser)]
-        #[command(name = "pint")]
+        // ArgvInput lets a flag repeat.
+        #[command(name = "pint", args_override_self = true)]
         struct Pint {
             #[command(flatten)]
             args: FormatArgs,
@@ -169,8 +186,10 @@ fn main() -> ExitCode {
         }
     } else {
         match Cli::parse().cmd {
-            Cmd::Format(a) if a.watch => watch::run(a),
-            Cmd::Format(a) => format(a, false),
+            Cmd::Format(FormatCmd { args, pun }) => {
+                let a = FormatArgs { pun, ..args };
+                if a.pun.watch { watch::run(a) } else { format(a, false) }
+            }
             Cmd::Lsp => lsp::run(),
             #[cfg(feature = "mago-lint")]
             Cmd::Lint(a) => lint::run(a),
@@ -262,7 +281,7 @@ impl Engine2 {
 }
 
 fn load_config(a: &FormatArgs, pint_mode: bool, root: &Path) -> Result<Config> {
-    let engine = a.engine.as_deref().map(|e| if e == "pun" { Engine::Pun } else { Engine::Compat });
+    let engine = a.pun.engine.as_deref().map(|e| if e == "pun" { Engine::Pun } else { Engine::Compat });
     let opts = Options { config: a.config.clone(), no_config: a.no_config, preset: a.preset.clone(), engine, blade: a.blade, pint_mode };
     pun_config::load(root, &opts)
 }
@@ -272,17 +291,17 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     let cfg = load_config(&a, pint_mode, &root)?;
     // EnsurePrettierIsConfigured: `"Pint/laravel_blade": true` (or --blade) needs Node and prettier in the project.
     let blade_on = cfg.rules.iter().any(|r| r.name == "Pint/laravel_blade" && r.options.is_null());
-    if let Some(out) = report::ensure_prettier(&root, blade_on, a.ansi, a.no_ansi) {
+    if let Some(out) = report::ensure_prettier(&root, blade_on) {
         print!("{out}");
         return Ok(1);
     }
     let engine = engine(&a, &cfg, &root)?;
-    if a.explain || (a.verbose > 0 && !pint_mode) {
-        explain(&cfg, &engine, a.explain);
+    if a.pun.explain || (a.verbose > 0 && !pint_mode) {
+        explain(&cfg, &engine, a.pun.explain);
     }
 
     let stdin_path = a.paths.first().is_some_and(|p| p.as_os_str() == "-");
-    if a.stdin || stdin_path || a.stdin_filename.is_some() {
+    if a.pun.stdin || stdin_path || a.stdin_filename.is_some() {
         return stdin(&a, &cfg, &engine);
     }
 
@@ -291,28 +310,30 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         Some(pun_workspace::GitSelect::Dirty)
     } else if let Some(b) = &a.diff {
         Some(pun_workspace::GitSelect::Diff(b.clone()))
-    } else if a.staged {
+    } else if a.pun.staged {
         Some(pun_workspace::GitSelect::Staged)
-    } else if let Some(r) = &a.since {
+    } else if let Some(r) = &a.pun.since {
         Some(pun_workspace::GitSelect::Since(r.clone()))
     } else {
         None
     };
     let files = match (&selection, &engine) {
+        // `pint` mode only (`pun format` refuses it): Pint 1.29 finds no files for an unknown preset.
+        _ if !pun_config::PRESETS.iter().any(|(n, _)| *n == cfg.preset) => vec![],
         (Some(sel), _) => pun_workspace::git_paths(&cfg, sel)?,
         // A .php-cs-fixer.php brings its own Finder.
         (None, Engine2::Delegate(d, _)) if cfg.php_cs_fixer.is_some() && a.paths.is_empty() => d.files()?,
         (None, _) => pun_workspace::discover(&cfg, &a.paths)?,
     };
 
-    if a.list_files {
+    if a.pun.list_files {
         for f in &files {
             println!("{}", f.strip_prefix(&root).unwrap_or(f).display());
         }
         return Ok(0);
     }
 
-    let cache = if a.no_cache {
+    let cache = if a.pun.no_cache {
         None
     } else {
         a.cache_file.as_ref().map(|f| root.join(f)).or_else(|| cache::default_path(&root)).map(|p| {
@@ -345,7 +366,15 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
             }
         }
         let mut clean = None;
-        match engine.run(path, &code)? {
+        let outcome = match isolated(|| engine.run(path, &code)) {
+            Ok(run) => run?,
+            Err(message) => {
+                r.status = Status::Exception;
+                r.message = message;
+                return Ok((r, None, false));
+            }
+        };
+        match outcome {
             Err(e) => {
                 r.status = if e.after_fix { Status::Lint } else { Status::Invalid };
                 r.message = e.message;
@@ -366,12 +395,13 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         Ok((r, clean, false))
     };
 
-    let results: Vec<(FileResult, Option<String>, bool)> = if a.bail {
-        // --bail is PHP-CS-Fixer's stop-on-violation: sequential, stop at the first fixable file (errors don't stop it).
+    let all: Vec<Result<_>> = if a.bail {
+        // --bail is PHP-CS-Fixer's stop-on-violation: sequential, stop at the first fixable file (lint errors don't
+        // stop it; an aborting file does).
         let mut out = Vec::new();
         for f in &files {
-            let r = process(f)?;
-            let stop = r.0.status == Status::Fixed;
+            let r = process(f);
+            let stop = r.as_ref().map_or(true, |r| r.0.status == Status::Fixed);
             out.push(r);
             if stop {
                 break;
@@ -379,17 +409,17 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         }
         out
     } else {
-        let all: Vec<Result<_>> = files.par_iter().map(process).collect();
-        if pint_mode && a.format.is_none() && !a.quiet && !a.parallel {
-            pint_error::progress_before_abort(&all, dry_run, a.ansi, a.no_ansi);
-        }
-        all.into_iter().collect::<Result<_>>()?
+        files.par_iter().map(process).collect()
     };
+    if pint_mode && a.format.is_none() && !a.quiet && !a.parallel {
+        pint_error::progress_before_abort(&all, dry_run, a.ansi, a.no_ansi);
+    }
+    let results: Vec<(FileResult, Option<String>, bool)> = all.into_iter().collect::<Result<_>>()?;
 
     let hits = results.iter().filter(|r| r.2).count();
     let (results, clean): (Vec<FileResult>, Vec<Option<String>>) = results.into_iter().map(|(r, c, _)| (r, c)).unzip();
     if let Some(c) = cache {
-        if a.explain {
+        if a.pun.explain {
             eprintln!("cache: {hits} of {} files unchanged since a clean run, skipped ({})", files.len(), c.path().display());
         }
         c.save(results.iter().map(|r| r.rel.clone()).zip(clean));
@@ -398,7 +428,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     let ctx = report::Ctx { preset: &cfg.preset, total: files.len(), dry_run, verbose: a.verbose > 0, ansi: a.ansi, no_ansi: a.no_ansi };
     let code = report::emit(&ctx, &results, a.format.as_deref(), a.quiet, a.output_to_file.as_deref(), a.output_format.as_deref())?;
     let failed = ((dry_run || a.repair) && results.iter().any(|r| r.status == Status::Fixed))
-        || results.iter().any(|r| matches!(r.status, Status::Invalid | Status::Lint));
+        || results.iter().any(FileResult::is_error);
 
     if let Engine2::Compat(p) = &engine {
         eprint!("{}", p.profile_report());
@@ -424,10 +454,10 @@ fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine2> {
                 None => (!p.not_ported.is_empty()).then(|| pun_delegate::Source::Rules(cfg.configured_rules.clone().into())),
             };
             match source {
-                Some(_) if a.native_only && cfg.php_cs_fixer.is_some() => {
+                Some(_) if a.pun.native_only && cfg.php_cs_fixer.is_some() => {
                     anyhow::bail!("--native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead.")
                 }
-                Some(s) if !a.native_only => {
+                Some(s) if !a.pun.native_only => {
                     // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
                     let d = pun_delegate::Delegate::start(root, s, std::env::var_os("PUN_PINT").map(PathBuf::from))?;
                     Engine2::Delegate(d, p.not_ported)
@@ -487,5 +517,25 @@ fn fix_text(cfg: &Config, engine: &Engine2, path: &Path, check_excluded: bool, c
     if check_excluded && pun_workspace::is_path_excluded(cfg, path) {
         return Ok(None);
     }
-    Ok(engine.run(path, code)?.ok().flatten().map(|(new, _)| new))
+    // A fixer's exception: Pint reports it in the unshown report too.
+    let Ok(run) = isolated(|| engine.run(path, code)) else { return Ok(None) };
+    Ok(run?.ok().flatten().map(|(new, _)| new))
+}
+
+thread_local! {
+    static ISOLATED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// One file's fixing, where a panic (Pun's fixers panic where upstream throws) fails only that file, with the panic
+/// message, like PHP-CS-Fixer's per-file exception errors. Such panics print nothing; others still do.
+fn isolated<T>(f: impl FnOnce() -> T) -> Result<T, String> {
+    static HOOK: std::sync::Once = std::sync::Once::new();
+    HOOK.call_once(|| {
+        let default = std::panic::take_hook();
+        std::panic::set_hook(Box::new(move |info| if !ISOLATED.get() { default(info) }));
+    });
+    ISOLATED.set(true);
+    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(f));
+    ISOLATED.set(false);
+    r.map_err(|p| p.downcast_ref::<&str>().map(|s| s.to_string()).or_else(|| p.downcast_ref::<String>().cloned()).unwrap_or_default())
 }
