@@ -72,6 +72,6 @@ impl Fixer for PhpdocTypesFixer {
         base::is_candidate(tokens)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        base::apply_fix(tokens, &|t| self.normalize(t));
+        base::apply_fix(tokens, &format!("phpdoc_types {:?}", self.types_set_to_fix), &|t| self.normalize(t));
     }
 }

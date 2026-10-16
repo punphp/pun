@@ -7,6 +7,8 @@ mod fix_report;
 mod highlight;
 mod php_diff;
 mod report;
+#[cfg(feature = "pprof")]
+mod sampler;
 
 use anyhow::{Context, Result};
 use clap::{Args, Parser, Subcommand};
@@ -133,6 +135,8 @@ pub struct FormatArgs {
 fn main() -> ExitCode {
     let argv0 = std::env::args_os().next().map(PathBuf::from).unwrap_or_default();
     let pint_mode = argv0.file_stem().is_some_and(|s| s == "pint");
+    #[cfg(feature = "pprof")]
+    let sampler = sampler::start();
     let result = if pint_mode {
         #[derive(Parser)]
         #[command(name = "pint")]
@@ -150,6 +154,10 @@ fn main() -> ExitCode {
             Cmd::Config { show: _, init: _, format, config, preset } => show_config(&format, config, preset),
         }
     };
+    #[cfg(feature = "pprof")]
+    if let Some(s) = sampler {
+        s.report();
+    }
     match result {
         Ok(code) => ExitCode::from(code),
         Err(e) => {
@@ -214,7 +222,14 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     pun_fixers::analyzers::active_preset::set(&cfg.preset);
 
     let engine = match cfg.engine {
-        Engine::Compat => Engine2::Compat(Pipeline::new(&cfg.rules, &pun_fixers::all)?),
+        Engine::Compat => {
+            let mut p = Pipeline::new(&cfg.rules, &pun_fixers::all)?;
+            // PUN_PROFILE=1: per-stage timings on stderr after the run.
+            if std::env::var_os("PUN_PROFILE").is_some() {
+                p.enable_profile();
+            }
+            Engine2::Compat(p)
+        }
         Engine::Pun => Engine2::Pun(cfg.php.clone()),
     };
     if a.explain {
@@ -304,6 +319,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         || results.iter().any(|r| matches!(r.status, Status::Invalid | Status::Lint));
 
     if let Engine2::Compat(p) = &engine {
+        eprint!("{}", p.profile_report());
         if !p.not_ported.is_empty() {
             eprintln!(
                 "pun: {} of {} enabled rules are not ported yet, so this result is not Pint-identical (see --explain).",

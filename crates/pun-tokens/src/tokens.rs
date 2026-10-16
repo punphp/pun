@@ -2,9 +2,11 @@
 //! including the found-kinds registry and the block-edge cache, since both are observable
 //! by fixers. Not ported: the static code-hash cache (pure optimization) and JSON helpers.
 
+use std::any::Any;
 use std::collections::{BTreeMap, HashMap};
 use std::cell::RefCell;
 use std::ops::Index;
+use std::sync::Arc;
 
 use crate::kind::Kind::{self, *};
 use crate::token::{FoundKey, Proto, Token};
@@ -25,6 +27,8 @@ pub struct Tokens {
     found_contents: HashMap<Vec<u8>, i64>,
     /// `blockStartCache` / `blockEndCache`; interior mutability so `find_block_end` takes `&self`.
     blocks: RefCell<BlockCache>,
+    /// `$namespaceDeclarations`: NamespacesAnalyzer's result (a pun-fixers type, hence `Any`), dropped on every change.
+    namespace_declarations: RefCell<Option<Arc<dyn Any + Send + Sync>>>,
     changed: bool,
 }
 
@@ -146,6 +150,7 @@ impl Tokens {
         }
         crate::transformers::transform(self);
         self.changed = true;
+        *self.namespace_declarations.get_mut() = None;
         *self.blocks.get_mut() = BlockCache::default();
     }
 
@@ -185,6 +190,7 @@ impl Tokens {
             let old = std::mem::replace(&mut self.tokens[index], Token::char(""));
             self.unregister_found_token(&old);
             self.changed = true;
+            *self.namespace_declarations.get_mut() = None;
             self.register_found_token(&token);
         }
         self.tokens[index] = token;
@@ -196,6 +202,17 @@ impl Tokens {
 
     pub fn is_changed(&self) -> bool {
         self.changed
+    }
+
+    /// `getNamespaceDeclarations()`: `compute` (NamespacesAnalyzer::getDeclarations) runs once per token-list version;
+    /// every edit (set to a different token, insert, clear_empty_tokens, set_code) drops the cached value.
+    pub fn namespace_declarations<T: Any + Send + Sync>(&self, compute: impl FnOnce(&Tokens) -> T) -> Arc<T> {
+        if let Some(v) = self.namespace_declarations.borrow().as_ref().and_then(|v| v.clone().downcast::<T>().ok()) {
+            return v;
+        }
+        let v = Arc::new(compute(self));
+        *self.namespace_declarations.borrow_mut() = Some(v.clone());
+        v
     }
 
     pub fn clear_empty_tokens(&mut self) {
@@ -221,6 +238,8 @@ impl Tokens {
             }
             index += 1;
         }
+        // Tokens moved: index-based caches go (upstream resets namespaceDeclarations here too).
+        *self.namespace_declarations.get_mut() = None;
         self.found_contents.insert(Vec::new(), 0);
         // updateSizeByTrimmingTrailingEmptyTokens
         while self.tokens.last().is_some_and(|t| t.id.is_none() && t.content.is_empty()) {
@@ -344,7 +363,14 @@ impl Tokens {
         tokens: &[Proto<'_>],
         case_sensitive: bool,
     ) -> Option<usize> {
-        let tokens: Vec<Proto<'_>> = tokens.iter().copied().filter(|t| self.is_token_kind_found(t.found_key())).collect();
+        // Upstream drops the prototypes whose kind is not in the collection; skip the copy when all of them are.
+        let filtered: Vec<Proto<'_>>;
+        let tokens = if tokens.iter().all(|t| self.is_token_kind_found(t.found_key())) {
+            tokens
+        } else {
+            filtered = tokens.iter().copied().filter(|t| self.is_token_kind_found(t.found_key())).collect();
+            &filtered
+        };
         if tokens.is_empty() {
             return None;
         }
@@ -458,6 +484,7 @@ impl Tokens {
         }
         self.changed = true;
         *self.blocks.get_mut() = BlockCache::default();
+        *self.namespace_declarations.get_mut() = None;
         let old_size = self.tokens.len();
         let far = *slices.keys().next_back().unwrap();
         assert!(far <= old_size, "Cannot insert index \"{far}\" outside of collection.");
@@ -721,5 +748,41 @@ mod tests {
         assert_eq!(t.generate_code(), b"<?php foo(7,[2]);");
         assert!(t.is_token_kind_found(CT_ARRAY_BRACKET_OPEN));
         assert_eq!(t.find_sequence(&[T_STRING.into(), "(".into()], 0, None, |_| true), Some(vec![1, 2]));
+    }
+
+    #[test]
+    fn namespace_declarations_cached_until_changed() {
+        // Like upstream's $namespaceDeclarations: computed once, recomputed after every edit that moves or changes tokens.
+        let runs = std::cell::Cell::new(0);
+        let count = |t: &Tokens| {
+            runs.set(runs.get() + 1);
+            t.count()
+        };
+        let mut t = Tokens::from_code(b"<?php foo(1);");
+        assert_eq!(*t.namespace_declarations(count), 7);
+        assert_eq!(*t.namespace_declarations(count), 7);
+        assert_eq!(runs.get(), 1);
+        // Re-setting an identical token is not a change.
+        t.set(1, t[1].clone());
+        t.namespace_declarations(count);
+        assert_eq!(runs.get(), 1);
+        let mut edits: Vec<Box<dyn Fn(&mut Tokens)>> = vec![
+            Box::new(|t| t.set(1, Token::new(T_STRING, "bar"))),
+            Box::new(|t| t.insert_at(1, vec![Token::new(T_WHITESPACE, " ")])),
+            Box::new(|t| {
+                t.clear_at(1);
+                // the clear above already dropped it; compute again so only clear_empty_tokens can drop it next
+                t.namespace_declarations(|t| t.count());
+                t.clear_empty_tokens();
+            }),
+            Box::new(|t| t.set_code(b"<?php $a;")),
+        ];
+        let expected = [7, 8, 7, 4];
+        for (edit, len) in edits.drain(..).zip(expected) {
+            let before = runs.get();
+            edit(&mut t);
+            assert_eq!(*t.namespace_declarations(count), len);
+            assert_eq!(runs.get(), before + 1);
+        }
     }
 }

@@ -42,3 +42,11 @@ codegen-units = 4
 [profile.dist]
 inherits = "release"
 lto = "thin"
+
+# Benchmarks and `perf`: release speed with line tables, cheap to build on a small box
+# (`CARGO_BUILD_JOBS=1 cargo build --profile profiling -p punphp`).
+[profile.profiling]
+inherits = "release"
+debug = "line-tables-only"
+lto = false
+codegen-units = 16

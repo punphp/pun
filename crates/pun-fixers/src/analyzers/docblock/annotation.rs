@@ -85,8 +85,11 @@ impl Annotation {
 
     pub fn set_types(&self, types: &[Vec<u8>]) {
         let orig_types_content = self.get_types_content().unwrap_or_default();
-        let glue = self.get_type_expression().and_then(|e| e.get_types_glue()).unwrap_or(b'|');
-        let new_types_content = types.join(&[glue][..]);
+        // The glue only joins two or more types; skip re-parsing the expression for the usual single one.
+        let new_types_content = match types {
+            [one] => one.clone(),
+            _ => types.join(&[self.get_type_expression().and_then(|e| e.get_types_glue()).unwrap_or(b'|')][..]),
+        };
         if orig_types_content == new_types_content {
             return;
         }
@@ -135,7 +138,7 @@ impl Annotation {
     }
 
     /// Panics like upstream's RuntimeException when the tag does not support types.
-    fn get_types_content(&self) -> Option<Vec<u8>> {
+    pub fn get_types_content(&self) -> Option<Vec<u8>> {
         if self.types_content.borrow().is_none() {
             let name = self.get_tag().get_name();
             if !self.support_types() {

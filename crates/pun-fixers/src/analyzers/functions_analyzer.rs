@@ -124,7 +124,7 @@ impl FunctionsAnalyzer {
         let mut scope_start_index = 0;
         let mut scope_end_index = tokens.count() - 1;
         let mut in_global_namespace = false;
-        for declaration in NamespacesAnalyzer.get_declarations(tokens) {
+        for declaration in NamespacesAnalyzer.declarations(tokens).iter() {
             scope_start_index = declaration.scope_start_index;
             scope_end_index = declaration.scope_end_index;
             if index >= scope_start_index && index <= scope_end_index {
