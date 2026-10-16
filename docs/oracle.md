@@ -36,7 +36,7 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 ## Harness
 
 ```
-cargo build -p pun-harness
+cargo build -p punphp-harness
 target/debug/pun-harness format                         # every corpus project, regenerates docs/scoreboard.md
 target/debug/pun-harness format --corpus pinkary        # one project (repeatable)
 target/debug/pun-harness format --fixer single_quote --corpus pinkary-dirty --diffs 5
