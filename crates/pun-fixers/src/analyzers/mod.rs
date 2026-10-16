@@ -7,3 +7,8 @@ pub mod alternative_syntax_analyzer;
 pub mod comments_analyzer;
 pub mod utils;
 pub mod docblock;
+pub mod analysis;
+pub mod namespaces_analyzer;
+pub mod namespace_uses_analyzer;
+pub mod attribute_analyzer;
+pub mod classy_analyzer;
