@@ -24,7 +24,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | M1.5 PSR-12: Pint psr12 preset + @PSR1/@PSR2/@PSR12, parity 0 on all 7 projects + 7 fuzz seeds | - | done |
 | M1.4 Delegate mode: unported/custom fixers via PHP workers, `--native-only` (crates/pun-delegate); laravel-framework own config 0 differing | - | done |
 | laravel-framework own pint.json fully native: port its 8 unported rules, native `// @php-cs-fixer-ignore`, cover php_diff.rs:163 | rules agent (target-rules/) | doing |
-| M1.6 `--watch` + formatting-only LSP | - | todo |
+| M1.6 `--watch` + formatting-only LSP (+ Pint error boxes in pint mode) | watch agent (target-watch/) | doing |
 | Verify --dirty/--diff/--repair/--parallel/--staged/--since/--stdin against Pint (crates/pun-cli/tests/flags.rs; `--since` added; stdin+`--dirty`/`--diff` intentionally does not format repo files) | - | done |
 | Cleanup: /code-review --fix, architecture pass, remove restating comments, cargo fmt, clippy (59); clap: `ValueEnum` for `--engine` and `config --format` instead of string lists + manual mapping (keep `--format`/`--output-format` as strings: Pint prints its own "Format [x] is not supported." box) | - | todo (after the doing rows) |
 | CI workflows (.github/ untracked: gh token lacks `workflow` scope) | user | blocked |
