@@ -161,16 +161,16 @@ Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeE
 - [ ] self_static_accessor
 - [x] visibility_required — deprecated upstream; not ported. pun-format runs it as a proxy of modifier_keywords (like AbstractProxyFixer).
 - [ ] heredoc_to_nowdoc
-- [ ] no_empty_phpdoc
+- [x] no_empty_phpdoc
 - [ ] phpdoc_align
 - [ ] phpdoc_no_access
 - [ ] phpdoc_no_package
 - [ ] phpdoc_no_useless_inheritdoc
 - [ ] phpdoc_order
-- [ ] phpdoc_scalar
+- [x] phpdoc_scalar
 - [ ] phpdoc_separation
-- [ ] phpdoc_trim
-- [ ] phpdoc_types
+- [x] phpdoc_trim
+- [x] phpdoc_types
 - [ ] phpdoc_var_without_name
 - [ ] no_superfluous_phpdoc_tags
 
