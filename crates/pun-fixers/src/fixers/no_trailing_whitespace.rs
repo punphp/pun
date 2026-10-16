@@ -24,6 +24,9 @@ impl Fixer for NoTrailingWhitespaceFixer {
         let mut index = tokens.count();
         while index > 0 {
             index -= 1;
+            if !tokens[index].is_kind(T_OPEN_TAG) && !(tokens[index].is_whitespace(None) && may_change(&tokens[index].content, index + 1 >= tokens.count())) {
+                continue;
+            }
             let token = tokens[index].clone();
             if token.is_kind(T_OPEN_TAG) && index + 1 < tokens.count() && tokens[index + 1].is_whitespace(None) {
                 if let Some(open_tag_matches) = Preg::match_groups("/(.*)\\h$/", &token.content, 0) {
@@ -66,4 +69,14 @@ impl Fixer for NoTrailingWhitespaceFixer {
             }
         }
     }
+}
+
+/// Whether trimming can change a whitespace token (only " \t\n\r\0\x0B" in it): a space or tab right before a line
+/// break, or at the very end of the file. A `\0` (a non-trimmable character) or an empty token takes the full path.
+fn may_change(c: &[u8], last: bool) -> bool {
+    let h = |b: &u8| matches!(b, b' ' | b'\t');
+    c.is_empty()
+        || c.contains(&0)
+        || (last && c.last().is_some_and(h))
+        || c.windows(2).any(|w| h(&w[0]) && matches!(w[1], b'\n' | b'\r' | 0x0b))
 }

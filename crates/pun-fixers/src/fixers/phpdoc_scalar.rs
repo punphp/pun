@@ -29,6 +29,16 @@ pub fn fixer() -> Box<dyn Fixer> {
 }
 
 impl PhpdocScalarFixer {
+    /// normalize() only rewrites a type spelled exactly as a configured name (after dropping `[]`), so a docblock
+    /// where every occurrence of those names runs on into more identifier characters (`str` in `string`) comes out
+    /// unchanged.
+    fn may_change(&self, doc: &[u8]) -> bool {
+        let word = |b: &u8| b.is_ascii_alphanumeric() || *b == b'_' || *b >= 0x80;
+        self.types.iter().any(|t| {
+            let t = t.as_bytes();
+            doc.windows(t.len()).enumerate().any(|(i, w)| w == t && !doc.get(i + t.len()).is_some_and(word))
+        })
+    }
     fn normalize(&self, t: &[u8]) -> Vec<u8> {
         let mut t = t;
         let mut suffix = Vec::new();
@@ -62,6 +72,6 @@ impl Fixer for PhpdocScalarFixer {
         base::is_candidate(tokens)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        base::apply_fix(tokens, &format!("phpdoc_scalar {:?}", self.types), &|t| self.normalize(t));
+        base::apply_fix(tokens, &format!("phpdoc_scalar {:?}", self.types), &|doc| self.may_change(doc), &|t| self.normalize(t));
     }
 }

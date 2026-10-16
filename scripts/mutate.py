@@ -46,6 +46,8 @@ MUTATIONS = [
     ('concat-nospace', lambda s, r: re.sub(r" \. ", '.', s)),
     ('long-array', lambda s, r: re.sub(r'= \[\]', '= array()', s)),
     ('crlf', lambda s, r: s.replace('\n', '\r\n')),
+    ('doc-type-alias', lambda s, r: re.sub(r'(@(?:param|return|var)\s+\S*?)\b(int|bool|float|string)\b', lambda m: m.group(1) + {'int': 'integer', 'bool': 'boolean', 'float': 'double', 'string': 'str'}[m.group(2)], s)),
+    ('doc-type-case', lambda s, r: re.sub(r'(@(?:param|return|var)\s+\S*?)\b(string|int|array|null|bool|mixed|void)\b', lambda m: m.group(1) + m.group(2).capitalize(), s)),
     ('shuffle-imports', shuffle_imports),
     ('quotes', quotes),
     ('op-nospace', lambda s, r: re.sub(r' (===|!==|==|!=|<=|>=|&&|\|\||\?\?|=>|\+=|-=|\.=) ', r'\1', s)),
