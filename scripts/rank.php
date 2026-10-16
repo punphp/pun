@@ -7,7 +7,7 @@
 // Fixers are configured from <pint.json>'s effective rule list (see pint-boot.php);
 // files come from Pint's own finder rooted at each <dir> (Blade files skipped).
 // Mirrors PHP-CS-Fixer's Runner per file: supports() -> isCandidate() -> fix() ->
-// clearEmptyTokens(), on a fresh token list for every (fixer, file).
+// clearEmptyTokens(), on a fresh clone of the file's token list for every fixer.
 
 $dirs = array_slice($argv, 2);
 $argv = [$argv[0], $argv[1]];
@@ -15,32 +15,36 @@ $argv = [$argv[0], $argv[1]];
 
 use PhpCsFixer\Tokenizer\Tokens;
 
+$fixers = array_filter($factory->getFixers(), fn ($f) => $f->getName() !== 'Pint/laravel_blade');
 $counts = [];
 foreach ($dirs as $dir) {
-    $files = [];
-    foreach (App\Factories\ConfigurationFactory::finder()->in($dir)->notName('*.blade.php') as $f) {
-        $files[] = [$f, file_get_contents($f->getPathname())];
-    }
-    fwrite(STDERR, basename($dir).': '.count($files)." files\n");
-    foreach ($factory->getFixers() as $fixer) {
-        if (str_starts_with($fixer->getName(), 'Pint/laravel_blade')) {
-            continue;
+    $n = array_fill_keys(array_map(fn ($f) => $f->getName(), $fixers), 0);
+    $files = 0;
+    foreach (App\Factories\ConfigurationFactory::finder()->in($dir)->notName('*.blade.php') as $file) {
+        $code = file_get_contents($file->getPathname());
+        Tokens::clearCache();
+        try {
+            $pristine = Tokens::fromCode($code);
+        } catch (ParseError) {
+            continue; // Pint's linter skips files that don't parse.
         }
-        $n = 0;
-        foreach ($files as [$file, $code]) {
+        $files++;
+        foreach ($fixers as $fixer) {
             if (! $fixer->supports($file)) {
                 continue;
             }
-            Tokens::clearCache();
-            $tokens = Tokens::fromCode($code);
+            $tokens = clone $pristine;
             if (! $fixer->isCandidate($tokens)) {
                 continue;
             }
             $fixer->fix($file, $tokens);
             $tokens->clearEmptyTokens();
-            $n += (int) ($tokens->generateCode() !== $code);
+            $n[$fixer->getName()] += (int) ($tokens->generateCode() !== $code);
         }
-        $counts[$fixer->getName()][basename($dir)] = $n;
+    }
+    fwrite(STDERR, basename($dir).": $files files\n");
+    foreach ($n as $name => $c) {
+        $counts[$name][basename($dir)] = $c;
     }
 }
 echo json_encode($counts, JSON_PRETTY_PRINT)."\n";
