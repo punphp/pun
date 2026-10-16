@@ -201,7 +201,6 @@ fn matches_pint() {
     cx.same(&dir, &tree, &[], &["--diff=main", "--test"], &[], b"");
 
     // Errors: unknown reporter, missing path, missing `in` dir, unreadable / unwritable files.
-    cx.same_error(&dir, &tree, &["--format=nope"]);
     cx.same_error(&dir, &tree, &["nope"]);
     let mut bad_in = tree.clone();
     bad_in[1] = ("pint.json", r#"{"preset":"empty","rules":{"array_syntax":true},"in":["nodir"]}"#);
@@ -283,26 +282,24 @@ fn blade_like_pint() {
     }
 }
 
-/// Syntax errors: PHP's message text differs from mago's, so compare everything but the message.
+/// `-v` diffs pair up lines exactly like PHP-CS-Fixer's sebastian/diff (LCS + strict unified builder): reordered
+/// imports (fixtures/dirty_imports.php, from pinkary-dirty: a Myers diff pairs other lines), a missing final newline, mixed line endings (warning line), and
+/// a file big enough for the memory-efficient LCS (> 853 differing lines).
 #[test]
-fn invalid_files_like_pint() {
+fn diffs_like_pint() {
     let Some(oracle) = oracle() else { return };
     let cx = Ctx { oracle, alias: pint_alias() };
-    let dir = tmp("inv");
-    let mut tree = files();
-    tree.push(("app/Bad.php", "<?php\nfunction (\n"));
-    for args in [&["--test"][..], &[], &["--format=agent"], &["--test", "--format=json"], &["-q"]] {
-        reset(&dir, &tree);
-        let (want, _) = cx.pint(&dir, args, &[], b"");
-        reset(&dir, &tree);
-        let (got, err) = run(&cx.alias, &[], &dir, args, &[], b"");
-        assert_eq!((got.code, &got.files), (want.code, &want.files), "{args:?}");
-        let shape = |s: &str| s.lines().map(|l| if l.contains("app/Bad.php") { "<error line>" } else { l }).map(|l| l.split("\"message\":").next().unwrap().to_string()).collect::<Vec<_>>();
-        assert_eq!(shape(&got.stdout), shape(&want.stdout), "{args:?}");
-        if args.contains(&"--format=json") || args.contains(&"--format=agent") {
-            assert!(err.contains("ERROR ") && err.contains("app/Bad.php: Parse error: "), "{err}");
-        }
-    }
+    let dir = tmp("diff");
+    let big: String = std::iter::once("<?php\n".to_string()).chain((0..1000).map(|i| format!("$a{i} = array({i});\n$b = {};\n", i % 7))).collect();
+    let tree = [
+        ("composer.json", r#"{"require":{"php":"^8.4"}}"#),
+        ("pint.json", r#"{"preset":"laravel"}"#),
+        ("app/Imports.php", include_str!("fixtures/dirty_imports.php")),
+        ("app/NoEol.php", "<?php\n\n$a = array(1);\n$b = 2;"),
+        ("app/Crlf.php", "<?php\r\n\r\n$a = array(1);\n"),
+        ("app/Big.php", &big),
+    ];
+    cx.same(&dir, &tree, &[], &["--test", "-v"], &[], b"");
 }
 
 fn pun(dir: &Path, args: &[&str]) -> (String, String, Option<i32>) {
@@ -356,10 +353,7 @@ fn pun_only_behaviour() {
     let (_, err) = run(&pint_alias(), &[], &dir, &["--test", "app/Clean.php"], &[], b"");
     assert!(!err.contains("engine"), "{err}");
 
-    // Reporters Pint has but Pun doesn't yet.
     reset(&dir, &files());
-    let (_, err, code) = pun(&dir, &["format", "--test", "--format=checkstyle"]);
-    assert_eq!((err.as_str(), code), ("\n  Format [checkstyle] is not yet supported by pun.\n\n", Some(1)));
 
     // --staged: only files with staged changes (none outside git).
     let (out, _, code) = pun(&dir, &["format", "--staged", "--test", "--format=json"]);

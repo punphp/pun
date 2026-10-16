@@ -2,6 +2,10 @@
 
 #[cfg(feature = "mago-lint")]
 mod lint;
+mod console;
+mod fix_report;
+mod highlight;
+mod php_diff;
 mod report;
 
 use anyhow::{Context, Result};
@@ -201,6 +205,12 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     let engine = a.engine.as_deref().map(|e| if e == "pun" { Engine::Pun } else { Engine::Compat });
     let opts = Options { config: a.config.clone(), no_config: a.no_config, preset: a.preset.clone(), engine, blade: a.blade, pint_mode };
     let cfg = pun_config::load(&root, &opts)?;
+    // EnsurePrettierIsConfigured: `"Pint/laravel_blade": true` (or --blade) needs Node and prettier in the project.
+    let blade_on = cfg.rules.iter().any(|r| r.name == "Pint/laravel_blade" && r.options.is_null());
+    if let Some(out) = report::ensure_prettier(&root, blade_on, a.ansi, a.no_ansi) {
+        print!("{out}");
+        return Ok(1);
+    }
     pun_fixers::analyzers::active_preset::set(&cfg.preset);
 
     let engine = match cfg.engine {
@@ -256,7 +266,8 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         match engine.run(path, &code) {
             Err(e) => {
                 r.status = if e.after_fix { Status::Lint } else { Status::Invalid };
-                r.message = e.message;
+                // PHP's own wording when a `php` is around (only failing files pay for the process).
+                r.message = if e.after_fix { e.message } else { report::php_parse_error(&code).unwrap_or(e.message) };
             }
             Ok(None) => {}
             Ok(Some((new, applied))) => {
@@ -287,7 +298,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         files.par_iter().map(process).collect::<Result<_>>()?
     };
 
-    let ctx = report::Ctx { preset: &cfg.preset, total: files.len(), dry_run, verbose: a.verbose > 0 };
+    let ctx = report::Ctx { preset: &cfg.preset, total: files.len(), dry_run, verbose: a.verbose > 0, ansi: a.ansi, no_ansi: a.no_ansi };
     let code = report::emit(&ctx, &results, a.format.as_deref(), a.quiet, a.output_to_file.as_deref(), a.output_format.as_deref())?;
     let failed = ((dry_run || a.repair) && results.iter().any(|r| r.status == Status::Fixed))
         || results.iter().any(|r| matches!(r.status, Status::Invalid | Status::Lint));

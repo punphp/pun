@@ -29,6 +29,8 @@ pun-config.workspace = true
 pun-format.workspace = true
 pun-fixers.workspace = true
 pun-workspace.workspace = true
+pun-tokens.workspace = true
+pcre2.workspace = true
 mago-allocator = { workspace = true, optional = true }
 mago-database = { workspace = true, optional = true }
 mago-linter = { workspace = true, optional = true }
