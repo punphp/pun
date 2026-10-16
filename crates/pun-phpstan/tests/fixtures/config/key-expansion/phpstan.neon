@@ -7,5 +7,7 @@ parameters:
 		num: '%level%'
 		bool: '%reportUnmatchedIgnoredErrors%'
 		cat: '%level%-%reportUnmatchedIgnoredErrors%'
+		single: '50% off'
+		spaced: 'a%b c%d'
 parametersSchema:
 	mine: mixed()
