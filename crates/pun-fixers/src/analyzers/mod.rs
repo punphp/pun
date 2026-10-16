@@ -6,3 +6,4 @@ pub mod blocks_analyzer;
 pub mod alternative_syntax_analyzer;
 pub mod comments_analyzer;
 pub mod utils;
+pub mod docblock;

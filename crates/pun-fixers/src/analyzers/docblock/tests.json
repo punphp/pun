@@ -1,0 +1,5135 @@
+{
+    "AnnotationTest::__static": {
+        "SAMPLE": "/**\n     * Test docblock.\n     *\n     * @param string $hello\n     * @param bool $test Description\n     *        extends over many lines\n     *\n     * @param adkjbadjasbdand $asdnjkasd\n     *\n     * @throws \\Exception asdnjkasd\n     *\n     * asdasdasdasdasdasdasdasd\n     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n     *\n     * @return void\n     */",
+        "CONTENT": {
+            "__list": true,
+            "items": [
+                "     * @param string $hello\n",
+                "     * @param bool $test Description\n     *        extends over many lines\n",
+                "     * @param adkjbadjasbdand $asdnjkasd\n",
+                "     * @throws \\Exception asdnjkasd\n     *\n     * asdasdasdasdasdasdasdasd\n     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n",
+                "     * @return void\n"
+            ]
+        },
+        "START": {
+            "__list": true,
+            "items": [
+                3,
+                4,
+                7,
+                9,
+                14
+            ]
+        },
+        "END": {
+            "__list": true,
+            "items": [
+                3,
+                5,
+                7,
+                12,
+                14
+            ]
+        },
+        "tags": {
+            "__list": true,
+            "items": [
+                "param",
+                "param",
+                "param",
+                "throws",
+                "return"
+            ]
+        }
+    },
+    "AnnotationTest::testGetContent": [
+        {
+            "key": 0,
+            "args": [
+                0,
+                "     * @param string $hello\n"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                1,
+                "     * @param bool $test Description\n     *        extends over many lines\n"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                2,
+                "     * @param adkjbadjasbdand $asdnjkasd\n"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                3,
+                "     * @throws \\Exception asdnjkasd\n     *\n     * asdasdasdasdasdasdasdasd\n     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                4,
+                "     * @return void\n"
+            ]
+        }
+    ],
+    "AnnotationTest::testStart": [
+        {
+            "key": 0,
+            "args": [
+                0,
+                3
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                1,
+                4
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                2,
+                7
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                3,
+                9
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                4,
+                14
+            ]
+        }
+    ],
+    "AnnotationTest::testEnd": [
+        {
+            "key": 0,
+            "args": [
+                0,
+                3
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                1,
+                5
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                2,
+                7
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                3,
+                12
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                4,
+                14
+            ]
+        }
+    ],
+    "AnnotationTest::testGetTag": [
+        {
+            "key": 0,
+            "args": [
+                0,
+                "param"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                1,
+                "param"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                2,
+                "param"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                3,
+                "throws"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                4,
+                "return"
+            ]
+        }
+    ],
+    "AnnotationTest::testRemove": [
+        {
+            "key": 0,
+            "args": [
+                0,
+                3,
+                3
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                1,
+                4,
+                5
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                2,
+                7,
+                7
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                3,
+                9,
+                12
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                4,
+                14,
+                14
+            ]
+        }
+    ],
+    "AnnotationTest::testRemoveEdgeCases": [
+        {
+            "key": 0,
+            "args": [
+                "",
+                "/** @return null*/"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "",
+                "/** @return null */"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "",
+                "/** @return null  */"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                "/**\n                 */",
+                "/** @return null\n                 */"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                "/**\n                 */",
+                "/** @return null \n                 */"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                "/**\n                 */",
+                "/**\n                 * @return null*/"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                "/**\n                 */",
+                "/**\n                 * @return null */"
+            ]
+        }
+    ],
+    "AnnotationTest::testTypeParsing": [
+        {
+            "key": 0,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int"
+                    ]
+                },
+                " * @method int method()"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int[]"
+                    ]
+                },
+                " * @return int[]\r"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int[]"
+                    ]
+                },
+                " * @return int[]\r\n"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "Foo[][]"
+                    ]
+                },
+                " * @method Foo[][] method()"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int[]"
+                    ]
+                },
+                " * @method int[] method()"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int[]",
+                        "null"
+                    ]
+                },
+                " * @method int[]|null method()"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int[]",
+                        "null",
+                        "?int",
+                        "array"
+                    ]
+                },
+                " * @method int[]|null|?int|array method()"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "null",
+                        "Foo\\Bar",
+                        "\\Baz\\Bax",
+                        "int[]"
+                    ]
+                },
+                " * @method null|Foo\\Bar|\\Baz\\Bax|int[] method()"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "gen<int>"
+                    ]
+                },
+                " * @method gen<int> method()"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int",
+                        "gen<int>"
+                    ]
+                },
+                " * @method int|gen<int> method()"
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "\\int",
+                        "\\gen<\\int, \\bool>"
+                    ]
+                },
+                " * @method \\int|\\gen<\\int, \\bool> method()"
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "gen<int,  int>"
+                    ]
+                },
+                " * @method gen<int,  int> method()"
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "gen<int,  bool|string>"
+                    ]
+                },
+                " * @method gen<int,  bool|string> method()"
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "gen<int,  string[]>"
+                    ]
+                },
+                " * @method gen<int,  string[]> method() <> a"
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "gen<int,  gener<string, bool>>"
+                    ]
+                },
+                " * @method gen<int,  gener<string, bool>> method() foo <a >"
+            ]
+        },
+        {
+            "key": 15,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "gen<int,  gener<string, null|bool>>"
+                    ]
+                },
+                " * @method gen<int,  gener<string, null|bool>> method()"
+            ]
+        },
+        {
+            "key": 16,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "null",
+                        "gen<int,  gener<string, bool>>",
+                        "int",
+                        "string[]"
+                    ]
+                },
+                " * @method null|gen<int,  gener<string, bool>>|int|string[] method() foo <a >"
+            ]
+        },
+        {
+            "key": 17,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "null",
+                        "gen<int,  gener<string, bool>>",
+                        "int",
+                        "array<int, string>",
+                        "string[]"
+                    ]
+                },
+                " * @method null|gen<int,  gener<string, bool>>|int|array<int, string>|string[] method() foo <a >"
+            ]
+        },
+        {
+            "key": 18,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "this"
+                    ]
+                },
+                "/** @return    this */"
+            ]
+        },
+        {
+            "key": 19,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "@this"
+                    ]
+                },
+                "/** @return    @this */"
+            ]
+        },
+        {
+            "key": 20,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "$SELF",
+                        "int"
+                    ]
+                },
+                "/** @return $SELF|int */"
+            ]
+        },
+        {
+            "key": 21,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "array<string|int, string>"
+                    ]
+                },
+                "/** @var array<string|int, string>"
+            ]
+        },
+        {
+            "key": 22,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int"
+                    ]
+                },
+                " * @return int\n"
+            ]
+        },
+        {
+            "key": 23,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int"
+                    ]
+                },
+                " * @return int\r\n"
+            ]
+        },
+        {
+            "key": 24,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "Collection<Foo<Bar>, Foo<Baz>>"
+                    ]
+                },
+                "/** @var Collection<Foo<Bar>, Foo<Baz>>"
+            ]
+        },
+        {
+            "key": 25,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "/** @var int | string"
+            ]
+        },
+        {
+            "key": 26,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "Foo::*"
+                    ]
+                },
+                "/** @var Foo::*"
+            ]
+        },
+        {
+            "key": 27,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "Foo::A"
+                    ]
+                },
+                "/** @var Foo::A"
+            ]
+        },
+        {
+            "key": 28,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "Foo::A",
+                        "Foo::B"
+                    ]
+                },
+                "/** @var Foo::A|Foo::B"
+            ]
+        },
+        {
+            "key": 29,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "Foo::A*"
+                    ]
+                },
+                "/** @var Foo::A*"
+            ]
+        },
+        {
+            "key": 30,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "array<Foo::A*>",
+                        "null"
+                    ]
+                },
+                "/** @var array<Foo::A*>|null"
+            ]
+        },
+        {
+            "key": 31,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "null",
+                        "true",
+                        "false",
+                        "1",
+                        "-1",
+                        "1.5",
+                        "-1.5",
+                        ".5",
+                        "1.",
+                        "'a'",
+                        "\"b\""
+                    ]
+                },
+                "/** @var null|true|false|1|-1|1.5|-1.5|.5|1.|'a'|\"b\""
+            ]
+        },
+        {
+            "key": 32,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "int",
+                        "\"a\"",
+                        "A<B<C, D>, E<F::*|G[]>>"
+                    ]
+                },
+                "/** @param int | \"a\" | A<B<C, D>, E<F::*|G[]>> $foo */"
+            ]
+        },
+        {
+            "key": 33,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "class-string<Foo>"
+                    ]
+                },
+                "/** @var class-string<Foo> */"
+            ]
+        },
+        {
+            "key": 34,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "A",
+                        "B"
+                    ]
+                },
+                "/** @var A&B */"
+            ]
+        },
+        {
+            "key": 35,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "A",
+                        "B"
+                    ]
+                },
+                "/** @var A & B */"
+            ]
+        },
+        {
+            "key": 36,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "array{1: bool, 2: bool}"
+                    ]
+                },
+                "/** @var array{1: bool, 2: bool} */"
+            ]
+        },
+        {
+            "key": 37,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "array{a: int|string, b?: bool}"
+                    ]
+                },
+                "/** @var array{a: int|string, b?: bool} */"
+            ]
+        },
+        {
+            "key": 38,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "array{'a': \"a\", \"b\"?: 'b'}"
+                    ]
+                },
+                "/** @var array{'a': \"a\", \"b\"?: 'b'} */"
+            ]
+        },
+        {
+            "key": 39,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "array { a : int | string , b ? : A<B, C> }"
+                    ]
+                },
+                "/** @var array { a : int | string , b ? : A<B, C> } */"
+            ]
+        },
+        {
+            "key": 40,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "array{\n    a: int,\n    b: string\n}"
+                    ]
+                },
+                "/** @var array{\n    a: int,\n    b: string\n} */"
+            ]
+        },
+        {
+            "key": 41,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "callable(string)"
+                    ]
+                },
+                "/** @param callable(string) $function"
+            ]
+        },
+        {
+            "key": 42,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "callable(string): bool"
+                    ]
+                },
+                "/** @param callable(string): bool $function"
+            ]
+        },
+        {
+            "key": 43,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "callable(array<int, string>, array<int, Foo>): bool"
+                    ]
+                },
+                "/** @param callable(array<int, string>, array<int, Foo>): bool $function"
+            ]
+        },
+        {
+            "key": 44,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "array<int, callable(string): bool>"
+                    ]
+                },
+                "/** @param array<int, callable(string): bool> $function"
+            ]
+        },
+        {
+            "key": 45,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "callable(string): callable(int)"
+                    ]
+                },
+                "/** @param callable(string): callable(int) $function"
+            ]
+        },
+        {
+            "key": 46,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "callable(string) : callable(int) : bool"
+                    ]
+                },
+                "/** @param callable(string) : callable(int) : bool $function"
+            ]
+        },
+        {
+            "key": 47,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "TheCollection<callable(Foo, Bar,Baz): Foo[]>",
+                        "string[]",
+                        "null"
+                    ]
+                },
+                "* @param TheCollection<callable(Foo, Bar,Baz): Foo[]>|string[]|null $x"
+            ]
+        },
+        {
+            "key": 48,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "Closure(string)"
+                    ]
+                },
+                "/** @param Closure(string) $function"
+            ]
+        },
+        {
+            "key": 49,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "closure()"
+                    ]
+                },
+                "/** @param closure() $function"
+            ]
+        },
+        {
+            "key": 50,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "array  <  int   , callable  (  string  )  :   bool  >"
+                    ]
+                },
+                "/** @param   array  <  int   , callable  (  string  )  :   bool  > $function"
+            ]
+        }
+    ],
+    "AnnotationTest::testTypes": [
+        {
+            "key": 0,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "Foo",
+                        "null"
+                    ]
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        "Bar[]"
+                    ]
+                },
+                "     * @param Foo|null $foo",
+                "     * @param Bar[] $foo"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "false"
+                    ]
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        "bool"
+                    ]
+                },
+                "*   @return            false",
+                "*   @return            bool"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "RUNTIMEEEEeXCEPTION"
+                    ]
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        "Throwable"
+                    ]
+                },
+                "* \t@throws\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n",
+                "* \t@throws\t  \t Throwable\t\t\t\t\t\t\t\n\n\n"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "RUNTIMEEEEeXCEPTION"
+                    ]
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        "Throwable"
+                    ]
+                },
+                "*\t@throws\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n",
+                "*\t@throws\t  \t Throwable\t\t\t\t\t\t\t\n\n\n"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "RUNTIMEEEEeXCEPTION"
+                    ]
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        "Throwable"
+                    ]
+                },
+                "*@throws\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n",
+                "*@throws\t  \t Throwable\t\t\t\t\t\t\t\n\n\n"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "string"
+                    ]
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        "string",
+                        "null"
+                    ]
+                },
+                " * @method string getString()",
+                " * @method string|null getString()"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "Foo",
+                        "Bar"
+                    ]
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        "Bar",
+                        "Foo"
+                    ]
+                },
+                " * @param Foo&Bar $x",
+                " * @param Bar&Foo $x"
+            ]
+        }
+    ],
+    "AnnotationTest::testNormalizedTypes": [
+        {
+            "key": 0,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "null",
+                        "string"
+                    ]
+                },
+                "* @param StRiNg|NuLl $foo"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "void"
+                    ]
+                },
+                "* @return Void"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bar",
+                        "baz",
+                        "foo",
+                        "null",
+                        "qux"
+                    ]
+                },
+                "* @return Foo|Bar|Baz|Qux|null"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bool",
+                        "int"
+                    ]
+                },
+                "* @param bool|int $foo"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bool",
+                        "int"
+                    ]
+                },
+                "* @param bool&int $foo"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bool",
+                        "int"
+                    ]
+                },
+                "* @param bool|int ...$foo"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bool",
+                        "int"
+                    ]
+                },
+                "* @param bool|int &$foo"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bool",
+                        "int"
+                    ]
+                },
+                "* @param bool|int &...$foo"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bool",
+                        "int"
+                    ]
+                },
+                "* @param bool|int$foo"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bool",
+                        "int"
+                    ]
+                },
+                "* @param bool|int&$foo"
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bool",
+                        "int"
+                    ]
+                },
+                "* @param bool|int&...$foo"
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bar&baz",
+                        "foo"
+                    ]
+                },
+                "* @param Foo|Bar&Baz&$param"
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        "bar&baz",
+                        "foo"
+                    ]
+                },
+                "* @param Baz&Bar|Foo&$param"
+            ]
+        }
+    ],
+    "AnnotationTest::testGetTypeExpression": [
+        {
+            "key": 0,
+            "args": [
+                "* @param array|Traversable $foo",
+                null,
+                {
+                    "__list": true,
+                    "items": []
+                },
+                "iterable"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "* @param array|Traversable $foo",
+                {
+                    "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceAnalysis",
+                    "fullName": "App",
+                    "shortName": "App",
+                    "startIndex": 0,
+                    "endIndex": 999,
+                    "scopeStartIndex": 0,
+                    "scopeEndIndex": 999
+                },
+                {
+                    "__list": true,
+                    "items": []
+                },
+                null
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "* @param array|Traversable $foo",
+                {
+                    "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceAnalysis",
+                    "fullName": "App",
+                    "shortName": "App",
+                    "startIndex": 0,
+                    "endIndex": 999,
+                    "scopeStartIndex": 0,
+                    "scopeEndIndex": 999
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceUseAnalysis",
+                            "fullName": "Traversable",
+                            "shortName": "Traversable",
+                            "isInMulti": false,
+                            "isAliased": false,
+                            "startIndex": 0,
+                            "endIndex": 999,
+                            "chunkStartIndex": null,
+                            "chunkEndIndex": null,
+                            "type": 1
+                        }
+                    ]
+                },
+                "iterable"
+            ]
+        }
+    ],
+    "AnnotationTest::testGetVariableName": [
+        {
+            "key": 0,
+            "args": [
+                "* @param int $foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "* @param int $foo some description",
+                "$foo"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "/** @param int $foo*/",
+                "$foo"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                "* @param int",
+                null
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                "* @var int $foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                "* @var int $foo some description",
+                "$foo"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                "/** @var int $foo*/",
+                "$foo"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                "* @var int",
+                null
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                "* @param $foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                "* @param &$foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                "* @param & $foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                "* @param int&$foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                "* @param int& $foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                "* @param int &$foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                "* @param int & $foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 15,
+            "args": [
+                "* @param int ...$foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 16,
+            "args": [
+                "* @param int ... $foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 17,
+            "args": [
+                "* @param int&...$foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 18,
+            "args": [
+                "* @param int &...$foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 19,
+            "args": [
+                "* @param int & ...$foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 20,
+            "args": [
+                "* @param int & ... $foo",
+                "$foo"
+            ]
+        },
+        {
+            "key": 21,
+            "args": [
+                "* @param ?int $foo=null invalid description",
+                "$foo"
+            ]
+        },
+        {
+            "key": 22,
+            "args": [
+                "* @param int $počet Special chars in variable name",
+                "$počet"
+            ]
+        },
+        {
+            "key": 23,
+            "args": [
+                " * @param array{\n * a: Foo,\n * b: Bar\n * } $x",
+                "$x"
+            ]
+        }
+    ],
+    "DocBlockTest::__static": {
+        "sample": "/**\n     * Test docblock.\n     *\n     * @param string $hello\n     * @param bool $test Description\n     *        extends over many lines\n     *\n     * @param adkjbadjasbdand $asdnjkasd\n     *\n     * @throws \\Exception asdnjkasd\n     * asdasdasdasdasdasdasdasd\n     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n     *\n     * @return void\n     */"
+    },
+    "DocBlockTest::testMakeMultiLine": [
+        {
+            "key": "It keeps a multi line doc block as is",
+            "args": [
+                "/**\n * Hello\n */"
+            ]
+        },
+        {
+            "key": "It keeps a multi line doc block as is with multiple annotations",
+            "args": [
+                "/**\n * @foo\n *@bar\n */"
+            ]
+        },
+        {
+            "key": "It keeps a multi line doc block with indentation",
+            "args": [
+                "/**\n\t *@foo\n\t */"
+            ]
+        },
+        {
+            "key": "It Converts a single line to multi line with no indentation",
+            "args": [
+                "/** Hello */",
+                "/**\n * Hello\n */"
+            ]
+        },
+        {
+            "key": "It Converts a single line to multi line with correct indentation",
+            "args": [
+                "/** Hello */",
+                "/**\n     * Hello\n     */",
+                "    "
+            ]
+        },
+        {
+            "key": "It Converts a single line to multi line with correct indentation and Line ending",
+            "args": [
+                "/** Hello */",
+                "/**\r\n     * Hello\r\n     */",
+                "    ",
+                "\r\n"
+            ]
+        }
+    ],
+    "DocBlockTest::testMakeSingleLine": [
+        {
+            "key": "It keeps a single line doc block as is",
+            "args": [
+                "/** Hello */"
+            ]
+        },
+        {
+            "key": "It converts a multi line doc block to a single line",
+            "args": [
+                "/**\n * Hello\n */",
+                "/** Hello */"
+            ]
+        },
+        {
+            "key": "It converts a multi line doc block to a single line with annotation",
+            "args": [
+                "/**\n * @foo\n */",
+                "/** @foo */"
+            ]
+        },
+        {
+            "key": "It converts a multi line doc block to a single line multiple empty lines",
+            "args": [
+                "/**\n * @foo\n *\n *\n *\n * */",
+                "/** @foo */"
+            ]
+        },
+        {
+            "key": "It changes an empty doc block to single line",
+            "args": [
+                "/**\n *\n */",
+                "/**  */"
+            ]
+        },
+        {
+            "key": "It does not change a multi line doc block if it can't",
+            "args": [
+                "/**\n     * Test docblock.\n     *\n     * @param string $hello\n     * @param bool $test Description\n     *        extends over many lines\n     *\n     * @param adkjbadjasbdand $asdnjkasd\n     *\n     * @throws \\Exception asdnjkasd\n     * asdasdasdasdasdasdasdasd\n     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n     *\n     * @return void\n     */"
+            ]
+        }
+    ],
+    "LineTest::__static": {
+        "sample": "/**\n     * Test docblock.\n     *\n     * @param string $hello\n     * @param bool $test Description\n     *        extends over many lines\n     *\n     * @param adkjbadjasbdand $asdnjkasd\n     *\n     * @throws \\Exception asdnjkasd\n     * asdasdasdasdasdasdasdasd\n     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n     *\n     * @return void\n     */",
+        "content": {
+            "__list": true,
+            "items": [
+                "/**\n",
+                "     * Test docblock.\n",
+                "     *\n",
+                "     * @param string $hello\n",
+                "     * @param bool $test Description\n",
+                "     *        extends over many lines\n",
+                "     *\n",
+                "     * @param adkjbadjasbdand $asdnjkasd\n",
+                "     *\n",
+                "     * @throws \\Exception asdnjkasd\n",
+                "     * asdasdasdasdasdasdasdasd\n",
+                "     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n",
+                "     *\n",
+                "     * @return void\n",
+                "     */"
+            ]
+        },
+        "useful": {
+            "__list": true,
+            "items": [
+                false,
+                true,
+                false,
+                true,
+                true,
+                true,
+                false,
+                true,
+                false,
+                true,
+                true,
+                true,
+                false,
+                true,
+                false
+            ]
+        },
+        "tag": {
+            "__list": true,
+            "items": [
+                false,
+                false,
+                false,
+                true,
+                true,
+                false,
+                false,
+                true,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false
+            ]
+        }
+    },
+    "LineTest::testPosAndContent": [
+        {
+            "key": 0,
+            "args": [
+                0,
+                "/**\n"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                1,
+                "     * Test docblock.\n"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                2,
+                "     *\n"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                3,
+                "     * @param string $hello\n"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                4,
+                "     * @param bool $test Description\n"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                5,
+                "     *        extends over many lines\n"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                6,
+                "     *\n"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                7,
+                "     * @param adkjbadjasbdand $asdnjkasd\n"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                8,
+                "     *\n"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                9,
+                "     * @throws \\Exception asdnjkasd\n"
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                10,
+                "     * asdasdasdasdasdasdasdasd\n"
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                11,
+                "     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n"
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                12,
+                "     *\n"
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                13,
+                "     * @return void\n"
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                14,
+                "     */"
+            ]
+        }
+    ],
+    "LineTest::testStartOrEndPos": [
+        {
+            "key": 0,
+            "args": [
+                0,
+                "/**\n"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                1,
+                "     * Test docblock.\n"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                2,
+                "     *\n"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                3,
+                "     * @param string $hello\n"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                4,
+                "     * @param bool $test Description\n"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                5,
+                "     *        extends over many lines\n"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                6,
+                "     *\n"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                7,
+                "     * @param adkjbadjasbdand $asdnjkasd\n"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                8,
+                "     *\n"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                9,
+                "     * @throws \\Exception asdnjkasd\n"
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                10,
+                "     * asdasdasdasdasdasdasdasd\n"
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                11,
+                "     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n"
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                12,
+                "     *\n"
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                13,
+                "     * @return void\n"
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                14,
+                "     */"
+            ]
+        }
+    ],
+    "LineTest::testUseful": [
+        {
+            "key": 0,
+            "args": [
+                0,
+                false
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                1,
+                true
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                2,
+                false
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                3,
+                true
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                4,
+                true
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                5,
+                true
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                6,
+                false
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                7,
+                true
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                8,
+                false
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                9,
+                true
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                10,
+                true
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                11,
+                true
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                12,
+                false
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                13,
+                true
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                14,
+                false
+            ]
+        }
+    ],
+    "LineTest::testTag": [
+        {
+            "key": 0,
+            "args": [
+                0,
+                false
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                1,
+                false
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                2,
+                false
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                3,
+                true
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                4,
+                true
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                5,
+                false
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                6,
+                false
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                7,
+                true
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                8,
+                false
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                9,
+                true
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                10,
+                false
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                11,
+                false
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                12,
+                false
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                13,
+                true
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                14,
+                false
+            ]
+        }
+    ],
+    "ShortDescriptionTest::__static": [],
+    "ShortDescriptionTest::testGetEnd": [
+        {
+            "key": 0,
+            "args": [
+                1,
+                "/**\n     * Test docblock.\n     *\n     * @param string $hello\n     * @param bool $test Description\n     *        extends over many lines\n     *\n     * @param adkjbadjasbdand $asdnjkasd\n     *\n     * @throws \\Exception asdnjkasd\n     * asdasdasdasdasdasdasdasd\n     * kasdkasdkbasdasdasdjhbasdhbasjdbjasbdjhb\n     *\n     * @return void\n     */"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                2,
+                "/**\n                  * This is a multi-line\n                  * short description.\n                  */"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                3,
+                "/**\n                  *\n                  *\n                  * There might be extra blank lines.\n                  *\n                  *\n                  * And here is description...\n                  */"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                null,
+                "/** */"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                null,
+                "/**\n * @test\n*/"
+            ]
+        }
+    ],
+    "TagComparatorTest::__static": [],
+    "TagComparatorTest::testComparatorTogether": [
+        {
+            "key": 0,
+            "args": [
+                "return",
+                "return",
+                true
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "param",
+                "param",
+                true
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "return",
+                "param",
+                false
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                "var",
+                "foo",
+                false
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                "api",
+                "deprecated",
+                false
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                "author",
+                "copyright",
+                true
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                "author",
+                "since",
+                false
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                "link",
+                "see",
+                true
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                "category",
+                "package",
+                true
+            ]
+        }
+    ],
+    "TagComparatorTest::testComparatorTogetherWithDefinedGroups": [
+        {
+            "key": 0,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__list": true,
+                            "items": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                "return",
+                "return",
+                true
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                {
+                    "__list": true,
+                    "items": []
+                },
+                "param",
+                "return",
+                false
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__list": true,
+                            "items": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                "return",
+                "param",
+                true
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__list": true,
+                            "items": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                "var",
+                "foo",
+                false
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__list": true,
+                            "items": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                "api",
+                "deprecated",
+                false
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__list": true,
+                            "items": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                "author",
+                "copyright",
+                false
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__list": true,
+                            "items": [
+                                "param",
+                                "return"
+                            ]
+                        },
+                        {
+                            "__list": true,
+                            "items": [
+                                "author",
+                                "since"
+                            ]
+                        }
+                    ]
+                },
+                "author",
+                "since",
+                true
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__list": true,
+                            "items": [
+                                "deprecated",
+                                "link",
+                                "see",
+                                "since"
+                            ]
+                        },
+                        {
+                            "__list": true,
+                            "items": [
+                                "author",
+                                "copyright",
+                                "license"
+                            ]
+                        },
+                        {
+                            "__list": true,
+                            "items": [
+                                "category",
+                                "package",
+                                "subpackage"
+                            ]
+                        },
+                        {
+                            "__list": true,
+                            "items": [
+                                "property",
+                                "property-read",
+                                "property-write"
+                            ]
+                        },
+                        {
+                            "__list": true,
+                            "items": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                "link",
+                "see",
+                true
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__list": true,
+                            "items": [
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                "category",
+                "package",
+                false
+            ]
+        }
+    ],
+    "TagTest::__static": [],
+    "TagTest::testName": [
+        {
+            "key": 0,
+            "args": [
+                "param",
+                "var",
+                "     * @param Foo $foo"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "return",
+                "type",
+                "*   @return            false"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "thRoWs",
+                "throws",
+                "*@thRoWs \\Exception"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                "THROWSSS",
+                "throws",
+                "\t@THROWSSS\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                "other",
+                "foobar",
+                " *   @\\Foo\\Bar(baz = 123)"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                "expectedException",
+                "baz",
+                "     * @expectedException Exception"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                "property-read",
+                "property-write",
+                " * @property-read integer $daysInMonth number of days in the given month"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                "method",
+                "foo",
+                " * @method"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                "method",
+                "hi",
+                " * @method string getString()"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                "other",
+                "hello",
+                " * @method(\"GET\")"
+            ]
+        }
+    ],
+    "TagTest::testValid": [
+        {
+            "key": 0,
+            "args": [
+                true,
+                "     * @param Foo $foo"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                true,
+                "*   @return            false"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                true,
+                "*@throws \\Exception"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                true,
+                " * @method"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                true,
+                " * @method string getString()"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                true,
+                " * @property-read integer $daysInMonth number of days in the given month"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                false,
+                " * @method(\"GET\")"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                false,
+                "*@thRoWs \\InvalidArgumentException"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                false,
+                "\t@THROWSSS\t  \t RUNTIMEEEEeXCEPTION\t\t\t\t\t\t\t\n\n\n"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                false,
+                " *   @\\Foo\\Bar(baz = 123)"
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                false,
+                "     * @expectedException Exception"
+            ]
+        }
+    ],
+    "TypeExpressionTest::__static": [],
+    "TypeExpressionTest::testGetTypes": [
+        {
+            "key": 0,
+            "args": [
+                "null"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "true"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "FALSE"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                "123"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                "+123"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                "-123"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                "0b0110101"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                "0o777"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                "0x7Fb4"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                "-0O777"
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                "-0X7Fb4"
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                "123_456"
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                "0b01_01_01"
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                "-0X7_Fb_4"
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                "18_446_744_073_709_551_616"
+            ]
+        },
+        {
+            "key": 15,
+            "args": [
+                "123.4"
+            ]
+        },
+        {
+            "key": 16,
+            "args": [
+                ".123"
+            ]
+        },
+        {
+            "key": 17,
+            "args": [
+                "123."
+            ]
+        },
+        {
+            "key": 18,
+            "args": [
+                "123e4"
+            ]
+        },
+        {
+            "key": 19,
+            "args": [
+                "123E4"
+            ]
+        },
+        {
+            "key": 20,
+            "args": [
+                "12.3e4"
+            ]
+        },
+        {
+            "key": 21,
+            "args": [
+                "+123.5"
+            ]
+        },
+        {
+            "key": 22,
+            "args": [
+                "-123."
+            ]
+        },
+        {
+            "key": 23,
+            "args": [
+                "-123.4"
+            ]
+        },
+        {
+            "key": 24,
+            "args": [
+                "-.123"
+            ]
+        },
+        {
+            "key": 25,
+            "args": [
+                "-123e-4"
+            ]
+        },
+        {
+            "key": 26,
+            "args": [
+                "-12.3e-4"
+            ]
+        },
+        {
+            "key": 27,
+            "args": [
+                "-1_2.3_4e5_6"
+            ]
+        },
+        {
+            "key": 28,
+            "args": [
+                "123E+80"
+            ]
+        },
+        {
+            "key": 29,
+            "args": [
+                "8.2023437675747321"
+            ]
+        },
+        {
+            "key": 30,
+            "args": [
+                "-0.0"
+            ]
+        },
+        {
+            "key": 31,
+            "args": [
+                "''"
+            ]
+        },
+        {
+            "key": 32,
+            "args": [
+                "'foo'"
+            ]
+        },
+        {
+            "key": 33,
+            "args": [
+                "'\\\\'"
+            ]
+        },
+        {
+            "key": 34,
+            "args": [
+                "'\\''"
+            ]
+        },
+        {
+            "key": 0,
+            "args": [
+                "int"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "Foo5"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "🚀_kůň"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                "positive-int"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                "?int"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                "? int"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                "int[]"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                "Foo[][]"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                "Foo [ ]  []"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                "int[]|null",
+                {
+                    "__list": true,
+                    "items": [
+                        "int[]",
+                        "null"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                "int[]|null|?int|array",
+                {
+                    "__list": true,
+                    "items": [
+                        "int[]",
+                        "null",
+                        "?int",
+                        "array"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                "null|Foo\\Bar|\\Baz\\Bax|int[]",
+                {
+                    "__list": true,
+                    "items": [
+                        "null",
+                        "Foo\\Bar",
+                        "\\Baz\\Bax",
+                        "int[]"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                "gen<int>"
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                "int|gen<int>",
+                {
+                    "__list": true,
+                    "items": [
+                        "int",
+                        "gen<int>"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                "\\int|\\gen<\\int, \\bool>",
+                {
+                    "__list": true,
+                    "items": [
+                        "\\int",
+                        "\\gen<\\int, \\bool>"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 15,
+            "args": [
+                "gen<int,  int>"
+            ]
+        },
+        {
+            "key": 16,
+            "args": [
+                "gen<int,  bool|string>"
+            ]
+        },
+        {
+            "key": 17,
+            "args": [
+                "gen<int,  string[]>"
+            ]
+        },
+        {
+            "key": 18,
+            "args": [
+                "gen<int,  gener<string, bool>>"
+            ]
+        },
+        {
+            "key": 19,
+            "args": [
+                "gen<int,  gener<string, null|bool>>"
+            ]
+        },
+        {
+            "key": 20,
+            "args": [
+                "gen<int>[][]"
+            ]
+        },
+        {
+            "key": 21,
+            "args": [
+                "non-empty-array<int>"
+            ]
+        },
+        {
+            "key": 22,
+            "args": [
+                "null|gen<int,  gener<string, bool>>|int|string[]",
+                {
+                    "__list": true,
+                    "items": [
+                        "null",
+                        "gen<int,  gener<string, bool>>",
+                        "int",
+                        "string[]"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 23,
+            "args": [
+                "null|gen<int,  gener<string, bool>>|int|array<int, string>|string[]",
+                {
+                    "__list": true,
+                    "items": [
+                        "null",
+                        "gen<int,  gener<string, bool>>",
+                        "int",
+                        "array<int, string>",
+                        "string[]"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 24,
+            "args": [
+                "this"
+            ]
+        },
+        {
+            "key": 25,
+            "args": [
+                "@this"
+            ]
+        },
+        {
+            "key": 26,
+            "args": [
+                "$SELF|int",
+                {
+                    "__list": true,
+                    "items": [
+                        "$SELF",
+                        "int"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 27,
+            "args": [
+                "array<string|int, string>"
+            ]
+        },
+        {
+            "key": 28,
+            "args": [
+                "Collection<Foo<Bar>, Foo<Baz>>"
+            ]
+        },
+        {
+            "key": 29,
+            "args": [
+                "int | string",
+                {
+                    "__list": true,
+                    "items": [
+                        "int",
+                        "string"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 30,
+            "args": [
+                "Foo::*"
+            ]
+        },
+        {
+            "key": 31,
+            "args": [
+                "Foo::A"
+            ]
+        },
+        {
+            "key": 32,
+            "args": [
+                "Foo::A|Foo::B",
+                {
+                    "__list": true,
+                    "items": [
+                        "Foo::A",
+                        "Foo::B"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 33,
+            "args": [
+                "Foo::A*"
+            ]
+        },
+        {
+            "key": 34,
+            "args": [
+                "Foo::*0*_Bar"
+            ]
+        },
+        {
+            "key": 35,
+            "args": [
+                "?Foo::*[]"
+            ]
+        },
+        {
+            "key": 36,
+            "args": [
+                "array<Foo::A*>|null",
+                {
+                    "__list": true,
+                    "items": [
+                        "array<Foo::A*>",
+                        "null"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 37,
+            "args": [
+                "null|true|false|1|-1|1.5|-1.5|.5|1.|'a'|\"b\"",
+                {
+                    "__list": true,
+                    "items": [
+                        "null",
+                        "true",
+                        "false",
+                        "1",
+                        "-1",
+                        "1.5",
+                        "-1.5",
+                        ".5",
+                        "1.",
+                        "'a'",
+                        "\"b\""
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 38,
+            "args": [
+                "int | \"a\" | A<B<C, D>, E<F::*|G[]>>",
+                {
+                    "__list": true,
+                    "items": [
+                        "int",
+                        "\"a\"",
+                        "A<B<C, D>, E<F::*|G[]>>"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 39,
+            "args": [
+                "class-string<Foo>"
+            ]
+        },
+        {
+            "key": 40,
+            "args": [
+                "A&B",
+                {
+                    "__list": true,
+                    "items": [
+                        "A",
+                        "B"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 41,
+            "args": [
+                "A & B",
+                {
+                    "__list": true,
+                    "items": [
+                        "A",
+                        "B"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 42,
+            "args": [
+                "array{}"
+            ]
+        },
+        {
+            "key": 43,
+            "args": [
+                "object{ }"
+            ]
+        },
+        {
+            "key": 44,
+            "args": [
+                "array{1: bool, 2: bool}"
+            ]
+        },
+        {
+            "key": 45,
+            "args": [
+                "array{a: int|string, b?: bool}"
+            ]
+        },
+        {
+            "key": 46,
+            "args": [
+                "array{'a': \"a\", \"b\"?: 'b'}"
+            ]
+        },
+        {
+            "key": 47,
+            "args": [
+                "array { a : int | string , b ? : A<B, C> }"
+            ]
+        },
+        {
+            "key": 48,
+            "args": [
+                "array{bool, int}"
+            ]
+        },
+        {
+            "key": 49,
+            "args": [
+                "array{bool,}"
+            ]
+        },
+        {
+            "key": 50,
+            "args": [
+                "list{int, bool}"
+            ]
+        },
+        {
+            "key": 51,
+            "args": [
+                "object{ bool, foo2: int }"
+            ]
+        },
+        {
+            "key": 52,
+            "args": [
+                "ArRAY{ 1 }"
+            ]
+        },
+        {
+            "key": 53,
+            "args": [
+                "lIst{ 1 }"
+            ]
+        },
+        {
+            "key": 54,
+            "args": [
+                "OBJECT { x: 1 }"
+            ]
+        },
+        {
+            "key": 55,
+            "args": [
+                "array{a: int, b: int, with-dash: int}"
+            ]
+        },
+        {
+            "key": 56,
+            "args": [
+                "array{...}"
+            ]
+        },
+        {
+            "key": 57,
+            "args": [
+                "array{...<string>}"
+            ]
+        },
+        {
+            "key": 58,
+            "args": [
+                "array{bool, ...<int, string>}"
+            ]
+        },
+        {
+            "key": 59,
+            "args": [
+                "array{bool, ...}"
+            ]
+        },
+        {
+            "key": 60,
+            "args": [
+                "array{bool, ...<string>}"
+            ]
+        },
+        {
+            "key": 61,
+            "args": [
+                "array{a: bool,... }"
+            ]
+        },
+        {
+            "key": 62,
+            "args": [
+                "array{a: bool,...<string> }"
+            ]
+        },
+        {
+            "key": 63,
+            "args": [
+                "array{\n    a: Foo,\n    b: Bar\n}"
+            ]
+        },
+        {
+            "key": 64,
+            "args": [
+                "array{\n    Foo,\n    Bar,\n}"
+            ]
+        },
+        {
+            "key": 65,
+            "args": [
+                "list{int, ...<string>}"
+            ]
+        },
+        {
+            "key": 66,
+            "args": [
+                "callable"
+            ]
+        },
+        {
+            "key": 67,
+            "args": [
+                "callable(string)"
+            ]
+        },
+        {
+            "key": 68,
+            "args": [
+                "? callable(string): bool"
+            ]
+        },
+        {
+            "key": 69,
+            "args": [
+                "CAllable(string): bool"
+            ]
+        },
+        {
+            "key": 70,
+            "args": [
+                "callable(string,): bool"
+            ]
+        },
+        {
+            "key": 71,
+            "args": [
+                "callable(array<int, string>, array<int, Foo>): bool"
+            ]
+        },
+        {
+            "key": 72,
+            "args": [
+                "array<int, callable(string): bool>"
+            ]
+        },
+        {
+            "key": 73,
+            "args": [
+                "callable(string): callable(int)"
+            ]
+        },
+        {
+            "key": 74,
+            "args": [
+                "callable(string) : callable(int) : bool"
+            ]
+        },
+        {
+            "key": 75,
+            "args": [
+                "TheCollection<callable(Foo, Bar,Baz): Foo[]>|string[]|null",
+                {
+                    "__list": true,
+                    "items": [
+                        "TheCollection<callable(Foo, Bar,Baz): Foo[]>",
+                        "string[]",
+                        "null"
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 76,
+            "args": [
+                "Closure()"
+            ]
+        },
+        {
+            "key": 77,
+            "args": [
+                "Closure(string)"
+            ]
+        },
+        {
+            "key": 78,
+            "args": [
+                "\\closure(string): void"
+            ]
+        },
+        {
+            "key": 79,
+            "args": [
+                "Closure"
+            ]
+        },
+        {
+            "key": 80,
+            "args": [
+                "\\Closure()"
+            ]
+        },
+        {
+            "key": 81,
+            "args": [
+                "\\Closure(string)"
+            ]
+        },
+        {
+            "key": 82,
+            "args": [
+                "\\Closure(string, bool)"
+            ]
+        },
+        {
+            "key": 83,
+            "args": [
+                "\\Closure(string|int, bool)"
+            ]
+        },
+        {
+            "key": 84,
+            "args": [
+                "\\Closure(string):bool"
+            ]
+        },
+        {
+            "key": 85,
+            "args": [
+                "\\Closure(string): bool"
+            ]
+        },
+        {
+            "key": 86,
+            "args": [
+                "\\Closure(string|int, bool): bool"
+            ]
+        },
+        {
+            "key": 87,
+            "args": [
+                "\\Closure(float|int): (bool|int)"
+            ]
+        },
+        {
+            "key": 88,
+            "args": [
+                "Closure<T>(): T"
+            ]
+        },
+        {
+            "key": 89,
+            "args": [
+                "Closure<Tx, Ty>(): array{x: Tx, y: Ty}"
+            ]
+        },
+        {
+            "key": 90,
+            "args": [
+                "Closure<Tx, Ty>(): array{x: Tx, y: Ty, ...<Closure(): void>}"
+            ]
+        },
+        {
+            "key": 91,
+            "args": [
+                "array  <  int   , callable  (  string  )  :   bool  >"
+            ]
+        },
+        {
+            "key": 92,
+            "args": [
+                "Closure<T of Foo>(T): T"
+            ]
+        },
+        {
+            "key": 93,
+            "args": [
+                "Closure< T1 of Foo, T2 AS Foo >(T1): T2"
+            ]
+        },
+        {
+            "key": 94,
+            "args": [
+                "Closure<T = Foo>(T): T"
+            ]
+        },
+        {
+            "key": 95,
+            "args": [
+                "Closure<T1=int, T2 of Foo = Foo2>(T1): T2"
+            ]
+        },
+        {
+            "key": 96,
+            "args": [
+                "Closure<T of string = ''>(T): T"
+            ]
+        },
+        {
+            "key": 97,
+            "args": [
+                "Closure<Closure_can_be_regular_class>"
+            ]
+        },
+        {
+            "key": 98,
+            "args": [
+                "Closure(int $a)"
+            ]
+        },
+        {
+            "key": 99,
+            "args": [
+                "Closure(int $a): bool"
+            ]
+        },
+        {
+            "key": 100,
+            "args": [
+                "Closure(int $a, array<Closure(int ...$args): Item<X>>): bool"
+            ]
+        },
+        {
+            "key": 101,
+            "args": [
+                "Closure_can_be_aliased()"
+            ]
+        },
+        {
+            "key": 102,
+            "args": [
+                "Closure_can_be_aliased(): (u|v)"
+            ]
+        },
+        {
+            "key": 103,
+            "args": [
+                "(int)"
+            ]
+        },
+        {
+            "key": 104,
+            "args": [
+                "(int|\\Exception)"
+            ]
+        },
+        {
+            "key": 105,
+            "args": [
+                "($foo is int ? false : true)"
+            ]
+        },
+        {
+            "key": 106,
+            "args": [
+                "($foo🚀3 is int ? false : true)"
+            ]
+        },
+        {
+            "key": 107,
+            "args": [
+                "'a\\'s\"\\\\\\n\\r\\t'|\"b\\\"s'\\\\\\n\\r\\t\"",
+                {
+                    "__list": true,
+                    "items": [
+                        "'a\\'s\"\\\\\\n\\r\\t'",
+                        "\"b\\\"s'\\\\\\n\\r\\t\""
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 108,
+            "args": [
+                "string[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"
+            ]
+        },
+        {
+            "key": 109,
+            "args": [
+                "array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<string>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+            ]
+        },
+        {
+            "key": 110,
+            "args": [
+                "array{key_no1: int, key-no2: int, key_no3: int, key-no4: int, key_no5: int, key-no6: int, key_no7: int, key-no8: int, key_no9: int, key-no10: int, key_no11: int, key-no12: int, key_no13: int, key-no14: int, key_no15: int, key-no16: int, key_no17: int, key-no18: int, key_no19: int, key-no20: int, key_no21: int, key-no22: int, key_no23: int, key-no24: int, key_no25: int, key-no26: int, key_no27: int, key-no28: int, key_no29: int, key-no30: int, key_no31: int, key-no32: int, key_no33: int, key-no34: int, key_no35: int, key-no36: int, key_no37: int, key-no38: int, key_no39: int, key-no40: int, key_no41: int, key-no42: int, key_no43: int, key-no44: int, key_no45: int, key-no46: int, key_no47: int, key-no48: int, key_no49: int, key-no50: int, key_no51: int, key-no52: int, key_no53: int, key-no54: int, key_no55: int, key-no56: int, key_no57: int, key-no58: int, key_no59: int, key-no60: int, key_no61: int, key-no62: int, key_no63: int, key-no64: int, key_no65: int, key-no66: int, key_no67: int, key-no68: int, key_no69: int, key-no70: int, key_no71: int, key-no72: int, key_no73: int, key-no74: int, key_no75: int, key-no76: int, key_no77: int, key-no78: int, key_no79: int, key-no80: int, key_no81: int, key-no82: int, key_no83: int, key-no84: int, key_no85: int, key-no86: int, key_no87: int, key-no88: int, key_no89: int, key-no90: int, key_no91: int, key-no92: int, key_no93: int, key-no94: int, key_no95: int, key-no96: int, key_no97: int, key-no98: int, key_no99: int, key-no100: int, key_no101: int, key-no102: int, key_no103: int, key-no104: int, key_no105: int, key-no106: int, key_no107: int, key-no108: int, key_no109: int, key-no110: int, key_no111: int, key-no112: int, key_no113: int, key-no114: int, key_no115: int, key-no116: int, key_no117: int, key-no118: int, key_no119: int, key-no120: int, key_no121: int, key-no122: int, key_no123: int, key-no124: int, key_no125: int, key-no126: int, key_no127: int, key-no128: int, key_no129: int, key-no130: int, key_no131: int, key-no132: int, key_no133: int, key-no134: int, key_no135: int, key-no136: int, key_no137: int, key-no138: int, key_no139: int, key-no140: int, key_no141: int, key-no142: int, key_no143: int, key-no144: int, key_no145: int, key-no146: int, key_no147: int, key-no148: int, key_no149: int, key-no150: int, key_no151: int, key-no152: int, key_no153: int, key-no154: int, key_no155: int, key-no156: int, key_no157: int, key-no158: int, key_no159: int, key-no160: int, key_no161: int, key-no162: int, key_no163: int, key-no164: int, key_no165: int, key-no166: int, key_no167: int, key-no168: int, key_no169: int, key-no170: int, key_no171: int, key-no172: int, key_no173: int, key-no174: int, key_no175: int, key-no176: int, key_no177: int, key-no178: int, key_no179: int, key-no180: int, key_no181: int, key-no182: int, key_no183: int, key-no184: int, key_no185: int, key-no186: int, key_no187: int, key-no188: int, key_no189: int, key-no190: int, key_no191: int, key-no192: int, key_no193: int, key-no194: int, key_no195: int, key-no196: int, key_no197: int, key-no198: int, key_no199: int, key-no200: int, key_no201: int, key-no202: int, key_no203: int, key-no204: int, key_no205: int, key-no206: int, key_no207: int, key-no208: int, key_no209: int, key-no210: int, key_no211: int, key-no212: int, key_no213: int, key-no214: int, key_no215: int, key-no216: int, key_no217: int, key-no218: int, key_no219: int, key-no220: int, key_no221: int, key-no222: int, key_no223: int, key-no224: int, key_no225: int, key-no226: int, key_no227: int, key-no228: int, key_no229: int, key-no230: int, key_no231: int, key-no232: int, key_no233: int, key-no234: int, key_no235: int, key-no236: int, key_no237: int, key-no238: int, key_no239: int, key-no240: int, key_no241: int, key-no242: int, key_no243: int, key-no244: int, key_no245: int, key-no246: int, key_no247: int, key-no248: int, key_no249: int, key-no250: int, key_no251: int, key-no252: int, key_no253: int, key-no254: int, key_no255: int, key-no256: int, key_no257: int, key-no258: int, key_no259: int, key-no260: int, key_no261: int, key-no262: int, key_no263: int, key-no264: int, key_no265: int, key-no266: int, key_no267: int, key-no268: int, key_no269: int, key-no270: int, key_no271: int, key-no272: int, key_no273: int, key-no274: int, key_no275: int, key-no276: int, key_no277: int, key-no278: int, key_no279: int, key-no280: int, key_no281: int, key-no282: int, key_no283: int, key-no284: int, key_no285: int, key-no286: int, key_no287: int, key-no288: int, key_no289: int, key-no290: int, key_no291: int, key-no292: int, key_no293: int, key-no294: int, key_no295: int, key-no296: int, key_no297: int, key-no298: int, key_no299: int, key-no300: int, key_no301: int, key-no302: int, key_no303: int, key-no304: int, key_no305: int, key-no306: int, key_no307: int, key-no308: int, key_no309: int, key-no310: int, key_no311: int, key-no312: int, key_no313: int, key-no314: int, key_no315: int, key-no316: int, key_no317: int, key-no318: int, key_no319: int, key-no320: int, key_no321: int, key-no322: int, key_no323: int, key-no324: int, key_no325: int, key-no326: int, key_no327: int, key-no328: int, key_no329: int, key-no330: int, key_no331: int, key-no332: int, key_no333: int, key-no334: int, key_no335: int, key-no336: int, key_no337: int, key-no338: int, key_no339: int, key-no340: int, key_no341: int, key-no342: int, key_no343: int, key-no344: int, key_no345: int, key-no346: int, key_no347: int, key-no348: int, key_no349: int, key-no350: int, key_no351: int, key-no352: int, key_no353: int, key-no354: int, key_no355: int, key-no356: int, key_no357: int, key-no358: int, key_no359: int, key-no360: int, key_no361: int, key-no362: int, key_no363: int, key-no364: int, key_no365: int, key-no366: int, key_no367: int, key-no368: int, key_no369: int, key-no370: int, key_no371: int, key-no372: int, key_no373: int, key-no374: int, key_no375: int, key-no376: int, key_no377: int, key-no378: int, key_no379: int, key-no380: int, key_no381: int, key-no382: int, key_no383: int, key-no384: int, key_no385: int, key-no386: int, key_no387: int, key-no388: int, key_no389: int, key-no390: int, key_no391: int, key-no392: int, key_no393: int, key-no394: int, key_no395: int, key-no396: int, key_no397: int, key-no398: int, key_no399: int, key-no400: int, key_no401: int, key-no402: int, key_no403: int, key-no404: int, key_no405: int, key-no406: int, key_no407: int, key-no408: int, key_no409: int, key-no410: int, key_no411: int, key-no412: int, key_no413: int, key-no414: int, key_no415: int, key-no416: int, key_no417: int, key-no418: int, key_no419: int, key-no420: int, key_no421: int, key-no422: int, key_no423: int, key-no424: int, key_no425: int, key-no426: int, key_no427: int, key-no428: int, key_no429: int, key-no430: int, key_no431: int, key-no432: int, key_no433: int, key-no434: int, key_no435: int, key-no436: int, key_no437: int, key-no438: int, key_no439: int, key-no440: int, key_no441: int, key-no442: int, key_no443: int, key-no444: int, key_no445: int, key-no446: int, key_no447: int, key-no448: int, key_no449: int, key-no450: int, key_no451: int, key-no452: int, key_no453: int, key-no454: int, key_no455: int, key-no456: int, key_no457: int, key-no458: int, key_no459: int, key-no460: int, key_no461: int, key-no462: int, key_no463: int, key-no464: int, key_no465: int, key-no466: int, key_no467: int, key-no468: int, key_no469: int, key-no470: int, key_no471: int, key-no472: int, key_no473: int, key-no474: int, key_no475: int, key-no476: int, key_no477: int, key-no478: int, key_no479: int, key-no480: int, key_no481: int, key-no482: int, key_no483: int, key-no484: int, key_no485: int, key-no486: int, key_no487: int, key-no488: int, key_no489: int, key-no490: int, key_no491: int, key-no492: int, key_no493: int, key-no494: int, key_no495: int, key-no496: int, key_no497: int, key-no498: int, key_no499: int, key-no500: int, key_no501: int, key-no502: int, key_no503: int, key-no504: int, key_no505: int, key-no506: int, key_no507: int, key-no508: int, key_no509: int, key-no510: int, key_no511: int, key-no512: int, key_no513: int, key-no514: int, key_no515: int, key-no516: int, key_no517: int, key-no518: int, key_no519: int, key-no520: int, key_no521: int, key-no522: int, key_no523: int, key-no524: int, key_no525: int, key-no526: int, key_no527: int, key-no528: int, key_no529: int, key-no530: int, key_no531: int, key-no532: int, key_no533: int, key-no534: int, key_no535: int, key-no536: int, key_no537: int, key-no538: int, key_no539: int, key-no540: int, key_no541: int, key-no542: int, key_no543: int, key-no544: int, key_no545: int, key-no546: int, key_no547: int, key-no548: int, key_no549: int, key-no550: int, key_no551: int, key-no552: int, key_no553: int, key-no554: int, key_no555: int, key-no556: int, key_no557: int, key-no558: int, key_no559: int, key-no560: int, key_no561: int, key-no562: int, key_no563: int, key-no564: int, key_no565: int, key-no566: int, key_no567: int, key-no568: int, key_no569: int, key-no570: int, key_no571: int, key-no572: int, key_no573: int, key-no574: int, key_no575: int, key-no576: int, key_no577: int, key-no578: int, key_no579: int, key-no580: int, key_no581: int, key-no582: int, key_no583: int, key-no584: int, key_no585: int, key-no586: int, key_no587: int, key-no588: int, key_no589: int, key-no590: int, key_no591: int, key-no592: int, key_no593: int, key-no594: int, key_no595: int, key-no596: int, key_no597: int, key-no598: int, key_no599: int, key-no600: int, key_no601: int, key-no602: int, key_no603: int, key-no604: int, key_no605: int, key-no606: int, key_no607: int, key-no608: int, key_no609: int, key-no610: int, key_no611: int, key-no612: int, key_no613: int, key-no614: int, key_no615: int, key-no616: int, key_no617: int, key-no618: int, key_no619: int, key-no620: int, key_no621: int, key-no622: int, key_no623: int, key-no624: int, key_no625: int, key-no626: int, key_no627: int, key-no628: int, key_no629: int, key-no630: int, key_no631: int, key-no632: int, key_no633: int, key-no634: int, key_no635: int, key-no636: int, key_no637: int, key-no638: int, key_no639: int, key-no640: int, key_no641: int, key-no642: int, key_no643: int, key-no644: int, key_no645: int, key-no646: int, key_no647: int, key-no648: int, key_no649: int, key-no650: int, key_no651: int, key-no652: int, key_no653: int, key-no654: int, key_no655: int, key-no656: int, key_no657: int, key-no658: int, key_no659: int, key-no660: int, key_no661: int, key-no662: int, key_no663: int, key-no664: int, key_no665: int, key-no666: int, key_no667: int, key-no668: int, key_no669: int, key-no670: int, key_no671: int, key-no672: int, key_no673: int, key-no674: int, key_no675: int, key-no676: int, key_no677: int, key-no678: int, key_no679: int, key-no680: int, key_no681: int, key-no682: int, key_no683: int, key-no684: int, key_no685: int, key-no686: int, key_no687: int, key-no688: int, key_no689: int, key-no690: int, key_no691: int, key-no692: int, key_no693: int, key-no694: int, key_no695: int, key-no696: int, key_no697: int, key-no698: int, key_no699: int, key-no700: int, key_no701: int, key-no702: int, key_no703: int, key-no704: int, key_no705: int, key-no706: int, key_no707: int, key-no708: int, key_no709: int, key-no710: int, key_no711: int, key-no712: int, key_no713: int, key-no714: int, key_no715: int, key-no716: int, key_no717: int, key-no718: int, key_no719: int, key-no720: int, key_no721: int, key-no722: int, key_no723: int, key-no724: int, key_no725: int, key-no726: int, key_no727: int, key-no728: int, key_no729: int, key-no730: int, key_no731: int, key-no732: int, key_no733: int, key-no734: int, key_no735: int, key-no736: int, key_no737: int, key-no738: int, key_no739: int, key-no740: int, key_no741: int, key-no742: int, key_no743: int, key-no744: int, key_no745: int, key-no746: int, key_no747: int, key-no748: int, key_no749: int, key-no750: int, key_no751: int, key-no752: int, key_no753: int, key-no754: int, key_no755: int, key-no756: int, key_no757: int, key-no758: int, key_no759: int, key-no760: int, key_no761: int, key-no762: int, key_no763: int, key-no764: int, key_no765: int, key-no766: int, key_no767: int, key-no768: int, key_no769: int, key-no770: int, key_no771: int, key-no772: int, key_no773: int, key-no774: int, key_no775: int, key-no776: int, key_no777: int, key-no778: int, key_no779: int, key-no780: int, key_no781: int, key-no782: int, key_no783: int, key-no784: int, key_no785: int, key-no786: int, key_no787: int, key-no788: int, key_no789: int, key-no790: int, key_no791: int, key-no792: int, key_no793: int, key-no794: int, key_no795: int, key-no796: int, key_no797: int, key-no798: int, key_no799: int, key-no800: int, key_no801: int, key-no802: int, key_no803: int, key-no804: int, key_no805: int, key-no806: int, key_no807: int, key-no808: int, key_no809: int, key-no810: int, key_no811: int, key-no812: int, key_no813: int, key-no814: int, key_no815: int, key-no816: int, key_no817: int, key-no818: int, key_no819: int, key-no820: int, key_no821: int, key-no822: int, key_no823: int, key-no824: int, key_no825: int, key-no826: int, key_no827: int, key-no828: int, key_no829: int, key-no830: int, key_no831: int, key-no832: int, key_no833: int, key-no834: int, key_no835: int, key-no836: int, key_no837: int, key-no838: int, key_no839: int, key-no840: int, key_no841: int, key-no842: int, key_no843: int, key-no844: int, key_no845: int, key-no846: int, key_no847: int, key-no848: int, key_no849: int, key-no850: int, key_no851: int, key-no852: int, key_no853: int, key-no854: int, key_no855: int, key-no856: int, key_no857: int, key-no858: int, key_no859: int, key-no860: int, key_no861: int, key-no862: int, key_no863: int, key-no864: int, key_no865: int, key-no866: int, key_no867: int, key-no868: int, key_no869: int, key-no870: int, key_no871: int, key-no872: int, key_no873: int, key-no874: int, key_no875: int, key-no876: int, key_no877: int, key-no878: int, key_no879: int, key-no880: int, key_no881: int, key-no882: int, key_no883: int, key-no884: int, key_no885: int, key-no886: int, key_no887: int, key-no888: int, key_no889: int, key-no890: int, key_no891: int, key-no892: int, key_no893: int, key-no894: int, key_no895: int, key-no896: int, key_no897: int, key-no898: int, key_no899: int, key-no900: int, key_no901: int, key-no902: int, key_no903: int, key-no904: int, key_no905: int, key-no906: int, key_no907: int, key-no908: int, key_no909: int, key-no910: int, key_no911: int, key-no912: int, key_no913: int, key-no914: int, key_no915: int, key-no916: int, key_no917: int, key-no918: int, key_no919: int, key-no920: int, key_no921: int, key-no922: int, key_no923: int, key-no924: int, key_no925: int, key-no926: int, key_no927: int, key-no928: int, key_no929: int, key-no930: int, key_no931: int, key-no932: int, key_no933: int, key-no934: int, key_no935: int, key-no936: int, key_no937: int, key-no938: int, key_no939: int, key-no940: int, key_no941: int, key-no942: int, key_no943: int, key-no944: int, key_no945: int, key-no946: int, key_no947: int, key-no948: int, key_no949: int, key-no950: int, key_no951: int, key-no952: int, key_no953: int, key-no954: int, key_no955: int, key-no956: int, key_no957: int, key-no958: int, key_no959: int, key-no960: int, key_no961: int, key-no962: int, key_no963: int, key-no964: int, key_no965: int, key-no966: int, key_no967: int, key-no968: int, key_no969: int, key-no970: int, key_no971: int, key-no972: int, key_no973: int, key-no974: int, key_no975: int, key-no976: int, key_no977: int, key-no978: int, key_no979: int, key-no980: int, key_no981: int, key-no982: int, key_no983: int, key-no984: int, key_no985: int, key-no986: int, key_no987: int, key-no988: int, key_no989: int, key-no990: int, key_no991: int, key-no992: int, key_no993: int, key-no994: int, key_no995: int, key-no996: int, key_no997: int, key-no998: int, key_no999: int, key-no1000: int}"
+            ]
+        },
+        {
+            "key": 111,
+            "args": [
+                "Foo<int, covariant Bar>"
+            ]
+        },
+        {
+            "key": 112,
+            "args": [
+                "Foo<contravariant int, Bar>"
+            ]
+        },
+        {
+            "key": 113,
+            "args": [
+                "Foo<Bar<contravariant Baz>>"
+            ]
+        },
+        {
+            "key": 114,
+            "args": [
+                "Foo<int>|covariant Bar",
+                {
+                    "__list": true,
+                    "items": [
+                        "Foo<int>",
+                        "covariant Bar"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TypeExpressionTest::testParseInvalidException": [
+        {
+            "key": 0,
+            "args": [
+                ""
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "0_class_cannot_start_with_number"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "$0_variable_cannot_start_with_number"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                "class cannot contain space"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                "\\\\class_with_double_backslash"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                "class\\\\with_double_backslash"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                "class_with_end_backslash\\"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                "class/with_slash"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                "class--with_double_dash"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                "class.with_dot"
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                "class,with_comma"
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                "class@with_at_sign"
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                "class:with_colon"
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                "class#with_hash"
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                "class//with_double_slash"
+            ]
+        },
+        {
+            "key": 15,
+            "args": [
+                "class$with_dollar"
+            ]
+        },
+        {
+            "key": 16,
+            "args": [
+                "class;with_semicolon"
+            ]
+        },
+        {
+            "key": 17,
+            "args": [
+                "class=with_equal_sign"
+            ]
+        },
+        {
+            "key": 18,
+            "args": [
+                "class+with_plus"
+            ]
+        },
+        {
+            "key": 19,
+            "args": [
+                "class?with_question_mark"
+            ]
+        },
+        {
+            "key": 20,
+            "args": [
+                "class*with_star"
+            ]
+        },
+        {
+            "key": 21,
+            "args": [
+                "class%with_percent"
+            ]
+        },
+        {
+            "key": 22,
+            "args": [
+                "(unclosed_parenthesis"
+            ]
+        },
+        {
+            "key": 23,
+            "args": [
+                ")unclosed_parenthesis"
+            ]
+        },
+        {
+            "key": 24,
+            "args": [
+                "unclosed_parenthesis("
+            ]
+        },
+        {
+            "key": 25,
+            "args": [
+                "((unclosed_parenthesis)"
+            ]
+        },
+        {
+            "key": 26,
+            "args": [
+                "|vertical_bar_start"
+            ]
+        },
+        {
+            "key": 27,
+            "args": [
+                "&ampersand_start"
+            ]
+        },
+        {
+            "key": 28,
+            "args": [
+                "~tilde_start"
+            ]
+        },
+        {
+            "key": 29,
+            "args": [
+                "vertical_bar_end|"
+            ]
+        },
+        {
+            "key": 30,
+            "args": [
+                "ampersand_end&"
+            ]
+        },
+        {
+            "key": 31,
+            "args": [
+                "tilde_end~"
+            ]
+        },
+        {
+            "key": 32,
+            "args": [
+                "class||double_vertical_bar"
+            ]
+        },
+        {
+            "key": 33,
+            "args": [
+                "class&&double_ampersand"
+            ]
+        },
+        {
+            "key": 34,
+            "args": [
+                "class~~double_tilde"
+            ]
+        },
+        {
+            "key": 35,
+            "args": [
+                "array<>"
+            ]
+        },
+        {
+            "key": 36,
+            "args": [
+                "array<"
+            ]
+        },
+        {
+            "key": 37,
+            "args": [
+                "array<<"
+            ]
+        },
+        {
+            "key": 38,
+            "args": [
+                "array>"
+            ]
+        },
+        {
+            "key": 39,
+            "args": [
+                "array<<>"
+            ]
+        },
+        {
+            "key": 40,
+            "args": [
+                "array<>>"
+            ]
+        },
+        {
+            "key": 41,
+            "args": [
+                "array{"
+            ]
+        },
+        {
+            "key": 42,
+            "args": [
+                "array{ $this: 5 }"
+            ]
+        },
+        {
+            "key": 43,
+            "args": [
+                "array{...<>}"
+            ]
+        },
+        {
+            "key": 44,
+            "args": [
+                "array{bool, ...<>}"
+            ]
+        },
+        {
+            "key": 45,
+            "args": [
+                "array{bool, ...<int,>}"
+            ]
+        },
+        {
+            "key": 46,
+            "args": [
+                "array{bool, ...<,int>}"
+            ]
+        },
+        {
+            "key": 47,
+            "args": [
+                "array{bool, ...<int, int, int>}"
+            ]
+        },
+        {
+            "key": 48,
+            "args": [
+                "array{bool...<int>}"
+            ]
+        },
+        {
+            "key": 49,
+            "args": [
+                "array{,...<int>}"
+            ]
+        },
+        {
+            "key": 50,
+            "args": [
+                "array{...<int>,}"
+            ]
+        },
+        {
+            "key": 51,
+            "args": [
+                "g<,>"
+            ]
+        },
+        {
+            "key": 52,
+            "args": [
+                "g<,no_leading_comma>"
+            ]
+        },
+        {
+            "key": 53,
+            "args": [
+                "10__000"
+            ]
+        },
+        {
+            "key": 54,
+            "args": [
+                "[ array_syntax_is_invalid ]"
+            ]
+        },
+        {
+            "key": 55,
+            "args": [
+                "' unclosed string"
+            ]
+        },
+        {
+            "key": 56,
+            "args": [
+                "' unclosed string \\'"
+            ]
+        },
+        {
+            "key": "generic with no arguments",
+            "args": [
+                "f<>"
+            ]
+        },
+        {
+            "key": "generic Closure with no arguments",
+            "args": [
+                "Closure<>(): void"
+            ]
+        },
+        {
+            "key": "generic Closure with non-identifier template argument",
+            "args": [
+                "Closure<A|B>(): void"
+            ]
+        },
+        {
+            "key": 57,
+            "args": [
+                "array{key_no1: int, key-no2: int, key_no3: int, key-no4: int, key_no5: int, key-no6: int, key_no7: int, key-no8: int, key_no9: int, key-no10: int, key_no11: int, key-no12: int, key_no13: int, key-no14: int, key_no15: int, key-no16: int, key_no17: int, key-no18: int, key_no19: int, key-no20: int, key_no21: int, key-no22: int, key_no23: int, key-no24: int, key_no25: int, key-no26: int, key_no27: int, key-no28: int, key_no29: int, key-no30: int, key_no31: int, key-no32: int, key_no33: int, key-no34: int, key_no35: int, key-no36: int, key_no37: int, key-no38: int, key_no39: int, key-no40: int, key_no41: int, key-no42: int, key_no43: int, key-no44: int, key_no45: int, key-no46: int, key_no47: int, key-no48: int, key_no49: int, key-no50: int, key_no51: int, key-no52: int, key_no53: int, key-no54: int, key_no55: int, key-no56: int, key_no57: int, key-no58: int, key_no59: int, key-no60: int, key_no61: int, key-no62: int, key_no63: int, key-no64: int, key_no65: int, key-no66: int, key_no67: int, key-no68: int, key_no69: int, key-no70: int, key_no71: int, key-no72: int, key_no73: int, key-no74: int, key_no75: int, key-no76: int, key_no77: int, key-no78: int, key_no79: int, key-no80: int, key_no81: int, key-no82: int, key_no83: int, key-no84: int, key_no85: int, key-no86: int, key_no87: int, key-no88: int, key_no89: int, key-no90: int, key_no91: int, key-no92: int, key_no93: int, key-no94: int, key_no95: int, key-no96: int, key_no97: int, key-no98: int, key_no99: int, key-no100: int, key_no101: int, key-no102: int, key_no103: int, key-no104: int, key_no105: int, key-no106: int, key_no107: int, key-no108: int, key_no109: int, key-no110: int, key_no111: int, key-no112: int, key_no113: int, key-no114: int, key_no115: int, key-no116: int, key_no117: int, key-no118: int, key_no119: int, key-no120: int, key_no121: int, key-no122: int, key_no123: int, key-no124: int, key_no125: int, key-no126: int, key_no127: int, key-no128: int, key_no129: int, key-no130: int, key_no131: int, key-no132: int, key_no133: int, key-no134: int, key_no135: int, key-no136: int, key_no137: int, key-no138: int, key_no139: int, key-no140: int, key_no141: int, key-no142: int, key_no143: int, key-no144: int, key_no145: int, key-no146: int, key_no147: int, key-no148: int, key_no149: int, key-no150: int, key_no151: int, key-no152: int, key_no153: int, key-no154: int, key_no155: int, key-no156: int, key_no157: int, key-no158: int, key_no159: int, key-no160: int, key_no161: int, key-no162: int, key_no163: int, key-no164: int, key_no165: int, key-no166: int, key_no167: int, key-no168: int, key_no169: int, key-no170: int, key_no171: int, key-no172: int, key_no173: int, key-no174: int, key_no175: int, key-no176: int, key_no177: int, key-no178: int, key_no179: int, key-no180: int, key_no181: int, key-no182: int, key_no183: int, key-no184: int, key_no185: int, key-no186: int, key_no187: int, key-no188: int, key_no189: int, key-no190: int, key_no191: int, key-no192: int, key_no193: int, key-no194: int, key_no195: int, key-no196: int, key_no197: int, key-no198: int, key_no199: int, key-no200: int, key_no201: int, key-no202: int, key_no203: int, key-no204: int, key_no205: int, key-no206: int, key_no207: int, key-no208: int, key_no209: int, key-no210: int, key_no211: int, key-no212: int, key_no213: int, key-no214: int, key_no215: int, key-no216: int, key_no217: int, key-no218: int, key_no219: int, key-no220: int, key_no221: int, key-no222: int, key_no223: int, key-no224: int, key_no225: int, key-no226: int, key_no227: int, key-no228: int, key_no229: int, key-no230: int, key_no231: int, key-no232: int, key_no233: int, key-no234: int, key_no235: int, key-no236: int, key_no237: int, key-no238: int, key_no239: int, key-no240: int, key_no241: int, key-no242: int, key_no243: int, key-no244: int, key_no245: int, key-no246: int, key_no247: int, key-no248: int, key_no249: int, key-no250: int, key_no251: int, key-no252: int, key_no253: int, key-no254: int, key_no255: int, key-no256: int, key_no257: int, key-no258: int, key_no259: int, key-no260: int, key_no261: int, key-no262: int, key_no263: int, key-no264: int, key_no265: int, key-no266: int, key_no267: int, key-no268: int, key_no269: int, key-no270: int, key_no271: int, key-no272: int, key_no273: int, key-no274: int, key_no275: int, key-no276: int, key_no277: int, key-no278: int, key_no279: int, key-no280: int, key_no281: int, key-no282: int, key_no283: int, key-no284: int, key_no285: int, key-no286: int, key_no287: int, key-no288: int, key_no289: int, key-no290: int, key_no291: int, key-no292: int, key_no293: int, key-no294: int, key_no295: int, key-no296: int, key_no297: int, key-no298: int, key_no299: int, key-no300: int, key_no301: int, key-no302: int, key_no303: int, key-no304: int, key_no305: int, key-no306: int, key_no307: int, key-no308: int, key_no309: int, key-no310: int, key_no311: int, key-no312: int, key_no313: int, key-no314: int, key_no315: int, key-no316: int, key_no317: int, key-no318: int, key_no319: int, key-no320: int, key_no321: int, key-no322: int, key_no323: int, key-no324: int, key_no325: int, key-no326: int, key_no327: int, key-no328: int, key_no329: int, key-no330: int, key_no331: int, key-no332: int, key_no333: int, key-no334: int, key_no335: int, key-no336: int, key_no337: int, key-no338: int, key_no339: int, key-no340: int, key_no341: int, key-no342: int, key_no343: int, key-no344: int, key_no345: int, key-no346: int, key_no347: int, key-no348: int, key_no349: int, key-no350: int, key_no351: int, key-no352: int, key_no353: int, key-no354: int, key_no355: int, key-no356: int, key_no357: int, key-no358: int, key_no359: int, key-no360: int, key_no361: int, key-no362: int, key_no363: int, key-no364: int, key_no365: int, key-no366: int, key_no367: int, key-no368: int, key_no369: int, key-no370: int, key_no371: int, key-no372: int, key_no373: int, key-no374: int, key_no375: int, key-no376: int, key_no377: int, key-no378: int, key_no379: int, key-no380: int, key_no381: int, key-no382: int, key_no383: int, key-no384: int, key_no385: int, key-no386: int, key_no387: int, key-no388: int, key_no389: int, key-no390: int, key_no391: int, key-no392: int, key_no393: int, key-no394: int, key_no395: int, key-no396: int, key_no397: int, key-no398: int, key_no399: int, key-no400: int, key_no401: int, key-no402: int, key_no403: int, key-no404: int, key_no405: int, key-no406: int, key_no407: int, key-no408: int, key_no409: int, key-no410: int, key_no411: int, key-no412: int, key_no413: int, key-no414: int, key_no415: int, key-no416: int, key_no417: int, key-no418: int, key_no419: int, key-no420: int, key_no421: int, key-no422: int, key_no423: int, key-no424: int, key_no425: int, key-no426: int, key_no427: int, key-no428: int, key_no429: int, key-no430: int, key_no431: int, key-no432: int, key_no433: int, key-no434: int, key_no435: int, key-no436: int, key_no437: int, key-no438: int, key_no439: int, key-no440: int, key_no441: int, key-no442: int, key_no443: int, key-no444: int, key_no445: int, key-no446: int, key_no447: int, key-no448: int, key_no449: int, key-no450: int, key_no451: int, key-no452: int, key_no453: int, key-no454: int, key_no455: int, key-no456: int, key_no457: int, key-no458: int, key_no459: int, key-no460: int, key_no461: int, key-no462: int, key_no463: int, key-no464: int, key_no465: int, key-no466: int, key_no467: int, key-no468: int, key_no469: int, key-no470: int, key_no471: int, key-no472: int, key_no473: int, key-no474: int, key_no475: int, key-no476: int, key_no477: int, key-no478: int, key_no479: int, key-no480: int, key_no481: int, key-no482: int, key_no483: int, key-no484: int, key_no485: int, key-no486: int, key_no487: int, key-no488: int, key_no489: int, key-no490: int, key_no491: int, key-no492: int, key_no493: int, key-no494: int, key_no495: int, key-no496: int, key_no497: int, key-no498: int, key_no499: int, key-no500: int, key_no501: int, key-no502: int, key_no503: int, key-no504: int, key_no505: int, key-no506: int, key_no507: int, key-no508: int, key_no509: int, key-no510: int, key_no511: int, key-no512: int, key_no513: int, key-no514: int, key_no515: int, key-no516: int, key_no517: int, key-no518: int, key_no519: int, key-no520: int, key_no521: int, key-no522: int, key_no523: int, key-no524: int, key_no525: int, key-no526: int, key_no527: int, key-no528: int, key_no529: int, key-no530: int, key_no531: int, key-no532: int, key_no533: int, key-no534: int, key_no535: int, key-no536: int, key_no537: int, key-no538: int, key_no539: int, key-no540: int, key_no541: int, key-no542: int, key_no543: int, key-no544: int, key_no545: int, key-no546: int, key_no547: int, key-no548: int, key_no549: int, key-no550: int, key_no551: int, key-no552: int, key_no553: int, key-no554: int, key_no555: int, key-no556: int, key_no557: int, key-no558: int, key_no559: int, key-no560: int, key_no561: int, key-no562: int, key_no563: int, key-no564: int, key_no565: int, key-no566: int, key_no567: int, key-no568: int, key_no569: int, key-no570: int, key_no571: int, key-no572: int, key_no573: int, key-no574: int, key_no575: int, key-no576: int, key_no577: int, key-no578: int, key_no579: int, key-no580: int, key_no581: int, key-no582: int, key_no583: int, key-no584: int, key_no585: int, key-no586: int, key_no587: int, key-no588: int, key_no589: int, key-no590: int, key_no591: int, key-no592: int, key_no593: int, key-no594: int, key_no595: int, key-no596: int, key_no597: int, key-no598: int, key_no599: int, key-no600: int, key_no601: int, key-no602: int, key_no603: int, key-no604: int, key_no605: int, key-no606: int, key_no607: int, key-no608: int, key_no609: int, key-no610: int, key_no611: int, key-no612: int, key_no613: int, key-no614: int, key_no615: int, key-no616: int, key_no617: int, key-no618: int, key_no619: int, key-no620: int, key_no621: int, key-no622: int, key_no623: int, key-no624: int, key_no625: int, key-no626: int, key_no627: int, key-no628: int, key_no629: int, key-no630: int, key_no631: int, key-no632: int, key_no633: int, key-no634: int, key_no635: int, key-no636: int, key_no637: int, key-no638: int, key_no639: int, key-no640: int, key_no641: int, key-no642: int, key_no643: int, key-no644: int, key_no645: int, key-no646: int, key_no647: int, key-no648: int, key_no649: int, key-no650: int, key_no651: int, key-no652: int, key_no653: int, key-no654: int, key_no655: int, key-no656: int, key_no657: int, key-no658: int, key_no659: int, key-no660: int, key_no661: int, key-no662: int, key_no663: int, key-no664: int, key_no665: int, key-no666: int, key_no667: int, key-no668: int, key_no669: int, key-no670: int, key_no671: int, key-no672: int, key_no673: int, key-no674: int, key_no675: int, key-no676: int, key_no677: int, key-no678: int, key_no679: int, key-no680: int, key_no681: int, key-no682: int, key_no683: int, key-no684: int, key_no685: int, key-no686: int, key_no687: int, key-no688: int, key_no689: int, key-no690: int, key_no691: int, key-no692: int, key_no693: int, key-no694: int, key_no695: int, key-no696: int, key_no697: int, key-no698: int, key_no699: int, key-no700: int, key_no701: int, key-no702: int, key_no703: int, key-no704: int, key_no705: int, key-no706: int, key_no707: int, key-no708: int, key_no709: int, key-no710: int, key_no711: int, key-no712: int, key_no713: int, key-no714: int, key_no715: int, key-no716: int, key_no717: int, key-no718: int, key_no719: int, key-no720: int, key_no721: int, key-no722: int, key_no723: int, key-no724: int, key_no725: int, key-no726: int, key_no727: int, key-no728: int, key_no729: int, key-no730: int, key_no731: int, key-no732: int, key_no733: int, key-no734: int, key_no735: int, key-no736: int, key_no737: int, key-no738: int, key_no739: int, key-no740: int, key_no741: int, key-no742: int, key_no743: int, key-no744: int, key_no745: int, key-no746: int, key_no747: int, key-no748: int, key_no749: int, key-no750: int, key_no751: int, key-no752: int, key_no753: int, key-no754: int, key_no755: int, key-no756: int, key_no757: int, key-no758: int, key_no759: int, key-no760: int, key_no761: int, key-no762: int, key_no763: int, key-no764: int, key_no765: int, key-no766: int, key_no767: int, key-no768: int, key_no769: int, key-no770: int, key_no771: int, key-no772: int, key_no773: int, key-no774: int, key_no775: int, key-no776: int, key_no777: int, key-no778: int, key_no779: int, key-no780: int, key_no781: int, key-no782: int, key_no783: int, key-no784: int, key_no785: int, key-no786: int, key_no787: int, key-no788: int, key_no789: int, key-no790: int, key_no791: int, key-no792: int, key_no793: int, key-no794: int, key_no795: int, key-no796: int, key_no797: int, key-no798: int, key_no799: int, key-no800: int, key_no801: int, key-no802: int, key_no803: int, key-no804: int, key_no805: int, key-no806: int, key_no807: int, key-no808: int, key_no809: int, key-no810: int, key_no811: int, key-no812: int, key_no813: int, key-no814: int, key_no815: int, key-no816: int, key_no817: int, key-no818: int, key_no819: int, key-no820: int, key_no821: int, key-no822: int, key_no823: int, key-no824: int, key_no825: int, key-no826: int, key_no827: int, key-no828: int, key_no829: int, key-no830: int, key_no831: int, key-no832: int, key_no833: int, key-no834: int, key_no835: int, key-no836: int, key_no837: int, key-no838: int, key_no839: int, key-no840: int, key_no841: int, key-no842: int, key_no843: int, key-no844: int, key_no845: int, key-no846: int, key_no847: int, key-no848: int, key_no849: int, key-no850: int, key_no851: int, key-no852: int, key_no853: int, key-no854: int, key_no855: int, key-no856: int, key_no857: int, key-no858: int, key_no859: int, key-no860: int, key_no861: int, key-no862: int, key_no863: int, key-no864: int, key_no865: int, key-no866: int, key_no867: int, key-no868: int, key_no869: int, key-no870: int, key_no871: int, key-no872: int, key_no873: int, key-no874: int, key_no875: int, key-no876: int, key_no877: int, key-no878: int, key_no879: int, key-no880: int, key_no881: int, key-no882: int, key_no883: int, key-no884: int, key_no885: int, key-no886: int, key_no887: int, key-no888: int, key_no889: int, key-no890: int, key_no891: int, key-no892: int, key_no893: int, key-no894: int, key_no895: int, key-no896: int, key_no897: int, key-no898: int, key_no899: int, key-no900: int, key_no901: int, key-no902: int, key_no903: int, key-no904: int, key_no905: int, key-no906: int, key_no907: int, key-no908: int, key_no909: int, key-no910: int, key_no911: int, key-no912: int, key_no913: int, key-no914: int, key_no915: int, key-no916: int, key_no917: int, key-no918: int, key_no919: int, key-no920: int, key_no921: int, key-no922: int, key_no923: int, key-no924: int, key_no925: int, key-no926: int, key_no927: int, key-no928: int, key_no929: int, key-no930: int, key_no931: int, key-no932: int, key_no933: int, key-no934: int, key_no935: int, key-no936: int, key_no937: int, key-no938: int, key_no939: int, key-no940: int, key_no941: int, key-no942: int, key_no943: int, key-no944: int, key_no945: int, key-no946: int, key_no947: int, key-no948: int, key_no949: int, key-no950: int, key_no951: int, key-no952: int, key_no953: int, key-no954: int, key_no955: int, key-no956: int, key_no957: int, key-no958: int, key_no959: int, key-no960: int, key_no961: int, key-no962: int, key_no963: int, key-no964: int, key_no965: int, key-no966: int, key_no967: int, key-no968: int, key_no969: int, key-no970: int, key_no971: int, key-no972: int, key_no973: int, key-no974: int, key_no975: int, key-no976: int, key_no977: int, key-no978: int, key_no979: int, key-no980: int, key_no981: int, key-no982: int, key_no983: int, key-no984: int, key_no985: int, key-no986: int, key_no987: int, key-no988: int, key_no989: int, key-no990: int, key_no991: int, key-no992: int, key_no993: int, key-no994: int, key_no995: int, key-no996: int, key_no997: int, key-no998: int, key_no999: int, key-no1000: int"
+            ]
+        }
+    ],
+    "TypeExpressionTest::testGetTypesGlue": [
+        {
+            "key": 0,
+            "args": [
+                null,
+                "string"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "|",
+                "bool|string"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "&",
+                "Foo&Bar"
+            ]
+        }
+    ],
+    "TypeExpressionTest::testIsCompositeType": [
+        {
+            "key": 0,
+            "args": [
+                false,
+                "string"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                false,
+                "iterable<Foo>"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                true,
+                "iterable&stringable"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                true,
+                "bool|string"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                true,
+                "Foo|(Bar&Baz)"
+            ]
+        }
+    ],
+    "TypeExpressionTest::testIsUnionType": [
+        {
+            "key": 0,
+            "args": [
+                false,
+                "string"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                false,
+                "iterable&stringable"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                true,
+                "bool|string"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                true,
+                "int|string|null"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                true,
+                "int|?string"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                true,
+                "int|null"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                false,
+                "?int"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                true,
+                "Foo|Bar"
+            ]
+        }
+    ],
+    "TypeExpressionTest::testIsIntersectionType": [
+        {
+            "key": 0,
+            "args": [
+                false,
+                "string"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                false,
+                "string|int"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                true,
+                "Foo&Bar"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                true,
+                "Foo&Bar&?Baz"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                true,
+                "\\iterable&\\Stringable"
+            ]
+        }
+    ],
+    "TypeExpressionTest::testGetCommonType": [
+        {
+            "key": 0,
+            "args": [
+                "true",
+                "bool"
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "false",
+                "bool"
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "bool",
+                "bool"
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                "int",
+                "int"
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                "float",
+                "float"
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                "string",
+                "string"
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                "array",
+                "array"
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                "object",
+                "object"
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                "self",
+                "self"
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                "static",
+                "static"
+            ]
+        },
+        {
+            "key": 10,
+            "args": [
+                "bool[]",
+                "array"
+            ]
+        },
+        {
+            "key": 11,
+            "args": [
+                "int[]",
+                "array"
+            ]
+        },
+        {
+            "key": 12,
+            "args": [
+                "float[]",
+                "array"
+            ]
+        },
+        {
+            "key": 13,
+            "args": [
+                "string[]",
+                "array"
+            ]
+        },
+        {
+            "key": 14,
+            "args": [
+                "array[]",
+                "array"
+            ]
+        },
+        {
+            "key": 15,
+            "args": [
+                "bool[][]",
+                "array"
+            ]
+        },
+        {
+            "key": 16,
+            "args": [
+                "int[][]",
+                "array"
+            ]
+        },
+        {
+            "key": 17,
+            "args": [
+                "float[][]",
+                "array"
+            ]
+        },
+        {
+            "key": 18,
+            "args": [
+                "string[][]",
+                "array"
+            ]
+        },
+        {
+            "key": 19,
+            "args": [
+                "array[][]",
+                "array"
+            ]
+        },
+        {
+            "key": 20,
+            "args": [
+                "bool [ ]",
+                "array"
+            ]
+        },
+        {
+            "key": 21,
+            "args": [
+                "bool [ ][ ]",
+                "array"
+            ]
+        },
+        {
+            "key": 22,
+            "args": [
+                "array|iterable",
+                "iterable"
+            ]
+        },
+        {
+            "key": 23,
+            "args": [
+                "iterable|array",
+                "iterable"
+            ]
+        },
+        {
+            "key": 24,
+            "args": [
+                "array|Traversable",
+                "iterable"
+            ]
+        },
+        {
+            "key": 25,
+            "args": [
+                "array|\\Traversable",
+                "iterable"
+            ]
+        },
+        {
+            "key": 26,
+            "args": [
+                "array|Traversable",
+                "iterable",
+                {
+                    "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceAnalysis",
+                    "fullName": "",
+                    "shortName": "",
+                    "startIndex": 0,
+                    "endIndex": 999,
+                    "scopeStartIndex": 0,
+                    "scopeEndIndex": 999
+                }
+            ]
+        },
+        {
+            "key": 27,
+            "args": [
+                "iterable|Traversable",
+                "iterable"
+            ]
+        },
+        {
+            "key": 28,
+            "args": [
+                "array<string>",
+                "array"
+            ]
+        },
+        {
+            "key": 29,
+            "args": [
+                "array<int, string>",
+                "array"
+            ]
+        },
+        {
+            "key": 30,
+            "args": [
+                "array < string >",
+                "array"
+            ]
+        },
+        {
+            "key": 31,
+            "args": [
+                "list<int>",
+                "array"
+            ]
+        },
+        {
+            "key": 32,
+            "args": [
+                "iterable<string>",
+                "iterable"
+            ]
+        },
+        {
+            "key": 33,
+            "args": [
+                "iterable<int, string>",
+                "iterable"
+            ]
+        },
+        {
+            "key": 34,
+            "args": [
+                "\\Traversable<string>",
+                "\\Traversable"
+            ]
+        },
+        {
+            "key": 35,
+            "args": [
+                "Traversable<int, string>",
+                "Traversable"
+            ]
+        },
+        {
+            "key": 36,
+            "args": [
+                "Collection<string>",
+                "Collection"
+            ]
+        },
+        {
+            "key": 37,
+            "args": [
+                "Collection<int, string>",
+                "Collection"
+            ]
+        },
+        {
+            "key": 38,
+            "args": [
+                "array{string}",
+                "array"
+            ]
+        },
+        {
+            "key": 39,
+            "args": [
+                "array { 1: string, \\Closure(): void }",
+                "array"
+            ]
+        },
+        {
+            "key": 40,
+            "args": [
+                "Closure(): void",
+                "Closure"
+            ]
+        },
+        {
+            "key": 41,
+            "args": [
+                "array<int, string>|iterable<int, string>",
+                "iterable"
+            ]
+        },
+        {
+            "key": 42,
+            "args": [
+                "int[]|string[]",
+                "array"
+            ]
+        },
+        {
+            "key": 43,
+            "args": [
+                "int|null",
+                "int"
+            ]
+        },
+        {
+            "key": 44,
+            "args": [
+                "null|int",
+                "int"
+            ]
+        },
+        {
+            "key": 45,
+            "args": [
+                "?int",
+                "int"
+            ]
+        },
+        {
+            "key": 46,
+            "args": [
+                "?array<Foo>",
+                "array"
+            ]
+        },
+        {
+            "key": 47,
+            "args": [
+                "?list<Foo>",
+                "array"
+            ]
+        },
+        {
+            "key": 48,
+            "args": [
+                "void",
+                "void"
+            ]
+        },
+        {
+            "key": 49,
+            "args": [
+                "never",
+                "never"
+            ]
+        },
+        {
+            "key": 50,
+            "args": [
+                "array|Traversable",
+                "iterable",
+                null,
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceUseAnalysis",
+                            "fullName": "Traversable",
+                            "shortName": "Traversable",
+                            "isInMulti": false,
+                            "isAliased": false,
+                            "startIndex": 0,
+                            "endIndex": 0,
+                            "chunkStartIndex": null,
+                            "chunkEndIndex": null,
+                            "type": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 51,
+            "args": [
+                "array|Traversable",
+                "iterable",
+                {
+                    "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceAnalysis",
+                    "fullName": "",
+                    "shortName": "",
+                    "startIndex": 0,
+                    "endIndex": 999,
+                    "scopeStartIndex": 0,
+                    "scopeEndIndex": 999
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceUseAnalysis",
+                            "fullName": "Traversable",
+                            "shortName": "Traversable",
+                            "isInMulti": false,
+                            "isAliased": false,
+                            "startIndex": 0,
+                            "endIndex": 0,
+                            "chunkStartIndex": null,
+                            "chunkEndIndex": null,
+                            "type": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 52,
+            "args": [
+                "array|Traversable",
+                "iterable",
+                {
+                    "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceAnalysis",
+                    "fullName": "App",
+                    "shortName": "App",
+                    "startIndex": 0,
+                    "endIndex": 999,
+                    "scopeStartIndex": 0,
+                    "scopeEndIndex": 999
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceUseAnalysis",
+                            "fullName": "Traversable",
+                            "shortName": "Traversable",
+                            "isInMulti": false,
+                            "isAliased": false,
+                            "startIndex": 0,
+                            "endIndex": 0,
+                            "chunkStartIndex": null,
+                            "chunkEndIndex": null,
+                            "type": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 53,
+            "args": [
+                "self|static",
+                "self"
+            ]
+        },
+        {
+            "key": 54,
+            "args": [
+                "array|Traversable",
+                null,
+                null,
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceUseAnalysis",
+                            "fullName": "Foo",
+                            "shortName": "Traversable",
+                            "isInMulti": false,
+                            "isAliased": false,
+                            "startIndex": 0,
+                            "endIndex": 0,
+                            "chunkStartIndex": null,
+                            "chunkEndIndex": null,
+                            "type": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 55,
+            "args": [
+                "array|Traversable",
+                null,
+                {
+                    "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceAnalysis",
+                    "fullName": "",
+                    "shortName": "",
+                    "startIndex": 0,
+                    "endIndex": 999,
+                    "scopeStartIndex": 0,
+                    "scopeEndIndex": 999
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceUseAnalysis",
+                            "fullName": "Foo",
+                            "shortName": "Traversable",
+                            "isInMulti": false,
+                            "isAliased": false,
+                            "startIndex": 0,
+                            "endIndex": 0,
+                            "chunkStartIndex": null,
+                            "chunkEndIndex": null,
+                            "type": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 56,
+            "args": [
+                "array|Traversable",
+                null,
+                {
+                    "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceAnalysis",
+                    "fullName": "App",
+                    "shortName": "App",
+                    "startIndex": 0,
+                    "endIndex": 999,
+                    "scopeStartIndex": 0,
+                    "scopeEndIndex": 999
+                },
+                {
+                    "__list": true,
+                    "items": [
+                        {
+                            "__class": "PhpCsFixer\\Tokenizer\\Analyzer\\Analysis\\NamespaceUseAnalysis",
+                            "fullName": "Foo",
+                            "shortName": "Traversable",
+                            "isInMulti": false,
+                            "isAliased": false,
+                            "startIndex": 0,
+                            "endIndex": 0,
+                            "chunkStartIndex": null,
+                            "chunkEndIndex": null,
+                            "type": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": 57,
+            "args": [
+                "bool|int",
+                null
+            ]
+        },
+        {
+            "key": 58,
+            "args": [
+                "string|bool",
+                null
+            ]
+        },
+        {
+            "key": 59,
+            "args": [
+                "array<int, string>|Collection<int, string>",
+                null
+            ]
+        }
+    ],
+    "TypeExpressionTest::testAllowsNull": [
+        {
+            "key": 0,
+            "args": [
+                "null",
+                true
+            ]
+        },
+        {
+            "key": 1,
+            "args": [
+                "mixed",
+                true
+            ]
+        },
+        {
+            "key": 2,
+            "args": [
+                "null|mixed",
+                true
+            ]
+        },
+        {
+            "key": 3,
+            "args": [
+                "int|bool|null",
+                true
+            ]
+        },
+        {
+            "key": 4,
+            "args": [
+                "int|bool|mixed",
+                true
+            ]
+        },
+        {
+            "key": 5,
+            "args": [
+                "int",
+                false
+            ]
+        },
+        {
+            "key": 6,
+            "args": [
+                "bool",
+                false
+            ]
+        },
+        {
+            "key": 7,
+            "args": [
+                "string",
+                false
+            ]
+        },
+        {
+            "key": 8,
+            "args": [
+                "?int",
+                true
+            ]
+        },
+        {
+            "key": 9,
+            "args": [
+                "?\\Closure(): void",
+                true
+            ]
+        }
+    ],
+    "TypeExpressionTest::testSortTypes": [
+        {
+            "key": "not a union type",
+            "args": [
+                "int",
+                "int"
+            ]
+        },
+        {
+            "key": "simple",
+            "args": [
+                "int|bool",
+                "bool|int"
+            ]
+        },
+        {
+            "key": "multiple union",
+            "args": [
+                "C___|D____|B__|A",
+                "A|B__|C___|D____"
+            ]
+        },
+        {
+            "key": "multiple intersect",
+            "args": [
+                "C___&D____&B__&A",
+                "A&B__&C___&D____"
+            ]
+        },
+        {
+            "key": "simple in generic",
+            "args": [
+                "array<int|bool>",
+                "array<bool|int>"
+            ]
+        },
+        {
+            "key": "generic with multiple types",
+            "args": [
+                "array<int|bool, string|float>",
+                "array<bool|int, float|string>"
+            ]
+        },
+        {
+            "key": "generic with trailing comma",
+            "args": [
+                "array<int|bool,>",
+                "array<bool|int,>"
+            ]
+        },
+        {
+            "key": "simple in array shape with int key",
+            "args": [
+                "array{0: int|bool}",
+                "array{0: bool|int}"
+            ]
+        },
+        {
+            "key": "simple in array shape with string key",
+            "args": [
+                "array{\"foo\": int|bool}",
+                "array{\"foo\": bool|int}"
+            ]
+        },
+        {
+            "key": "simple in array shape with multiple keys",
+            "args": [
+                "array{0: int|bool, \"foo\": int|bool}",
+                "array{0: bool|int, \"foo\": bool|int}"
+            ]
+        },
+        {
+            "key": "simple in array shape with implicit key",
+            "args": [
+                "array{int|bool}",
+                "array{bool|int}"
+            ]
+        },
+        {
+            "key": "simple in array shape with trailing comma",
+            "args": [
+                "array{int|bool,}",
+                "array{bool|int,}"
+            ]
+        },
+        {
+            "key": "simple in array shape with multiple types with trailing comma",
+            "args": [
+                "array{int|bool, Foo|Bar, }",
+                "array{bool|int, Bar|Foo, }"
+            ]
+        },
+        {
+            "key": "simple in array shape",
+            "args": [
+                "list{int, Foo|Bar}",
+                "list{int, Bar|Foo}"
+            ]
+        },
+        {
+            "key": "array shape with multiple colons - array shape",
+            "args": [
+                "array{array{x:int|bool}, a:array{x:int|bool}}",
+                "array{array{x:bool|int}, a:array{x:bool|int}}"
+            ]
+        },
+        {
+            "key": "array shape with multiple colons - callable",
+            "args": [
+                "array{array{x:int|bool}, int|bool, callable(): void}",
+                "array{array{x:bool|int}, bool|int, callable(): void}"
+            ]
+        },
+        {
+            "key": "unsealed array shape",
+            "args": [
+                "array{bool, ...<B|A>}",
+                "array{bool, ...<A|B>}"
+            ]
+        },
+        {
+            "key": "unsealed array shape with key and value type",
+            "args": [
+                "array{bool, ...<B|A, D&C>}",
+                "array{bool, ...<A|B, C&D>}"
+            ]
+        },
+        {
+            "key": "simple in callable argument",
+            "args": [
+                "callable(int|bool)",
+                "callable(bool|int)"
+            ]
+        },
+        {
+            "key": "callable with multiple arguments",
+            "args": [
+                "callable(int|bool, null|array)",
+                "callable(bool|int, array|null)"
+            ]
+        },
+        {
+            "key": "simple in callable return type",
+            "args": [
+                "callable(): (string|float)",
+                "callable(): (float|string)"
+            ]
+        },
+        {
+            "key": "callable with union return type and within union itself",
+            "args": [
+                "callable(): (string|float)|bool",
+                "bool|callable(): (float|string)"
+            ]
+        },
+        {
+            "key": "callable with multiple named arguments",
+            "args": [
+                "callable(int|bool $b, null|array $a)",
+                "callable(bool|int $b, array|null $a)"
+            ]
+        },
+        {
+            "key": "callable with complex arguments",
+            "args": [
+                "callable(B|A&, D|Closure(): void..., array{}$foo=, $this $foo=): array{}",
+                "callable(A|B&, Closure(): void|D..., array{}$foo=, $this $foo=): array{}"
+            ]
+        },
+        {
+            "key": "callable with trailing comma",
+            "args": [
+                "Closure( Y|X , ): B|A",
+                "A|Closure( X|Y , ): B"
+            ]
+        },
+        {
+            "key": "simple in Closure argument",
+            "args": [
+                "Closure(int|bool)",
+                "Closure(bool|int)"
+            ]
+        },
+        {
+            "key": "Closure with multiple arguments",
+            "args": [
+                "Closure(int|bool, null|array)",
+                "Closure(bool|int, array|null)"
+            ]
+        },
+        {
+            "key": "simple in Closure argument with trailing comma",
+            "args": [
+                "Closure(int|bool,)",
+                "Closure(bool|int,)"
+            ]
+        },
+        {
+            "key": "simple in Closure argument multiple arguments with trailing comma",
+            "args": [
+                "Closure(int|bool, null|array,)",
+                "Closure(bool|int, array|null,)"
+            ]
+        },
+        {
+            "key": "simple in Closure return type",
+            "args": [
+                "Closure(): (string|float)",
+                "Closure(): (float|string)"
+            ]
+        },
+        {
+            "key": "Closure with union return type and within union itself",
+            "args": [
+                "Closure(): (string|float)|bool",
+                "bool|Closure(): (float|string)"
+            ]
+        },
+        {
+            "key": "with multiple nesting levels",
+            "args": [
+                "array{0: Foo<int|bool>|Bar<callable(string|float|array<int|bool>): (Foo|Bar)>}",
+                "array{0: Bar<callable(array<bool|int>|float|string): (Bar|Foo)>|Foo<bool|int>}"
+            ]
+        },
+        {
+            "key": "with multiple nesting levels and callable within union",
+            "args": [
+                "array{0: Foo<int|bool>|Bar<callable(string|float|array<int|bool>): (Foo|Bar)|Baz>}",
+                "array{0: Bar<Baz|callable(array<bool|int>|float|string): (Bar|Foo)>|Foo<bool|int>}"
+            ]
+        },
+        {
+            "key": "complex type with Closure with $this",
+            "args": [
+                "array<string, string|array{ string|\\Closure(mixed, string, $this): (int|float) }>|false",
+                "array<string, array{ \\Closure(mixed, string, $this): (float|int)|string }|string>|false"
+            ]
+        },
+        {
+            "key": "generic Closure",
+            "args": [
+                "Closure<B, A>(y|x, U<p|o>|B|A): (Y|B|X)",
+                "Closure<B, A>(x|y, A|B|U<o|p>): (B|X|Y)"
+            ]
+        },
+        {
+            "key": "generic Closure with bound template",
+            "args": [
+                "Closure<B of J|I, C, A of V|U, D of object>(B|A): array{B, A, B, C, D}",
+                "Closure<B of I|J, C, A of U|V, D of object>(A|B): array{B, A, B, C, D}"
+            ]
+        },
+        {
+            "key": "generic Closure with template with default",
+            "args": [
+                "Closure<T = B&A>(T): void",
+                "Closure<T = A&B>(T): void"
+            ]
+        },
+        {
+            "key": "nullable generic",
+            "args": [
+                "?array<Foo|Bar>",
+                "?array<Bar|Foo>"
+            ]
+        },
+        {
+            "key": "nullable callable",
+            "args": [
+                "?callable(Foo|Bar): (Foo|Bar)",
+                "?callable(Bar|Foo): (Bar|Foo)"
+            ]
+        },
+        {
+            "key": "nullable callable with union return type and within union itself",
+            "args": [
+                "?callable(Foo|Bar): (Foo|Bar)|?Bar",
+                "?Bar|?callable(Bar|Foo): (Bar|Foo)"
+            ]
+        },
+        {
+            "key": "nullable array shape",
+            "args": [
+                "?array{0: Foo|Bar}",
+                "?array{0: Bar|Foo}"
+            ]
+        },
+        {
+            "key": "simple types alternation",
+            "args": [
+                "array<Foo&Bar>",
+                "array<Bar&Foo>"
+            ]
+        },
+        {
+            "key": "nesty stuff",
+            "args": [
+                "array<Level11&array<Level2|array<Level31&Level32>>>",
+                "array<array<array<Level31&Level32>|Level2>&Level11>"
+            ]
+        },
+        {
+            "key": "parenthesized",
+            "args": [
+                "(Foo|Bar)",
+                "(Bar|Foo)"
+            ]
+        },
+        {
+            "key": "parenthesized intersect",
+            "args": [
+                "(Foo&Bar)",
+                "(Bar&Foo)"
+            ]
+        },
+        {
+            "key": "parenthesized in closure return type",
+            "args": [
+                "Closure(Y|X): (string|float)",
+                "Closure(X|Y): (float|string)"
+            ]
+        },
+        {
+            "key": "conditional with variable",
+            "args": [
+                "($x is (CFoo|(CBaz&CBar)) ? (TFoo|(TBaz&TBar)) : (FFoo|(FBaz&FBar)))",
+                "($x is ((CBar&CBaz)|CFoo) ? ((TBar&TBaz)|TFoo) : ((FBar&FBaz)|FFoo))"
+            ]
+        },
+        {
+            "key": "conditional with type",
+            "args": [
+                "((Foo|Bar) is x ? y : z)",
+                "((Bar|Foo) is x ? y : z)"
+            ]
+        },
+        {
+            "key": "conditional in conditional",
+            "args": [
+                "((Foo|Bar) is x ? ($x is (CFoo|CBar) ? (TFoo|TBar) : (FFoo|FBar)) : z)",
+                "((Bar|Foo) is x ? ($x is (CBar|CFoo) ? (TBar|TFoo) : (FBar|FFoo)) : z)"
+            ]
+        },
+        {
+            "key": "large numbers",
+            "args": [
+                "18_446_744_073_709_551_616|-8.2023437675747321e-18_446_744_073_709_551_616",
+                "-8.2023437675747321e-18_446_744_073_709_551_616|18_446_744_073_709_551_616"
+            ]
+        },
+        {
+            "key": "mixed 2x | and & glue",
+            "args": [
+                "Foo|Foo2|Baz&Bar",
+                "Bar&Baz|Foo|Foo2"
+            ]
+        },
+        {
+            "key": "mixed | and 2x & glue",
+            "args": [
+                "Foo|Baz&Baz2&Bar",
+                "Bar&Baz&Baz2|Foo"
+            ]
+        }
+    ]
+}
