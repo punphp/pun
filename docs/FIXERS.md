@@ -146,7 +146,7 @@ Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeE
 - [ ] lambda_not_used_import
 - [x] magic_constant_casing
 - [ ] modifier_keywords
-- [ ] no_leading_import_slash
+- [x] no_leading_import_slash
 - [ ] no_unneeded_import_alias
 - [ ] no_unused_imports
 - [ ] no_useless_else
