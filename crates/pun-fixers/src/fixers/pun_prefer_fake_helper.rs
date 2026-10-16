@@ -26,17 +26,15 @@ impl Fixer for PreferFakeHelper {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let mut i = 0;
         while i < tokens.count() {
-            if tokens[i].is_kind(T_CLASS) {
+            if let Some(open) = class_body(tokens, i) {
                 let named_factory = tokens
                     .get_next_meaningful_token(i)
                     .is_some_and(|n| tokens[n].is_kind(T_STRING) && tokens[n].get_content().ends_with(b"Factory"));
-                if let Some(open) = tokens.get_next_token_of_kind(i, &["{".into()], true) {
-                    let end = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open);
-                    if named_factory {
-                        fix_body(tokens, open, end);
-                    }
-                    i = end;
+                let end = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open);
+                if named_factory {
+                    fix_body(tokens, open, end);
                 }
+                i = end;
             }
             i += 1;
         }
@@ -54,11 +52,9 @@ fn fix_body(tokens: &mut Tokens, open: usize, end: usize) {
             in_string = true;
         } else if t.is_kind(T_END_HEREDOC) {
             in_string = false;
-        } else if t.is_kind(T_CLASS) {
+        } else if let Some(o) = class_body(tokens, i) {
             // Nested anonymous class: `$this` is not the factory there.
-            if let Some(o) = tokens.get_next_token_of_kind(i, &["{".into()], true) {
-                i = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, o);
-            }
+            i = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, o);
         } else if !in_string && t.is_kind(T_VARIABLE) && t.get_content() == b"$this" {
             try_fix(tokens, i);
         }
@@ -77,10 +73,9 @@ fn try_fix(tokens: &mut Tokens, this: usize) {
     }) {
         return;
     }
-    if let Some(p) = tokens.get_prev_meaningful_token(this) {
-        if tokens[p].equals("&", true) || tokens[p].is_given_kind(&[T_INC, T_DEC]) || inside_isset_or_unset(tokens, this) {
-            return;
-        }
+    let p = tokens.get_prev_meaningful_token(this).expect("inside a class body");
+    if tokens[p].equals("&", true) || tokens[p].is_given_kind(&[T_INC, T_DEC]) || inside_isset_or_unset(tokens, this) {
+        return;
     }
     if (this..prop).any(|k| tokens[k].is_comment()) {
         return;
@@ -88,10 +83,20 @@ fn try_fix(tokens: &mut Tokens, this: usize) {
     tokens.override_range(this, prop, vec![Token::new(T_STRING, "fake"), Token::char("("), Token::char(")")]);
 }
 
+/// The `{` of a class declaration or anonymous class at `i`; `None` for anything else, including `Foo::class`.
+fn class_body(tokens: &Tokens, i: usize) -> Option<usize> {
+    if !tokens[i].is_kind(T_CLASS) || tokens.get_prev_meaningful_token(i).is_some_and(|p| tokens[p].is_kind(T_DOUBLE_COLON)) {
+        return None;
+    }
+    tokens.get_next_token_of_kind(i, &["{".into()], true)
+}
+
+/// Walks back from `index` (inside a class body, so a `{` is always found) to its statement start.
 fn inside_isset_or_unset(tokens: &Tokens, index: usize) -> bool {
     let mut depth = 0;
     let mut i = index;
-    while let Some(p) = tokens.get_prev_meaningful_token(i) {
+    loop {
+        let p = tokens.get_prev_meaningful_token(i).expect("inside a class body");
         let t = &tokens[p];
         if t.equals(")", true) {
             depth += 1;
@@ -105,14 +110,17 @@ fn inside_isset_or_unset(tokens: &Tokens, index: usize) -> bool {
         }
         i = p;
     }
-    false
 }
 
 #[cfg(test)]
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -150,11 +158,16 @@ mod tests {
             factory("$this->faker();"),
             factory("return new class { function f() { return $this->faker->name(); } };"),
             "<?php trait UserFactory { function f() { return $this->faker->name(); } }".into(),
+            factory("return <<<EOT\n    {$this->faker->name}\n    EOT;"),
+            factory("return $this-> /* keep */ faker->name();"),
         ] {
             assert_eq!(fix(&same), same);
         }
         // A class after the factory is not touched.
         let two = "<?php class AFactory { function f() { $this->faker->a(); } } class B { function f() { $this->faker->b(); } }";
         assert_eq!(fix(two), two.replacen("$this->faker->a", "fake()->a", 1));
+        // `::class` is not a class declaration (it used to swallow everything up to the next `{`).
+        let refs = "<?php $f = AFactory::class; class AFactory { function f() { $m = B::class; if ($m) { $this->faker->a(); } } }";
+        assert_eq!(fix(refs), refs.replacen("$this->faker->a", "fake()->a", 1));
     }
 }

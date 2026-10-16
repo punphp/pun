@@ -125,9 +125,6 @@ fn classify(tokens: &Tokens, s: usize, e: usize) -> Arg {
         return Arg::Drop;
     }
     let inlinable = elements.iter().all(|&(es, ee)| {
-        if tokens[es].equals(",", true) {
-            return false; // missing element
-        }
         match (es..=ee).find(|&k| tokens[k].is_kind(T_DOUBLE_ARROW) && !inside_block(tokens, es, k)) {
             None => true,
             Some(arrow) => tokens.get_next_meaningful_token(es) == Some(arrow) && tokens[es].is_kind(T_CONSTANT_ENCAPSED_STRING) && is_string_array_key(tokens[es].get_content()),
@@ -203,7 +200,11 @@ fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)>
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -264,6 +265,11 @@ mod tests {
         assert_eq!(fix("<?php $x = array_merge($a, array_merge($b, $c));"), "<?php $x = [...$a, ...$b, ...$c];");
         assert_eq!(fix("<?php $x = array_merge($a, ['k' => fn ($v) => [1 => $v]]);"), "<?php $x = [...$a, 'k' => fn ($v) => [1 => $v]];");
         assert_eq!(fix("<?php $x = array_merge($a, [\"b\\n\" => 1]);"), "<?php $x = [...$a, ...[\"b\\n\" => 1]];");
+        // A nested array's keys don't count; a computed key or a literal inside a larger expression is spread.
+        assert_eq!(fix("<?php $x = array_merge($a, [[1 => 2]]);"), "<?php $x = [...$a, [1 => 2]];");
+        assert_eq!(fix("<?php $x = array_merge($a, [f(1) => 2]);"), "<?php $x = [...$a, ...[f(1) => 2]];");
+        assert_eq!(fix("<?php $x = array_merge($a, [1] + $b);"), "<?php $x = [...$a, ...[1] + $b];");
+        assert_eq!(fix("<?php $x = array_merge($a, ['a\\'b' => 1]);"), "<?php $x = [...$a, 'a\\'b' => 1];");
         for same in [
             "<?php $x = array_merge(array: $a);",
             "<?php $f = array_merge(...);",

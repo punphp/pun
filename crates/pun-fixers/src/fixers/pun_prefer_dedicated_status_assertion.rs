@@ -82,7 +82,11 @@ fn dedicated_status_method(status_code: u64) -> Option<&'static str> {
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -98,6 +102,28 @@ mod tests {
         }
     }
 
+    /// Every `assertX() { return $this->assertStatus(N); }` in laravel/framework's
+    /// src/Illuminate/Testing/Concerns/AssertsStatusCodes.php (corpus/laravel-framework), plus Mago's
+    /// 204 → assertNoContent (whose Laravel body also checks the content is empty).
+    #[test]
+    fn laravel_status_methods() {
+        let laravel = [
+            (200, "assertOk"), (201, "assertCreated"), (202, "assertAccepted"), (204, "assertNoContent"),
+            (301, "assertMovedPermanently"), (302, "assertFound"), (304, "assertNotModified"),
+            (307, "assertTemporaryRedirect"), (308, "assertPermanentRedirect"), (400, "assertBadRequest"),
+            (401, "assertUnauthorized"), (402, "assertPaymentRequired"), (403, "assertForbidden"),
+            (404, "assertNotFound"), (405, "assertMethodNotAllowed"), (406, "assertNotAcceptable"),
+            (408, "assertRequestTimeout"), (409, "assertConflict"), (410, "assertGone"),
+            (415, "assertUnsupportedMediaType"), (422, "assertUnprocessable"), (424, "assertFailedDependency"),
+            (429, "assertTooManyRequests"), (500, "assertInternalServerError"), (503, "assertServiceUnavailable"),
+        ];
+        for (code, method) in laravel {
+            assert_eq!(fix(&format!("<?php $r->assertStatus({code});")), format!("<?php $r->{method}();"));
+        }
+        // Underscore separators are part of the literal's value.
+        assert_eq!(fix("<?php $r->assertStatus(4_04);"), "<?php $r->assertNotFound();");
+    }
+
     #[test]
     fn edge_cases() {
         assert_eq!(fix("<?php $r\n    ->ASSERTSTATUS( 201, );"), "<?php $r\n    ->assertCreated();");
@@ -106,6 +132,7 @@ mod tests {
             "<?php $r->assertStatus(200 + 1);",
             "<?php $r->assertStatus(/* ok */ 200);",
             "<?php Foo::assertStatus(200);",
+            "<?php $a->b; Foo::assertStatus(200);",
             "<?php $r?->assertStatus(200);",
         ] {
             assert_eq!(fix(same), same);

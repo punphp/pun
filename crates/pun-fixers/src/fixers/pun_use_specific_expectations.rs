@@ -67,10 +67,8 @@ fn chain_starts_with_expect(tokens: &Tokens, arrow: usize) -> bool {
             }
             let before = tokens.get_prev_meaningful_token(name);
             match before {
-                Some(b) if is_arrow(b) => match tokens.get_prev_meaningful_token(b) {
-                    Some(n) => p = n,
-                    None => return false,
-                },
+                // An arrow always has at least the open tag before it.
+                Some(b) if is_arrow(b) => p = tokens.get_prev_meaningful_token(b).expect("open tag"),
                 _ => {
                     let n = tokens[name].get_content();
                     let is_expect = n.eq_ignore_ascii_case(b"expect") || n.eq_ignore_ascii_case(b"\\expect");
@@ -81,10 +79,8 @@ fn chain_starts_with_expect(tokens: &Tokens, arrow: usize) -> bool {
             }
         } else if tokens[p].is_kind(T_STRING) {
             match tokens.get_prev_meaningful_token(p) {
-                Some(b) if is_arrow(b) => match tokens.get_prev_meaningful_token(b) {
-                    Some(n) => p = n,
-                    None => return false,
-                },
+                // An arrow always has at least the open tag before it.
+                Some(b) if is_arrow(b) => p = tokens.get_prev_meaningful_token(b).expect("open tag"),
                 _ => return false,
             }
         } else {
@@ -97,7 +93,11 @@ fn chain_starts_with_expect(tokens: &Tokens, arrow: usize) -> bool {
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -144,6 +144,9 @@ mod tests {
             "<?php expect()->toBe(true);",
             "<?php $x->toBe(true);",
             "<?php expect($x)->toBe(\\true);",
+            "<?php expect($x)->toBe(FOO);",
+            "<?php $f($x)->toBe(true);",
+            "<?php foo->toBe(true);",
         ] {
             assert_eq!(fix(same), same);
         }

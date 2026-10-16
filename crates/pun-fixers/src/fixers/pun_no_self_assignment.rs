@@ -56,7 +56,11 @@ impl Fixer for NoSelfAssignment {
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -78,6 +82,7 @@ mod tests {
             "<?php\nfunction f($a) {\n    $x = 1;\n    return $a;\n}\n"
         );
         assert_eq!(fix("<?php foo(); $a=$a; bar();"), "<?php foo(); bar();");
+        assert_eq!(fix("<?php foo();\n$a = $a;"), "<?php foo();\n");
         for same in [
             "<?php if ($x) $a = $a;",
             "<?php $b = $a = $a;",

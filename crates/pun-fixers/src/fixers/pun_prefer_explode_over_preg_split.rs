@@ -158,7 +158,11 @@ fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)>
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -196,6 +200,8 @@ mod tests {
         assert_eq!(fix("<?php preg_split('/,/', $s, null);"), "<?php explode(',', $s);");
         assert_eq!(fix("<?php preg_split('/,/', $s, 2, 0);"), "<?php explode(',', $s, 2);");
         assert_eq!(fix("<?php preg_split(\"/\\x2c/\", $s);"), "<?php explode(\"\\x2c\", $s);");
+        assert_eq!(fix("<?php preg_split(\"/\\v\\e\\f/\", $s);"), "<?php explode(\"\\v\\e\\f\", $s);");
+        assert_eq!(fix("<?php preg_split(\"/\\54/\", trim($s));"), "<?php explode(\"\\54\", trim($s));");
         for same in [
             "<?php preg_split('//', $s);",
             "<?php preg_split('/,/', $s, $limit);",
@@ -208,6 +214,8 @@ mod tests {
             "<?php preg_split(pattern: '/,/', subject: $s);",
             "<?php $o->preg_split('/,/', $s);",
             "<?php preg_split('/a/b/', $s);",
+            "<?php preg_split(\"/a$/\", $s);",
+            "<?php preg_split($p, 'a,b');",
         ] {
             assert_eq!(fix(same), same);
         }

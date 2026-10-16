@@ -109,7 +109,11 @@ fn enclosing_paren(tokens: &Tokens, k: usize) -> Option<usize> {
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -134,6 +138,7 @@ mod tests {
             ("<?php $x = $c ? $u?->id ?? 0 : 1;", "<?php $x = $c ? $u->id ?? 0 : 1;"),
             ("<?php isset($a, $u?->id);", "<?php isset($a, $u->id);"),
             ("<?php $x = ($a ?: $b)?->id ?? 0;", "<?php $x = ($a ?: $b)->id ?? 0;"),
+            ("<?php isset($a[0], $u?->id);", "<?php isset($a[0], $u->id);"),
         ] {
             assert_eq!(fix(from), to);
         }
@@ -148,6 +153,8 @@ mod tests {
             "<?php foo($u?->id);",
             "<?php isset($x[$u?->id]);",
             "<?php $x = $a == $u?->id ?? 0;",
+            // Dynamic property names end the chain walk: skipped.
+            "<?php $x = $a->{'b'}?->c ?? 0;",
         ] {
             assert_eq!(fix(same), same);
         }

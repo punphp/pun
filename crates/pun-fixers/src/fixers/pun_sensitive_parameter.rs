@@ -34,8 +34,8 @@ impl Fixer for SensitiveParameter {
             }
             let Some(open) = k.filter(|&o| tokens[o].equals("(", true)) else { continue };
             let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
-            for (s, e) in split_list(tokens, open, close).into_iter().rev() {
-                if needs_attribute(tokens, s, e) {
+            for (s, _) in split_list(tokens, open, close).into_iter().rev() {
+                if needs_attribute(tokens, s) {
                     tokens.insert_at(s, vec![
                         Token::new(T_ATTRIBUTE, "#["),
                         Token::new(T_NS_SEPARATOR, "\\"),
@@ -49,10 +49,11 @@ impl Fixer for SensitiveParameter {
     }
 }
 
-fn needs_attribute(tokens: &Tokens, s: usize, e: usize) -> bool {
+fn needs_attribute(tokens: &Tokens, s: usize) -> bool {
     let mut type_names = vec![];
     let mut k = s;
-    while k <= e {
+    // Every parameter has a variable, so the loop always returns.
+    loop {
         let t = &tokens[k];
         if t.is_kind(T_ATTRIBUTE) {
             let end = tokens.find_block_end(Tokens::BLOCK_TYPE_ATTRIBUTE, k);
@@ -71,7 +72,6 @@ fn needs_attribute(tokens: &Tokens, s: usize, e: usize) -> bool {
         }
         k += 1;
     }
-    false
 }
 
 /// (first, last) meaningful token of each comma-separated item between `open` and `close`.
@@ -100,7 +100,11 @@ fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)>
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 

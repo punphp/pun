@@ -58,10 +58,8 @@ fn chain_root_is_pest_function(tokens: &Tokens, arrow: usize) -> bool {
             return false;
         };
         match tokens.get_prev_meaningful_token(name) {
-            Some(b) if is_arrow(b) => match tokens.get_prev_meaningful_token(b) {
-                Some(n) => p = n,
-                None => return false,
-            },
+            // An arrow always has at least the open tag before it.
+            Some(b) if is_arrow(b) => p = tokens.get_prev_meaningful_token(b).expect("open tag"),
             before => {
                 // The root must be a call, `name(...)`, of a global function.
                 if p == name {
@@ -83,7 +81,11 @@ fn chain_root_is_pest_function(tokens: &Tokens, arrow: usize) -> bool {
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -126,6 +128,8 @@ mod tests {
             "<?php $this->it('x')->only();",
             "<?php test('x', fn () => 1)->only(/* keep */);",
             "<?php test('x', fn () => 1)->ONLY();",
+            "<?php $f()->only();",
+            "<?php test->only();",
         ] {
             assert_eq!(fix(same), same);
         }

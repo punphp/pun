@@ -168,7 +168,11 @@ fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)>
 mod tests {
     fn fix(code: &str) -> String {
         let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        super::fixer().fix(std::path::Path::new("t.php"), &mut tokens);
+        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
+        let f = super::fixer();
+        if f.is_candidate(&tokens) {
+            f.fix(std::path::Path::new("t.php"), &mut tokens);
+        }
         String::from_utf8(tokens.generate_code()).unwrap()
     }
 
@@ -223,6 +227,9 @@ mod tests {
             "<?php $f = function ($x) { return $this->m(/* c */ $x); };",
             "<?php $f = #[Pure] fn ($x) => $this->m($x);",
             "<?php class A { public function m($x) { return $this->n($x); } }",
+            "<?php $f = fn ($x) => (new Foo)->m($x);",
+            "<?php $f = fn ($x) => $this->m(f($x));",
+            "<?php $f = function ($x) { return $this->m($x) + 1; };",
         ] {
             assert_eq!(fix(same), same);
         }
