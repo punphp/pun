@@ -141,24 +141,24 @@ Analyzers owned: NamespaceUsesAnalyzer, NamespacesAnalyzer, ClassyAnalyzer, Attr
 
 Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeExpression), AbstractPhpdocTypesFixer, AbstractProxyFixer.
 
-- [ ] final_public_method_for_abstract_class
+- [x] final_public_method_for_abstract_class
 - [ ] fully_qualified_strict_types (handed to agent 3)
-- [ ] lambda_not_used_import
+- [x] lambda_not_used_import
 - [x] magic_constant_casing
-- [ ] modifier_keywords
+- [x] modifier_keywords
 - [x] no_leading_import_slash
 - [ ] no_unneeded_import_alias (handed to agent 3)
 - [ ] no_unused_imports (handed to agent 3)
-- [ ] no_useless_else
+- [x] no_useless_else
 - [x] no_useless_return
 - [ ] ordered_class_elements (handed to agent 3)
 - [ ] ordered_imports (handed to agent 3)
 - [ ] ordered_interfaces (handed to agent 3)
 - [ ] ordered_traits (handed to agent 3)
-- [ ] php_unit_set_up_tear_down_visibility
-- [ ] protected_to_private
-- [ ] self_accessor
-- [ ] self_static_accessor
+- [x] php_unit_set_up_tear_down_visibility
+- [x] protected_to_private
+- [x] self_accessor
+- [x] self_static_accessor
 - [x] visibility_required — deprecated upstream; not ported. pun-format runs it as a proxy of modifier_keywords (like AbstractProxyFixer).
 - [x] heredoc_to_nowdoc
 - [x] no_empty_phpdoc
@@ -172,7 +172,7 @@ Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeE
 - [x] phpdoc_trim
 - [x] phpdoc_types
 - [x] phpdoc_var_without_name
-- [ ] no_superfluous_phpdoc_tags
+- [x] no_superfluous_phpdoc_tags
 
 
 ## Deprecated rules (not supported)
