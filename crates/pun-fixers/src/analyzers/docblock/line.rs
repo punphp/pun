@@ -32,7 +32,13 @@ impl Line {
     }
 
     pub fn contains_a_tag(&self) -> bool {
-        preg::is_match(r"/\*\s*@/", &self.content)
+        if !self.content.is_ascii() {
+            return preg::is_match(r"/\*\s*@/", &self.content);
+        }
+        // ASCII `\s`: space, TAB, LF, VT, FF, CR.
+        self.content.iter().enumerate().any(|(i, &b)| {
+            b == b'*' && self.content[i + 1..].iter().find(|c| !matches!(c, b' ' | b'\t' | b'\n' | 0x0b | 0x0c | b'\r')) == Some(&b'@')
+        })
     }
 
     pub fn is_the_start(&self) -> bool {

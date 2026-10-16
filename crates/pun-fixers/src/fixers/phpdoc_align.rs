@@ -114,7 +114,8 @@ impl Fixer for PhpdocAlignFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
-            if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
+            // Only a line with `@` can start an aligned group; without one the docblock is left as is.
+            if !tokens[index].is_kind(Kind::T_DOC_COMMENT) || !tokens[index].content.contains(&b'@') {
                 continue;
             }
             let content = tokens[index].content.clone();
@@ -231,7 +232,7 @@ impl PhpdocAlignFixer {
     }
 
     fn get_matches(&self, line: &[u8], match_comment_only: bool) -> Option<Item> {
-        if let Some(m) = Preg::match_groups(&self.regex, line, 0) {
+        if let Some(m) = line.contains(&b'@').then(|| Preg::match_groups(&self.regex, line, 0)).flatten() {
             let g = |n: &str| m.name_str(n).to_vec();
             let has = |n: &str| m.name_exists(n);
             let mut item = Item { indent: g("indent"), tag: Some(g("tag")), hint: g("hint"), var: g("var"), static_: g("static"), desc: g("desc") };

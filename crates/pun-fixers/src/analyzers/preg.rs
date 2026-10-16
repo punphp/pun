@@ -203,6 +203,7 @@ fn compile_uncached(pattern: &[u8]) -> Option<Regex> {
             names.push((name.to_vec(), group));
         }
         let matcher = Matcher::new(code);
+        debug_assert!(names.is_sorted_by(|a, b| a.0 <= b.0));
         Some(Regex { code, utf, capture_count: capture_count as usize, names: names.into(), matcher })
     }
 }
@@ -330,7 +331,9 @@ impl<'s> Captures<'s> {
 
     /// With duplicate names (`J`) PHP's `$matches['name']` is the last group of that name present in `$matches`.
     fn group_by_name(&self, name: &[u8]) -> Option<usize> {
-        self.names.iter().filter(|&&(ref n, g)| n == name && g < self.len).map(|&(_, g)| g).max()
+        // pcre2api: the name table is sorted by name (byte order, a prefix first), so equal names are one run.
+        let lo = self.names.partition_point(|(n, _)| n.as_slice() < name);
+        self.names[lo..].iter().take_while(|(n, _)| n == name).filter(|&&(_, g)| g < self.len).map(|&(_, g)| g).max()
     }
 
     /// Named group text (`$matches['name']`), `None` when unmatched or absent.
