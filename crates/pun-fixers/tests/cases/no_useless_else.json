@@ -3,5 +3,10 @@
         "fixer": "no_useless_else",
         "input": "<?php\nfunction f($a) { if ($a) { return 1; } else echo 2; }\n",
         "expected": "<?php\nfunction f($a) { if ($a) { return 1; }  echo 2; }\n"
+    },
+    {
+        "fixer": "no_useless_else",
+        "input": "<?php\nfunction f($a) {\n    if ($a) {\n        for (;;) {}\n        return 1;\n    } else {\n        echo 1;\n    }\n    if ($a) {\n        try {} finally {}\n        return 2;\n    } else {\n        echo 2;\n    }\n}\n",
+        "expected": "<?php\nfunction f($a) {\n    if ($a) {\n        for (;;) {}\n        return 1;\n    } else {\n        echo 1;\n    }\n    if ($a) {\n        try {} finally {}\n        return 2;\n    }  \n        echo 2;\n    \n}\n"
     }
 ]

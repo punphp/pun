@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "switch_case_space",
+        "input": "<?php\nswitch ($a) {\n    case 1 :\n        switch ($b):\n            case 2 :\n                { foo(); }\n                break;\n            default :\n                break;\n        endswitch;\n        break;\n    case $c ? 1 : 2 :\n        $x = match ($y) { default => 1 };\n        break;\n}\n",
+        "expected": "<?php\nswitch ($a) {\n    case 1:\n        switch ($b):\n            case 2:\n                { foo(); }\n                break;\n            default:\n                break;\n        endswitch;\n        break;\n    case $c ? 1 : 2:\n        $x = match ($y) { default => 1 };\n        break;\n}\n"
+    }
+]

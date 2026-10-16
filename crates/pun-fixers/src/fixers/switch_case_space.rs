@@ -21,7 +21,7 @@ impl Fixer for SwitchCaseSpaceFixer {
         tokens.is_token_kind_found(T_SWITCH)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        'analysis: for analysis in ControlCaseStructuresAnalyzer::find_control_structures(tokens, &[T_SWITCH]) {
+        'analysis: for analysis in ControlCaseStructuresAnalyzer::find_switch_structures(tokens) {
             if let Some(default) = analysis.get_default_analysis() {
                 let index = default.get_index();
                 if !tokens[index + 1].is_whitespace(None) || !tokens[index + 2].equals_any(&[":".into(), ";".into()], true) {

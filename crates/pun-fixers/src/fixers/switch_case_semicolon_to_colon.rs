@@ -21,7 +21,7 @@ impl Fixer for SwitchCaseSemicolonToColonFixer {
         tokens.is_token_kind_found(T_SWITCH)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        for analysis in ControlCaseStructuresAnalyzer::find_control_structures(tokens, &[T_SWITCH]) {
+        for analysis in ControlCaseStructuresAnalyzer::find_switch_structures(tokens) {
             if let Some(default) = analysis.get_default_analysis() {
                 fix_token_if_needed(tokens, default.get_colon_index());
             }

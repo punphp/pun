@@ -103,25 +103,11 @@ fn is_in_condition_without_braces(tokens: &Tokens, mut index: usize, lower_limit
             return false;
         }
         if token.equals("{", true) {
-            index = tokens.get_prev_meaningful_token(index).unwrap();
-            // OK if belongs to: for, do, while, foreach
-            // Not OK if belongs to: if, else, elseif
-            if tokens[index].is_kind(T_DO) {
-                index -= 1;
-                if index > lower_limit_index {
-                    continue;
-                }
-                return false;
-            }
-            if !tokens[index].equals(")", true) {
-                return false; // like `else {`
-            }
-            index = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, index);
-            index = tokens.get_prev_meaningful_token(index).unwrap();
-            if tokens[index].is_given_kind(&[T_IF, T_ELSEIF]) {
-                return false;
-            }
-        } else if token.equals(")", true) {
+            // Upstream steps over a `{` owned by for/foreach/while/do, but walking back from the candidate meets
+            // no ")" (else isInConditional held), so this "{" opens the if/elseif/else block itself: not OK.
+            return false;
+        }
+        if token.equals(")", true) {
             let (t, _) = Tokens::detect_block_type(token).unwrap();
             index = tokens.find_block_start(t, index);
             index = tokens.get_prev_meaningful_token(index).unwrap();

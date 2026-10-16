@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "native_function_casing",
+        "input": "<?php\nnamespace A {\n    function STRLEN($x) {}\n    STRLEN(1);\n}\nnamespace B {\n    use function C\\TRIM;\n    STRTOLOWER(1);\n    TRIM(1);\n    function Foo() {}\n}\nnamespace C {\n    $a = new class() { function STRTOUPPER() {} };\n    STRTOUPPER(1);\n}\n",
+        "expected": "<?php\nnamespace A {\n    function STRLEN($x) {}\n    STRLEN(1);\n}\nnamespace B {\n    use function C\\TRIM;\n    strtolower(1);\n    TRIM(1);\n    function Foo() {}\n}\nnamespace C {\n    $a = new class() { function STRTOUPPER() {} };\n    strtoupper(1);\n}\n"
+    },
+    {
+        "fixer": "native_function_casing",
+        "input": "<?php\n#[STRLEN(1)]\nclass A {\n    public string $a {\n        SET(string $v) {\n            $this->a = STRTOLOWER($v);\n        }\n    }\n}\nSET(1);\n",
+        "expected": "<?php\n#[STRLEN(1)]\nclass A {\n    public string $a {\n        SET(string $v) {\n            $this->a = strtolower($v);\n        }\n    }\n}\nSET(1);\n"
+    },
+    {
+        "fixer": "native_function_casing",
+        "input": "<?php\n#[Foo, STRLEN(1)]\nclass A {}\n$x = SET(1);\n",
+        "expected": "<?php\n#[Foo, STRLEN(1)]\nclass A {}\n$x = SET(1);\n"
+    }
+]

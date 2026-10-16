@@ -209,15 +209,8 @@ fn decide_insert(content: &[u8], frame: &Frame, close: u8, close_index: usize) -
 }
 
 fn close_on_own_line(content: &[u8], index: usize) -> bool {
-    for &c in content[..index].iter().rev() {
-        if c == b'\n' {
-            return true;
-        }
-        if c != b' ' && c != b'\t' && c != b'\r' {
-            return false;
-        }
-    }
-    true
+    // the first character before the close that is not a space, tab or CR is a newline (or there is none)
+    content[..index].iter().rev().find(|&&c| c != b' ' && c != b'\t' && c != b'\r').is_none_or(|&c| c == b'\n')
 }
 
 fn paren_is_call(content: &[u8], paren_index: usize) -> bool {
@@ -225,9 +218,7 @@ fn paren_is_call(content: &[u8], paren_index: usize) -> bool {
     while cursor >= 0 && (content[cursor as usize] == b' ' || content[cursor as usize] == b'\t') {
         cursor -= 1;
     }
-    if cursor < 0 {
-        return false;
-    }
+    // the directive's `@` comes earlier, so the start of the content is never reached
     let c = content[cursor as usize];
     if c == b']' || c == b')' {
         return true;
