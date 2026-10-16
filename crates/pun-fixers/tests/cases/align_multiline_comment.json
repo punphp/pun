@@ -19,5 +19,10 @@
         "fixer": "align_multiline_comment",
         "input": "<?php\nclass A\n{\n    /**\n      * Foo\n    bar\n\n       */\n    public function a() {}\n\n        /*\n       * like\n         * doc\n    */\n    public $b;\n}\n",
         "expected": "<?php\nclass A\n{\n    /**\n     * Foo\n     * bar\n     *\n     */\n    public function a() {}\n\n        /*\n       * like\n         * doc\n    */\n    public $b;\n}\n"
+    },
+    {
+        "fixer": "align_multiline_comment",
+        "input": "<?php\r\n/**\r\n * @see A\r  \n * @see B\r */\r\nclass P {}\r\n",
+        "expected": "<?php\r\n/**\n * @see A\n *\n * @see B\n */\r\nclass P {}\r\n"
     }
 ]

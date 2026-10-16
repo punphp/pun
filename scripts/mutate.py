@@ -2,7 +2,8 @@
 """Style mutations for scripts/fuzz-parity.sh.
 
   mutate.py mutate <dir> <seed>            mutate every non-Blade .php file under <dir> in place (3 mutations each);
-                                           deterministic per (seed, relative path), so subsets agree with full runs
+                                           deterministic per (seed, relative path), so subsets agree with full runs;
+                                           FUZZ_EXTRA=crlf,mixed-eol also applies those mutations to every file, last
   mutate.py minimise <file> <project-dir>  shrink <file> (lines, then characters) while Pint and Pun still
                                            disagree on it, with <project-dir>'s pint.json; prints the result
 
@@ -46,6 +47,7 @@ MUTATIONS = [
     ('concat-nospace', lambda s, r: re.sub(r" \. ", '.', s)),
     ('long-array', lambda s, r: re.sub(r'= \[\]', '= array()', s)),
     ('crlf', lambda s, r: s.replace('\n', '\r\n')),
+    ('mixed-eol', lambda s, r: re.sub('\n', lambda m: r.choice(('\n', '\r\n', '\r')), s)),
     ('doc-type-alias', lambda s, r: re.sub(r'(@(?:param|return|var)\s+\S*?)\b(int|bool|float|string)\b', lambda m: m.group(1) + {'int': 'integer', 'bool': 'boolean', 'float': 'double', 'string': 'str'}[m.group(2)], s)),
     ('doc-type-case', lambda s, r: re.sub(r'(@(?:param|return|var)\s+\S*?)\b(string|int|array|null|bool|mixed|void)\b', lambda m: m.group(1) + m.group(2).capitalize(), s)),
     ('shuffle-imports', shuffle_imports),
@@ -88,7 +90,8 @@ def mutate(root, seed):
             p = os.path.join(d, f)
             rnd = random.Random(f'{seed}:{os.path.relpath(p, root)}')
             s = open(p, encoding='utf-8', errors='surrogateescape', newline='').read()
-            for name, fn in rnd.sample(MUTATIONS, 3):
+            extra = [(n, fn) for n, fn in MUTATIONS if n in os.environ.get('FUZZ_EXTRA', '').split(',')]
+            for name, fn in rnd.sample(MUTATIONS, 3) + extra:
                 s = fn(s, rnd)
                 applied[name] = applied.get(name, 0) + 1
             open(p, 'w', encoding='utf-8', errors='surrogateescape', newline='').write(s)
@@ -106,7 +109,7 @@ def outputs(code, project):
         if os.path.exists(os.path.join(project, 'node_modules')):
             os.symlink(os.path.realpath(os.path.join(project, 'node_modules')), os.path.join(d, 'node_modules'))
         open(os.path.join(d, 'x.php'), 'wb').write(code)
-        cmd = ['php', os.path.join(ROOT, '.oracle/pint/builds/pint'), 'x.php'] if tool == 'pint' else [os.path.join(ROOT, 'target/debug/pun'), 'format', 'x.php']
+        cmd = ['php', os.path.join(ROOT, '.oracle/pint/builds/pint'), 'x.php'] if tool == 'pint' else [os.environ.get('PUN_BIN', os.path.join(ROOT, 'target/debug/pun')), 'format', 'x.php']
         subprocess.run(cmd, cwd=d, capture_output=True, env={'PATH': os.environ['PATH'], 'HOME': os.environ.get('HOME', '/tmp')}, timeout=300)
         res.append(open(os.path.join(d, 'x.php'), 'rb').read())
         shutil.rmtree(d)
