@@ -51,27 +51,27 @@ Analyzers owned: WhitespacesAnalyzer, WhitespacesFixerConfig, Preg (pcre2 wrappe
 Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCaseStructuresAnalyzer, GotoLabelAnalyzer, ReferenceAnalyzer, AbstractNoUselessElseFixer, AbstractFunctionReferenceFixer.
 
 - [ ] no_trailing_comma_in_singleline
-- [ ] no_trailing_whitespace
-- [ ] no_trailing_whitespace_in_comment
-- [ ] no_unneeded_braces
+- [x] no_trailing_whitespace
+- [x] no_trailing_whitespace_in_comment
+- [x] no_unneeded_braces
 - [x] no_whitespace_before_comma_in_array
-- [ ] no_whitespace_in_blank_line
+- [x] no_whitespace_in_blank_line
 - [x] not_operator_with_successor_space
-- [ ] object_operator_without_whitespace
-- [ ] phpdoc_indent
-- [ ] phpdoc_inline_tag_normalizer
-- [ ] phpdoc_single_line_var_spacing
-- [ ] phpdoc_tag_type
-- [ ] single_blank_line_at_eof
+- [x] object_operator_without_whitespace
+- [x] phpdoc_indent
+- [x] phpdoc_inline_tag_normalizer
+- [x] phpdoc_single_line_var_spacing
+- [x] phpdoc_tag_type
+- [x] single_blank_line_at_eof
 - [ ] single_class_element_per_statement
 - [ ] single_import_per_statement
 - [ ] single_line_after_imports
-- [ ] single_line_comment_spacing
-- [ ] single_line_comment_style
-- [ ] single_line_empty_body
+- [x] single_line_comment_spacing
+- [x] single_line_comment_style
+- [x] single_line_empty_body
 - [ ] single_space_around_construct
-- [ ] space_after_semicolon
-- [ ] spaces_inside_parentheses
+- [x] space_after_semicolon
+- [x] spaces_inside_parentheses
 - [ ] statement_indentation
 - [x] switch_case_semicolon_to_colon
 - [x] switch_case_space
@@ -79,19 +79,19 @@ Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCa
 - [ ] trailing_comma_in_multiline
 - [x] trim_array_spaces
 - [ ] type_declaration_spaces
-- [ ] types_spaces
-- [ ] unary_operator_spaces
+- [x] types_spaces
+- [x] unary_operator_spaces
 - [x] whitespace_after_comma_in_array
 - [x] Pint/laravel_blade
 - [ ] array_push
 - [x] array_syntax
-- [ ] backtick_to_shell_exec
-- [ ] compact_nullable_type_declaration
-- [ ] control_structure_continuation_position
+- [x] backtick_to_shell_exec
+- [x] compact_nullable_type_declaration
+- [x] control_structure_continuation_position
 - [ ] date_time_immutable
-- [ ] declare_equal_normalize
-- [ ] declare_parentheses
-- [ ] declare_strict_types
+- [x] declare_equal_normalize
+- [x] declare_parentheses
+- [x] declare_strict_types
 
 ## Agent 3: imports, namespaces, classes
 
