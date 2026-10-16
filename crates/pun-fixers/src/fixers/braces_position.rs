@@ -180,9 +180,7 @@ impl Fixer for BracesPositionFixer {
                     index,
                     &["{".into(), ";".into(), ".".into(), CT_CURLY_CLOSE.into(), CT_PROPERTY_HOOK_BRACE_OPEN.into(), T_ENCAPSED_AND_WHITESPACE.into(), T_CLOSE_TAG.into()],
                     true,
-                ) else {
-                    continue;
-                };
+                ) else { continue }; // unreachable for code that parses (a statement ends in one of these)
                 open_brace_index = obi;
                 if !tokens[open_brace_index].is_kind(CT_PROPERTY_HOOK_BRACE_OPEN) {
                     continue;
@@ -279,10 +277,7 @@ impl Fixer for BracesPositionFixer {
                     } else if index_before_open_brace == previous_meaningful_index {
                         move_brace_to_index = Some(previous_meaningful_index + 1);
                     }
-                    if index_before_open_brace == 0 {
-                        break;
-                    }
-                    index_before_open_brace -= 1;
+                    index_before_open_brace -= 1; // >= previous_meaningful_index >= 1: no underflow
                 }
             } else if !tokens[open_brace_index - 1].is_whitespace(None) || !has_newline(tokens[open_brace_index - 1].get_content()) {
                 for index_after_open_brace in open_brace_index + 1..close_brace_index {
@@ -346,5 +341,18 @@ impl Fixer for BracesPositionFixer {
             let whitespace = [line_ending, &get_line_indentation(tokens, open_brace_index)].concat();
             tokens.ensure_whitespace_at_index(prev_index, 1, &whitespace);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    // Both rejected by the real fixer's configure() (undefined option / value not allowed).
+    #[test]
+    fn configure_rejects_invalid_options() {
+        assert!(fixer().configure(&json!({"foo": true})).is_err());
+        assert!(fixer().configure(&json!({"classes_opening_brace": "next_line"})).is_err());
     }
 }

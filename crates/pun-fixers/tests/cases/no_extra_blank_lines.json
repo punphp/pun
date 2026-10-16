@@ -1,0 +1,24 @@
+[
+    {
+        "fixer": "no_extra_blank_lines",
+        "config": {
+            "tokens": [
+                "use",
+                "use",
+                "use_trait"
+            ]
+        },
+        "input": "<?php\nuse A;\n\n\nuse B;\nclass C {\n    use T;\n\n\n    use U;\n}\n",
+        "expected": "<?php\nuse A;\nuse B;\nclass C {\n    use T;\n    use U;\n}\n"
+    },
+    {
+        "fixer": "no_extra_blank_lines",
+        "config": {
+            "tokens": [
+                "return"
+            ]
+        },
+        "input": "<?php\nreturn 1;",
+        "expected": "<?php\nreturn 1;"
+    }
+]

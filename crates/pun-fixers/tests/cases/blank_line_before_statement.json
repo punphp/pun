@@ -1,0 +1,13 @@
+[
+    {
+        "fixer": "blank_line_before_statement",
+        "config": {
+            "statements": [
+                "return",
+                "return"
+            ]
+        },
+        "input": "<?php\nfoo();\nreturn 1;\n",
+        "expected": "<?php\nfoo();\n\nreturn 1;\n"
+    }
+]

@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "array_indentation",
+        "input": "x<?php $a = [\n1,\n    2];\n",
+        "expected": "x<?php $a = [\n    1,\n    2];\n"
+    }
+]

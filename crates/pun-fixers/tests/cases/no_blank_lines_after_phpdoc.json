@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_blank_lines_after_phpdoc",
+        "input": "<?php\n/** @var int */",
+        "expected": "<?php\n/** @var int */"
+    }
+]

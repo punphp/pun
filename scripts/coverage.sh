@@ -48,9 +48,9 @@ for arg in "$@"; do
   find "$CARGO_LLVM_COV_TARGET_DIR/debug" "$CARGO_LLVM_COV_TARGET_DIR/debug/deps" -maxdepth 1 -type f -perm -u+x ! -name '*.*' -delete 2>/dev/null || true
   tests_ok=1
   filter=()
-  # One fixer: only its own unit tests + the upstream fixture runner (which PUN_FIXERS_ONLY already narrows), so
+  # One fixer: only its own unit tests + the upstream fixture runner + tests/cases.rs oracle_* tests (which PUN_FIXERS_ONLY already narrows), so
   # "analyzers touched" means touched by this fixer, not by the analyzers' own unit tests.
-  if [ -n "$ONLY" ]; then filter=(-- upstream_fixtures); for n in ${ONLY//,/ }; do filter+=("$n::"); done; fi
+  if [ -n "$ONLY" ]; then filter=(-- upstream_fixtures oracle_); for n in ${ONLY//,/ }; do filter+=("$n::"); done; fi
   timeout "${COVERAGE_TIMEOUT:-3600}" nice cargo llvm-cov --no-report -p "$pkg" --no-fail-fast "${filter[@]}" >&2 || tests_ok=0
   lcov="$OUT/$pkg${ONLY:+.only}.lcov"
   nice cargo llvm-cov report --lcov --output-path "$lcov" >&2

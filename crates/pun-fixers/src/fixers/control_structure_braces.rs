@@ -17,8 +17,7 @@ fn control_continuation_tokens(k: Kind) -> &'static [Kind] {
     match k {
         T_IF => &[T_ELSE, T_ELSEIF],
         T_DO => &[T_WHILE],
-        T_TRY => &[T_CATCH, T_FINALLY],
-        _ => unreachable!(),
+        _ => &[T_CATCH, T_FINALLY], // T_TRY
     }
 }
 
@@ -26,8 +25,7 @@ fn final_control_continuation_tokens(k: Kind) -> &'static [Kind] {
     match k {
         T_IF => &[T_ELSE],
         T_DO => &[],
-        T_TRY => &[T_FINALLY],
-        _ => unreachable!(),
+        _ => &[T_FINALLY], // T_TRY
     }
 }
 
@@ -51,17 +49,12 @@ impl ControlStructureBracesFixer {
             let mut end_index = Self::find_statement_end(tokens, parenthesis_end_index);
             if next_token.is_given_kind(&[T_IF, T_TRY, T_DO]) {
                 let opening_token_kind = next_token.get_id().unwrap();
-                loop {
-                    let next_index = tokens.get_next_meaningful_token(end_index);
-                    match next_index {
-                        Some(n) if tokens[n].is_given_kind(control_continuation_tokens(opening_token_kind)) => {
-                            let parenthesis_end_index = Self::find_parenthesis_end(tokens, n);
-                            end_index = Self::find_statement_end(tokens, parenthesis_end_index);
-                            if tokens[n].is_given_kind(final_control_continuation_tokens(opening_token_kind)) {
-                                return end_index;
-                            }
-                        }
-                        _ => break,
+                let is_continuation = |n: &usize| tokens[*n].is_given_kind(control_continuation_tokens(opening_token_kind));
+                while let Some(n) = tokens.get_next_meaningful_token(end_index).filter(is_continuation) {
+                    let parenthesis_end_index = Self::find_parenthesis_end(tokens, n);
+                    end_index = Self::find_statement_end(tokens, parenthesis_end_index);
+                    if tokens[n].is_given_kind(final_control_continuation_tokens(opening_token_kind)) {
+                        return end_index;
                     }
                 }
             }

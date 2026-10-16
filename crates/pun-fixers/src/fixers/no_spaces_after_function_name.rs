@@ -50,12 +50,12 @@ impl Fixer for NoSpacesAfterFunctionNameFixer {
             // check for ternary operator
             let end_parenthesis_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
             let next_non_white_space = tokens.get_next_meaningful_token(end_parenthesis_index);
-            if let Some(n) = next_non_white_space {
-                if !tokens[n].equals(";", true)
-                    && tokens[last_token_index].is_given_kind(&[T_ECHO, T_PRINT, T_INCLUDE, T_INCLUDE_ONCE, T_REQUIRE, T_REQUIRE_ONCE])
-                {
-                    continue;
-                }
+            // (`)` is never the last meaningful token of code that parses)
+            if let Some(n) = next_non_white_space
+                && !tokens[n].equals(";", true)
+                && tokens[last_token_index].is_given_kind(&[T_ECHO, T_PRINT, T_INCLUDE, T_INCLUDE_ONCE, T_REQUIRE, T_REQUIRE_ONCE])
+            {
+                continue;
             }
             // check if it is a function call
             if tokens[last_token_index].is_given_kind(FUNCTIONY_TOKEN_KINDS) {

@@ -13,33 +13,6 @@ pub fn fixer() -> Box<dyn Fixer> {
 /// PHP_VERSION_ID of the oracle (PHP 8.5).
 const PHP_VERSION_ID: u32 = 8_05_00;
 
-impl CleanNamespaceFixer {
-    fn fix_namespace(tokens: &mut Tokens, mut index: usize) -> usize {
-        let mut till_index = index;
-        // go to the end of the namespace
-        while tokens[till_index].is_given_kind(&[T_NS_SEPARATOR, T_STRING]) {
-            till_index = tokens.get_next_meaningful_token(till_index).unwrap();
-        }
-        till_index = tokens.get_prev_meaningful_token(till_index).unwrap();
-        let mut space_indices = Vec::new();
-        while index <= till_index {
-            if tokens[index].is_kind(T_WHITESPACE) {
-                space_indices.push(index);
-            } else if tokens[index].is_comment() {
-                tokens.clear_at(index);
-            }
-            index += 1;
-        }
-        if tokens[index - 1].is_whitespace(None) {
-            space_indices.pop();
-        }
-        for i in space_indices {
-            tokens.clear_at(i);
-        }
-        index
-    }
-}
-
 impl Fixer for CleanNamespaceFixer {
     fn name(&self) -> &'static str {
         "clean_namespace"
@@ -51,15 +24,24 @@ impl Fixer for CleanNamespaceFixer {
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         PHP_VERSION_ID < 8_00_00 && tokens.is_token_kind_found(T_NS_SEPARATOR)
     }
-    fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        let count = tokens.count();
-        let mut index = 0;
-        while index < count {
-            if tokens[index].is_kind(T_NS_SEPARATOR) {
-                let previous_index = tokens.get_prev_meaningful_token(index).unwrap();
-                index = Self::fix_namespace(tokens, if tokens[previous_index].is_kind(T_STRING) { previous_index } else { index });
-            }
-            index += 1;
-        }
+    /// Upstream's applyFix (strip whitespace/comments inside `Foo \ Bar` names) is unreachable here:
+    /// `is_candidate` is always false on PHP 8.5, and AbstractFixer::fix gates applyFix on it.
+    fn fix(&self, _file: &Path, _tokens: &mut Tokens) {}
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // PHP 8.5: `(new CleanNamespaceFixer)->isCandidate(Tokens::fromCode(...))` is false even with T_NS_SEPARATOR.
+    #[test]
+    fn never_a_candidate_on_php_8() {
+        let tokens = Tokens::from_code(b"<?php\nuse Foo\\{A, B};\n");
+        assert!(tokens.is_token_kind_found(T_NS_SEPARATOR));
+        assert!(!fixer().is_candidate(&tokens));
+        // ...so the real fixer never touches it; neither may a direct fix() call.
+        let mut tokens = tokens;
+        fixer().fix(Path::new("t.php"), &mut tokens);
+        assert!(!tokens.is_changed());
     }
 }

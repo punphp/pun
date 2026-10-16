@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "braces_position",
+        "input": "x<?php function f() { return 1; }\n",
+        "expected": "x<?php function f()\n{\nreturn 1;\n}\n"
+    }
+]

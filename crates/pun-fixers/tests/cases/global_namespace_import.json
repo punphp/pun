@@ -1,0 +1,37 @@
+[
+    {
+        "fixer": "global_namespace_import",
+        "config": {
+            "import_constants": false,
+            "import_functions": false,
+            "import_classes": false
+        },
+        "input": "<?php\nnamespace Foo;\nuse const BAR as B;\nuse function baz as z;\nuse Qux as Q;\necho B, z(), new Q, \\FOO, \\strlen('');\n",
+        "expected": "<?php\nnamespace Foo;\nuse const BAR as B;\nuse function baz as z;\nuse Qux as Q;\necho B, z(), new Q, \\FOO, \\strlen('');\n"
+    },
+    {
+        "fixer": "global_namespace_import",
+        "config": {
+            "import_constants": false,
+            "import_functions": false,
+            "import_classes": false
+        },
+        "input": "<?php\nnamespace Foo;\necho \\FOO, \\strlen(''), new \\DateTime();\n",
+        "expected": "<?php\nnamespace Foo;\necho \\FOO, \\strlen(''), new \\DateTime();\n"
+    },
+    {
+        "fixer": "global_namespace_import",
+        "config": {
+            "import_constants": true,
+            "import_functions": true,
+            "import_classes": null
+        },
+        "input": "<?php\nnamespace Foo;\nabstract class A {\n    abstract function x();\n    function &y() { function &strlen() {} return \\strlen(''); }\n}\n/** Just text. */\nfunction &count() {}\necho \\count([]), \\strlen(''), \\PHP_EOL;\n/** @var \\DateTime $d */\n$d = new \\DateTime();\n",
+        "expected": "<?php\nnamespace Foo;\nuse const PHP_EOL;\nabstract class A {\n    abstract function x();\n    function &y() { function &strlen() {} return \\strlen(''); }\n}\n/** Just text. */\nfunction &count() {}\necho \\count([]), \\strlen(''), PHP_EOL;\n/** @var \\DateTime $d */\n$d = new \\DateTime();\n"
+    },
+    {
+        "fixer": "global_namespace_import",
+        "input": "<?php\nnamespace Foo;\n/** Just text. */\nfunction f(\\DateTime $d) {}\n",
+        "expected": "<?php\nnamespace Foo;\nuse DateTime;\n/** Just text. */\nfunction f(DateTime $d) {}\n"
+    }
+]

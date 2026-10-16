@@ -1,0 +1,12 @@
+[
+    {
+        "fixer": "method_argument_space",
+        "input": "<?php\nfoo($a,\n    $b,);\nfoo(\n    $a, $b, );\n",
+        "expected": "<?php\nfoo(\n    $a,\n    $b,\n);\nfoo(\n    $a,\n    $b,\n);\n"
+    },
+    {
+        "fixer": "method_argument_space",
+        "input": "<?php\nfoo(\n);\nfunction f(\n) {}\nfoo(/* a */\n);\n",
+        "expected": "<?php\nfoo(\n);\nfunction f(\n) {}\nfoo(/* a */\n);\n"
+    }
+]

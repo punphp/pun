@@ -151,10 +151,7 @@ impl Run<'_> {
                 self.remove_empty_lines_after_line_with_token_at(index);
                 break;
             }
-            if i == 0 {
-                break;
-            }
-            i -= 1;
+            i -= 1; // index >= 1 (a block opener is never token 0), so this cannot underflow
         }
     }
 

@@ -1,0 +1,11 @@
+[
+    {
+        "fixer": "blank_lines_before_namespace",
+        "config": {
+            "min_line_breaks": 0,
+            "max_line_breaks": 1
+        },
+        "input": "<?php\n\nnamespace Foo;\n",
+        "expected": "<?php\nnamespace Foo;\n"
+    }
+]
