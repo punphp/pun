@@ -10,6 +10,7 @@ use std::time::{Duration, Instant};
 
 pub use pun_tokens::Tokens;
 
+mod fixer_annotation;
 mod php_grammar;
 mod php_parser;
 
@@ -200,8 +201,14 @@ impl Pipeline {
     pub fn run(&self, file: &Path, code: &[u8]) -> Result<Option<Fixed>, LintError> {
         self.timed("(lint)", || lint(code))?;
         let mut tokens = self.timed("(tokenize)", || Tokens::from_code(code));
+        // `check_annotations` reports a bad annotation; here it only selects the rules to skip.
+        let ignored = has_annotation(code).then(|| fixer_annotation::find(&tokens).map(|a| fixer_annotation::ignored(&a)));
+        let ignored = ignored.and_then(Result::ok).unwrap_or_default();
         let mut applied = Vec::new();
         for f in &self.fixers {
+            if ignored.iter().any(|n| n == f.name().as_bytes()) {
+                continue;
+            }
             // AbstractFixer::fix: `0 < $tokens->count() && isCandidate && supports` (Pint/laravel_blade can empty the list).
             if tokens.count() == 0 || !f.supports(file) || !self.timed("(is_candidate)", || f.is_candidate(&tokens)) {
                 continue;
@@ -223,6 +230,54 @@ impl Pipeline {
         self.timed("(lint after fix)", || lint(&new)).map_err(|e| LintError { after_fix: true, ..e })?;
         Ok(Some(Fixed { code: new, applied }))
     }
+}
+
+impl Pipeline {
+    /// Runner::fixFile's run-level checks of `// @php-cs-fixer-ignore` annotations (FixerAnnotationAnalyzer and
+    /// validateRulesNamesForExceptions): `Err` aborts the whole run, like the RuntimeException upstream.
+    pub fn check_annotations(&self, file: &Path, code: &[u8]) -> Result<()> {
+        if !has_annotation(code) {
+            return Ok(());
+        }
+        let path = file.display();
+        let annotations = match fixer_annotation::find(&Tokens::from_code(code)) {
+            Ok(a) => a,
+            Err(fixer_annotation::FindError::Duplicated(e)) => bail!("Error while analysing file \"{path}\": {e}"),
+            Err(fixer_annotation::FindError::UndefinedArrayKey) => bail!("Undefined array key 1"),
+        };
+        if std::env::var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS").is_ok_and(|v| php_bool(&v)) {
+            return Ok(());
+        }
+        let used = |n: &[u8]| self.fixers.iter().any(|f| f.name().as_bytes() == n) || self.not_ported.iter().any(|r| r.as_bytes() == n);
+        let missing: Vec<String> = fixer_annotation::ignored(&annotations)
+            .iter()
+            .filter(|n| !used(n))
+            .map(|n| match n.first() {
+                None => "- (no name provided)".to_string(),
+                Some(b'@') => format!("- {} (can exclude only rules, not sets)", String::from_utf8_lossy(n)),
+                Some(_) => format!("- {} (unknown rule)", String::from_utf8_lossy(n)),
+            })
+            .collect();
+        if missing.is_empty() {
+            return Ok(());
+        }
+        bail!(
+            "@php-cs-fixer-ignore annotation(s) used for rules that are not in the current set of enabled rules:\n{}\n\n\
+             Please check your annotation(s) usage in {path} to ensure that these rules are included, or update your \
+             annotation(s) usage if they have been replaced by other rules in the version of PHP CS Fixer you are using.",
+            missing.join("\n")
+        )
+    }
+}
+
+/// Cheap guard: FixerAnnotationAnalyzer can only find something when the marker is in the file.
+fn has_annotation(code: &[u8]) -> bool {
+    code.windows(13).any(|w| w == b"php-cs-fixer-")
+}
+
+/// `filter_var($v, FILTER_VALIDATE_BOOLEAN)`.
+fn php_bool(v: &str) -> bool {
+    ["1", "true", "on", "yes"].contains(&v.trim().to_ascii_lowercase().as_str())
 }
 
 /// A syntax error (PHP-CS-Fixer `LintingException`). `after_fix` = the fixers produced invalid code.
@@ -386,6 +441,49 @@ mod tests {
             .collect();
         let expected = [("(clear_empty_tokens)", 2), ("(generate_code)", 1), ("(is_candidate)", 4), ("(lint after fix)", 1), ("(lint)", 2), ("(tokenize)", 2), ("drop_space", 1), ("upper", 1)];
         assert_eq!(calls, expected.iter().map(|(k, v)| (k.to_string(), *v)).collect());
+    }
+
+    #[test]
+    fn fixer_annotations() {
+        use fixer_annotation::{FindError, find};
+        let found = |code: &[u8]| find(&Tokens::from_code(code));
+        let strs = |v: &[&str]| v.iter().map(|s| s.as_bytes().to_vec()).collect::<Vec<_>>();
+        // Expected values: FixerAnnotationAnalyzer::find on the same code (PHP-CS-Fixer 3.95.17). Leading comments
+        // (past declare and `;`) and trailing ones (before `?>`) count, values sorted per annotation.
+        let a = found(b"<?php\ndeclare(strict_types=1);\n/* @php-cs-fixer-ignore b,a */\n; // @php-cs-fixer-foo x\nfoo();\n// @php-cs-fixer-ignore c\n/**\n * @php-cs-fixer-ignore d,@Set\n */\n?>\n").unwrap();
+        assert_eq!(a, vec![(b"php-cs-fixer-ignore".to_vec(), strs(&["@Set", "a", "b", "c", "d"])), (b"php-cs-fixer-foo".to_vec(), strs(&["x"]))]);
+        // `/u` when the comments are UTF-8 (\w is Unicode), plain bytes otherwise (\w is ASCII); not-leading comments don't count.
+        assert_eq!(fixer_annotation::ignored(&found("<?php\n// @php-cs-fixer-ignore ét\n$a;\n".as_bytes()).unwrap()), strs(&["ét"]));
+        assert_eq!(found(b"<?= 1 // \xff @php-cs-fixer-ignore x\n;\n// @php-cs-fixer-ignore \xc3\xa9t\xe9\n").unwrap(), vec![]);
+        assert_eq!(found(b"<?php\n// @php-cs-fixer-ignore\tx\n").unwrap_err(), FindError::UndefinedArrayKey);
+        let dup = |m: &str| FindError::Duplicated(format!("Duplicated values found for annotation \"@php-cs-fixer-ignore\": {m}."));
+        assert_eq!(found(b"<?php\n// @php-cs-fixer-ignore a,b,b,a\n").unwrap_err(), dup("\"a\", \"b\""));
+        assert_eq!(found(b"<?php\n// @php-cs-fixer-ignore a\n// @php-cs-fixer-ignore b,a\n").unwrap_err(), dup("\"a\""));
+
+        // Runner::fixFile skips the annotated rules; the others still run.
+        let p = Pipeline::new(&[rule("upper"), rule("drop_space"), rule("gone")], &factory).unwrap();
+        let code = b"<?php\n// @php-cs-fixer-ignore upper,gone\nfoo ();\n";
+        assert_eq!(p.run(Path::new("a.php"), code).unwrap().unwrap().code, b"<?php\n// @php-cs-fixer-ignore upper,gone\nfoo();\n");
+        // Rules named must be enabled (ported or not); messages and order as Pint prints them.
+        p.check_annotations(Path::new("a.php"), code).unwrap();
+        p.check_annotations(Path::new("a.php"), b"<?php foo();").unwrap();
+        let err = |code: &[u8]| p.check_annotations(Path::new("/p/b.php"), code).unwrap_err().to_string();
+        assert_eq!(
+            err(b"<?php\n\n// @php-cs-fixer-ignore nope,@Foo,\n$a = \"x\";\n"),
+            "@php-cs-fixer-ignore annotation(s) used for rules that are not in the current set of enabled rules:\n- (no name provided)\n\
+             - @Foo (can exclude only rules, not sets)\n- nope (unknown rule)\n\nPlease check your annotation(s) usage in /p/b.php to \
+             ensure that these rules are included, or update your annotation(s) usage if they have been replaced by other rules \
+             in the version of PHP CS Fixer you are using."
+        );
+        assert_eq!(err(b"<?php\n// @php-cs-fixer-ignore a,b,b,a\n"), "Error while analysing file \"/p/b.php\": Duplicated values found for annotation \"@php-cs-fixer-ignore\": \"a\", \"b\".");
+        assert_eq!(err(b"<?php\n// @php-cs-fixer-ignore\tx\n"), "Undefined array key 1");
+        // PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS (FILTER_VALIDATE_BOOLEAN) turns the name check off, not the analysis.
+        unsafe { std::env::set_var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS", " Yes") };
+        p.check_annotations(Path::new("a.php"), b"<?php\n// @php-cs-fixer-ignore nope\n").unwrap();
+        assert_eq!(err(b"<?php\n// @php-cs-fixer-ignore\tx\n"), "Undefined array key 1");
+        unsafe { std::env::set_var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS", "0") };
+        assert!(err(b"<?php\n// @php-cs-fixer-ignore nope\n").ends_with("you are using."));
+        unsafe { std::env::remove_var("PHP_CS_FIXER_IGNORE_MISMATCHED_RULES_EXCEPTIONS") };
     }
 
     #[test]
