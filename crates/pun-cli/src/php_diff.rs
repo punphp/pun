@@ -95,10 +95,9 @@ fn lcs_time_efficient<'a>(from: &[&'a [u8]], to: &[&'a [u8]]) -> Vec<&'a [u8]> {
 }
 
 fn lcs_memory_efficient<'a>(from: &[&'a [u8]], to: &[&'a [u8]]) -> Vec<&'a [u8]> {
-    match from.len() {
-        0 => return vec![],
-        1 => return if to.contains(&from[0]) { vec![from[0]] } else { vec![] },
-        _ => {}
+    // Never called with an empty `from`: the first call has min(len)^2 large, the halves of 2+ lines are non-empty.
+    if from.len() == 1 {
+        return if to.contains(&from[0]) { vec![from[0]] } else { vec![] };
     }
     let i = from.len() / 2;
     let (from_start, from_end) = from.split_at(i);
@@ -166,17 +165,11 @@ fn unmatched_line_endings(diff: &[(&[u8], u8)]) -> bool {
     new.iter().any(|b| !old.contains(b)) || old.iter().any(|b| !new.contains(b))
 }
 
+/// Only called for changed files, so `diff` has an added or removed line and the output ends with a line break
+/// (a last line without one gets the "No newline" marker), which getDiff would otherwise append.
 fn get_diff(header: &str, mut diff: Vec<(&[u8], u8)>) -> Vec<u8> {
-    if diff.is_empty() {
-        return vec![];
-    }
     let mut out = header.as_bytes().to_vec();
-    if !write_diff_hunks(&mut out, &mut diff) {
-        return vec![];
-    }
-    if !matches!(out.last(), Some(b'\n' | b'\r')) {
-        out.push(b'\n');
-    }
+    write_diff_hunks(&mut out, &mut diff);
     out
 }
 
@@ -184,8 +177,7 @@ const NO_EOL: &[u8] = b"\n\\ No newline at end of file\n";
 const CONTEXT: usize = 3;
 const CUT_OFF: usize = 6; // max(commonLineThreshold 6, contextLines 3)
 
-/// Returns `changed`.
-fn write_diff_hunks(out: &mut Vec<u8>, diff: &mut Vec<(&[u8], u8)>) -> bool {
+fn write_diff_hunks(out: &mut Vec<u8>, diff: &mut Vec<(&[u8], u8)>) {
     let upper = diff.len();
     if diff[upper - 1].1 == OLD {
         if !diff[upper - 1].0.ends_with(b"\n") {
@@ -206,7 +198,6 @@ fn write_diff_hunks(out: &mut Vec<u8>, diff: &mut Vec<(&[u8], u8)>) -> bool {
         }
     }
 
-    let mut changed = false;
     let mut hunk_capture: Option<usize> = None;
     let (mut same_count, mut to_range, mut from_range) = (0, 0, 0);
     let (mut to_start, mut from_start) = (1, 1);
@@ -224,7 +215,7 @@ fn write_diff_hunks(out: &mut Vec<u8>, diff: &mut Vec<(&[u8], u8)>) -> bool {
             from_range += 1;
             if same_count == CUT_OFF {
                 let ctx_start = capture.min(CONTEXT);
-                changed |= write_hunk(
+                write_hunk(
                     out,
                     diff,
                     capture - ctx_start,
@@ -245,7 +236,6 @@ fn write_diff_hunks(out: &mut Vec<u8>, diff: &mut Vec<(&[u8], u8)>) -> bool {
         if kind == NO_LINE_END_EOF_WARNING {
             continue;
         }
-        changed = true;
         hunk_capture.get_or_insert(i);
         if kind == ADDED {
             to_range += 1;
@@ -254,7 +244,7 @@ fn write_diff_hunks(out: &mut Vec<u8>, diff: &mut Vec<(&[u8], u8)>) -> bool {
             from_range += 1;
         }
     }
-    let Some(capture) = hunk_capture else { return changed };
+    let Some(capture) = hunk_capture else { return };
     let ctx_start = capture.min(CONTEXT);
     let ctx_end = same_count.min(CONTEXT);
     from_range -= same_count;
@@ -267,14 +257,11 @@ fn write_diff_hunks(out: &mut Vec<u8>, diff: &mut Vec<(&[u8], u8)>) -> bool {
         (from_start - ctx_start, from_range + ctx_start + ctx_end),
         (to_start - ctx_start, to_range + ctx_start + ctx_end),
     );
-    changed
 }
 
-/// Returns whether the hunk contained a change (StrictUnifiedDiffOutputBuilder sets `changed` while writing).
-fn write_hunk(out: &mut Vec<u8>, diff: &[(&[u8], u8)], start: usize, end: usize, from: (usize, usize), to: (usize, usize)) -> bool {
+fn write_hunk(out: &mut Vec<u8>, diff: &[(&[u8], u8)], start: usize, end: usize, from: (usize, usize), to: (usize, usize)) {
     let range = |(s, r): (usize, usize)| if r == 1 { s.to_string() } else { format!("{s},{r}") };
     out.extend_from_slice(format!("@@ -{} +{} @@\n", range(from), range(to)).as_bytes());
-    let mut changed = false;
     for &(line, kind) in &diff[start..end] {
         match kind {
             ADDED => out.push(b'+'),
@@ -283,8 +270,18 @@ fn write_hunk(out: &mut Vec<u8>, diff: &[(&[u8], u8)], start: usize, end: usize,
             NO_LINE_END_EOF_WARNING => {}
             _ => continue,
         }
-        changed |= kind != OLD;
         out.extend_from_slice(line);
     }
-    changed
+}
+
+#[cfg(test)]
+mod tests {
+    // Expectations: PhpCsFixer\Differ\UnifiedDiffer::diff (php-cs-fixer v3.95.17) on the same strings.
+    #[test]
+    fn missing_final_newline_and_cr_lines() {
+        let d = |a: &[u8], b: &[u8]| String::from_utf8(super::unified(a, b, "/f.php")).unwrap();
+        assert_eq!(d(b"x\r", b"y\r"), "--- /f.php\n+++ /f.php\n@@ -1 +1 @@\n-x\r\n\\ No newline at end of file\n+y\r\n\\ No newline at end of file\n");
+        assert_eq!(d(b"a\nb", b"A\nb"), "--- /f.php\n+++ /f.php\n@@ -1,2 +1,2 @@\n-a\n+A\n b\n\\ No newline at end of file\n");
+        assert_eq!(d(b"a\rb\r", b"a\rc\r"), "--- /f.php\n+++ /f.php\n@@ -1 +1 @@\n-a\rb\r\n\\ No newline at end of file\n+a\rc\r\n\\ No newline at end of file\n");
+    }
 }
