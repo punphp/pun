@@ -3,6 +3,14 @@ name = "punphp-harness"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "Differential harness comparing Pun with the real Pint"
+repository.workspace = true
+homepage = "https://github.com/punphp/pun"
+keywords = ["php", "formatter", "pint", "laravel", "php-cs-fixer"]
+categories = ["development-tools"]
+
+[package.metadata.dist]
+dist = false
 
 [[bin]]
 name = "pun-harness"

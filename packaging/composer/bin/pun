@@ -1,0 +1,79 @@
+#!/usr/bin/env php
+<?php
+
+// Composer shim for Pun: on first run, downloads the release binary matching this package's version and
+// platform from GitHub Releases into vendor/bin/, then runs it with the same arguments.
+
+const PUN_VERSION = '0.1.0'; // used when Composer can't tell us the installed tag (e.g. dev-main)
+
+function pun_fail(string $message): never
+{
+    fwrite(STDERR, "pun: $message\n");
+    exit(1);
+}
+
+function pun_target(): string
+{
+    $arch = match (strtolower(php_uname('m'))) {
+        'x86_64', 'amd64' => 'x86_64',
+        'arm64', 'aarch64' => 'aarch64',
+        default => pun_fail('unsupported CPU architecture '.php_uname('m')),
+    };
+
+    return match (PHP_OS_FAMILY) {
+        'Darwin' => "$arch-apple-darwin",
+        'Linux' => "$arch-unknown-linux-musl", // static, so it runs on glibc and Alpine alike
+        default => pun_fail('unsupported OS '.PHP_OS_FAMILY.' (Pun ships Linux and macOS binaries)'),
+    };
+}
+
+function pun_version(): string
+{
+    if (class_exists(Composer\InstalledVersions::class) && Composer\InstalledVersions::isInstalled('punphp/pun')) {
+        $v = Composer\InstalledVersions::getPrettyVersion('punphp/pun');
+        if (preg_match('/^v?(\d+\.\d+\.\d+.*)$/', (string) $v, $m)) {
+            return $m[1];
+        }
+    }
+
+    return PUN_VERSION;
+}
+
+function pun_download(string $url): string
+{
+    $context = stream_context_create(['http' => ['user_agent' => 'punphp/pun composer shim', 'follow_location' => 1]]);
+    $data = @file_get_contents($url, false, $context);
+
+    return $data === false ? pun_fail("download failed: $url") : $data;
+}
+
+$version = pun_version();
+$target = pun_target();
+$binDir = $GLOBALS['_composer_bin_dir'] ?? __DIR__;
+$binary = "$binDir/pun-$version";
+
+if (! is_file($binary)) {
+    $archive = "punphp-$target.tar.gz";
+    $url = "https://github.com/punphp/pun/releases/download/v$version/$archive";
+    fwrite(STDERR, "pun: downloading $url\n");
+    $data = pun_download($url);
+    $expected = strtok(pun_download("$url.sha256"), " \n");
+    if (! hash_equals($expected, hash('sha256', $data))) {
+        pun_fail("checksum mismatch for $archive");
+    }
+
+    $tmp = sys_get_temp_dir().'/pun-'.bin2hex(random_bytes(8));
+    mkdir($tmp, 0700, true);
+    file_put_contents("$tmp/$archive", $data);
+    exec('tar xzf '.escapeshellarg("$tmp/$archive").' -C '.escapeshellarg($tmp), $_, $code);
+    $found = glob("$tmp/*/pun") ?: glob("$tmp/pun");
+    if ($code !== 0 || ! $found) {
+        pun_fail("could not extract pun from $archive");
+    }
+    chmod($found[0], 0755);
+    rename($found[0], $binary) || pun_fail("could not write $binary");
+    exec('rm -rf '.escapeshellarg($tmp));
+}
+
+$process = proc_open([$binary, ...array_slice($argv, 1)], [STDIN, STDOUT, STDERR], $pipes);
+exit(is_resource($process) ? proc_close($process) : 1);

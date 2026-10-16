@@ -34,3 +34,10 @@
   oracle-derived cases in `tests/cases.rs` (`oracle_cases`: tests/cases/<fixer>.json, written by scripts/oracle-case.php;
   `oracle_metadata`: priority/is_risky of every fixer vs tests/metadata.json from scripts/fixer-metadata.php) don't count.
   Please add `oracle_` to that filter.
+- **all crates (from CI agent):** CI (`.github/workflows/ci.yml`) runs `cargo fmt --all --check` and
+  `cargo clippy --workspace --all-targets` but doesn't gate on them yet: the tree has ~636 rustfmt diff hunks and
+  59 distinct clippy warnings (33 `collapsible_if`, 3 `type_complexity`, 3 `if_same_then_else`, 2
+  `needless_late_init`, 2 `needless_range_loop`, ...; about 42 in pun-fixers, 8 pun-tokens, 2 pun-cli). Once a
+  quiet moment allows one `cargo fmt --all` commit and the clippy fixes, drop `continue-on-error` and add
+  `-- -D warnings` in ci.yml. The coverage job gates on `scripts/coverage.sh` (100% per crate), so it stays red
+  until pun-fixers reaches 100% (98.21% at the time of writing, see docs/COVERAGE.md).
