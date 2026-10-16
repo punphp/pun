@@ -51,7 +51,11 @@ struct Outcome {
 }
 
 fn main() -> Result<()> {
-    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..").canonicalize()?;
+    // PUN_HARNESS_ROOT: run against another checkout layout (corpus/, .oracle/, scripts/, docs/).
+    let root = std::env::var_os("PUN_HARNESS_ROOT")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../.."))
+        .canonicalize()?;
     let Cmd::Format { corpus, fixer, diffs } = Cli::parse().cmd;
     let manifest: Manifest = toml::from_str(&fs::read_to_string(root.join("corpus/manifest.toml"))?)?;
     let pint = root.join(".oracle/pint/builds/pint");
