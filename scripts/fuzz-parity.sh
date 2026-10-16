@@ -9,7 +9,7 @@
 #
 # Needs php 8.5, the pinned Pint in .oracle/pint (scripts/oracle.sh) and a built target/debug/pun (or PUN_BIN=<pun>).
 # A project whose pint.json enables Pint/laravel_blade needs its node_modules (prettier); it is symlinked.
-# FUZZ_CONFIG=<pint.json> replaces the project's config (e.g. a preset when its pint.json uses rules Pun lacks).
+# FUZZ_CONFIG=<pint.json> replaces the project's config. PUN_PINT=<Pint PHAR> is passed to pun for rules it delegates.
 # composer.json is not copied: Pint ignores it, and Pun would refuse projects allowing PHP < 8.4.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -24,7 +24,7 @@ find "$w/src" \( -name vendor -o -name node_modules \) -prune -exec rm -rf {} +
 echo "seed $seed: $(python3 "$ROOT/scripts/mutate.py" mutate "$w/src" "$seed")"
 [ -d "$project/node_modules" ] && ln -s "$project/node_modules" "$w/src/node_modules"
 cp -a "$w/src" "$w/pint"; cp -a "$w/src" "$w/pun"
-run() { (cd "$1" && env -i PATH="$PATH" HOME="$HOME" timeout 1800 nice "${@:2}" >/dev/null 2>&1 || true); }
+run() { (cd "$1" && env -i PATH="$PATH" HOME="$HOME" ${PUN_PINT:+PUN_PINT="$PUN_PINT"} timeout 1800 nice "${@:2}" >/dev/null 2>&1 || true); }
 run "$w/pint" php "$ROOT/.oracle/pint/builds/pint"
 run "$w/pun" "${PUN_BIN:-$ROOT/target/debug/pun}" format
 files=$(find "$w/src" -name '*.php' -not -path '*/node_modules/*' | wc -l)

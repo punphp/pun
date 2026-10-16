@@ -5,6 +5,7 @@
 |---|---:|---:|---:|---|
 | punphp | 1236 | 1236 | 100.00% | ok |
 | punphp-config | 419 | 419 | 100.00% | ok |
+| punphp-delegate | 95 | 95 | 100.00% | ok |
 | punphp-fixers | 19488 | 19488 | 100.00% | ok |
 | punphp-format | 540 | 540 | 100.00% | ok |
 | punphp-harness | 174 | 174 | 100.00% | ok |

@@ -142,51 +142,56 @@ pub fn discover(cfg: &Config, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
 pub enum GitSelect {
     /// `--dirty`
     Dirty,
-    /// `--diff=<branch>`
+    /// `--diff=<branch>`: changed since the merge-base with `<branch>`, plus staged, unstaged and untracked files.
     Diff(String),
     /// `--staged` (Pun): files with staged changes.
     /// ponytail: selects staged files and formats the working tree; index-only formatting comes with M1.3 polish.
     Staged,
+    /// `--since=<ref>` (Pun): like `--diff`, but against `<ref>` itself instead of the merge-base.
+    Since(String),
 }
 
 /// Pint's GitPathsRepository: git's file list intersected with the full finder run in the project root.
+/// Git failing (not a repository, unknown branch) selects nothing: Pint's ConfigurationResolverFactory swallows
+/// that abort and reports an empty run.
 pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
-    let php = ["--", "**.php"];
-    let names: Vec<String> = match sel {
-        GitSelect::Dirty => {
-            let out = git(&cfg.root, &[&["status", "--short"][..], &php].concat(), "The [--dirty] option is only available when using Git.")?;
+    let lists = |cmds: &[&[&str]]| -> Option<Vec<String>> {
+        let mut all = Vec::new();
+        for args in cmds {
+            all.extend(git(&cfg.root, args)?.lines().filter(|l| !l.is_empty()).map(String::from));
+        }
+        Some(all)
+    };
+    let untracked: &[&str] = &["ls-files", "--others", "--exclude-standard", "--", "**.php"];
+    let names = match sel {
+        GitSelect::Dirty => git(&cfg.root, &["status", "--short", "--", "**.php"]).map(|out| {
             // mapWithKeys(substr($l, 3) => trim(substr($l, 0, 3))); git lists each path once, so no key collides.
+            // Only exact "D" / "R" count: " D"/"D " are dropped, "RM" keeps "old -> new" (which then matches nothing).
             out.lines()
                 .filter(|l| !l.is_empty())
                 .map(|l| (l.get(3..).unwrap_or(""), l.get(..3.min(l.len())).unwrap_or("").trim()))
                 .filter(|(_, s)| *s != "D")
                 .map(|(f, s)| if s == "R" { f.split_once(" -> ").map_or(f, |x| x.1) } else { f }.to_string())
                 .collect()
-        }
-        GitSelect::Diff(branch) => {
-            let msg = "The [--diff] option is only available when using Git.";
-            let range = format!("{branch}...HEAD");
-            let mut all = Vec::new();
-            for args in [
-                &["diff", "--name-only", "--diff-filter=AMR", range.as_str()][..],
-                &["diff", "--name-only", "--diff-filter=AMR", "--cached"],
-                &["diff", "--name-only", "--diff-filter=AMR"],
-                &["ls-files", "--others", "--exclude-standard"],
-            ] {
-                all.extend(git(&cfg.root, &[args, &php].concat(), msg)?.lines().filter(|l| !l.is_empty()).map(String::from));
-            }
-            all
-        }
-        GitSelect::Staged => git(&cfg.root, &[&["diff", "--name-only", "--diff-filter=AMR", "--cached"][..], &php].concat(), "The [--staged] option is only available when using Git.")?
-            .lines()
-            .filter(|l| !l.is_empty())
-            .map(String::from)
-            .collect(),
+        }),
+        GitSelect::Diff(branch) => lists(&[
+            &["diff", "--name-only", "--diff-filter=AMR", &format!("{branch}...HEAD"), "--", "**.php"],
+            &["diff", "--name-only", "--diff-filter=AMR", "--cached", "--", "**.php"],
+            &["diff", "--name-only", "--diff-filter=AMR", "--", "**.php"],
+            untracked,
+        ]),
+        GitSelect::Staged => lists(&[&["diff", "--name-only", "--diff-filter=AMR", "--cached", "--", "**.php"]]),
+        GitSelect::Since(r) => lists(&[&["diff", "--name-only", "--diff-filter=AMR", r, "--", "**.php"], untracked]),
     };
-    let wanted: std::collections::HashSet<PathBuf> = names.iter().map(|n| cfg.root.join(n)).collect();
+    let wanted: std::collections::HashSet<PathBuf> = names.unwrap_or_default().iter().map(|n| cfg.root.join(n)).collect();
+    if wanted.is_empty() {
+        return Ok(vec![]);
+    }
     let mut f = Finder::pint(cfg)?;
     f.dirs.push(cfg.root.clone());
-    Ok(dedup(f.files()?.into_iter().filter(|p| wanted.contains(p)).collect()))
+    let picked: Vec<PathBuf> = f.files()?.into_iter().filter(|p| wanted.contains(p)).collect();
+    // Project::paths() hands the list to the resolver like path arguments: symlinks resolve to their targets.
+    if picked.is_empty() { Ok(picked) } else { discover(cfg, &picked) }
 }
 
 fn dedup(files: Vec<PathBuf>) -> Vec<PathBuf> {
@@ -241,13 +246,10 @@ fn fnmatch(pat: &str, s: &str) -> bool {
     Regex::new(&re).and_then(|r| r.is_match(s.as_bytes())).unwrap_or(false)
 }
 
-fn git(root: &Path, args: &[&str], err: &str) -> Result<String> {
-    let out = Command::new("git").args(args).current_dir(root).output().context(err.to_string())?;
-    if !out.status.success() {
-        bail!("{err}");
-    }
+fn git(root: &Path, args: &[&str]) -> Option<String> {
+    let out = Command::new("git").args(args).current_dir(root).output().ok().filter(|o| o.status.success())?;
     // preg_split('/\R+/') — CR alone also separates.
-    Ok(String::from_utf8_lossy(&out.stdout).replace('\r', "\n"))
+    Some(String::from_utf8_lossy(&out.stdout).replace('\r', "\n"))
 }
 
 /// Symfony `MultiplePcreFilterIterator::isRegex`.

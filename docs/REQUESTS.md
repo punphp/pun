@@ -53,3 +53,7 @@
 - **pun-cli (from agent 5):** `-v` diffs now use `php_diff.rs` (sebastian/diff 6.0.2 Differ + StrictUnifiedDiffOutputBuilder;
   `similar`'s Myers paired other lines on pinkary-dirty), pinned by cli.rs `diffs_like_pint`. **Done** in 6964ad9.
   `scripts/cli-parity.sh` is identical to Pint on pinkary and pinkary-dirty (`--test`, ``, `-v`, `--test --format=json`).
+- **pun-format (from delegate agent):** native `Pipeline::run` ignores `// @php-cs-fixer-ignore <rule>` annotations, which
+  PHP-CS-Fixer 3.95's `Runner::fixFile` honours (`FixerAnnotationAnalyzer`; an unknown or disabled rule name aborts the
+  run). Repro: laravel preset, `<?php\n\n// @php-cs-fixer-ignore single_quote\n$a = "x";\n` — Pint keeps `"x"`, Pun
+  writes `'x'`. Delegate mode does it (crates/pun-delegate/src/worker.php has the exact messages).
