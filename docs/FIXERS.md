@@ -177,6 +177,24 @@ Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeE
 - [x] no_superfluous_phpdoc_tags
 
 
+## M1.5: psr12 preset (`@PSR12` = `@PSR2` + `@PSR1` + PSR-12 rules, plus Pint's `no_unused_imports`)
+
+Rule lists from `.oracle/pint/resources/presets/psr12.php` and `src/RuleSet/Sets/PSR{1,2,12}Set.php` (3.95.17), exported to
+`crates/pun-config/presets/sets.json` and expanded by pun-config with RuleSet::resolveSet semantics. All 52 resolved rules are ported.
+
+- [x] no_break_comment (new; fixtures 146/146, the 4 `testInvalidConfiguration` cases are unit tests)
+- [x] single_trait_insert_per_statement (new; fixtures 12/12)
+- Already ported, psr12 option values checked (upstream fixtures or oracle cases in `crates/pun-fixers/tests/cases/`):
+  binary_operator_spaces `default: at_least_single_space`; braces_position `allow_single_line_anonymous_functions: false`,
+  `allow_single_line_empty_anonymous_classes: true`; class_definition `inline_constructor_arguments: false`,
+  `space_before_parenthesis: true`; function_declaration `closure_fn_spacing: one`; method_argument_space
+  `after_heredoc: false`, `attribute_placement: ignore`, `on_multiline: ensure_fully_multiline`; modifier_keywords (defaults);
+  new_with_parentheses `anonymous_class: true`; no_extra_blank_lines `tokens: [use]`; ordered_class_elements `order: [use_trait]`;
+  ordered_imports `imports_order: [class, function, const]`, `sort_algorithm: none`; single_class_element_per_statement
+  `elements: [property]`; single_import_per_statement `group_to_single_imports: false`; single_space_around_construct (PSR12 lists);
+  unary_operator_spaces `only_dec_inc: true`.
+- Other sets (`@PER-CS`, `@Symfony`, ...) are not expanded: they stay one unported rule (per/symfony presets go through delegate mode).
+
 ## Deprecated rules (not supported)
 
 PHP-CS-Fixer 3.95 marks 18 rules deprecated (`DeprecatedFixerInterface`, see https://cs.symfony.com/doc/rules/index.html).

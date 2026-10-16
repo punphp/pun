@@ -4,10 +4,10 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 1236 | 1236 | 100.00% | ok |
-| punphp-config | 370 | 370 | 100.00% | ok |
+| punphp-config | 419 | 419 | 100.00% | ok |
 | punphp-fixers | 19488 | 19488 | 100.00% | ok |
 | punphp-format | 540 | 540 | 100.00% | ok |
-| punphp-harness | 171 | 171 | 100.00% | ok |
+| punphp-harness | 174 | 174 | 100.00% | ok |
 | punphp-tokens | 2893 | 2893 | 100.00% | ok |
 | punphp-workspace | 268 | 268 | 100.00% | ok |
 
