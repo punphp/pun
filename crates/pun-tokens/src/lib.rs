@@ -6,6 +6,7 @@ pub mod parse_mode;
 pub mod php_compat;
 pub mod token;
 pub mod tokens;
+pub mod tokens_analyzer;
 pub mod transformers;
 
 pub use kind::Kind;
@@ -13,3 +14,4 @@ pub use lexer::{RawToken, tokenize};
 pub use parse_mode::apply_parse_mode;
 pub use token::{FoundKey, Proto, Token};
 pub use tokens::{BlockType, Tokens};
+pub use tokens_analyzer::TokensAnalyzer;

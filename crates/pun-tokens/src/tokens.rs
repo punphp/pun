@@ -3,6 +3,7 @@
 //! by fixers. Not ported: the static code-hash cache (pure optimization) and JSON helpers.
 
 use std::collections::{BTreeMap, HashMap};
+use std::cell::RefCell;
 use std::ops::Index;
 
 use crate::kind::Kind::{self, *};
@@ -12,12 +13,18 @@ use crate::token::{FoundKey, Proto, Token};
 pub struct BlockType(pub u8);
 
 #[derive(Clone, Debug, Default)]
+struct BlockCache {
+    start: HashMap<usize, usize>,
+    end: HashMap<usize, usize>,
+}
+
+#[derive(Clone, Debug, Default)]
 pub struct Tokens {
     tokens: Vec<Token>,
     found_kinds: Vec<i64>,
     found_contents: HashMap<Vec<u8>, i64>,
-    block_start_cache: HashMap<usize, usize>,
-    block_end_cache: HashMap<usize, usize>,
+    /// `blockStartCache` / `blockEndCache`; interior mutability so `find_block_end` takes `&self`.
+    blocks: RefCell<BlockCache>,
     changed: bool,
 }
 
@@ -139,8 +146,7 @@ impl Tokens {
         }
         crate::transformers::transform(self);
         self.changed = true;
-        self.block_start_cache.clear();
-        self.block_end_cache.clear();
+        *self.blocks.get_mut() = BlockCache::default();
     }
 
     pub fn len(&self) -> usize {
@@ -163,11 +169,12 @@ impl Tokens {
     }
 
     fn invalidate_block_cache_at(&mut self, index: usize) {
-        if let Some(end) = self.block_start_cache.remove(&index) {
-            self.block_end_cache.remove(&end);
+        let c = self.blocks.get_mut();
+        if let Some(end) = c.start.remove(&index) {
+            c.end.remove(&end);
         }
-        if let Some(start) = self.block_end_cache.remove(&index) {
-            self.block_start_cache.remove(&start);
+        if let Some(start) = c.end.remove(&index) {
+            c.start.remove(&start);
         }
     }
 
@@ -206,13 +213,14 @@ impl Tokens {
         while index < limit {
             if !self.is_empty_at(index) {
                 self.tokens.swap(count, index);
-                if let Some(other) = self.block_start_cache.remove(&index) {
-                    self.block_start_cache.insert(count, other);
-                    self.block_end_cache.insert(other, count);
+                let c = self.blocks.get_mut();
+                if let Some(other) = c.start.remove(&index) {
+                    c.start.insert(count, other);
+                    c.end.insert(other, count);
                 }
-                if let Some(other) = self.block_end_cache.remove(&index) {
-                    self.block_start_cache.insert(other, count);
-                    self.block_end_cache.insert(count, other);
+                if let Some(other) = c.end.remove(&index) {
+                    c.start.insert(other, count);
+                    c.end.insert(count, other);
                 }
                 count += 1;
             }
@@ -258,11 +266,11 @@ impl Tokens {
         true
     }
 
-    pub fn find_block_end(&mut self, t: BlockType, search_index: usize) -> usize {
+    pub fn find_block_end(&self, t: BlockType, search_index: usize) -> usize {
         self.find_opposite_block_edge(t, search_index, true)
     }
 
-    pub fn find_block_start(&mut self, t: BlockType, search_index: usize) -> usize {
+    pub fn find_block_start(&self, t: BlockType, search_index: usize) -> usize {
         self.find_opposite_block_edge(t, search_index, false)
     }
 
@@ -454,8 +462,7 @@ impl Tokens {
             return;
         }
         self.changed = true;
-        self.block_start_cache.clear();
-        self.block_end_cache.clear();
+        *self.blocks.get_mut() = BlockCache::default();
         let old_size = self.tokens.len();
         if let Some((&far, _)) = slices.iter().next_back() {
             assert!(far <= old_size, "Cannot insert index \"{far}\" outside of collection.");
@@ -609,13 +616,13 @@ impl Tokens {
         }
     }
 
-    fn find_opposite_block_edge(&mut self, t: BlockType, search_index: usize, find_end: bool) -> usize {
+    fn find_opposite_block_edge(&self, t: BlockType, search_index: usize, find_end: bool) -> usize {
         let (mut start_edge, mut end_edge) = Self::block_edges(t);
         if find_end {
-            if let Some(&e) = self.block_start_cache.get(&search_index) {
+            if let Some(&e) = self.blocks.borrow().start.get(&search_index) {
                 return e;
             }
-        } else if let Some(&s) = self.block_end_cache.get(&search_index) {
+        } else if let Some(&s) = self.blocks.borrow().end.get(&search_index) {
             return s;
         }
         let start_index = search_index;
@@ -649,13 +656,10 @@ impl Tokens {
             "Missing block \"{}\".",
             if find_end { "end" } else { "start" }
         );
-        if start_index < index {
-            self.block_start_cache.insert(start_index, index);
-            self.block_end_cache.insert(index, start_index);
-        } else {
-            self.block_start_cache.insert(index, start_index);
-            self.block_end_cache.insert(start_index, index);
-        }
+        let (a, b) = if start_index < index { (start_index, index) } else { (index, start_index) };
+        let mut c = self.blocks.borrow_mut();
+        c.start.insert(a, b);
+        c.end.insert(b, a);
         index
     }
 
