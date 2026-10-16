@@ -1,0 +1,69 @@
+[
+    {
+        "fixer": "phpdoc_order",
+        "config": {
+            "order": []
+        },
+        "error": "[phpdoc_order] Invalid configuration: The option \"order\" value is invalid. Minimum two tags are required."
+    },
+    {
+        "fixer": "phpdoc_order",
+        "config": {
+            "order": [
+                "param"
+            ]
+        },
+        "error": "[phpdoc_order] Invalid configuration: The option \"order\" value is invalid. Minimum two tags are required."
+    },
+    {
+        "fixer": "phpdoc_order",
+        "config": {
+            "order": [
+                "param",
+                "return",
+                "throws",
+                "return"
+            ]
+        },
+        "error": "[phpdoc_order] Invalid configuration: The option \"order\" value is invalid. Tag \"return\" is duplicated."
+    },
+    {
+        "fixer": "phpdoc_order",
+        "config": {
+            "order": [
+                "param",
+                "return",
+                "throws",
+                "param",
+                "return",
+                "throws"
+            ]
+        },
+        "error": "[phpdoc_order] Invalid configuration: The option \"order\" value is invalid. Tags \"param\", \"return\" and \"throws\" are duplicated."
+    },
+    {
+        "fixer": "phpdoc_order",
+        "input": "<?php\n/**\n * @param int $a\n * @throws Foo\n */\n",
+        "expected": "<?php\n/**\n * @param int $a\n * @throws Foo\n */\n"
+    },
+    {
+        "fixer": "phpdoc_order",
+        "input": "<?php\n/**\n * @throws Foo\n * @param int $a\n * @return int\n */\n",
+        "expected": "<?php\n/**\n * @param int $a\n * @throws Foo\n * @return int\n */\n"
+    },
+    {
+        "fixer": "phpdoc_order",
+        "input": "<?php\n/**\n * @psalm-return int\n */\n",
+        "expected": "<?php\n/**\n * @psalm-return int\n */\n"
+    },
+    {
+        "fixer": "phpdoc_order",
+        "input": "<?php\n/**\n * @psalm-return int\n * @param int $a\n */\n",
+        "expected": "<?php\n/**\n * @param int $a\n * @psalm-return int\n */\n"
+    },
+    {
+        "fixer": "phpdoc_order",
+        "input": "<?php\n/**\n * @psalm-return int\n * @phpstan-return int\n */\n",
+        "expected": "<?php\n/**\n * @phpstan-return int\n * @psalm-return int\n */\n"
+    }
+]

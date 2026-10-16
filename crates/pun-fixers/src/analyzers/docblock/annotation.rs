@@ -130,10 +130,6 @@ impl Annotation {
         self.lines.iter().flat_map(|l| l.borrow().get_content().to_vec()).collect()
     }
 
-    pub fn get_lines(&self) -> &[LineRef] {
-        &self.lines
-    }
-
     pub fn support_types(&self) -> bool {
         TAGS_WITH_TYPES.iter().any(|t| t.as_bytes() == self.get_tag().get_name())
     }

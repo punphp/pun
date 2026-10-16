@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "no_leading_import_slash",
+        "input": "<?php\nuse\\Foo;\nuse function\\bar;\n",
+        "expected": "<?php\nuse\\Foo;\nuse function\\bar;\n"
+    }
+]

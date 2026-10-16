@@ -33,11 +33,6 @@ pub struct DocBlock {
     ctx: Rc<Context>,
 }
 
-impl std::fmt::Display for DocBlock {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        f.write_str(&String::from_utf8_lossy(&self.get_content()))
-    }
-}
 
 impl DocBlock {
     pub fn new(content: &[u8]) -> Self {
@@ -141,11 +136,8 @@ impl DocBlock {
     }
 
     fn get_single_line_doc_block_entry(line: &Line) -> Vec<u8> {
-        let line_string = line.get_content();
-        if line_string.is_empty() {
-            return vec![];
-        }
-        let replaced = replace_all(line_string, b"*/", b"");
+        // Upstream returns early for an empty line, but a DocBlock never holds one (and useful lines aren't empty).
+        let replaced = replace_all(line.get_content(), b"*/", b"");
         let mut s = trim(&replaced);
         if s.starts_with(b"/**") {
             s = &s[3..];

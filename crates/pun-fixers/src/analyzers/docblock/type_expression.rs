@@ -149,26 +149,6 @@ impl TypeExpression {
         })
     }
 
-    pub fn remove_duplicate_types(&self) -> TypeExpression {
-        let ctx = self.ctx.clone();
-        self.map_types(&mut |t: TypeExpression| {
-            if !t.is_composite_type {
-                return t;
-            }
-            let mut seen: Vec<Vec<u8>> = vec![];
-            let mut unique: Vec<&TypeExpression> = vec![];
-            for (_, inner) in &t.inner_type_expressions {
-                let normalized = inner.sort_types(&mut |a, b| a.value.cmp(&b.value)).value;
-                if !seen.contains(&normalized) {
-                    seen.push(normalized);
-                    unique.push(inner);
-                }
-            }
-            let value = unique.iter().map(|e| e.value.clone()).collect::<Vec<_>>().join(&[t.types_glue.unwrap()][..]);
-            TypeExpression::new(&value, ctx.clone())
-        })
-    }
-
     pub fn get_common_type(&self) -> Option<Vec<u8>> {
         let mut main_type: Option<Vec<u8>> = None;
         for mut t in self.get_types() {
@@ -418,22 +398,15 @@ impl TypeExpression {
         parents.iter().find(|(k, _)| *k == joined).map(|(_, v)| v.to_vec())
     }
 
+    /// Upstream also maps aliases, `X[]` and `X<...>` first, but its only caller (`getCommonType`, via
+    /// `getParentType`) has already done that to both types, so those branches are unreachable and not ported.
     fn normalize(&self, t: &[u8]) -> Vec<u8> {
-        if let Some(a) = alias(t) {
-            return a.to_vec();
-        }
         const BUILTIN: &[&[u8]] = &[
             b"array", b"bool", b"callable", b"false", b"float", b"int", b"iterable", b"mixed", b"never", b"null", b"object", b"resource",
             b"string", b"true", b"void",
         ];
         if BUILTIN.contains(&t) {
             return t.to_vec();
-        }
-        if preg::is_match(r"/\[\]$/", t) {
-            return b"array".to_vec();
-        }
-        if let Some(m) = preg::captures(r"/^(.+?)</", t) {
-            return m.str(1).to_vec();
         }
         if let Some(rest) = t.strip_prefix(b"\\") {
             return rest.to_vec();

@@ -1,0 +1,74 @@
+[
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": 0
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" is invalid. All spacings must be greater than zero."
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": -2
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" is invalid. All spacings must be greater than zero."
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": {
+                "param": 1,
+                "return": 0
+            }
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" is invalid. All spacings must be greater than zero."
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "align": "left",
+            "spacing": {
+                "return": 2,
+                "param": -1
+            }
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" is invalid. All spacings must be greater than zero."
+    },
+    {
+        "fixer": "phpdoc_align",
+        "input": "<?php\n/**\n * @method static int foo()\n * @method string barbaz(int $a)\n */\n",
+        "expected": "<?php\n/**\n * @method static int    foo()\n * @method        string barbaz(int $a)\n */\n"
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": {
+                "param": "x"
+            }
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" with value array is expected to be of type \"int\" or \"int[]\", but one of the elements is of type \"array|string\"."
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": "x"
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" with value \"x\" is expected to be of type \"int\" or \"int[]\", but is of type \"string\"."
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": [
+                2,
+                3
+            ]
+        },
+        "input": "<?php\n/**\n * @param int $a\n * @return int\n */\n",
+        "expected": "<?php\n/**\n * @param  int $a\n * @return int\n */\n"
+    },
+    {
+        "fixer": "phpdoc_align",
+        "input": "<?php\n/**\n * @method static int foo()\n *   continued here\n * @method string barbaz(int $a)\n */\n",
+        "expected": "<?php\n/**\n * @method static int    foo()\n *                                      continued here\n * @method        string barbaz(int $a)\n */\n"
+    }
+]

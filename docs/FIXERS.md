@@ -150,7 +150,7 @@ Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeE
 - [ ] no_unneeded_import_alias
 - [ ] no_unused_imports
 - [ ] no_useless_else
-- [ ] no_useless_return
+- [x] no_useless_return
 - [ ] ordered_class_elements
 - [ ] ordered_imports
 - [ ] ordered_interfaces
@@ -160,18 +160,18 @@ Analyzers owned: DocBlock (DocBlock, Line, Annotation, Tag, TagComparator, TypeE
 - [ ] self_accessor
 - [ ] self_static_accessor
 - [x] visibility_required — deprecated upstream; not ported. pun-format runs it as a proxy of modifier_keywords (like AbstractProxyFixer).
-- [ ] heredoc_to_nowdoc
+- [x] heredoc_to_nowdoc
 - [x] no_empty_phpdoc
-- [ ] phpdoc_align
-- [ ] phpdoc_no_access
-- [ ] phpdoc_no_package
-- [ ] phpdoc_no_useless_inheritdoc
-- [ ] phpdoc_order
+- [x] phpdoc_align
+- [x] phpdoc_no_access
+- [x] phpdoc_no_package
+- [x] phpdoc_no_useless_inheritdoc
+- [x] phpdoc_order
 - [x] phpdoc_scalar
-- [ ] phpdoc_separation
+- [x] phpdoc_separation
 - [x] phpdoc_trim
 - [x] phpdoc_types
-- [ ] phpdoc_var_without_name
+- [x] phpdoc_var_without_name
 - [ ] no_superfluous_phpdoc_tags
 
 
