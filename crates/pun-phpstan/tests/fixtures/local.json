@@ -1,0 +1,794 @@
+{
+    "identifiers.php": {
+        "raw": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope2 not found.",
+                "line": 4,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Instantiated class Nope3 not found.",
+                "line": 5,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "class.notFound"
+            },
+            {
+                "message": "Function nope4 not found.",
+                "line": 6,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Instantiated class Nope4 not found.",
+                "line": 6,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "class.notFound"
+            },
+            {
+                "message": "Function nope5 not found.",
+                "line": 7,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope5b not found.",
+                "line": 7,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope6 not found.",
+                "line": 8,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope7 not found.",
+                "line": 11,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Instantiated class Nope8 not found.",
+                "line": 14,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "class.notFound"
+            },
+            {
+                "message": "Function nope9 not found.",
+                "line": 18,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            }
+        ],
+        "reported": [
+            {
+                "message": "Instantiated class Nope3 not found.",
+                "line": 5,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "class.notFound"
+            },
+            {
+                "message": "No error with identifier function.notFound is reported on line 5.",
+                "line": 5,
+                "ignorable": false,
+                "identifier": "ignore.unmatchedIdentifier"
+            },
+            {
+                "message": "Function nope5b not found.",
+                "line": 7,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "No error with identifier function.notFound is reported on line 8.",
+                "line": 8,
+                "ignorable": false,
+                "identifier": "ignore.unmatchedIdentifier"
+            },
+            {
+                "message": "No error with identifier function.notFound is reported on line 16.",
+                "line": 16,
+                "ignorable": false,
+                "identifier": "ignore.unmatchedIdentifier"
+            },
+            {
+                "message": "Function nope9 not found.",
+                "line": 18,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "No error with identifier unused.id is reported on line 20.",
+                "line": 20,
+                "ignorable": false,
+                "identifier": "ignore.unmatchedIdentifier"
+            },
+            {
+                "message": "No error with identifier unused.a is reported on line 21.",
+                "line": 21,
+                "ignorable": false,
+                "identifier": "ignore.unmatchedIdentifier"
+            },
+            {
+                "message": "No error with identifier unused.b is reported on line 21.",
+                "line": 21,
+                "ignorable": false,
+                "identifier": "ignore.unmatchedIdentifier"
+            }
+        ],
+        "reportedWithoutComments": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 3,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 5,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Instantiated class Nope3 not found.",
+                "line": 5,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "class.notFound"
+            },
+            {
+                "message": "Function nope4 not found.",
+                "line": 6,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignore with identifier class.notFound has no comment.",
+                "line": 6,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Instantiated class Nope4 not found.",
+                "line": 6,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "class.notFound"
+            },
+            {
+                "message": "Function nope5 not found.",
+                "line": 7,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope5b not found.",
+                "line": 7,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 7,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Function nope6 not found.",
+                "line": 8,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 8,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 8,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Function nope7 not found.",
+                "line": 11,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 11,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 16,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Function nope9 not found.",
+                "line": 18,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignore with identifier unused.id has no comment.",
+                "line": 20,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Ignore with identifier unused.b has no comment.",
+                "line": 21,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            }
+        ]
+    },
+    "lines.php": {
+        "raw": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope2 not found.",
+                "line": 4,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope3 not found.",
+                "line": 7,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope4 not found.",
+                "line": 13,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope5 not found.",
+                "line": 13,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope6 not found.",
+                "line": 18,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            }
+        ],
+        "reported": [
+            {
+                "message": "No error to ignore is reported on line 10.",
+                "line": 10,
+                "ignorable": false,
+                "identifier": "ignore.unmatchedLine"
+            },
+            {
+                "message": "No error to ignore is reported on line 20.",
+                "line": 20,
+                "ignorable": false,
+                "identifier": "ignore.unmatchedLine"
+            }
+        ],
+        "reportedWithoutComments": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignoring all errors on a line is not allowed.",
+                "line": 3,
+                "ignorable": false,
+                "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+                "identifier": "ignore.allLineErrors"
+            },
+            {
+                "message": "Function nope2 not found.",
+                "line": 4,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignoring all errors on a line is not allowed.",
+                "line": 4,
+                "ignorable": false,
+                "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+                "identifier": "ignore.allLineErrors"
+            },
+            {
+                "message": "Function nope3 not found.",
+                "line": 7,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignoring all errors on a line is not allowed.",
+                "line": 7,
+                "ignorable": false,
+                "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+                "identifier": "ignore.allLineErrors"
+            },
+            {
+                "message": "Ignoring all errors on a line is not allowed.",
+                "line": 10,
+                "ignorable": false,
+                "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+                "identifier": "ignore.allLineErrors"
+            },
+            {
+                "message": "Function nope4 not found.",
+                "line": 13,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope5 not found.",
+                "line": 13,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignoring all errors on a line is not allowed.",
+                "line": 13,
+                "ignorable": false,
+                "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+                "identifier": "ignore.allLineErrors"
+            },
+            {
+                "message": "Function nope6 not found.",
+                "line": 18,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignoring all errors on a line is not allowed.",
+                "line": 18,
+                "ignorable": false,
+                "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+                "identifier": "ignore.allLineErrors"
+            },
+            {
+                "message": "Ignoring all errors on a line is not allowed.",
+                "line": 20,
+                "ignorable": false,
+                "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+                "identifier": "ignore.allLineErrors"
+            }
+        ]
+    },
+    "mixed.php": {
+        "raw": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 5,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope2 not found.",
+                "line": 7,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope3 not found.",
+                "line": 9,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope4 not found.",
+                "line": 13,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope5 not found.",
+                "line": 14,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope6 not found.",
+                "line": 17,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope7 not found.",
+                "line": 17,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            }
+        ],
+        "reported": [
+            {
+                "message": "Function nope5 not found.",
+                "line": 14,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope7 not found.",
+                "line": 17,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            }
+        ],
+        "reportedWithoutComments": [
+            {
+                "message": "Function nope2 not found.",
+                "line": 7,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignoring all errors on a line is not allowed.",
+                "line": 7,
+                "ignorable": false,
+                "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+                "identifier": "ignore.allLineErrors"
+            },
+            {
+                "message": "Function nope3 not found.",
+                "line": 9,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 9,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Function nope4 not found.",
+                "line": 13,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 13,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            },
+            {
+                "message": "Function nope5 not found.",
+                "line": 14,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope6 not found.",
+                "line": 17,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope7 not found.",
+                "line": 17,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignore with identifier function.notFound has no comment.",
+                "line": 17,
+                "ignorable": false,
+                "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+                "identifier": "ignore.noComment"
+            }
+        ]
+    },
+    "none.php": {
+        "raw": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope2 not found.",
+                "line": 5,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            }
+        ],
+        "reported": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            }
+        ],
+        "reportedWithoutComments": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope2 not found.",
+                "line": 5,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Ignoring all errors on a line is not allowed.",
+                "line": 5,
+                "ignorable": false,
+                "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+                "identifier": "ignore.allLineErrors"
+            }
+        ]
+    },
+    "parse-errors.php": {
+        "raw": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope2 not found.",
+                "line": 4,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope3 not found.",
+                "line": 5,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope4 not found.",
+                "line": 6,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Function nope5 not found.",
+                "line": 11,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            }
+        ],
+        "reported": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected end after @phpstan-ignore, expected identifier",
+                "line": 3,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Function nope2 not found.",
+                "line": 4,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected end after comma (,), expected identifier",
+                "line": 4,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Function nope3 not found.",
+                "line": 5,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected end, unclosed opening parenthesis",
+                "line": 5,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Function nope4 not found.",
+                "line": 6,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected T_OTHER '-dash' after @phpstan-ignore, expected identifier",
+                "line": 6,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected comma (,) after comma (,), expected identifier",
+                "line": 9,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Function nope5 not found.",
+                "line": 11,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            }
+        ],
+        "reportedWithoutComments": [
+            {
+                "message": "Function nope1 not found.",
+                "line": 3,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected end after @phpstan-ignore, expected identifier",
+                "line": 3,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Function nope2 not found.",
+                "line": 4,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected end after comma (,), expected identifier",
+                "line": 4,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Function nope3 not found.",
+                "line": 5,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected end, unclosed opening parenthesis",
+                "line": 5,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Function nope4 not found.",
+                "line": 6,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected T_OTHER '-dash' after @phpstan-ignore, expected identifier",
+                "line": 6,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Parse error in @phpstan-ignore: Unexpected comma (,) after comma (,), expected identifier",
+                "line": 9,
+                "ignorable": false,
+                "identifier": "ignore.parseError"
+            },
+            {
+                "message": "Function nope5 not found.",
+                "line": 11,
+                "ignorable": true,
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "identifier": "function.notFound"
+            }
+        ]
+    }
+}
