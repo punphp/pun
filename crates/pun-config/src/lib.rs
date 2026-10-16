@@ -160,6 +160,19 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
     let engine = opts.engine.or(f.engine).unwrap_or(Engine::Compat);
     let php = compat.php.unwrap_or_else(|| "8.4".into());
 
+    // RuleSet::__construct: only true, false or an options array.
+    for (name, v) in &rules {
+        if !matches!(v, Value::Bool(_) | Value::Array(_) | Value::Object(_)) {
+            let (what, kind) = if name.starts_with('@') {
+                ("Set must be enabled (true) or disabled (false).", "set")
+            } else {
+                ("Rule must be enabled (true), disabled (false) or configured (non-empty, assoc array).", "rule")
+            };
+            let null = if v.is_null() { format!(" To disable the {kind}, use \"FALSE\" instead of \"NULL\".") } else { String::new() };
+            bail!("[{name}] {what} Other values are not allowed.{null}");
+        }
+    }
+
     let blade = rules.get("Pint/laravel_blade").is_some_and(|v| *v != Value::Bool(false));
     let rules = rules
         .into_iter()
@@ -414,5 +427,16 @@ mod tests {
         assert_eq!(from_toml.show()["format"], from_pint.show()["format"]);
         assert_eq!(from_toml.show()["finder"], from_pint.show()["finder"]);
         assert_eq!(init_toml(&dir(&[])).unwrap(), "[format]\npreset = \"laravel\"\n");
+    }
+
+    #[test]
+    fn rule_values_like_pint() {
+        // Messages from real Pint 1.29.3 (PHP-CS-Fixer RuleSet) on the same pint.json.
+        let d = dir(&[("pint.json", r#"{"rules":{"final_class":null}}"#)]);
+        assert_eq!(err(&d, Options::default()), "[final_class] Rule must be enabled (true), disabled (false) or configured (non-empty, assoc array). Other values are not allowed. To disable the rule, use \"FALSE\" instead of \"NULL\".");
+        let d = dir(&[("pint.json", r#"{"rules":{"@PSR12":1}}"#)]);
+        assert_eq!(err(&d, Options::default()), "[@PSR12] Set must be enabled (true) or disabled (false). Other values are not allowed.");
+        let d = dir(&[("pun.toml", "[format.rules]\nfinal_class = \"yes\"\n")]);
+        assert!(err(&d, Options::default()).starts_with("[final_class] Rule must be enabled"));
     }
 }
