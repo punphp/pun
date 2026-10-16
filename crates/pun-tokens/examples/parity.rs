@@ -6,6 +6,7 @@
 //! parse: our lexer + TOKEN_PARSE keyword demotion vs `token_get_all($code, TOKEN_PARSE)`
 //! fixer: our `Tokens::from_code` (transformers applied) vs PHP-CS-Fixer's `Tokens::fromCode`
 //!        (kind incl. `CT::` names, content). Uses .oracle/php-cs-fixer unless PUN_PHP_CS_FIXER is set.
+//! classy: TokensAnalyzer::get_classy_elements vs getClassyElements (type, classIndex, index).
 //! Files PHP refuses to parse (parse/fixer modes) are reported and skipped.
 
 use std::io::Write;
@@ -77,6 +78,17 @@ fn ours(mode: &str, code: &[u8]) -> (Stream, Duration) {
             let s = toks
                 .iter()
                 .map(|t| (name(t.kind), t.text.to_vec(), if t.kind.is_some() { t.line } else { 0 }))
+                .collect();
+            (s, d)
+        }
+        "classy" => {
+            let tokens = pun_tokens::Tokens::from_code(code);
+            let t = Instant::now();
+            let el = pun_tokens::TokensAnalyzer::new(&tokens).get_classy_elements();
+            let d = t.elapsed();
+            let s = el
+                .iter()
+                .map(|(i, e)| (e.kind.as_str().to_string(), i.to_string().into_bytes(), e.class_index as u32))
                 .collect();
             (s, d)
         }

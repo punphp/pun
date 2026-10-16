@@ -4,11 +4,12 @@
 //   raw   token_get_all($code)
 //   parse token_get_all($code, TOKEN_PARSE)
 //   fixer PhpCsFixer\Tokenizer\Tokens::fromCode($code) (needs PUN_PHP_CS_FIXER=<checkout>)
+//   classy TokensAnalyzer::getClassyElements(): name=type, line=classIndex, text=index
 // Output per file: "=== <path>\n", then per token "<name> <line> <len>\n<bytes>\n"
 // (name "-" = plain-string token; line 0 when unknown), or "!!! <error>\n".
 error_reporting(E_ALL & ~E_DEPRECATED);
 $mode = $argv[1] ?? 'raw';
-if ($mode === 'fixer') {
+if ($mode === 'fixer' || $mode === 'classy') {
     require (getenv('PUN_PHP_CS_FIXER') ?: __DIR__.'/../../../.oracle/php-cs-fixer').'/vendor/autoload.php';
 }
 $out = fopen('php://stdout', 'wb');
@@ -18,7 +19,13 @@ while (($path = fgets(STDIN)) !== false) {
     $code = file_get_contents($path);
     fwrite($out, "=== $path\n");
     try {
-        if ($mode === 'fixer') {
+        if ($mode === 'classy') {
+            PhpCsFixer\Tokenizer\Tokens::clearCache();
+            $a = new PhpCsFixer\Tokenizer\TokensAnalyzer(PhpCsFixer\Tokenizer\Tokens::fromCode($code));
+            foreach ($a->getClassyElements() as $i => $e) {
+                fwrite($out, $e['type'].' '.$e['classIndex'].' '.strlen((string) $i)."\n$i\n");
+            }
+        } elseif ($mode === 'fixer') {
             PhpCsFixer\Tokenizer\Tokens::clearCache();
             foreach (PhpCsFixer\Tokenizer\Tokens::fromCode($code) as $t) {
                 $c = $t->getContent();
