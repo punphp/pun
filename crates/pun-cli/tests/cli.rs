@@ -131,16 +131,14 @@ impl Ctx {
         }
         assert_eq!(got, want, "{pre:?} {args:?} {env:?} (our stderr: {err})");
     }
-    /// Both fail with exit 1 and Pint's message (rendered in a Symfony box) contains ours.
+    /// Both fail with exit 1 and the same Symfony error box on stdout.
     fn same_error(&self, dir: &Path, tree: &[(&str, &str)], args: &[&str]) {
         reset(dir, tree);
         let (want, werr) = self.pint(dir, args, &[], b"");
         reset(dir, tree);
         let (got, err) = run(&self.alias, &[], dir, args, &[], b"");
-        assert_eq!((got.code, want.code), (Some(1), Some(1)), "{args:?}: {werr} / {err}");
-        let msg = err.trim();
-        let pint_text: String = (want.stdout + &werr).split_whitespace().collect::<Vec<_>>().join(" ");
-        assert!(!msg.is_empty() && pint_text.contains(&msg.split_whitespace().collect::<Vec<_>>().join(" ")), "{args:?}: pint said {pint_text:?}, we said {msg:?}");
+        assert_eq!(want.code, Some(1), "{args:?}: {werr}");
+        assert_eq!(got, want, "{args:?}: our stderr {err}");
     }
 }
 
@@ -207,26 +205,25 @@ fn matches_pint() {
     cx.same_error(&dir, &bad_in, &[]);
     let mut bad_preset = tree.clone();
     bad_preset[1] = ("pint.json", r#"{"preset":"psr13"}"#);
-    // Pint 1.29's phar crashes ("Undefined array key") instead of printing its "Preset not found." abort.
+    // Pint 1.29's phar crashes ("Undefined array key") instead of printing its "Preset not found." abort; Pun prints
+    // the abort's box (hand-derived from ConfigurationResolverFactory + renderThrowable).
     reset(&dir, &bad_preset);
     let (got, err) = run(&cx.alias, &[], &dir, &[], &[], b"");
-    assert_eq!((got.code, err.trim()), (Some(1), "Preset not found."));
-    reset(&dir, &tree);
-    std::fs::set_permissions(dir.join("app/Fix.php"), std::os::unix::fs::PermissionsExt::from_mode(0o444)).unwrap();
-    let (want, werr) = cx.pint(&dir, &[], &[], b"");
-    reset(&dir, &tree);
-    std::fs::set_permissions(dir.join("app/Fix.php"), std::os::unix::fs::PermissionsExt::from_mode(0o444)).unwrap();
-    let (got, err) = run(&cx.alias, &[], &dir, &[], &[], b"");
-    // Symfony hard-wraps long messages mid-word, so compare with all whitespace removed.
-    let squash = |s: &str| s.split_whitespace().collect::<String>();
-    assert_eq!(got.code, want.code);
-    assert!(squash(&(want.stdout.clone() + &werr)).contains(&squash(err.trim())), "{werr} / {err}");
-    reset(&dir, &tree);
-    std::fs::set_permissions(dir.join("app/Fix.php"), std::os::unix::fs::PermissionsExt::from_mode(0o000)).unwrap();
-    let (want, werr) = cx.pint(&dir, &["--test"], &[], b"");
-    let (got, err) = run(&cx.alias, &[], &dir, &["--test"], &[], b"");
-    assert_eq!(got.code, want.code);
-    assert!(squash(&(want.stdout + &werr)).contains(&squash(err.trim())), "{werr} / {err}");
+    assert_eq!((got.code, got.stdout.as_str(), err.as_str()), (Some(1), "\n                     \n  Preset not found.  \n                     \n\n", ""));
+    // Unreadable / unwritable files: same box (see output.rs error_boxes_like_pint for the byte-exact cases).
+    for (mode, args, env) in [(0o444, &[][..], &[][..]), (0o000, &["--test"], &[]), (0o000, &["--test"], &[("AI_AGENT", "x")])] {
+        let locked = || {
+            reset(&dir, &tree);
+            std::fs::set_permissions(dir.join("app/Fix.php"), std::os::unix::fs::PermissionsExt::from_mode(mode)).unwrap();
+        };
+        locked();
+        let (want, _) = cx.pint(&dir, args, env, b"");
+        locked();
+        let (got, _) = run(&cx.alias, &[], &dir, args, env, b"");
+        // Progress symbols of the files before the aborting one (none under an agent), then the box.
+        assert_eq!(want.stdout.starts_with("\n  "), env.is_empty(), "{}", want.stdout);
+        assert_eq!((got.code, got.stdout), (want.code, want.stdout));
+    }
     std::fs::set_permissions(dir.join("app/Fix.php"), std::os::unix::fs::PermissionsExt::from_mode(0o644)).unwrap();
 
     let git = |args: &[&str]| {

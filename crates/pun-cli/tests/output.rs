@@ -212,6 +212,59 @@ fn abort_box_like_pint() {
     cx.same(&t, &["--format=a-format-name-long-enough-to-wrap-in-an-eighty-column-terminal-if-it-were-wrapped-at-all"], Opts { env: &[("COLUMNS", "0")], ..PLAIN });
 }
 
+/// Option errors (ArgvInput: unknown, value on a flag, missing value) and run errors (with the PHP exception's
+/// "In X.php line N:" header) as Pint's box on stdout, exit 1, coloured by a raw `--ansi`/`--no-ansi`.
+#[test]
+fn error_boxes_like_pint() {
+    let Some(cx) = Cx::new("errors") else { return };
+    let t = tree();
+    for args in [
+        &["--nope"][..],
+        &["--nope=1", "--test"],
+        &["-z"],
+        &["--te"],
+        &["--test=1"],
+        &["--config"],
+        &["--nope", "--ansi"],
+        &["--no-ansi", "--ansi", "--nope"],
+        &["-q", "--nope"],
+        &["app/Missing.php"],
+        &["--ansi", "app/Missing.php"],
+        &["--config=http://example.com/pint.json"],
+    ] {
+        let r = cx.same(&t, args, PLAIN);
+        assert_eq!(r.code, Some(1), "{args:?}");
+    }
+    for cfg in [r#"{"in":["nope"]}"#, r#"{"extend":"b.json"}"#, r#"{"rules":{"array_syntax":1}}"#, r#"{"rules":{"@PSR12":null}}"#, "{bad"] {
+        let mut t = tree();
+        t[1] = ("pint.json", cfg);
+        t.push(("b.json", r#"{"extend":"c.json"}"#));
+        let r = cx.same(&t, &["--test"], PLAIN);
+        assert_eq!(r.code, Some(1), "{cfg}");
+    }
+    // Help and Pun-only value checks stay clap's (Pint's help differs; it has no --engine): exit 0 / 2, not a box.
+    let ours = |args: &[&str]| run(&[&[cx.alias.to_str().unwrap()][..], args].concat(), &cx.dir, PLAIN);
+    let h = ours(&["--help"]);
+    assert!(h.code == Some(0) && h.stdout.starts_with("Fix the coding style of the given path\n"), "{h:?}");
+    let e = ours(&["--engine=nope"]);
+    assert!(e.code == Some(2) && e.stdout.is_empty() && e.stderr.contains("invalid value 'nope' for '--engine"), "{e:?}");
+    // Unreadable / unwritable files abort the run (kept outside the snapshotted tree).
+    let outside = tmp("perm").join("Fix.php");
+    for (mode, args) in [(0o000, &["--test"][..]), (0o444, &[])] {
+        let pair = |cmd: &[&str]| {
+            reset(&cx.dir, &t);
+            std::fs::write(&outside, "<?php\n$a = array( 1,2 );\n").unwrap();
+            std::fs::set_permissions(&outside, std::os::unix::fs::PermissionsExt::from_mode(mode)).unwrap();
+            let r = run(&[cmd, &[outside.to_str().unwrap()], args].concat(), &cx.dir, PLAIN);
+            std::fs::set_permissions(&outside, std::os::unix::fs::PermissionsExt::from_mode(0o644)).unwrap();
+            r
+        };
+        let want = pair(&[&which("php"), cx.oracle.to_str().unwrap()]);
+        assert!(want.stdout.contains("\nIn ") && want.code == Some(1), "{want:?}");
+        assert_eq!(pair(&[cx.alias.to_str().unwrap()]), want, "mode {mode:o}");
+    }
+}
+
 /// Gitlab entries for rules GitlabReporter's FixerFactory doesn't know (Pun's own, enabled via pun.toml) use its
 /// "custom rule" wording. Hand-derived from GitlabReporter::generate (Pint has no such rules to run).
 #[test]

@@ -139,14 +139,12 @@ impl Cx {
     fn same(&self, script: &str, sub: &str, args: &[&str]) -> Run {
         self.same_as(script, sub, args, args, b"")
     }
-    /// Both exit 1; Pint's message (in a Symfony box on stdout) contains ours (on stderr), whitespace ignored.
+    /// Same Symfony error box on stdout (exit 1), and it carries `message`.
     fn same_error(&self, script: &str, args: &[&str], message: &str) {
-        let want = self.pint(script, "", args, b"");
-        let got = self.ours(script, "", args, b"");
+        let r = self.same(script, "", args);
         let squash = |s: &str| s.split_whitespace().collect::<String>();
-        assert_eq!((got.code, want.code), (Some(1), Some(1)), "{args:?}: {want:?} / {got:?}");
-        assert!(squash(&want.stdout).contains(&squash(message)), "{args:?}: pint said {}", want.stdout);
-        assert_eq!(squash(&got.stderr), squash(message), "{args:?}");
+        assert_eq!(r.code, Some(1), "{args:?}: {r:?}");
+        assert!(squash(&r.stdout).contains(&squash(message)), "{args:?}: pint said {}", r.stdout);
     }
 }
 
