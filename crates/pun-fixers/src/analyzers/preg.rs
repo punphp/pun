@@ -362,6 +362,21 @@ pub struct Piece {
 
 pub struct Preg;
 
+/// `Preg::match('/\R/', $s)`: CR, LF, VT or FF; with the `/u` attempt (valid UTF-8) also U+0085, U+2028 and U+2029,
+/// otherwise (the non-`u` fallback) the byte 0x85.
+fn has_line_break(s: &[u8]) -> bool {
+    if s.iter().any(|b| matches!(b, b'\n' | b'\r' | 0x0b | 0x0c)) {
+        return true;
+    }
+    if s.is_ascii() {
+        return false;
+    }
+    match std::str::from_utf8(s) {
+        Ok(t) => t.contains(['\u{85}', '\u{2028}', '\u{2029}']),
+        Err(_) => s.contains(&0x85),
+    }
+}
+
 fn add_utf8_modifier(pattern: &[u8]) -> Vec<u8> {
     let mut p = pattern.to_vec();
     p.push(b'u');
@@ -403,6 +418,10 @@ fn with_fallback<T>(pattern: &[u8], subject: &[u8], offset: usize, method: &str,
 impl Preg {
     /// `Preg::match($pattern, $subject)`.
     pub fn r#match(pattern: impl AsRef<[u8]>, subject: impl AsRef<[u8]>) -> bool {
+        // `/\R/` (a line break anywhere) is the hottest pattern, run on nearly every whitespace token.
+        if pattern.as_ref() == br"/\R/" {
+            return has_line_break(subject.as_ref());
+        }
         Self::match_groups(pattern, subject.as_ref(), 0).is_some()
     }
 
@@ -618,6 +637,19 @@ fn expand_replacement(replacement: &[u8], c: &Captures) -> Vec<u8> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn line_break_fast_path() {
+        // PhpCsFixer\Preg::match('/\R/', $s) on PHP 8.5.
+        let cases: &[(&[u8], bool)] = &[
+            (b"", false), (b"  ", false), (b"a\nb", true), (b"\r", true), (b"\x0b", true), (b"\x0c", true),
+            ("é".as_bytes(), false), (b"\xc2\x85", true), (b"\x85", true), (b"a\xe2\x80\xa8", true), (b"\xe2\x80\xa9", true),
+            (b"\xff\x85", true), (b"\xff", false),
+        ];
+        for &(s, want) in cases {
+            assert_eq!(super::Preg::r#match(r"/\R/", s), want, "{s:?}");
+        }
+    }
+
     use super::*;
 
     // Expected values produced by PHP 8.5 / PCRE2 10.46.
