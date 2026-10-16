@@ -98,17 +98,13 @@ impl Fixer for Proxy {
     fn priority(&self) -> i32 {
         self.inner.priority()
     }
-    fn is_risky(&self) -> bool {
-        self.inner.is_risky()
-    }
+    // is_risky / configure / set_whitespaces_config are never called on the proxy: the inner fixer is configured
+    // before wrapping, and modifier_keywords is not risky (the trait default).
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         self.inner.is_candidate(tokens)
     }
     fn supports(&self, file: &Path) -> bool {
         self.inner.supports(file)
-    }
-    fn configure(&mut self, options: &Value) -> Result<()> {
-        self.inner.configure(options)
     }
     fn fix(&self, file: &Path, tokens: &mut Tokens) {
         self.inner.fix(file, tokens)
@@ -122,6 +118,7 @@ pub struct Pipeline {
     pub not_ported: Vec<String>,
 }
 
+#[derive(Debug)]
 pub struct Fixed {
     pub code: Vec<u8>,
     pub applied: Vec<&'static str>,
@@ -148,6 +145,8 @@ impl Pipeline {
             }
             match factory().into_iter().find(|f| f.name() == target) {
                 Some(mut f) => {
+                    // FixerFactory::setWhitespacesConfig on every WhitespacesAwareFixerInterface; Pint keeps the defaults.
+                    f.set_whitespaces_config(&WhitespacesFixerConfig::default());
                     f.configure(&rule.options)?;
                     if target != rule.name {
                         f = Box::new(Proxy { name: "visibility_required", inner: f });
@@ -230,43 +229,153 @@ pub fn format_pun(code: &[u8], php: &str) -> Result<Option<Vec<u8>>, LintError> 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pun_tokens::{Kind, Token};
 
-    struct F(&'static str, i32);
+    /// Test fixer: `edit` runs on every candidate; `file` names it doesn't support.
+    struct F {
+        name: &'static str,
+        priority: i32,
+        unsupported: &'static str,
+        edit: fn(&mut Tokens),
+        ws: Option<WhitespacesFixerConfig>,
+    }
     impl Fixer for F {
         fn name(&self) -> &'static str {
-            self.0
+            self.name
         }
         fn priority(&self) -> i32 {
-            self.1
+            self.priority
+        }
+        fn is_candidate(&self, tokens: &Tokens) -> bool {
+            tokens.is_token_kind_found(Kind::T_STRING)
+        }
+        fn supports(&self, file: &Path) -> bool {
+            !file.ends_with(self.unsupported)
+        }
+        fn fix(&self, _: &Path, tokens: &mut Tokens) {
+            assert_eq!(self.ws, Some(WhitespacesFixerConfig::default()), "the pipeline sets the whitespace config");
+            (self.edit)(tokens)
+        }
+        fn set_whitespaces_config(&mut self, config: &WhitespacesFixerConfig) {
+            self.ws = Some(config.clone());
+        }
+    }
+    fn f(name: &'static str, priority: i32, edit: fn(&mut Tokens)) -> Box<dyn Fixer> {
+        Box::new(F { name, priority, unsupported: "skip.php", edit, ws: None })
+    }
+    /// A fixer relying on the trait defaults (no options, not risky, supports everything, ignores whitespace config).
+    struct Plain;
+    impl Fixer for Plain {
+        fn name(&self) -> &'static str {
+            "plain"
+        }
+        fn priority(&self) -> i32 {
+            0
         }
         fn is_candidate(&self, _: &Tokens) -> bool {
             true
         }
         fn fix(&self, _: &Path, _: &mut Tokens) {}
     }
+    fn rule(n: &str) -> Rule {
+        Rule { name: n.into(), options: Value::Null }
+    }
+    fn upper(t: &mut Tokens) {
+        for i in 0..t.count() {
+            if t[i].is_kind(Kind::T_STRING) {
+                let c = t[i].get_content().to_ascii_uppercase();
+                t.set(i, Token::new(Kind::T_STRING, c));
+            }
+        }
+    }
+    fn drop_space(t: &mut Tokens) {
+        if let Some(i) = (0..t.count()).find(|&i| t[i].is_kind(Kind::T_WHITESPACE) && t[i].get_content() == b" ") {
+            t.clear_at(i);
+        }
+    }
+    fn round_trip(t: &mut Tokens) {
+        let i = (0..t.count()).find(|&i| t[i].is_kind(Kind::T_STRING)).unwrap();
+        let old = t[i].clone();
+        t.set(i, Token::new(Kind::T_STRING, "tmp"));
+        t.set(i, old);
+    }
+    fn none(_: &mut Tokens) {}
+    fn factory() -> Vec<Box<dyn Fixer>> {
+        vec![f("z", 1, none), f("upper", 5, upper), f("drop_space", 5, drop_space), f("round_trip", 9, round_trip), f("unused", 9, none), Box::new(Plain)]
+    }
 
     #[test]
     fn sorts_like_php_cs_fixer() {
-        let rule = |n: &str| Rule { name: n.into(), options: Value::Null };
-        let rules = [rule("b"), rule("a"), rule("z"), rule("missing")];
-        let all = || -> Vec<Box<dyn Fixer>> { vec![Box::new(F("z", 1)), Box::new(F("b", 5)), Box::new(F("a", 5)), Box::new(F("unused", 9))] };
-        let p = Pipeline::new(&rules, &all).unwrap();
-        assert_eq!(p.fixers().map(|f| f.name()).collect::<Vec<_>>(), ["a", "b", "z"]);
+        // Utils::sortFixers: priority desc, then name (strcmp); unknown rules are reported, not fatal.
+        let p = Pipeline::new(&[rule("upper"), rule("drop_space"), rule("z"), rule("missing"), rule("round_trip"), rule("plain")], &factory).unwrap();
+        assert_eq!(p.fixers().map(|f| f.name()).collect::<Vec<_>>(), ["round_trip", "drop_space", "upper", "z", "plain"]);
         assert_eq!(p.not_ported, ["missing"]);
-        assert!(p.run(Path::new("x.php"), b"<?php\nfunction (\n").is_err());
-        assert!(p.run(Path::new("x.php"), b"<?php\necho 1;\n").unwrap().is_none());
-        assert!(format_pun(b"<?php\necho   1;", "8.4").unwrap().is_some());
+        assert!(!Plain.is_risky() && Plain.supports(Path::new("x.php")));
+        assert_eq!(Plain.configure(&serde_json::json!({"a": 1})).unwrap_err().to_string(), "[plain] Is not configurable.");
+        let plain = Pipeline::new(&[rule("plain")], &|| vec![Box::new(Plain)]).unwrap();
+        assert!(plain.run(Path::new("x.php"), b"<?php foo();").unwrap().is_none());
+    }
+
+    #[test]
+    fn runs_like_runner_fix_file() {
+        let p = Pipeline::new(&[rule("upper"), rule("drop_space"), rule("round_trip"), rule("z")], &factory).unwrap();
+        // Each changed fixer is recorded once, in run order; empty tokens are cleared between fixers.
+        let fixed = p.run(Path::new("a.php"), b"<?php foo (bar);\nbaz();\n").unwrap().unwrap();
+        assert_eq!(String::from_utf8(fixed.code).unwrap(), "<?php FOO(BAR);\nBAZ();\n");
+        assert_eq!(fixed.applied, ["round_trip", "drop_space", "upper"]);
+        // Changed-but-identical code and code with no candidate tokens report no change.
+        let only_round_trip = Pipeline::new(&[rule("round_trip")], &factory).unwrap();
+        assert!(only_round_trip.run(Path::new("a.php"), b"<?php foo();").unwrap().is_none());
+        assert!(p.run(Path::new("a.php"), b"<?php\n$a = 1;\n").unwrap().is_none());
+        // supports() false skips the fixer.
+        let only_upper = Pipeline::new(&[rule("upper")], &factory).unwrap();
+        assert!(only_upper.run(Path::new("dir/skip.php"), b"<?php foo();").unwrap().is_none());
+        // Syntax errors: in the input (TYPE_INVALID) vs produced by the fixers (TYPE_LINT).
+        let e = p.run(Path::new("a.php"), b"<?php\nfunction (\n").unwrap_err();
+        // (The line is mago's error position; PHP reports this one on line 3, mago on line 2 — see docs/COVERAGE.md.)
+        assert!(!e.after_fix && e.message.starts_with("Parse error: "), "{}", e.message);
+        let only_drop = Pipeline::new(&[rule("drop_space")], &factory).unwrap();
+        let e = only_drop.run(Path::new("a.php"), b"<?php\nfunction a() {}").unwrap_err();
+        assert!(e.after_fix && e.message.starts_with("Parse error: "), "{}", e.message);
+    }
+
+    #[test]
+    fn whitespaces_config() {
+        // Messages from PhpCsFixer\WhitespacesFixerConfig.
+        assert_eq!(WhitespacesFixerConfig::new("   ", "\n").unwrap_err().to_string(), "Invalid \"indent\" param, expected tab or two or four spaces.");
+        assert_eq!(WhitespacesFixerConfig::new("\t", "\r").unwrap_err().to_string(), r#"Invalid "lineEnding" param, expected "\n" or "\r\n"."#);
+        let c = WhitespacesFixerConfig::new("\t", "\r\n").unwrap();
+        assert_eq!((c.get_indent(), c.get_line_ending()), ("\t", "\r\n"));
+        let d = WhitespacesFixerConfig::default();
+        assert_eq!((d.get_indent(), d.get_line_ending()), ("    ", "\n"));
     }
 
     #[test]
     fn deprecated_rules() {
-        let rule = |n: &str| Rule { name: n.into(), options: Value::Null };
-        let all = || -> Vec<Box<dyn Fixer>> { vec![Box::new(F("modifier_keywords", 56)), Box::new(F("new_with_parentheses", 37))] };
+        let all = || -> Vec<Box<dyn Fixer>> { vec![f("modifier_keywords", 56, upper), f("new_with_parentheses", 37, none)] };
         let err = Pipeline::new(&[rule("new_with_braces")], &all).err().unwrap().to_string();
-        assert!(err.contains("deprecated") && err.contains("\"new_with_parentheses\""), "{err}");
-        assert!(Pipeline::new(&[rule("class_keyword_remove")], &all).err().unwrap().to_string().contains("no replacement"));
-        // visibility_required runs a second modifier_keywords instance under its own name, sorted after the preset one.
+        assert_eq!(err, "Rule \"new_with_braces\" is deprecated in PHP-CS-Fixer and not supported by Pun. Use \"new_with_parentheses\" instead.");
+        let err = Pipeline::new(&[rule("braces")], &all).err().unwrap().to_string();
+        assert!(err.ends_with("Use \"single_space_around_construct\", \"control_structure_braces\", \"control_structure_continuation_position\", \"declare_parentheses\", \"no_multiple_statements_per_line\", \"braces_position\", \"statement_indentation\", \"no_extra_blank_lines\" instead."), "{err}");
+        assert!(Pipeline::new(&[rule("class_keyword_remove")], &all).err().unwrap().to_string().ends_with("Remove it; it has no replacement."));
+        // visibility_required runs a second modifier_keywords instance under its own name, sorted after the preset one,
+        // and behaves exactly like it (AbstractProxyFixer).
+        let p = Pipeline::new(&[rule("visibility_required")], &all).unwrap();
+        assert_eq!(p.fixers().map(|f| (f.name(), f.priority())).collect::<Vec<_>>(), [("visibility_required", 56)]);
+        let fixed = p.run(Path::new("a.php"), b"<?php foo();").unwrap().unwrap();
+        assert_eq!((fixed.code, fixed.applied), (b"<?php FOO();".to_vec(), vec!["visibility_required"]));
+        assert!(p.run(Path::new("skip.php"), b"<?php foo();").unwrap().is_none());
+        assert!(p.run(Path::new("a.php"), b"<?php $a;").unwrap().is_none());
         let p = Pipeline::new(&[rule("visibility_required"), rule("modifier_keywords")], &all).unwrap();
-        assert_eq!(p.fixers().map(|f| (f.name(), f.priority())).collect::<Vec<_>>(), [("modifier_keywords", 56), ("visibility_required", 56)]);
+        assert_eq!(p.fixers().map(|f| f.name()).collect::<Vec<_>>(), ["modifier_keywords", "visibility_required"]);
+    }
+
+    #[test]
+    fn pun_engine() {
+        // Some(new) only when mago-formatter changed the code: its own output comes back as None.
+        let out = format_pun(b"<?php\necho   1;", "8.4").unwrap().unwrap();
+        assert_ne!(out, b"<?php\necho   1;");
+        assert!(format_pun(&out, "8.5").unwrap().is_none());
+        assert!(format_pun(b"<?php\nfunction (", "x").unwrap_err().message.starts_with("Parse error: "));
     }
 }
