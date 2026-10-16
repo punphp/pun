@@ -1,0 +1,2623 @@
+[
+ {
+  "rule": "Pint/laravel_blade",
+  "file": "test.blade.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "Pint/laravel_blade": true
+   }
+  },
+  "input": "<div>\n        {{--\n        A multi-line blade comment\n        spanning several lines.\n    --}}\n   <p>Visible</p>\n      {{-- @if ($x) commented-out directive @endif --}}\n   {{-- <flux:button>commented component</flux:button> --}}\n        <span>{{   $value   }}</span>{{-- trailing comment --}}\n   {{--\n        @foreach ($items as $item)\n            {{ $item }}\n        @endforeach\n    --}}\n      <button @class(['btn']) {{-- inline note --}}>Go</button>\n</div>\n",
+  "expected": "<div>\n    {{--\n        A multi-line blade comment\n        spanning several lines.\n    --}}\n    <p>Visible</p>\n    {{-- @if ($x) commented-out directive @endif --}}\n    {{-- <flux:button>commented component</flux:button> --}}\n    <span>{{ $value }}</span>\n    {{-- trailing comment --}}\n    {{--\n        @foreach ($items as $item)\n            {{ $item }}\n        @endforeach\n    --}}\n    <button @class(['btn']) {{-- inline note --}}>Go</button>\n</div>\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.blade.php                                          Pint/laravel_blade  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pint/phpdoc_type_annotations_only",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "Pint/phpdoc_type_annotations_only": true
+   }
+  },
+  "input": "<?php\n\n// This is a comment\n$x = 1;",
+  "expected": "<?php\n\n$x = 1;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                 Pint/phpdoc_type_annotations_only  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "array_indentation",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "array_indentation": true
+   }
+  },
+  "input": "<?php\n$foo = [\n  'foo',\n        'bar' => 'baz',\n ];",
+  "expected": "<?php\n$foo = [\n    'foo',\n    'bar' => 'baz',\n];",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 array_indentation  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "array_push",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "array_push": true
+   }
+  },
+  "input": "<?php array_push($a,$b);",
+  "expected": "<?php $a[] =$b;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                        array_push  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "array_syntax",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "array_syntax": {
+     "syntax": "short"
+    }
+   }
+  },
+  "input": "<?php $a = []; $b = array();",
+  "expected": "<?php $a = []; $b = [];",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                      array_syntax  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "backtick_to_shell_exec",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "backtick_to_shell_exec": true
+   }
+  },
+  "input": "<?php `ls -lah`;",
+  "expected": "<?php shell_exec(\"ls -lah\");",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                            backtick_to_shell_exec  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "binary_operator_spaces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "binary_operator_spaces": {
+     "default": "single_space",
+     "operators": []
+    }
+   }
+  },
+  "input": "<?php function myFunction() {\n\t$foo= \t1;\n\t$looooongVar\t  = 2;\n\t$middleVar\t= 1;\n}",
+  "expected": "<?php function myFunction() {\n\t$foo = 1;\n\t$looooongVar = 2;\n\t$middleVar = 1;\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                            binary_operator_spaces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "blank_line_after_namespace",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "blank_line_after_namespace": true
+   }
+  },
+  "input": "<?php\nnamespace A\\B;\n\n\n\nclass C {}\n",
+  "expected": "<?php\nnamespace A\\B;\n\nclass C {}\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                        blank_line_after_namespace  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "blank_line_after_opening_tag",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "blank_line_after_opening_tag": true
+   }
+  },
+  "input": "<?php\n    echo 1;",
+  "expected": "<?php\n\n    echo 1;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                      blank_line_after_opening_tag  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "blank_line_before_statement",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "blank_line_before_statement": {
+     "statements": [
+      "continue",
+      "return"
+     ]
+    }
+   }
+  },
+  "input": "<?php\n$a = $a; return $a;",
+  "expected": "<?php\n$a = $a;\n\nreturn $a;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                       blank_line_before_statement  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "blank_line_between_import_groups",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "blank_line_between_import_groups": true
+   }
+  },
+  "input": "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse Some\\Cloz;\nuse Aaa\\Bbb;\nuse const some\\a\\{ConstD};\nuse const some\\a\\{ConstA};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse const some\\b\\{ConstE};\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse function some\\c\\{fn_f};\nuse function some\\a\\{fn_x};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse function some\\a\\{fn_a, fn_b};\n",
+  "expected": "<?php\nuse Aaa\\Ccc;\nuse Foo\\Zar\\Baz;\nuse some\\a\\{ClassA};\nuse some\\b\\{ClassD, ClassB, ClassC as C};\nuse Bar\\Biz\\Boooz\\Bum;\nuse some\\b\\{\n    ClassF,\n    ClassG\n};\nuse Some\\Cloz;\nuse Aaa\\Bbb;\n\nuse const some\\a\\{ConstD};\nuse const some\\a\\{ConstA};\nuse const some\\a\\{ConstB, ConstC as CC};\nuse const some\\b\\{ConstE};\n\nuse function some\\f\\{fn_g, fn_h, fn_i};\nuse function some\\c\\{fn_f};\nuse function some\\a\\{fn_x};\nuse function some\\b\\{fn_c, fn_d, fn_e};\nuse function some\\a\\{fn_a, fn_b};\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                  blank_line_between_import_groups  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "blank_lines_before_namespace",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "blank_lines_before_namespace": {
+     "min_line_breaks": 2,
+     "max_line_breaks": 2
+    }
+   }
+  },
+  "input": "<?php\nnamespace X;",
+  "expected": "<?php\n\nnamespace X;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                      blank_lines_before_namespace  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "braces_position",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "braces_position": {
+     "allow_single_line_anonymous_functions": false,
+     "allow_single_line_empty_anonymous_classes": false,
+     "anonymous_classes_opening_brace": "next_line_unless_newline_at_signature_end",
+     "anonymous_functions_opening_brace": "same_line",
+     "classes_opening_brace": "next_line_unless_newline_at_signature_end",
+     "control_structures_opening_brace": "same_line",
+     "functions_opening_brace": "next_line_unless_newline_at_signature_end"
+    }
+   }
+  },
+  "input": "<?php\n                if ($foo)\n                {\n                    foo();\n                }",
+  "expected": "<?php\n                if ($foo) {\n                    foo();\n                }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                   braces_position  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "cast_spaces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "cast_spaces": {
+     "space": "single"
+    }
+   }
+  },
+  "input": "<?php $bar = ( int)$foo;",
+  "expected": "<?php $bar = (int) $foo;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                       cast_spaces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "class_attributes_separation",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "class_attributes_separation": {
+     "elements": {
+      "const": "one",
+      "method": "one",
+      "property": "one",
+      "trait_import": "none"
+     }
+    }
+   }
+  },
+  "input": "<?php\nclass Sample\n{private $a; // foo\n    /** second in a hour */\n    private $b;\n}\n",
+  "expected": "<?php\nclass Sample\n{\nprivate $a; // foo\n\n    /** second in a hour */\n    private $b;\n}\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                       class_attributes_separation  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "class_definition",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "class_definition": {
+     "inline_constructor_arguments": true,
+     "multi_line_extends_each_single_line": true,
+     "single_item_single_line": true,
+     "single_line": true,
+     "space_before_parenthesis": false
+    }
+   }
+  },
+  "input": "<?php $a = new    class(0)     extends\nSomeClass\timplements    SomeInterface, D {};",
+  "expected": "<?php $a = new class(0) extends SomeClass implements SomeInterface, D {};",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                  class_definition  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "clean_namespace",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "clean_namespace": true
+   }
+  },
+  "input": "<?php use function FooLibrary \\ Bar \\ Baz \\ /* A */ ClassA as Foo ?>",
+  "expected": "<?php use function FooLibrary \\ Bar \\ Baz \\ /* A */ ClassA as Foo ?>",
+  "test_stdout": "\n  !\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ................................................... 1 file, 1 error  \n  ! test.php Parse error: syntax error, unexpected identifier \"Bar\", expectin…  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "compact_nullable_type_declaration",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "compact_nullable_type_declaration": true
+   }
+  },
+  "input": "<?php function foo(/**? int*/$param): ? int {}",
+  "expected": "<?php function foo(/**? int*/$param): ?int {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                 compact_nullable_type_declaration  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "concat_space",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "concat_space": {
+     "spacing": "none"
+    }
+   }
+  },
+  "input": "<?php $foo = \"a\" . 'b' .\"c\". \"d\" . $e.($f + 1);",
+  "expected": "<?php $foo = \"a\".'b'.\"c\".\"d\".$e.($f + 1);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                      concat_space  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "constant_case",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "constant_case": {
+     "case": "lower"
+    }
+   }
+  },
+  "input": "<?php if (TRUE) if (FALSE) if (NULL) {}",
+  "expected": "<?php if (true) if (false) if (null) {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                     constant_case  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "control_structure_braces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "control_structure_braces": true
+   }
+  },
+  "input": "<?php if ($foo) foo();",
+  "expected": "<?php if ($foo) { foo(); }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                          control_structure_braces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "control_structure_continuation_position",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "control_structure_continuation_position": {
+     "position": "same_line"
+    }
+   }
+  },
+  "input": "<?php\n                if ($foo) {\n                    foo();\n                }\n                else {\n                    bar();\n                }",
+  "expected": "<?php\n                if ($foo) {\n                    foo();\n                } else {\n                    bar();\n                }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                           control_structure_continuation_position  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "date_time_immutable",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "date_time_immutable": true
+   }
+  },
+  "input": "<?php new DateTime();",
+  "expected": "<?php new DateTimeImmutable();",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                               date_time_immutable  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "declare_equal_normalize",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "declare_equal_normalize": {
+     "space": "none"
+    }
+   }
+  },
+  "input": "<?php declare(ticks= 1);",
+  "expected": "<?php declare(ticks=1);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                           declare_equal_normalize  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "declare_parentheses",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "declare_parentheses": true
+   }
+  },
+  "input": "<?php declare ( strict_types = 1 );",
+  "expected": "<?php declare(strict_types = 1);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                               declare_parentheses  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "declare_strict_types",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "declare_strict_types": {
+     "strategy": "enforce"
+    }
+   }
+  },
+  "input": "<?php declare(strict_types=0);",
+  "expected": "<?php declare(strict_types=1);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                              declare_strict_types  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "elseif",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "elseif": true
+   }
+  },
+  "input": "<?php if ($some) { $test = true; } else if ($some !== \"test\") { $test = false; }",
+  "expected": "<?php if ($some) { $test = true; } elseif ($some !== \"test\") { $test = false; }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                            elseif  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "encoding",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "encoding": true
+   }
+  },
+  "input": "﻿<?php\necho 1;\n",
+  "expected": "<?php\necho 1;\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                          encoding  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "final_class",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "final_class": true
+   }
+  },
+  "input": "<?php class MyClass {}",
+  "expected": "<?php final class MyClass {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                       final_class  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "final_internal_class",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "final_internal_class": {
+     "include": [
+      "@Custom"
+     ]
+    }
+   }
+  },
+  "input": "<?php\n/** @CUSTOM */class A{}",
+  "expected": "<?php\n/** @CUSTOM */final class A{}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                              final_internal_class  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "final_public_method_for_abstract_class",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "final_public_method_for_abstract_class": true
+   }
+  },
+  "input": "<?php abstract class MyClass {\n                    public function __foo() {}\n                    public static function __bar($a, $b) {}\n                }",
+  "expected": "<?php abstract class MyClass {\n                    final public function __foo() {}\n                    final public static function __bar($a, $b) {}\n                }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                            final_public_method_for_abstract_class  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "full_opening_tag",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "full_opening_tag": true
+   }
+  },
+  "input": "<? echo 'Foo';",
+  "expected": "<?php echo 'Foo';",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                  full_opening_tag  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "fully_qualified_strict_types",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "fully_qualified_strict_types": {
+     "import_symbols": false,
+     "leading_backslash_in_global_namespace": false,
+     "phpdoc_tags": [
+      "param",
+      "phpstan-param",
+      "phpstan-property",
+      "phpstan-property-read",
+      "phpstan-property-write",
+      "phpstan-return",
+      "phpstan-var",
+      "property",
+      "property-read",
+      "property-write",
+      "psalm-param",
+      "psalm-property",
+      "psalm-property-read",
+      "psalm-property-write",
+      "psalm-return",
+      "psalm-var",
+      "return",
+      "see",
+      "throws",
+      "var"
+     ]
+    }
+   }
+  },
+  "input": "<?php\n\nnamespace A\\B\\C\\D\n{\n    class Foo {}\n}\n\nnamespace A\\B\\C\\D\\E\n{\n    class Bar {}\n}\n\nnamespace A\\B\\C\\D\n{\n    function A(\\A\\B\\C\\D\\Foo $fix, \\X\\B\\C\\D\\E\\Bar $doNotFix) {}\n}\n",
+  "expected": "<?php\n\nnamespace A\\B\\C\\D\n{\n    class Foo {}\n}\n\nnamespace A\\B\\C\\D\\E\n{\n    class Bar {}\n}\n\nnamespace A\\B\\C\\D\n{\n    function A(Foo $fix, \\X\\B\\C\\D\\E\\Bar $doNotFix) {}\n}\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                      fully_qualified_strict_types  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "function_declaration",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "function_declaration": {
+     "closure_fn_spacing": "one",
+     "closure_function_spacing": "one",
+     "trailing_comma_single_line": false
+    }
+   }
+  },
+  "input": "<?php function\tfoo() {}",
+  "expected": "<?php function foo() {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                              function_declaration  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "general_phpdoc_tag_rename",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "general_phpdoc_tag_rename": {
+     "replacements": {
+      "inheritDocs": "inheritDoc"
+     }
+    }
+   }
+  },
+  "input": "<?php\n    /**\n     * @inheritdocs\n     * @inheritDocs\n     * {@inheritdocs}\n     * {@inheritDocs}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+  "expected": "<?php\n    /**\n     * @inheritDoc\n     * @inheritDoc\n     * {@inheritDoc}\n     * {@inheritDoc}\n     * @see Foo::bar()\n     * {@see Foo::bar()}\n     */",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                         general_phpdoc_tag_rename  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "global_namespace_import",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "global_namespace_import": {
+     "import_classes": true,
+     "import_constants": true,
+     "import_functions": true
+    }
+   }
+  },
+  "input": "<?php\nnamespace Test;\necho \\FOO, \\BAR;",
+  "expected": "<?php\nnamespace Test;\nuse const BAR;\nuse const FOO;\necho FOO, BAR;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                           global_namespace_import  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "heredoc_to_nowdoc",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "heredoc_to_nowdoc": true
+   }
+  },
+  "input": "<?php $a = <<<TEST\nTEST;\n",
+  "expected": "<?php $a = <<<'TEST'\nTEST;\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 heredoc_to_nowdoc  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "include",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "include": true
+   }
+  },
+  "input": "<?php include# A\n(# B\n# C\n\"a\"# D\n# E\n)# F\n;# G\n# H",
+  "expected": "<?php include # A\n# B\n# C\n\"a\"# D\n# E\n# F\n;# G\n# H",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                           include  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "increment_style",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "increment_style": {
+     "style": "post"
+    }
+   }
+  },
+  "input": "<?php ++$a;",
+  "expected": "<?php $a++;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                   increment_style  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "indentation_type",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "indentation_type": true
+   }
+  },
+  "input": "<?php\n\t\techo ALPHA;",
+  "expected": "<?php\n        echo ALPHA;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                  indentation_type  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "integer_literal_case",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "integer_literal_case": true
+   }
+  },
+  "input": "<?php $foo1 = 0XFF; $foo2 = 0xdefa; $foo3 = 0Xfa; $foo4 = 0xFA;",
+  "expected": "<?php $foo1 = 0xFF; $foo2 = 0xDEFA; $foo3 = 0xFA; $foo4 = 0xFA;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                              integer_literal_case  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "lambda_not_used_import",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "lambda_not_used_import": true
+   }
+  },
+  "input": "<?php $foo = function() use ($bar) {};",
+  "expected": "<?php $foo = function() {};",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                            lambda_not_used_import  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "line_ending",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "line_ending": true
+   }
+  },
+  "input": "<?php\r\n $a = 1;",
+  "expected": "<?php\n $a = 1;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                       line_ending  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "linebreak_after_opening_tag",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "linebreak_after_opening_tag": true
+   }
+  },
+  "input": "<?php $a = function(){\n                    echo 1;\n                };",
+  "expected": "<?php\n$a = function(){\n                    echo 1;\n                };",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                       linebreak_after_opening_tag  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "list_syntax",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "list_syntax": {
+     "syntax": "short"
+    }
+   }
+  },
+  "input": "<?php $a = list($a, $b) = $a; [$b] = $a;",
+  "expected": "<?php $a = [$a, $b] = $a; [$b] = $a;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                       list_syntax  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "lowercase_cast",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "lowercase_cast": true
+   }
+  },
+  "input": "<?php $b= (BOOLEAN)$d;",
+  "expected": "<?php $b= (boolean)$d;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                    lowercase_cast  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "lowercase_keywords",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "lowercase_keywords": true
+   }
+  },
+  "input": "<?php $x = (1 AND 2);",
+  "expected": "<?php $x = (1 and 2);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                lowercase_keywords  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "lowercase_static_reference",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "lowercase_static_reference": true
+   }
+  },
+  "input": "<?php class Foo extends Bar { public function baz() { SELF::qux(); } }",
+  "expected": "<?php class Foo extends Bar { public function baz() { self::qux(); } }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                        lowercase_static_reference  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "magic_constant_casing",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "magic_constant_casing": true
+   }
+  },
+  "input": "<?php echo __line__;",
+  "expected": "<?php echo __LINE__;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                             magic_constant_casing  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "magic_method_casing",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "magic_method_casing": true
+   }
+  },
+  "input": "<?php class Foo {public static function __CALLStatic($a, $b){}}",
+  "expected": "<?php class Foo {public static function __callStatic($a, $b){}}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                               magic_method_casing  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "mb_str_functions",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "mb_str_functions": true
+   }
+  },
+  "input": "<?php $x = strlen(\"bar\");",
+  "expected": "<?php $x = mb_strlen(\"bar\");",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                  mb_str_functions  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "method_argument_space",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "method_argument_space": {
+     "after_heredoc": false,
+     "attribute_placement": "standalone",
+     "keep_multiple_spaces_after_comma": false,
+     "on_multiline": "ignore"
+    }
+   }
+  },
+  "input": "<?php function A($c ,...$a){}",
+  "expected": "<?php function A($c, ...$a){}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                             method_argument_space  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "method_chaining_indentation",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "method_chaining_indentation": true
+   }
+  },
+  "input": "<?php\n\n    $user->setEmail('voff.web@gmail.com')\n\n     ->setPassword('233434')\n        ->setEmailConfirmed(false)\n->setEmailConfirmationCode('123456')\n\n                ->setHashsalt('1234')\n  ->setTncAccepted(true);\n",
+  "expected": "<?php\n\n    $user->setEmail('voff.web@gmail.com')\n        ->setPassword('233434')\n        ->setEmailConfirmed(false)\n        ->setEmailConfirmationCode('123456')\n        ->setHashsalt('1234')\n        ->setTncAccepted(true);\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                       method_chaining_indentation  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "modernize_types_casting",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "modernize_types_casting": true
+   }
+  },
+  "input": "<?php $x = intval($x);",
+  "expected": "<?php $x = (int) $x;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                           modernize_types_casting  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "modifier_keywords",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "modifier_keywords": {
+     "elements": [
+      "method",
+      "property"
+     ]
+    }
+   }
+  },
+  "input": "<?php\nclass Foo {\n    public $var;\n    protected $var_foo;\n    private $FooBar;\n    static public $var1;\n    static protected $var_foo2;\n    static private $FooBar1;\n    public static $var2;\n    protected static $var_foo3;\n    private static $FooBar2;\n    private static\n    $FooBar3;\n    var $old = 'foo';\n}",
+  "expected": "<?php\nclass Foo {\n    public $var;\n    protected $var_foo;\n    private $FooBar;\n    public static $var1;\n    protected static $var_foo2;\n    private static $FooBar1;\n    public static $var2;\n    protected static $var_foo3;\n    private static $FooBar2;\n    private static $FooBar3;\n    public $old = 'foo';\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 modifier_keywords  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "multiline_whitespace_before_semicolons",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "multiline_whitespace_before_semicolons": {
+     "strategy": "no_multi_line"
+    }
+   }
+  },
+  "input": "<?php\n                    $foo->bar() // test\n                    ;",
+  "expected": "<?php\n                    $foo->bar(); // test",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                            multiline_whitespace_before_semicolons  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "native_function_casing",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "native_function_casing": true
+   }
+  },
+  "input": "<?php\n                    echo STRTOLOWER(\"hello 1\");\n                ",
+  "expected": "<?php\n                    echo strtolower(\"hello 1\");\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                            native_function_casing  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "native_type_declaration_casing",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "native_type_declaration_casing": true
+   }
+  },
+  "input": "<?php\n                function A(INT $a): VOID {}\n\n                class Foo\n                {\n                    private BOOL $c = false;\n                    private BOOL $d = false;\n\n                    public function B(INT $a): BOOL { return $this->c || $this->d; }\n                }\n\n                function C(FLOAT $a): ARRAY { return [$a];}\n                function D(ARRAY $a): ARRAY { return [$a];}\n            ",
+  "expected": "<?php\n                function A(int $a): void {}\n\n                class Foo\n                {\n                    private bool $c = false;\n                    private bool $d = false;\n\n                    public function B(int $a): bool { return $this->c || $this->d; }\n                }\n\n                function C(float $a): array { return [$a];}\n                function D(array $a): array { return [$a];}\n            ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                    native_type_declaration_casing  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "new_with_parentheses",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "new_with_parentheses": true
+   }
+  },
+  "input": "<?php $x = new X;",
+  "expected": "<?php $x = new X();",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                              new_with_parentheses  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_alias_functions",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_alias_functions": {
+     "sets": [
+      "@internal",
+      "@IMAP",
+      "@pg"
+     ]
+    }
+   }
+  },
+  "input": "<?php diskfreespace($a);",
+  "expected": "<?php disk_free_space($a);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                no_alias_functions  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_alias_language_construct_call",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_alias_language_construct_call": true
+   }
+  },
+  "input": "<?php die;",
+  "expected": "<?php exit;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                  no_alias_language_construct_call  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_alternative_syntax",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_alternative_syntax": {
+     "fix_non_monolithic_code": true
+    }
+   }
+  },
+  "input": "<?php\n                declare(ticks = 1) :\n                enddeclare;\n            ",
+  "expected": "<?php\n                declare(ticks = 1) {\n                }\n            ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                             no_alternative_syntax  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_binary_string",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_binary_string": true
+   }
+  },
+  "input": "<?php echo b'hello world';",
+  "expected": "<?php echo 'hello world';",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                  no_binary_string  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_blank_lines_after_class_opening",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_blank_lines_after_class_opening": true
+   }
+  },
+  "input": "<?php\nclass Good\n{\n\n    public function firstMethod()\n    {\n        //code here\n    }\n}",
+  "expected": "<?php\nclass Good\n{\n    public function firstMethod()\n    {\n        //code here\n    }\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                no_blank_lines_after_class_opening  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_blank_lines_after_phpdoc",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_blank_lines_after_phpdoc": true
+   }
+  },
+  "input": "<?php\n                /**\n                 * PHPDoc with a line with space\n                 */\n                \n                class Foo {}",
+  "expected": "<?php\n                /**\n                 * PHPDoc with a line with space\n                 */\n                class Foo {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                       no_blank_lines_after_phpdoc  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_closing_tag",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_closing_tag": true
+   }
+  },
+  "input": "<?php echo 'Foo'; ?>",
+  "expected": "<?php echo 'Foo';",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                    no_closing_tag  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_empty_phpdoc",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_empty_phpdoc": true
+   }
+  },
+  "input": "<?php\n                    /**  *//** a *//**  */\n\n                    /**\n                    */\n\n                    /**\n                     *\n                     */\n\n                    /** ***\n                     *\n                     ******/\n\n                    /**\n**/\n                    /**\n                     * test\n                     */\n\n                     /** *test* */\n                ",
+  "expected": "<?php\n                    /** a */\n\n                    \n\n                    \n\n                    \n\n                    \n                    /**\n                     * test\n                     */\n\n                     /** *test* */\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                   no_empty_phpdoc  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_empty_statement",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_empty_statement": true
+   }
+  },
+  "input": "<?php\n                abstract class TestClass0 extends Test IMPLEMENTS TestInterface, TestInterface2\n                {\n                };\n                ",
+  "expected": "<?php\n                abstract class TestClass0 extends Test IMPLEMENTS TestInterface, TestInterface2\n                {\n                }\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                no_empty_statement  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_extra_blank_lines",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_extra_blank_lines": {
+     "tokens": [
+      "extra",
+      "throw",
+      "use"
+     ]
+    }
+   }
+  },
+  "input": "<?php\nuse \\DateTime;\n\nuse \\stdClass;\n\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n\n    }\n\n\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+  "expected": "<?php\nuse \\DateTime;\nuse \\stdClass;\nuse \\InvalidArgumentException;\n\nclass Test {\n\n    public function testThrow($a)\n    {\n        if ($a) {\n            throw new InvalidArgumentException('test.'); // test\n        }\n        $date = new DateTime();\n        $class = new stdClass();\n        $class = (string) $class;\n        $e = new InvalidArgumentException($class.$date->format('Y'));\n        throw $e;\n    }\n\n    public function testBreak($a)\n    {\n        switch($a) {\n            case 1:\n                echo $a;\n                break;\n\n            case 2:\n                echo 'test';\n                break;\n        }\n    }\n\n    protected static function testContinueAndReturn($a, $b)\n    {\n        while($a < 100) {\n            if ($b < time()) {\n\n                continue;\n\n            }\n\n            return $b;\n\n        }\n\n        return $a;\n\n    }\n\n    private function test(){\n\n        // comment\n    }\n\n    private function test123(){\n        // comment\n    }\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                              no_extra_blank_lines  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_leading_import_slash",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_leading_import_slash": true
+   }
+  },
+  "input": "<?php\n                use \\A\\B;\n                ",
+  "expected": "<?php\n                use A\\B;\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                           no_leading_import_slash  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_leading_namespace_whitespace",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_leading_namespace_whitespace": true
+   }
+  },
+  "input": "<?php\n namespace Test3;",
+  "expected": "<?php\nnamespace Test3;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                   no_leading_namespace_whitespace  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_mixed_echo_print",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_mixed_echo_print": {
+     "use": "echo"
+    }
+   }
+  },
+  "input": "<?php\n                some_function_call();\n                print \"test\";\n                ",
+  "expected": "<?php\n                some_function_call();\n                echo \"test\";\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                               no_mixed_echo_print  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_multiline_whitespace_around_double_arrow",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_multiline_whitespace_around_double_arrow": true
+   }
+  },
+  "input": "<?php\n    $arr = array(\n        $a =>\n            array(1),\n        $a =>\n            array(0 =>\n            array())\n    );",
+  "expected": "<?php\n    $arr = array(\n        $a => array(1),\n        $a => array(0 => array())\n    );",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                       no_multiline_whitespace_around_double_arrow  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_multiple_statements_per_line",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_multiple_statements_per_line": true
+   }
+  },
+  "input": "<?php\n                foo(); bar();",
+  "expected": "<?php\n                foo();\n                bar();",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                   no_multiple_statements_per_line  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_short_bool_cast",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_short_bool_cast": true
+   }
+  },
+  "input": "<?php\n            $c = ! // lala\n                // cc\n            !$content;",
+  "expected": "<?php\n            $c = // lala\n                // cc\n            (bool)$content;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                no_short_bool_cast  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_singleline_whitespace_before_semicolons",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_singleline_whitespace_before_semicolons": true
+   }
+  },
+  "input": "<?php for ($uu = 0    ;    ; ++$uu) {}",
+  "expected": "<?php for ($uu = 0; ; ++$uu) {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                        no_singleline_whitespace_before_semicolons  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_space_around_double_colon",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_space_around_double_colon": true
+   }
+  },
+  "input": "<?php echo self :: $a;",
+  "expected": "<?php echo self::$a;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                      no_space_around_double_colon  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_spaces_after_function_name",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_spaces_after_function_name": true
+   }
+  },
+  "input": "<?php abc ($a);",
+  "expected": "<?php abc($a);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                     no_spaces_after_function_name  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_spaces_around_offset",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_spaces_around_offset": {
+     "positions": [
+      "inside",
+      "outside"
+     ]
+    }
+   }
+  },
+  "input": "<?php\n$foo = array(1, 2, 3);\n$var = $foo[ 1 ];",
+  "expected": "<?php\n$foo = array(1, 2, 3);\n$var = $foo[1];",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                           no_spaces_around_offset  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_superfluous_elseif",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_superfluous_elseif": true
+   }
+  },
+  "input": "<?php\nif ($some) { return 1; } elseif ($a == 6){ $test = false; } //",
+  "expected": "<?php\nif ($some) { return 1; } if ($a == 6){ $test = false; } //",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                             no_superfluous_elseif  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_superfluous_phpdoc_tags",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_superfluous_phpdoc_tags": {
+     "allow_hidden_params": false,
+     "allow_mixed": true,
+     "allow_unused_params": true,
+     "remove_inheritdoc": false
+    }
+   }
+  },
+  "input": "<?php\nclass Foo {\n    /**\n     * @param Bar $bar\n     */\n    public function doFoo(Bar $bar) {}\n}",
+  "expected": "<?php\nclass Foo {\n    /**\n     */\n    public function doFoo(Bar $bar) {}\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                        no_superfluous_phpdoc_tags  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_trailing_comma_in_singleline",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_trailing_comma_in_singleline": {
+     "elements": [
+      "arguments",
+      "array",
+      "array_destructuring",
+      "group_import"
+     ]
+    }
+   }
+  },
+  "input": "<?php [$x, $y,] = $a;",
+  "expected": "<?php [$x, $y] = $a;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                   no_trailing_comma_in_singleline  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_trailing_whitespace",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_trailing_whitespace": true
+   }
+  },
+  "input": "<?php\n$a = 1;   ",
+  "expected": "<?php\n$a = 1;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                            no_trailing_whitespace  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_trailing_whitespace_in_comment",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_trailing_whitespace_in_comment": true
+   }
+  },
+  "input": "<?php\n        /*\n                //\n                //\n                \n                //\n                //\n                //\n                \n                //\n                //\n                \n                //\n        */\n                ",
+  "expected": "<?php\n        /*\n                //\n                //\n\n                //\n                //\n                //\n\n                //\n                //\n\n                //\n        */\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                 no_trailing_whitespace_in_comment  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_unneeded_braces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_unneeded_braces": {
+     "namespaces": false
+    }
+   }
+  },
+  "input": "<?php { echo 1;}",
+  "expected": "<?php  echo 1;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                no_unneeded_braces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_unneeded_control_parentheses",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_unneeded_control_parentheses": {
+     "statements": [
+      "break",
+      "clone",
+      "continue",
+      "echo_print",
+      "return",
+      "switch_case",
+      "yield"
+     ]
+    }
+   }
+  },
+  "input": "<?php while ($x) { while ($y) { break (2); } }",
+  "expected": "<?php while ($x) { while ($y) { break 2; } }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                   no_unneeded_control_parentheses  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_unneeded_import_alias",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_unneeded_import_alias": true
+   }
+  },
+  "input": "<?php use some\\ns\\{ClassA, ClassB, ClassC as ClassC};",
+  "expected": "<?php use some\\ns\\{ClassA, ClassB, ClassC  };",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                          no_unneeded_import_alias  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_unreachable_default_argument_value",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_unreachable_default_argument_value": true
+   }
+  },
+  "input": "<?php function bFunction($foo = null, $bar) {}",
+  "expected": "<?php function bFunction($foo, $bar) {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                             no_unreachable_default_argument_value  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_unset_cast",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_unset_cast": true
+   }
+  },
+  "input": "<?php\n$a =(unset)$z;",
+  "expected": "<?php\n$a = null;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                     no_unset_cast  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_unused_imports",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_unused_imports": true
+   }
+  },
+  "input": "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\Baz;\nuse Foo\\Bar\\FooBar as FooBaz;\nuse Foo\\Bar\\Foo as Fooo;\nuse Foo\\Bar\\Baar\\Baar;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new SomeClass();\n\nuse Symfony\\Annotation\\Template;\nuse Symfony\\Doctrine\\Entities\\Entity;\nuse Symfony\\Array123\\ArrayInterface;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n    }\n}",
+  "expected": "<?php\n\nuse Foo\\Bar;\nuse Foo\\Bar\\FooBar as FooBaz;\nuse SomeClass;\n\n$a = new Bar();\n$a = new FooBaz();\n$a = new SomeClass();\n\nuse Symfony\\Annotation\\Template;\nuse Symfony\\Doctrine\\Entities\\Entity;\nuse Symfony\\Array123\\ArrayInterface;\n\nclass AnnotatedClass\n{\n    /**\n     * @Template(foobar=21)\n     * @param Entity $foo\n     */\n    public function doSomething($foo)\n    {\n        $bar = $foo->toArray();\n        /** @var ArrayInterface $bar */\n    }\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 no_unused_imports  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_useless_else",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_useless_else": true
+   }
+  },
+  "input": "<?php\n                    if (true)\n                        echo 3;\n                    else\n                    ?><?php\n                echo 4;\n                ",
+  "expected": "<?php\n                    if (true)\n                        echo 3;\n                    \n                    ?><?php\n                echo 4;\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                   no_useless_else  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_useless_return",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_useless_return": true
+   }
+  },
+  "input": "<?php\n    function b($b) {\n        if ($b) {\n            return;\n        }\n        return /**/;\n    }",
+  "expected": "<?php\n    function b($b) {\n        if ($b) {\n            return;\n        }\n         /**/\n    }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 no_useless_return  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_whitespace_before_comma_in_array",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_whitespace_before_comma_in_array": {
+     "after_heredoc": false
+    }
+   }
+  },
+  "input": "<?php $x = array(1 , \"2\",3);",
+  "expected": "<?php $x = array(1, \"2\",3);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                               no_whitespace_before_comma_in_array  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "no_whitespace_in_blank_line",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "no_whitespace_in_blank_line": true
+   }
+  },
+  "input": "<?php\n  ",
+  "expected": "<?php\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                       no_whitespace_in_blank_line  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "normalize_index_brace",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "normalize_index_brace": true
+   }
+  },
+  "input": "<?php echo $arr{$index};",
+  "expected": "<?php echo $arr{$index};",
+  "test_stdout": "\n  !\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ................................................... 1 file, 1 error  \n  ! test.php Parse error: syntax error, unexpected token \"{\", expecting \",\" o…  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "not_operator_with_successor_space",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "not_operator_with_successor_space": true
+   }
+  },
+  "input": "<?php $i = 0; $i++; $foo = !false || (!true || !!false && (2 === (7 -5)));",
+  "expected": "<?php $i = 0; $i++; $foo = ! false || (! true || ! ! false && (2 === (7 -5)));",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                 not_operator_with_successor_space  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "nullable_type_declaration",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "nullable_type_declaration": {
+     "syntax": "question_mark"
+    }
+   }
+  },
+  "input": "<?php\nfunction foo(int|null $bar): void {}\n",
+  "expected": "<?php\nfunction foo(?int $bar): void {}\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                         nullable_type_declaration  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "nullable_type_declaration_for_default_null_value",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "nullable_type_declaration_for_default_null_value": {
+     "use_nullable_type_declaration": true
+    }
+   }
+  },
+  "input": "<?php function foo(string $param = null) {}",
+  "expected": "<?php function foo(?string $param = null) {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                  nullable_type_declaration_for_default_null_value  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "object_operator_without_whitespace",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "object_operator_without_whitespace": true
+   }
+  },
+  "input": "<?php $object   ->method();",
+  "expected": "<?php $object->method();",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                object_operator_without_whitespace  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "ordered_class_elements",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "ordered_class_elements": {
+     "case_sensitive": false,
+     "order": [
+      "use_trait",
+      "case",
+      "constant",
+      "constant_public",
+      "constant_protected",
+      "constant_private",
+      "property_public",
+      "property_protected",
+      "property_private",
+      "construct",
+      "destruct",
+      "magic",
+      "phpunit",
+      "method_abstract",
+      "method_public_static",
+      "method_public",
+      "method_protected_static",
+      "method_protected",
+      "method_private_static",
+      "method_private"
+     ],
+     "sort_algorithm": "none"
+    }
+   }
+  },
+  "input": "<?php\n\nclass Foo { private function bar1($x) { return 1; } protected $abc = 'abc'; const C1 = 1; public function baz($y, $z) {} }",
+  "expected": "<?php\n\nclass Foo { const C1 = 1; protected $abc = 'abc'; public function baz($y, $z) {} private function bar1($x) { return 1; } }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                            ordered_class_elements  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "ordered_imports",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "ordered_imports": {
+     "case_sensitive": false,
+     "imports_order": [
+      "const",
+      "class",
+      "function"
+     ],
+     "sort_algorithm": "alpha"
+    }
+   }
+  },
+  "input": "<?php\n\nnamespace FooRoo {\n\n    use Foo\\Bar\\FooBar as FooBaz;\n    use Zoo\\Bar as ZooBar, Zoo\\Tar1;\n     use Foo\\Bar;\n    use Foo\\Zar\\Baz;\n    use Symfony\\Annotation\\Template;\n       use Foo\\Bar\\Foo as Fooo, Foo\\Bir as FBB;\n    use SomeClass;\n\n    $a = new Bar();\n    $a = new FooBaz();\n    $a = new someclass();\n\n    use Zoo\\Tar2;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}\n\nnamespace BlaRoo {\n\n    use Foo\\Zar\\Baz;\n  use Zoo\\Bar;\n    use SomeClass;\n  use Symfony\\Annotation\\Template, Symfony\\Doctrine\\Entities\\Entity;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}",
+  "expected": "<?php\n\nnamespace FooRoo {\n\n    use Foo\\Bar;\n    use Foo\\Bar\\Foo as Fooo, Foo\\Bar\\FooBar as FooBaz;\n     use Foo\\Bir as FBB;\n    use Foo\\Zar\\Baz;\n    use SomeClass;\n       use Symfony\\Annotation\\Template, Zoo\\Bar as ZooBar;\n    use Zoo\\Tar1;\n\n    $a = new Bar();\n    $a = new FooBaz();\n    $a = new someclass();\n\n    use Zoo\\Tar2;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}\n\nnamespace BlaRoo {\n\n    use Foo\\Zar\\Baz;\n  use SomeClass;\n    use Symfony\\Annotation\\Template;\n  use Symfony\\Doctrine\\Entities\\Entity, Zoo\\Bar;\n\n    class AnnotatedClass\n    {\n        /**\n         * @Template(foobar=21)\n         * @param Entity $foo\n         */\n        public function doSomething($foo)\n        {\n            $bar = $foo->toArray();\n            /** @var ArrayInterface $bar */\n\n            return function () use ($bar, $foo) {};\n        }\n    }\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                   ordered_imports  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "ordered_interfaces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "ordered_interfaces": {
+     "case_sensitive": false,
+     "direction": "ascend",
+     "order": "alpha"
+    }
+   }
+  },
+  "input": "<?php class T implements C, A, B {}",
+  "expected": "<?php class T implements A, B, C {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                ordered_interfaces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "ordered_traits",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "ordered_traits": {
+     "case_sensitive": false
+    }
+   }
+  },
+  "input": "<?php\nclass Foo {\n    use B;\n    use A;\n}",
+  "expected": "<?php\nclass Foo {\n    use A;\n    use B;\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                    ordered_traits  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "php_unit_method_casing",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "php_unit_method_casing": {
+     "case": "snake_case"
+    }
+   }
+  },
+  "input": "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { public function testMyApp() {} }",
+  "expected": "<?php class MyTest extends \\PhpUnit\\FrameWork\\TestCase { public function test_my_app() {} }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                            php_unit_method_casing  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "php_unit_set_up_tear_down_visibility",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "php_unit_set_up_tear_down_visibility": true
+   }
+  },
+  "input": "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function setUp() {}\n\n    public function tearDown() {}\n}\n",
+  "expected": "<?php\nclass FixerTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    protected function setUp() {}\n\n    protected function tearDown() {}\n}\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                              php_unit_set_up_tear_down_visibility  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_align",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_align": {
+     "align": "left",
+     "spacing": {
+      "param": 2
+     },
+     "tags": [
+      "method",
+      "param",
+      "property",
+      "return",
+      "throws",
+      "type",
+      "var"
+     ]
+    }
+   }
+  },
+  "input": "<?php\n                    /**\n                     * @param int    $a\n                     * @param int $b\n                     * @param int$c\n                     */",
+  "expected": "<?php\n                    /**\n                     * @param  int  $a\n                     * @param  int  $b\n                     * @param  int  $c\n                     */",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                      phpdoc_align  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_indent",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_indent": true
+   }
+  },
+  "input": "<?php\n/**\n * Do not indent\n */\n\n/**\n * Do not indent this\n */\nclass DocBlocks\n{\n/**\n *Test that attribute docblocks are indented\n */\n    protected $indent = false;\n\n/**\n * Test that method docblocks are indented.\n */\n    public function test() {}\n}",
+  "expected": "<?php\n/**\n * Do not indent\n */\n\n/**\n * Do not indent this\n */\nclass DocBlocks\n{\n    /**\n     *Test that attribute docblocks are indented\n     */\n    protected $indent = false;\n\n    /**\n     * Test that method docblocks are indented.\n     */\n    public function test() {}\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                     phpdoc_indent  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_inline_tag_normalizer",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_inline_tag_normalizer": {
+     "tags": [
+      "example",
+      "id",
+      "internal",
+      "inheritdoc",
+      "inheritdocs",
+      "link",
+      "source",
+      "toc",
+      "tutorial"
+     ]
+    }
+   }
+  },
+  "input": "<?php\n    /**\n     * {link} { LINK }\n     * { test }\n     * {@inheritDoc rire éclatant des écoliers qui décontenança®¶ñ¿ }\n     * test other comment\n     * @{inheritdoc test} a\n     * {{@inheritdoc    test}} b\n     * {@ inheritdoc   test} c\n     * { @inheritdoc \tfoo bar.  } d\n     * {@ \tinheritdoc foo bar.\t} e\n     * @{{inheritdoc test}} f\n     * end comment {@inheritdoc here we are done} @foo {1}\n     */\n",
+  "expected": "<?php\n    /**\n     * {link} { LINK }\n     * { test }\n     * {@inheritDoc rire éclatant des écoliers qui décontenança®¶ñ¿}\n     * test other comment\n     * {@inheritdoc test} a\n     * {@inheritdoc test} b\n     * {@inheritdoc test} c\n     * {@inheritdoc foo bar.} d\n     * {@inheritdoc foo bar.} e\n     * {@inheritdoc test} f\n     * end comment {@inheritdoc here we are done} @foo {1}\n     */\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                      phpdoc_inline_tag_normalizer  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_no_access",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_no_access": true
+   }
+  },
+  "input": "<?php\n    /**\n     * @access public\n     */\n",
+  "expected": "<?php\n    /**\n     */\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                  phpdoc_no_access  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_no_package",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_no_package": true
+   }
+  },
+  "input": "<?php\n    /**\n     * @package Foo\\Bar\n     */\n",
+  "expected": "<?php\n    /**\n     */\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 phpdoc_no_package  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_no_useless_inheritdoc",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_no_useless_inheritdoc": true
+   }
+  },
+  "input": "<?php\n/** @inheritdoc */class min1{}",
+  "expected": "<?php\n/** */class min1{}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                      phpdoc_no_useless_inheritdoc  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_order",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_order": {
+     "order": [
+      "param",
+      "return",
+      "throws"
+     ]
+    }
+   }
+  },
+  "input": "<?php\n    /**\n     * @throws Exception\n     * @return bool\n     * @param string $foo\n     */\n",
+  "expected": "<?php\n    /**\n     * @param string $foo\n     * @return bool\n     * @throws Exception\n     */\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                      phpdoc_order  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_scalar",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_scalar": {
+     "types": [
+      "boolean",
+      "callback",
+      "double",
+      "integer",
+      "real",
+      "str"
+     ]
+    }
+   }
+  },
+  "input": "<?php\n            /**\n             * @return integer\n             */\n             ",
+  "expected": "<?php\n            /**\n             * @return int\n             */\n             ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                     phpdoc_scalar  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_separation",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_separation": {
+     "groups": [
+      [
+       "deprecated",
+       "link",
+       "see",
+       "since"
+      ],
+      [
+       "author",
+       "copyright",
+       "license"
+      ],
+      [
+       "category",
+       "package",
+       "subpackage"
+      ],
+      [
+       "property",
+       "property-read",
+       "property-write"
+      ],
+      [
+       "param",
+       "return"
+      ]
+     ],
+     "skip_unlisted_annotations": false
+    }
+   }
+  },
+  "input": "<?php\n    /**\n     * Hello there!\n     * @internal\n     * @param string $foo\n     * @throws Exception\n     *\n     *\n     *\n     * @return bool\n     */\n",
+  "expected": "<?php\n    /**\n     * Hello there!\n     *\n     * @internal\n     *\n     * @param string $foo\n     *\n     * @throws Exception\n     *\n     * @return bool\n     */\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 phpdoc_separation  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_single_line_var_spacing",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_single_line_var_spacing": true
+   }
+  },
+  "input": "<?php\n                    class A {\n                        /**@var MyCass6 $a */\n                        public $test6 = 6;\n\n                        /**@var MyCass6*/\n                        public $testB = 7;\n                    }\n                ",
+  "expected": "<?php\n                    class A {\n                        /** @var MyCass6 $a */\n                        public $test6 = 6;\n\n                        /** @var MyCass6 */\n                        public $testB = 7;\n                    }\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                    phpdoc_single_line_var_spacing  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_tag_type",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_tag_type": {
+     "tags": {
+      "inheritdoc": "inline"
+     }
+    }
+   }
+  },
+  "input": "<?php\n/**\n * @api\n * @author\n * @copyright\n * @deprecated\n * @example\n * @global\n * @inheritDoc\n * @internal\n * @license\n * @method\n * @package\n * @param\n * @property\n * @return\n * @see\n * @since\n * @throws\n * @todo\n * @uses\n * @var\n * @version\n */",
+  "expected": "<?php\n/**\n * @api\n * @author\n * @copyright\n * @deprecated\n * @example\n * @global\n * {@inheritDoc}\n * @internal\n * @license\n * @method\n * @package\n * @param\n * @property\n * @return\n * @see\n * @since\n * @throws\n * @todo\n * @uses\n * @var\n * @version\n */",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                   phpdoc_tag_type  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_trim",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_trim": true
+   }
+  },
+  "input": "<?php\n    /**\n     *\n  *\n     * Hello there!\n     * @internal\n     *@param string $foo\n     *@throws Exception\n     *\n    *\n     *\n     *  @return bool\n     *\n     *\n     */\n",
+  "expected": "<?php\n    /**\n     * Hello there!\n     * @internal\n     *@param string $foo\n     *@throws Exception\n     *\n    *\n     *\n     *  @return bool\n     */\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                       phpdoc_trim  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_types",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_types": {
+     "exclude": [],
+     "groups": [
+      "alias",
+      "meta",
+      "simple"
+     ]
+    }
+   }
+  },
+  "input": "<?php /**\r\n * @param STRING|String[] $bar\r\n *\r\n * @return inT[]\r\n */\r\n",
+  "expected": "<?php /**\r\n * @param string|string[] $bar\r\n *\r\n * @return int[]\r\n */\r\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                      phpdoc_types  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "phpdoc_var_without_name",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "phpdoc_var_without_name": true
+   }
+  },
+  "input": "<?php\n\nclass Foo\n{\n    /**\n     * @var string $foo Hello!\n     */\n    public $foo;\n}",
+  "expected": "<?php\n\nclass Foo\n{\n    /**\n     * @var string Hello!\n     */\n    public $foo;\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                           phpdoc_var_without_name  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "protected_to_private",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "protected_to_private": true
+   }
+  },
+  "input": "<?php final class MyClass { \npublic $v1;\nprotected $v2;\nprivate $v3;\npublic static $v4;\nprotected static $v5;\nprivate static $v6;\npublic function f1(){}\nprotected function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprotected static function f5(){}\nprivate static function f6(){}\n } class B {use C;}",
+  "expected": "<?php final class MyClass { \npublic $v1;\nprivate $v2;\nprivate $v3;\npublic static $v4;\nprivate static $v5;\nprivate static $v6;\npublic function f1(){}\nprivate function f2(){}\nprivate function f3(){}\npublic static function f4(){}\nprivate static function f5(){}\nprivate static function f6(){}\n } class B {use C;}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                              protected_to_private  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "return_type_declaration",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "return_type_declaration": {
+     "space_before": "none"
+    }
+   }
+  },
+  "input": "<?php function foo2(int $a):string {}",
+  "expected": "<?php function foo2(int $a): string {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                           return_type_declaration  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "self_accessor",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "self_accessor": true
+   }
+  },
+  "input": "<?php class Foo { const BAR = Foo::BAZ; }",
+  "expected": "<?php class Foo { const BAR = self::BAZ; }",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                     self_accessor  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "self_static_accessor",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "self_static_accessor": true
+   }
+  },
+  "input": "<?php\nfinal class Sample\n{\n    public function getBar()\n    {\n        return static::class.static::test();\n    }\n\n    private static function test()\n    {\n        return 'test';\n    }\n}\n",
+  "expected": "<?php\nfinal class Sample\n{\n    public function getBar()\n    {\n        return self::class.self::test();\n    }\n\n    private static function test()\n    {\n        return 'test';\n    }\n}\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                              self_static_accessor  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "short_scalar_cast",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "short_scalar_cast": true
+   }
+  },
+  "input": "<?php echo ( boolean  )$a;",
+  "expected": "<?php echo ( bool  )$a;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 short_scalar_cast  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "single_blank_line_at_eof",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "single_blank_line_at_eof": true
+   }
+  },
+  "input": "<?php\n$a = 1;",
+  "expected": "<?php\n$a = 1;\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                          single_blank_line_at_eof  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "single_class_element_per_statement",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "single_class_element_per_statement": {
+     "elements": [
+      "const",
+      "property"
+     ]
+    }
+   }
+  },
+  "input": "<?php\nclass Foo\n{\n    private static $bar1 = array(1,2,3), $bar2 = [1,2,3];\n    private static $baz1 = array(array(1,2), array(3, 4)), $baz2 = array(1,2,3);\n    private static $aaa1 = 1, $aaa2 = array(2, 2), $aaa3 = 3;\n}",
+  "expected": "<?php\nclass Foo\n{\n    private static $bar1 = array(1,2,3);\n    private static $bar2 = [1,2,3];\n    private static $baz1 = array(array(1,2), array(3, 4));\n    private static $baz2 = array(1,2,3);\n    private static $aaa1 = 1;\n    private static $aaa2 = array(2, 2);\n    private static $aaa3 = 3;\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                single_class_element_per_statement  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "single_import_per_statement",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "single_import_per_statement": {
+     "group_to_single_imports": true
+    }
+   }
+  },
+  "input": "<?php\n                    /**/use Foo,FooB;\n                ",
+  "expected": "<?php\n                    /**/use Foo;\n                    use FooB;\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                       single_import_per_statement  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "single_line_after_imports",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "single_line_after_imports": true
+   }
+  },
+  "input": "<?php\nuse D;         use E;\nuse DP;   /**/      use EZ; //\nuse DAZ;         use EGGGG; /**/\nuse A\\B;\n\nuse C\\DE;\n\n\nuse E\\F;\n\n\n\nuse G\\H;\n",
+  "expected": "<?php\nuse D;\nuse E;\nuse DP;   /**/\nuse EZ; //\nuse DAZ;\nuse EGGGG; /**/\nuse A\\B;\n\nuse C\\DE;\n\n\nuse E\\F;\n\n\n\nuse G\\H;\n\n",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                         single_line_after_imports  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "single_line_comment_spacing",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "single_line_comment_spacing": true
+   }
+  },
+  "input": "<?php /*    XYZ   */",
+  "expected": "<?php /*    XYZ */",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                       single_line_comment_spacing  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "single_line_comment_style",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "single_line_comment_style": {
+     "comment_types": [
+      "hash"
+     ]
+    }
+   }
+  },
+  "input": "<h1>This is an <?php #echo 123;?> example</h1>",
+  "expected": "<h1>This is an <?php //echo 123;?> example</h1>",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                         single_line_comment_style  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "single_line_empty_body",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "single_line_empty_body": true
+   }
+  },
+  "input": "<?php\n            class Foo\n            {\n            }\n            class Bar extends BarParent\n            {}\n            class Baz implements BazInterface    {}\n            abstract class A\n            {}\n            final class F\n            {\n\n            }\n            ",
+  "expected": "<?php\n            class Foo {}\n            class Bar extends BarParent {}\n            class Baz implements BazInterface {}\n            abstract class A {}\n            final class F {}\n            ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                            single_line_empty_body  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "single_quote",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "single_quote": {
+     "strings_containing_single_quote_chars": false
+    }
+   }
+  },
+  "input": "<?php $a = \"\";",
+  "expected": "<?php $a = '';",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                      single_quote  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "single_space_around_construct",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "single_space_around_construct": {
+     "constructs_contain_a_single_space": [
+      "yield_from"
+     ],
+     "constructs_followed_by_a_single_space": [
+      "abstract",
+      "as",
+      "attribute",
+      "break",
+      "case",
+      "catch",
+      "class",
+      "clone",
+      "comment",
+      "const",
+      "const_import",
+      "continue",
+      "do",
+      "echo",
+      "else",
+      "elseif",
+      "enum",
+      "extends",
+      "final",
+      "finally",
+      "for",
+      "foreach",
+      "function",
+      "function_import",
+      "global",
+      "goto",
+      "if",
+      "implements",
+      "include",
+      "include_once",
+      "instanceof",
+      "insteadof",
+      "interface",
+      "match",
+      "named_argument",
+      "namespace",
+      "new",
+      "open_tag_with_echo",
+      "php_doc",
+      "php_open",
+      "print",
+      "private",
+      "private_set",
+      "protected",
+      "protected_set",
+      "public",
+      "public_set",
+      "readonly",
+      "require",
+      "require_once",
+      "return",
+      "static",
+      "switch",
+      "throw",
+      "trait",
+      "try",
+      "type_colon",
+      "use",
+      "use_lambda",
+      "use_trait",
+      "var",
+      "while",
+      "yield",
+      "yield_from"
+     ],
+     "constructs_preceded_by_a_single_space": [
+      "as",
+      "use_lambda"
+     ]
+    }
+   }
+  },
+  "input": "<?php abstract  class Foo {}; if($a){}",
+  "expected": "<?php abstract class Foo {}; if ($a){}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                     single_space_around_construct  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "space_after_semicolon",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "space_after_semicolon": {
+     "remove_in_empty_for_expressions": false
+    }
+   }
+  },
+  "input": "<?php test7a();/* */",
+  "expected": "<?php test7a(); /* */",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                             space_after_semicolon  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "spaces_inside_parentheses",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "spaces_inside_parentheses": {
+     "space": "none"
+    }
+   }
+  },
+  "input": "<?php foo( );",
+  "expected": "<?php foo();",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                         spaces_inside_parentheses  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "standardize_not_equals",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "standardize_not_equals": true
+   }
+  },
+  "input": "<?php $a = ($b <> $c);",
+  "expected": "<?php $a = ($b != $c);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                            standardize_not_equals  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "statement_indentation",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "statement_indentation": {
+     "stick_comment_to_next_continuous_control_statement": false
+    }
+   }
+  },
+  "input": "<?php\n  foo();\n       bar();",
+  "expected": "<?php\nfoo();\nbar();",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                             statement_indentation  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "strict_comparison",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "strict_comparison": true
+   }
+  },
+  "input": "<?php $a == $b;",
+  "expected": "<?php $a === $b;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 strict_comparison  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "switch_case_semicolon_to_colon",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "switch_case_semicolon_to_colon": true
+   }
+  },
+  "input": "<?php\n                switch (1) {\n                    case f(function () { return; });\n                        break;\n                }\n                ",
+  "expected": "<?php\n                switch (1) {\n                    case f(function () { return; }):\n                        break;\n                }\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                    switch_case_semicolon_to_colon  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "switch_case_space",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "switch_case_space": true
+   }
+  },
+  "input": "<?php\n                switch ($a) {\n                    case \"prod\" :\n                        break;\n                }\n                ",
+  "expected": "<?php\n                switch ($a) {\n                    case \"prod\":\n                        break;\n                }\n                ",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 switch_case_space  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "ternary_operator_spaces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "ternary_operator_spaces": true
+   }
+  },
+  "input": "<?php\nbeginning:\necho $guard?1:2;",
+  "expected": "<?php\nbeginning:\necho $guard ? 1 : 2;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                           ternary_operator_spaces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "trailing_comma_in_multiline",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "trailing_comma_in_multiline": {
+     "after_heredoc": false,
+     "elements": [
+      "arrays"
+     ]
+    }
+   }
+  },
+  "input": "<?php $x = array(\n'foo'\n);",
+  "expected": "<?php $x = array(\n'foo',\n);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                       trailing_comma_in_multiline  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "trim_array_spaces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "trim_array_spaces": true
+   }
+  },
+  "input": "<?php $foo = array( \"foo\" );",
+  "expected": "<?php $foo = array(\"foo\");",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                 trim_array_spaces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "type_declaration_spaces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "type_declaration_spaces": {
+     "elements": [
+      "function",
+      "property"
+     ]
+    }
+   }
+  },
+  "input": "<?php function foo(bool/**bla bla*/$param) {}",
+  "expected": "<?php function foo(bool /**bla bla*/$param) {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                           type_declaration_spaces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "types_spaces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "types_spaces": {
+     "space": "none",
+     "space_multiple_catch": "none"
+    }
+   }
+  },
+  "input": "<?php try {} catch (ErrorA | ErrorB $e) {}",
+  "expected": "<?php try {} catch (ErrorA|ErrorB $e) {}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                      types_spaces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "unary_operator_spaces",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "unary_operator_spaces": {
+     "only_dec_inc": false
+    }
+   }
+  },
+  "input": "<?php $a ++;",
+  "expected": "<?php $a++;",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                             unary_operator_spaces  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "visibility_required",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "visibility_required": {
+     "elements": [
+      "const",
+      "method",
+      "property"
+     ]
+    }
+   }
+  },
+  "input": "<?php\nclass Foo {\n    public $var;\n    protected $var_foo;\n    private $FooBar;\n    static public $var1;\n    static protected $var_foo2;\n    static private $FooBar1;\n    public static $var2;\n    protected static $var_foo3;\n    private static $FooBar2;\n    private static\n    $FooBar3;\n    var $old = 'foo';\n}",
+  "expected": "<?php\nclass Foo {\n    public $var;\n    protected $var_foo;\n    private $FooBar;\n    public static $var1;\n    protected static $var_foo2;\n    private static $FooBar1;\n    public static $var2;\n    protected static $var_foo3;\n    private static $FooBar2;\n    private static $FooBar3;\n    public $old = 'foo';\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                               visibility_required  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "whitespace_after_comma_in_array",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "whitespace_after_comma_in_array": {
+     "ensure_single_space": false
+    }
+   }
+  },
+  "input": "<?php $x = array( 1 ,\"2\",3);",
+  "expected": "<?php $x = array( 1 , \"2\", 3);",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                   whitespace_after_comma_in_array  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "yoda_style",
+  "file": "test.php",
+  "pint.json": {
+   "preset": "empty",
+   "rules": {
+    "yoda_style": {
+     "always_move_variable": false,
+     "equal": false,
+     "identical": false,
+     "less_and_greater": false
+    }
+   }
+  },
+  "input": "<?php\nif ((1 === $a) === 1) {\n    return;\n}",
+  "expected": "<?php\nif (($a === 1) === 1) {\n    return;\n}",
+  "test_stdout": "\n  ⨯\n\n  ────────────────────────────────────────────────────────────────────── Empty  \n    FAIL   ............................................. 1 file, 1 style issue  \n  ⨯ test.php                                                        yoda_style  \n\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/final_controller",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/final_controller\" = true\n",
+  "input": "<?php\n\nclass UserController\n{\n}\n",
+  "expected": "<?php\n\nfinal class UserController\n{\n}\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/no_implicit_model_query",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/no_implicit_model_query\" = true\n",
+  "input": "<?php\n\n$users = User::where('is_active', true)->get();\n",
+  "expected": "<?php\n\n$users = User::query()->where('is_active', true)->get();\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/no_only",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/no_only\" = true\n",
+  "input": "<?php\n\ntest('example', function () {\n    expect(true)->toBeTrue();\n})->only();\n",
+  "expected": "<?php\n\ntest('example', function () {\n    expect(true)->toBeTrue();\n});\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/no_redundant_isset",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/no_redundant_isset\" = true\n",
+  "input": "<?php isset($a[0], $a[0][1]);",
+  "expected": "<?php isset($a[0][1]);",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/no_redundant_literal_return",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/no_redundant_literal_return\" = true\n",
+  "input": "<?php\n\nfunction getValue($x) {\n    if ($x === null) {\n        return null;\n    }\n    return $x;\n}\n",
+  "expected": "<?php\n\nfunction getValue($x) {\n    return $x;\n}\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/no_redundant_nullsafe",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/no_redundant_nullsafe\" = true\n",
+  "input": "<?php\n\n$name = $user?->name ?? 'Guest';\n\nif (isset($user?->profile)) {\n    // Do something with $user->profile\n}\n",
+  "expected": "<?php\n\n$name = $user->name ?? 'Guest';\n\nif (isset($user->profile)) {\n    // Do something with $user->profile\n}\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/no_self_assignment",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/no_self_assignment\" = true\n",
+  "input": "<?php\n\n$a = $a;\n$this->x = $this->x;\n$foo->bar = $foo->bar;\n",
+  "expected": "<?php\n\n$this->x = $this->x;\n$foo->bar = $foo->bar;\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/prefer_array_spread",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/prefer_array_spread\" = true\n",
+  "input": "<?php\n\n$merged = array_merge($a, $b, $c);\n",
+  "expected": "<?php\n\n$merged = [...$a, ...$b, ...$c];\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/prefer_array_validation_rules",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/prefer_array_validation_rules\" = true\n",
+  "input": "<?php\n\nclass StoreUserRequest\n{\n    public function rules(): array\n    {\n        return [\n            'name' => 'required|string|max:255',\n        ];\n    }\n}\n",
+  "expected": "<?php\n\nclass StoreUserRequest\n{\n    public function rules(): array\n    {\n        return [\n            'name' => ['required', 'string', 'max:255'],\n        ];\n    }\n}\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/prefer_dedicated_status_assertion",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/prefer_dedicated_status_assertion\" = true\n",
+  "input": "<?php\n\n$response->assertStatus(404);\n",
+  "expected": "<?php\n\n$response->assertNotFound();\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/prefer_explode_over_preg_split",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/prefer_explode_over_preg_split\" = true\n",
+  "input": "<?php\n\n$parts = preg_split('/, /', $s);\n",
+  "expected": "<?php\n\n$parts = explode(', ', $s);\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/prefer_fake_helper",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/prefer_fake_helper\" = true\n",
+  "input": "<?php\n\nclass UserFactory\n{\n    public function definition(): array\n    {\n        return ['name' => $this->faker->unique()->word()];\n    }\n}\n",
+  "expected": "<?php\n\nclass UserFactory\n{\n    public function definition(): array\n    {\n        return ['name' => fake()->unique()->word()];\n    }\n}\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/prefer_first_class_callable",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/prefer_first_class_callable\" = true\n",
+  "input": "<?php\n\nrun(fn($x) => $this->method($x));\n",
+  "expected": "<?php\n\nrun($this->method(...));\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/sensitive_parameter",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/sensitive_parameter\" = true\n",
+  "input": "<?php\n\nfunction login(string $username, string $password): void {\n    // ...\n}\n",
+  "expected": "<?php\n\nfunction login(string $username, #[\\SensitiveParameter] string $password): void {\n    // ...\n}\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/use_dedicated_expectation",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/use_dedicated_expectation\" = true\n",
+  "input": "<?php\n\nexpect(is_array($value))->toBeTrue();\n",
+  "expected": "<?php\n\nexpect($value)->toBeArray();\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/use_simpler_expectation",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/use_simpler_expectation\" = true\n",
+  "input": "<?php\n\nexpect($a > $b)->toBeTrue();\n",
+  "expected": "<?php\n\nexpect($a)->toBeGreaterThan($b);\n",
+  "test_exit": 1
+ },
+ {
+  "rule": "Pun/use_specific_expectations",
+  "file": "test.php",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[format.rules]\n\"Pun/use_specific_expectations\" = true\n",
+  "input": "<?php\n\nexpect($value)->toBe(true);\n",
+  "expected": "<?php\n\nexpect($value)->toBeTrue();\n",
+  "test_exit": 1
+ }
+]
