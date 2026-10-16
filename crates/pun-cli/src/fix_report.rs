@@ -157,10 +157,8 @@ pub fn gitlab(changes: &[Change], decorated: bool) -> String {
 /// changed line, `end` is where the chunk (context included) ends.
 fn gitlab_lines(diff: &str) -> (usize, usize) {
     let lines: Vec<&str> = diff.split("\r\n").flat_map(|l| l.split(['\r', '\n'])).collect();
-    let Some(i) = (0..lines.len().saturating_sub(1)).find(|&i| lines[i].starts_with("--- ") && lines[i + 1].starts_with("+++ ")) else {
-        return (0, 0);
-    };
-    let Some(h) = lines.iter().skip(i + 2).position(|l| l.starts_with("@@ -")).map(|p| p + i + 2) else {
+    let header = (0..lines.len().saturating_sub(1)).find(|&i| lines[i].starts_with("--- ") && lines[i + 1].starts_with("+++ "));
+    let Some(h) = header.and_then(|i| lines.iter().skip(i + 2).position(|l| l.starts_with("@@ -")).map(|p| p + i + 2)) else {
         return (0, 0);
     };
     // `@@ -start[,range] +…`

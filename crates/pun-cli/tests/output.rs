@@ -208,6 +208,22 @@ fn abort_box_like_pint() {
     cx.same(&t, &["--format=nope", "--ansi", "--test"], PLAIN);
     cx.same(&t, &["--format=a-format-name-long-enough-to-wrap-in-a-narrow-terminal"], Opts { env: &[("COLUMNS", "30")], ..PLAIN });
     cx.same(&t, &["--test", "--output-to-file=r", "--output-format=nope", "--format=json"], PLAIN);
+    // COLUMNS=0: Symfony doesn't wrap at all.
+    cx.same(&t, &["--format=a-format-name-long-enough-to-wrap-in-an-eighty-column-terminal-if-it-were-wrapped-at-all"], Opts { env: &[("COLUMNS", "0")], ..PLAIN });
+}
+
+/// Gitlab entries for rules GitlabReporter's FixerFactory doesn't know (Pun's own, enabled via pun.toml) use its
+/// "custom rule" wording. Hand-derived from GitlabReporter::generate (Pint has no such rules to run).
+#[test]
+fn gitlab_custom_rule() {
+    let dir = tmp("gitlab");
+    reset(&dir, &[("pun.toml", "[format]\npreset = \"empty\"\n[format.rules]\n\"Pun/no_only\" = true\n"), ("t.php", "<?php\ntest('a', fn () => 1)->only();\n")]);
+    let r = run(&[env!("CARGO_BIN_EXE_pun"), "format", "--test", "--format=gitlab"], &dir, PLAIN);
+    let v: serde_json::Value = serde_json::from_str(&r.stdout).unwrap();
+    assert_eq!(v[0]["description"], "PHP-CS-Fixer.Pun/no_only (custom rule)", "{}", r.stdout);
+    assert_eq!(v[0]["content"]["body"], "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.\nCheck performed with a custom rule.");
+    // md5("t.phpPun/no_only")
+    assert_eq!(v[0]["fingerprint"], "147051f627619bd7f4d79ce3046a3395");
 }
 
 /// EnsurePrettierIsConfigured: `"Pint/laravel_blade": true` needs Node and prettier (+ plugins) in the project.
