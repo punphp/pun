@@ -33,6 +33,9 @@ enum Cmd {
         /// Print the resolved configuration after imports.
         #[arg(long)]
         show: bool,
+        /// Write pun.toml from pint.json, so pun.toml can be the only config file.
+        #[arg(long, conflicts_with = "show")]
+        init: bool,
         /// Output format.
         #[arg(long, default_value = "toml", value_parser = ["toml", "json"])]
         format: String,
@@ -139,7 +142,8 @@ fn main() -> ExitCode {
             Cmd::Format(a) => format(a, false),
             #[cfg(feature = "mago-lint")]
             Cmd::Lint(a) => lint::run(a),
-            Cmd::Config { show: _, format, config, preset } => show_config(&format, config, preset),
+            Cmd::Config { init: true, .. } => init_config(),
+            Cmd::Config { show: _, init: _, format, config, preset } => show_config(&format, config, preset),
         }
     };
     match result {
@@ -153,6 +157,17 @@ fn main() -> ExitCode {
 
 fn root() -> Result<PathBuf> {
     Ok(std::env::current_dir()?.canonicalize()?)
+}
+
+fn init_config() -> Result<u8> {
+    let root = root()?;
+    let path = root.join("pun.toml");
+    if path.exists() {
+        anyhow::bail!("pun.toml already exists.");
+    }
+    std::fs::write(&path, pun_config::init_toml(&root)?)?;
+    println!("Wrote {}. pint.json is no longer needed unless you still run Pint.", path.display());
+    Ok(0)
 }
 
 fn show_config(fmt: &str, config: Option<PathBuf>, preset: Option<String>) -> Result<u8> {

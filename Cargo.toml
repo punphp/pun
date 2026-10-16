@@ -18,7 +18,7 @@ mago-syntax = "=1.57.0"
 mago-database = "=1.57.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
-toml = "0.9"
+toml = { version = "0.9", features = ["preserve_order"] }
 clap = { version = "4", features = ["derive"] }
 rayon = "1"
 anyhow = "1"
