@@ -2,8 +2,10 @@
 //! it, baselines, `ignoreErrors` and `@phpstan-ignore` comments.
 
 pub mod baseline;
+pub mod comments;
 pub mod config;
 pub mod di;
+pub mod ignore;
 pub mod neon;
 pub mod php;
 pub mod phpfile;

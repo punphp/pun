@@ -382,10 +382,7 @@ pub fn base_dec(digits: &str, base: u32) -> Value {
 /// ponytail: a literal without a zone is read as UTC (PHP uses php.ini's date.timezone).
 pub fn datetime_format(raw: &str, format: &str) -> String {
     let num = |s: &str| s.parse::<i64>().unwrap_or(0);
-    let (date, rest) = raw.split_at(
-        raw.find(['T', 't', ' '])
-            .unwrap_or(raw.len()),
-    );
+    let (date, rest) = raw.split_at(raw.find(['T', 't', ' ']).unwrap_or(raw.len()));
     let mut d = date.split('-').map(num);
     let (y, m, day) = (
         d.next().unwrap_or(0),
