@@ -13,12 +13,12 @@ use serde_json::{Value as J, json};
 const ROOT: &str = "/pun-root";
 const TMP: &str = "/pun-tmp";
 
-fn options(cwd: &Path, case: &J, phar: &str) -> Options {
+fn options(cwd: &Path, case: &J, base: Options) -> Options {
     let mut o = Options {
         cwd: cwd.to_string_lossy().into_owned(),
-        phar: phar.to_string(),
         sys_temp_dir: TMP.into(),
-        ..Options::default()
+        env: Vec::new(),
+        ..base
     };
     let args: Vec<String> = case["args"]
         .as_array()
@@ -98,7 +98,11 @@ fn edge_case_configs() {
             serde_json::from_str(&std::fs::read_to_string(case_dir.join("expected.json")).unwrap())
                 .unwrap();
         let cwd = case_dir.to_string_lossy().into_owned();
-        let o = options(case_dir, &case, &format!("{ROOT}/phpstan.phar"));
+        let base = Options {
+            phar: format!("{ROOT}/phpstan.phar"),
+            ..Options::default()
+        };
+        let o = options(case_dir, &case, base);
         let got = got(&o, &[(&cwd, "{cwd}"), (ROOT, "{root}"), (TMP, "{tmp}")]);
         if let Some(d) = diff(&want, &got) {
             failures.push(format!(
@@ -150,11 +154,8 @@ fn corpus_configs() {
         }
         std::os::unix::fs::symlink(&vendor, farm.join("vendor")).unwrap();
         let cwd = farm.to_string_lossy().into_owned();
-        let o = options(
-            &farm,
-            &case,
-            &format!("{cwd}/vendor/phpstan/phpstan/phpstan.phar"),
-        );
+        // What `vendor/bin/phpstan` finds in a project (no extension-installer in .oracle/phpstan).
+        let o = options(&farm, &case, Options::for_project(&cwd));
         let got = got(&o, &[(&cwd, "{cwd}"), (TMP, "{tmp}")]);
         if let Some(d) = diff(&case["expected"], &got) {
             failures.push(format!("{name}:\n{d}"));

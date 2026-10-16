@@ -54,7 +54,11 @@ foreach (glob($fixtures.'/config/*/case.json') as $caseFile) {
         continue;
     }
     $case = json_decode(file_get_contents($caseFile), true);
+    $before = scandir($dir);
     $res = oracle($phar, $dir, $case['args'] ?? [], $case['env'] ?? []);
+    foreach (array_diff(scandir($dir), $before, ['expected.json']) as $created) { // e.g. a relative tmpDir
+        system('rm -rf '.escapeshellarg($dir.'/'.$created));
+    }
     write($dir.'/expected.json', placeholders($res, [$dir => '{cwd}', dirname($phar) => '{root}', $tmp => '{tmp}']));
     echo basename($dir), ': ', isset($res['error']) ? 'error' : 'ok', "\n";
 }

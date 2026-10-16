@@ -1,0 +1,5 @@
+parameters:
+	level: 1
+	tmpDir: var/cache
+	paths: [src]
+	resultCachePath: %tmpDir%/rc.php

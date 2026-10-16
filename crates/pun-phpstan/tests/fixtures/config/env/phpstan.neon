@@ -1,0 +1,6 @@
+parameters:
+	level: 1
+	paths: [%env.PUN_SRC%]
+	custom: %env.PUN_TMP%/cache
+parametersSchema:
+	custom: string()

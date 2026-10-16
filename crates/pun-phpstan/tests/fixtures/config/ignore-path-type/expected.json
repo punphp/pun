@@ -1,0 +1,3 @@
+{
+    "error": "Invalid entries in ignoreErrors:\nKey 'path' of ignoreErrors expects a string, array given. Did you mean 'paths'?\n\nKey 'paths' of ignoreErrors expects an array, string given. Did you mean 'path'?\n\nTo ignore non-existent paths in ignoreErrors,\nset reportUnmatchedIgnoredErrors: false in your configuration file.\n"
+}

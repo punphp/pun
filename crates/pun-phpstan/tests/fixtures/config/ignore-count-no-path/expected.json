@@ -1,0 +1,3 @@
+{
+    "error": "Invalid configuration:\nAn ignoreErrors entry with count field must also contain path field."
+}

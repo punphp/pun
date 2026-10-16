@@ -1,0 +1,1 @@
+{"args": ["--generate-baseline", "phpstan-baseline.neon"]}

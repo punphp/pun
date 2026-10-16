@@ -1,0 +1,3 @@
+{
+    "error": "Invalid configuration:\nUnexpected item 'parameters › parallel › unknownKey'.\nInvalid configuration:\nThe item 'parameters › parallel › jobSize' expects to be int, 'big' given."
+}

@@ -1,0 +1,13 @@
+includes:
+	- inc/a.neon
+	- phar://phpstan.phar/conf/bleedingEdge.neon
+	- %currentWorkingDirectory%/inc/c.neon
+parameters:
+	level: 1
+	paths: [src]
+	earlyTerminatingMethodCalls:
+		Foo: [bar]
+	universalObjectCratesClasses!:
+		- Mine
+	dynamicConstantNames:
+		- B

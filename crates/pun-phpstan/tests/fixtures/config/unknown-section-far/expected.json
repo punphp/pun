@@ -1,0 +1,3 @@
+{
+    "error": "Invalid configuration:\nFound section 'qqqqqqqq' in configuration, but corresponding extension is missing."
+}

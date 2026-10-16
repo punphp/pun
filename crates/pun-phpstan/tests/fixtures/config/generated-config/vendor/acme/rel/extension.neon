@@ -1,0 +1,6 @@
+parameters:
+	universalObjectCratesClasses: [Acme\\Crate]
+	acme:
+		dir: %currentWorkingDirectory%
+parametersSchema:
+	acme: structure([dir: string()])

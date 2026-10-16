@@ -1,0 +1,3 @@
+{
+    "error": "This file is included multiple times:\n- {cwd}/c.neon"
+}

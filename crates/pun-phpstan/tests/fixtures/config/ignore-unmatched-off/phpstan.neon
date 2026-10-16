@@ -1,0 +1,9 @@
+parameters:
+	level: 0
+	paths: [src]
+	reportUnmatchedIgnoredErrors: false
+	ignoreErrors:
+		- message: '#bar#'
+		  path: src/nope.php
+		- rawMessage: 'x'
+		  identifier: a.b

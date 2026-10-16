@@ -1,0 +1,3 @@
+{
+    "error": "Invalid configuration:\nAn ignoreErrors entry must contain at least one of the following fields: message, messages, rawMessage, rawMessages, identifier, identifiers, path, paths."
+}

@@ -1,0 +1,8 @@
+includes:
+	- ../b.neon
+parameters:
+	dynamicConstantNames: [A]
+	earlyTerminatingMethodCalls:
+		Foo: [baz]
+		Qux: [x]
+	stubFiles: [stub.php]
