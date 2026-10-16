@@ -54,9 +54,9 @@ Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCa
 - [ ] no_trailing_whitespace
 - [ ] no_trailing_whitespace_in_comment
 - [ ] no_unneeded_braces
-- [ ] no_whitespace_before_comma_in_array
+- [x] no_whitespace_before_comma_in_array
 - [ ] no_whitespace_in_blank_line
-- [ ] not_operator_with_successor_space
+- [x] not_operator_with_successor_space
 - [ ] object_operator_without_whitespace
 - [ ] phpdoc_indent
 - [ ] phpdoc_inline_tag_normalizer
@@ -73,18 +73,18 @@ Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCa
 - [ ] space_after_semicolon
 - [ ] spaces_inside_parentheses
 - [ ] statement_indentation
-- [ ] switch_case_semicolon_to_colon
-- [ ] switch_case_space
+- [x] switch_case_semicolon_to_colon
+- [x] switch_case_space
 - [ ] ternary_operator_spaces
 - [ ] trailing_comma_in_multiline
-- [ ] trim_array_spaces
+- [x] trim_array_spaces
 - [ ] type_declaration_spaces
 - [ ] types_spaces
 - [ ] unary_operator_spaces
-- [ ] whitespace_after_comma_in_array
+- [x] whitespace_after_comma_in_array
 - [ ] Pint/laravel_blade
 - [ ] array_push
-- [ ] array_syntax
+- [x] array_syntax
 - [ ] backtick_to_shell_exec
 - [ ] compact_nullable_type_declaration
 - [ ] control_structure_continuation_position
