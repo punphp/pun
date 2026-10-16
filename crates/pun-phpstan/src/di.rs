@@ -17,12 +17,6 @@ fn has_prevent(a: &Array) -> bool {
     a.get(&prevent_key()).is_some_and(|v| *v != Value::Null)
 }
 
-impl Default for Value {
-    fn default() -> Value {
-        Value::Null
-    }
-}
-
 /// `Nette\Schema\Helpers::merge($value, $base)`: `$value` wins; its list items are appended to `$base`.
 pub fn merge(value: Value, base: Value) -> Value {
     if let Value::Array(mut v) = value {
