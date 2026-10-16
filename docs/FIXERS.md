@@ -97,14 +97,14 @@ Analyzers owned: FunctionsAnalyzer, ArgumentsAnalyzer, SwitchAnalyzer, ControlCa
 
 Analyzers owned: NamespaceUsesAnalyzer, NamespacesAnalyzer, ClassyAnalyzer, AttributeAnalyzer, Analysis/* structs.
 
-- [ ] elseif
+- [x] elseif
 - [ ] function_declaration
 - [ ] include
 - [ ] increment_style
-- [ ] integer_literal_case
+- [x] integer_literal_case
 - [ ] list_syntax
-- [ ] lowercase_cast
-- [ ] lowercase_keywords
+- [x] lowercase_cast
+- [x] lowercase_keywords
 - [ ] lowercase_static_reference
 - [ ] magic_method_casing
 - [ ] mb_str_functions
@@ -112,28 +112,28 @@ Analyzers owned: NamespaceUsesAnalyzer, NamespacesAnalyzer, ClassyAnalyzer, Attr
 - [ ] native_function_casing
 - [ ] native_type_declaration_casing
 - [ ] no_alias_functions
-- [ ] no_alias_language_construct_call
+- [x] no_alias_language_construct_call
 - [ ] no_alternative_syntax
-- [ ] no_binary_string
-- [ ] no_mixed_echo_print
-- [ ] no_short_bool_cast
+- [x] no_binary_string
+- [x] no_mixed_echo_print
+- [x] no_short_bool_cast
 - [ ] no_superfluous_elseif
 - [ ] no_unneeded_control_parentheses
 - [ ] no_unreachable_default_argument_value
-- [ ] no_unset_cast
-- [ ] normalize_index_brace
+- [x] no_unset_cast
+- [x] normalize_index_brace
 - [ ] nullable_type_declaration
 - [ ] nullable_type_declaration_for_default_null_value
 - [ ] php_unit_method_casing
-- [ ] return_type_declaration
-- [ ] short_scalar_cast
-- [ ] single_quote
-- [ ] standardize_not_equals
-- [ ] strict_comparison
+- [x] return_type_declaration
+- [x] short_scalar_cast
+- [x] single_quote
+- [x] standardize_not_equals
+- [x] strict_comparison
 - [ ] yoda_style
 - [ ] class_attributes_separation
 - [ ] class_definition
-- [ ] constant_case
+- [x] constant_case
 - [ ] final_class
 - [ ] final_internal_class
 
