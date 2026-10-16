@@ -27,7 +27,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | M1.6 `pun format --watch` + `pun lsp` (formatting-only) + Pint error boxes in pint mode | - | done |
 | Verify --dirty/--diff/--repair/--parallel/--staged/--since/--stdin against Pint (crates/pun-cli/tests/flags.rs; `--since` added; stdin+`--dirty`/`--diff` intentionally does not format repo files) | - | done |
 | Cleanup: /code-review --fix, architecture pass, remove restating comments, cargo fmt, clippy (59); clap: `ValueEnum` for `--engine` and `config --format` instead of string lists + manual mapping (keep `--format`/`--output-format` as strings: Pint prints its own "Format [x] is not supported." box) | - | todo (after the doing rows) |
-| CRLF fuzz diff + native framework benchmark (Process.php seed 2; scoreboard re-measure with own pint.json, no flags) | crlf agent (target-crlf/) | doing |
+| CRLF fuzz diff + native framework benchmark: seed-2 Process.php diff was a stale target/debug/pun (fuzz-parity.sh now refuses stale binaries); crlf + mixed-eol fuzz 16 runs 0 differing; scoreboard re-measured with own pint.json, no flags | - | done |
 | Pint-mode polish: Pun-only flags rejected in pint mode, -v exception boxes (class + throw site; PHP frames dropped), --bail abort progress, list pint.json, --preset=nope, LSP config reload, per-file fixer panics, watch exits with its parent, one Node probe (crates/pun-cli, pun-config) | - | done |
 | CI workflows (.github/ untracked: gh token lacks `workflow` scope) | user | blocked |
 | Publish v0.1 (tag, LICENSE, crates, npm @punphp, Homebrew, Packagist, public repo) | user | needs approval |
