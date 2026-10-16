@@ -8,5 +8,15 @@
         "fixer": "method_argument_space",
         "input": "<?php\nfoo(\n);\nfunction f(\n) {}\nfoo(/* a */\n);\n",
         "expected": "<?php\nfoo(\n);\nfunction f(\n) {}\nfoo(/* a */\n);\n"
+    },
+    {
+        "fixer": "method_argument_space",
+        "config": {
+            "after_heredoc": false,
+            "attribute_placement": "ignore",
+            "on_multiline": "ensure_fully_multiline"
+        },
+        "input": "<?php\nfunction foo(#[Foo] $a,\n    #[Bar, Baz] int $b) {}\nfoo(<<<EOT\nx\nEOT\n, $b);\n$x = bar($a,\n    $b);\n",
+        "expected": "<?php\nfunction foo(\n    #[Foo] $a,\n    #[Bar, Baz] int $b\n) {}\nfoo(<<<EOT\nx\nEOT\n, $b);\n$x = bar(\n    $a,\n    $b\n);\n"
     }
 ]
