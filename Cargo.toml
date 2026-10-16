@@ -30,6 +30,9 @@ walkdir = "2"
 mago-allocator = "=1.57.0"
 mago-php-version = "=1.57.0"
 mago-span = "=1.57.0"
+mago-linter = "=1.57.0"
+mago-names = "=1.57.0"
+mago-reporting = "=1.57.0"
 
 [profile.release]
 lto = "thin"

@@ -18,7 +18,7 @@ pub fn fixer() -> Box<dyn Fixer> {
 enum Arg {
     Drop,
     Spread,
-    /// Inline the literal's elements: skip the tokens before the first and after the last element.
+    /// Inline the literal's elements (first and last element token).
     Inline(usize, usize),
 }
 
@@ -62,6 +62,31 @@ impl Fixer for PreferArraySpread {
                         None => removed.extend(args[*kept.iter().rev().find(|&&h| h < a).unwrap()].1 + 1..=args[a].1),
                     }
                 }
+                // The last argument keeps its own layout (`[...$a, \n    'k' => 1,\n]`): only its brackets go.
+                let last_kept = kept[kept.len() - 1];
+                for (a, kind) in kinds.iter().enumerate() {
+                    let Arg::Inline(first, last) = *kind else { continue };
+                    let (s, e) = args[a];
+                    if a == last_kept {
+                        let open_d = if tokens[s].is_kind(T_ARRAY) { tokens.get_next_meaningful_token(s).unwrap() } else { s };
+                        removed.extend(s..=open_d);
+                        removed.extend(e..close);
+                        let multiline = |w: usize| tokens[w].get_content().contains(&b'\n');
+                        if tokens[open_d + 1].is_whitespace(None) {
+                            if !multiline(open_d + 1) {
+                                removed.insert(open_d + 1);
+                            } else if tokens[s - 1].is_whitespace(None) {
+                                removed.insert(s - 1);
+                            }
+                        }
+                        if tokens[e - 1].is_whitespace(None) && !multiline(e - 1) {
+                            removed.insert(e - 1);
+                        }
+                    } else {
+                        removed.extend(s..first);
+                        removed.extend(last + 1..=e);
+                    }
+                }
                 for k in open + 1..close {
                     if removed.contains(&k) {
                         continue;
@@ -69,7 +94,6 @@ impl Fixer for PreferArraySpread {
                     if let Some(a) = args.iter().position(|&(s, e)| s <= k && k <= e) {
                         match kinds[a] {
                             Arg::Spread if k == args[a].0 => out.push(Token::new(T_ELLIPSIS, "...")),
-                            Arg::Inline(first, last) if k < first || k > last => continue,
                             _ => {}
                         }
                     }
@@ -231,6 +255,12 @@ mod tests {
             fix("<?php $x = array_merge(\n    $defaults,\n    $options,\n);"),
             "<?php $x = [\n    ...$defaults,\n    ...$options,\n];"
         );
+        assert_eq!(
+            fix("<?php $x = array_merge($a, [\n    'k' => 1,\n    'l' => 2,\n]);"),
+            "<?php $x = [...$a,\n    'k' => 1,\n    'l' => 2,\n];"
+        );
+        assert_eq!(fix("<?php $x = array_merge(['k' => 1,], ['l' => 2,],);"), "<?php $x = ['k' => 1, 'l' => 2,];");
+        assert_eq!(fix("<?php $x = array_merge($a, array ( 1 ));"), "<?php $x = [...$a, 1];");
         assert_eq!(fix("<?php $x = array_merge($a, array_merge($b, $c));"), "<?php $x = [...$a, ...$b, ...$c];");
         assert_eq!(fix("<?php $x = array_merge($a, ['k' => fn ($v) => [1 => $v]]);"), "<?php $x = [...$a, 'k' => fn ($v) => [1 => $v]];");
         assert_eq!(fix("<?php $x = array_merge($a, [\"b\\n\" => 1]);"), "<?php $x = [...$a, ...[\"b\\n\" => 1]];");

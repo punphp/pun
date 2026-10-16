@@ -1,5 +1,7 @@
 //! `pun` binary. Invoked as `pint` (argv[0]), it takes Pint's flags and mimics its output and exit codes.
 
+#[cfg(feature = "mago-lint")]
+mod lint;
 mod report;
 
 use anyhow::Result;
@@ -23,6 +25,9 @@ struct Cli {
 enum Cmd {
     /// Fix (or check) the coding style of the given paths.
     Format(FormatArgs),
+    /// Report Mago's lint-only rules (`--mago`); never edits files. Needs the `mago-lint` build feature.
+    #[cfg(feature = "mago-lint")]
+    Lint(lint::LintArgs),
     /// Inspect configuration.
     Config {
         /// Print the resolved configuration after imports.
@@ -132,6 +137,8 @@ fn main() -> ExitCode {
     } else {
         match Cli::parse().cmd {
             Cmd::Format(a) => format(a, false),
+            #[cfg(feature = "mago-lint")]
+            Cmd::Lint(a) => lint::run(a),
             Cmd::Config { show: _, format, config, preset } => show_config(&format, config, preset),
         }
     };

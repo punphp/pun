@@ -19,3 +19,13 @@ pun-config.workspace = true
 pun-format.workspace = true
 pun-fixers.workspace = true
 pun-workspace.workspace = true
+mago-allocator = { workspace = true, optional = true }
+mago-database = { workspace = true, optional = true }
+mago-linter = { workspace = true, optional = true }
+mago-names = { workspace = true, optional = true }
+mago-reporting = { workspace = true, optional = true }
+mago-syntax = { workspace = true, optional = true }
+
+[features]
+# `pun lint --mago`: Mago's lint-only Laravel rules. Off by default (mago-linter is ~65k lines to compile).
+mago-lint = ["dep:mago-allocator", "dep:mago-database", "dep:mago-linter", "dep:mago-names", "dep:mago-reporting", "dep:mago-syntax"]
