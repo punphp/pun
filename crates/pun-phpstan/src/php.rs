@@ -53,42 +53,46 @@ fn compile(pattern: &str) -> Result<Regex, String> {
     };
     let (body, modifiers) = (&rest[..end], &rest[end + close.len_utf8()..]);
     let mut b = RegexBuilder::new();
-    let mut prefix = String::new();
+    let mut flags = String::new();
+    let mut anchored = false;
+    let mut extended = false;
     for m in modifiers.chars() {
         match m {
             'i' => _ = b.caseless(true),
             'm' => _ = b.multi_line(true),
             's' => _ = b.dotall(true),
-            'x' => _ = b.extended(true),
+            'x' => {
+                b.extended(true);
+                extended = true;
+            }
             'u' => _ = b.utf(true).ucp(true),
-            'A' => prefix.push_str(r"\G"),
-            'U' => prefix.insert_str(0, "(?U)"),
-            'J' => prefix.insert_str(0, "(?J)"),
-            'n' => prefix.insert_str(0, "(?n)"),
+            'A' => anchored = true,
+            'U' => flags.push_str("(?U)"),
+            'J' => flags.push_str("(?J)"),
+            'n' => flags.push_str("(?n)"),
             // ponytail: D (dollar end-only) and r (caseless-restrict) aren't exposed by the pcre2 crate; S/X are no-ops.
             'D' | 'S' | 'X' | 'r' | ' ' | '\n' | '\r' => {}
             '\0' => return Err("NUL byte is not a valid modifier".into()),
             m => return Err(format!("Unknown modifier '{m}'")),
         }
     }
-    let full = if prefix.is_empty() {
-        body.to_string()
-    } else {
-        format!("{prefix}(?:{body})")
-    };
-    let offset_shift = full.len() - body.len() - if prefix.is_empty() { 0 } else { 1 };
-    b.build(&full).map_err(|e| {
-        let at = e
-            .offset()
-            .map(|o| o.saturating_sub(offset_shift))
-            .unwrap_or(0);
+    // Compiled as written first, so error offsets are PHP's; `A` (PCRE2_ANCHORED) then wraps it after `\G`.
+    let re = b.build(&format!("{flags}{body}")).map_err(|e| {
+        let at = e.offset().unwrap_or(0).saturating_sub(flags.len());
         let text = e.to_string();
         let msg = text
             .split_once("pattern at offset ")
             .and_then(|(_, r)| r.split_once(": "))
             .map_or(text.as_str(), |(_, m)| m);
         format!("Compilation failed: {msg} at offset {at}")
-    })
+    })?;
+    if !anchored {
+        return Ok(re);
+    }
+    // (A newline ends an `x`-mode comment before the closing parenthesis.)
+    let close = if extended { "\n)" } else { ")" };
+    Ok(b.build(&format!("{flags}\\G(?:{body}{close}"))
+        .expect("compiles unanchored"))
 }
 
 /// `preg_match($pattern, $subject) === 1` once compiled; matching errors (e.g. invalid UTF-8 under `/u`) count as no match.

@@ -1,0 +1,11 @@
+parameters:
+	level: 1
+	mine:
+		'%level%': x
+		'k%level%': y
+		pct: 'a%%b%%'
+		num: '%level%'
+		bool: '%reportUnmatchedIgnoredErrors%'
+		cat: '%level%-%reportUnmatchedIgnoredErrors%'
+parametersSchema:
+	mine: mixed()

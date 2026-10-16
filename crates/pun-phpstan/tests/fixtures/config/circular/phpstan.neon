@@ -1,0 +1,7 @@
+parameters:
+	level: 1
+	mine:
+		a: '%mine.b%'
+		b: 'x%mine.a%'
+parametersSchema:
+	mine: mixed()

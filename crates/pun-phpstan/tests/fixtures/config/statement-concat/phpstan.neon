@@ -1,0 +1,8 @@
+parameters:
+	level: 1
+	mine:
+		a: Foo(1)::bar()
+		b: 'x%mine.a%y'
+		c: '%mine.a.c%'
+parametersSchema:
+	mine: mixed()

@@ -1,0 +1,3 @@
+includes: Foo(x)
+parameters:
+	level: 1
