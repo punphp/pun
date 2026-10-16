@@ -14,7 +14,7 @@ Analyzers owned: WhitespacesAnalyzer, WhitespacesFixerConfig, Preg (pcre2 wrappe
 - [ ] array_indentation
 - [ ] binary_operator_spaces
 - [ ] blank_line_after_namespace
-- [ ] blank_line_after_opening_tag
+- [x] blank_line_after_opening_tag
 - [ ] blank_line_before_statement
 - [ ] blank_line_between_import_groups
 - [ ] blank_lines_before_namespace
@@ -23,26 +23,26 @@ Analyzers owned: WhitespacesAnalyzer, WhitespacesFixerConfig, Preg (pcre2 wrappe
 - [ ] clean_namespace
 - [ ] concat_space
 - [ ] control_structure_braces
-- [ ] encoding
-- [ ] full_opening_tag
+- [x] encoding
+- [x] full_opening_tag
 - [ ] general_phpdoc_tag_rename
 - [ ] global_namespace_import
 - [ ] indentation_type
-- [ ] line_ending
-- [ ] linebreak_after_opening_tag
+- [x] line_ending
+- [x] linebreak_after_opening_tag
 - [ ] method_argument_space
 - [ ] method_chaining_indentation
 - [ ] multiline_whitespace_before_semicolons
 - [ ] no_blank_lines_after_class_opening
 - [ ] no_blank_lines_after_phpdoc
-- [ ] no_closing_tag
-- [ ] no_empty_statement
+- [x] no_closing_tag (6 `testWithShortOpenTag` cases are skipped upstream too: need `short_open_tag=On`)
+- [ ] no_empty_statement (1 `testWithShortOpenTag` case is skipped upstream too: needs `short_open_tag=On`)
 - [ ] no_extra_blank_lines
 - [ ] no_leading_namespace_whitespace
 - [ ] no_multiline_whitespace_around_double_arrow
 - [ ] no_multiple_statements_per_line
-- [ ] no_singleline_whitespace_before_semicolons
-- [ ] no_space_around_double_colon
+- [x] no_singleline_whitespace_before_semicolons
+- [x] no_space_around_double_colon
 - [ ] no_spaces_after_function_name
 - [ ] no_spaces_around_offset
 
