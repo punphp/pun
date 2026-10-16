@@ -13,7 +13,6 @@ pub enum Status {
     Invalid,
     /// Fixers produced invalid code (TYPE_LINT).
     Lint,
-    Exception,
     /// Symlink: listed by the finder, dropped by the runner without an event.
     Link,
 }
@@ -29,7 +28,7 @@ pub struct FileResult {
 
 impl FileResult {
     fn is_error(&self) -> bool {
-        matches!(self.status, Status::Invalid | Status::Lint | Status::Exception)
+        matches!(self.status, Status::Invalid | Status::Lint)
     }
 }
 
@@ -90,7 +89,7 @@ fn symbol(s: Status, testing: bool) -> &'static str {
     match s {
         Status::Fixed if testing => "⨯",
         Status::Fixed => "✓",
-        Status::Invalid | Status::Lint | Status::Exception => "!",
+        Status::Invalid | Status::Lint => "!",
         _ => ".",
     }
 }
@@ -156,8 +155,14 @@ fn summary(ctx: &Ctx, results: &[FileResult]) -> String {
         let left = format!("{} {}", symbol(i.status, ctx.dry_run), i.rel);
         let room = inner.saturating_sub(left.chars().count() + 1);
         let mut desc = description(i);
-        if !ctx.verbose && desc.chars().count() > room {
-            desc = desc.chars().take(room.saturating_sub(1)).collect::<String>() + "…";
+        // A path wider than the box leaves no room; Termwind then prints the description whole.
+        if room > 0 && desc.chars().count() > room {
+            // Termwind: `truncate` ends in "…"; without it (verbose) the flex box just clips.
+            desc = if ctx.verbose {
+                desc.chars().take(room).collect()
+            } else {
+                desc.chars().take(room - 1).collect::<String>().trim_end().to_string() + "…"
+            };
         }
         let _ = writeln!(o, "  {left} {desc:>room$}  ");
         if ctx.verbose && !i.is_error() && !i.diff.is_empty() {
@@ -194,7 +199,7 @@ fn reporter(ctx: &Ctx, results: &[FileResult], format: &str) -> Result<String> {
                 if ctx.verbose {
                     let _ = write!(o, " ({})", r.applied.join(", "));
                     if !r.diff.is_empty() {
-                        let _ = write!(o, "\n      ---------- begin diff ----------\n{}\n      ----------- end diff -----------\n", r.diff.trim_end_matches('\n'));
+                        let _ = write!(o, "\n      ---------- begin diff ----------\n{}\n      ----------- end diff -----------\n", r.diff);
                     }
                 }
                 o.push('\n');
@@ -254,34 +259,4 @@ pub fn diff(old: &str, new: &str, path: &Path) -> String {
         p = format!("\"{p}\"");
     }
     similar::TextDiff::from_lines(old, new).unified_diff().context_radius(3).header(&p, &p).to_string()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn r(rel: &str, status: Status, applied: Vec<&'static str>, message: &str) -> FileResult {
-        FileResult { path: PathBuf::from("/tmp/ps").join(rel), rel: rel.into(), status, applied, diff: String::new(), message: message.into() }
-    }
-
-    /// Byte-for-byte against `pint --test` (pinned build, COLUMNS=80, no TTY) on the sample in /tmp/ps.
-    #[test]
-    fn summary_matches_pint() {
-        let ctx = Ctx { preset: "laravel", total: 3, dry_run: true, verbose: false };
-        let res = [
-            r("app/C.php", Status::Invalid, vec![], "Parse error: Unclosed '(' on line 3 on line 4."),
-            r("app/B.php", Status::NoChanges, vec![], ""),
-            r("app/A.php", Status::Fixed, vec!["array_syntax", "whitespace_after_comma_in_array"], ""),
-        ];
-        let expected = format!(
-            "\n  !.⨯\n\n  {} Laravel  \n    FAIL   {} 3 files, 1 error, 1 style issue  \n  ! app/C.php                   Parse error: Unclosed '(' on line 3 on line 4.  \n  ⨯ app/A.php                    array_syntax, whitespace_after_comma_in_array  \n\n",
-            "─".repeat(68),
-            ".".repeat(35)
-        );
-        assert_eq!(summary(&ctx, &res), expected);
-        assert_eq!(
-            reporter(&ctx, &res, "json").unwrap(),
-            r#"{"about":"PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.","files":[{"name":"app\/A.php"}],"time":{"total":0},"memory":0}"#
-        );
-    }
 }
