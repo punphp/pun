@@ -326,8 +326,6 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
                 // Issue::code(): the file as it is on disk, around the exception's line.
                 let content = std::fs::read(&i.path).unwrap_or_default();
                 highlight::snippet(&String::from_utf8_lossy(&content), error_line(&i.message), colors)
-            } else if i.diff.is_empty() {
-                String::new()
             } else {
                 highlight::diff(&i.diff, colors)
             };
