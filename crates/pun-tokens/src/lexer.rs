@@ -571,8 +571,11 @@ impl<'a> Lexer<'a> {
         if word.len() > 15 {
             return (Some(T_STRING), e);
         }
-        let lower = word.to_ascii_lowercase();
-        match &lower[..] {
+        let mut buf = [0u8; 15];
+        buf[..word.len()].copy_from_slice(word);
+        buf[..word.len()].make_ascii_lowercase();
+        let lower = &buf[..word.len()];
+        match lower {
             b"yield" => {
                 let best = self
                     .woc_ends(e)
@@ -612,7 +615,7 @@ impl<'a> Lexer<'a> {
             }
             _ => {}
         }
-        (Some(keyword(&lower).unwrap_or(T_STRING)), e)
+        (Some(keyword(lower).unwrap_or(T_STRING)), e)
     }
 
     fn lnum_end(&self, i: usize) -> Option<usize> {
