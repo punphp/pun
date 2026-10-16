@@ -251,6 +251,8 @@ printf '{"preset":"empty","rules":{"array_syntax":true},"notName":["Keep.php"]}'
     ] {
         cx.same(cfg, sub, args);
     }
+    let bad = &format!("{cfg}\nprintf 'not json' > bad.json");
+    cx.same_error(bad, &["--config=bad.json"], "The configuration file [bad.json] is not valid JSON.");
 }
 
 /// `--output-to-file` writes only with `--output-format` or `--format`; an unwritable target is PHP's

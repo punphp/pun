@@ -121,7 +121,7 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
         Some(c) if c.to_string_lossy().contains("://") => c.clone(),
         c => root.join(c.clone().unwrap_or_else(|| "pint.json".into())),
     };
-    let pint = if opts.no_config { Map::new() } else { read_pint_json(&pint_path, &mut sources)? };
+    let pint = if opts.no_config { Map::new() } else { read_pint_json(&pint_path, opts.config.as_deref().unwrap_or(&pint_path), &mut sources)? };
 
     let php_cs_fixer = [".php-cs-fixer.php", ".php-cs-fixer.dist.php"]
         .iter()
@@ -204,7 +204,8 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
 }
 
 /// Pint's ConfigurationJsonRepository::get(): a missing file means "no config"; `extend` is one level deep.
-fn read_pint_json(path: &Path, sources: &mut Vec<PathBuf>) -> Result<Map<String, Value>> {
+/// Errors name the file as given (`shown`: `--config` verbatim, else the absolute default).
+fn read_pint_json(path: &Path, shown: &Path, sources: &mut Vec<PathBuf>) -> Result<Map<String, Value>> {
     let s = path.to_string_lossy();
     if s.starts_with("http://") {
         bail!("Loading the configuration over plaintext HTTP is not allowed. Use HTTPS.");
@@ -215,7 +216,7 @@ fn read_pint_json(path: &Path, sources: &mut Vec<PathBuf>) -> Result<Map<String,
     if !path.exists() {
         return Ok(Map::new());
     }
-    let invalid = || format!("The configuration file [{}] is not valid JSON.", path.display());
+    let invalid = || format!("The configuration file [{}] is not valid JSON.", shown.display());
     let mut v: Value = serde_json::from_slice(&std::fs::read(path)?).with_context(invalid)?;
     if let Some(ext) = v.get("extend").and_then(Value::as_str) {
         let ext_path = path.parent().unwrap_or(Path::new(".")).join(ext);
@@ -309,7 +310,8 @@ fn check_composer(root: &Path, sources: &mut Vec<PathBuf>) -> Result<()> {
 
 /// `pun config --init`: pint.json rewritten as a standalone pun.toml (same preset, rule overrides and finder keys).
 pub fn init_toml(root: &Path) -> Result<String> {
-    let pint = read_pint_json(&root.join("pint.json"), &mut Vec::new())?;
+    let path = root.join("pint.json");
+    let pint = read_pint_json(&path, &path, &mut Vec::new())?;
     let mut format = toml::Table::new();
     format.insert("preset".into(), pint.get("preset").and_then(Value::as_str).unwrap_or("laravel").into());
     for (json, key) in [("in", "paths"), ("exclude", "exclude"), ("notName", "not-name"), ("notPath", "not-path")] {
