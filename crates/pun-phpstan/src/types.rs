@@ -2309,41 +2309,38 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     if args.is_empty() || result.no() {
         return result;
     }
-    // GenericObjectType: `$b`'s arguments for this class, each a valid (invariant) variance
-    match b {
-        Type::Object(b_class, b_args) if !b_args.is_empty() => {
-            match ancestor_args(b_class, b_args, class) {
-                Some(b_args) if b_args.len() == args.len() => args
-                    .iter()
-                    .zip(&b_args)
-                    .map(|(x, y)| valid_variance(x, y))
-                    .fold(Tri::Yes, Tri::and),
-                Some(_) => Tri::No,
-                None => result,
-            }
+    // GenericObjectType: `$b` as this class (`getAncestorWithClassName()`), each argument a valid variance
+    let Type::Object(b_class, b_args) = b else {
+        return result;
+    };
+    let (Some(c), class) = (symbols::class(b_class), canonical_class(class)) else {
+        return result;
+    };
+    let ancestor: Vec<Type> = if c.name == class {
+        if b_args.is_empty() {
+            // a raw reference to the generic class itself
+            return result.and(Tri::Maybe);
         }
-        // a raw reference to the generic class itself is maybe; to a descendant, it is the class relation
-        Type::Object(b_class, _) if canonical_class(b_class) == canonical_class(class) => {
-            result.and(Tri::Maybe)
-        }
-        _ => result,
-    }
-}
-
-/// `getAncestorWithClassName()`'s type arguments: `class<args>` as its generic ancestor (or itself) `ancestor`.
-fn ancestor_args(class: &str, args: &[Type], ancestor: &str) -> Option<Vec<Type>> {
-    let c = symbols::class(class)?;
-    let ancestor = canonical_class(ancestor);
-    if c.name == ancestor {
-        return Some(args.to_vec());
-    }
-    Some(
+        b_args.clone()
+    } else if c.ancestors.contains(&class) {
+        // ponytail: every built-in class names its generic ancestors' arguments; for user classes add PHPStan's
+        // non-generic ancestor case (the class relation and maybe)
         c.generics
-            .get(&ancestor)?
+            .get(&class)
+            .expect("a generic ancestor's arguments")
             .iter()
-            .map(|s| with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), c, args))
-            .collect(),
-    )
+            .map(|s| with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), c, b_args))
+            .collect()
+    } else {
+        return result;
+    };
+    if ancestor.len() != args.len() {
+        return Tri::No;
+    }
+    args.iter()
+        .zip(&ancestor)
+        .map(|(x, y)| valid_variance(x, y))
+        .fold(Tri::Yes, Tri::and)
 }
 
 /// `TemplateTypeVariance::isValidVariance()` + `validPosition()` of an invariant template, `*` being bivariant.
@@ -2921,12 +2918,9 @@ fn reduce_arrays(arrays: &[Type], preserve_tagged_unions: bool) -> Vec<Type> {
     let mut to_process: Vec<Option<ConstArray>> = Vec::new();
     let mut empty = None;
     for a in arrays {
+        // only a general union (`preserve_tagged_unions` false) has arrays that are not constant
         if !a.is_constant_array().yes() {
-            if !preserve_tagged_unions {
-                return arrays.to_vec();
-            }
-            new_arrays.push(a.clone());
-            continue;
+            return arrays.to_vec();
         }
         if a.is_iterable_at_least_once().no() {
             empty = Some(a.clone());
@@ -3017,19 +3011,16 @@ fn reduce_arrays(arrays: &[Type], preserve_tagged_unions: bool) -> Vec<Type> {
 }
 
 impl ConstArray {
-    /// `legacyIsKeysSupersetOf()`
+    /// `legacyIsKeysSupersetOf()`, called (by `reduce_arrays`) only when every key of `other` is one of ours, so
+    /// its size and missing-key checks are left out.
     fn is_keys_superset_of(&self, other: &ConstArray) -> bool {
-        if self.keys.len() < other.keys.len() {
-            return false;
-        }
-        if other.keys.is_empty() {
-            return self.keys.is_empty();
-        }
         let mut fail_on_different = self.keys.len() != other.keys.len() || self.keys.len() < 2;
         for (j, key) in other.keys.iter().enumerate() {
-            let Some(i) = self.keys.iter().position(|k| k == key) else {
-                return false;
-            };
+            let i = self
+                .keys
+                .iter()
+                .position(|k| k == key)
+                .expect("a shared key");
             if !is_super_type_of(&other.values[j], &self.values[i]).no() {
                 continue;
             }
@@ -3127,11 +3118,11 @@ fn common_array_accessories(arrays: &[Type]) -> Vec<Type> {
 // ---- TypeCombinator::intersect ----
 
 pub fn intersect(types: Vec<Type>) -> Type {
-    if types.is_empty() {
-        return Type::Never(NeverKind::Implicit);
-    }
-    if types.len() == 1 {
-        return types.into_iter().next().expect("one type");
+    if types.len() <= 1 {
+        return types
+            .into_iter()
+            .next()
+            .unwrap_or(Type::Never(NeverKind::Implicit));
     }
     if let Some(never) = types.iter().find(|t| t.is_implicit_never()) {
         return never.clone();
@@ -3255,28 +3246,24 @@ pub fn intersect(types: Vec<Type>) -> Type {
                     types.remove(j);
                     continue;
                 }
-                // ConstantArrayType & list / non-empty-array, either way round
-                for (c, other) in [(i, j), (j, i)] {
-                    let Type::ConstArray(ca) = &types[c] else {
-                        continue;
-                    };
-                    let merged = match &types[other] {
-                        Type::Accessory(Accessory::List) => ca.make_list(),
+                // ConstantArrayType & list / non-empty-array (constant arrays sort first, so the shape is i)
+                if let Type::ConstArray(ca) = &types[i] {
+                    let merged = match &types[j] {
+                        Type::Accessory(Accessory::List) => Some(ca.make_list()),
                         Type::Accessory(Accessory::NonEmptyArray)
                             if (ca.keys.len() == 1 || ca.is_list.yes())
                                 && ca.is_optional_key(0)
                                 && !ca.is_unsealed().yes() =>
                         {
-                            ca.make_first_offset_required()
+                            Some(ca.make_first_offset_required())
                         }
-                        _ => continue,
+                        _ => None,
                     };
-                    types[c] = Type::ConstArray(Box::new(merged));
-                    types.remove(other);
-                    if other == i {
-                        continue 'outer;
+                    if let Some(merged) = merged {
+                        types[i] = Type::ConstArray(Box::new(merged));
+                        types.remove(j);
+                        continue 'inner;
                     }
-                    continue 'inner;
                 }
                 // ConstantArrayType & ArrayType: key by key (constant arrays sort first, so the shape is i).
                 // ponytail: two constant arrays meet only through isSuperTypeOf(), not key by key.
@@ -3287,22 +3274,13 @@ pub fn intersect(types: Vec<Type>) -> Type {
                     i += 1;
                     continue 'outer;
                 }
-                let arrayish = |t: &Type| {
-                    matches!(
-                        t,
-                        Type::Array(..) | Type::Iterable(..) | Type::ConstArray(_)
-                    )
-                };
-                if arrayish(&types[i])
-                    && arrayish(&types[j])
-                    && !matches!(types[j], Type::ConstArray(_))
+                // `getKeyType()`: the raw key of an array, not its iterable key
+                if matches!(
+                    types[i],
+                    Type::Array(..) | Type::Iterable(..) | Type::ConstArray(_)
+                ) && let Type::Array(jk, _) | Type::Iterable(jk, _) = &types[j]
                 {
-                    // `getKeyType()`: the raw key of an array, not its iterable key
-                    let jk = match &types[j] {
-                        Type::Array(k, _) | Type::Iterable(k, _) => (**k).clone(),
-                        t => t.iterable_key_type(),
-                    };
-                    let key = intersect(vec![types[i].iterable_key_type(), jk]);
+                    let key = intersect(vec![types[i].iterable_key_type(), (**jk).clone()]);
                     let item = intersect(vec![
                         types[i].iterable_value_type(),
                         types[j].iterable_value_type(),
@@ -3329,9 +3307,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
                         types[i].iterable_key_type(),
                         types[j].iterable_key_type(),
                     ]);
-                    if key.is_never() {
-                        return key;
-                    }
+                    // (never empty: the key types overlap, or the two would not be maybe-related)
                     let item = types[i].iterable_value_type();
                     types[i] = Type::array(key, item);
                     j += 1;
@@ -3354,18 +3330,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
     if types.len() == 1 {
         return types.pop().expect("one type");
     }
-    if types.iter().all(|t| matches!(t, Type::Accessory(_))) {
-        let base: Vec<Type> = types
-            .iter()
-            .map(|t| match t {
-                Type::Accessory(a) if a.is_string_accessory() => Type::String,
-                _ => Type::array(mixed(), mixed()),
-            })
-            .collect();
-        let mut all = vec![intersect(base)];
-        all.extend(types);
-        return intersect(all);
-    }
+    // ponytail: PHPStan supplies a base type for an intersection of accessories only; nothing in Pun builds one
     Type::Intersection(types)
 }
 

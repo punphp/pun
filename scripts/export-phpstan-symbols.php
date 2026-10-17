@@ -478,6 +478,14 @@ if (($argv[1] ?? '') === 'probes') {
     // more than 63 constant-array keys overflow processArrayTypes()' bit set
     $keys = fn (string $v) => 'array{'.implode(', ', array_map(fn ($i) => "k$i: $v", range(0, 63))).'}';
     $probes[] = [null, $keys('1').'|'.$keys('2')];
+    $probes[] = [null, 'array{}|'.$keys('1').'|'.$keys('2')];
+    // reduceArrays() merging into an array that a later pair also names
+    $probes[] = [null, 'array{a: 1, b: 1}|array{a: 1, c: 1}|array{a: 1}'];
+    $probes[] = [null, 'array{a: 1, b: 1}|array{a: 1}|array{a: 1, c: 1}'];
+    $probes[] = [null, 'Countable&(int&string)'];
+    $probes[] = [null, 'iterable<int|string>&iterable<int|bool>'];
+    $probes[] = ['templates', '(T&array)|array{a: 1}'];
+    $probes[] = ['templates', '(T&list<int>)|list<int>'];
     // parser corners
     foreach (['($x int ? 1 : 2)', 'callable(): ?int', 'callable(): $this', 'callable(): DateTime::ATOM', 'callable(): (int)[', 'callable(): DateTime::',
         'callable(): DateTime::A* |int', '"\\e"', '"\\$"', '"\\u{}"', '"\\q"', 'EmptyIterator<int, string, bool>'] as $s) {
@@ -501,7 +509,7 @@ if (($argv[1] ?? '') === 'probes') {
             'Iterator<int, string>', 'Traversable<int, string>', 'SplObjectStorage<*, *>', 'SplObjectStorage<Countable, int>', 'Generator<int, string>', 'Iterator',
             'IteratorAggregate<int, string>', 'ArrayObject<int, string>', 'WeakMap<Countable, int>', '1|2|3', 'int<1, 3>', '(1|2)', 'int<1, 2>'], null],
         [['(int is int ? 1 : 2)', '(int is not int ? 1 : 2)', '1', '2', 'SplObjectStorage<Countable>', 'SplObjectStorage<Countable, int>',
-            'ArrayIterator<array-key, int>', 'ArrayIterator<int, int>'], null]] as [$set, $ctx]) {
+            'ArrayIterator<array-key, int>', 'ArrayIterator<int, int>', 'ArrayAccess<int>', 'ArrayAccess<int, string>'], null]] as [$set, $ctx]) {
         $scope = $ctx === 'templates' ? new NameScope(null, [], null, null, $templates) : new NameScope(null, [], $ctx);
         foreach ($set as $a) {
             foreach ($set as $b) {
