@@ -4,10 +4,16 @@ Pun has three commands that carry rules: `pun format`, `pun lint` and `pun analy
 (PHP-CS-Fixer/Pint, Rector, PHPStan with its extensions, Larastan and the Mago linter), and their rules overlap a lot.
 This page decides where every rule lives. Each concept gets exactly one Pun rule in exactly one command, under a Pun name.
 
-The data is in [`crates/pun-config/rules/mapping.toml`](../crates/pun-config/rules/mapping.toml): 1,678 Pun rules and
-2,564 upstream entries, each pointing at a Pun rule or carrying a drop/unsupported reason. `pun migrate` reads it to
-translate configs, ignores and baselines. `pun explain <rule>` reads it to show the upstream names and docs, and the docs
-site renders it as the rules page.
+The data is in [`crates/pun-config/rules/mapping.toml`](../crates/pun-config/rules/mapping.toml): 1,005 Pun rules and
+2,564 upstream entries, each pointing at a Pun rule or carrying a drop/unsupported reason. Every Pun rule keeps its
+mapping back to the upstream rule(s) it replaces: source tool, exact upstream ID (CS-Fixer rule name, Rector class FQCN,
+PHPStan identifier, Mago rule code) and how options carry over. That one file drives:
+
+- `pun migrate`: translates configs, ignore comments and baselines;
+- `pun explain <rule>`: shows the upstream names of a rule with a link to each upstream doc;
+- the generated docs page **"Coming from Pint / PHPStan / Rector"**: every upstream rule and the Pun rule that replaces it.
+
+`scripts/check-rule-mapping.py` checks it (names, prefixes, references, upstream sources; §8).
 
 Status: design. Supersedes the "Rule names" bullet in docs/PLAN.md ("Update, Oct 17"). Mago rules are no longer reported as
 `mago.*`; they get Pun names like everything else. Nothing here changes runtime code yet.
@@ -109,6 +115,12 @@ rules + Mago `no-protected-in-final` → `format.protected-to-private`. The full
   - lint rules start with a verb: `no-*` (remove or ban), `prefer-*` (replace with a better form), `require-*` / `add-*`
     (insert).
   - analyse rules name the problem (`undefined-method`, `argument-type`, `missing-return-type`).
+- **Short.** The ID is on every output line, so names are cheap in tokens: two to four words, no upstream mechanism
+  (`add-return-type`, not `return-type-from-strict-native-call`).
+- **Familiar.** Where Biome, ESLint, oxlint, Ruff or typescript-eslint has a name for the same concept, Pun uses it
+  (`no-lonely-if`, `no-unsafe-finally`, `no-unreachable-loop`, `no-useless-catch`, `no-multi-assign`, `prefer-spread`,
+  `no-negated-condition`, `require-naming-convention`), else Mago's name, else PHPStan's wording (`undefined-method`).
+  The reader is a Laravel developer who has never used Rector or PHPStan.
 - **Modernised where the upstream name is opaque or describes a mechanism.** Examples:
 
 | Upstream | Pun |
@@ -119,8 +131,53 @@ rules + Mago `no-protected-in-final` → `format.protected-to-private`. The full
 | Larastan `larastan.noEnvCallsOutsideOfConfig` / `larastan.relationExistence` | `analyse.no-env-outside-config` / `analyse.undefined-relation` |
 | strict-rules `plus.leftNonNumeric` … `unaryMinus.nonNumeric` (15 ids) | `analyse.non-numeric-operand` (one rule) |
 
-  Names that were derived automatically (kebab-case of the Rector class or PHPStan identifier) are marked
-  `status = "tentative"` in the mapping and get a naming pass before release (§10).
+- **Lint prefixes.** `no-` removes or bans something. `prefer-X` replaces code with the better form X. `add-` inserts
+  something that can be inferred (types, attributes, PHPDoc). `require-` reports, and may insert, something a policy
+  says must be there (`require-todo-reference`, `require-static-data-provider`). Rector's PHP-version rules are mostly
+  "use newer syntax X" and are all `prefer-X` (`prefer-array-find`, `prefer-pipe-operator`, `prefer-clamp`); the ones
+  that fix code a newer PHP removed are `no-X` (`no-each`, `no-create-function`, `no-money-format`).
+  Two exceptions, both checked: configurable codemods in the `refactor` group (Rector `RenameMethod` & co., which do
+  nothing until configured) are named after their edit with `rename-`, `replace-`, `remove-`, `change-` or `wrap-`; and
+  32 lint names decided before the naming pass keep their name (§10, question 5).
+- **Analyse names** name the problem, usually `<vocabulary word>-<thing>` (`undefined-method`, `unused-result`,
+  `invalid-attribute`) or `<thing>-<problem>` (`argument-type`, `condition-always-true`).
+- **Renames keep working.** Every rule renamed in the naming pass lists its earlier name under `aliases`; configs,
+  ignore comments and baselines that use an alias still resolve.
+
+### Vocabulary
+
+Each word means one thing, in every command:
+
+| Word | Means | Examples |
+| --- | --- | --- |
+| `unused` | declared, assigned or computed, and never read | `no-unused-assignment`, `unused-private-method`, `unused-result`, `unused-ignore` |
+| `undefined` | referenced, but not declared anywhere | `undefined-method`, `undefined-variable`, `undefined-parent` |
+| `missing` | something required or expected is absent (lint inserts it with `add-`/`require-`) | `missing-return-type`, `missing-argument`, `missing-throws` |
+| `redundant` | has no effect because something else already guarantees it: an earlier check, a default, the native type, a modifier | `no-redundant-nullsafe`, `no-redundant-default-argument`, `redundant-type-check`, `redundant-null-coalesce` |
+| `useless` | has no effect on its own; removing it never changes behaviour | `no-useless-cast`, `no-useless-override`, `no-useless-continue`, `useless-void-cast` |
+| `dead` | a branch or handler that can never run: its condition is decided, or the exception is never thrown | `no-dead-catch`, `dead-catch`, `no-dead-php-version-check` |
+| `unreachable` | statements after `return`/`throw`/`exit` (kept from ESLint and PHPStan) | `no-unreachable-code`, `unreachable-code` |
+| `invalid` | malformed, or contradicts the declaration it belongs to (a PHP or PHPDoc error) | `invalid-attribute`, `invalid-var-tag`, `invalid-phpdoc` |
+| `impossible` / `always-true` / `always-false` | a check whose result is known from the types | `impossible-type-check`, `condition-always-false` |
+| `deprecated` | uses something marked deprecated | `deprecated-method`, `no-deprecated-phpunit-api` |
+
+PHP-CS-Fixer's own words stay in format names (`no-superfluous-phpdoc-tags`, `no-unneeded-braces`), because format names
+are the CS-Fixer names Pint users know. `unnecessary` is not used: Larastan's `noUnnecessaryCollectionCall` and
+PHPStan's `nullCoalesce.unnecessary` became `redundant-collection-call` and `redundant-null-coalesce`.
+
+### Merges
+
+The naming pass merged upstream rules that are the same rule: 109 lint and 82 analyse rules now carry several upstream
+sources, listed in their `merged` field. A merge is right when the sources make the same edit or report the same
+problem and a user would never want one without the other. Examples: Rector's 33 return-type inference strategies →
+`add-return-type`; 31 rector-laravel `*PropertyTo*Attribute` rules → `prefer-php-attributes`; pest-plugin-rector's
+`UseToBe*` matchers → Mago's `use-dedicated-expectation`; Mago `no-redundant-math` + Rector `RemoveDeadZeroAndOneOperation`
+→ `no-useless-math`; CS-Fixer `void_return` + Rector's four void rules → `add-void-return-type`; PHPStan's 20
+`generics.*` identifiers → `invalid-generics` and its 20 "supported only on PHP X" identifiers → `php-version-too-low`.
+Rules stay separate when the fix differs in safety, or when merging would widen a CS-Fixer fixer beyond what Pint does
+(so `pun check --fix` stays equal to Pint): Rector's PHPUnit narrow-asserts rules are `prefer-comparison-assertion`, not
+part of CS-Fixer's `php_unit_construct` (`use-specific-assertions`). Merging PHPStan identifiers makes a migrated
+`ignoreErrors` entry ignore the whole merged rule; migrate prints which.
 
 ## 4. Groups, severity, fix safety
 
@@ -129,8 +186,8 @@ Groups are data used for docs, `pun explain`, and selecting rules in config. The
 | Command | Groups |
 | --- | --- |
 | format (208) | `whitespace`, `control-flow`, `phpdoc`, `comments`, `imports`, `casing`, `syntax`, `operators`, `classes`, `functions`, `strings`, `testing`, `blade` |
-| lint (902) | `correctness`, `suspicious`, `style`, `complexity`, `performance`, `security` (Biome's intent groups), plus `dead-code`, `types`, `modernize` (Ruff's `UP`; gated by `[php] version`), `laravel`, `testing` (PHPUnit/Pest), `refactor` (configurable codemods such as Rector `RenameMethod`, which do nothing until configured) |
-| analyse (568) | `undefined`, `types`, `dead-code`, `phpdoc`, `correctness`, `strict`, `deprecated`, `laravel`, `meta` (ignore-comment errors, `dumpType` debugging) |
+| lint (542) | `correctness`, `suspicious`, `style`, `complexity`, `performance`, `security` (Biome's intent groups), plus `dead-code`, `types`, `modernize` (Ruff's `UP`; gated by `[php] version`), `laravel`, `testing` (PHPUnit/Pest), `refactor` (configurable codemods such as Rector `RenameMethod`, which do nothing until configured) |
+| analyse (255) | `undefined`, `types`, `dead-code`, `phpdoc`, `correctness`, `strict`, `deprecated`, `laravel`, `meta` (ignore-comment errors, `dumpType` debugging) |
 
 - **Severity:** `error` (fails the run), `warn` (printed; fails only with `--error-on-warnings`, as in Biome), `info`, or
   `off`. Lint rules default to `warn` and analyse rules to `error`. Format has no severities: `format --check` fails on any
@@ -153,9 +210,9 @@ Each rule's `presets` field in the mapping is the source of truth.
 | Preset | format | lint | analyse |
 | --- | --- | --- | --- |
 | `laravel` / `psr12` / `per` / `symfony` / `empty` | Pint's presets, minus their risky rules (laravel 126 of 130) | - | - |
-| `recommended` | - | 266 rules: Rector dead-code, code-quality, early-return and php-version sets (`modernize`, gated by `[php] version`); Mago correctness/safety/security reports; safe Pun rules; `unused-ignore` | 505 rules: everything PHPStan levels 0–5 report, plus `invalid-ignore-comment` |
-| `strict` | - | +166: type-declaration, privatization, coding-style, PHPUnit code-quality; `no-loose-comparison`, `strict-param`, `declare-strict-types`; the strict-rules bans (`no-empty`, `no-short-ternary`, `no-dynamic-name`, …) | +21 rules (level 6 `missing-*-type`, strict-rules type checks, deprecation-rules) and all four type switches on, which equals PHPStan `max` + strict-rules + deprecation-rules |
-| `laravel` | - | 147: rector-laravel code-quality/collection/testing/type-declarations sets, plus version sets gated by the locked laravel/framework; Pest coding-style; Mago Laravel/Pest rules; Pun's Laravel/Pest rules; Pint-laravel's 4 risky rules | 20 Larastan rules |
+| `recommended` | - | 195 rules: Rector dead-code, code-quality, early-return and php-version sets (`modernize`, gated by `[php] version`); Mago correctness/safety/security reports; safe Pun rules; `unused-ignore` | 211 rules: everything PHPStan levels 0–5 report, plus `invalid-ignore-comment` |
+| `strict` | - | +69: type-declaration, privatization, coding-style, PHPUnit code-quality; `no-loose-comparison`, `strict-param`, `declare-strict-types`; the strict-rules bans (`no-empty`, `no-short-ternary`, `no-dynamic-name`, …) | +19 rules (level 6 `missing-*-type`, strict-rules type checks, deprecation-rules) and all four type switches on, which equals PHPStan `max` + strict-rules + deprecation-rules |
+| `laravel` | - | 95: rector-laravel code-quality/collection/testing/type-declarations sets, plus version sets gated by the locked laravel/framework; Pest coding-style; Mago Laravel/Pest rules; Pun's Laravel/Pest rules; Pint-laravel's 4 risky rules | 20 Larastan rules |
 
 ```toml
 [php]
@@ -233,8 +290,11 @@ unused-private-method = { group = "dead-code", severity = "error", presets = ["r
 [upstream.php-cs-fixer]
 strict_comparison = { pun = "lint.no-loose-comparison", risky = true, options = "none", status = "decided" }
 
+[rules.lint]
+add-void-return-type = { …, aliases = ["add-function-void-return-type-where-no-return", …], merged = ["php-cs-fixer:void_return", "rector:AddVoidReturnTypeWhereNoReturn", …] }
+
 [upstream.rector]   # keys: class name without the "Rector" suffix; fully qualified on a clash
-RemoveUnusedPrivateMethod = { pun = "lint.no-unused-private-method", sets = ["dead-code"], options = "none", status = "decided" }
+RemoveUnusedPrivateMethod = { class = "Rector\\DeadCode\\Rector\\ClassMethod\\RemoveUnusedPrivateMethodRector", pun = "lint.no-unused-private-method", sets = ["dead-code"], options = "none", status = "decided" }
 
 [upstream.rector-symfony]
 AccessTypeAnnotationToAttribute = { unsupported = "Symfony rules: out of scope (Laravel-first); migrate lists them", sets = ["annotations-to-attributes"], status = "decided" }
@@ -246,15 +306,21 @@ AccessTypeAnnotationToAttribute = { unsupported = "Symfony rules: out of scope (
   `phpstan-deprecation-rules`, `larastan`, `mago-linter`, `mago-analyzer`.
 - `options` says how upstream options carry over. Common values: `same (option keys kebab-cased)`; `none`;
   `configurable: options carry 1:1` for Rector's configurable rules; and, for merged rules, which tool's options win.
-- `status`: `decided` covers every placement and overlap resolution above, all format rules and the curated names.
-  `tentative` covers names, groups or fix safety derived mechanically (807 of 902 lint rules, 497 of 568 analyse rules)
-  and the Mago analyzer mappings.
+- Upstream keys are the exact upstream IDs (CS-Fixer rule name, PHPStan identifier, Mago rule code). Rector and Pest
+  entries also carry the fully qualified `class`.
+- Rule fields added by the naming pass: `aliases` (earlier Pun names, still accepted), `merged` (all upstream sources of a
+  rule built by merging), `pun_only = true` (no upstream source; today only `lint.unused-ignore`).
+- `status`: every entry is `decided`. The naming pass (Oct 17) named the 807 lint and 497 analyse rules and the Mago
+  analyzer mappings that were marked `tentative`; 163 more Mago analyzer codes now map onto analyse rules.
 - Upstream versions are pinned in `[meta] upstream`: PHP-CS-Fixer 3.95.17, Rector 2.6.1 (Pinkary's lock),
   driftingly/rector-laravel 2.5.0, pest-plugin-rector 5.x-dev, PHPStan 2.2.7, strict-rules 2.0.12, deprecation-rules 2.0.5,
   Larastan 3.10.0, Mago 1.57.0. The Rector oracle is at `.oracle/rector` (composer).
-- **Maintenance:** the mapping is now hand-maintained data. The config agent should add one test that loads it and fails
-  when (a) an oracle rule/identifier is missing from `[upstream.*]`, (b) a `pun`/`fixed_by` reference is dangling, or (c) a
-  name is not unique across commands. Bumping an upstream then forces a decision for every new rule.
+- **Maintenance:** the mapping is hand-maintained data. `scripts/check-rule-mapping.py` fails on a `tentative` entry, a
+  name that is not kebab-case or not unique across commands (aliases included), a lint name without its prefix (§3), a
+  dangling `pun` / `fixed_by` / `conflicts` / `merged` reference, an upstream entry that is not exactly one of
+  pun / drop / unsupported, a Rector entry without `class`, and a rule that no upstream entry maps to unless it is
+  `pun_only`. Still to add (config agent, once the loader exists): a test that fails when an oracle rule or identifier is
+  missing from `[upstream.*]`, so bumping an upstream forces a decision for every new rule.
 
 ## 9. Summary
 
@@ -265,21 +331,24 @@ AccessTypeAnnotationToAttribute = { unsupported = "Symfony rules: out of scope (
 | PHP-CS-Fixer 3.95.17 (76 risky) | 300 | 206 | 76 | - | 18 (deprecated → successor) | - |
 | Pint custom fixers | 2 | 2 | - | - | - | - |
 | Pun `Pun/*` | 17 | - | 17 | - | - | - |
-| Rector core 2.6.1 | 512 | 43 | 447 | - | 22 (deprecated) | - |
+| Rector core 2.6.1 | 512 | 48 | 437 | - | 24 (deprecated; Rector-internal post-rectors) | 3 (Rector-internal, Nette) |
 | rector-laravel 2.5.0 | 122 | - | 122 | - | - | - |
 | pest-plugin-rector | 61 | - | 61 | - | - | - |
-| rector-phpunit | 113 | - | 110 | - | 3 | - |
+| rector-phpunit | 113 | 9 | 100 | - | 3 | 1 (Rector-internal) |
 | rector-symfony / doctrine / downgrade-php | 267 | - | - | - | - | 267 |
 | PHPStan 2.2.7 core identifiers | 559 | 2 | - | 534 | 8 (playground) | 15 (`phpstanApi.*`, `phpParser.*`) |
 | PHPStan level parameters | 18 | - | - | 13 rule options + 5 switches | - | - |
 | phpstan-strict-rules 2.0.12 | 44 | 1 | 16 | 27 | - | - |
 | phpstan-deprecation-rules 2.0.5 | 10 | - | - | 10 | - | - |
 | Larastan 3.10.0 | 20 | - | - | 20 | - | - |
-| Mago 1.57.0 linter | 190 | 40 | 129 | - | 2 | 19 (WordPress/Psl/Symfony) |
-| Mago 1.57.0 analyzer codes | 329 | - | - | 28 (tentative) | - | 301 (not a migrate input) |
-| **Pun rules** | | **208** | **902** | **568** | | |
+| Mago 1.57.0 linter | 190 | 39 | 130 | - | 2 | 19 (WordPress/Psl/Symfony) |
+| Mago 1.57.0 analyzer codes | 329 | - | - | 190 | - | 139 (no PHPStan-parity equivalent; not a migrate input) |
+| **Pun rules** | | **208** | **542** | **255** | | |
 
-PHP-CS-Fixer: 144 of the 208 format rules and 31 of the 902 lint rules are ported today (`ported = true`).
+Before the naming pass: 902 lint and 568 analyse rules. The pass folded 354 lint rules into other rules (13 of them into
+format rules such as `format.phpunit-attributes`) and 313 analyse rules into others, and dropped 6 Rector-internal or
+out-of-scope ones.
+144 of the 208 format rules and 31 of the 542 lint rules are ported today (`ported = true`).
 
 ### Overlaps found and how they were resolved
 
@@ -290,10 +359,11 @@ PHP-CS-Fixer: 144 of the 208 format rules and 31 of the 902 lint rules are porte
 | Pun / Mago / Rector / strict-rules clusters without a CS-Fixer rule | 24 | O3/O4: one lint rule. Pun's 17 are merged with their Mago originals; `prefer-casts-method` ← rector-laravel `ModelCastsPropertyToCastsMethod` + Mago; `early-return` ← Rector + Mago `prefer-early-return` |
 | strict-rules syntax-only ids | 16 ids → 9 lint rules | O4: `no-loose-comparison`, `strict-param`, `no-empty`, `no-short-ternary`, `no-dynamic-name`, `no-loop-variable-overwrite`, `no-explicit-constructor-call`, `no-implicit-array-creation`, `require-array-filter-callback` |
 | strict-rules / PHPStan layout ids ∩ format | 3 | `backtick.notAllowed`, `whitespace.bom`, `whitespace.fileEnd` → format rules |
-| Type-aware report ∩ fixer | 18 linked pairs | O5: analyse reports, `fixed_by` names the fixer. `unused-private-method/property/constant`, `unreachable-code`, `duplicate-array-key`, `useless-cast`, `missing-return-type` (5 Rector fixers), `missing-property-type`, `missing-override-attribute`, `deprecated-cast` → `format.short-scalar-cast`, … |
+| Type-aware report ∩ fixer | 18 linked pairs | O5: analyse reports, `fixed_by` names the fixer. `unused-private-method/property/constant`, `unreachable-code`, `duplicate-array-key`, `useless-cast`, `missing-return-type` (`add-return-type`, `add-void-return-type`), `missing-property-type`, `missing-override-attribute`, `deprecated-cast` → `format.short-scalar-cast`, … |
 | Type-dependent fix safety | 3 | O6: `mixed`, for `no-loose-comparison`, `strict-param` and `declare-strict-types` |
-| Contradicting rules | 3 pairs | O7: `[meta] conflicts`; config check refuses both on |
-| Mago analyzer ∩ PHPStan | 28 (tentative) | Mapped onto the PHPStan-parity analyse rule; the other 301 are listed as unsupported |
+| Contradicting rules | 5 pairs | O7: `[meta] conflicts`; config check refuses both on |
+| Mago analyzer ∩ PHPStan | 190 | Mapped onto the PHPStan-parity analyse rule; the other 139 are listed as unsupported |
+| Naming-pass merges | 109 lint, 82 analyse | Same edit or same problem from several upstream rules → one rule; sources in `merged` (§3 Merges) |
 
 ## 10. Decisions the user needs to make
 
@@ -307,8 +377,14 @@ PHP-CS-Fixer: 144 of the 208 format rules and 31 of the 902 lint rules are porte
    v1 they can move to lint like strict-rules did.
 4. **Out-of-scope Rector packages** (Symfony, Doctrine, downgrade; 267 rules) are `unsupported`: migrate stops and lists
    them. Confirm Pun stays Laravel-first here.
-5. **The tentative names** (807 lint, 497 analyse) need a naming pass. Most are mechanical kebab-case of Rector class names
-   (`return-type-from-strict-native-call`). This is a good task for the config agent once the loader exists.
+5. **32 lint names predate the prefix rule** and keep their old name for now: risky CS-Fixer fixers that kept the fixer
+   name (`final-class`, `mb-str-functions`, `declare-strict-types`, `strict-param`, `self-accessor`, …), Mago/Pun names
+   (`use-dedicated-expectation`, `use-compound-assignment`, `assertion-style`) and the curated `early-return`,
+   `early-continue`, `class-name-matches-file`, `unused-ignore`. The checker lists them as `LEGACY_LINT`. My call: rename
+   them with aliases, e.g. `final-class` → `require-final-class`, `declare-strict-types` → `require-strict-types`,
+   `early-return` → `prefer-early-return` (Mago's name), `use-dedicated-expectation` → `prefer-dedicated-matcher`,
+   `strict-param` → `require-strict-param`. The alternative keeps CS-Fixer names for every rule that comes from a fixer,
+   which Pint users know.
 
 ## Borrowed from
 
