@@ -11,7 +11,7 @@ mod scope;
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
-use mago_allocator::LocalArena;
+use mago_allocator::{Arena, LocalArena};
 use mago_analyzer::Analyzer;
 use mago_analyzer::analysis_result::AnalysisResult;
 use mago_analyzer::plugin::PluginRegistry;
@@ -372,6 +372,12 @@ fn infer<'arena>(
     let settings = Settings::new(crate::codebase::php_version(php_version));
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());
+    // Only the declarations holding a wanted expression: a method's types come from its own body and the codebase,
+    // so the file's other functions and methods would only cost time (most of the rules' time on large classes).
+    let program = arena.alloc(Program {
+        statements: Prune { arena, wanted: &wanted.0 }.statements(&program.statements),
+        ..program.clone()
+    });
     // ponytail: Mago's analyzer trips debug assertions on some code (an empty TUnion::from_vec); no types then
     let analysed = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         analyzer.analyze_with_artifacts(program, &mut result)
@@ -384,6 +390,76 @@ fn infer<'arena>(
         .into_iter()
         .filter_map(|span| Some((span, artifacts.get_expression_type(&span)?.clone())))
         .collect()
+}
+
+/// A copy of a program's statements without the functions, class-likes and methods that hold none of `wanted`. Every
+/// other statement and member stays, so the kept code's scope is unchanged.
+struct Prune<'w, 'arena> {
+    arena: &'arena LocalArena,
+    wanted: &'w [Span],
+}
+
+impl<'arena> Prune<'_, 'arena> {
+    fn holds(&self, span: Span) -> bool {
+        self.wanted
+            .iter()
+            .any(|w| span.start.offset <= w.start.offset && w.end.offset <= span.end.offset)
+    }
+
+    fn statements(
+        &self,
+        statements: &Sequence<'arena, Statement<'arena>>,
+    ) -> Sequence<'arena, Statement<'arena>> {
+        let kept = statements.iter().filter_map(|s| match s {
+            Statement::Function(_)
+            | Statement::Class(_)
+            | Statement::Interface(_)
+            | Statement::Trait(_)
+            | Statement::Enum(_)
+                if !self.holds(s.span()) =>
+            {
+                None
+            }
+            Statement::Namespace(n) => Some(Statement::Namespace(Namespace {
+                body: match &n.body {
+                    NamespaceBody::Implicit(b) => NamespaceBody::Implicit(NamespaceImplicitBody {
+                        statements: self.statements(&b.statements),
+                        ..b.clone()
+                    }),
+                    NamespaceBody::BraceDelimited(b) => NamespaceBody::BraceDelimited(Block {
+                        statements: self.statements(&b.statements),
+                        ..b.clone()
+                    }),
+                },
+                ..n.clone()
+            })),
+            Statement::Class(c) => Some(Statement::Class(Class {
+                members: self.members(&c.members),
+                ..c.clone()
+            })),
+            Statement::Trait(t) => Some(Statement::Trait(Trait {
+                members: self.members(&t.members),
+                ..t.clone()
+            })),
+            Statement::Enum(e) => Some(Statement::Enum(Enum {
+                members: self.members(&e.members),
+                ..e.clone()
+            })),
+            s => Some(s.clone()),
+        });
+        Sequence::from_slice(self.arena.alloc_slice_fill_iter(kept))
+    }
+
+    fn members(
+        &self,
+        members: &Sequence<'arena, ClassLikeMember<'arena>>,
+    ) -> Sequence<'arena, ClassLikeMember<'arena>> {
+        let kept = members
+            .iter()
+            .filter(|m| !matches!(m, ClassLikeMember::Method(_)) || self.holds(m.span()))
+            .cloned();
+        Sequence::from_slice(self.arena.alloc_slice_fill_iter(kept))
+    }
 }
 
 impl<'a, 'arena> Checker<'a, 'arena> {

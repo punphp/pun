@@ -2,6 +2,34 @@
  "general": [],
  "errors": [
   {
+   "file": "src/Dynamic.php",
+   "line": 15,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Dynamic\\MissingFromFunction not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/Dynamic.php",
+   "line": 35,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Dynamic\\MissingFromClass not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/Dynamic.php",
+   "line": 73,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Dynamic\\MissingFromEnum not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/Dynamic.php (in context of class Dynamic\\Holder)",
+   "line": 57,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Dynamic\\MissingFromTrait not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
    "file": "src/Main.php",
    "line": null,
    "identifier": "ignore.unmatched",
