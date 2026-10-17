@@ -36,6 +36,48 @@ pub fn pipe<'arena>(c: &mut Checker<'_, 'arena>, pipe: &Pipe<'arena>) {
     }
 }
 
+/// FunctionCallableRule: `f(...)`.
+pub fn function_callable<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    f: &FunctionPartialApplication<'arena>,
+) {
+    let Expression::Identifier(id) = f.function else {
+        return;
+    };
+    let whole = f.function.span().join(f.argument_list.span());
+    if c.piped.contains(&whole)
+        || !matches!(
+            f.argument_list
+                .arguments
+                .iter()
+                .collect::<Vec<_>>()
+                .as_slice(),
+            [PartialArgument::VariadicPlaceholder(_)]
+        )
+    {
+        return;
+    }
+    let fallback = match id {
+        Identifier::Local(l) if !c.names.is_imported(&l.span) => Some(l.value),
+        _ => None,
+    };
+    if std::iter::once(c.names.get(&id.span()))
+        .chain(fallback)
+        .any(|n| c.function(n).is_some())
+    {
+        return;
+    }
+    let name = c.written_or_resolved(id);
+    if !c.in_function_exists(&name) {
+        c.report(
+            id,
+            "function.notFound",
+            format!("Function {name} not found."),
+            None,
+        );
+    }
+}
+
 fn named_call<'arena>(
     c: &mut Checker<'_, 'arena>,
     id: &Identifier<'arena>,
@@ -123,7 +165,29 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
         );
         return;
     };
-    let subject = format!("{}::{}()", method.declaring_display(), method.name());
+    let declaring = method.declaring_display();
+    let visibility = method.visibility();
+    if !can_call(c, Some(class), &declaring, visibility) {
+        let v = if visibility.is_private() {
+            "private"
+        } else {
+            "protected"
+        };
+        c.report(
+            name,
+            if visibility.is_private() {
+                "method.private"
+            } else {
+                "method.protected"
+            },
+            format!(
+                "Call to {v} method {}() of class {declaring}.",
+                method.name()
+            ),
+            None,
+        );
+    }
+    let subject = format!("{declaring}::{}()", method.name());
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
     params::check(
@@ -222,7 +286,14 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     };
     let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
     let Some(method) = members::method(c.codebase, class, name.value) else {
-        if members::method(c.codebase, class, b"__callStatic").is_some()
+        let guarded = match call.class {
+            Expression::Static(_) => "static".to_string(),
+            Expression::Self_(_) => "self".to_string(),
+            _ => String::from_utf8_lossy(class.name.as_bytes()).into_owned(),
+        };
+        let key = format!("{guarded}::{method_name}").to_ascii_lowercase();
+        if c.guards.contains(&super::scope::Guard::Method(key))
+            || members::method(c.codebase, class, b"__callStatic").is_some()
             || class
                 .static_pseudo_methods
                 .iter()
@@ -241,6 +312,8 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     let declaring = method.declaring_display();
     let declared = method.name();
     let is_static = method.is_static();
+    // after "Static call to instance method", PHPStan checks only the arguments
+    let mut checked = false;
     if !is_static {
         let function_static = c.functions.last().and_then(|f| f.method_static);
         let in_subclass = scope_class.is_some_and(|s| {
@@ -252,6 +325,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         });
         if function_static != Some(false) || !in_subclass {
             if !(declared.eq_ignore_ascii_case("loadhtml") && declaring == "DOMDocument") {
+                checked = true;
                 c.report(
                     name,
                     "method.staticCall",
@@ -263,7 +337,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     }
     let kind = if is_static { "static method" } else { "method" };
     let visibility = method.visibility();
-    if !can_call(c, scope_class, &declaring, visibility) {
+    if !checked && !can_call(c, scope_class, &declaring, visibility) {
         let v = if visibility.is_private() {
             "private"
         } else {
@@ -280,7 +354,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
             None,
         );
     }
-    if method.is_abstract() && !is_static_keyword {
+    if !checked && method.is_abstract() && !is_static_keyword {
         let s = if is_static { " static" } else { "" };
         c.report(
             name,
