@@ -223,6 +223,8 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | todo |
 | lint (from config 4): give the options of lint rules that are fixers (risky and code-deleting) Pun names through mapping.toml's `[options]` tables; they are still PHP-CS-Fixer names, kebab-cased | todo |
 | lint 7: all 703 rules native, in usage order | todo |
+| lint (from mapping): write summaries in rules/mapping.toml for the 286 lint rules added by the one-to-one mapping (several have none) | todo |
+| lint (from mapping): look at the upstream rector-laravel laravel-120 set's RenameMethod bug, and decide whether the livewire-40 set belongs in scope | todo |
 | migrate 4: rector.php | todo |
 
 **Gate:** `format(pun lint --fix)` equals `format(rector process)` on Rector's fixtures and the corpus, for every rule.
@@ -241,6 +243,10 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 3 follow-up: fix the 5 gaps.txt cases that regressed with 138dab1's trait-context change (new.static and arguments.count reported per using class, shadowed trait method, variadic @method arity) | todo |
 | analyse 3 follow-up (from perf analyse 1, also on HEAD before it): a class in an analysed file using a trait declared only in a scanned file (scanDirectories) gets the trait's errors as 'lib/T.php (in context of class C)'; PHPStan 2.2.7 reports nothing | todo |
 | analyse 4-5: type inference; levels 1-10 as the five presets; strict-rules, deprecation rules | todo |
+| analyse 4-5: all 378 analyse rules native (one PHPStan Rule class each, rules.md §7) | todo |
+| analyse (from mapping): re-link `fixed_by` from analyse/types/missing-param-type, missing-property-type and missing-return-type to the split lint type rules where one fits | todo |
+| analyse (from mapping): consider dedicated home rules for identifiers that many classes emit (class.notFound, missingType.iterableValue), so migrated ignores read naturally | todo |
+| analyse (from mapping): revisit the Symfony and phpstanApi exclusions if the scope widens | todo |
 | analyse 6-7: Larastan with the seven improvements; Pest | todo |
 | analyse 6 follow-up: Larastan knowledge Pinkary needs first: auth() return types (53 Mago issues), Http/facade responses (7), container/Storage (6), plus model accessors and relations | todo |
 | analyse: enable Larastan/Pest from `pun_config::composer::Composer` and gate on `Locked.semver` | todo |
@@ -287,6 +293,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf (from bench): analyse is slower than a warm PHPStan result cache (pun 0.5-1.8 s vs 0.4-0.8 s) and 1.5-2.2x slower than Mago's analyser; targets for the perf rounds (reports/scoreboard.md "Analyse benchmark") | todo |
 | perf: analyse speed and memory, round by round against the bench, errors unchanged | doing (workflow, wf/perf-analyse-N) |
 | perf: lint speed and memory, round by round against the bench, output unchanged | doing (workflow, wf/perf-lint-N) |
+| perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |
 | perf lint 1 follow-up: scripts/bench.py lint and analyse modes report time from a run without the 20 ms RSS polling (or poll RSS in a separate run), so runs under 100 ms show real differences | todo |
 | perf lint 1 follow-up: if the pun-lint tree walk grows with more rules, skip leaf node kinds no rule targets (about 28% of nodes: DirectVariable, Keyword, LocalIdentifier, Terminator, LiteralString); under 3% today | todo |
 | perf lint 2 follow-up: peak memory is Mago's parse arena (about 41x source size; a 462 KB file takes a 26 MB arena, 39k allocations of 376 bytes); cutting it needs an upstream change in Mago, not pun-lint | todo |
