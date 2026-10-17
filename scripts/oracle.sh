@@ -23,7 +23,13 @@ fetch "$root/.oracle/php-cs-fixer" https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.
 (cd "$root/.oracle/pint" && composer install -q --no-interaction --no-progress)
 (cd "$root/.oracle/php-cs-fixer" && composer install -q --no-interaction --no-progress)
 
+# PHPStan oracle (pun-phpstan): pinned by the committed lock file.
+mkdir -p "$root/.oracle/phpstan"
+cp "$root/scripts/oracle-phpstan/composer.json" "$root/scripts/oracle-phpstan/composer.lock" "$root/.oracle/phpstan/"
+(cd "$root/.oracle/phpstan" && composer install -q --no-interaction --no-progress)
+
 php "$root/.oracle/pint/builds/pint" --version
+php "$root/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar" --version
 php "$root/.oracle/php-cs-fixer/php-cs-fixer" --version
 bundled=$(php -r 'Phar::loadPhar($argv[1], "p.phar"); foreach (json_decode(file_get_contents("phar://p.phar/vendor/composer/installed.json"), true)["packages"] as $p) if ($p["name"] === "friendsofphp/php-cs-fixer") echo $p["source"]["reference"];' "$root/.oracle/pint/builds/pint")
 [ "$bundled" = "$FIXER_REF" ] || { echo "PHAR bundles php-cs-fixer $bundled, expected $FIXER_REF" >&2; exit 1; }

@@ -1,5 +1,5 @@
 name: Oracle
-description: PHP 8.5, Node, and the pinned Pint / PHP-CS-Fixer oracle in .oracle/ (scripts/oracle.sh), cached.
+description: PHP 8.5, Node, and the pinned Pint / PHP-CS-Fixer / PHPStan oracle in .oracle/ (scripts/oracle.sh), cached.
 runs:
   using: composite
   steps:
@@ -14,7 +14,7 @@ runs:
     - uses: actions/cache@v4
       with:
         path: .oracle
-        key: oracle-${{ hashFiles('scripts/oracle.sh') }}
+        key: oracle-${{ hashFiles('scripts/oracle.sh', 'scripts/oracle-phpstan/composer.lock') }}
     - shell: bash
       run: scripts/oracle.sh
     # Blade fixture tests resolve prettier from crates/pun-fixers/node_modules.

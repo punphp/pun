@@ -128,7 +128,7 @@ Intentional differences:
 | nette/neon | v3.3.4 (bundled in the PHAR) | `bb88bf3a54dd21bf4dbddb5cd525d7b0c61b7cda` |
 | nette/di / nette/schema | 3.1.10 / 1.2.5 (bundled in the PHAR) | |
 
-- `.oracle/phpstan`: `composer.json` requiring exactly `phpstan/phpstan: 2.2.7`, `larastan/larastan: 3.10.0`,
+- `.oracle/phpstan`: installed by `scripts/oracle.sh` from the committed `scripts/oracle-phpstan/composer.{json,lock}` (exactly `phpstan/phpstan: 2.2.7`, `larastan/larastan: 3.10.0`,
   `phpstan/phpstan-deprecation-rules: ^2.0`; `composer install` there. Oracle binary:
   `php .oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar`. Its `vendor/` also serves the corpus parity
   tests (symlinked into a farm, so `%rootDir%` and `includes: vendor/...` resolve as in a real project).
