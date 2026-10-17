@@ -51,9 +51,10 @@ while (($line = fgets($in)) !== false) {
         $send('R', '', json_encode($resolver->getRules()));
         continue;
     }
-    [, $plen, $clen] = explode(' ', rtrim($line));
+    [, $plen, $clen, $slen] = explode(' ', rtrim($line));
     $path = $read((int) $plen);
     $code = $read((int) $clen);
+    $skip = explode(',', $read((int) $slen)); // the file's @pun-ignore-file fixers, which the analyzer doesn't read
     // Runner::fixFile, minus linting (Pun lints natively before and after) and event plumbing.
     try {
         $file = new SplFileInfo($path);
@@ -72,7 +73,7 @@ while (($line = fgets($in)) !== false) {
         $old = $tokens->getCodeHash();
         $applied = [];
         foreach ($fixers as $i => $fixer) {
-            if (in_array($fixer->getName(), $ignored, true)) {
+            if (in_array($fixer->getName(), $ignored, true) || in_array($fixer->getName(), $skip, true)) {
                 continue;
             }
             if (isset($customisers[$fixer->getName()])) {

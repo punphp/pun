@@ -86,7 +86,7 @@ fn custom_fixer_config() {
     let app = dir.join("app").canonicalize().unwrap();
 
     let read = |f: &str| std::fs::read(app.join(f)).unwrap();
-    let (code, applied) = fixed(d.fix(&app.join("A.php"), &read("A.php")).unwrap());
+    let (code, applied) = fixed(d.fix(&app.join("A.php"), &read("A.php"), &[]).unwrap());
     assert_eq!(code.as_bytes(), expected("A.php"));
     let order = [
         "class_definition",
@@ -98,11 +98,15 @@ fn custom_fixer_config() {
         "blank_line_after_namespace",
     ];
     assert_eq!(applied, order);
-    let (code, applied) = fixed(d.fix(&app.join("b.skip.php"), &read("b.skip.php")).unwrap());
+    let (code, applied) = fixed(
+        d.fix(&app.join("b.skip.php"), &read("b.skip.php"), &[])
+            .unwrap(),
+    );
     assert_eq!(code.as_bytes(), expected("b.skip.php"));
     assert_eq!(applied, ["single_quote", "blank_line_after_opening_tag"]);
     assert!(matches!(
-        d.fix(&app.join("Clean.php"), &read("Clean.php")).unwrap(),
+        d.fix(&app.join("Clean.php"), &read("Clean.php"), &[])
+            .unwrap(),
         Outcome::Unchanged
     ));
 }
@@ -115,14 +119,14 @@ fn worker_errors() {
     let dir = custom_project(&oracle, "errors");
     let d = Delegate::start(&dir, Source::Config(dir.join(".php-cs-fixer.php")), None).unwrap();
     match d
-        .fix(&dir.join("app/T.php"), b"<?php\n\n// THROW\n")
+        .fix(&dir.join("app/T.php"), b"<?php\n\n// THROW\n", &[])
         .unwrap()
     {
         Outcome::Failed(e) => assert_eq!(e, "boom"),
         _ => panic!("expected a failure"),
     }
     let e = d
-        .fix(&dir.join("app/crash.php"), b"<?php\n\n// x\n")
+        .fix(&dir.join("app/crash.php"), b"<?php\n\n// x\n", &[])
         .unwrap_err();
     assert_eq!(
         e.to_string(),
@@ -132,6 +136,7 @@ fn worker_errors() {
         d.fix(
             &dir.join("app/A.php"),
             &std::fs::read(dir.join("app/A.php")).unwrap(),
+            &[],
         )
         .unwrap(),
     );
@@ -167,6 +172,7 @@ fn pint_rules_via_project_phar() {
         d.fix(
             &dir.join("app/a.php"),
             b"<?php\nunset($a);\nunset($b);\n$c = \"x\";\n",
+            &[],
         )
         .unwrap(),
     );
@@ -179,8 +185,22 @@ fn pint_rules_via_project_phar() {
             "blank_line_after_opening_tag"
         ]
     );
+    // `skip` (the file's `@pun-ignore-file` fixers) works like the `@php-cs-fixer-ignore` case below.
+    let (code, applied) = fixed(
+        d.fix(
+            &dir.join("app/a.php"),
+            b"<?php\nunset($a);\nunset($b);\n$c = \"x\";\n",
+            &["single_quote", "nope"],
+        )
+        .unwrap(),
+    );
+    assert_eq!(code, "<?php\n\nunset($a, $b);\n\n$c = \"x\";\n");
+    assert_eq!(
+        applied,
+        ["combine_consecutive_unsets", "blank_line_after_opening_tag"]
+    );
     let b = b"<?php\n// @php-cs-fixer-ignore single_quote\nunset($a);\nunset($b);\n$c = \"x\";\n";
-    let (code, applied) = fixed(d.fix(&dir.join("app/b.php"), b).unwrap());
+    let (code, applied) = fixed(d.fix(&dir.join("app/b.php"), b, &[]).unwrap());
     assert_eq!(
         code,
         "<?php\n\n// @php-cs-fixer-ignore single_quote\nunset($a, $b);\n\n$c = \"x\";\n"
@@ -195,6 +215,7 @@ fn pint_rules_via_project_phar() {
         .fix(
             Path::new("/tmp/dp1/app/c.php"),
             b"<?php\n// @php-cs-fixer-ignore nope\n$c = \"x\";\n",
+            &[],
         )
         .unwrap_err();
     assert_eq!(
@@ -235,7 +256,10 @@ fn runtimes_and_startup_errors() {
     with_vendor(&dir, &oracle);
     let d = Delegate::start(&dir, rules(), None).unwrap();
     assert_eq!(d.runtime, dir.join("vendor/autoload.php"));
-    let (code, _) = fixed(d.fix(&dir.join("a.php"), b"<?php\n$a = \"x\";\n").unwrap());
+    let (code, _) = fixed(
+        d.fix(&dir.join("a.php"), b"<?php\n$a = \"x\";\n", &[])
+            .unwrap(),
+    );
     assert_eq!(code, "<?php\n$a = 'x';\n");
 
     // Pint's own message for an unknown rule (`pint --config` with {"rules":{"nope":true}}).
