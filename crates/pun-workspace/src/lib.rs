@@ -13,9 +13,24 @@ use pun_config::Config;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-const PINT_NOT_NAME: [&str; 4] = ["_ide_helper_actions.php", "_ide_helper_models.php", "_ide_helper.php", ".phpstorm.meta.php"];
+const PINT_NOT_NAME: [&str; 4] = [
+    "_ide_helper_actions.php",
+    "_ide_helper_models.php",
+    "_ide_helper.php",
+    ".phpstorm.meta.php",
+];
 const PINT_EXCLUDE: [&str; 4] = ["bootstrap/cache", "build", "node_modules", "storage"];
-const VCS: [&str; 9] = [".svn", "_svn", "CVS", "_darcs", ".arch-params", ".monotone", ".bzr", ".git", ".hg"];
+const VCS: [&str; 9] = [
+    ".svn",
+    "_svn",
+    "CVS",
+    "_darcs",
+    ".arch-params",
+    ".monotone",
+    ".bzr",
+    ".git",
+    ".hg",
+];
 
 /// A Symfony Finder configured the way PHP-CS-Fixer and Pint configure it.
 struct Finder {
@@ -30,8 +45,15 @@ struct Finder {
 impl Finder {
     /// `PhpCsFixer\Finder::create()`: files named `/\.php$/`, exclude vendor, ignore dot files and VCS dirs.
     fn php_cs_fixer() -> Self {
-        Finder { dirs: vec![], append: vec![], excluded_names: vec![], excluded_pattern: None, not_names: vec![], not_paths: vec![] }
-            .exclude(["vendor"])
+        Finder {
+            dirs: vec![],
+            append: vec![],
+            excluded_names: vec![],
+            excluded_pattern: None,
+            not_names: vec![],
+            not_paths: vec![],
+        }
+        .exclude(["vendor"])
     }
 
     /// `ConfigurationFactory::finder()`.
@@ -40,7 +62,9 @@ impl Finder {
         if !cfg.blade {
             not_name.push("*.blade.php");
         }
-        let mut f = Self::php_cs_fixer().not_name(not_name)?.exclude(PINT_EXCLUDE);
+        let mut f = Self::php_cs_fixer()
+            .not_name(not_name)?
+            .exclude(PINT_EXCLUDE);
         // pint.json finder options, applied in Pint's key order (exclude, in, notPath, notName are independent).
         f = f.exclude(cfg.finder.exclude.iter().map(String::as_str));
         for d in &cfg.finder.in_dirs {
@@ -58,7 +82,11 @@ impl Finder {
     }
 
     fn exclude<'a>(mut self, dirs: impl IntoIterator<Item = &'a str>) -> Self {
-        let mut pats: Vec<String> = self.excluded_pattern.take().map(|r| vec![r.as_str().to_string()]).unwrap_or_default();
+        let mut pats: Vec<String> = self
+            .excluded_pattern
+            .take()
+            .map(|r| vec![r.as_str().to_string()])
+            .unwrap_or_default();
         for d in dirs {
             let d = d.trim_end_matches('/');
             if d.contains('/') {
@@ -75,7 +103,11 @@ impl Finder {
 
     fn not_name<'a>(mut self, globs: impl IntoIterator<Item = &'a str>) -> Result<Self> {
         for g in globs {
-            self.not_names.push(if is_regex(g) { php_regex(g)? } else { php_regex(&glob_to_regex(g))? });
+            self.not_names.push(if is_regex(g) {
+                php_regex(g)?
+            } else {
+                php_regex(&glob_to_regex(g))?
+            });
         }
         Ok(self)
     }
@@ -88,7 +120,12 @@ impl Finder {
             let mut it = walkdir::WalkDir::new(dir).min_depth(1).into_iter();
             while let Some(entry) = it.next() {
                 let entry = entry?;
-                let rel = entry.path().strip_prefix(dir).unwrap().to_string_lossy().into_owned();
+                let rel = entry
+                    .path()
+                    .strip_prefix(dir)
+                    .unwrap()
+                    .to_string_lossy()
+                    .into_owned();
                 // Follows symlinks, like SplFileInfo::isDir(). Symfony's ONLY_FILES only drops directories, so dangling
                 // symlinks (and other non-regular files) are listed.
                 let is_dir = entry.path().is_dir();
@@ -96,7 +133,10 @@ impl Finder {
                     let fname = entry.file_name().to_string_lossy();
                     let pruned = self.excluded_names.iter().any(|n| *n == fname)
                         || VCS.contains(&fname.as_ref())
-                        || self.excluded_pattern.as_ref().is_some_and(|r| r.is_match(rel.as_bytes()).unwrap_or(false));
+                        || self
+                            .excluded_pattern
+                            .as_ref()
+                            .is_some_and(|r| r.is_match(rel.as_bytes()).unwrap_or(false));
                     if pruned && entry.file_type().is_dir() {
                         it.skip_current_dir();
                     }
@@ -125,13 +165,27 @@ pub fn discover(cfg: &Config, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
     let f = if paths.is_empty() && has_in {
         Finder::pint(cfg)?
     } else {
-        let paths: Vec<PathBuf> = if paths.is_empty() { vec![cfg.root.clone()] } else { paths.to_vec() };
+        let paths: Vec<PathBuf> = if paths.is_empty() {
+            vec![cfg.root.clone()]
+        } else {
+            paths.to_vec()
+        };
         // A fully defined finder in the config is replaced, not narrowed (ConfigurationResolver::resolveFinder).
-        let mut f = if has_in { Finder::php_cs_fixer() } else { Finder::pint(cfg)? };
+        let mut f = if has_in {
+            Finder::php_cs_fixer()
+        } else {
+            Finder::pint(cfg)?
+        };
         for p in paths {
             let abs = cfg.root.join(&p);
-            let real = abs.canonicalize().map_err(|_| anyhow::anyhow!("The path \"{}\" is not readable.", p.display()))?;
-            if real.is_file() { f.append.push(real) } else { f.dirs.push(real) }
+            let real = abs
+                .canonicalize()
+                .map_err(|_| anyhow::anyhow!("The path \"{}\" is not readable.", p.display()))?;
+            if real.is_file() {
+                f.append.push(real)
+            } else {
+                f.dirs.push(real)
+            }
         }
         f
     };
@@ -158,7 +212,12 @@ pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
     let lists = |cmds: &[&[&str]]| -> Option<Vec<String>> {
         let mut all = Vec::new();
         for args in cmds {
-            all.extend(git(&cfg.root, args)?.lines().filter(|l| !l.is_empty()).map(String::from));
+            all.extend(
+                git(&cfg.root, args)?
+                    .lines()
+                    .filter(|l| !l.is_empty())
+                    .map(String::from),
+            );
         }
         Some(all)
     };
@@ -169,42 +228,106 @@ pub fn git_paths(cfg: &Config, sel: &GitSelect) -> Result<Vec<PathBuf>> {
             // Only exact "D" / "R" count: " D"/"D " are dropped, "RM" keeps "old -> new" (which then matches nothing).
             out.lines()
                 .filter(|l| !l.is_empty())
-                .map(|l| (l.get(3..).unwrap_or(""), l.get(..3.min(l.len())).unwrap_or("").trim()))
+                .map(|l| {
+                    (
+                        l.get(3..).unwrap_or(""),
+                        l.get(..3.min(l.len())).unwrap_or("").trim(),
+                    )
+                })
                 .filter(|(_, s)| *s != "D")
-                .map(|(f, s)| if s == "R" { f.split_once(" -> ").map_or(f, |x| x.1) } else { f }.to_string())
+                .map(|(f, s)| {
+                    if s == "R" {
+                        f.split_once(" -> ").map_or(f, |x| x.1)
+                    } else {
+                        f
+                    }
+                    .to_string()
+                })
                 .collect()
         }),
         GitSelect::Diff(branch) => lists(&[
-            &["diff", "--name-only", "--diff-filter=AMR", &format!("{branch}...HEAD"), "--", "**.php"],
-            &["diff", "--name-only", "--diff-filter=AMR", "--cached", "--", "**.php"],
+            &[
+                "diff",
+                "--name-only",
+                "--diff-filter=AMR",
+                &format!("{branch}...HEAD"),
+                "--",
+                "**.php",
+            ],
+            &[
+                "diff",
+                "--name-only",
+                "--diff-filter=AMR",
+                "--cached",
+                "--",
+                "**.php",
+            ],
             &["diff", "--name-only", "--diff-filter=AMR", "--", "**.php"],
             untracked,
         ]),
-        GitSelect::Staged => lists(&[&["diff", "--name-only", "--diff-filter=AMR", "--cached", "--", "**.php"]]),
-        GitSelect::Since(r) => lists(&[&["diff", "--name-only", "--diff-filter=AMR", r, "--", "**.php"], untracked]),
+        GitSelect::Staged => lists(&[&[
+            "diff",
+            "--name-only",
+            "--diff-filter=AMR",
+            "--cached",
+            "--",
+            "**.php",
+        ]]),
+        GitSelect::Since(r) => lists(&[
+            &[
+                "diff",
+                "--name-only",
+                "--diff-filter=AMR",
+                r,
+                "--",
+                "**.php",
+            ],
+            untracked,
+        ]),
     };
-    let wanted: std::collections::HashSet<PathBuf> = names.unwrap_or_default().iter().map(|n| cfg.root.join(n)).collect();
+    let wanted: std::collections::HashSet<PathBuf> = names
+        .unwrap_or_default()
+        .iter()
+        .map(|n| cfg.root.join(n))
+        .collect();
     if wanted.is_empty() {
         return Ok(vec![]);
     }
     let mut f = Finder::pint(cfg)?;
     f.dirs.push(cfg.root.clone());
-    let picked: Vec<PathBuf> = f.files()?.into_iter().filter(|p| wanted.contains(p)).collect();
+    let picked: Vec<PathBuf> = f
+        .files()?
+        .into_iter()
+        .filter(|p| wanted.contains(p))
+        .collect();
     // Project::paths() hands the list to the resolver like path arguments: symlinks resolve to their targets.
-    if picked.is_empty() { Ok(picked) } else { discover(cfg, &picked) }
+    if picked.is_empty() {
+        Ok(picked)
+    } else {
+        discover(cfg, &picked)
+    }
 }
 
 fn dedup(files: Vec<PathBuf>) -> Vec<PathBuf> {
     let mut seen = std::collections::HashSet::new();
-    files.into_iter().filter(|p| seen.insert(p.clone())).collect()
+    files
+        .into_iter()
+        .filter(|p| seen.insert(p.clone()))
+        .collect()
 }
 
 /// ConfigurationFactory::isPathExcluded (used for `--stdin-filename`): fnmatch-based, not the finder.
 pub fn is_path_excluded(cfg: &Config, file: &Path) -> bool {
     let base = cfg.root.to_string_lossy();
     let full = file.to_string_lossy().replace('\\', "/");
-    let rel = full.strip_prefix(&format!("{base}/")).unwrap_or(&full).to_string();
-    let name = file.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+    let rel = full
+        .strip_prefix(&format!("{base}/"))
+        .unwrap_or(&full)
+        .to_string();
+    let name = file
+        .file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_default();
     let mut not_name: Vec<&str> = PINT_NOT_NAME.to_vec();
     if !cfg.blade {
         not_name.push("*.blade.php");
@@ -213,8 +336,16 @@ pub fn is_path_excluded(cfg: &Config, file: &Path) -> bool {
         let d = d.replace('\\', "/");
         rel == d || rel.starts_with(&format!("{d}/"))
     };
-    not_name.iter().copied().chain(cfg.finder.not_name.iter().map(String::as_str)).any(|p| fnmatch(p, &name))
-        || PINT_EXCLUDE.iter().copied().chain(cfg.finder.exclude.iter().map(String::as_str)).any(under)
+    not_name
+        .iter()
+        .copied()
+        .chain(cfg.finder.not_name.iter().map(String::as_str))
+        .any(|p| fnmatch(p, &name))
+        || PINT_EXCLUDE
+            .iter()
+            .copied()
+            .chain(cfg.finder.exclude.iter().map(String::as_str))
+            .any(under)
         || cfg.finder.not_path.iter().any(|p| fnmatch(p, &rel))
 }
 
@@ -233,21 +364,36 @@ fn fnmatch(pat: &str, s: &str) -> bool {
                     class.push('^');
                 }
                 for c in chars.by_ref() {
-                    if c == '\\' { class.push_str("\\\\") } else { class.push(c) }
-                    if c == ']' { break; }
+                    if c == '\\' {
+                        class.push_str("\\\\")
+                    } else {
+                        class.push(c)
+                    }
+                    if c == ']' {
+                        break;
+                    }
                 }
                 re.push_str(&class);
             }
-            '\\' => re.push_str(&preg_quote(&chars.next().map(String::from).unwrap_or_default())),
+            '\\' => re.push_str(&preg_quote(
+                &chars.next().map(String::from).unwrap_or_default(),
+            )),
             c => re.push_str(&preg_quote(&c.to_string())),
         }
     }
     re.push('$');
-    Regex::new(&re).and_then(|r| r.is_match(s.as_bytes())).unwrap_or(false)
+    Regex::new(&re)
+        .and_then(|r| r.is_match(s.as_bytes()))
+        .unwrap_or(false)
 }
 
 fn git(root: &Path, args: &[&str]) -> Option<String> {
-    let out = Command::new("git").args(args).current_dir(root).output().ok().filter(|o| o.status.success())?;
+    let out = Command::new("git")
+        .args(args)
+        .current_dir(root)
+        .output()
+        .ok()
+        .filter(|o| o.status.success())?;
     // preg_split('/\R+/') — CR alone also separates.
     Some(String::from_utf8_lossy(&out.stdout).replace('\r', "\n"))
 }
@@ -264,7 +410,10 @@ fn is_regex(s: &str) -> bool {
     if start == end {
         return !(start.is_ascii_alphanumeric() || b"*? \\".contains(&start));
     }
-    matches!((start, end), (b'{', b'}') | (b'(', b')') | (b'[', b']') | (b'<', b'>'))
+    matches!(
+        (start, end),
+        (b'{', b'}') | (b'(', b')') | (b'[', b']') | (b'<', b'>')
+    )
 }
 
 /// Compile a PHP `preg_*` pattern (delimiters + modifiers) with PCRE2.
@@ -277,7 +426,10 @@ fn php_regex(p: &str) -> Result<Regex> {
         '<' => '>',
         c => c,
     };
-    let end = p.rfind(close).filter(|&i| i > 0).with_context(|| format!("no ending delimiter in {p}"))?;
+    let end = p
+        .rfind(close)
+        .filter(|&i| i > 0)
+        .with_context(|| format!("no ending delimiter in {p}"))?;
     let (body, mods) = (&p[1..end], &p[end + 1..]);
     let mut b = RegexBuilder::new();
     for m in mods.chars() {
@@ -295,7 +447,11 @@ fn php_regex(p: &str) -> Result<Regex> {
 
 /// Symfony PathFilterIterator::toRegex.
 fn path_regex(s: &str) -> Result<Regex> {
-    if is_regex(s) { php_regex(s) } else { Ok(Regex::new(&preg_quote(s))?) }
+    if is_regex(s) {
+        php_regex(s)
+    } else {
+        Ok(Regex::new(&preg_quote(s))?)
+    }
 }
 
 fn preg_quote(s: &str) -> String {
@@ -312,7 +468,11 @@ fn preg_quote(s: &str) -> String {
 /// Symfony `Glob::toRegex($glob)` with defaults (strict leading dot, strict wildcard slash, `#` delimiter).
 fn glob_to_regex(glob: &str) -> String {
     let unanchored = glob.starts_with("**/");
-    let glob = if unanchored { format!("/{glob}") } else { glob.to_string() };
+    let glob = if unanchored {
+        format!("/{glob}")
+    } else {
+        glob.to_string()
+    };
     let g = glob.as_bytes();
     let (mut first, mut escaping, mut curlies) = (true, false, 0);
     let mut re = String::new();
@@ -323,7 +483,11 @@ fn glob_to_regex(glob: &str) -> String {
             re.push_str(r"(?=[^\.])");
         }
         first = g[i] == b'/';
-        if first && g.len() > i + 2 && &g[i + 1..i + 3] == b"**" && (g.len() == i + 3 || g[i + 3] == b'/') {
+        if first
+            && g.len() > i + 2
+            && &g[i + 1..i + 3] == b"**"
+            && (g.len() == i + 3 || g[i + 3] == b'/')
+        {
             let mut c = "[^/]++/".to_string();
             if g.len() == i + 3 {
                 c.push('?');

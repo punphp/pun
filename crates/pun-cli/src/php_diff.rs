@@ -22,7 +22,10 @@ fn split_lines(mut s: &[u8]) -> Vec<&[u8]> {
     while !s.is_empty() {
         let end = match s.iter().position(|&c| c == b'\n') {
             Some(i) => i + 1,
-            None => s.iter().rposition(|c| b"\r\x0b\x0c\x85".contains(c)).map_or(s.len(), |i| i + 1),
+            None => s
+                .iter()
+                .rposition(|c| b"\r\x0b\x0c\x85".contains(c))
+                .map_or(s.len(), |i| i + 1),
         };
         lines.push(&s[..end]);
         s = &s[end..];
@@ -32,7 +35,12 @@ fn split_lines(mut s: &[u8]) -> Vec<&[u8]> {
 
 fn diff_to_array<'a>(mut from: Vec<&'a [u8]>, mut to: Vec<&'a [u8]>) -> Vec<(&'a [u8], u8)> {
     let start = from.iter().zip(&to).take_while(|(a, b)| a == b).count();
-    let end = from[start..].iter().rev().zip(to[start..].iter().rev()).take_while(|(a, b)| a == b).count();
+    let end = from[start..]
+        .iter()
+        .rev()
+        .zip(to[start..].iter().rev())
+        .take_while(|(a, b)| a == b)
+        .count();
     let tail: Vec<&[u8]> = from.drain(from.len() - end..).collect();
     to.truncate(to.len() - end);
     let head: Vec<&[u8]> = from.drain(..start).collect();
@@ -62,7 +70,13 @@ fn diff_to_array<'a>(mut from: Vec<&'a [u8]>, mut to: Vec<&'a [u8]>) -> Vec<(&'a
     diff.extend(t.map(|l| (l, ADDED)));
     diff.extend(tail.into_iter().map(|l| (l, OLD)));
     if unmatched_line_endings(&diff) {
-        diff.insert(0, (b"#Warning: Strings contain different line endings!\n", DIFF_LINE_END_WARNING));
+        diff.insert(
+            0,
+            (
+                b"#Warning: Strings contain different line endings!\n",
+                DIFF_LINE_END_WARNING,
+            ),
+        );
     }
     diff
 }
@@ -73,8 +87,16 @@ fn lcs_time_efficient<'a>(from: &[&'a [u8]], to: &[&'a [u8]]) -> Vec<&'a [u8]> {
     for j in 1..=to.len() {
         for i in 1..=from.len() {
             let o = j * width + i;
-            let first_or_last = if from[i - 1] == to[j - 1] { m[o - width - 1] + 1 } else { 0 };
-            let best = if m[o - 1] > m[o - width] { m[o - 1] } else { m[o - width] };
+            let first_or_last = if from[i - 1] == to[j - 1] {
+                m[o - width - 1] + 1
+            } else {
+                0
+            };
+            let best = if m[o - 1] > m[o - width] {
+                m[o - 1]
+            } else {
+                m[o - width]
+            };
             m[o] = first_or_last.max(best);
         }
     }
@@ -97,7 +119,11 @@ fn lcs_time_efficient<'a>(from: &[&'a [u8]], to: &[&'a [u8]]) -> Vec<&'a [u8]> {
 fn lcs_memory_efficient<'a>(from: &[&'a [u8]], to: &[&'a [u8]]) -> Vec<&'a [u8]> {
     // Never called with an empty `from`: the first call has min(len)^2 large, the halves of 2+ lines are non-empty.
     if from.len() == 1 {
-        return if to.contains(&from[0]) { vec![from[0]] } else { vec![] };
+        return if to.contains(&from[0]) {
+            vec![from[0]]
+        } else {
+            vec![]
+        };
     }
     let i = from.len() / 2;
     let (from_start, from_end) = from.split_at(i);
@@ -126,7 +152,11 @@ where
     for f in from {
         let prev = current.clone();
         for j in 0..to.len() {
-            current[j + 1] = if *f == to[j] { prev[j] + 1 } else { current[j].max(prev[j + 1]) };
+            current[j + 1] = if *f == to[j] {
+                prev[j] + 1
+            } else {
+                current[j].max(prev[j + 1])
+            };
         }
     }
     current
@@ -220,8 +250,14 @@ fn write_diff_hunks(out: &mut Vec<u8>, diff: &mut Vec<(&[u8], u8)>) {
                     diff,
                     capture - ctx_start,
                     i + 1 + CONTEXT - CUT_OFF,
-                    (from_start - ctx_start, from_range + ctx_start + CONTEXT - CUT_OFF),
-                    (to_start - ctx_start, to_range + ctx_start + CONTEXT - CUT_OFF),
+                    (
+                        from_start - ctx_start,
+                        from_range + ctx_start + CONTEXT - CUT_OFF,
+                    ),
+                    (
+                        to_start - ctx_start,
+                        to_range + ctx_start + CONTEXT - CUT_OFF,
+                    ),
                 );
                 from_start += from_range;
                 to_start += to_range;
@@ -259,8 +295,21 @@ fn write_diff_hunks(out: &mut Vec<u8>, diff: &mut Vec<(&[u8], u8)>) {
     );
 }
 
-fn write_hunk(out: &mut Vec<u8>, diff: &[(&[u8], u8)], start: usize, end: usize, from: (usize, usize), to: (usize, usize)) {
-    let range = |(s, r): (usize, usize)| if r == 1 { s.to_string() } else { format!("{s},{r}") };
+fn write_hunk(
+    out: &mut Vec<u8>,
+    diff: &[(&[u8], u8)],
+    start: usize,
+    end: usize,
+    from: (usize, usize),
+    to: (usize, usize),
+) {
+    let range = |(s, r): (usize, usize)| {
+        if r == 1 {
+            s.to_string()
+        } else {
+            format!("{s},{r}")
+        }
+    };
     out.extend_from_slice(format!("@@ -{} +{} @@\n", range(from), range(to)).as_bytes());
     for &(line, kind) in &diff[start..end] {
         match kind {
@@ -280,8 +329,17 @@ mod tests {
     #[test]
     fn missing_final_newline_and_cr_lines() {
         let d = |a: &[u8], b: &[u8]| String::from_utf8(super::unified(a, b, "/f.php")).unwrap();
-        assert_eq!(d(b"x\r", b"y\r"), "--- /f.php\n+++ /f.php\n@@ -1 +1 @@\n-x\r\n\\ No newline at end of file\n+y\r\n\\ No newline at end of file\n");
-        assert_eq!(d(b"a\nb", b"A\nb"), "--- /f.php\n+++ /f.php\n@@ -1,2 +1,2 @@\n-a\n+A\n b\n\\ No newline at end of file\n");
-        assert_eq!(d(b"a\rb\r", b"a\rc\r"), "--- /f.php\n+++ /f.php\n@@ -1 +1 @@\n-a\rb\r\n\\ No newline at end of file\n+a\rc\r\n\\ No newline at end of file\n");
+        assert_eq!(
+            d(b"x\r", b"y\r"),
+            "--- /f.php\n+++ /f.php\n@@ -1 +1 @@\n-x\r\n\\ No newline at end of file\n+y\r\n\\ No newline at end of file\n"
+        );
+        assert_eq!(
+            d(b"a\nb", b"A\nb"),
+            "--- /f.php\n+++ /f.php\n@@ -1,2 +1,2 @@\n-a\n+A\n b\n\\ No newline at end of file\n"
+        );
+        assert_eq!(
+            d(b"a\rb\r", b"a\rc\r"),
+            "--- /f.php\n+++ /f.php\n@@ -1 +1 @@\n-a\rb\r\n\\ No newline at end of file\n+a\rc\r\n\\ No newline at end of file\n"
+        );
     }
 }

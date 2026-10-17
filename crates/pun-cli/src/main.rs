@@ -1,11 +1,11 @@
 //! `pun` binary. Invoked as `pint` (argv[0]), it takes Pint's flags and mimics its output and exit codes.
 
-#[cfg(feature = "mago-lint")]
-mod lint;
 mod cache;
 mod console;
 mod fix_report;
 mod highlight;
+#[cfg(feature = "mago-lint")]
+mod lint;
 mod lsp;
 mod php_diff;
 mod pint_error;
@@ -25,7 +25,11 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 #[derive(Parser)]
-#[command(name = "pun", version, about = "Fast PHP toolchain: Pint-compatible formatter")]
+#[command(
+    name = "pun",
+    version,
+    about = "Fast PHP toolchain: Pint-compatible formatter"
+)]
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,
@@ -168,7 +172,10 @@ struct FormatCmd {
 }
 
 fn main() -> ExitCode {
-    let argv0 = std::env::args_os().next().map(PathBuf::from).unwrap_or_default();
+    let argv0 = std::env::args_os()
+        .next()
+        .map(PathBuf::from)
+        .unwrap_or_default();
     let pint_mode = argv0.file_stem().is_some_and(|s| s == "pint");
     #[cfg(feature = "pprof")]
     let sampler = sampler::start();
@@ -182,19 +189,31 @@ fn main() -> ExitCode {
         }
         match Pint::try_parse() {
             Ok(p) => format(p.args, true),
-            Err(e) => Err(anyhow::anyhow!(pint_error::from_clap(&e).unwrap_or_else(|| e.exit()))),
+            Err(e) => Err(anyhow::anyhow!(
+                pint_error::from_clap(&e).unwrap_or_else(|| e.exit())
+            )),
         }
     } else {
         match Cli::parse().cmd {
             Cmd::Format(FormatCmd { args, pun }) => {
                 let a = FormatArgs { pun, ..args };
-                if a.pun.watch { watch::run(a) } else { format(a, false) }
+                if a.pun.watch {
+                    watch::run(a)
+                } else {
+                    format(a, false)
+                }
             }
             Cmd::Lsp => lsp::run(),
             #[cfg(feature = "mago-lint")]
             Cmd::Lint(a) => lint::run(a),
             Cmd::Config { init: true, .. } => init_config(),
-            Cmd::Config { show: _, init: _, format, config, preset } => show_config(&format, config, preset),
+            Cmd::Config {
+                show: _,
+                init: _,
+                format,
+                config,
+                preset,
+            } => show_config(&format, config, preset),
         }
     };
     #[cfg(feature = "pprof")]
@@ -225,12 +244,22 @@ fn init_config() -> Result<u8> {
         anyhow::bail!("pun.toml already exists.");
     }
     std::fs::write(&path, pun_config::init_toml(&root)?)?;
-    println!("Wrote {}. pint.json is no longer needed unless you still run Pint.", path.display());
+    println!(
+        "Wrote {}. pint.json is no longer needed unless you still run Pint.",
+        path.display()
+    );
     Ok(0)
 }
 
 fn show_config(fmt: &str, config: Option<PathBuf>, preset: Option<String>) -> Result<u8> {
-    let cfg = pun_config::load(&root()?, &Options { config, preset, ..Default::default() })?;
+    let cfg = pun_config::load(
+        &root()?,
+        &Options {
+            config,
+            preset,
+            ..Default::default()
+        },
+    )?;
     let v = cfg.show();
     if fmt == "json" {
         println!("{}", serde_json::to_string_pretty(&v)?);
@@ -239,7 +268,6 @@ fn show_config(fmt: &str, config: Option<PathBuf>, preset: Option<String>) -> Re
     }
     Ok(0)
 }
-
 
 enum Engine2 {
     Compat(Pipeline),
@@ -258,21 +286,35 @@ impl Engine2 {
             Engine2::Compat(p) => {
                 let r = p.run(file, code);
                 // Runner::fixFile analyses annotations after linting the input, before any fixer runs.
-                if !matches!(r, Err(LintError { after_fix: false, .. })) {
+                if !matches!(
+                    r,
+                    Err(LintError {
+                        after_fix: false,
+                        ..
+                    })
+                ) {
                     p.check_annotations(file, code)?;
                 }
                 r.map(|f| f.map(|f| (f.code, f.applied)))
             }
-            Engine2::Pun(php) => pun_format::format_pun(code, php).map(|c| c.map(|c| (c, vec!["pun"]))),
+            Engine2::Pun(php) => {
+                pun_format::format_pun(code, php).map(|c| c.map(|c| (c, vec!["pun"])))
+            }
             // Linting stays native (TokenizerLinter's messages), as on the native path.
             Engine2::Delegate(d, _) => match pun_format::lint(code) {
                 Err(e) => Err(e),
                 Ok(()) => match d.fix(file, code)? {
                     pun_delegate::Outcome::Unchanged => Ok(None),
-                    pun_delegate::Outcome::Failed(message) => Err(LintError { message, after_fix: true }),
+                    pun_delegate::Outcome::Failed(message) => Err(LintError {
+                        message,
+                        after_fix: true,
+                    }),
                     pun_delegate::Outcome::Fixed(new, applied) => match pun_format::lint(&new) {
                         Ok(()) => Ok(Some((new, applied))),
-                        Err(e) => Err(LintError { after_fix: true, ..e }),
+                        Err(e) => Err(LintError {
+                            after_fix: true,
+                            ..e
+                        }),
                     },
                 },
             },
@@ -281,8 +323,21 @@ impl Engine2 {
 }
 
 fn load_config(a: &FormatArgs, pint_mode: bool, root: &Path) -> Result<Config> {
-    let engine = a.pun.engine.as_deref().map(|e| if e == "pun" { Engine::Pun } else { Engine::Compat });
-    let opts = Options { config: a.config.clone(), no_config: a.no_config, preset: a.preset.clone(), engine, blade: a.blade, pint_mode };
+    let engine = a.pun.engine.as_deref().map(|e| {
+        if e == "pun" {
+            Engine::Pun
+        } else {
+            Engine::Compat
+        }
+    });
+    let opts = Options {
+        config: a.config.clone(),
+        no_config: a.no_config,
+        preset: a.preset.clone(),
+        engine,
+        blade: a.blade,
+        pint_mode,
+    };
     pun_config::load(root, &opts)
 }
 
@@ -290,7 +345,10 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     let root = root()?;
     let cfg = load_config(&a, pint_mode, &root)?;
     // EnsurePrettierIsConfigured: `"Pint/laravel_blade": true` (or --blade) needs Node and prettier in the project.
-    let blade_on = cfg.rules.iter().any(|r| r.name == "Pint/laravel_blade" && r.options.is_null());
+    let blade_on = cfg
+        .rules
+        .iter()
+        .any(|r| r.name == "Pint/laravel_blade" && r.options.is_null());
     if let Some(out) = report::ensure_prettier(&root, blade_on) {
         print!("{out}");
         return Ok(1);
@@ -322,7 +380,9 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         _ if !pun_config::PRESETS.iter().any(|(n, _)| *n == cfg.preset) => vec![],
         (Some(sel), _) => pun_workspace::git_paths(&cfg, sel)?,
         // A .php-cs-fixer.php brings its own Finder.
-        (None, Engine2::Delegate(d, _)) if cfg.php_cs_fixer.is_some() && a.paths.is_empty() => d.files()?,
+        (None, Engine2::Delegate(d, _)) if cfg.php_cs_fixer.is_some() && a.paths.is_empty() => {
+            d.files()?
+        }
         (None, _) => pun_workspace::discover(&cfg, &a.paths)?,
     };
 
@@ -336,25 +396,41 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     let cache = if a.pun.no_cache {
         None
     } else {
-        a.cache_file.as_ref().map(|f| root.join(f)).or_else(|| cache::default_path(&root)).map(|p| {
-            let mut sig = cache::signature(&cfg);
-            if let Engine2::Delegate(d, _) = &engine {
-                sig["delegate"] = d.signature();
-            }
-            cache::Cache::load(p, sig)
-        })
+        a.cache_file
+            .as_ref()
+            .map(|f| root.join(f))
+            .or_else(|| cache::default_path(&root))
+            .map(|p| {
+                let mut sig = cache::signature(&cfg);
+                if let Engine2::Delegate(d, _) = &engine {
+                    sig["delegate"] = d.signature();
+                }
+                cache::Cache::load(p, sig)
+            })
     };
     // Unreadable / unwritable files abort the whole run, like Pint (FileReader / Runner exceptions).
     // Besides the result: the content hash when the file is clean (for the cache), and whether the cache said so.
     let process = |path: &PathBuf| -> Result<(FileResult, Option<String>, bool)> {
-        let rel = path.strip_prefix(&root).unwrap_or(path).to_string_lossy().into_owned();
-        let mut r = FileResult { path: path.clone(), rel, status: Status::NoChanges, applied: vec![], diff: String::new(), message: String::new() };
+        let rel = path
+            .strip_prefix(&root)
+            .unwrap_or(path)
+            .to_string_lossy()
+            .into_owned();
+        let mut r = FileResult {
+            path: path.clone(),
+            rel,
+            status: Status::NoChanges,
+            applied: vec![],
+            diff: String::new(),
+            message: String::new(),
+        };
         // Runner FileFilterIterator: symlinks are dropped silently, empty files are "skipped".
         if path.is_symlink() {
             r.status = Status::Link;
             return Ok((r, None, false));
         }
-        let code = std::fs::read(path).with_context(|| format!("Failed to read content from \"{}\".", path.display()))?;
+        let code = std::fs::read(path)
+            .with_context(|| format!("Failed to read content from \"{}\".", path.display()))?;
         if code.is_empty() || (matches!(engine, Engine2::Pun(_)) && r.rel.ends_with(".blade.php")) {
             r.status = Status::Skipped;
             return Ok((r, None, false));
@@ -376,19 +452,32 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         };
         match outcome {
             Err(e) => {
-                r.status = if e.after_fix { Status::Lint } else { Status::Invalid };
+                r.status = if e.after_fix {
+                    Status::Lint
+                } else {
+                    Status::Invalid
+                };
                 r.message = e.message;
             }
             Ok(None) => clean = hash,
             Ok(Some((new, applied))) => {
                 // Reports show diffs only with -v (sebastian/diff's LCS is quadratic, so skip it otherwise).
                 if a.verbose > 0 {
-                    r.diff = report::diff(&String::from_utf8_lossy(&code), &String::from_utf8_lossy(&new), path);
+                    r.diff = report::diff(
+                        &String::from_utf8_lossy(&code),
+                        &String::from_utf8_lossy(&new),
+                        path,
+                    );
                 }
                 r.applied = applied;
                 r.status = Status::Fixed;
                 if !dry_run {
-                    std::fs::write(path, new).with_context(|| format!("Cannot write to file \"{}\" as it is not writable.", path.display()))?;
+                    std::fs::write(path, new).with_context(|| {
+                        format!(
+                            "Cannot write to file \"{}\" as it is not writable.",
+                            path.display()
+                        )
+                    })?;
                 }
             }
         }
@@ -414,26 +503,50 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     if pint_mode && a.format.is_none() && !a.quiet && !a.parallel {
         pint_error::progress_before_abort(&all, dry_run, a.ansi, a.no_ansi);
     }
-    let results: Vec<(FileResult, Option<String>, bool)> = all.into_iter().collect::<Result<_>>()?;
+    let results: Vec<(FileResult, Option<String>, bool)> =
+        all.into_iter().collect::<Result<_>>()?;
 
     let hits = results.iter().filter(|r| r.2).count();
-    let (results, clean): (Vec<FileResult>, Vec<Option<String>>) = results.into_iter().map(|(r, c, _)| (r, c)).unzip();
+    let (results, clean): (Vec<FileResult>, Vec<Option<String>>) =
+        results.into_iter().map(|(r, c, _)| (r, c)).unzip();
     if let Some(c) = cache {
         if a.pun.explain {
-            eprintln!("cache: {hits} of {} files unchanged since a clean run, skipped ({})", files.len(), c.path().display());
+            eprintln!(
+                "cache: {hits} of {} files unchanged since a clean run, skipped ({})",
+                files.len(),
+                c.path().display()
+            );
         }
         c.save(results.iter().map(|r| r.rel.clone()).zip(clean));
     }
 
-    let ctx = report::Ctx { preset: &cfg.preset, total: files.len(), dry_run, verbose: a.verbose > 0, ansi: a.ansi, no_ansi: a.no_ansi };
-    let code = report::emit(&ctx, &results, a.format.as_deref(), a.quiet, a.output_to_file.as_deref(), a.output_format.as_deref())?;
+    let ctx = report::Ctx {
+        preset: &cfg.preset,
+        total: files.len(),
+        dry_run,
+        verbose: a.verbose > 0,
+        ansi: a.ansi,
+        no_ansi: a.no_ansi,
+    };
+    let code = report::emit(
+        &ctx,
+        &results,
+        a.format.as_deref(),
+        a.quiet,
+        a.output_to_file.as_deref(),
+        a.output_format.as_deref(),
+    )?;
     let failed = ((dry_run || a.repair) && results.iter().any(|r| r.status == Status::Fixed))
         || results.iter().any(FileResult::is_error);
 
     if let Engine2::Compat(p) = &engine {
         eprint!("{}", p.profile_report());
         if !p.not_ported.is_empty() {
-            eprintln!("pun: --native-only skipped {} rules that are not ported: {}", p.not_ported.len(), p.not_ported.join(", "));
+            eprintln!(
+                "pun: --native-only skipped {} rules that are not ported: {}",
+                p.not_ported.len(),
+                p.not_ported.join(", ")
+            );
         }
     }
     Ok(code.max(u8::from(failed)))
@@ -451,15 +564,22 @@ fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine2> {
             }
             let source = match &cfg.php_cs_fixer {
                 Some(f) => Some(pun_delegate::Source::Config(f.clone())),
-                None => (!p.not_ported.is_empty()).then(|| pun_delegate::Source::Rules(cfg.configured_rules.clone().into())),
+                None => (!p.not_ported.is_empty())
+                    .then(|| pun_delegate::Source::Rules(cfg.configured_rules.clone().into())),
             };
             match source {
                 Some(_) if a.pun.native_only && cfg.php_cs_fixer.is_some() => {
-                    anyhow::bail!("--native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead.")
+                    anyhow::bail!(
+                        "--native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead."
+                    )
                 }
                 Some(s) if !a.pun.native_only => {
                     // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
-                    let d = pun_delegate::Delegate::start(root, s, std::env::var_os("PUN_PINT").map(PathBuf::from))?;
+                    let d = pun_delegate::Delegate::start(
+                        root,
+                        s,
+                        std::env::var_os("PUN_PINT").map(PathBuf::from),
+                    )?;
                     Engine2::Delegate(d, p.not_ported)
                 }
                 _ => Engine2::Compat(p),
@@ -476,19 +596,37 @@ fn explain(cfg: &Config, engine: &Engine2, full: bool) {
         Engine2::Delegate(d, not_ported) => {
             let why = match &cfg.php_cs_fixer {
                 Some(f) => format!("{} configures the run", f.display()),
-                None => format!("{} of {} rules are not ported ({})", not_ported.len(), cfg.rules.len(), not_ported.join(", ")),
+                None => format!(
+                    "{} of {} rules are not ported ({})",
+                    not_ported.len(),
+                    cfg.rules.len(),
+                    not_ported.join(", ")
+                ),
             };
-            let _ = writeln!(err, "delegate: {why}, so every file runs through PHP-CS-Fixer in `php` ({})", d.runtime.display());
+            let _ = writeln!(
+                err,
+                "delegate: {why}, so every file runs through PHP-CS-Fixer in `php` ({})",
+                d.runtime.display()
+            );
             for (name, priority) in d.fixers.iter().filter(|_| full) {
                 let _ = writeln!(err, "  delegated   {priority:>4}  {name}");
             }
         }
         _ if !full => {}
         Engine2::Pun(php) => {
-            let _ = writeln!(err, "engine: pun (mago-formatter, pint preset, PHP {php}); pint.json rules are ignored");
+            let _ = writeln!(
+                err,
+                "engine: pun (mago-formatter, pint preset, PHP {php}); pint.json rules are ignored"
+            );
         }
         Engine2::Compat(p) => {
-            let _ = writeln!(err, "engine: compat (PHP {}), preset {}, {} rules", cfg.php, cfg.preset, cfg.rules.len());
+            let _ = writeln!(
+                err,
+                "engine: compat (PHP {}), preset {}, {} rules",
+                cfg.php,
+                cfg.preset,
+                cfg.rules.len()
+            );
             for f in p.fixers() {
                 let _ = writeln!(err, "  native      {:>4}  {}", f.priority(), f.name());
             }
@@ -504,21 +642,36 @@ fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine2) -> Result<u8> {
     let mut code = Vec::new();
     std::io::stdin().read_to_end(&mut code)?;
     let mut out = std::io::stdout().lock();
-    let ctx = a.stdin_filename.clone().unwrap_or_else(|| "stdin.php".into());
+    let ctx = a
+        .stdin_filename
+        .clone()
+        .unwrap_or_else(|| "stdin.php".into());
     // --test/--bail: the dry run leaves Pint's temp file untouched, so the input comes back as is.
-    let fixed = if a.test || a.bail { None } else { fix_text(cfg, engine, &ctx, a.stdin_filename.is_some(), &code)? };
+    let fixed = if a.test || a.bail {
+        None
+    } else {
+        fix_text(cfg, engine, &ctx, a.stdin_filename.is_some(), &code)?
+    };
     out.write_all(fixed.as_deref().unwrap_or(&code))?;
     Ok(0)
 }
 
 /// Stdin / LSP formatting of `code` as `path`: the fixed code, or `None` when excluded, clean or invalid (Pint
 /// reports syntax errors through its unshown JSON report and echoes the input).
-fn fix_text(cfg: &Config, engine: &Engine2, path: &Path, check_excluded: bool, code: &[u8]) -> Result<Option<Vec<u8>>> {
+fn fix_text(
+    cfg: &Config,
+    engine: &Engine2,
+    path: &Path,
+    check_excluded: bool,
+    code: &[u8],
+) -> Result<Option<Vec<u8>>> {
     if check_excluded && pun_workspace::is_path_excluded(cfg, path) {
         return Ok(None);
     }
     // A fixer's exception: Pint reports it in the unshown report too.
-    let Ok(run) = isolated(|| engine.run(path, code)) else { return Ok(None) };
+    let Ok(run) = isolated(|| engine.run(path, code)) else {
+        return Ok(None);
+    };
     Ok(run?.ok().flatten().map(|(new, _)| new))
 }
 
@@ -532,10 +685,19 @@ fn isolated<T>(f: impl FnOnce() -> T) -> Result<T, String> {
     static HOOK: std::sync::Once = std::sync::Once::new();
     HOOK.call_once(|| {
         let default = std::panic::take_hook();
-        std::panic::set_hook(Box::new(move |info| if !ISOLATED.get() { default(info) }));
+        std::panic::set_hook(Box::new(move |info| {
+            if !ISOLATED.get() {
+                default(info)
+            }
+        }));
     });
     ISOLATED.set(true);
     let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(f));
     ISOLATED.set(false);
-    r.map_err(|p| p.downcast_ref::<&str>().map(|s| s.to_string()).or_else(|| p.downcast_ref::<String>().cloned()).unwrap_or_default())
+    r.map_err(|p| {
+        p.downcast_ref::<&str>()
+            .map(|s| s.to_string())
+            .or_else(|| p.downcast_ref::<String>().cloned())
+            .unwrap_or_default()
+    })
 }

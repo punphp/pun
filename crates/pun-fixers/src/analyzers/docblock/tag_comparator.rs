@@ -15,5 +15,8 @@ pub fn should_be_together(first: &Tag, second: &Tag, groups: &[&[&str]]) -> bool
     if first_name == second_name {
         return true;
     }
-    groups.iter().any(|g| g.iter().any(|t| t.as_bytes() == first_name) && g.iter().any(|t| t.as_bytes() == second_name))
+    groups.iter().any(|g| {
+        g.iter().any(|t| t.as_bytes() == first_name)
+            && g.iter().any(|t| t.as_bytes() == second_name)
+    })
 }

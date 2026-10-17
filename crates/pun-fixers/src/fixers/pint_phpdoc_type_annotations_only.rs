@@ -47,7 +47,11 @@ fn process_comment(tokens: &mut Tokens, index: usize) {
         && tokens[p].equals("{", true)
         && tokens[n].equals("}", true)
     {
-        let placeholder: &[u8] = if ltrim_chars(&content, TRIM_CHARS).starts_with(b"#") { b"#" } else { b"//" };
+        let placeholder: &[u8] = if ltrim_chars(&content, TRIM_CHARS).starts_with(b"#") {
+            b"#"
+        } else {
+            b"//"
+        };
         if trim(&content) != placeholder {
             tokens.set(index, Token::new(T_COMMENT, placeholder));
         }
@@ -96,15 +100,25 @@ fn count(s: &[u8], c: u8) -> i64 {
 fn clear_and_clean_whitespace(tokens: &mut Tokens, index: usize) {
     let prev = tokens.get_prev_non_whitespace(index, None);
     let next = tokens.get_next_non_whitespace(index, None);
-    let had_blank_line_before =
-        prev.is_some_and(|p| (p + 1..index).any(|i| tokens[i].is_whitespace(None) && count(tokens[i].get_content(), b'\n') >= 2));
+    let had_blank_line_before = prev.is_some_and(|p| {
+        (p + 1..index)
+            .any(|i| tokens[i].is_whitespace(None) && count(tokens[i].get_content(), b'\n') >= 2)
+    });
     tokens.clear_token_and_merge_surrounding_whitespace(index);
-    let (Some(prev), Some(next)) = (prev, next) else { return };
-    let Some(i) = (prev + 1..next).find(|&i| tokens[i].is_whitespace(None)) else { return };
+    let (Some(prev), Some(next)) = (prev, next) else {
+        return;
+    };
+    let Some(i) = (prev + 1..next).find(|&i| tokens[i].is_whitespace(None)) else {
+        return;
+    };
     let ws = tokens[i].get_content();
     if count(ws, b'\n') > 1 {
         let last_newline = ws.iter().rposition(|&c| c == b'\n').unwrap();
-        let mut new = if had_blank_line_before { b"\n".to_vec() } else { vec![] };
+        let mut new = if had_blank_line_before {
+            b"\n".to_vec()
+        } else {
+            vec![]
+        };
         new.extend_from_slice(&ws[last_newline..]);
         tokens.set(i, Token::new(T_WHITESPACE, new));
     }
@@ -113,7 +127,10 @@ fn clear_and_clean_whitespace(tokens: &mut Tokens, index: usize) {
 /// First `/^(\s+)\*/` match's group, else a single space.
 fn detect_indent<'a>(lines: &[&'a [u8]]) -> &'a [u8] {
     for line in lines {
-        let n = line.iter().take_while(|c| b" \t\x0B\x0C\r".contains(c)).count();
+        let n = line
+            .iter()
+            .take_while(|c| b" \t\x0B\x0C\r".contains(c))
+            .count();
         if n > 0 && line.get(n) == Some(&b'*') {
             return &line[..n];
         }

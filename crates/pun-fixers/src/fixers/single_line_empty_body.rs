@@ -24,16 +24,22 @@ impl Fixer for SingleLineEmptyBodyFixer {
             if !tokens[index].is_given_kind(&[T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM, T_FUNCTION]) {
                 continue;
             }
-            let open_brace_index = tokens.get_next_token_of_kind(index, &["{".into(), ";".into()], true).unwrap();
+            let open_brace_index = tokens
+                .get_next_token_of_kind(index, &["{".into(), ";".into()], true)
+                .unwrap();
             if !tokens[open_brace_index].equals("{", true) {
                 continue;
             }
-            let close_brace_index = tokens.get_next_non_whitespace(open_brace_index, None).unwrap();
+            let close_brace_index = tokens
+                .get_next_non_whitespace(open_brace_index, None)
+                .unwrap();
             if !tokens[close_brace_index].equals("}", true) {
                 continue;
             }
             tokens.ensure_whitespace_at_index(open_brace_index + 1, 0, b"");
-            let before_open_brace_index = tokens.get_prev_non_whitespace(open_brace_index, None).unwrap();
+            let before_open_brace_index = tokens
+                .get_prev_non_whitespace(open_brace_index, None)
+                .unwrap();
             if !tokens[before_open_brace_index].is_given_kind(&[T_COMMENT, T_DOC_COMMENT]) {
                 tokens.ensure_whitespace_at_index(open_brace_index - 1, 1, b" ");
             }

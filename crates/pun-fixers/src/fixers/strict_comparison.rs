@@ -25,7 +25,11 @@ impl Fixer for StrictComparisonFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for (kind, indices) in tokens.find_given_kinds(&[T_IS_EQUAL, T_IS_NOT_EQUAL], 0, None) {
-            let new = if kind == T_IS_EQUAL { (T_IS_IDENTICAL, "===") } else { (T_IS_NOT_IDENTICAL, "!==") };
+            let new = if kind == T_IS_EQUAL {
+                (T_IS_IDENTICAL, "===")
+            } else {
+                (T_IS_NOT_IDENTICAL, "!==")
+            };
             for index in indices {
                 tokens.set(index, Token::new(new.0, new.1));
             }

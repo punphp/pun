@@ -8,8 +8,24 @@ use std::cell::{OnceCell, RefCell};
 use std::rc::Rc;
 
 pub const TAGS_WITH_TYPES: &[&str] = &[
-    "extends", "implements", "method", "param", "param-out", "phpstan-import-type", "phpstan-type", "phpstan-var", "property",
-    "property-read", "property-write", "psalm-import-type", "psalm-type", "psalm-var", "return", "throws", "type", "var",
+    "extends",
+    "implements",
+    "method",
+    "param",
+    "param-out",
+    "phpstan-import-type",
+    "phpstan-type",
+    "phpstan-var",
+    "property",
+    "property-read",
+    "property-write",
+    "psalm-import-type",
+    "psalm-type",
+    "psalm-var",
+    "return",
+    "throws",
+    "type",
+    "var",
 ];
 
 #[derive(Clone, Debug)]
@@ -56,7 +72,8 @@ impl Annotation {
     }
 
     pub fn get_type_expression(&self) -> Option<TypeExpression> {
-        self.get_types_content().map(|c| TypeExpression::new(&c, self.ctx.clone()))
+        self.get_types_content()
+            .map(|c| TypeExpression::new(&c, self.ctx.clone()))
     }
 
     pub fn get_variable_name(&self) -> Option<Vec<u8>> {
@@ -81,7 +98,9 @@ impl Annotation {
 
     pub fn get_types(&self) -> Vec<Vec<u8>> {
         if self.types.borrow().is_none() {
-            let t = self.get_type_expression().map_or_else(Vec::new, |e| e.get_types());
+            let t = self
+                .get_type_expression()
+                .map_or_else(Vec::new, |e| e.get_types());
             *self.types.borrow_mut() = Some(t);
         }
         self.types.borrow().clone().unwrap()
@@ -92,16 +111,32 @@ impl Annotation {
         // The glue only joins two or more types; skip re-parsing the expression for the usual single one.
         let new_types_content = match types {
             [one] => one.clone(),
-            _ => types.join(&[self.get_type_expression().and_then(|e| e.get_types_glue()).unwrap_or(b'|')][..]),
+            _ => types.join(
+                &[self
+                    .get_type_expression()
+                    .and_then(|e| e.get_types_glue())
+                    .unwrap_or(b'|')][..],
+            ),
         };
         if orig_types_content == new_types_content {
             return;
         }
-        let split = |s: &[u8]| preg::split(r"/([^\n\r]+\R*)/", s, preg::SPLIT_NO_EMPTY | preg::SPLIT_DELIM_CAPTURE);
+        let split = |s: &[u8]| {
+            preg::split(
+                r"/([^\n\r]+\R*)/",
+                s,
+                preg::SPLIT_NO_EMPTY | preg::SPLIT_DELIM_CAPTURE,
+            )
+        };
         let original_types_lines = split(&orig_types_content);
         let new_types_lines = split(&new_types_content);
         for (index, line) in new_types_lines.iter().enumerate() {
-            let pattern = [&b"/"[..], &preg::quote(&original_types_lines[index], Some(b'/')), b"/"].concat();
+            let pattern = [
+                &b"/"[..],
+                &preg::quote(&original_types_lines[index], Some(b'/')),
+                b"/",
+            ]
+            .concat();
             let content = self.lines[index].borrow().get_content().to_vec();
             // the replacement is a literal in upstream only by accident of content; keep preg_replace semantics
             let new = preg::replace(&pattern, line, &content, 1);
@@ -111,8 +146,12 @@ impl Annotation {
     }
 
     pub fn get_normalized_types(&self) -> Vec<Vec<u8>> {
-        let Some(e) = self.get_type_expression() else { return vec![] };
-        e.map_types(&mut |v| v.lowercased()).sort_types(&mut |a, b| a.to_string().cmp(b.to_string())).get_types()
+        let Some(e) = self.get_type_expression() else {
+            return vec![];
+        };
+        e.map_types(&mut |v| v.lowercased())
+            .sort_types(&mut |a, b| a.to_string().cmp(b.to_string()))
+            .get_types()
     }
 
     pub fn remove(&self) {
@@ -134,11 +173,16 @@ impl Annotation {
     }
 
     pub fn get_content(&self) -> Vec<u8> {
-        self.lines.iter().flat_map(|l| l.borrow().get_content().to_vec()).collect()
+        self.lines
+            .iter()
+            .flat_map(|l| l.borrow().get_content().to_vec())
+            .collect()
     }
 
     pub fn support_types(&self) -> bool {
-        TAGS_WITH_TYPES.iter().any(|t| t.as_bytes() == self.get_tag().get_name())
+        TAGS_WITH_TYPES
+            .iter()
+            .any(|t| t.as_bytes() == self.get_tag().get_name())
     }
 
     /// Panics like upstream's RuntimeException when the tag does not support types.
@@ -148,7 +192,14 @@ impl Annotation {
             if !self.support_types() {
                 panic!("This tag does not support types.");
             }
-            let pattern = [&br"{^(?:\h*\*|/\*\*)[\h*]*@"[..], &name, br"\h+", REGEX_TYPES.as_bytes(), br"(?:(?:[*\h\v]|\&?[\.\$\s]).*)?\r?$}is"].concat();
+            let pattern = [
+                &br"{^(?:\h*\*|/\*\*)[\h*]*@"[..],
+                &name,
+                br"\h+",
+                REGEX_TYPES.as_bytes(),
+                br"(?:(?:[*\h\v]|\&?[\.\$\s]).*)?\r?$}is",
+            ]
+            .concat();
             let content = self.get_content();
             if let Some(m) = preg::captures(&pattern, &content) {
                 *self.types_content.borrow_mut() = Some(m.name_str("types").to_vec());
@@ -170,8 +221,14 @@ fn variable_name_ascii(content: &[u8], tag: &[u8], types: &[u8]) -> Option<Vec<u
     if !content.is_ascii() {
         return None;
     }
-    let ws = |s: &[u8]| s.iter().take_while(|b| matches!(b, b' ' | b'\t' | b'\n' | b'\r' | 0x0b | 0x0c)).count();
-    let at = content.windows(tag.len() + 1).position(|w| w[0] == b'@' && &w[1..] == tag)?;
+    let ws = |s: &[u8]| {
+        s.iter()
+            .take_while(|b| matches!(b, b' ' | b'\t' | b'\n' | b'\r' | 0x0b | 0x0c))
+            .count()
+    };
+    let at = content
+        .windows(tag.len() + 1)
+        .position(|w| w[0] == b'@' && &w[1..] == tag)?;
     let mut rest = &content[at + 1 + tag.len()..];
     let n = ws(rest);
     if n == 0 {
@@ -188,7 +245,10 @@ fn variable_name_ascii(content: &[u8], tag: &[u8], types: &[u8]) -> Option<Vec<u
         rest = &r[ws(r)..];
     }
     let name = rest.strip_prefix(b"$")?;
-    let len = name.iter().take_while(|b| b.is_ascii_alphanumeric() || **b == b'_').count();
+    let len = name
+        .iter()
+        .take_while(|b| b.is_ascii_alphanumeric() || **b == b'_')
+        .count();
     (len > 0 && !name[0].is_ascii_digit()).then(|| rest[..1 + len].to_vec())
 }
 
@@ -199,10 +259,22 @@ mod tests {
     #[test]
     fn variable_name_fast_path_matches_php() {
         // Expected values: PHP 8.5 preg_match() with getVariableName()'s pattern on the same input.
-        let v = |c: &str, tag: &str, ty: &str| variable_name_ascii(c.as_bytes(), tag.as_bytes(), ty.as_bytes()).map(|v| String::from_utf8(v).unwrap());
-        assert_eq!(v("     * @param string $foo bar\n", "param", "string"), Some("$foo".into()));
-        assert_eq!(v("     * @param $this $a1_b\n", "param", "$this"), Some("$a1_b".into()));
-        assert_eq!(v(" * @param int &...  $x\n", "param", "int"), Some("$x".into()));
+        let v = |c: &str, tag: &str, ty: &str| {
+            variable_name_ascii(c.as_bytes(), tag.as_bytes(), ty.as_bytes())
+                .map(|v| String::from_utf8(v).unwrap())
+        };
+        assert_eq!(
+            v("     * @param string $foo bar\n", "param", "string"),
+            Some("$foo".into())
+        );
+        assert_eq!(
+            v("     * @param $this $a1_b\n", "param", "$this"),
+            Some("$a1_b".into())
+        );
+        assert_eq!(
+            v(" * @param int &...  $x\n", "param", "int"),
+            Some("$x".into())
+        );
         assert_eq!(v(" * @param\t\n  $x\n", "param", ""), Some("$x".into()));
         // Not the first path (or no match at all): left to the regex.
         assert_eq!(v(" * @param int $1x\n", "param", "int"), None);

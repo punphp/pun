@@ -13,7 +13,9 @@ struct OrderedTraitsFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(OrderedTraitsFixer { case_sensitive: false })
+    Box::new(OrderedTraitsFixer {
+        case_sensitive: false,
+    })
 }
 
 impl Fixer for OrderedTraitsFixer {
@@ -61,12 +63,19 @@ fn find_use_statements_groups(tokens: &Tokens) -> Vec<Vec<(usize, Tokens)>> {
             index += 1;
             continue;
         }
-        let start_index = tokens.get_next_non_whitespace(tokens.get_prev_meaningful_token(index).unwrap(), None).unwrap();
-        let mut end_index = tokens.get_next_token_of_kind(index, &[";".into(), "{".into()], true).unwrap();
+        let start_index = tokens
+            .get_next_non_whitespace(tokens.get_prev_meaningful_token(index).unwrap(), None)
+            .unwrap();
+        let mut end_index = tokens
+            .get_next_token_of_kind(index, &[";".into(), "{".into()], true)
+            .unwrap();
         if tokens[end_index].equals("{", true) {
             end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, end_index);
         }
-        uses.push((start_index, Tokens::from_array(tokens.as_slice()[start_index..=end_index].to_vec())));
+        uses.push((
+            start_index,
+            Tokens::from_array(tokens.as_slice()[start_index..=end_index].to_vec()),
+        ));
         index = end_index + 1;
     }
     groups
@@ -95,7 +104,10 @@ impl OrderedTraitsFixer {
                 continue;
             }
             if token.equals_any(&[",".into(), ";".into(), "{".into()], true) {
-                traits.push((index_of_name.unwrap(), Tokens::from_array(std::mem::take(&mut name))));
+                traits.push((
+                    index_of_name.unwrap(),
+                    Tokens::from_array(std::mem::take(&mut name)),
+                ));
                 index_of_name = None;
             }
             if u[index].equals("{", true) {
@@ -122,7 +134,11 @@ impl OrderedTraitsFixer {
         let mut order: Vec<usize> = (0..elements.len()).collect();
         order.sort_by(|&a, &b| {
             let (x, y) = (to_trait_name(&elements[a].1), to_trait_name(&elements[b].1));
-            if self.case_sensitive { x.cmp(&y) } else { strcasecmp(&x, &y).cmp(&0) }
+            if self.case_sensitive {
+                x.cmp(&y)
+            } else {
+                strcasecmp(&x, &y).cmp(&0)
+            }
         });
         let before_override_count = tokens.count();
         for pos in (0..elements.len()).rev() {
@@ -135,4 +151,3 @@ impl OrderedTraitsFixer {
         }
     }
 }
-

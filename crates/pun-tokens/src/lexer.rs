@@ -70,7 +70,10 @@ pub fn tokenize(src: &[u8]) -> Vec<RawToken<'_>> {
     while let Some((kind, start, end)) = lx.next() {
         spans.push((kind, start, end));
         if need_tokens != -1 {
-            if !matches!(kind, Some(T_WHITESPACE | T_OPEN_TAG | T_COMMENT | T_DOC_COMMENT)) {
+            if !matches!(
+                kind,
+                Some(T_WHITESPACE | T_OPEN_TAG | T_COMMENT | T_DOC_COMMENT)
+            ) {
                 need_tokens -= 1;
                 if need_tokens == 0 {
                     if end < src.len() {
@@ -99,7 +102,11 @@ pub fn tokenize(src: &[u8]) -> Vec<RawToken<'_>> {
                 }
             }
             counted = counted.max(start);
-            RawToken { kind, text: &src[start..end], line }
+            RawToken {
+                kind,
+                text: &src[start..end],
+                line,
+            }
         })
         .collect();
     // The post-__halt_compiler T_INLINE_HTML reuses the third token's start line.
@@ -211,7 +218,14 @@ type Tok = (Option<Kind>, usize, usize);
 
 impl<'a> Lexer<'a> {
     pub(crate) fn new(src: &'a [u8]) -> Self {
-        Lexer { src, pos: 0, state: State::Initial, stack: Vec::new(), labels: Vec::new(), tok_state: State::Initial }
+        Lexer {
+            src,
+            pos: 0,
+            state: State::Initial,
+            stack: Vec::new(),
+            labels: Vec::new(),
+            tok_state: State::Initial,
+        }
     }
 
     #[inline]
@@ -301,7 +315,14 @@ impl<'a> Lexer<'a> {
                     }
                     b'\r' => {
                         self.state = State::Scripting;
-                        return (Some(T_OPEN_TAG), if self.at(e + 1) == b'\n' { e + 2 } else { e + 1 });
+                        return (
+                            Some(T_OPEN_TAG),
+                            if self.at(e + 1) == b'\n' {
+                                e + 2
+                            } else {
+                                e + 1
+                            },
+                        );
                     }
                     _ if e == n => {
                         self.state = State::Scripting;
@@ -325,7 +346,8 @@ impl<'a> Lexer<'a> {
             if self.src[cur] == b'?'
                 && (self.at(cur + 1) == b'='
                     || (self.starts_with_ci(cur + 1, b"php")
-                        && (cur + 4 == n || matches!(self.at(cur + 4), b' ' | b'\t' | b'\n' | b'\r'))))
+                        && (cur + 4 == n
+                            || matches!(self.at(cur + 4), b' ' | b'\t' | b'\n' | b'\r'))))
             {
                 cur -= 1;
                 break;
@@ -347,7 +369,10 @@ impl<'a> Lexer<'a> {
             } else if c == b'/' && self.at(q + 1) == b'*' {
                 // "/*" ... first "*/", no NUL.
                 let mut k = q + 2;
-                while k + 1 < n && !(self.src[k] == b'*' && self.src[k + 1] == b'/') && self.src[k] != 0 {
+                while k + 1 < n
+                    && !(self.src[k] == b'*' && self.src[k + 1] == b'/')
+                    && self.src[k] != 0
+                {
                     k += 1;
                 }
                 if k + 1 < n && self.src[k] == b'*' && self.src[k + 1] == b'/' {
@@ -406,7 +431,10 @@ impl<'a> Lexer<'a> {
             b'$' if is_label_start(self.at(p + 1)) => (Some(T_VARIABLE), self.label_end(p + 1)),
             b'\\' => {
                 if is_label_start(self.at(p + 1)) {
-                    (Some(T_NAME_FULLY_QUALIFIED), self.qualified_end(self.label_end(p + 1)))
+                    (
+                        Some(T_NAME_FULLY_QUALIFIED),
+                        self.qualified_end(self.label_end(p + 1)),
+                    )
                 } else {
                     (Some(T_NS_SEPARATOR), p + 1)
                 }
@@ -421,7 +449,11 @@ impl<'a> Lexer<'a> {
                 let e = match self.at(e) {
                     b'\n' if e < n => e + 1,
                     b'\r' if e < n => {
-                        if self.at(e + 1) == b'\n' { e + 2 } else { e + 1 }
+                        if self.at(e + 1) == b'\n' {
+                            e + 2
+                        } else {
+                            e + 1
+                        }
                     }
                     _ => e,
                 };
@@ -465,7 +497,10 @@ impl<'a> Lexer<'a> {
                 if matches!(self.at(p + 1), b'&' | b'=') {
                     return self.operator(p);
                 }
-                let followed = |q: usize| self.at(q) == b'$' || (self.at(q) == b'.' && self.at(q + 1) == b'.' && self.at(q + 2) == b'.');
+                let followed = |q: usize| {
+                    self.at(q) == b'$'
+                        || (self.at(q) == b'.' && self.at(q + 1) == b'.' && self.at(q + 2) == b'.')
+                };
                 if followed(p + 1) || self.woc_ends(p + 1).into_iter().any(|q| followed(q)) {
                     (Some(T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG), p + 1)
                 } else {
@@ -573,7 +608,11 @@ impl<'a> Lexer<'a> {
         }
         if self.at(e) == b'\\' && is_label_start(self.at(e + 1)) {
             let q = self.qualified_end(e);
-            let kind = if word.eq_ignore_ascii_case(b"namespace") { T_NAME_RELATIVE } else { T_NAME_QUALIFIED };
+            let kind = if word.eq_ignore_ascii_case(b"namespace") {
+                T_NAME_RELATIVE
+            } else {
+                T_NAME_QUALIFIED
+            };
             return (Some(kind), q);
         }
         if word.len() > 15 {
@@ -603,7 +642,11 @@ impl<'a> Lexer<'a> {
                             as_string = as_string.max(Some(q + kw.len()));
                         }
                     }
-                    if q < self.src.len() && (self.src[q].is_ascii_alphabetic() || self.src[q] == b'_' || self.src[q] >= 0x80) {
+                    if q < self.src.len()
+                        && (self.src[q].is_ascii_alphabetic()
+                            || self.src[q] == b'_'
+                            || self.src[q] >= 0x80)
+                    {
                         as_enum = as_enum.max(Some(q + 1));
                     }
                 }
@@ -807,22 +850,38 @@ impl<'a> Lexer<'a> {
         let end = match self.at(i) {
             b'\n' if i < n => i + 1,
             b'\r' if i < n => {
-                if self.at(i + 1) == b'\n' { i + 2 } else { i + 1 }
+                if self.at(i + 1) == b'\n' {
+                    i + 2
+                } else {
+                    i + 1
+                }
             }
             _ => return None,
         };
-        self.state = if quote == Some(b'\'') { State::Nowdoc } else { State::Heredoc };
+        self.state = if quote == Some(b'\'') {
+            State::Nowdoc
+        } else {
+            State::Heredoc
+        };
         let label = &self.src[ls..le];
         let mut cur = end;
         while cur < n && matches!(self.src[cur], b' ' | b'\t') {
             cur += 1;
         }
         let mut indentation = 0;
-        if cur < n && label.len() < n - cur && &self.src[cur..cur + label.len()] == label && !is_label_char(self.src[cur + label.len()]) {
+        if cur < n
+            && label.len() < n - cur
+            && &self.src[cur..cur + label.len()] == label
+            && !is_label_char(self.src[cur + label.len()])
+        {
             indentation = cur - end;
             self.state = State::EndHeredoc;
         }
-        self.labels.push(Label { start: ls, end: le, indentation });
+        self.labels.push(Label {
+            start: ls,
+            end: le,
+            indentation,
+        });
         Some(end)
     }
 
@@ -840,8 +899,12 @@ impl<'a> Lexer<'a> {
             (b'$', c) if is_label_start(c) => {
                 let e = self.label_end(p + 1);
                 match (self.at(e), self.at(e + 1), self.at(e + 2), self.at(e + 3)) {
-                    (b'-', b'>', c, _) if is_label_start(c) && e + 2 < self.src.len() => self.push(State::LookingForProperty),
-                    (b'?', b'-', b'>', c) if is_label_start(c) && e + 3 < self.src.len() => self.push(State::LookingForProperty),
+                    (b'-', b'>', c, _) if is_label_start(c) && e + 2 < self.src.len() => {
+                        self.push(State::LookingForProperty)
+                    }
+                    (b'?', b'-', b'>', c) if is_label_start(c) && e + 3 < self.src.len() => {
+                        self.push(State::LookingForProperty)
+                    }
                     (b'[', ..) => self.push(State::VarOffset),
                     _ => {}
                 }
@@ -913,7 +976,10 @@ impl<'a> Lexer<'a> {
                     if cur == n {
                         return (Some(T_ENCAPSED_AND_WHITESPACE), n);
                     }
-                    if is_label_start(self.src[cur]) && llen < n - cur && self.src[cur..cur + llen] == self.src[ls..le] {
+                    if is_label_start(self.src[cur])
+                        && llen < n - cur
+                        && self.src[cur..cur + llen] == self.src[ls..le]
+                    {
                         if is_label_char(self.src[cur + llen]) {
                             continue;
                         }
@@ -1024,7 +1090,11 @@ fn decimal_kind(text: &[u8]) -> Kind {
         return T_LNUMBER;
     }
     let base = if octal { 8 } else { 10 };
-    if fits_i64(&d, base) { T_LNUMBER } else { T_DNUMBER }
+    if fits_i64(&d, base) {
+        T_LNUMBER
+    } else {
+        T_DNUMBER
+    }
 }
 
 fn prefixed_kind(digits: &[u8], base: u32) -> Kind {
@@ -1042,7 +1112,10 @@ fn fits_i64(d: &[u8], base: u32) -> bool {
     let mut v: i64 = 0;
     for &c in d {
         let digit = (c as char).to_digit(base).unwrap_or(0) as i64;
-        match v.checked_mul(base as i64).and_then(|v| v.checked_add(digit)) {
+        match v
+            .checked_mul(base as i64)
+            .and_then(|v| v.checked_add(digit))
+        {
             Some(x) => v = x,
             None => return false,
         }
@@ -1057,7 +1130,12 @@ mod tests {
     fn kinds(src: &str) -> Vec<(String, String)> {
         tokenize(src.as_bytes())
             .iter()
-            .map(|t| (t.kind.map_or("".into(), |k| k.name().to_string()), String::from_utf8_lossy(t.text).into_owned()))
+            .map(|t| {
+                (
+                    t.kind.map_or("".into(), |k| k.name().to_string()),
+                    String::from_utf8_lossy(t.text).into_owned(),
+                )
+            })
             .collect()
     }
 

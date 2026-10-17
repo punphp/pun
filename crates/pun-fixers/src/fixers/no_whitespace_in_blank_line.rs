@@ -54,7 +54,10 @@ impl NoWhitespaceInBlankLineFixer {
         }
         let l_max = if has_next { line_count - 1 } else { line_count };
         let l_start = usize::from(!(prev.is_kind(T_OPEN_TAG) && prev.content.ends_with(b"\n")));
-        c.split(|&b| b == b'\n').take(l_max).skip(l_start).any(|l| !l.is_empty() && l.iter().all(|b| matches!(b, b' ' | b'\t')))
+        c.split(|&b| b == b'\n')
+            .take(l_max)
+            .skip(l_start)
+            .any(|l| !l.is_empty() && l.iter().all(|b| matches!(b, b' ' | b'\t')))
     }
 
     fn fix_whitespace_token(&self, tokens: &mut Tokens, index: usize) {
@@ -65,7 +68,9 @@ impl NoWhitespaceInBlankLineFixer {
 
         // fix T_WHITESPACES with at least 3 lines (eg `\n   \n`)
         // and T_WHITESPACES with at least 2 lines at the end of file or after open tag with linebreak
-        if line_count > 2 || (line_count > 0 && (!has_next || tokens[index - 1].is_kind(T_OPEN_TAG))) {
+        if line_count > 2
+            || (line_count > 0 && (!has_next || tokens[index - 1].is_kind(T_OPEN_TAG)))
+        {
             let l_max = if has_next { line_count - 1 } else { line_count };
             let mut l_start = 1;
             if tokens[index - 1].is_kind(T_OPEN_TAG) && tokens[index - 1].content.ends_with(b"\n") {

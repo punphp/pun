@@ -13,7 +13,13 @@ use std::borrow::Cow;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-pub const RULES: &[&str] = &["no-request-all", "prefer-casts-method", "prefer-anonymous-migration", "prefer-view-array", "middleware-in-routes"];
+pub const RULES: &[&str] = &[
+    "no-request-all",
+    "prefer-casts-method",
+    "prefer-anonymous-migration",
+    "prefer-view-array",
+    "middleware-in-routes",
+];
 
 #[derive(clap::Args)]
 pub struct LintArgs {
@@ -33,7 +39,13 @@ pub fn run(a: LintArgs) -> Result<u8> {
         bail!("`pun lint` only runs Mago's rules for now; pass --mago");
     }
     let root = super::root()?;
-    let cfg = pun_config::load(&root, &pun_config::Options { config: a.config, ..Default::default() })?;
+    let cfg = pun_config::load(
+        &root,
+        &pun_config::Options {
+            config: a.config,
+            ..Default::default()
+        },
+    )?;
     let files = pun_workspace::discover(&cfg, &a.paths)?;
     let mut settings = Settings::default();
     settings.integrations.insert(Integration::Laravel);
@@ -41,11 +53,18 @@ pub fn run(a: LintArgs) -> Result<u8> {
     let registry = Arc::new(RuleRegistry::build(&settings, Some(&only), true));
     let mut found = 0usize;
     for path in &files {
-        let rel = path.strip_prefix(&root).unwrap_or(path).to_string_lossy().into_owned();
+        let rel = path
+            .strip_prefix(&root)
+            .unwrap_or(path)
+            .to_string_lossy()
+            .into_owned();
         if rel.ends_with(".blade.php") {
             continue;
         }
-        let file = File::ephemeral(Cow::Owned(rel.clone().into_bytes()), Cow::Owned(std::fs::read(path)?));
+        let file = File::ephemeral(
+            Cow::Owned(rel.clone().into_bytes()),
+            Cow::Owned(std::fs::read(path)?),
+        );
         let arena = LocalArena::new();
         let program = mago_syntax::parser::parse_file(&arena, &file);
         if program.has_errors() {
@@ -54,9 +73,24 @@ pub fn run(a: LintArgs) -> Result<u8> {
         let names = NameResolver::new(&arena).resolve(program);
         let linter = Linter::from_registry(&arena, registry.clone(), settings.php_version);
         for issue in linter.lint(&file, program, &names).iter() {
-            let span = issue.annotations.iter().find(|n| n.kind == AnnotationKind::Primary).or(issue.annotations.first()).map(|n| n.span);
-            let (line, col) = span.map_or((1, 1), |s| (file.line_number(s.start.offset) + 1, file.column_number(s.start.offset) + 1));
-            println!("{rel}:{line}:{col}: {} [{}] {}", issue.level, issue.code.as_deref().unwrap_or("mago"), issue.message);
+            let span = issue
+                .annotations
+                .iter()
+                .find(|n| n.kind == AnnotationKind::Primary)
+                .or(issue.annotations.first())
+                .map(|n| n.span);
+            let (line, col) = span.map_or((1, 1), |s| {
+                (
+                    file.line_number(s.start.offset) + 1,
+                    file.column_number(s.start.offset) + 1,
+                )
+            });
+            println!(
+                "{rel}:{line}:{col}: {} [{}] {}",
+                issue.level,
+                issue.code.as_deref().unwrap_or("mago"),
+                issue.message
+            );
             if let Some(help) = &issue.help {
                 println!("    help: {help}");
             }

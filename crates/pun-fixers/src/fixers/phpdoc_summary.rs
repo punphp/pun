@@ -10,7 +10,9 @@ struct PhpdocSummaryFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocSummaryFixer { line_ending: b"\n".to_vec() })
+    Box::new(PhpdocSummaryFixer {
+        line_ending: b"\n".to_vec(),
+    })
 }
 
 impl Fixer for PhpdocSummaryFixer {
@@ -32,14 +34,18 @@ impl Fixer for PhpdocSummaryFixer {
                 continue;
             }
             let doc = DocBlock::new(&tokens[index].content);
-            let Some(end) = ShortDescription::new(&doc).get_end() else { continue };
+            let Some(end) = ShortDescription::new(&doc).get_end() else {
+                continue;
+            };
             let mut line = doc.get_line(end).unwrap().borrow_mut();
             let content = rtrim(line.get_content()).to_vec();
             // final line of Description is NOT properly formatted, and first line of Description,
             // if different than final line, does NOT indicate a list
             if !is_correctly_formatted(&content)
                 && (end == 1
-                    || (doc.is_multi_line() && rtrim(doc.get_line(1).unwrap().borrow().get_content()).last() != Some(&b':')))
+                    || (doc.is_multi_line()
+                        && rtrim(doc.get_line(1).unwrap().borrow().get_content()).last()
+                            != Some(&b':')))
             {
                 line.set_content([&content[..], b".", &self.line_ending].concat());
                 drop(line);
@@ -50,7 +56,10 @@ impl Fixer for PhpdocSummaryFixer {
 }
 
 fn is_correctly_formatted(content: &[u8]) -> bool {
-    if strtolower(content).windows(13).any(|w| w == b"{@inheritdoc}") {
+    if strtolower(content)
+        .windows(13)
+        .any(|w| w == b"{@inheritdoc}")
+    {
         return true;
     }
     // rtrim's char list is bytes, so the multibyte marks count byte by byte, as upstream

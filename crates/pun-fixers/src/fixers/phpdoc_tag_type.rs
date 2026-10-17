@@ -1,6 +1,6 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocTagTypeFixer`.
-use crate::analyzers::preg::{preg_quote, Preg, PREG_SPLIT_DELIM_CAPTURE};
-use anyhow::{bail, Result};
+use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, Preg, preg_quote};
+use anyhow::{Result, bail};
 use pun_format::Fixer;
 use pun_tokens::{Kind::*, Token, Tokens};
 use serde_json::Value;
@@ -17,8 +17,27 @@ const TAG_REGEX: &str = "/^(?:
     )$/x";
 
 const DEFAULT_TAGS: &[&str] = &[
-    "api", "author", "copyright", "deprecated", "example", "global", "inheritDoc", "internal", "license", "method",
-    "package", "param", "property", "return", "see", "since", "throws", "todo", "uses", "var", "version",
+    "api",
+    "author",
+    "copyright",
+    "deprecated",
+    "example",
+    "global",
+    "inheritDoc",
+    "internal",
+    "license",
+    "method",
+    "package",
+    "param",
+    "property",
+    "return",
+    "see",
+    "since",
+    "throws",
+    "todo",
+    "uses",
+    "var",
+    "version",
 ];
 
 struct PhpdocTagTypeFixer {
@@ -27,7 +46,12 @@ struct PhpdocTagTypeFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocTagTypeFixer { tags: DEFAULT_TAGS.iter().map(|t| (t.to_ascii_lowercase(), false)).collect() })
+    Box::new(PhpdocTagTypeFixer {
+        tags: DEFAULT_TAGS
+            .iter()
+            .map(|t| (t.to_ascii_lowercase(), false))
+            .collect(),
+    })
 }
 
 impl Fixer for PhpdocTagTypeFixer {
@@ -41,9 +65,18 @@ impl Fixer for PhpdocTagTypeFixer {
         tokens.is_token_kind_found(T_DOC_COMMENT)
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let o = crate::analyzers::fixer_configuration_resolver::resolve(self.name(), options, &["tags"])?;
+        let o = crate::analyzers::fixer_configuration_resolver::resolve(
+            self.name(),
+            options,
+            &["tags"],
+        )?;
         let Some(v) = o.get("tags") else {
-            *self = PhpdocTagTypeFixer { tags: DEFAULT_TAGS.iter().map(|t| (t.to_ascii_lowercase(), false)).collect() };
+            *self = PhpdocTagTypeFixer {
+                tags: DEFAULT_TAGS
+                    .iter()
+                    .map(|t| (t.to_ascii_lowercase(), false))
+                    .collect(),
+            };
             return Ok(());
         };
         o.check_types("tags", &["string[]"])?;
@@ -55,7 +88,10 @@ impl Fixer for PhpdocTagTypeFixer {
         // setAllowedValues runs before the normalizer
         for (_, ty) in &entries {
             if !matches!(ty.as_str(), Some("annotation" | "inline")) {
-                bail!("[phpdoc_tag_type] Invalid configuration: Unknown tag type \"{}\".", ty.as_str().unwrap());
+                bail!(
+                    "[phpdoc_tag_type] Invalid configuration: Unknown tag type \"{}\".",
+                    ty.as_str().unwrap()
+                );
             }
         }
         if v.is_array() && !entries.is_empty() {
@@ -81,16 +117,28 @@ impl Fixer for PhpdocTagTypeFixer {
         }
         let regular_expression = format!(
             "/({{?@(?:{}).*?(?:(?=\\s\\*\\/)|(?=\\n)}}?))/i",
-            self.tags.iter().map(|(t, _)| String::from_utf8_lossy(&preg_quote(t.as_bytes(), Some(b'/'))).into_owned()).collect::<Vec<_>>().join("|")
+            self.tags
+                .iter()
+                .map(
+                    |(t, _)| String::from_utf8_lossy(&preg_quote(t.as_bytes(), Some(b'/')))
+                        .into_owned()
+                )
+                .collect::<Vec<_>>()
+                .join("|")
         );
         for index in 0..tokens.count() {
             if !tokens[index].is_kind(T_DOC_COMMENT) {
                 continue;
             }
-            let mut parts: Vec<Vec<u8>> = Preg::split(&regular_expression, &tokens[index].content, -1, PREG_SPLIT_DELIM_CAPTURE)
-                .into_iter()
-                .map(|p| p.text)
-                .collect();
+            let mut parts: Vec<Vec<u8>> = Preg::split(
+                &regular_expression,
+                &tokens[index].content,
+                -1,
+                PREG_SPLIT_DELIM_CAPTURE,
+            )
+            .into_iter()
+            .map(|p| p.text)
+            .collect();
             let max = parts.len() - 1;
             let mut i = 1;
             while i < max {
@@ -100,9 +148,15 @@ impl Fixer for PhpdocTagTypeFixer {
                     continue;
                 };
                 let (tag, tag_name) = if !matches.name_str("tag").is_empty() {
-                    (matches.name_str("tag").to_vec(), matches.name_str("tag_name"))
+                    (
+                        matches.name_str("tag").to_vec(),
+                        matches.name_str("tag_name"),
+                    )
                 } else {
-                    (matches.name_str("inlined_tag").to_vec(), matches.name_str("inlined_tag_name"))
+                    (
+                        matches.name_str("inlined_tag").to_vec(),
+                        matches.name_str("inlined_tag_name"),
+                    )
                 };
                 let tag_name = String::from_utf8_lossy(&tag_name.to_ascii_lowercase()).into_owned();
                 let Some(&(_, inline)) = self.tags.iter().find(|(k, _)| *k == tag_name) else {

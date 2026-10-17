@@ -33,7 +33,10 @@ impl Fixer for FinalController {
             .filter(|&k| tokens[k].is_kind(T_EXTENDS))
             .filter_map(|k| {
                 let mut n = tokens.get_next_meaningful_token(k)?;
-                while let Some(m) = tokens.get_next_meaningful_token(n).filter(|&m| tokens[m].is_given_kind(&[T_NS_SEPARATOR, T_STRING])) {
+                while let Some(m) = tokens
+                    .get_next_meaningful_token(n)
+                    .filter(|&m| tokens[m].is_given_kind(&[T_NS_SEPARATOR, T_STRING]))
+                {
                     n = m;
                 }
                 Some(tokens[n].get_content().to_vec())
@@ -43,21 +46,37 @@ impl Fixer for FinalController {
             if !tokens[i].is_kind(T_CLASS) {
                 continue;
             }
-            let Some(name) = tokens.get_next_meaningful_token(i).filter(|&n| tokens[n].is_kind(T_STRING)) else { continue };
+            let Some(name) = tokens
+                .get_next_meaningful_token(i)
+                .filter(|&n| tokens[n].is_kind(T_STRING))
+            else {
+                continue;
+            };
             let n = tokens[name].get_content();
-            if !n.ends_with(b"Controller") || n == b"Controller" || extended.iter().any(|e| e == n) {
+            if !n.ends_with(b"Controller") || n == b"Controller" || extended.iter().any(|e| e == n)
+            {
                 continue;
             }
             let mut start = i;
             let mut skip = false;
-            while let Some(p) = tokens.get_prev_meaningful_token(start).filter(|&p| tokens[p].is_given_kind(&[T_ABSTRACT, T_FINAL, T_READONLY])) {
+            while let Some(p) = tokens
+                .get_prev_meaningful_token(start)
+                .filter(|&p| tokens[p].is_given_kind(&[T_ABSTRACT, T_FINAL, T_READONLY]))
+            {
                 skip |= !tokens[p].is_kind(T_READONLY);
                 start = p;
             }
-            if skip || tokens.get_prev_meaningful_token(start).is_some_and(|p| tokens[p].is_kind(T_NEW)) {
+            if skip
+                || tokens
+                    .get_prev_meaningful_token(start)
+                    .is_some_and(|p| tokens[p].is_kind(T_NEW))
+            {
                 continue;
             }
-            tokens.insert_at(start, vec![Token::new(T_FINAL, "final"), Token::new(T_WHITESPACE, " ")]);
+            tokens.insert_at(
+                start,
+                vec![Token::new(T_FINAL, "final"), Token::new(T_WHITESPACE, " ")],
+            );
         }
     }
 }
@@ -77,9 +96,18 @@ mod tests {
     #[test]
     fn mago_cases() {
         // adds_final_to_plain_controller, adds_final_before_existing_modifier, adds_final_after_attributes
-        assert_eq!(fix("<?php\n\nclass UserController\n{\n}\n"), "<?php\n\nfinal class UserController\n{\n}\n");
-        assert_eq!(fix("<?php\n\nreadonly class CachedController\n{\n}\n"), "<?php\n\nfinal readonly class CachedController\n{\n}\n");
-        assert_eq!(fix("<?php\n\n#[Route]\nclass OrderController\n{\n}\n"), "<?php\n\n#[Route]\nfinal class OrderController\n{\n}\n");
+        assert_eq!(
+            fix("<?php\n\nclass UserController\n{\n}\n"),
+            "<?php\n\nfinal class UserController\n{\n}\n"
+        );
+        assert_eq!(
+            fix("<?php\n\nreadonly class CachedController\n{\n}\n"),
+            "<?php\n\nfinal readonly class CachedController\n{\n}\n"
+        );
+        assert_eq!(
+            fix("<?php\n\n#[Route]\nclass OrderController\n{\n}\n"),
+            "<?php\n\n#[Route]\nfinal class OrderController\n{\n}\n"
+        );
         // skips_abstract_controller
         let same = "<?php\n\nabstract class BaseController\n{\n}\n";
         assert_eq!(fix(same), same);
@@ -88,7 +116,9 @@ mod tests {
     #[test]
     fn edge_cases() {
         assert_eq!(
-            fix("<?php\nnamespace App\\Http\\Controllers;\n\n/** Doc */\nclass PostController extends Controller {}\n"),
+            fix(
+                "<?php\nnamespace App\\Http\\Controllers;\n\n/** Doc */\nclass PostController extends Controller {}\n"
+            ),
             "<?php\nnamespace App\\Http\\Controllers;\n\n/** Doc */\nfinal class PostController extends Controller {}\n"
         );
         for same in [

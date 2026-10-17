@@ -8,16 +8,29 @@ use std::path::{Path, PathBuf};
 
 /// `pint --blade` with preset laravel: the preset's rules plus Pint/laravel_blade, sorted like the runner.
 fn pipeline() -> pun_format::Pipeline {
-    let (_, json) = pun_config::PRESETS.iter().find(|(n, _)| *n == "laravel").unwrap();
+    let (_, json) = pun_config::PRESETS
+        .iter()
+        .find(|(n, _)| *n == "laravel")
+        .unwrap();
     let preset: serde_json::Value = serde_json::from_str(json).unwrap();
     let mut rules: Vec<pun_config::Rule> = preset["rules_as_configured"]
         .as_object()
         .unwrap()
         .iter()
         .filter(|(_, v)| **v != serde_json::Value::Bool(false))
-        .map(|(name, v)| pun_config::Rule { name: name.clone(), options: if v.is_boolean() { serde_json::Value::Null } else { v.clone() } })
+        .map(|(name, v)| pun_config::Rule {
+            name: name.clone(),
+            options: if v.is_boolean() {
+                serde_json::Value::Null
+            } else {
+                v.clone()
+            },
+        })
         .collect();
-    rules.push(pun_config::Rule { name: "Pint/laravel_blade".into(), options: serde_json::Value::Null });
+    rules.push(pun_config::Rule {
+        name: "Pint/laravel_blade".into(),
+        options: serde_json::Value::Null,
+    });
     pun_format::Pipeline::new(&rules, &pun_fixers::all).unwrap()
 }
 
@@ -48,11 +61,18 @@ fn run(pipeline: &pun_format::Pipeline, file: &Path, code: &[u8]) -> Vec<u8> {
 
 #[test]
 fn oracle_blade_fixtures() {
-    if !pun_fixers::all().iter().any(|f| f.name() == "Pint/laravel_blade") {
+    if !pun_fixers::all()
+        .iter()
+        .any(|f| f.name() == "Pint/laravel_blade")
+    {
         return; // PUN_FIXERS_ONLY build without this fixer
     }
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
-    assert!(root.join("node_modules/prettier-plugin-blade").exists(), "run `npm install` in {}", root.display());
+    assert!(
+        root.join("node_modules/prettier-plugin-blade").exists(),
+        "run `npm install` in {}",
+        root.display()
+    );
     let pipeline = pipeline();
     // Prettier would re-indent this; untouched means the fixer bailed out.
     let html: &[u8] = b"<div>\n<p>x</p></div>\n";
@@ -75,12 +95,26 @@ fn oracle_blade_fixtures() {
         let expected = std::fs::read(format!("{}.expected", input.display())).unwrap();
         let got = run(&pipeline, rel, &code);
         if got != expected {
-            fail.push(format!("{} (input)\n{}", rel.display(), String::from_utf8_lossy(&got)));
+            fail.push(format!(
+                "{} (input)\n{}",
+                rel.display(),
+                String::from_utf8_lossy(&got)
+            ));
         }
         let again = run(&pipeline, rel, &expected);
         if again != expected {
-            fail.push(format!("{} (expected changed)\n{}", rel.display(), String::from_utf8_lossy(&again)));
+            fail.push(format!(
+                "{} (expected changed)\n{}",
+                rel.display(),
+                String::from_utf8_lossy(&again)
+            ));
         }
     }
-    assert!(fail.is_empty(), "{} of {} failed:\n{}", fail.len(), all.len() * 2, fail.join("\n"));
+    assert!(
+        fail.is_empty(),
+        "{} of {} failed:\n{}",
+        fail.len(),
+        all.len() * 2,
+        fail.join("\n")
+    );
 }

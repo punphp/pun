@@ -11,7 +11,9 @@ struct CastSpacesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(CastSpacesFixer { space: "single".into() })
+    Box::new(CastSpacesFixer {
+        space: "single".into(),
+    })
 }
 
 impl Fixer for CastSpacesFixer {
@@ -39,8 +41,16 @@ impl Fixer for CastSpacesFixer {
                 continue;
             }
             // strtr with INSIDE_CAST_SPACE_REPLACE_MAP
-            let content: Vec<u8> = token.get_content().iter().copied().filter(|b| !b" \t\n\r\0\x0B".contains(b)).collect();
-            let t = Token { id: token.get_id(), content };
+            let content: Vec<u8> = token
+                .get_content()
+                .iter()
+                .copied()
+                .filter(|b| !b" \t\n\r\0\x0B".contains(b))
+                .collect();
+            let t = Token {
+                id: token.get_id(),
+                content,
+            };
             tokens.set(index, t);
             if self.space == "single" {
                 // force single whitespace after cast token:

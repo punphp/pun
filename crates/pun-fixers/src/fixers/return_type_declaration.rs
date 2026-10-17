@@ -11,7 +11,9 @@ struct ReturnTypeDeclarationFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ReturnTypeDeclarationFixer { one_space_before: false })
+    Box::new(ReturnTypeDeclarationFixer {
+        one_space_before: false,
+    })
 }
 
 impl Fixer for ReturnTypeDeclarationFixer {

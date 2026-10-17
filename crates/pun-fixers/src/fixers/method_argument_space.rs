@@ -41,9 +41,18 @@ impl MethodArgumentSpaceFixer {
     /// Fix arguments spacing for given function; returns whether the function is multiline.
     fn fix_function(&self, tokens: &mut Tokens, start_function_index: usize) -> bool {
         let mut is_multiline = false;
-        let end_function_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_function_index);
-        let first_whitespace_index = Self::find_whitespace_index_after_parenthesis(tokens, start_function_index, end_function_index);
-        let last_whitespace_index = Self::find_whitespace_index_after_parenthesis(tokens, end_function_index, start_function_index);
+        let end_function_index =
+            tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_function_index);
+        let first_whitespace_index = Self::find_whitespace_index_after_parenthesis(
+            tokens,
+            start_function_index,
+            end_function_index,
+        );
+        let last_whitespace_index = Self::find_whitespace_index_after_parenthesis(
+            tokens,
+            end_function_index,
+            start_function_index,
+        );
         for index in [first_whitespace_index, last_whitespace_index] {
             let Some(index) = index else { continue };
             if !has_newline(tokens[index].get_content()) {
@@ -78,8 +87,16 @@ impl MethodArgumentSpaceFixer {
         is_multiline
     }
 
-    fn find_whitespace_index_after_parenthesis(tokens: &Tokens, start_parenthesis_index: usize, end_parenthesis_index: usize) -> Option<usize> {
-        let direction: isize = if end_parenthesis_index > start_parenthesis_index { 1 } else { -1 };
+    fn find_whitespace_index_after_parenthesis(
+        tokens: &Tokens,
+        start_parenthesis_index: usize,
+        end_parenthesis_index: usize,
+    ) -> Option<usize> {
+        let direction: isize = if end_parenthesis_index > start_parenthesis_index {
+            1
+        } else {
+            -1
+        };
         let start_index = start_parenthesis_index.wrapping_add_signed(direction);
         let end_index = end_parenthesis_index.wrapping_add_signed(-direction);
         let mut index = start_index;
@@ -112,7 +129,15 @@ impl MethodArgumentSpaceFixer {
         let mut search_index = start_function_index;
         let mut prev_whitespace_token_index;
         loop {
-            prev_whitespace_token_index = tokens.get_prev_token_of_kind(search_index, &[T_ENCAPSED_AND_WHITESPACE.into(), T_INLINE_HTML.into(), T_WHITESPACE.into()], true);
+            prev_whitespace_token_index = tokens.get_prev_token_of_kind(
+                search_index,
+                &[
+                    T_ENCAPSED_AND_WHITESPACE.into(),
+                    T_INLINE_HTML.into(),
+                    T_WHITESPACE.into(),
+                ],
+                true,
+            );
             match prev_whitespace_token_index {
                 Some(p) if !tokens[p].get_content().contains(&b'\n') => search_index = p,
                 _ => break,
@@ -127,10 +152,23 @@ impl MethodArgumentSpaceFixer {
                 c[c.iter().rposition(|&b| b == b'\n').unwrap() + 1..].to_vec()
             }
         };
-        let indentation = [&existing_indentation[..], self.whitespaces_config.get_indent().as_bytes()].concat();
-        let mut end_function_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_function_index);
-        let at = if tokens[end_function_index - 1].is_whitespace(None) { end_function_index - 1 } else { end_function_index };
-        let ws = [self.whitespaces_config.get_line_ending().as_bytes(), &existing_indentation].concat();
+        let indentation = [
+            &existing_indentation[..],
+            self.whitespaces_config.get_indent().as_bytes(),
+        ]
+        .concat();
+        let mut end_function_index =
+            tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_function_index);
+        let at = if tokens[end_function_index - 1].is_whitespace(None) {
+            end_function_index - 1
+        } else {
+            end_function_index
+        };
+        let ws = [
+            self.whitespaces_config.get_line_ending().as_bytes(),
+            &existing_indentation,
+        ]
+        .concat();
         if tokens.ensure_whitespace_at_index(at, 0, &ws) {
             end_function_index += 1;
         }
@@ -182,7 +220,11 @@ impl MethodArgumentSpaceFixer {
         if tokens[index + 1].is_comment() {
             return;
         }
-        let ws = [self.whitespaces_config.get_line_ending().as_bytes(), indentation].concat();
+        let ws = [
+            self.whitespaces_config.get_line_ending().as_bytes(),
+            indentation,
+        ]
+        .concat();
         if tokens[index + 2].is_comment() {
             let next_meaningful_token_index = tokens.get_next_meaningful_token(index + 2).unwrap();
             if !is_newline(&tokens[next_meaningful_token_index - 1]) {
@@ -220,10 +262,19 @@ impl MethodArgumentSpaceFixer {
             if self.on_multiline == "ensure_single_line" {
                 new_content = Preg::replace("/\\R/", "", &new_content);
             }
-            if (!self.keep_multiple_spaces_after_comma || has_newline(&new_content)) && !Self::is_comment_last_line_token(tokens, index + 2) {
+            if (!self.keep_multiple_spaces_after_comma || has_newline(&new_content))
+                && !Self::is_comment_last_line_token(tokens, index + 2)
+            {
                 new_content = ltrim_chars(&new_content, b" \t").to_vec();
             }
-            let t = Token::new(T_WHITESPACE, if new_content.is_empty() { b" ".to_vec() } else { new_content });
+            let t = Token::new(
+                T_WHITESPACE,
+                if new_content.is_empty() {
+                    b" ".to_vec()
+                } else {
+                    new_content
+                },
+            );
             tokens.set(next_index, t);
             return;
         }
@@ -242,7 +293,11 @@ impl MethodArgumentSpaceFixer {
     }
 
     /// Whether the argument content should not be collapsed.
-    fn argument_content_is_multiline(tokens: &Tokens, open_parenthesis: usize, close_parenthesis: usize) -> bool {
+    fn argument_content_is_multiline(
+        tokens: &Tokens,
+        open_parenthesis: usize,
+        close_parenthesis: usize,
+    ) -> bool {
         let mut index = open_parenthesis + 1;
         while index < close_parenthesis {
             if tokens[index].is_comment() {
@@ -273,7 +328,11 @@ impl MethodArgumentSpaceFixer {
     }
 
     /// Collapse a multiline single-argument call/declaration to a single line.
-    fn ensure_single_line_for_parentheses(tokens: &mut Tokens, open_parenthesis: usize, close_parenthesis: usize) {
+    fn ensure_single_line_for_parentheses(
+        tokens: &mut Tokens,
+        open_parenthesis: usize,
+        close_parenthesis: usize,
+    ) {
         if Self::argument_content_is_multiline(tokens, open_parenthesis, close_parenthesis) {
             return;
         }
@@ -287,7 +346,9 @@ impl MethodArgumentSpaceFixer {
                 index = tokens.find_block_start(Tokens::BLOCK_TYPE_BRACE, index);
             } else if tokens[index].is_whitespace(None) {
                 let previous_token = &tokens[index - 1];
-                if !(previous_token.is_comment() && !previous_token.get_content().starts_with(b"/*")) {
+                if !(previous_token.is_comment()
+                    && !previous_token.get_content().starts_with(b"/*"))
+                {
                     let content = Preg::replace("/\\R\\h*/", "", tokens[index].get_content());
                     tokens.ensure_whitespace_at_index(index, 0, &content);
                 }
@@ -308,16 +369,35 @@ impl Fixer for MethodArgumentSpaceFixer {
         30
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let r = resolve(self.name(), options, &["keep_multiple_spaces_after_comma", "on_multiline", "after_heredoc", "attribute_placement"])?;
-        self.keep_multiple_spaces_after_comma = r.bool("keep_multiple_spaces_after_comma", false)?;
+        let r = resolve(
+            self.name(),
+            options,
+            &[
+                "keep_multiple_spaces_after_comma",
+                "on_multiline",
+                "after_heredoc",
+                "attribute_placement",
+            ],
+        )?;
+        self.keep_multiple_spaces_after_comma =
+            r.bool("keep_multiple_spaces_after_comma", false)?;
         self.on_multiline = r.string(
             "on_multiline",
             "ensure_fully_multiline",
-            &["ignore", "ensure_single_line", "ensure_fully_multiline", "ensure_single_line_for_single_argument"],
+            &[
+                "ignore",
+                "ensure_single_line",
+                "ensure_fully_multiline",
+                "ensure_single_line_for_single_argument",
+            ],
         )?;
         // Future::getV4OrV3(true, false)
         self.after_heredoc = r.bool("after_heredoc", false)?;
-        self.attribute_placement = r.string("attribute_placement", "standalone", &["ignore", "same_line", "standalone"])?;
+        self.attribute_placement = r.string(
+            "attribute_placement",
+            "standalone",
+            &["ignore", "same_line", "standalone"],
+        )?;
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
@@ -334,17 +414,22 @@ impl Fixer for MethodArgumentSpaceFixer {
             if !tokens[index].equals("(", true) {
                 continue;
             }
-            let meaningful_token_before_parenthesis = tokens[tokens.get_prev_meaningful_token(index).unwrap()].clone();
-            if meaningful_token_before_parenthesis.is_keyword() && !meaningful_token_before_parenthesis.is_given_kind(&expected_tokens) {
+            let meaningful_token_before_parenthesis =
+                tokens[tokens.get_prev_meaningful_token(index).unwrap()].clone();
+            if meaningful_token_before_parenthesis.is_keyword()
+                && !meaningful_token_before_parenthesis.is_given_kind(&expected_tokens)
+            {
                 continue;
             }
             let is_multiline = self.fix_function(tokens, index);
             if is_multiline
-                && (self.on_multiline == "ensure_fully_multiline" || self.on_multiline == "ensure_single_line_for_single_argument")
+                && (self.on_multiline == "ensure_fully_multiline"
+                    || self.on_multiline == "ensure_single_line_for_single_argument")
                 && !meaningful_token_before_parenthesis.is_kind(T_LIST)
             {
                 if self.on_multiline == "ensure_single_line_for_single_argument" {
-                    let end_function_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
+                    let end_function_index =
+                        tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
                     if arguments_analyzer.count_arguments(tokens, index, end_function_index) == 1 {
                         Self::ensure_single_line_for_parentheses(tokens, index, end_function_index);
                     } else {
@@ -367,6 +452,10 @@ mod tests {
     #[test]
     fn configure_rejects_unknown_values() {
         assert!(fixer().configure(&json!({"on_multiline": "foo"})).is_err());
-        assert!(fixer().configure(&json!({"attribute_placement": "x"})).is_err());
+        assert!(
+            fixer()
+                .configure(&json!({"attribute_placement": "x"}))
+                .is_err()
+        );
     }
 }

@@ -25,14 +25,18 @@ impl Fixer for NoUselessElseFixer {
             if !tokens[index].is_kind(Kind::T_ELSE) {
                 continue;
             }
-            if tokens[tokens.get_next_meaningful_token(index).unwrap()].equals_any(&[":".into(), Kind::T_IF.into()], true) {
+            if tokens[tokens.get_next_meaningful_token(index).unwrap()]
+                .equals_any(&[":".into(), Kind::T_IF.into()], true)
+            {
                 continue;
             }
             fix_empty_else(tokens, index);
             if tokens.is_empty_at(index) {
                 continue;
             }
-            if is_superfluous_else(tokens, index) && !contains_named_symbol_declaration(tokens, index) {
+            if is_superfluous_else(tokens, index)
+                && !contains_named_symbol_declaration(tokens, index)
+            {
                 clear_else(tokens, index);
             }
         }
@@ -72,5 +76,8 @@ fn contains_named_symbol_declaration(tokens: &Tokens, index: usize) -> bool {
     }
     let a = TokensAnalyzer::new(tokens);
     let close = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, next);
-    (next + 1..close).any(|i| (tokens[i].is_kind(Kind::T_FUNCTION) && !a.is_lambda(i)) || (tokens[i].is_classy() && !a.is_anonymous_class(i)))
+    (next + 1..close).any(|i| {
+        (tokens[i].is_kind(Kind::T_FUNCTION) && !a.is_lambda(i))
+            || (tokens[i].is_classy() && !a.is_anonymous_class(i))
+    })
 }

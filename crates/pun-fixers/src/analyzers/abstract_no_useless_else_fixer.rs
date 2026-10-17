@@ -28,13 +28,21 @@ pub fn is_superfluous_else(tokens: &Tokens, index: usize) -> bool {
         let candidate_index = tokens.get_prev_token_of_kind(
             previous,
             &[
-                ";".into(), T_BREAK.into(), T_CLOSE_TAG.into(), T_CONTINUE.into(), T_EXIT.into(), T_GOTO.into(), T_IF.into(),
-                T_RETURN.into(), T_THROW.into(),
+                ";".into(),
+                T_BREAK.into(),
+                T_CLOSE_TAG.into(),
+                T_CONTINUE.into(),
+                T_EXIT.into(),
+                T_GOTO.into(),
+                T_IF.into(),
+                T_RETURN.into(),
+                T_THROW.into(),
             ],
             true,
         );
-        let Some(candidate_index) = candidate_index.filter(|&c| !tokens[c].equals_any(&[";".into(), T_CLOSE_TAG.into(), T_IF.into()], true))
-        else {
+        let Some(candidate_index) = candidate_index.filter(|&c| {
+            !tokens[c].equals_any(&[";".into(), T_CLOSE_TAG.into(), T_IF.into()], true)
+        }) else {
             return false;
         };
 
@@ -65,7 +73,13 @@ fn get_previous_block(tokens: &Tokens, index: usize) -> (usize, usize) {
     if tokens[close].equals("}", true) {
         previous = tokens.find_block_start(Tokens::BLOCK_TYPE_BRACE, close);
     }
-    let mut open = tokens.get_prev_token_of_kind(previous, &[T_IF.into(), T_ELSE.into(), T_ELSEIF.into()], true).unwrap();
+    let mut open = tokens
+        .get_prev_token_of_kind(
+            previous,
+            &[T_IF.into(), T_ELSE.into(), T_ELSEIF.into()],
+            true,
+        )
+        .unwrap();
     if tokens[open].is_kind(T_IF) {
         let else_candidate = tokens.get_prev_meaningful_token(open).unwrap();
         if tokens[else_candidate].is_kind(T_ELSE) {
@@ -76,7 +90,9 @@ fn get_previous_block(tokens: &Tokens, index: usize) -> (usize, usize) {
 }
 
 fn is_in_conditional(tokens: &Tokens, index: usize, lower_limit_index: usize) -> bool {
-    let candidate_index = tokens.get_prev_token_of_kind(index, &[")".into(), ";".into(), ":".into()], true).unwrap();
+    let candidate_index = tokens
+        .get_prev_token_of_kind(index, &[")".into(), ";".into(), ":".into()], true)
+        .unwrap();
     if tokens[candidate_index].equals(":", true) {
         return true;
     }
@@ -87,10 +103,16 @@ fn is_in_conditional(tokens: &Tokens, index: usize, lower_limit_index: usize) ->
     // If it is part of the condition the token is always in, return false.
     // If it is not it is a nested condition so return true
     let open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, candidate_index);
-    tokens.get_prev_meaningful_token(open).is_some_and(|p| p > lower_limit_index)
+    tokens
+        .get_prev_meaningful_token(open)
+        .is_some_and(|p| p > lower_limit_index)
 }
 
-fn is_in_condition_without_braces(tokens: &Tokens, mut index: usize, lower_limit_index: usize) -> bool {
+fn is_in_condition_without_braces(
+    tokens: &Tokens,
+    mut index: usize,
+    lower_limit_index: usize,
+) -> bool {
     loop {
         if tokens[index].is_comment() || tokens[index].is_whitespace(None) {
             index = tokens.get_prev_meaningful_token(index).unwrap();

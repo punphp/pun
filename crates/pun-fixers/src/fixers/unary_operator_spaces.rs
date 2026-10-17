@@ -11,7 +11,9 @@ struct UnaryOperatorSpacesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(UnaryOperatorSpacesFixer { only_dec_inc: false })
+    Box::new(UnaryOperatorSpacesFixer {
+        only_dec_inc: false,
+    })
 }
 
 impl Fixer for UnaryOperatorSpacesFixer {

@@ -23,7 +23,16 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
     let mut watcher = notify::recommended_watcher(tx)?;
     watcher.watch(&root, RecursiveMode::Recursive)?;
     // Re-runs format exactly the changed files; git selections only pick the first run's files.
-    let rerun = FormatArgs { dirty: false, diff: None, pun: crate::PunArgs { staged: false, since: None, ..a.pun.clone() }, ..a.clone() };
+    let rerun = FormatArgs {
+        dirty: false,
+        diff: None,
+        pun: crate::PunArgs {
+            staged: false,
+            since: None,
+            ..a.pun.clone()
+        },
+        ..a.clone()
+    };
     // The content each file had when Pun last finished with it: events that leave it so (Pun's own writes) are no change.
     let mut done: HashMap<PathBuf, u64> = HashMap::new();
     let hash = |p: &PathBuf| std::fs::read(p).ok().map(|c| xxh3_64(&c));
@@ -48,18 +57,29 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
         if !root.exists() {
             return Ok(0);
         }
-        let files = match load_config(&a, false, &root).and_then(|cfg| pun_workspace::discover(&cfg, &a.paths)) {
+        let files = match load_config(&a, false, &root)
+            .and_then(|cfg| pun_workspace::discover(&cfg, &a.paths))
+        {
             Ok(f) => f,
             Err(e) => {
                 report(Err(e));
                 continue;
             }
         };
-        let targets: Vec<PathBuf> = files.into_iter().filter(|f| changed.contains(f) && done.get(f).is_none_or(|&h| hash(f) != Some(h))).collect();
+        let targets: Vec<PathBuf> = files
+            .into_iter()
+            .filter(|f| changed.contains(f) && done.get(f).is_none_or(|&h| hash(f) != Some(h)))
+            .collect();
         if targets.is_empty() {
             continue;
         }
-        report(format(FormatArgs { paths: targets.clone(), ..rerun.clone() }, false));
+        report(format(
+            FormatArgs {
+                paths: targets.clone(),
+                ..rerun.clone()
+            },
+            false,
+        ));
         for t in targets {
             if let Some(h) = hash(&t) {
                 done.insert(t, h);

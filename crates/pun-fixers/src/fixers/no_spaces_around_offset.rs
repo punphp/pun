@@ -13,7 +13,9 @@ struct NoSpacesAroundOffsetFixer {
 const VALUES: &[&str] = &["inside", "outside"];
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoSpacesAroundOffsetFixer { positions: VALUES.iter().map(|s| s.to_string()).collect() })
+    Box::new(NoSpacesAroundOffsetFixer {
+        positions: VALUES.iter().map(|s| s.to_string()).collect(),
+    })
 }
 
 impl Fixer for NoSpacesAroundOffsetFixer {
@@ -41,7 +43,11 @@ impl Fixer for NoSpacesAroundOffsetFixer {
             }
             if inside {
                 // `$a{0}` (CT_ARRAY_INDEX_BRACE_OPEN) is a parse error since PHP 8, kept for parity with upstream
-                let block_type = if token.equals("[", true) { Tokens::BLOCK_TYPE_INDEX_BRACKET } else { Tokens::BLOCK_TYPE_INDEX_BRACE };
+                let block_type = if token.equals("[", true) {
+                    Tokens::BLOCK_TYPE_INDEX_BRACKET
+                } else {
+                    Tokens::BLOCK_TYPE_INDEX_BRACE
+                };
                 let end_index = tokens.find_block_end(block_type, index);
                 // remove space after opening `[` or `{`
                 if tokens[index + 1].is_whitespace(Some(b" \t")) {
@@ -53,7 +59,8 @@ impl Fixer for NoSpacesAroundOffsetFixer {
                 }
             }
             if outside {
-                let prev_non_whitespace_index = tokens.get_prev_non_whitespace(index, None).unwrap();
+                let prev_non_whitespace_index =
+                    tokens.get_prev_non_whitespace(index, None).unwrap();
                 if tokens[prev_non_whitespace_index].is_comment() {
                     continue;
                 }

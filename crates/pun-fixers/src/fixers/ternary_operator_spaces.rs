@@ -45,7 +45,8 @@ impl Fixer for TernaryOperatorSpacesFixer {
 
         for &index in ternary_operator_indices.iter().rev() {
             if tokens[index].equals("?", true) {
-                let next_non_whitespace_index = tokens.get_next_non_whitespace(index, None).unwrap();
+                let next_non_whitespace_index =
+                    tokens.get_next_non_whitespace(index, None).unwrap();
                 if tokens[next_non_whitespace_index].equals(":", true) {
                     // for `$a ?: $b` remove spaces between `?` and `:`
                     tokens.ensure_whitespace_at_index(index + 1, 0, b"");

@@ -21,7 +21,10 @@ pub fn post_format(content: &[u8]) -> Vec<u8> {
 }
 
 fn wrap(indent: &[u8], tag: &[u8], attribute: &[u8], body: &[u8]) -> Vec<u8> {
-    [indent, b"<", tag, b" ", attribute, b">", body, b"</", tag, b">"].concat()
+    [
+        indent, b"<", tag, b" ", attribute, b">", body, b"</", tag, b">",
+    ]
+    .concat()
 }
 
 fn try_collapse(lines: &[Vec<u8>], line_count: usize, index: usize) -> Option<(Vec<u8>, usize)> {
@@ -29,7 +32,8 @@ fn try_collapse(lines: &[Vec<u8>], line_count: usize, index: usize) -> Option<(V
     let trimmed = ltrim(line);
     let indent = &line[..line.len() - trimmed.len()];
 
-    if let Some(m) = RawPreg::match_groups("/^<([A-Za-z][A-Za-z0-9:_.\\-]*)\\s+(\\S.*)$/", trimmed) {
+    if let Some(m) = RawPreg::match_groups("/^<([A-Za-z][A-Za-z0-9:_.\\-]*)\\s+(\\S.*)$/", trimmed)
+    {
         let tag = m.str(1);
         let attribute = rtrim(m.str(2));
         if attribute_count(attribute) != 1 {
@@ -60,13 +64,22 @@ fn try_collapse(lines: &[Vec<u8>], line_count: usize, index: usize) -> Option<(V
     let terminator = trim(&lines[index + 2]);
     if terminator == b">" || terminator == b"/>" {
         let suffix: &[u8] = if terminator == b"/>" { b" />" } else { b">" };
-        return Some(([indent, trimmed, b" ", attribute, suffix].concat(), index + 3));
+        return Some((
+            [indent, trimmed, b" ", attribute, suffix].concat(),
+            index + 3,
+        ));
     }
     let (body, next_index) = extract_hugged_content(lines, line_count, index + 2, tag)?;
     Some((wrap(indent, tag, attribute, &body), next_index))
 }
 
-fn try_collapse_wrapped_attribute(lines: &[Vec<u8>], line_count: usize, index: usize, indent: &[u8], tag: &[u8]) -> Option<(Vec<u8>, usize)> {
+fn try_collapse_wrapped_attribute(
+    lines: &[Vec<u8>],
+    line_count: usize,
+    index: usize,
+    indent: &[u8],
+    tag: &[u8],
+) -> Option<(Vec<u8>, usize)> {
     let start = index + 1;
     if start >= line_count {
         return None;
@@ -76,7 +89,8 @@ fn try_collapse_wrapped_attribute(lines: &[Vec<u8>], line_count: usize, index: u
     if !opens_blade_attribute(trimmed_first) {
         return None;
     }
-    let dedent_by = first_line.len() as isize - trimmed_first.len() as isize - indent.len() as isize;
+    let dedent_by =
+        first_line.len() as isize - trimmed_first.len() as isize - indent.len() as isize;
     if dedent_by <= 0 {
         return None;
     }
@@ -150,7 +164,12 @@ fn dedent(line: &[u8], amount: usize) -> &[u8] {
     &line[strip..]
 }
 
-fn extract_hugged_content(lines: &[Vec<u8>], line_count: usize, start: usize, tag: &[u8]) -> Option<(Vec<u8>, usize)> {
+fn extract_hugged_content(
+    lines: &[Vec<u8>],
+    line_count: usize,
+    start: usize,
+    tag: &[u8],
+) -> Option<(Vec<u8>, usize)> {
     if start >= line_count {
         return None;
     }

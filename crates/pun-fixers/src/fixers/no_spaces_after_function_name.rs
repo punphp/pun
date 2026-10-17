@@ -11,8 +11,20 @@ pub fn fixer() -> Box<dyn Fixer> {
 
 /// Token kinds which can work as function calls.
 const FUNCTIONY_TOKEN_KINDS: &[Kind] = &[
-    T_ARRAY, T_ECHO, T_EMPTY, T_EVAL, T_EXIT, T_INCLUDE, T_INCLUDE_ONCE, T_ISSET, T_LIST, T_PRINT, T_REQUIRE,
-    T_REQUIRE_ONCE, T_UNSET, T_VARIABLE,
+    T_ARRAY,
+    T_ECHO,
+    T_EMPTY,
+    T_EVAL,
+    T_EXIT,
+    T_INCLUDE,
+    T_INCLUDE_ONCE,
+    T_ISSET,
+    T_LIST,
+    T_PRINT,
+    T_REQUIRE,
+    T_REQUIRE_ONCE,
+    T_UNSET,
+    T_VARIABLE,
 ];
 
 impl NoSpacesAfterFunctionNameFixer {
@@ -48,12 +60,20 @@ impl Fixer for NoSpacesAfterFunctionNameFixer {
             // last non-whitespace token, can never be `null` always at least PHP open tag before it
             let last_token_index = tokens.get_prev_non_whitespace(index, None).unwrap();
             // check for ternary operator
-            let end_parenthesis_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
+            let end_parenthesis_index =
+                tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
             let next_non_white_space = tokens.get_next_meaningful_token(end_parenthesis_index);
             // (`)` is never the last meaningful token of code that parses)
             if let Some(n) = next_non_white_space
                 && !tokens[n].equals(";", true)
-                && tokens[last_token_index].is_given_kind(&[T_ECHO, T_PRINT, T_INCLUDE, T_INCLUDE_ONCE, T_REQUIRE, T_REQUIRE_ONCE])
+                && tokens[last_token_index].is_given_kind(&[
+                    T_ECHO,
+                    T_PRINT,
+                    T_INCLUDE,
+                    T_INCLUDE_ONCE,
+                    T_REQUIRE,
+                    T_REQUIRE_ONCE,
+                ])
             {
                 continue;
             }
@@ -62,15 +82,29 @@ impl Fixer for NoSpacesAfterFunctionNameFixer {
                 Self::fix_function_call(tokens, index);
             } else if tokens[last_token_index].is_kind(T_STRING) {
                 // for real function calls or definitions
-                let possible_definition_index = tokens.get_prev_meaningful_token(last_token_index).unwrap();
+                let possible_definition_index =
+                    tokens.get_prev_meaningful_token(last_token_index).unwrap();
                 if !tokens[possible_definition_index].is_kind(T_FUNCTION) {
                     Self::fix_function_call(tokens, index);
                 }
-            } else if tokens[last_token_index].equals_any(&[")".into(), "]".into(), CT_DYNAMIC_VAR_BRACE_CLOSE.into(), CT_ARRAY_INDEX_BRACE_CLOSE.into()], true) {
+            } else if tokens[last_token_index].equals_any(
+                &[
+                    ")".into(),
+                    "]".into(),
+                    CT_DYNAMIC_VAR_BRACE_CLOSE.into(),
+                    CT_ARRAY_INDEX_BRACE_CLOSE.into(),
+                ],
+                true,
+            ) {
                 let block = Tokens::detect_block_type(&tokens[last_token_index]).map(|(t, _)| t);
-                if [Tokens::BLOCK_TYPE_INDEX_BRACE, Tokens::BLOCK_TYPE_DYNAMIC_VAR_BRACE, Tokens::BLOCK_TYPE_INDEX_BRACKET, Tokens::BLOCK_TYPE_PARENTHESIS]
-                    .iter()
-                    .any(|&t| Some(t) == block)
+                if [
+                    Tokens::BLOCK_TYPE_INDEX_BRACE,
+                    Tokens::BLOCK_TYPE_DYNAMIC_VAR_BRACE,
+                    Tokens::BLOCK_TYPE_INDEX_BRACKET,
+                    Tokens::BLOCK_TYPE_PARENTHESIS,
+                ]
+                .iter()
+                .any(|&t| Some(t) == block)
                 {
                     Self::fix_function_call(tokens, index);
                 }

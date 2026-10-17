@@ -10,8 +10,10 @@ pub const REGEX_IDENTIFIER: &str = crate::__regex_identifier!();
 pub const REGEX_TYPES: &str = crate::__regex_types!();
 const REGEX_TYPE: &str = crate::__regex_type!();
 /// parse()'s and parseCommaSeparatedInnerTypes()'s patterns, built once (they run for every type in every docblock).
-static PARSE_PATTERN: LazyLock<String> = LazyLock::new(|| format!(r"{{\G{REGEX_TYPE}(?<glue_raw>\h*(?<glue>[|&])\h*(?!$)|$)}}"));
-static COMMA_SEPARATED_PATTERN: LazyLock<String> = LazyLock::new(|| format!(r"{{\G{REGEX_TYPES}(?:\h*,[\h\v*]*|$)}}"));
+static PARSE_PATTERN: LazyLock<String> =
+    LazyLock::new(|| format!(r"{{\G{REGEX_TYPE}(?<glue_raw>\h*(?<glue>[|&])\h*(?!$)|$)}}"));
+static COMMA_SEPARATED_PATTERN: LazyLock<String> =
+    LazyLock::new(|| format!(r"{{\G{REGEX_TYPES}(?:\h*,[\h\v*]*|$)}}"));
 
 const ALIASES: &[(&[u8], &[u8])] = &[
     (b"boolean", b"bool"),
@@ -58,7 +60,11 @@ pub struct ParseError(pub Vec<u8>);
 
 impl std::fmt::Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Unable to parse phpdoc type '{}'", String::from_utf8_lossy(&self.0))
+        write!(
+            f,
+            "Unable to parse phpdoc type '{}'",
+            String::from_utf8_lossy(&self.0)
+        )
     }
 }
 
@@ -78,7 +84,13 @@ impl TypeExpression {
     }
 
     pub fn try_new(value: &[u8], ctx: Rc<Context>) -> Result<Self, ParseError> {
-        let mut t = TypeExpression { value: value.to_vec(), is_composite_type: false, types_glue: None, inner_type_expressions: vec![], ctx };
+        let mut t = TypeExpression {
+            value: value.to_vec(),
+            is_composite_type: false,
+            types_glue: None,
+            inner_type_expressions: vec![],
+            ctx,
+        };
         t.parse()?;
         Ok(t)
     }
@@ -93,7 +105,11 @@ impl TypeExpression {
 
     pub fn get_types(&self) -> Vec<Vec<u8>> {
         if self.is_composite_type {
-            return self.inner_type_expressions.iter().map(|(_, e)| e.value.clone()).collect();
+            return self
+                .inner_type_expressions
+                .iter()
+                .map(|(_, e)| e.value.clone())
+                .collect();
         }
         vec![self.value.clone()]
     }
@@ -114,7 +130,10 @@ impl TypeExpression {
         self.types_glue
     }
 
-    pub fn map_types(&self, callback: &mut dyn FnMut(TypeExpression) -> TypeExpression) -> TypeExpression {
+    pub fn map_types(
+        &self,
+        callback: &mut dyn FnMut(TypeExpression) -> TypeExpression,
+    ) -> TypeExpression {
         let mut value = self.value.clone();
         let mut start_index_offset: isize = 0;
         for (start_index_orig, inner) in &self.inner_type_expressions {
@@ -126,7 +145,11 @@ impl TypeExpression {
                 start_index_offset += inner.value.len() as isize - inner_value_orig.len() as isize;
             }
         }
-        let t = if value == self.value { self.clone() } else { self.inner(&value) };
+        let t = if value == self.value {
+            self.clone()
+        } else {
+            self.inner(&value)
+        };
         callback(t)
     }
 
@@ -137,16 +160,28 @@ impl TypeExpression {
         });
     }
 
-    pub fn sort_types(&self, compare: &mut dyn FnMut(&TypeExpression, &TypeExpression) -> Ordering) -> TypeExpression {
+    pub fn sort_types(
+        &self,
+        compare: &mut dyn FnMut(&TypeExpression, &TypeExpression) -> Ordering,
+    ) -> TypeExpression {
         let ctx = self.ctx.clone();
         self.map_types(&mut |t: TypeExpression| {
             if !t.is_composite_type {
                 return t;
             }
             let mut order: Vec<usize> = (0..t.inner_type_expressions.len()).collect();
-            order.sort_by(|&a, &b| compare(&t.inner_type_expressions[a].1, &t.inner_type_expressions[b].1));
+            order.sort_by(|&a, &b| {
+                compare(
+                    &t.inner_type_expressions[a].1,
+                    &t.inner_type_expressions[b].1,
+                )
+            });
             if order.iter().enumerate().any(|(i, &j)| i != j) {
-                let value = order.iter().map(|&i| t.inner_type_expressions[i].1.value.clone()).collect::<Vec<_>>().join(&[t.types_glue.unwrap()][..]);
+                let value = order
+                    .iter()
+                    .map(|&i| t.inner_type_expressions[i].1.value.clone())
+                    .collect::<Vec<_>>()
+                    .join(&[t.types_glue.unwrap()][..]);
                 return TypeExpression::new(&value, ctx.clone());
             }
             t
@@ -181,7 +216,9 @@ impl TypeExpression {
     }
 
     pub fn allows_null(&self) -> bool {
-        self.get_types().iter().any(|t| t == b"null" || t == b"mixed" || t.starts_with(b"?"))
+        self.get_types()
+            .iter()
+            .any(|t| t == b"null" || t == b"mixed" || t.starts_with(b"?"))
     }
 
     fn parse(&mut self) -> Result<(), ParseError> {
@@ -214,7 +251,9 @@ impl TypeExpression {
                 start_index: index,
                 value: m.name_str("type").to_vec(),
                 next_glue: m.name_exists("glue").then(|| glue.to_vec()),
-                next_glue_raw: m.name_exists("glue_raw").then(|| m.name_str("glue_raw").to_vec()),
+                next_glue_raw: m
+                    .name_exists("glue_raw")
+                    .then(|| m.name_str("glue_raw").to_vec()),
             });
             index += m.str(0).len();
             if value.len() <= index {
@@ -237,7 +276,9 @@ impl TypeExpression {
                             if inner_values[i].next_glue.as_deref().unwrap_or(&[glue]) == [glue] {
                                 break;
                             }
-                            inner_value.extend_from_slice(inner_values[i].next_glue_raw.as_deref().unwrap_or(b""));
+                            inner_value.extend_from_slice(
+                                inner_values[i].next_glue_raw.as_deref().unwrap_or(b""),
+                            );
                             i += 1;
                         }
                         let e = self.inner_checked(&inner_value)?;
@@ -260,11 +301,20 @@ impl TypeExpression {
             self.push(0, &typ[..typ.len() - s("array").len()])?;
         } else if at0("generic") {
             self.push(0, s("generic_name"))?;
-            self.parse_comma_separated_inner_types(s("generic_name").len() + s("generic_start").len(), s("generic_types"))?;
+            self.parse_comma_separated_inner_types(
+                s("generic_name").len() + s("generic_start").len(),
+                s("generic_types"),
+            )?;
         } else if at0("callable") {
             self.push(0, s("callable_name"))?;
-            self.parse_callable_template_inner_types(s("callable_name").len() + s("callable_template_start").len(), s("callable_template_inners"))?;
-            self.parse_callable_argument_types(s("callable_name").len() + s("callable_template").len() + s("callable_start").len(), s("callable_arguments"))?;
+            self.parse_callable_template_inner_types(
+                s("callable_name").len() + s("callable_template_start").len(),
+                s("callable_template_inners"),
+            )?;
+            self.parse_callable_argument_types(
+                s("callable_name").len() + s("callable_template").len() + s("callable_start").len(),
+                s("callable_arguments"),
+            )?;
             let ret = s("callable_return");
             if !ret.is_empty() {
                 self.push(self.value.len() - ret.len(), ret)?;
@@ -274,10 +324,13 @@ impl TypeExpression {
             let mut next_index = s("array_shape_name").len() + s("array_shape_start").len();
             self.parse_array_shape_inner_types(next_index, s("array_shape_inners"))?;
             if !s("array_shape_unsealed_type").is_empty() {
-                next_index += s("array_shape_inners").len() + s("array_shape_unsealed_variadic").len() + s("array_shape_unsealed_type_start").len();
+                next_index += s("array_shape_inners").len()
+                    + s("array_shape_unsealed_variadic").len()
+                    + s("array_shape_unsealed_type_start").len();
                 self.push(next_index, s("array_shape_unsealed_type_a"))?;
                 if !s("array_shape_unsealed_type_b").is_empty() {
-                    next_index += s("array_shape_unsealed_type_a").len() + s("array_shape_unsealed_type_comma").len();
+                    next_index += s("array_shape_unsealed_type_a").len()
+                        + s("array_shape_unsealed_type_comma").len();
                     self.push(next_index, s("array_shape_unsealed_type_b"))?;
                 }
             }
@@ -289,7 +342,8 @@ impl TypeExpression {
                 }
                 index += s("conditional_cond_left").len() + s("conditional_cond_middle").len();
                 self.push(index, s("conditional_cond_right_types"))?;
-                index += s("conditional_cond_right_types").len() + s("conditional_true_start").len();
+                index +=
+                    s("conditional_cond_right_types").len() + s("conditional_true_start").len();
                 self.push(index, s("conditional_true_types"))?;
                 index += s("conditional_true_types").len() + s("conditional_false_start").len();
                 self.push(index, s("conditional_false_types"))?;
@@ -308,11 +362,16 @@ impl TypeExpression {
         Ok(())
     }
 
-    fn parse_comma_separated_inner_types(&mut self, start_index: usize, value: &[u8]) -> Result<(), ParseError> {
+    fn parse_comma_separated_inner_types(
+        &mut self,
+        start_index: usize,
+        value: &[u8],
+    ) -> Result<(), ParseError> {
         let pattern: &str = &COMMA_SEPARATED_PATTERN;
         let mut index = 0;
         while value.len() != index {
-            let m = preg::match_at(&pattern, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
+            let m =
+                preg::match_at(&pattern, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
             self.push(start_index + index, m.name_str("types"))?;
             index += m.str(0).len();
         }
@@ -334,7 +393,8 @@ impl TypeExpression {
         let full = format!(r"{{^{REGEX_TYPES}$}}");
         let mut index = 0;
         while value.len() != index {
-            let pm = preg::match_at(&pre, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
+            let pm =
+                preg::match_at(&pre, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
             let consumed_value = pm.name_str(&format!("_{group}"));
             let consumed_value_length = consumed_value.len();
             let consumed_comma_length = pm.str(0).len() - consumed_value_length;
@@ -350,32 +410,74 @@ impl TypeExpression {
         Ok(())
     }
 
-    fn parse_callable_template_inner_types(&mut self, start_index: usize, value: &[u8]) -> Result<(), ParseError> {
+    fn parse_callable_template_inner_types(
+        &mut self,
+        start_index: usize,
+        value: &[u8],
+    ) -> Result<(), ParseError> {
         let p = b"Closure<".len();
-        self.parse_prefixed(start_index, value, "callable_template_inner", r"(?:\h*,\h*|$)", b"Closure<", b">(): void", |m, base, out| {
-            if !m.name_str("callable_template_inner_b").is_empty() {
-                let s = m.name_offset("callable_template_inner_b_types") as usize;
-                out.push((base + s - p, m.name_str("callable_template_inner_b_types").to_vec()));
-            }
-            if !m.name_str("callable_template_inner_d").is_empty() {
-                let s = m.name_offset("callable_template_inner_d_types") as usize;
-                out.push((base + s - p, m.name_str("callable_template_inner_d_types").to_vec()));
-            }
-        })
+        self.parse_prefixed(
+            start_index,
+            value,
+            "callable_template_inner",
+            r"(?:\h*,\h*|$)",
+            b"Closure<",
+            b">(): void",
+            |m, base, out| {
+                if !m.name_str("callable_template_inner_b").is_empty() {
+                    let s = m.name_offset("callable_template_inner_b_types") as usize;
+                    out.push((
+                        base + s - p,
+                        m.name_str("callable_template_inner_b_types").to_vec(),
+                    ));
+                }
+                if !m.name_str("callable_template_inner_d").is_empty() {
+                    let s = m.name_offset("callable_template_inner_d_types") as usize;
+                    out.push((
+                        base + s - p,
+                        m.name_str("callable_template_inner_d_types").to_vec(),
+                    ));
+                }
+            },
+        )
     }
 
-    fn parse_callable_argument_types(&mut self, start_index: usize, value: &[u8]) -> Result<(), ParseError> {
-        self.parse_prefixed(start_index, value, "callable_argument", r"(?:\h*,\h*|$)", b"Closure(", b"): void", |m, base, out| {
-            out.push((base, m.name_str("callable_argument_type").to_vec()));
-        })
+    fn parse_callable_argument_types(
+        &mut self,
+        start_index: usize,
+        value: &[u8],
+    ) -> Result<(), ParseError> {
+        self.parse_prefixed(
+            start_index,
+            value,
+            "callable_argument",
+            r"(?:\h*,\h*|$)",
+            b"Closure(",
+            b"): void",
+            |m, base, out| {
+                out.push((base, m.name_str("callable_argument_type").to_vec()));
+            },
+        )
     }
 
-    fn parse_array_shape_inner_types(&mut self, start_index: usize, value: &[u8]) -> Result<(), ParseError> {
+    fn parse_array_shape_inner_types(
+        &mut self,
+        start_index: usize,
+        value: &[u8],
+    ) -> Result<(), ParseError> {
         let p = b"array{".len();
-        self.parse_prefixed(start_index, value, "array_shape_inner", r"(?:\h*,[\h\v*]*|$)", b"array{", b"}", |m, base, out| {
-            let s = m.name_offset("array_shape_inner_value") as usize;
-            out.push((base + s - p, m.name_str("array_shape_inner_value").to_vec()));
-        })
+        self.parse_prefixed(
+            start_index,
+            value,
+            "array_shape_inner",
+            r"(?:\h*,[\h\v*]*|$)",
+            b"array{",
+            b"}",
+            |m, base, out| {
+                let s = m.name_offset("array_shape_inner_value") as usize;
+                out.push((base + s - p, m.name_str("array_shape_inner_value").to_vec()));
+            },
+        )
     }
 
     fn inner_checked(&self, value: &[u8]) -> Result<TypeExpression, ParseError> {
@@ -399,15 +501,31 @@ impl TypeExpression {
             (b"iterable|Traversable", b"iterable"),
             (b"self|static", b"self"),
         ];
-        parents.iter().find(|(k, _)| *k == joined).map(|(_, v)| v.to_vec())
+        parents
+            .iter()
+            .find(|(k, _)| *k == joined)
+            .map(|(_, v)| v.to_vec())
     }
 
     /// Upstream also maps aliases, `X[]` and `X<...>` first, but its only caller (`getCommonType`, via
     /// `getParentType`) has already done that to both types, so those branches are unreachable and not ported.
     fn normalize(&self, t: &[u8]) -> Vec<u8> {
         const BUILTIN: &[&[u8]] = &[
-            b"array", b"bool", b"callable", b"false", b"float", b"int", b"iterable", b"mixed", b"never", b"null", b"object", b"resource",
-            b"string", b"true", b"void",
+            b"array",
+            b"bool",
+            b"callable",
+            b"false",
+            b"float",
+            b"int",
+            b"iterable",
+            b"mixed",
+            b"never",
+            b"null",
+            b"object",
+            b"resource",
+            b"string",
+            b"true",
+            b"void",
         ];
         if BUILTIN.contains(&t) {
             return t.to_vec();

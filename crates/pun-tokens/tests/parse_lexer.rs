@@ -6,7 +6,15 @@ use pun_tokens::{LexError, ParseLexer};
 
 /// Messages raised by Zend/zend_language_scanner.l rather than the grammar.
 fn is_scanner_error(m: &str) -> bool {
-    ["Invalid ", "Unclosed '", "Unmatched '", "Unterminated comment", "The (real) cast"].iter().any(|p| m.starts_with(p))
+    [
+        "Invalid ",
+        "Unclosed '",
+        "Unmatched '",
+        "Unterminated comment",
+        "The (real) cast",
+    ]
+    .iter()
+    .any(|p| m.starts_with(p))
 }
 
 fn drain(code: &str) -> Result<usize, LexError> {
@@ -20,18 +28,26 @@ fn drain(code: &str) -> Result<usize, LexError> {
 
 #[test]
 fn scanner_errors_match_php() {
-    let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!("fixtures/lint_cases.json")).unwrap();
+    let cases: Vec<serde_json::Value> =
+        serde_json::from_str(include_str!("fixtures/lint_cases.json")).unwrap();
     let mut checked = 0;
     for case in &cases {
         let code = case["code"].as_str().unwrap();
         if code.to_ascii_lowercase().contains("__halt_compiler") {
             continue; // the parser decides where lexing stops
         }
-        match case["error"].as_str().and_then(|e| e.strip_prefix("Parse error: ")) {
+        match case["error"]
+            .as_str()
+            .and_then(|e| e.strip_prefix("Parse error: "))
+        {
             Some(m) if is_scanner_error(m) => {
                 let (msg, line) = m.rsplit_once(" on line ").unwrap();
                 let got = drain(code).expect_err(code);
-                assert_eq!((got.message.as_str(), got.line), (msg, line.trim_end_matches('.').parse().unwrap()), "{code:?}");
+                assert_eq!(
+                    (got.message.as_str(), got.line),
+                    (msg, line.trim_end_matches('.').parse().unwrap()),
+                    "{code:?}"
+                );
                 checked += 1;
             }
             None => {
@@ -52,7 +68,13 @@ fn halt_compiler_stops_lexing() {
     }
     lx.stop();
     assert_eq!(lx.next_token(), Ok(None));
-    assert_eq!(drain("<?php __halt_compiler(); ("), Err(LexError { message: "Unclosed '('".into(), line: 1 }));
+    assert_eq!(
+        drain("<?php __halt_compiler(); ("),
+        Err(LexError {
+            message: "Unclosed '('".into(),
+            line: 1
+        })
+    );
 }
 
 #[test]
@@ -60,10 +82,16 @@ fn tokens_the_parser_rejects_still_lex() {
     // PHP: `syntax error, unexpected string content "x"` on line 2: an unterminated single-quoted string is one
     // T_ENCAPSED_AND_WHITESPACE whose newlines the scanner does not count.
     let mut lx = ParseLexer::new(b"<?php\n$a = 'x\ny");
-    assert_eq!(lx.next_token().unwrap().unwrap().kind, Some(pun_tokens::Kind::T_VARIABLE));
+    assert_eq!(
+        lx.next_token().unwrap().unwrap().kind,
+        Some(pun_tokens::Kind::T_VARIABLE)
+    );
     lx.next_token().unwrap();
     let s = lx.next_token().unwrap().unwrap();
-    assert_eq!((s.kind, s.start, s.end, lx.lineno()), (Some(pun_tokens::Kind::T_ENCAPSED_AND_WHITESPACE), 11, 15, 2));
+    assert_eq!(
+        (s.kind, s.start, s.end, lx.lineno()),
+        (Some(pun_tokens::Kind::T_ENCAPSED_AND_WHITESPACE), 11, 15, 2)
+    );
     // PHP: `syntax error, unexpected string content "", expecting ...` on line 2: ST_VAR_OFFSET hands the parser
     // an empty T_ENCAPSED_AND_WHITESPACE before the space.
     let kinds: Vec<_> = std::iter::from_fn({
@@ -72,5 +100,8 @@ fn tokens_the_parser_rejects_still_lex() {
     })
     .map(|t| (t.kind, t.end - t.start))
     .collect();
-    assert_eq!(kinds[3], (Some(pun_tokens::Kind::T_ENCAPSED_AND_WHITESPACE), 0));
+    assert_eq!(
+        kinds[3],
+        (Some(pun_tokens::Kind::T_ENCAPSED_AND_WHITESPACE), 0)
+    );
 }

@@ -16,14 +16,36 @@ struct NoAliasFunctionsFixer {
 }
 
 const ALLOWED_SETS: &[&str] = &[
-    "@all", "@internal", "@exif", "@ftp", "@IMAP", "@ldap", "@mbreg", "@mysqli", "@oci", "@odbc", "@openssl", "@pcntl", "@pg",
-    "@posix", "@snmp", "@sodium", "@time",
+    "@all",
+    "@internal",
+    "@exif",
+    "@ftp",
+    "@IMAP",
+    "@ldap",
+    "@mbreg",
+    "@mysqli",
+    "@oci",
+    "@odbc",
+    "@openssl",
+    "@pcntl",
+    "@pg",
+    "@posix",
+    "@snmp",
+    "@sodium",
+    "@time",
 ];
 const DEFAULT_SETS: &[&str] = &["@internal", "@IMAP", "@pg"];
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = NoAliasFunctionsFixer { aliases: Vec::new() };
-    f.set_sets(&DEFAULT_SETS.iter().map(|s| s.to_string()).collect::<Vec<_>>());
+    let mut f = NoAliasFunctionsFixer {
+        aliases: Vec::new(),
+    };
+    f.set_sets(
+        &DEFAULT_SETS
+            .iter()
+            .map(|s| s.to_string())
+            .collect::<Vec<_>>(),
+    );
     Box::new(f)
 }
 
@@ -76,7 +98,11 @@ impl Fixer for NoAliasFunctionsFixer {
         for index in tokens.find_given_kind(T_STRING, 0, None) {
             // check mapping hit
             let token_content = tokens[index].content.to_ascii_lowercase();
-            let Some(&(_, alias, number_of_arguments)) = self.aliases.iter().find(|a| a.0.as_bytes() == &token_content[..]) else {
+            let Some(&(_, alias, number_of_arguments)) = self
+                .aliases
+                .iter()
+                .find(|a| a.0.as_bytes() == &token_content[..])
+            else {
                 continue;
             };
             // skip expressions without parameters list
@@ -99,104 +125,118 @@ impl Fixer for NoAliasFunctionsFixer {
 }
 
 const SETS: &[(&str, &[Alias])] = &[
-    ("@internal", &[
-        ("diskfreespace", "disk_free_space", None),
-        ("dns_check_record", "checkdnsrr", None),
-        ("dns_get_mx", "getmxrr", None),
-        ("session_commit", "session_write_close", None),
-        ("stream_register_wrapper", "stream_wrapper_register", None),
-        ("set_file_buffer", "stream_set_write_buffer", None),
-        ("socket_set_blocking", "stream_set_blocking", None),
-        ("socket_get_status", "stream_get_meta_data", None),
-        ("socket_set_timeout", "stream_set_timeout", None),
-        ("socket_getopt", "socket_get_option", None),
-        ("socket_setopt", "socket_set_option", None),
-        ("chop", "rtrim", None),
-        ("close", "closedir", None),
-        ("doubleval", "floatval", None),
-        ("fputs", "fwrite", None),
-        ("get_required_files", "get_included_files", None),
-        ("ini_alter", "ini_set", None),
-        ("is_double", "is_float", None),
-        ("is_integer", "is_int", None),
-        ("is_long", "is_int", None),
-        ("is_real", "is_float", None),
-        ("is_writeable", "is_writable", None),
-        ("join", "implode", None),
-        ("key_exists", "array_key_exists", None),
-        ("magic_quotes_runtime", "set_magic_quotes_runtime", None),
-        ("pos", "current", None),
-        ("show_source", "highlight_file", None),
-        ("sizeof", "count", None),
-        ("strchr", "strstr", None),
-        ("user_error", "trigger_error", None),
-    ]),
-    ("@IMAP", &[
-        ("imap_create", "imap_createmailbox", None),
-        ("imap_fetchtext", "imap_body", None),
-        ("imap_header", "imap_headerinfo", None),
-        ("imap_listmailbox", "imap_list", None),
-        ("imap_listsubscribed", "imap_lsub", None),
-        ("imap_rename", "imap_renamemailbox", None),
-        ("imap_scan", "imap_listscan", None),
-        ("imap_scanmailbox", "imap_listscan", None),
-    ]),
-    ("@ldap", &[
-        ("ldap_close", "ldap_unbind", None),
-        ("ldap_modify", "ldap_mod_replace", None),
-    ]),
-    ("@mysqli", &[
-        ("mysqli_execute", "mysqli_stmt_execute", None),
-        ("mysqli_set_opt", "mysqli_options", None),
-        ("mysqli_escape_string", "mysqli_real_escape_string", None),
-    ]),
-    ("@pg", &[
-        ("pg_exec", "pg_query", None),
-    ]),
-    ("@oci", &[
-        ("oci_free_cursor", "oci_free_statement", None),
-    ]),
-    ("@odbc", &[
-        ("odbc_do", "odbc_exec", None),
-        ("odbc_field_precision", "odbc_field_len", None),
-    ]),
-    ("@mbreg", &[
-        ("mbereg", "mb_ereg", None),
-        ("mbereg_match", "mb_ereg_match", None),
-        ("mbereg_replace", "mb_ereg_replace", None),
-        ("mbereg_search", "mb_ereg_search", None),
-        ("mbereg_search_getpos", "mb_ereg_search_getpos", None),
-        ("mbereg_search_getregs", "mb_ereg_search_getregs", None),
-        ("mbereg_search_init", "mb_ereg_search_init", None),
-        ("mbereg_search_pos", "mb_ereg_search_pos", None),
-        ("mbereg_search_regs", "mb_ereg_search_regs", None),
-        ("mbereg_search_setpos", "mb_ereg_search_setpos", None),
-        ("mberegi", "mb_eregi", None),
-        ("mberegi_replace", "mb_eregi_replace", None),
-        ("mbregex_encoding", "mb_regex_encoding", None),
-        ("mbsplit", "mb_split", None),
-    ]),
-    ("@openssl", &[
-        ("openssl_get_publickey", "openssl_pkey_get_public", None),
-        ("openssl_get_privatekey", "openssl_pkey_get_private", None),
-    ]),
-    ("@sodium", &[
-        ("sodium_crypto_scalarmult_base", "sodium_crypto_box_publickey_from_secretkey", None),
-    ]),
-    ("@exif", &[
-        ("read_exif_data", "exif_read_data", None),
-    ]),
-    ("@ftp", &[
-        ("ftp_quit", "ftp_close", None),
-    ]),
-    ("@posix", &[
-        ("posix_errno", "posix_get_last_error", None),
-    ]),
-    ("@pcntl", &[
-        ("pcntl_errno", "pcntl_get_last_error", None),
-    ]),
-    ("@time", &[
-        ("mktime", "time", Some(0)),
-        ("gmmktime", "time", Some(0)),
-    ]),
+    (
+        "@internal",
+        &[
+            ("diskfreespace", "disk_free_space", None),
+            ("dns_check_record", "checkdnsrr", None),
+            ("dns_get_mx", "getmxrr", None),
+            ("session_commit", "session_write_close", None),
+            ("stream_register_wrapper", "stream_wrapper_register", None),
+            ("set_file_buffer", "stream_set_write_buffer", None),
+            ("socket_set_blocking", "stream_set_blocking", None),
+            ("socket_get_status", "stream_get_meta_data", None),
+            ("socket_set_timeout", "stream_set_timeout", None),
+            ("socket_getopt", "socket_get_option", None),
+            ("socket_setopt", "socket_set_option", None),
+            ("chop", "rtrim", None),
+            ("close", "closedir", None),
+            ("doubleval", "floatval", None),
+            ("fputs", "fwrite", None),
+            ("get_required_files", "get_included_files", None),
+            ("ini_alter", "ini_set", None),
+            ("is_double", "is_float", None),
+            ("is_integer", "is_int", None),
+            ("is_long", "is_int", None),
+            ("is_real", "is_float", None),
+            ("is_writeable", "is_writable", None),
+            ("join", "implode", None),
+            ("key_exists", "array_key_exists", None),
+            ("magic_quotes_runtime", "set_magic_quotes_runtime", None),
+            ("pos", "current", None),
+            ("show_source", "highlight_file", None),
+            ("sizeof", "count", None),
+            ("strchr", "strstr", None),
+            ("user_error", "trigger_error", None),
+        ],
+    ),
+    (
+        "@IMAP",
+        &[
+            ("imap_create", "imap_createmailbox", None),
+            ("imap_fetchtext", "imap_body", None),
+            ("imap_header", "imap_headerinfo", None),
+            ("imap_listmailbox", "imap_list", None),
+            ("imap_listsubscribed", "imap_lsub", None),
+            ("imap_rename", "imap_renamemailbox", None),
+            ("imap_scan", "imap_listscan", None),
+            ("imap_scanmailbox", "imap_listscan", None),
+        ],
+    ),
+    (
+        "@ldap",
+        &[
+            ("ldap_close", "ldap_unbind", None),
+            ("ldap_modify", "ldap_mod_replace", None),
+        ],
+    ),
+    (
+        "@mysqli",
+        &[
+            ("mysqli_execute", "mysqli_stmt_execute", None),
+            ("mysqli_set_opt", "mysqli_options", None),
+            ("mysqli_escape_string", "mysqli_real_escape_string", None),
+        ],
+    ),
+    ("@pg", &[("pg_exec", "pg_query", None)]),
+    ("@oci", &[("oci_free_cursor", "oci_free_statement", None)]),
+    (
+        "@odbc",
+        &[
+            ("odbc_do", "odbc_exec", None),
+            ("odbc_field_precision", "odbc_field_len", None),
+        ],
+    ),
+    (
+        "@mbreg",
+        &[
+            ("mbereg", "mb_ereg", None),
+            ("mbereg_match", "mb_ereg_match", None),
+            ("mbereg_replace", "mb_ereg_replace", None),
+            ("mbereg_search", "mb_ereg_search", None),
+            ("mbereg_search_getpos", "mb_ereg_search_getpos", None),
+            ("mbereg_search_getregs", "mb_ereg_search_getregs", None),
+            ("mbereg_search_init", "mb_ereg_search_init", None),
+            ("mbereg_search_pos", "mb_ereg_search_pos", None),
+            ("mbereg_search_regs", "mb_ereg_search_regs", None),
+            ("mbereg_search_setpos", "mb_ereg_search_setpos", None),
+            ("mberegi", "mb_eregi", None),
+            ("mberegi_replace", "mb_eregi_replace", None),
+            ("mbregex_encoding", "mb_regex_encoding", None),
+            ("mbsplit", "mb_split", None),
+        ],
+    ),
+    (
+        "@openssl",
+        &[
+            ("openssl_get_publickey", "openssl_pkey_get_public", None),
+            ("openssl_get_privatekey", "openssl_pkey_get_private", None),
+        ],
+    ),
+    (
+        "@sodium",
+        &[(
+            "sodium_crypto_scalarmult_base",
+            "sodium_crypto_box_publickey_from_secretkey",
+            None,
+        )],
+    ),
+    ("@exif", &[("read_exif_data", "exif_read_data", None)]),
+    ("@ftp", &[("ftp_quit", "ftp_close", None)]),
+    ("@posix", &[("posix_errno", "posix_get_last_error", None)]),
+    ("@pcntl", &[("pcntl_errno", "pcntl_get_last_error", None)]),
+    (
+        "@time",
+        &[("mktime", "time", Some(0)), ("gmmktime", "time", Some(0))],
+    ),
 ];

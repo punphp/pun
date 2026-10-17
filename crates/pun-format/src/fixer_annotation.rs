@@ -7,8 +7,16 @@ use std::sync::LazyLock;
 const PATTERN: &str = r"^\h*[*\/]+\h+@(php-cs-fixer-\w+\h+(?:@?[\w\/,])+)";
 
 /// Preg::matchAll adds `/u` (PHP: UTF + UCP) and falls back to the plain pattern when the subject isn't UTF-8.
-static UTF: LazyLock<Regex> = LazyLock::new(|| RegexBuilder::new().multi_line(true).utf(true).ucp(true).build(PATTERN).unwrap());
-static BYTES: LazyLock<Regex> = LazyLock::new(|| RegexBuilder::new().multi_line(true).build(PATTERN).unwrap());
+static UTF: LazyLock<Regex> = LazyLock::new(|| {
+    RegexBuilder::new()
+        .multi_line(true)
+        .utf(true)
+        .ucp(true)
+        .build(PATTERN)
+        .unwrap()
+});
+static BYTES: LazyLock<Regex> =
+    LazyLock::new(|| RegexBuilder::new().multi_line(true).build(PATTERN).unwrap());
 
 /// What `find()` throws.
 #[derive(Debug, PartialEq)]
@@ -26,7 +34,9 @@ pub fn find(tokens: &Tokens) -> Result<Vec<(Vec<u8>, Vec<Vec<u8>>)>, FindError> 
     let mut index = 0;
     while index < count {
         let token = &tokens[index];
-        if token.is_given_kind(&[T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_WHITESPACE]) || token.equals(";", true) {
+        if token.is_given_kind(&[T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_WHITESPACE])
+            || token.equals(";", true)
+        {
             index += 1;
             continue;
         }
@@ -53,11 +63,18 @@ pub fn find(tokens: &Tokens) -> Result<Vec<(Vec<u8>, Vec<Vec<u8>>)>, FindError> 
     }
 
     let subject = comments.join(&b'\n');
-    let re = if std::str::from_utf8(&subject).is_ok() { &*UTF } else { &*BYTES };
+    let re = if std::str::from_utf8(&subject).is_ok() {
+        &*UTF
+    } else {
+        &*BYTES
+    };
     let mut annotations: Vec<(Vec<u8>, Vec<Vec<u8>>)> = vec![];
     for caps in re.captures_iter(&subject) {
         let m = &caps.unwrap()[1];
-        let at = m.iter().position(|&c| c == b' ').ok_or(FindError::UndefinedArrayKey)?;
+        let at = m
+            .iter()
+            .position(|&c| c == b' ')
+            .ok_or(FindError::UndefinedArrayKey)?;
         let (name, values) = (&m[..at], &m[at + 1..]);
         let values = values.split(|&c| c == b',').map(<[u8]>::to_vec);
         match annotations.iter_mut().find(|(n, _)| n == name) {
@@ -74,7 +91,10 @@ pub fn find(tokens: &Tokens) -> Result<Vec<(Vec<u8>, Vec<Vec<u8>>)>, FindError> 
             }
         }
         if !duplicates.is_empty() {
-            let list: Vec<String> = duplicates.iter().map(|d| String::from_utf8_lossy(d).into_owned()).collect();
+            let list: Vec<String> = duplicates
+                .iter()
+                .map(|d| String::from_utf8_lossy(d).into_owned())
+                .collect();
             return Err(FindError::Duplicated(format!(
                 "Duplicated values found for annotation \"@{}\": \"{}\".",
                 String::from_utf8_lossy(annotation),
@@ -89,5 +109,9 @@ pub fn find(tokens: &Tokens) -> Result<Vec<(Vec<u8>, Vec<Vec<u8>>)>, FindError> 
 
 /// `$fixerAnnotationAnalysis['php-cs-fixer-ignore'] ?? []`.
 pub fn ignored(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
-    annotations.iter().find(|(n, _)| n == b"php-cs-fixer-ignore").map(|(_, v)| v.clone()).unwrap_or_default()
+    annotations
+        .iter()
+        .find(|(n, _)| n == b"php-cs-fixer-ignore")
+        .map(|(_, v)| v.clone())
+        .unwrap_or_default()
 }

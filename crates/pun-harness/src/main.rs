@@ -59,26 +59,41 @@ fn main() -> Result<()> {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../.."))
         .canonicalize()?;
-    let Cmd::Format { corpus, fixer, preset, diffs } = Cli::parse().cmd;
-    let manifest: Manifest = toml::from_str(&fs::read_to_string(root.join("corpus/manifest.toml"))?)?;
+    let Cmd::Format {
+        corpus,
+        fixer,
+        preset,
+        diffs,
+    } = Cli::parse().cmd;
+    let manifest: Manifest =
+        toml::from_str(&fs::read_to_string(root.join("corpus/manifest.toml"))?)?;
     let pint = root.join(".oracle/pint/builds/pint");
     if !pint.exists() {
         bail!("{} missing: run scripts/oracle.sh", pint.display());
     }
     // PUN_BIN: a private copy of the pun binary, so concurrent agents rebuilding target/debug/pun don't race.
-    let pun = std::env::var_os("PUN_BIN").map(PathBuf::from).unwrap_or_else(|| root.join("target/debug/pun"));
+    let pun = std::env::var_os("PUN_BIN")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| root.join("target/debug/pun"));
     if !pun.exists() {
         eprintln!("note: {} missing, treating pun as identity", pun.display());
     }
 
     let tmp = std::env::temp_dir().join(format!("pun-harness-{}", std::process::id()));
     let mut outcomes = vec![];
-    for p in manifest.project.iter().filter(|p| corpus.is_empty() || corpus.contains(&p.name)) {
+    for p in manifest
+        .project
+        .iter()
+        .filter(|p| corpus.is_empty() || corpus.contains(&p.name))
+    {
         let src = root.join("corpus").join(&p.name);
         if !src.join(".git").exists() {
             bail!("{} missing: run scripts/corpus.sh", src.display());
         }
-        let (oracle_dir, pun_dir) = (tmp.join(&p.name).join("oracle"), tmp.join(&p.name).join("pun"));
+        let (oracle_dir, pun_dir) = (
+            tmp.join(&p.name).join("oracle"),
+            tmp.join(&p.name).join("pun"),
+        );
         copy_tree(&src, &oracle_dir)?;
         copy_tree(&src, &pun_dir)?;
 
@@ -91,19 +106,40 @@ fn main() -> Result<()> {
         if let Some(p) = &preset {
             args.extend(["--preset".into(), p.clone()]);
         }
-        run(Command::new("php").arg(&pint).args(&args).current_dir(&oracle_dir), "pint")?;
+        run(
+            Command::new("php")
+                .arg(&pint)
+                .args(&args)
+                .current_dir(&oracle_dir),
+            "pint",
+        )?;
         if pun.exists() {
-            run(Command::new(&pun).env("PUN_IGNORE_PHP_CONSTRAINT", "1").arg("format").arg("--no-cache").args(&args).current_dir(&pun_dir), "pun")?;
+            run(
+                Command::new(&pun)
+                    .env("PUN_IGNORE_PHP_CONSTRAINT", "1")
+                    .arg("format")
+                    .arg("--no-cache")
+                    .args(&args)
+                    .current_dir(&pun_dir),
+                "pun",
+            )?;
         }
 
         let o = compare(&p.name, &src, &oracle_dir, &pun_dir)?;
         println!(
             "{}: {} files, {} identical, {} differing (pint changed {}, pun changed {})",
-            o.name, o.files, o.identical, o.differing.len(), o.oracle_changed, o.pun_changed
+            o.name,
+            o.files,
+            o.identical,
+            o.differing.len(),
+            o.oracle_changed,
+            o.pun_changed
         );
         for rel in o.differing.iter().take(diffs) {
-            let a = String::from_utf8_lossy(&fs::read(oracle_dir.join(rel)).unwrap_or_default()).into_owned();
-            let b = String::from_utf8_lossy(&fs::read(pun_dir.join(rel)).unwrap_or_default()).into_owned();
+            let a = String::from_utf8_lossy(&fs::read(oracle_dir.join(rel)).unwrap_or_default())
+                .into_owned();
+            let b = String::from_utf8_lossy(&fs::read(pun_dir.join(rel)).unwrap_or_default())
+                .into_owned();
             print!(
                 "{}",
                 similar::TextDiff::from_lines(&a, &b)
@@ -147,7 +183,8 @@ fn single_fixer_config(root: &Path, src: &Path, name: &str) -> Result<String> {
     let mut cfg = serde_json::Map::new();
     if pint_json.exists() {
         cmd.arg(&pint_json);
-        let orig: serde_json::Map<String, serde_json::Value> = serde_json::from_slice(&fs::read(&pint_json)?)?;
+        let orig: serde_json::Map<String, serde_json::Value> =
+            serde_json::from_slice(&fs::read(&pint_json)?)?;
         for key in ["exclude", "notPath", "notName", "in"] {
             if let Some(v) = orig.get(key) {
                 cfg.insert(key.into(), v.clone());
@@ -155,7 +192,8 @@ fn single_fixer_config(root: &Path, src: &Path, name: &str) -> Result<String> {
         }
     }
     let out = cmd.output()?;
-    let eff: serde_json::Value = serde_json::from_slice(&out.stdout).context("effective-rules.php output")?;
+    let eff: serde_json::Value =
+        serde_json::from_slice(&out.stdout).context("effective-rules.php output")?;
     let options = eff["fixers"]
         .as_array()
         .and_then(|fs| fs.iter().find(|f| f["name"] == name))
@@ -195,7 +233,11 @@ fn list_files(dir: &Path, rel: &str, out: &mut BTreeSet<String>) -> Result<()> {
     for entry in fs::read_dir(dir)? {
         let entry = entry?;
         let name = entry.file_name().to_string_lossy().into_owned();
-        let rel = if rel.is_empty() { name.clone() } else { format!("{rel}/{name}") };
+        let rel = if rel.is_empty() {
+            name.clone()
+        } else {
+            format!("{rel}/{name}")
+        };
         let ty = entry.file_type()?;
         if ty.is_dir() {
             list_files(&entry.path(), &rel, out)?;
@@ -219,7 +261,11 @@ fn compare(name: &str, src: &Path, oracle: &Path, pun: &Path) -> Result<Outcome>
         pun_changed: 0,
     };
     for rel in a.union(&b) {
-        let (x, y, s) = (fs::read(oracle.join(rel)).ok(), fs::read(pun.join(rel)).ok(), fs::read(src.join(rel)).ok());
+        let (x, y, s) = (
+            fs::read(oracle.join(rel)).ok(),
+            fs::read(pun.join(rel)).ok(),
+            fs::read(src.join(rel)).ok(),
+        );
         o.oracle_changed += (x != s) as usize;
         o.pun_changed += (y != s) as usize;
         if x == y {
@@ -238,13 +284,24 @@ fn write_scoreboard(path: &Path, outcomes: &[Outcome]) -> Result<()> {
     let (table, trailer) = old.split_at(old.find("\n## ").unwrap_or(old.len()));
     let mut rows: Vec<String> = table
         .lines()
-        .filter(|l| l.starts_with("| ") && !l.starts_with("| project") && !outcomes.iter().any(|o| l.starts_with(&format!("| {} |", o.name))))
+        .filter(|l| {
+            l.starts_with("| ")
+                && !l.starts_with("| project")
+                && !outcomes
+                    .iter()
+                    .any(|o| l.starts_with(&format!("| {} |", o.name)))
+        })
         .map(String::from)
         .collect();
     for o in outcomes {
         rows.push(format!(
             "| {} | {} | {} | {} | {} | {} |",
-            o.name, o.files, o.identical, o.differing.len(), o.oracle_changed, o.pun_changed
+            o.name,
+            o.files,
+            o.identical,
+            o.differing.len(),
+            o.oracle_changed,
+            o.pun_changed
         ));
     }
     rows.sort();

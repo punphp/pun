@@ -48,7 +48,9 @@ fn fix_short_cast(tokens: &mut Tokens, index: usize) -> usize {
 
 fn fix_short_cast_to_bool_cast(tokens: &mut Tokens, mut start: usize, end: usize) {
     while start <= end {
-        if !tokens[start].is_comment() && !(tokens[start].is_whitespace(None) && tokens[start - 1].is_comment()) {
+        if !tokens[start].is_comment()
+            && !(tokens[start].is_whitespace(None) && tokens[start - 1].is_comment())
+        {
             tokens.clear_at(start);
         }
         start += 1;

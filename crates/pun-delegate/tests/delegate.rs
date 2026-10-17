@@ -7,7 +7,10 @@ use serde_json::json;
 use std::path::{Path, PathBuf};
 
 fn oracle() -> Option<PathBuf> {
-    let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle").canonicalize().ok()?;
+    let p = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../.oracle")
+        .canonicalize()
+        .ok()?;
     p.join("pint/builds/pint").exists().then_some(p)
 }
 
@@ -21,7 +24,10 @@ fn tmp(name: &str) -> PathBuf {
 /// A project whose Composer install has PHP-CS-Fixer (the oracle's checkout, at the PHAR's bundled ref).
 fn with_vendor(dir: &Path, oracle: &Path) {
     std::fs::create_dir_all(dir.join("vendor/friendsofphp/php-cs-fixer")).unwrap();
-    let autoload = format!("<?php\nreturn require '{}';\n", oracle.join("php-cs-fixer/vendor/autoload.php").display());
+    let autoload = format!(
+        "<?php\nreturn require '{}';\n",
+        oracle.join("php-cs-fixer/vendor/autoload.php").display()
+    );
     std::fs::write(dir.join("vendor/autoload.php"), autoload).unwrap();
 }
 
@@ -29,7 +35,13 @@ fn custom_project(oracle: &Path, name: &str) -> PathBuf {
     let dir = tmp(name);
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/custom");
     std::fs::create_dir_all(dir.join("app")).unwrap();
-    for f in [".php-cs-fixer.php", "UpperTodoFixer.php", "app/A.php", "app/b.skip.php", "app/Clean.php"] {
+    for f in [
+        ".php-cs-fixer.php",
+        "UpperTodoFixer.php",
+        "app/A.php",
+        "app/b.skip.php",
+        "app/Clean.php",
+    ] {
         std::fs::copy(src.join(f), dir.join(f)).unwrap();
     }
     with_vendor(&dir, oracle);
@@ -37,7 +49,12 @@ fn custom_project(oracle: &Path, name: &str) -> PathBuf {
 }
 
 fn expected(name: &str) -> Vec<u8> {
-    std::fs::read(Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/custom/expected").join(name)).unwrap()
+    std::fs::read(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/custom/expected")
+            .join(name),
+    )
+    .unwrap()
 }
 
 fn fixed(o: Outcome) -> (String, Vec<&'static str>) {
@@ -61,7 +78,14 @@ fn custom_fixer_config() {
     let mut files = d.files().unwrap();
     files.sort();
     let app = dir.join("app").canonicalize().unwrap();
-    assert_eq!(files, [app.join("A.php"), app.join("Clean.php"), app.join("b.skip.php")]);
+    assert_eq!(
+        files,
+        [
+            app.join("A.php"),
+            app.join("Clean.php"),
+            app.join("b.skip.php")
+        ]
+    );
 
     let read = |f: &str| std::fs::read(app.join(f)).unwrap();
     let (code, applied) = fixed(d.fix(&app.join("A.php"), &read("A.php")).unwrap());
@@ -79,7 +103,10 @@ fn custom_fixer_config() {
     let (code, applied) = fixed(d.fix(&app.join("b.skip.php"), &read("b.skip.php")).unwrap());
     assert_eq!(code.as_bytes(), expected("b.skip.php"));
     assert_eq!(applied, ["single_quote", "blank_line_after_opening_tag"]);
-    assert!(matches!(d.fix(&app.join("Clean.php"), &read("Clean.php")).unwrap(), Outcome::Unchanged));
+    assert!(matches!(
+        d.fix(&app.join("Clean.php"), &read("Clean.php")).unwrap(),
+        Outcome::Unchanged
+    ));
 }
 
 /// A fixer exception fails that file only (Runner::processException); a dying worker aborts the run, and the next
@@ -89,13 +116,27 @@ fn worker_errors() {
     let Some(oracle) = oracle() else { return };
     let dir = custom_project(&oracle, "errors");
     let d = Delegate::start(&dir, Source::Config(dir.join(".php-cs-fixer.php")), None).unwrap();
-    match d.fix(&dir.join("app/T.php"), b"<?php\n\n// THROW\n").unwrap() {
+    match d
+        .fix(&dir.join("app/T.php"), b"<?php\n\n// THROW\n")
+        .unwrap()
+    {
         Outcome::Failed(e) => assert_eq!(e, "boom"),
         _ => panic!("expected a failure"),
     }
-    let e = d.fix(&dir.join("app/crash.php"), b"<?php\n\n// x\n").unwrap_err();
-    assert_eq!(e.to_string(), "the PHP worker exited unexpectedly (see its output above)");
-    let (code, _) = fixed(d.fix(&dir.join("app/A.php"), &std::fs::read(dir.join("app/A.php")).unwrap()).unwrap());
+    let e = d
+        .fix(&dir.join("app/crash.php"), b"<?php\n\n// x\n")
+        .unwrap_err();
+    assert_eq!(
+        e.to_string(),
+        "the PHP worker exited unexpectedly (see its output above)"
+    );
+    let (code, _) = fixed(
+        d.fix(
+            &dir.join("app/A.php"),
+            &std::fs::read(dir.join("app/A.php")).unwrap(),
+        )
+        .unwrap(),
+    );
     assert_eq!(code.as_bytes(), expected("A.php"));
 }
 
@@ -106,24 +147,58 @@ fn pint_rules_via_project_phar() {
     let Some(oracle) = oracle() else { return };
     let dir = tmp("pint");
     std::fs::create_dir_all(dir.join("vendor/laravel/pint/builds")).unwrap();
-    std::os::unix::fs::symlink(oracle.join("pint/builds/pint"), dir.join("vendor/laravel/pint/builds/pint")).unwrap();
+    std::os::unix::fs::symlink(
+        oracle.join("pint/builds/pint"),
+        dir.join("vendor/laravel/pint/builds/pint"),
+    )
+    .unwrap();
     let rules = json!({"combine_consecutive_unsets": true, "single_quote": true, "@PSR12": true, "no_unused_imports": false, "braces_position": false});
     let d = Delegate::start(&dir, Source::Rules(rules), None).unwrap();
     assert_eq!(d.runtime, dir.join("vendor/laravel/pint/builds/pint"));
     assert!(d.fixers.contains(&("combine_consecutive_unsets", 24)));
-    assert!(d.fixers.contains(&("class_definition", 36)), "@PSR12 expanded");
-    assert!(!d.fixers.iter().any(|(n, _)| *n == "braces_position"), "false disables a rule of the set");
+    assert!(
+        d.fixers.contains(&("class_definition", 36)),
+        "@PSR12 expanded"
+    );
+    assert!(
+        !d.fixers.iter().any(|(n, _)| *n == "braces_position"),
+        "false disables a rule of the set"
+    );
 
-    let (code, applied) = fixed(d.fix(&dir.join("app/a.php"), b"<?php\nunset($a);\nunset($b);\n$c = \"x\";\n").unwrap());
+    let (code, applied) = fixed(
+        d.fix(
+            &dir.join("app/a.php"),
+            b"<?php\nunset($a);\nunset($b);\n$c = \"x\";\n",
+        )
+        .unwrap(),
+    );
     assert_eq!(code, "<?php\n\nunset($a, $b);\n\n$c = 'x';\n");
-    assert_eq!(applied, ["combine_consecutive_unsets", "single_quote", "blank_line_after_opening_tag"]);
+    assert_eq!(
+        applied,
+        [
+            "combine_consecutive_unsets",
+            "single_quote",
+            "blank_line_after_opening_tag"
+        ]
+    );
     let b = b"<?php\n// @php-cs-fixer-ignore single_quote\nunset($a);\nunset($b);\n$c = \"x\";\n";
     let (code, applied) = fixed(d.fix(&dir.join("app/b.php"), b).unwrap());
-    assert_eq!(code, "<?php\n\n// @php-cs-fixer-ignore single_quote\nunset($a, $b);\n\n$c = \"x\";\n");
-    assert_eq!(applied, ["combine_consecutive_unsets", "blank_line_after_opening_tag"]);
+    assert_eq!(
+        code,
+        "<?php\n\n// @php-cs-fixer-ignore single_quote\nunset($a, $b);\n\n$c = \"x\";\n"
+    );
+    assert_eq!(
+        applied,
+        ["combine_consecutive_unsets", "blank_line_after_opening_tag"]
+    );
 
     // Pint aborts the whole run with this message (Runner::validateRulesNamesForExceptions).
-    let e = d.fix(Path::new("/tmp/dp1/app/c.php"), b"<?php\n// @php-cs-fixer-ignore nope\n$c = \"x\";\n").unwrap_err();
+    let e = d
+        .fix(
+            Path::new("/tmp/dp1/app/c.php"),
+            b"<?php\n// @php-cs-fixer-ignore nope\n$c = \"x\";\n",
+        )
+        .unwrap_err();
     assert_eq!(
         e.to_string(),
         "@php-cs-fixer-ignore annotation(s) used for rules that are not in the current set of enabled rules:\n- nope (unknown rule)\n\n\
@@ -139,13 +214,26 @@ fn runtimes_and_startup_errors() {
     let dir = tmp("runtimes");
     let rules = || Source::Rules(json!({"single_quote": true}));
     let e = Delegate::start(&dir, rules(), None).err().unwrap();
-    assert_eq!(e.to_string(), "no PHP-CS-Fixer to delegate to: run `composer require --dev laravel/pint`, set PUN_PINT to a Pint PHAR, or pass --native-only");
-    let e = Delegate::start(&dir, Source::Config(dir.join(".php-cs-fixer.php")), None).err().unwrap();
-    assert_eq!(e.to_string(), "no vendor/friendsofphp/php-cs-fixer: run `composer install` so Pun can load the config's fixers");
+    assert_eq!(
+        e.to_string(),
+        "no PHP-CS-Fixer to delegate to: run `composer require --dev laravel/pint`, set PUN_PINT to a Pint PHAR, or pass --native-only"
+    );
+    let e = Delegate::start(&dir, Source::Config(dir.join(".php-cs-fixer.php")), None)
+        .err()
+        .unwrap();
+    assert_eq!(
+        e.to_string(),
+        "no vendor/friendsofphp/php-cs-fixer: run `composer install` so Pun can load the config's fixers"
+    );
 
     // PUN_PINT (passed in by the CLI) wins; without a PHAR, a Composer install of PHP-CS-Fixer is used.
     let phar = oracle.join("pint/builds/pint");
-    assert_eq!(Delegate::start(&dir, rules(), Some(phar.clone())).unwrap().runtime, phar);
+    assert_eq!(
+        Delegate::start(&dir, rules(), Some(phar.clone()))
+            .unwrap()
+            .runtime,
+        phar
+    );
     with_vendor(&dir, &oracle);
     let d = Delegate::start(&dir, rules(), None).unwrap();
     assert_eq!(d.runtime, dir.join("vendor/autoload.php"));
@@ -153,18 +241,33 @@ fn runtimes_and_startup_errors() {
     assert_eq!(code, "<?php\n$a = 'x';\n");
 
     // Pint's own message for an unknown rule (`pint --config` with {"rules":{"nope":true}}).
-    let e = Delegate::start(&dir, Source::Rules(json!({"nope": true})), None).err().unwrap();
+    let e = Delegate::start(&dir, Source::Rules(json!({"nope": true})), None)
+        .err()
+        .unwrap();
     assert_eq!(e.to_string(), "The rules contain unknown fixers: \"nope\".");
     // php-cs-fixer's risky check for a config that doesn't allow risky rules.
-    std::fs::write(dir.join("risky.php"), "<?php return (new PhpCsFixer\\Config())->setRules(['strict_comparison' => true]);").unwrap();
-    let e = Delegate::start(&dir, Source::Config(dir.join("risky.php")), None).err().unwrap();
+    std::fs::write(
+        dir.join("risky.php"),
+        "<?php return (new PhpCsFixer\\Config())->setRules(['strict_comparison' => true]);",
+    )
+    .unwrap();
+    let e = Delegate::start(&dir, Source::Config(dir.join("risky.php")), None)
+        .err()
+        .unwrap();
     assert_eq!(
         e.to_string(),
         "The rules contain risky fixers (\"strict_comparison\"), but they are not allowed to run. Perhaps you forget to use --allow-risky=yes option?"
     );
     // A Finder without in() fails when listed, like php-cs-fixer does.
-    std::fs::write(dir.join("nodirs.php"), "<?php return (new PhpCsFixer\\Config())->setFinder(PhpCsFixer\\Finder::create());").unwrap();
-    let e = Delegate::start(&dir, Source::Config(dir.join("nodirs.php")), None).unwrap().files().unwrap_err();
+    std::fs::write(
+        dir.join("nodirs.php"),
+        "<?php return (new PhpCsFixer\\Config())->setFinder(PhpCsFixer\\Finder::create());",
+    )
+    .unwrap();
+    let e = Delegate::start(&dir, Source::Config(dir.join("nodirs.php")), None)
+        .unwrap()
+        .files()
+        .unwrap_err();
     assert!(e.to_string().contains("in()"), "{e}");
 }
 
@@ -175,7 +278,11 @@ fn signature_tracks_config_and_packages() {
     let dir = custom_project(&oracle, "signature");
     let d = Delegate::start(&dir, Source::Config(dir.join(".php-cs-fixer.php")), None).unwrap();
     let a = d.signature();
-    std::fs::write(dir.join(".php-cs-fixer.php"), std::fs::read_to_string(dir.join(".php-cs-fixer.php")).unwrap() + "\n").unwrap();
+    std::fs::write(
+        dir.join(".php-cs-fixer.php"),
+        std::fs::read_to_string(dir.join(".php-cs-fixer.php")).unwrap() + "\n",
+    )
+    .unwrap();
     let b = d.signature();
     assert_ne!(a, b);
     std::fs::create_dir_all(dir.join("vendor/composer")).unwrap();

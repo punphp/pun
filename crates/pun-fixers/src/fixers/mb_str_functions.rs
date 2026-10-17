@@ -34,7 +34,11 @@ const FUNCTIONS_MAP: &[(&str, &str, &[usize])] = &[
 
 pub fn fixer() -> Box<dyn Fixer> {
     Box::new(MbStrFunctionsFixer {
-        functions: FUNCTIONS_MAP.iter().copied().filter(|(_, alt, _)| is_internal_function(alt.as_bytes())).collect(),
+        functions: FUNCTIONS_MAP
+            .iter()
+            .copied()
+            .filter(|(_, alt, _)| is_internal_function(alt.as_bytes()))
+            .collect(),
     })
 }
 
@@ -59,16 +63,20 @@ impl Fixer for MbStrFunctionsFixer {
                 continue;
             }
             let lowercased_content = tokens[index].content.to_ascii_lowercase();
-            let Some(&(_, alternative_name, argument_count)) =
-                self.functions.iter().find(|(n, _, _)| n.as_bytes() == &lowercased_content[..])
+            let Some(&(_, alternative_name, argument_count)) = self
+                .functions
+                .iter()
+                .find(|(n, _, _)| n.as_bytes() == &lowercased_content[..])
             else {
                 continue;
             };
             // is it a global function call?
             if functions_analyzer.is_global_function_call(tokens, index) {
                 let open_parenthesis = tokens.get_next_meaningful_token(index).unwrap();
-                let close_parenthesis = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_parenthesis);
-                let number_of_arguments = arguments_analyzer.count_arguments(tokens, open_parenthesis, close_parenthesis);
+                let close_parenthesis =
+                    tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_parenthesis);
+                let number_of_arguments =
+                    arguments_analyzer.count_arguments(tokens, open_parenthesis, close_parenthesis);
                 if !argument_count.contains(&number_of_arguments) {
                     continue;
                 }

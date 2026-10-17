@@ -25,7 +25,9 @@ struct PhpdocScalarFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocScalarFixer { types: DEFAULT_TYPES.iter().map(|s| s.to_string()).collect() })
+    Box::new(PhpdocScalarFixer {
+        types: DEFAULT_TYPES.iter().map(|s| s.to_string()).collect(),
+    })
 }
 
 impl PhpdocScalarFixer {
@@ -36,7 +38,9 @@ impl PhpdocScalarFixer {
         let word = |b: &u8| b.is_ascii_alphanumeric() || *b == b'_' || *b >= 0x80;
         self.types.iter().any(|t| {
             let t = t.as_bytes();
-            doc.windows(t.len()).enumerate().any(|(i, w)| w == t && !doc.get(i + t.len()).is_some_and(word))
+            doc.windows(t.len())
+                .enumerate()
+                .any(|(i, w)| w == t && !doc.get(i + t.len()).is_some_and(word))
         })
     }
     fn normalize(&self, t: &[u8]) -> Vec<u8> {
@@ -48,7 +52,13 @@ impl PhpdocScalarFixer {
         }
         let mut out = t.to_vec();
         if self.types.iter().any(|x| x.as_bytes() == t) {
-            out = TYPES_MAP.iter().find(|(k, _)| k.as_bytes() == t).unwrap().1.as_bytes().to_vec();
+            out = TYPES_MAP
+                .iter()
+                .find(|(k, _)| k.as_bytes() == t)
+                .unwrap()
+                .1
+                .as_bytes()
+                .to_vec();
         }
         out.extend(suffix);
         out
@@ -72,6 +82,11 @@ impl Fixer for PhpdocScalarFixer {
         base::is_candidate(tokens)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        base::apply_fix(tokens, &format!("phpdoc_scalar {:?}", self.types), &|doc| self.may_change(doc), &|t| self.normalize(t));
+        base::apply_fix(
+            tokens,
+            &format!("phpdoc_scalar {:?}", self.types),
+            &|doc| self.may_change(doc),
+            &|t| self.normalize(t),
+        );
     }
 }

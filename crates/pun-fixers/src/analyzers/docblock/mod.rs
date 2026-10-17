@@ -33,7 +33,6 @@ pub struct DocBlock {
     ctx: Rc<Context>,
 }
 
-
 impl DocBlock {
     pub fn new(content: &[u8]) -> Self {
         Self::with_context(content, Rc::default())
@@ -41,11 +40,21 @@ impl DocBlock {
 
     pub fn with_context(content: &[u8], ctx: Rc<Context>) -> Self {
         let lines = split_lines_ascii(content)
-            .unwrap_or_else(|| preg::split(r"/([^\n\r]+\R*)/", content, preg::SPLIT_NO_EMPTY | preg::SPLIT_DELIM_CAPTURE))
+            .unwrap_or_else(|| {
+                preg::split(
+                    r"/([^\n\r]+\R*)/",
+                    content,
+                    preg::SPLIT_NO_EMPTY | preg::SPLIT_DELIM_CAPTURE,
+                )
+            })
             .into_iter()
             .map(Line::shared)
             .collect();
-        DocBlock { lines, annotations: OnceCell::new(), ctx }
+        DocBlock {
+            lines,
+            annotations: OnceCell::new(),
+            ctx,
+        }
     }
 
     pub fn get_lines(&self) -> &[LineRef] {
@@ -64,7 +73,9 @@ impl DocBlock {
             while index < total {
                 if self.lines[index].borrow().contains_a_tag() {
                     let len = self.find_annotation_length(index);
-                    let lines = (index..index + len).map(|i| (i, self.lines[i].clone())).collect();
+                    let lines = (index..index + len)
+                        .map(|i| (i, self.lines[i].clone()))
+                        .collect();
                     let annotation = Annotation::new(lines, self.ctx.clone());
                     index = annotation.get_end();
                     annotations.push(annotation);
@@ -84,19 +95,33 @@ impl DocBlock {
             return;
         }
         let line_content = Self::get_single_line_doc_block_entry(&self.lines[0].borrow());
-        let mid = if line_content.is_empty() { [indent, b" *", line_end].concat() } else { [indent, b" * ", &line_content, line_end].concat() };
-        self.lines = vec![Line::shared([b"/**", line_end].concat()), Line::shared(mid), Line::shared([indent, b" */"].concat())];
+        let mid = if line_content.is_empty() {
+            [indent, b" *", line_end].concat()
+        } else {
+            [indent, b" * ", &line_content, line_end].concat()
+        };
+        self.lines = vec![
+            Line::shared([b"/**", line_end].concat()),
+            Line::shared(mid),
+            Line::shared([indent, b" */"].concat()),
+        ];
     }
 
     pub fn make_single_line(&mut self) {
         if !self.is_multi_line() {
             return;
         }
-        let useful: Vec<&LineRef> = self.lines.iter().filter(|l| l.borrow().contains_useful_content()).collect();
+        let useful: Vec<&LineRef> = self
+            .lines
+            .iter()
+            .filter(|l| l.borrow().contains_useful_content())
+            .collect();
         if useful.len() > 1 {
             return;
         }
-        let line_content = useful.first().map_or_else(Vec::new, |l| Self::get_single_line_doc_block_entry(&l.borrow()));
+        let line_content = useful.first().map_or_else(Vec::new, |l| {
+            Self::get_single_line_doc_block_entry(&l.borrow())
+        });
         self.lines = vec![Line::shared([b"/** ", &line_content[..], b" */"].concat())];
     }
 
@@ -105,18 +130,26 @@ impl DocBlock {
     }
 
     pub fn get_annotations_of_type(&self, types: &[&str]) -> Vec<&Annotation> {
-        self.get_annotations().iter().filter(|a| types.iter().any(|t| t.as_bytes() == a.get_tag().get_name())).collect()
+        self.get_annotations()
+            .iter()
+            .filter(|a| types.iter().any(|t| t.as_bytes() == a.get_tag().get_name()))
+            .collect()
     }
 
     pub fn get_content(&self) -> Vec<u8> {
-        self.lines.iter().flat_map(|l| l.borrow().get_content().to_vec()).collect()
+        self.lines
+            .iter()
+            .flat_map(|l| l.borrow().get_content().to_vec())
+            .collect()
     }
 
     fn find_annotation_length(&self, start: usize) -> usize {
         let mut index = start;
         loop {
             index += 1;
-            let Some(line) = self.get_line(index) else { break };
+            let Some(line) = self.get_line(index) else {
+                break;
+            };
             let line = line.borrow();
             if line.contains_a_tag() {
                 break;

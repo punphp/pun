@@ -66,12 +66,24 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
     let r = match name {
         "code" => s(&t.generate_code()),
         "contents" => json!(t.iter().map(|k| s(k.get_content())).collect::<Vec<_>>()),
-        "count" => json!([t.count(), t.len(), t.is_empty(), t.as_slice().len(), (&*t).into_iter().count()]),
+        "count" => json!([
+            t.count(),
+            t.len(),
+            t.is_empty(),
+            t.as_slice().len(),
+            (&*t).into_iter().count()
+        ]),
         "changed" => json!(t.is_changed()),
         "partial" => s(&t.generate_partial_code(u(0), u(1))),
-        "detect" => json!(Tokens::detect_block_type(&t[u(0)]).map(|(bt, start)| json!([bt.0, start]))),
+        "detect" => {
+            json!(Tokens::detect_block_type(&t[u(0)]).map(|(bt, start)| json!([bt.0, start])))
+        }
         "blocks" => json!(Tokens::detect_block_type(&t[u(0)]).map(|(bt, start)| {
-            if start { t.find_block_end(bt, u(0)) } else { t.find_block_start(bt, u(0)) }
+            if start {
+                t.find_block_end(bt, u(0))
+            } else {
+                t.find_block_start(bt, u(0))
+            }
         })),
         "blockEnd" => json!(t.find_block_end(BlockType(u(0) as u8), u(1))),
         "blockStart" => json!(t.find_block_start(BlockType(u(0) as u8), u(1))),
@@ -81,7 +93,11 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
                 json!(t.find_given_kind(kind(&x[0]), start, end(2)))
             } else {
                 let m = t.find_given_kinds(&kinds(&x[0]), start, end(2));
-                json!(m.into_iter().map(|(k, v)| (k.name().to_string(), v)).collect::<BTreeMap<_, _>>())
+                json!(
+                    m.into_iter()
+                        .map(|(k, v)| (k.name().to_string(), v))
+                        .collect::<BTreeMap<_, _>>()
+                )
             }
         }
         "nextNonWs" => json!(t.get_next_non_whitespace(u(0), opt_ws(x.get(1)))),
@@ -89,7 +105,9 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
         "nonWsSibling" => json!(t.get_non_whitespace_sibling(u(0), d(1), opt_ws(x.get(2)))),
         "nextOfKind" => json!(t.get_next_token_of_kind(u(0), &protos(&x[1]), b(2, true))),
         "prevOfKind" => json!(t.get_prev_token_of_kind(u(0), &protos(&x[1]), b(2, true))),
-        "ofKindSibling" => json!(t.get_token_of_kind_sibling(u(0), d(1), &protos(&x[2]), b(3, true))),
+        "ofKindSibling" => {
+            json!(t.get_token_of_kind_sibling(u(0), d(1), &protos(&x[2]), b(3, true)))
+        }
         "notOfKindSibling" => json!(t.get_token_not_of_kind_sibling(u(0), d(1), &protos(&x[2]))),
         "notOfKindsSibling" => json!(t.get_token_not_of_kinds_sibling(u(0), d(1), &kinds(&x[2]))),
         "meaningfulSibling" => json!(t.get_meaningful_token_sibling(u(0), d(1))),
@@ -100,7 +118,10 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
             let start = x.get(1).and_then(Value::as_u64).unwrap_or(0) as usize;
             let cs = x.get(3).cloned().unwrap_or(json!(true));
             let f = |k: usize| match &cs {
-                Value::Object(m) => m.get(&k.to_string()).and_then(Value::as_bool).unwrap_or(true),
+                Value::Object(m) => m
+                    .get(&k.to_string())
+                    .and_then(Value::as_bool)
+                    .unwrap_or(true),
                 v => v.as_bool().unwrap(),
             };
             json!(t.find_sequence(&protos(&x[0]), start, end(2), f))
@@ -115,8 +136,20 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
         "altSyntax" => json!(t.has_alternative_syntax()),
         "tok" => {
             let k = &t[u(0)];
-            json!([k.get_name(), k.get_id().map(Kind::name), s(k.get_content()), k.is_array(), k.is_cast(), k.is_classy(), k.is_comment(),
-                k.is_object_operator(), k.is_keyword(), k.is_magic_constant(), k.is_native_constant(), k.is_whitespace(None)])
+            json!([
+                k.get_name(),
+                k.get_id().map(Kind::name),
+                s(k.get_content()),
+                k.is_array(),
+                k.is_cast(),
+                k.is_classy(),
+                k.is_comment(),
+                k.is_object_operator(),
+                k.is_keyword(),
+                k.is_magic_constant(),
+                k.is_native_constant(),
+                k.is_whitespace(None)
+            ])
         }
         "isWs" => json!(t[u(0)].is_whitespace(opt_ws(x.get(1)))),
         "equals" => json!(t[u(0)].equals(proto(&x[1]), b(2, true))),
@@ -125,9 +158,18 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
         "newEquals" => json!(tok(&x[0]).equals(proto(&x[1]), b(2, true))),
         "newEqualsToken" => json!(tok(&x[0]).equals_token(&tok(&x[1]), b(2, true))),
         "equalsAny" => json!(t[u(0)].equals_any(&protos(&x[1]), b(2, true))),
-        "isGivenKind" => json!(if x[1].is_string() { t[u(0)].is_kind(kind(&x[1])) } else { t[u(0)].is_given_kind(&kinds(&x[1])) }),
+        "isGivenKind" => json!(if x[1].is_string() {
+            t[u(0)].is_kind(kind(&x[1]))
+        } else {
+            t[u(0)].is_given_kind(&kinds(&x[1]))
+        }),
         "classyElements" => {
-            json!(a.get_classy_elements().iter().map(|(i, e)| json!([i, e.kind.as_str(), e.class_index])).collect::<Vec<_>>())
+            json!(
+                a.get_classy_elements()
+                    .iter()
+                    .map(|(i, e)| json!([i, e.kind.as_str(), e.class_index]))
+                    .collect::<Vec<_>>()
+            )
         }
         "classyModifiers" => {
             let m = a.get_classy_modifiers(u(0));
@@ -136,7 +178,11 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
         "importUses" => {
             let m = a.get_import_use_indexes(b(0, false));
             if b(0, false) {
-                json!(m.into_iter().map(|(k, v)| (k.to_string(), v)).collect::<BTreeMap<_, _>>())
+                json!(
+                    m.into_iter()
+                        .map(|(k, v)| (k.to_string(), v))
+                        .collect::<BTreeMap<_, _>>()
+                )
             } else {
                 json!(m.get(&0).cloned().unwrap_or_default())
             }
@@ -146,7 +192,12 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
         "blockMultiline" => json!(a.is_block_multiline(u(0))),
         "methodAttributes" => {
             let m = a.get_method_attributes(u(0));
-            json!([m.visibility.map(Kind::name), m.static_, m.abstract_, m.final_])
+            json!([
+                m.visibility.map(Kind::name),
+                m.static_,
+                m.abstract_,
+                m.final_
+            ])
         }
         "anonClass" => json!(a.is_anonymous_class(u(0))),
         "lambda" => json!(a.is_lambda(u(0))),
@@ -162,9 +213,13 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
             match name {
                 "clearChanged" => t.clear_changed(),
                 "insertAt" => t.insert_at(u(0), toks(&x[1])),
-                "insertSlices" => {
-                    t.insert_slices(x[0].as_object().unwrap().iter().map(|(i, l)| (i.parse().unwrap(), toks(l))).collect())
-                }
+                "insertSlices" => t.insert_slices(
+                    x[0].as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(i, l)| (i.parse().unwrap(), toks(l)))
+                        .collect(),
+                ),
                 "clearAt" => t.clear_at(u(0)),
                 "set" => t.set(u(0), tok(&x[1])),
                 "overrideRange" => t.override_range(u(0), u(1), toks(&x[2])),
@@ -175,7 +230,13 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
                 "fromArray" => *t = Tokens::from_array(toks(&x[0])),
                 "clearRange" => t.clear_range(u(0), u(1)),
                 "clearMerge" => t.clear_token_and_merge_surrounding_whitespace(u(0)),
-                "ensureWs" => return json!(t.ensure_whitespace_at_index(u(0), u(1), x[2].as_str().unwrap().as_bytes())),
+                "ensureWs" => {
+                    return json!(t.ensure_whitespace_at_index(
+                        u(0),
+                        u(1),
+                        x[2].as_str().unwrap().as_bytes()
+                    ));
+                }
                 "clearEmpty" => t.clear_empty_tokens(),
                 _ => panic!("unknown op {name}"),
             }
@@ -206,11 +267,15 @@ fn run_case(case: &Value) -> Vec<Value> {
             let o = o.as_array().unwrap();
             if o[0] == "each" {
                 let n = t.count();
-                json!((0..n).map(|i| {
-                    let mut args = vec![o[1].clone(), json!(i)];
-                    args.extend_from_slice(&o[2..]);
-                    guarded(&mut t, &args)
-                }).collect::<Vec<_>>())
+                json!(
+                    (0..n)
+                        .map(|i| {
+                            let mut args = vec![o[1].clone(), json!(i)];
+                            args.extend_from_slice(&o[2..]);
+                            guarded(&mut t, &args)
+                        })
+                        .collect::<Vec<_>>()
+                )
             } else {
                 guarded(&mut t, o)
             }
@@ -226,13 +291,27 @@ fn api_matches_php_cs_fixer() {
         return;
     }
     let cases_json = std::fs::read_to_string(root.join("tests/api_cases.json")).unwrap();
-    let Ok(mut child) = Command::new("php").arg(root.join("tools/api.php")).stdin(Stdio::piped()).stdout(Stdio::piped()).spawn() else {
+    let Ok(mut child) = Command::new("php")
+        .arg(root.join("tools/api.php"))
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+    else {
         return;
     };
-    child.stdin.take().unwrap().write_all(cases_json.as_bytes()).unwrap();
+    child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(cases_json.as_bytes())
+        .unwrap();
     let out = child.wait_with_output().unwrap();
     assert!(out.status.success(), "tools/api.php failed");
-    let expected: Vec<Vec<Value>> = String::from_utf8(out.stdout).unwrap().lines().map(|l| serde_json::from_str(l).unwrap()).collect();
+    let expected: Vec<Vec<Value>> = String::from_utf8(out.stdout)
+        .unwrap()
+        .lines()
+        .map(|l| serde_json::from_str(l).unwrap())
+        .collect();
     let cases: Vec<Value> = serde_json::from_str(&cases_json).unwrap();
     assert_eq!(expected.len(), cases.len());
     std::panic::set_hook(Box::new(|_| {}));
@@ -241,10 +320,18 @@ fn api_matches_php_cs_fixer() {
         let got = run_case(case);
         for ((o, g), w) in ops_of(case).iter().zip(&got).zip(want) {
             if g != w {
-                bad.push(format!("case {n} {:?} {o}\n  php:  {w}\n  ours: {g}", case["code"].as_str().unwrap()));
+                bad.push(format!(
+                    "case {n} {:?} {o}\n  php:  {w}\n  ours: {g}",
+                    case["code"].as_str().unwrap()
+                ));
             }
         }
     }
     let _ = std::panic::take_hook();
-    assert!(bad.is_empty(), "{} mismatches:\n{}", bad.len(), bad.join("\n"));
+    assert!(
+        bad.is_empty(),
+        "{} mismatches:\n{}",
+        bad.len(),
+        bad.join("\n")
+    );
 }

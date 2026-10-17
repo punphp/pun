@@ -238,12 +238,16 @@ impl Kind {
     pub const CT_ARRAY_INDEX_CURLY_BRACE_OPEN: Kind = Kind::CT_ARRAY_INDEX_BRACE_OPEN;
     pub const CT_ARRAY_SQUARE_BRACE_CLOSE: Kind = Kind::CT_ARRAY_BRACKET_CLOSE;
     pub const CT_ARRAY_SQUARE_BRACE_OPEN: Kind = Kind::CT_ARRAY_BRACKET_OPEN;
-    pub const CT_BRACE_CLASS_INSTANTIATION_CLOSE: Kind = Kind::CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE;
-    pub const CT_BRACE_CLASS_INSTANTIATION_OPEN: Kind = Kind::CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN;
+    pub const CT_BRACE_CLASS_INSTANTIATION_CLOSE: Kind =
+        Kind::CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE;
+    pub const CT_BRACE_CLASS_INSTANTIATION_OPEN: Kind =
+        Kind::CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN;
     pub const CT_DESTRUCTURING_SQUARE_BRACE_CLOSE: Kind = Kind::CT_DESTRUCTURING_BRACKET_CLOSE;
     pub const CT_DESTRUCTURING_SQUARE_BRACE_OPEN: Kind = Kind::CT_DESTRUCTURING_BRACKET_OPEN;
-    pub const CT_DYNAMIC_CLASS_CONSTANT_FETCH_CURLY_BRACE_OPEN: Kind = Kind::CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN;
-    pub const CT_DYNAMIC_CLASS_CONSTANT_FETCH_CURLY_BRACE_CLOSE: Kind = Kind::CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE;
+    pub const CT_DYNAMIC_CLASS_CONSTANT_FETCH_CURLY_BRACE_OPEN: Kind =
+        Kind::CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN;
+    pub const CT_DYNAMIC_CLASS_CONSTANT_FETCH_CURLY_BRACE_CLOSE: Kind =
+        Kind::CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE;
 }
 
 #[cfg(test)]
@@ -253,8 +257,14 @@ mod tests {
     #[test]
     fn names() {
         assert_eq!(Kind::T_STRING.name(), "T_STRING");
-        assert_eq!(Kind::CT_ARRAY_BRACKET_OPEN.name(), "CT::T_ARRAY_BRACKET_OPEN");
-        assert_eq!(Kind::from_name("CT::T_TYPE_COLON"), Some(Kind::CT_TYPE_COLON));
+        assert_eq!(
+            Kind::CT_ARRAY_BRACKET_OPEN.name(),
+            "CT::T_ARRAY_BRACKET_OPEN"
+        );
+        assert_eq!(
+            Kind::from_name("CT::T_TYPE_COLON"),
+            Some(Kind::CT_TYPE_COLON)
+        );
         assert!(Kind::CT_TYPE_COLON.is_custom() && !Kind::T_BAD_CHARACTER.is_custom());
     }
 }

@@ -98,8 +98,15 @@ impl Fixer for ClassAttributesSeparationFixer {
         };
         let mut out = Vec::new();
         for (type_, spacing) in types.into_iter().zip(&spacings) {
-            let Some(&t) = ["const", "method", "property", "trait_import", "case"].iter().find(|t| **t == type_) else {
-                let php_type = if type_.parse::<i64>().is_ok_and(|n| n.to_string() == type_) { "integer" } else { "string" };
+            let Some(&t) = ["const", "method", "property", "trait_import", "case"]
+                .iter()
+                .find(|t| **t == type_)
+            else {
+                let php_type = if type_.parse::<i64>().is_ok_and(|n| n.to_string() == type_) {
+                    "integer"
+                } else {
+                    "string"
+                };
                 bail!(
                     "[class_attributes_separation] Invalid configuration: Unexpected element type, expected any of \"const\", \"method\", \"property\", \"trait_import\" and \"case\", got \"{php_type}#{type_}\"."
                 );
@@ -135,9 +142,16 @@ impl Fixer for ClassAttributesSeparationFixer {
         let mut pos = 0;
         while pos < all.len() {
             let class_index = all[pos].1;
-            let class_open = tokens.get_next_token_of_kind(class_index, &["{".into()], true).unwrap();
+            let class_open = tokens
+                .get_next_token_of_kind(class_index, &["{".into()], true)
+                .unwrap();
             let class_end = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, class_open);
-            let mut class = Class { index: class_index, open: class_open, close: class_end, elements: Vec::new() };
+            let mut class = Class {
+                index: class_index,
+                open: class_open,
+                close: class_end,
+                elements: Vec::new(),
+            };
             while pos < all.len() && all[pos].1 == class_index {
                 let (index, _, type_) = all[pos];
                 let start = get_first_token_index_of_class_element(tokens, index);
@@ -156,7 +170,10 @@ fn type_name(kind: ClassyElementType) -> &'static str {
 
 impl ClassAttributesSeparationFixer {
     fn spacing(&self, type_: &str) -> Option<Spacing> {
-        self.class_element_types.iter().find(|(t, _)| *t == type_).map(|(_, s)| *s)
+        self.class_element_types
+            .iter()
+            .find(|(t, _)| *t == type_)
+            .map(|(_, s)| *s)
     }
 
     fn fix_class(&self, tokens: &mut Tokens, class: &Class) {
@@ -170,7 +187,12 @@ impl ClassAttributesSeparationFixer {
         }
     }
 
-    fn fix_space_above_class_element(&self, tokens: &mut Tokens, class: &Class, element_index: usize) {
+    fn fix_space_above_class_element(
+        &self,
+        tokens: &mut Tokens,
+        class: &Class,
+        element_index: usize,
+    ) {
         let element = &class.elements[element_index];
         let element_above_end = class.elements.get(element_index + 1).map_or(0, |e| e.end);
         let non_white_above = tokens.get_prev_non_whitespace(element.start, None).unwrap();
@@ -188,25 +210,37 @@ impl ClassAttributesSeparationFixer {
                 return;
             }
             // more than one line break, always bring it back to 2 line breaks between the element start and what is above it
-            if tokens[non_white_above + 1].is_whitespace(None) && substr_count_nl(&tokens[non_white_above + 1]) > 1 {
+            if tokens[non_white_above + 1].is_whitespace(None)
+                && substr_count_nl(&tokens[non_white_above + 1]) > 1
+            {
                 self.correct_line_breaks(tokens, non_white_above, element.start, 2);
                 return;
             }
             if element.start - non_white_above == 1
-                || (tokens[non_white_above - 1].is_whitespace(None) && substr_count_nl(&tokens[non_white_above - 1]) > 0)
-                || (tokens[non_white_above + 1].is_whitespace(None) && substr_count_nl(&tokens[non_white_above + 1]) > 0)
+                || (tokens[non_white_above - 1].is_whitespace(None)
+                    && substr_count_nl(&tokens[non_white_above - 1]) > 0)
+                || (tokens[non_white_above + 1].is_whitespace(None)
+                    && substr_count_nl(&tokens[non_white_above + 1]) > 0)
             {
                 // 1. The comment is meant for the element (although not a PHPDoc),
                 //    make sure there is one line break between the element and the comment...
                 self.correct_line_breaks(tokens, non_white_above, element.start, 1);
                 //    ... and make sure there is blank line above the comment (with the exception when it is directly after a class opening)
-                let non_white_above = find_comment_block_start(tokens, non_white_above, element_above_end);
-                let non_white_above_comment = tokens.get_prev_non_whitespace(non_white_above, None).unwrap();
+                let non_white_above =
+                    find_comment_block_start(tokens, non_white_above, element_above_end);
+                let non_white_above_comment = tokens
+                    .get_prev_non_whitespace(non_white_above, None)
+                    .unwrap();
                 if non_white_above_comment == class.open {
                     if tokens[non_white_above_comment - 1].is_whitespace(None)
                         && substr_count_nl(&tokens[non_white_above_comment - 1]) > 0
                     {
-                        self.correct_line_breaks(tokens, non_white_above_comment, non_white_above, 1);
+                        self.correct_line_breaks(
+                            tokens,
+                            non_white_above_comment,
+                            non_white_above,
+                            1,
+                        );
                     }
                 } else {
                     self.correct_line_breaks(tokens, non_white_above_comment, non_white_above, 2);
@@ -223,9 +257,16 @@ impl ClassAttributesSeparationFixer {
             // there should be one linebreak between the element and the attribute above it
             self.correct_line_breaks(tokens, non_white_above, element.start, 1);
             // make sure there is blank line above the comment (with the exception when it is directly after a class opening)
-            let non_white_above = find_comment_block_start(tokens, non_white_above, element_above_end);
-            let non_white_above_comment = tokens.get_prev_non_whitespace(non_white_above, None).unwrap();
-            let n = if non_white_above_comment == class.open { 1 } else { 2 };
+            let non_white_above =
+                find_comment_block_start(tokens, non_white_above, element_above_end);
+            let non_white_above_comment = tokens
+                .get_prev_non_whitespace(non_white_above, None)
+                .unwrap();
+            let n = if non_white_above_comment == class.open {
+                1
+            } else {
+                2
+            };
             self.correct_line_breaks(tokens, non_white_above_comment, non_white_above, n);
             return;
         }
@@ -233,7 +274,12 @@ impl ClassAttributesSeparationFixer {
         self.correct_line_breaks(tokens, non_white_above, element.start, n);
     }
 
-    fn determine_required_line_count(&self, tokens: &Tokens, class: &Class, element_index: usize) -> usize {
+    fn determine_required_line_count(
+        &self,
+        tokens: &Tokens,
+        class: &Class,
+        element_index: usize,
+    ) -> usize {
         let type_ = class.elements[element_index].type_;
         let spacing = self.spacing(type_).unwrap();
         if spacing == Spacing::One {
@@ -241,7 +287,11 @@ impl ClassAttributesSeparationFixer {
         }
         let meta_above = |start: usize| {
             let i = tokens.get_prev_non_whitespace(start, None).unwrap();
-            if tokens[i].is_given_kind(&[T_DOC_COMMENT, CT_ATTRIBUTE_CLOSE]) { 2 } else { 1 }
+            if tokens[i].is_given_kind(&[T_DOC_COMMENT, CT_ATTRIBUTE_CLOSE]) {
+                2
+            } else {
+                1
+            }
         };
         if spacing == Spacing::None {
             let above_element = &class.elements[element_index + 1];
@@ -262,12 +312,21 @@ impl ClassAttributesSeparationFixer {
         }
     }
 
-    fn correct_line_breaks(&self, tokens: &mut Tokens, mut start_index: usize, end_index: usize, req_line_count: usize) {
+    fn correct_line_breaks(
+        &self,
+        tokens: &mut Tokens,
+        mut start_index: usize,
+        end_index: usize,
+        req_line_count: usize,
+    ) {
         let line_ending = self.whitespaces_config.get_line_ending().as_bytes();
         start_index += 1;
         let numb_of_white_tokens = end_index as isize - start_index as isize;
         if numb_of_white_tokens == 0 {
-            tokens.insert_at(start_index, vec![Token::new(T_WHITESPACE, line_ending.repeat(req_line_count))]);
+            tokens.insert_at(
+                start_index,
+                vec![Token::new(T_WHITESPACE, line_ending.repeat(req_line_count))],
+            );
             return;
         }
         let line_break_count = get_line_break_count(tokens, start_index, end_index);
@@ -275,21 +334,31 @@ impl ClassAttributesSeparationFixer {
             return;
         }
         if line_break_count < req_line_count {
-            let content = [&line_ending.repeat(req_line_count - line_break_count)[..], &tokens[start_index].content].concat();
+            let content = [
+                &line_ending.repeat(req_line_count - line_break_count)[..],
+                &tokens[start_index].content,
+            ]
+            .concat();
             tokens.set(start_index, Token::new(T_WHITESPACE, content));
             return;
         }
         // $lineCount = > $reqLineCount : check the one Token case first since this one will be true most of the time
         if numb_of_white_tokens == 1 {
-            let (content, _) =
-                Preg::replace_limit("/\\r\\n|\\n/", "", &tokens[start_index].content, (line_break_count - req_line_count) as isize);
+            let (content, _) = Preg::replace_limit(
+                "/\\r\\n|\\n/",
+                "",
+                &tokens[start_index].content,
+                (line_break_count - req_line_count) as isize,
+            );
             tokens.set(start_index, Token::new(T_WHITESPACE, content));
         }
     }
 }
 
 fn get_line_break_count(tokens: &Tokens, start_index: usize, end_index: usize) -> usize {
-    (start_index..end_index).map(|i| substr_count_nl(&tokens[i])).sum()
+    (start_index..end_index)
+        .map(|i| substr_count_nl(&tokens[i]))
+        .sum()
 }
 
 fn find_comment_block_start(tokens: &Tokens, mut start: usize, element_above_end: usize) -> usize {
@@ -318,59 +387,86 @@ fn find_comment_block_start(tokens: &Tokens, mut start: usize, element_above_end
 /// after the class's `{`.
 fn get_first_token_index_of_class_element(tokens: &Tokens, element_index: usize) -> usize {
     let mut first_element_attribute_index = element_index;
-    while let Some(non_white_above) =
-        tokens.get_prev_meaningful_token(first_element_attribute_index).filter(|&i| tokens[i].is_given_kind(MODIFIER_TYPES))
+    while let Some(non_white_above) = tokens
+        .get_prev_meaningful_token(first_element_attribute_index)
+        .filter(|&i| tokens[i].is_given_kind(MODIFIER_TYPES))
     {
         first_element_attribute_index = non_white_above;
     }
     first_element_attribute_index
 }
 
-fn get_last_token_index_of_class_element(tokens: &Tokens, class_index: usize, element_index: usize, element_type: &str) -> usize {
+fn get_last_token_index_of_class_element(
+    tokens: &Tokens,
+    class_index: usize,
+    element_index: usize,
+    element_type: &str,
+) -> usize {
     // find last token of the element
     let mut element_end_index;
     if element_type == "method" && !tokens[class_index].is_kind(T_INTERFACE) {
         let attributes = TokensAnalyzer::new(tokens).get_method_attributes(element_index);
         if attributes.abstract_ {
-            element_end_index = tokens.get_next_token_of_kind(element_index, &[";".into()], true).unwrap();
+            element_end_index = tokens
+                .get_next_token_of_kind(element_index, &[";".into()], true)
+                .unwrap();
         } else {
-            let open = tokens.get_next_token_of_kind(element_index, &["{".into()], true).unwrap();
+            let open = tokens
+                .get_next_token_of_kind(element_index, &["{".into()], true)
+                .unwrap();
             element_end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open);
         }
     } else if element_type == "trait_import" {
         element_end_index = element_index;
         loop {
             element_end_index = tokens.get_next_meaningful_token(element_end_index).unwrap();
-            if !(tokens[element_end_index].is_given_kind(&[T_STRING, T_NS_SEPARATOR]) || tokens[element_end_index].equals(",", true)) {
+            if !(tokens[element_end_index].is_given_kind(&[T_STRING, T_NS_SEPARATOR])
+                || tokens[element_end_index].equals(",", true))
+            {
                 break;
             }
         }
         if !tokens[element_end_index].equals(";", true) {
-            let open = tokens.get_next_token_of_kind(element_index, &["{".into()], true).unwrap();
+            let open = tokens
+                .get_next_token_of_kind(element_index, &["{".into()], true)
+                .unwrap();
             element_end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open);
         }
     } else if element_type == "property" {
-        element_end_index =
-            tokens.get_next_token_of_kind(element_index, &[";".into(), CT_PROPERTY_HOOK_BRACE_OPEN.into()], true).unwrap();
+        element_end_index = tokens
+            .get_next_token_of_kind(
+                element_index,
+                &[";".into(), CT_PROPERTY_HOOK_BRACE_OPEN.into()],
+                true,
+            )
+            .unwrap();
         if tokens[element_end_index].is_kind(CT_PROPERTY_HOOK_BRACE_OPEN) {
-            element_end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PROPERTY_HOOK, element_end_index);
+            element_end_index =
+                tokens.find_block_end(Tokens::BLOCK_TYPE_PROPERTY_HOOK, element_end_index);
         }
     } else {
         // 'const', enum-'case', 'promoted_property', or 'method' of an interface
-        element_end_index = tokens.get_next_token_of_kind(element_index, &[";".into(), "{".into()], true).unwrap();
+        element_end_index = tokens
+            .get_next_token_of_kind(element_index, &[";".into(), "{".into()], true)
+            .unwrap();
     }
-    let single_line_element = !(element_index + 1..element_end_index).any(|i| tokens[i].content.contains(&b'\n'));
+    let single_line_element =
+        !(element_index + 1..element_end_index).any(|i| tokens[i].content.contains(&b'\n'));
     if single_line_element {
         loop {
             let next_token = &tokens[element_end_index + 1];
-            if (next_token.is_comment() || next_token.is_whitespace(None)) && !next_token.content.contains(&b'\n') {
+            if (next_token.is_comment() || next_token.is_whitespace(None))
+                && !next_token.content.contains(&b'\n')
+            {
                 element_end_index += 1;
             } else {
                 break;
             }
         }
         if tokens[element_end_index].is_whitespace(None) {
-            element_end_index = tokens.get_prev_non_whitespace(element_end_index, None).unwrap();
+            element_end_index = tokens
+                .get_prev_non_whitespace(element_end_index, None)
+                .unwrap();
         }
     }
     element_end_index

@@ -4,19 +4,37 @@ use pun_tokens::{Kind, Kind::*, Tokens};
 use std::collections::BTreeMap;
 
 const ARGUMENT_INFO_SKIP_TYPES: &[Kind] = &[
-    T_ELLIPSIS, T_FINAL, CT_CONSTRUCTOR_PROPERTY_PROMOTION_PUBLIC, CT_CONSTRUCTOR_PROPERTY_PROMOTION_PROTECTED,
-    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PRIVATE, T_READONLY, T_PRIVATE_SET, T_PROTECTED_SET, T_PUBLIC_SET,
+    T_ELLIPSIS,
+    T_FINAL,
+    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PUBLIC,
+    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PROTECTED,
+    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PRIVATE,
+    T_READONLY,
+    T_PRIVATE_SET,
+    T_PROTECTED_SET,
+    T_PUBLIC_SET,
 ];
 
 pub struct ArgumentsAnalyzer;
 
 impl ArgumentsAnalyzer {
-    pub fn count_arguments(&self, tokens: &Tokens, open_parenthesis: usize, close_parenthesis: usize) -> usize {
-        self.get_arguments(tokens, open_parenthesis, close_parenthesis).len()
+    pub fn count_arguments(
+        &self,
+        tokens: &Tokens,
+        open_parenthesis: usize,
+        close_parenthesis: usize,
+    ) -> usize {
+        self.get_arguments(tokens, open_parenthesis, close_parenthesis)
+            .len()
     }
 
     /// start index => end index of each argument.
-    pub fn get_arguments(&self, tokens: &Tokens, open_parenthesis: usize, close_parenthesis: usize) -> BTreeMap<usize, usize> {
+    pub fn get_arguments(
+        &self,
+        tokens: &Tokens,
+        open_parenthesis: usize,
+        close_parenthesis: usize,
+    ) -> BTreeMap<usize, usize> {
         let mut arguments = BTreeMap::new();
         let first_sensible_token = tokens.get_next_meaningful_token(open_parenthesis).unwrap();
         if tokens[first_sensible_token].equals(")", true) {
@@ -33,7 +51,8 @@ impl ArgumentsAnalyzer {
             }
             // if comma matched, increase arguments counter
             if token.equals(",", true) {
-                if tokens.get_next_meaningful_token(param_content_index) == Some(close_parenthesis) {
+                if tokens.get_next_meaningful_token(param_content_index) == Some(close_parenthesis)
+                {
                     break; // trailing ',' in function call (PHP 7.3)
                 }
                 arguments.insert(arguments_start, param_content_index - 1);
@@ -45,7 +64,12 @@ impl ArgumentsAnalyzer {
         arguments
     }
 
-    pub fn get_argument_info(&self, tokens: &Tokens, argument_start: usize, argument_end: usize) -> ArgumentAnalysis {
+    pub fn get_argument_info(
+        &self,
+        tokens: &Tokens,
+        argument_start: usize,
+        argument_end: usize,
+    ) -> ArgumentAnalysis {
         let mut default: Option<Vec<u8>> = None;
         let mut name: Option<Vec<u8>> = None;
         let mut name_index = None;
@@ -65,7 +89,11 @@ impl ArgumentsAnalyzer {
                 index = tokens.find_block_end(Tokens::BLOCK_TYPE_PROPERTY_HOOK, index) + 1;
                 continue;
             }
-            if token.is_comment() || token.is_whitespace(None) || token.is_given_kind(ARGUMENT_INFO_SKIP_TYPES) || token.equals("&", true) {
+            if token.is_comment()
+                || token.is_whitespace(None)
+                || token.is_given_kind(ARGUMENT_INFO_SKIP_TYPES)
+                || token.equals("&", true)
+            {
                 index += 1;
                 continue;
             }
@@ -83,11 +111,15 @@ impl ArgumentsAnalyzer {
                 continue;
             }
             if saw_name {
-                default.get_or_insert_with(Vec::new).extend_from_slice(&token.content);
+                default
+                    .get_or_insert_with(Vec::new)
+                    .extend_from_slice(&token.content);
             } else {
                 type_index_start = Some(type_index_start.filter(|&s| s > 0).unwrap_or(index));
                 type_index_end = Some(index);
-                type_.get_or_insert_with(Vec::new).extend_from_slice(&token.content);
+                type_
+                    .get_or_insert_with(Vec::new)
+                    .extend_from_slice(&token.content);
             }
             index += 1;
         }

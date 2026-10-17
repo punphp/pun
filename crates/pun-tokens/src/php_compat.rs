@@ -54,7 +54,10 @@ pub fn rtrim(s: &[u8]) -> &[u8] {
 }
 
 pub fn rtrim_chars<'a>(s: &'a [u8], chars: &[u8]) -> &'a [u8] {
-    let end = s.iter().rposition(|c| !chars.contains(c)).map_or(0, |i| i + 1);
+    let end = s
+        .iter()
+        .rposition(|c| !chars.contains(c))
+        .map_or(0, |i| i + 1);
     &s[..end]
 }
 
@@ -189,10 +192,56 @@ mod tests {
     use super::*;
 
     const INPUTS: &[&str] = &[
-        "", "a", "A", "b", "B", "_", "a1", "a01", "a001", "a2", "a10", "a 10", "a  2", "img12", "img10", "IMG12",
-        "x2-g8", "x2-y7", "x2-y08", "x8-y8", "1.010", "1.002", "1.1", "1.02", "0", "00", "007", "07", " 7", "7 ",
-        "abc", "ABC", "Abc", "abcd", "ab c", "é", "É", "\u{ff}", "Foo\\Bar", "Foo\\bar", "foo_bar", "fooBar",
-        "\t1", "1\t", "0a", "0b", "a0", "a00", "12345678901234567890", "12345678901234567891",
+        "",
+        "a",
+        "A",
+        "b",
+        "B",
+        "_",
+        "a1",
+        "a01",
+        "a001",
+        "a2",
+        "a10",
+        "a 10",
+        "a  2",
+        "img12",
+        "img10",
+        "IMG12",
+        "x2-g8",
+        "x2-y7",
+        "x2-y08",
+        "x8-y8",
+        "1.010",
+        "1.002",
+        "1.1",
+        "1.02",
+        "0",
+        "00",
+        "007",
+        "07",
+        " 7",
+        "7 ",
+        "abc",
+        "ABC",
+        "Abc",
+        "abcd",
+        "ab c",
+        "é",
+        "É",
+        "\u{ff}",
+        "Foo\\Bar",
+        "Foo\\bar",
+        "foo_bar",
+        "fooBar",
+        "\t1",
+        "1\t",
+        "0a",
+        "0b",
+        "a0",
+        "a00",
+        "12345678901234567890",
+        "12345678901234567891",
     ];
 
     /// Every pair, compared against `php` (skipped if no php binary is available).
@@ -206,7 +255,11 @@ mod tests {
         "#;
         let json = format!(
             "[{}]",
-            INPUTS.iter().map(|s| format!("{:?}", s)).collect::<Vec<_>>().join(",")
+            INPUTS
+                .iter()
+                .map(|s| format!("{:?}", s))
+                .collect::<Vec<_>>()
+                .join(",")
         );
         let mut child = std::process::Command::new("php")
             .args(["-r", script])
@@ -215,21 +268,39 @@ mod tests {
             .spawn()
             .expect("php (the oracle) must be on PATH");
         use std::io::Write;
-        child.stdin.take().unwrap().write_all(json.as_bytes()).unwrap();
+        child
+            .stdin
+            .take()
+            .unwrap()
+            .write_all(json.as_bytes())
+            .unwrap();
         let out = String::from_utf8(child.wait_with_output().unwrap().stdout).unwrap();
         let mut lines = out.lines();
         for a in INPUTS {
             for b in INPUTS {
                 let (a, b) = (a.as_bytes(), b.as_bytes());
-                let got = format!("{} {} {} {}", strcmp(a, b), strcasecmp(a, b), strnatcmp(a, b), strnatcasecmp(a, b));
+                let got = format!(
+                    "{} {} {} {}",
+                    strcmp(a, b),
+                    strcasecmp(a, b),
+                    strnatcmp(a, b),
+                    strnatcasecmp(a, b)
+                );
                 let line = lines.next().expect("php output");
                 assert_eq!(got, line, "{:?} vs {:?}", a, b);
             }
         }
         for a in INPUTS {
-            let want: Vec<String> = serde_json::from_str(lines.next().expect("php output")).unwrap();
+            let want: Vec<String> =
+                serde_json::from_str(lines.next().expect("php output")).unwrap();
             let a = a.as_bytes();
-            let got = [ltrim_chars(a, b" \t0a"), rtrim_chars(a, b" \t7"), rtrim(a), trim(a)].map(|x| String::from_utf8(x.to_vec()).unwrap());
+            let got = [
+                ltrim_chars(a, b" \t0a"),
+                rtrim_chars(a, b" \t7"),
+                rtrim(a),
+                trim(a),
+            ]
+            .map(|x| String::from_utf8(x.to_vec()).unwrap());
             assert_eq!(got.to_vec(), want, "{a:?}");
         }
     }

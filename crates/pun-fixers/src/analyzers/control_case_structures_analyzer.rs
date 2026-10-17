@@ -84,7 +84,14 @@ impl ControlCaseStructuresAnalyzer {
             let token = &tokens[index];
             if token.is_given_kind(SUPPORTED_TYPES_WITH_CASE_OR_DEFAULT) {
                 let kind = token.id.unwrap();
-                let mut frame = Frame { kind, brace_count: 0, cases: Vec::new(), default: None, alternative_syntax: false, open: 0 };
+                let mut frame = Frame {
+                    kind,
+                    brace_count: 0,
+                    cases: Vec::new(),
+                    default: None,
+                    alternative_syntax: false,
+                    open: 0,
+                };
                 is_type_of_interest = kind == T_SWITCH;
                 // upstream reassigns the foreach variable `$index` here, which does not affect the iteration
                 if kind == T_SWITCH {
@@ -124,11 +131,22 @@ impl ControlCaseStructuresAnalyzer {
 
             let mut current = index;
             if token.is_kind(T_ENDSWITCH) {
-                assert!(top.alternative_syntax, "Analysis syntax failure, unexpected \"T_ENDSWITCH\".");
-                assert!(top.kind == T_SWITCH, "Analysis type failure, unexpected \"T_ENDSWITCH\".");
-                assert!(top.brace_count == 0, "Analysis count failure, unexpected \"T_ENDSWITCH\".");
+                assert!(
+                    top.alternative_syntax,
+                    "Analysis syntax failure, unexpected \"T_ENDSWITCH\"."
+                );
+                assert!(
+                    top.kind == T_SWITCH,
+                    "Analysis type failure, unexpected \"T_ENDSWITCH\"."
+                );
+                assert!(
+                    top.brace_count == 0,
+                    "Analysis count failure, unexpected \"T_ENDSWITCH\"."
+                );
                 // upstream reassigns `$index` (used below for `$tokens[$index]` lookups only via `$token`)
-                current = tokens.get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true).unwrap();
+                current = tokens
+                    .get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true)
+                    .unwrap();
                 let frame = stack.pop().unwrap();
                 out.push(Self::build_switch_analysis(frame));
                 is_type_of_interest = stack.last().is_some_and(|f| f.kind == T_SWITCH);
@@ -140,13 +158,20 @@ impl ControlCaseStructuresAnalyzer {
             }
 
             // `$token` is still the token at the original foreach index.
-            let top = stack.last_mut().expect("case outside of a control structure");
+            let top = stack
+                .last_mut()
+                .expect("case outside of a control structure");
             if token.is_kind(T_CASE) {
                 let open = Self::find_case_open(tokens, current);
                 top.cases.push((current, open));
             } else if token.is_kind(T_DEFAULT) {
-                assert!(top.default.is_none(), "Analysis multiple \"default\" found.");
-                let open = tokens.get_next_token_of_kind(current, &[":".into(), ";".into()], true).unwrap();
+                assert!(
+                    top.default.is_none(),
+                    "Analysis multiple \"default\" found."
+                );
+                let open = tokens
+                    .get_next_token_of_kind(current, &[":".into(), ";".into()], true)
+                    .unwrap();
                 top.default = Some((current, open));
             }
             index += 1;
@@ -155,11 +180,20 @@ impl ControlCaseStructuresAnalyzer {
     }
 
     fn build_switch_analysis(frame: Frame) -> ControlCaseStructuresAnalysis {
-        let default = frame.default.map(|(index, colon_index)| DefaultAnalysis { index, colon_index });
-        let mut cases: Vec<CaseAnalysis> =
-            frame.cases.iter().map(|&(index, colon_index)| CaseAnalysis { index, colon_index }).collect();
+        let default = frame
+            .default
+            .map(|(index, colon_index)| DefaultAnalysis { index, colon_index });
+        let mut cases: Vec<CaseAnalysis> = frame
+            .cases
+            .iter()
+            .map(|&(index, colon_index)| CaseAnalysis { index, colon_index })
+            .collect();
         cases.sort();
-        ControlCaseStructuresAnalysis { open_index: frame.open, cases, default }
+        ControlCaseStructuresAnalysis {
+            open_index: frame.open,
+            cases,
+            default,
+        }
     }
 
     /// `findCaseOpen` for a switch: the `:`/`;` after the case value, skipping blocks and ternaries.

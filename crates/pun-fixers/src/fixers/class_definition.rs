@@ -18,7 +18,10 @@ struct ClassDefinitionFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ClassDefinitionFixer { inline_constructor_arguments: true, ..Default::default() })
+    Box::new(ClassDefinitionFixer {
+        inline_constructor_arguments: true,
+        ..Default::default()
+    })
 }
 
 #[derive(Clone, Copy)]
@@ -63,7 +66,8 @@ impl Fixer for ClassDefinitionFixer {
                 "inline_constructor_arguments",
             ],
         )?;
-        self.multi_line_extends_each_single_line = c.bool("multi_line_extends_each_single_line", false)?;
+        self.multi_line_extends_each_single_line =
+            c.bool("multi_line_extends_each_single_line", false)?;
         self.single_item_single_line = c.bool("single_item_single_line", false)?;
         self.single_line = c.bool("single_line", false)?;
         self.space_before_parenthesis = c.bool("space_before_parenthesis", false)?;
@@ -93,7 +97,8 @@ impl ClassDefinitionFixer {
         let mut def = self.get_classy_definition_info(tokens, classy_index);
         // PSR2 4.1 Lists of implements MAY be split across multiple lines, where each subsequent line is indented once.
         if let Some(implements) = def.implements {
-            def.implements = Some(self.fix_classy_definition_implements(tokens, def.open, implements));
+            def.implements =
+                Some(self.fix_classy_definition_implements(tokens, def.open, implements));
         }
         if let Some(extends) = def.extends {
             let open = def.implements.map_or(def.open, |i| i.start);
@@ -126,8 +131,15 @@ impl ClassDefinitionFixer {
         sort_class_modifiers(tokens, &def);
     }
 
-    fn fix_classy_definition_extends(&self, tokens: &mut Tokens, class_open_index: usize, mut info: InheritanceInfo) -> InheritanceInfo {
-        let end_index = tokens.get_prev_non_whitespace(class_open_index, None).unwrap();
+    fn fix_classy_definition_extends(
+        &self,
+        tokens: &mut Tokens,
+        class_open_index: usize,
+        mut info: InheritanceInfo,
+    ) -> InheritanceInfo {
+        let end_index = tokens
+            .get_prev_non_whitespace(class_open_index, None)
+            .unwrap();
         if self.single_line || !info.multi_line {
             self.make_classy_definition_single_line(tokens, info.start, end_index);
             info.multi_line = false;
@@ -141,8 +153,15 @@ impl ClassDefinitionFixer {
         info
     }
 
-    fn fix_classy_definition_implements(&self, tokens: &mut Tokens, class_open_index: usize, mut info: InheritanceInfo) -> InheritanceInfo {
-        let end_index = tokens.get_prev_non_whitespace(class_open_index, None).unwrap();
+    fn fix_classy_definition_implements(
+        &self,
+        tokens: &mut Tokens,
+        class_open_index: usize,
+        mut info: InheritanceInfo,
+    ) -> InheritanceInfo {
+        let end_index = tokens
+            .get_prev_non_whitespace(class_open_index, None)
+            .unwrap();
         if self.single_line || !info.multi_line {
             self.make_classy_definition_single_line(tokens, info.start, end_index);
             info.multi_line = false;
@@ -156,7 +175,11 @@ impl ClassDefinitionFixer {
         info
     }
 
-    fn fix_classy_definition_open_spacing(&self, tokens: &mut Tokens, def: &ClassyDefinitionInfo) -> usize {
+    fn fix_classy_definition_open_spacing(
+        &self,
+        tokens: &mut Tokens,
+        def: &ClassyDefinitionInfo,
+    ) -> usize {
         let line_ending = self.whitespaces_config.get_line_ending().as_bytes();
         let spacing: &[u8] = if def.anonymous_class {
             if let Some(i) = def.implements {
@@ -169,12 +192,19 @@ impl ClassDefinitionFixer {
         } else {
             line_ending
         };
-        let open_index = tokens.get_next_token_of_kind(def.classy, &["{".into()], true).unwrap();
+        let open_index = tokens
+            .get_next_token_of_kind(def.classy, &["{".into()], true)
+            .unwrap();
         if spacing != b" " && has_nl(&tokens[open_index - 1]) {
             return open_index;
         }
         if tokens[open_index - 1].is_whitespace(None) {
-            if spacing != b" " || !tokens[tokens.get_prev_non_whitespace(open_index - 1, None).unwrap()].is_comment() {
+            if spacing != b" "
+                || !tokens[tokens
+                    .get_prev_non_whitespace(open_index - 1, None)
+                    .unwrap()]
+                .is_comment()
+            {
                 tokens.set(open_index - 1, Token::new(T_WHITESPACE, spacing));
             }
             return open_index;
@@ -183,9 +213,15 @@ impl ClassDefinitionFixer {
         open_index + 1
     }
 
-    fn get_classy_definition_info(&self, tokens: &Tokens, classy_index: usize) -> ClassyDefinitionInfo {
+    fn get_classy_definition_info(
+        &self,
+        tokens: &Tokens,
+        classy_index: usize,
+    ) -> ClassyDefinitionInfo {
         let tokens_analyzer = TokensAnalyzer::new(tokens);
-        let open_index = tokens.get_next_token_of_kind(classy_index, &["{".into()], true).unwrap();
+        let open_index = tokens
+            .get_next_token_of_kind(classy_index, &["{".into()], true)
+            .unwrap();
         let mut def = ClassyDefinitionInfo {
             classy: classy_index,
             open: open_index,
@@ -199,29 +235,44 @@ impl ClassDefinitionFixer {
         };
         if !tokens[classy_index].is_kind(T_TRAIT) {
             let extends = tokens.find_given_kind(T_EXTENDS, classy_index, Some(open_index));
-            def.extends = extends.first().map(|&i| get_classy_inheritance_info(tokens, i));
+            def.extends = extends
+                .first()
+                .map(|&i| get_classy_inheritance_info(tokens, i));
             if !tokens[classy_index].is_kind(T_INTERFACE) {
-                let implements = tokens.find_given_kind(T_IMPLEMENTS, classy_index, Some(open_index));
-                def.implements = implements.first().map(|&i| get_classy_inheritance_info(tokens, i));
+                let implements =
+                    tokens.find_given_kind(T_IMPLEMENTS, classy_index, Some(open_index));
+                def.implements = implements
+                    .first()
+                    .map(|&i| get_classy_inheritance_info(tokens, i));
                 def.anonymous_class = tokens_analyzer.is_anonymous_class(classy_index);
             }
         }
         if def.anonymous_class {
             // go to "new" for anonymous class
-            def.start = tokens.get_prev_token_of_kind(classy_index, &[T_NEW.into()], true).unwrap();
+            def.start = tokens
+                .get_prev_token_of_kind(classy_index, &[T_NEW.into()], true)
+                .unwrap();
         } else {
             let modifiers = tokens_analyzer.get_classy_modifiers(classy_index);
             def.final_ = modifiers.final_;
             def.abstract_ = modifiers.abstract_;
             def.readonly = modifiers.readonly;
-            for m in [modifiers.final_, modifiers.abstract_, modifiers.readonly].into_iter().flatten() {
+            for m in [modifiers.final_, modifiers.abstract_, modifiers.readonly]
+                .into_iter()
+                .flatten()
+            {
                 def.start = def.start.min(m);
             }
         }
         def
     }
 
-    fn make_classy_definition_single_line(&self, tokens: &mut Tokens, start_index: usize, end_index: usize) {
+    fn make_classy_definition_single_line(
+        &self,
+        tokens: &mut Tokens,
+        start_index: usize,
+        end_index: usize,
+    ) {
         let ws = || Token::new(T_WHITESPACE, " ");
         let mut i = end_index as isize;
         while i >= start_index as isize {
@@ -229,15 +280,20 @@ impl ClassDefinitionFixer {
             i -= 1;
             if tokens[iu].is_whitespace(None) {
                 if has_nl(&tokens[iu]) {
-                    if tokens[iu - 1].is_kind(CT_ATTRIBUTE_CLOSE) || tokens[iu + 1].is_kind(T_ATTRIBUTE) {
-                        continue;
-                    }
-                    if (tokens[iu - 1].is_comment() && tokens[iu - 1].content.ends_with(b"]"))
-                        || (tokens[iu + 1].is_comment() && tokens[iu + 1].content.starts_with(b"#["))
+                    if tokens[iu - 1].is_kind(CT_ATTRIBUTE_CLOSE)
+                        || tokens[iu + 1].is_kind(T_ATTRIBUTE)
                     {
                         continue;
                     }
-                    if tokens[iu - 1].is_kind(T_DOC_COMMENT) || tokens[iu + 1].is_kind(T_DOC_COMMENT) {
+                    if (tokens[iu - 1].is_comment() && tokens[iu - 1].content.ends_with(b"]"))
+                        || (tokens[iu + 1].is_comment()
+                            && tokens[iu + 1].content.starts_with(b"#["))
+                    {
+                        continue;
+                    }
+                    if tokens[iu - 1].is_kind(T_DOC_COMMENT)
+                        || tokens[iu + 1].is_kind(T_DOC_COMMENT)
+                    {
                         continue;
                     }
                 }
@@ -262,7 +318,8 @@ impl ClassDefinitionFixer {
                     }
                     continue;
                 }
-                if (!tokens[iu - 1].equals(",", true) && tokens[iu + 1].equals_any(&[",".into(), ")".into()], true))
+                if (!tokens[iu - 1].equals(",", true)
+                    && tokens[iu + 1].equals_any(&[",".into(), ")".into()], true))
                     || tokens[iu - 1].equals("(", true)
                 {
                     tokens.clear_at(iu);
@@ -275,14 +332,20 @@ impl ClassDefinitionFixer {
                 tokens.insert_at(iu + 1, vec![ws()]);
                 continue;
             }
-            if self.space_before_parenthesis && tokens[iu].is_kind(T_CLASS) && !tokens[iu + 1].is_whitespace(None) {
+            if self.space_before_parenthesis
+                && tokens[iu].is_kind(T_CLASS)
+                && !tokens[iu + 1].is_whitespace(None)
+            {
                 tokens.insert_at(iu + 1, vec![ws()]);
                 continue;
             }
             if !tokens[iu].is_comment() {
                 continue;
             }
-            if !tokens[iu + 1].is_whitespace(None) && !tokens[iu + 1].is_comment() && !has_nl(&tokens[iu]) {
+            if !tokens[iu + 1].is_whitespace(None)
+                && !tokens[iu + 1].is_comment()
+                && !has_nl(&tokens[iu])
+            {
                 tokens.insert_at(iu + 1, vec![ws()]);
             }
             if !tokens[iu - 1].is_whitespace(None) && !tokens[iu - 1].is_comment() {
@@ -291,22 +354,44 @@ impl ClassDefinitionFixer {
         }
     }
 
-    fn make_classy_inheritance_part_multi_line(&self, tokens: &mut Tokens, start_index: usize, end_index: usize) {
-        let nl_indent =
-            [self.whitespaces_config.get_line_ending().as_bytes(), self.whitespaces_config.get_indent().as_bytes()].concat();
+    fn make_classy_inheritance_part_multi_line(
+        &self,
+        tokens: &mut Tokens,
+        start_index: usize,
+        end_index: usize,
+    ) {
+        let nl_indent = [
+            self.whitespaces_config.get_line_ending().as_bytes(),
+            self.whitespaces_config.get_indent().as_bytes(),
+        ]
+        .concat();
         let mut i = end_index;
         while i > start_index {
-            let previous = tokens.get_prev_token_of_kind(i, &[",".into(), T_IMPLEMENTS.into(), T_EXTENDS.into()], true).unwrap();
+            let previous = tokens
+                .get_prev_token_of_kind(
+                    i,
+                    &[",".into(), T_IMPLEMENTS.into(), T_EXTENDS.into()],
+                    true,
+                )
+                .unwrap();
             let break_at_index = tokens.get_next_meaningful_token(previous).unwrap();
             // make the part of a ',' or 'implements' single line
             self.make_classy_definition_single_line(tokens, break_at_index, i);
             // make sure the part is on its own line
-            let is_on_own_line = (previous + 1..=break_at_index).rev().any(|j| has_nl(&tokens[j]));
+            let is_on_own_line = (previous + 1..=break_at_index)
+                .rev()
+                .any(|j| has_nl(&tokens[j]));
             if !is_on_own_line {
                 if tokens[break_at_index - 1].is_whitespace(None) {
-                    tokens.set(break_at_index - 1, Token::new(T_WHITESPACE, nl_indent.clone()));
+                    tokens.set(
+                        break_at_index - 1,
+                        Token::new(T_WHITESPACE, nl_indent.clone()),
+                    );
                 } else {
-                    tokens.insert_at(break_at_index, vec![Token::new(T_WHITESPACE, nl_indent.clone())]);
+                    tokens.insert_at(
+                        break_at_index,
+                        vec![Token::new(T_WHITESPACE, nl_indent.clone())],
+                    );
                 }
             }
             i = previous + 1;
@@ -316,10 +401,19 @@ impl ClassDefinitionFixer {
 }
 
 fn get_classy_inheritance_info(tokens: &Tokens, mut start_index: usize) -> InheritanceInfo {
-    let mut info = InheritanceInfo { start: start_index, count: 1, multi_line: false };
+    let mut info = InheritanceInfo {
+        start: start_index,
+        count: 1,
+        multi_line: false,
+    };
     start_index += 1;
-    let mut end_index =
-        tokens.get_next_token_of_kind(start_index, &["{".into(), T_IMPLEMENTS.into(), T_EXTENDS.into()], true).unwrap();
+    let mut end_index = tokens
+        .get_next_token_of_kind(
+            start_index,
+            &["{".into(), T_IMPLEMENTS.into(), T_EXTENDS.into()],
+            true,
+        )
+        .unwrap();
     if tokens[end_index].equals("{", true) {
         end_index = tokens.get_prev_non_whitespace(end_index, None).unwrap();
     }
@@ -336,9 +430,13 @@ fn get_classy_inheritance_info(tokens: &Tokens, mut start_index: usize) -> Inher
 }
 
 fn sort_class_modifiers(tokens: &mut Tokens, def: &ClassyDefinitionInfo) {
-    let Some(readonly_index) = def.readonly else { return };
+    let Some(readonly_index) = def.readonly else {
+        return;
+    };
     for access_modifier in [def.final_, def.abstract_] {
-        let Some(access_modifier_index) = access_modifier else { continue };
+        let Some(access_modifier_index) = access_modifier else {
+            continue;
+        };
         if access_modifier_index < readonly_index {
             continue;
         }

@@ -28,8 +28,13 @@ impl Fixer for SingleBlankLineAtEofFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let count = tokens.count();
-        if count > 0 && !tokens[count - 1].is_given_kind(&[T_INLINE_HTML, T_CLOSE_TAG, T_OPEN_TAG]) {
-            let le = self.whitespaces_config.get_line_ending().as_bytes().to_vec();
+        if count > 0 && !tokens[count - 1].is_given_kind(&[T_INLINE_HTML, T_CLOSE_TAG, T_OPEN_TAG])
+        {
+            let le = self
+                .whitespaces_config
+                .get_line_ending()
+                .as_bytes()
+                .to_vec();
             tokens.ensure_whitespace_at_index(count - 1, 1, &le);
         }
     }

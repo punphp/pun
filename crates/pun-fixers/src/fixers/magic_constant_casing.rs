@@ -30,12 +30,15 @@ impl Fixer for MagicConstantCasingFixer {
         0
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_any_token_kinds_found(&MAGIC_CONSTANTS.iter().map(|(k, _)| *k).collect::<Vec<_>>())
+        tokens
+            .is_any_token_kinds_found(&MAGIC_CONSTANTS.iter().map(|(k, _)| *k).collect::<Vec<_>>())
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
             let Some(id) = tokens[index].id else { continue };
-            let Some((_, c)) = MAGIC_CONSTANTS.iter().find(|(k, _)| *k == id) else { continue };
+            let Some((_, c)) = MAGIC_CONSTANTS.iter().find(|(k, _)| *k == id) else {
+                continue;
+            };
             tokens.set(index, Token::new(id, c.as_bytes().to_vec()));
         }
     }

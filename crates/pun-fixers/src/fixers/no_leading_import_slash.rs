@@ -20,7 +20,10 @@ impl Fixer for NoLeadingImportSlashFixer {
         tokens.is_token_kind_found(Kind::T_USE)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        let uses_indices = TokensAnalyzer::new(tokens).get_import_use_indexes(false).remove(&0).unwrap_or_default();
+        let uses_indices = TokensAnalyzer::new(tokens)
+            .get_import_use_indexes(false)
+            .remove(&0)
+            .unwrap_or_default();
         for idx in uses_indices {
             let mut next_token_idx = tokens.get_next_meaningful_token(idx).unwrap();
             let next_token = &tokens[next_token_idx];

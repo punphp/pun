@@ -29,15 +29,24 @@ impl Fixer for BlankLineAfterOpeningTagFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let line_ending = self.whitespaces_config.get_line_ending().as_bytes();
-        let newline_found = tokens.iter().any(|t| (t.is_whitespace(None) || t.is_kind(T_OPEN_TAG)) && t.get_content().contains(&b'\n'));
+        let newline_found = tokens.iter().any(|t| {
+            (t.is_whitespace(None) || t.is_kind(T_OPEN_TAG)) && t.get_content().contains(&b'\n')
+        });
         // ignore one-line files
         if !newline_found {
             return;
         }
-        let open_tag_index = if tokens[0].is_kind(T_INLINE_HTML) { 1 } else { 0 };
+        let open_tag_index = if tokens[0].is_kind(T_INLINE_HTML) {
+            1
+        } else {
+            0
+        };
         let token = &tokens[open_tag_index];
         if !token.get_content().contains(&b'\n') {
-            let t = Token { id: token.get_id(), content: [rtrim(token.get_content()), line_ending].concat() };
+            let t = Token {
+                id: token.get_id(),
+                content: [rtrim(token.get_content()), line_ending].concat(),
+            };
             tokens.set(open_tag_index, t);
         }
         let new_line_index = open_tag_index + 1;
@@ -46,7 +55,10 @@ impl Fixer for BlankLineAfterOpeningTagFixer {
         }
         if tokens[new_line_index].is_whitespace(None) {
             if !tokens[new_line_index].get_content().contains(&b'\n') {
-                let t = Token::new(T_WHITESPACE, [line_ending, tokens[new_line_index].get_content()].concat());
+                let t = Token::new(
+                    T_WHITESPACE,
+                    [line_ending, tokens[new_line_index].get_content()].concat(),
+                );
                 tokens.set(new_line_index, t);
             }
         } else {

@@ -22,19 +22,36 @@ impl FunctionReferenceFinder {
 
     /// `[function name index, open parenthesis, close parenthesis]` of the next global call to
     /// `function_name_to_search` (case-insensitive) in `start..=end` (`end` defaults to the token count).
-    pub fn find(&self, function_name_to_search: &str, tokens: &Tokens, mut start: usize, end: Option<usize>) -> Option<(usize, usize, usize)> {
+    pub fn find(
+        &self,
+        function_name_to_search: &str,
+        tokens: &Tokens,
+        mut start: usize,
+        end: Option<usize>,
+    ) -> Option<(usize, usize, usize)> {
         // make interface consistent with findSequence
         let end = end.unwrap_or(tokens.count());
         loop {
             // find raw sequence which we can analyse for context
-            let matches =
-                tokens.find_sequence(&[(T_STRING, function_name_to_search).into(), "(".into()], start, Some(end), |_| false)?;
+            let matches = tokens.find_sequence(
+                &[(T_STRING, function_name_to_search).into(), "(".into()],
+                start,
+                Some(end),
+                |_| false,
+            )?;
             let (function_name, open_parenthesis) = (matches[0], matches[1]);
-            if !self.functions_analyzer.is_global_function_call(tokens, function_name) {
+            if !self
+                .functions_analyzer
+                .is_global_function_call(tokens, function_name)
+            {
                 start = open_parenthesis;
                 continue;
             }
-            return Some((function_name, open_parenthesis, tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_parenthesis)));
+            return Some((
+                function_name,
+                open_parenthesis,
+                tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_parenthesis),
+            ));
         }
     }
 }

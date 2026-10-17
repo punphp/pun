@@ -18,7 +18,11 @@ type Stream = Vec<(String, Vec<u8>, u32)>;
 
 fn collect(path: &Path, out: &mut Vec<PathBuf>) {
     if path.is_dir() {
-        let mut entries: Vec<_> = std::fs::read_dir(path).unwrap().flatten().map(|e| e.path()).collect();
+        let mut entries: Vec<_> = std::fs::read_dir(path)
+            .unwrap()
+            .flatten()
+            .map(|e| e.path())
+            .collect();
         entries.sort();
         for p in entries {
             let name = p.file_name().unwrap().to_string_lossy();
@@ -77,7 +81,13 @@ fn ours(mode: &str, code: &[u8]) -> (Stream, Duration) {
             let d = t.elapsed();
             let s = toks
                 .iter()
-                .map(|t| (name(t.kind), t.text.to_vec(), if t.kind.is_some() { t.line } else { 0 }))
+                .map(|t| {
+                    (
+                        name(t.kind),
+                        t.text.to_vec(),
+                        if t.kind.is_some() { t.line } else { 0 },
+                    )
+                })
                 .collect();
             (s, d)
         }
@@ -88,7 +98,13 @@ fn ours(mode: &str, code: &[u8]) -> (Stream, Duration) {
             let d = t.elapsed();
             let s = el
                 .iter()
-                .map(|(i, e)| (e.kind.as_str().to_string(), i.to_string().into_bytes(), e.class_index as u32))
+                .map(|(i, e)| {
+                    (
+                        e.kind.as_str().to_string(),
+                        i.to_string().into_bytes(),
+                        e.class_index as u32,
+                    )
+                })
                 .collect();
             (s, d)
         }
@@ -96,7 +112,13 @@ fn ours(mode: &str, code: &[u8]) -> (Stream, Duration) {
             let t = Instant::now();
             let tokens = pun_tokens::Tokens::from_code(code);
             let d = t.elapsed();
-            (tokens.iter().map(|t| (name(t.id), t.content.clone(), 0)).collect(), d)
+            (
+                tokens
+                    .iter()
+                    .map(|t| (name(t.id), t.content.clone(), 0))
+                    .collect(),
+                d,
+            )
         }
     }
 }
@@ -169,7 +191,10 @@ pub fn run(mode: &str, paths: &[String], verbose: bool) -> usize {
             None => same += 1,
             Some(i) => {
                 diff += 1;
-                bad_tokens += (i..expected.len()).filter(|&j| expected.get(j) != got.get(j)).count().max(1);
+                bad_tokens += (i..expected.len())
+                    .filter(|&j| expected.get(j) != got.get(j))
+                    .count()
+                    .max(1);
                 println!("MISMATCH {path} at token {i}");
                 println!("  php:  {}", show(expected.get(i)));
                 println!("  ours: {}", show(got.get(i)));
@@ -183,6 +208,9 @@ pub fn run(mode: &str, paths: &[String], verbose: bool) -> usize {
         "mode={mode} files={} identical={same} mismatched={diff} skipped={skipped} tokens={tokens} mismatched_tokens={bad_tokens}",
         dump.len()
     );
-    println!("time: php {:.2?} (incl. startup), ours {:.2?}", php_time, rust_time);
+    println!(
+        "time: php {:.2?} (incl. startup), ours {:.2?}",
+        php_time, rust_time
+    );
     diff
 }

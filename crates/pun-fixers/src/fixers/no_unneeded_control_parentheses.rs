@@ -10,12 +10,32 @@ struct NoUnneededControlParenthesesFixer {
     statements: Vec<String>,
 }
 
-const CONFIG_OPTIONS: &[&str] =
-    &["break", "clone", "continue", "echo_print", "negative_instanceof", "others", "return", "switch_case", "yield", "yield_from"];
-const DEFAULT_STATEMENTS: &[&str] = &["break", "clone", "continue", "echo_print", "return", "switch_case", "yield"];
+const CONFIG_OPTIONS: &[&str] = &[
+    "break",
+    "clone",
+    "continue",
+    "echo_print",
+    "negative_instanceof",
+    "others",
+    "return",
+    "switch_case",
+    "yield",
+    "yield_from",
+];
+const DEFAULT_STATEMENTS: &[&str] = &[
+    "break",
+    "clone",
+    "continue",
+    "echo_print",
+    "return",
+    "switch_case",
+    "yield",
+];
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoUnneededControlParenthesesFixer { statements: DEFAULT_STATEMENTS.iter().map(|s| s.to_string()).collect() })
+    Box::new(NoUnneededControlParenthesesFixer {
+        statements: DEFAULT_STATEMENTS.iter().map(|s| s.to_string()).collect(),
+    })
 }
 
 const BLOCK_TYPES: &[BlockType] = &[
@@ -141,7 +161,8 @@ impl Fixer for NoUnneededControlParenthesesFixer {
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_token_kind_found("(") || tokens.is_token_kind_found(CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN)
+        tokens.is_token_kind_found("(")
+            || tokens.is_token_kind_found(CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let mut open_index = 0;
@@ -157,7 +178,10 @@ impl NoUnneededControlParenthesesFixer {
         let close_index = if tokens[open_index].equals("(", true) {
             tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_index)
         } else if tokens[open_index].is_kind(CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN) {
-            tokens.find_block_end(Tokens::BLOCK_TYPE_CLASS_INSTANTIATION_PARENTHESIS, open_index)
+            tokens.find_block_end(
+                Tokens::BLOCK_TYPE_CLASS_INSTANTIATION_PARENTHESIS,
+                open_index,
+            )
         } else {
             return;
         };
@@ -166,7 +190,14 @@ impl NoUnneededControlParenthesesFixer {
         // do a cheap check for negative case: `X()`
         if next(tokens, open_index) == close_index {
             if tokens[before_open_index].is_kind(T_EXIT) {
-                self.remove_useless_parenthesis_pair(tokens, before_open_index, after_close_index, open_index, close_index, Some("others"));
+                self.remove_useless_parenthesis_pair(
+                    tokens,
+                    before_open_index,
+                    after_close_index,
+                    open_index,
+                    close_index,
+                    Some("others"),
+                );
             }
             return;
         }
@@ -177,29 +208,80 @@ impl NoUnneededControlParenthesesFixer {
         // check for the simple useless wrapped cases
         if self.is_useless_wrapped(tokens, before_open_index, after_close_index) {
             let t = get_config_type(tokens, before_open_index);
-            self.remove_useless_parenthesis_pair(tokens, before_open_index, after_close_index, open_index, close_index, t);
+            self.remove_useless_parenthesis_pair(
+                tokens,
+                before_open_index,
+                after_close_index,
+                open_index,
+                close_index,
+                t,
+            );
             return;
         }
         // handle `clone` statements
         if tokens[before_open_index].is_kind(T_CLONE) {
-            if self.is_wrapped_clone_argument(tokens, before_open_index, open_index, close_index, after_close_index) {
-                self.remove_useless_parenthesis_pair(tokens, before_open_index, after_close_index, open_index, close_index, Some("clone"));
+            if self.is_wrapped_clone_argument(
+                tokens,
+                before_open_index,
+                open_index,
+                close_index,
+                after_close_index,
+            ) {
+                self.remove_useless_parenthesis_pair(
+                    tokens,
+                    before_open_index,
+                    after_close_index,
+                    open_index,
+                    close_index,
+                    Some("clone"),
+                );
             }
             return;
         }
         // handle `instance of` statements
         let instance_of = tokens.find_given_kind(T_INSTANCEOF, open_index, Some(close_index));
         if instance_of.len() == 1 {
-            if self.is_wrapped_instance_of(tokens, instance_of[0], before_open_index, open_index, close_index, after_close_index) {
-                let t = if tokens[before_open_index].equals("!", true) { "negative_instanceof" } else { "others" };
-                self.remove_useless_parenthesis_pair(tokens, before_open_index, after_close_index, open_index, close_index, Some(t));
+            if self.is_wrapped_instance_of(
+                tokens,
+                instance_of[0],
+                before_open_index,
+                open_index,
+                close_index,
+                after_close_index,
+            ) {
+                let t = if tokens[before_open_index].equals("!", true) {
+                    "negative_instanceof"
+                } else {
+                    "others"
+                };
+                self.remove_useless_parenthesis_pair(
+                    tokens,
+                    before_open_index,
+                    after_close_index,
+                    open_index,
+                    close_index,
+                    Some(t),
+                );
             }
             return;
         }
         // last checks deal with operators, do not swap around
-        if self.is_wrapped_part_of_operation(tokens, before_open_index, open_index, close_index, after_close_index) {
+        if self.is_wrapped_part_of_operation(
+            tokens,
+            before_open_index,
+            open_index,
+            close_index,
+            after_close_index,
+        ) {
             let t = get_config_type(tokens, before_open_index);
-            self.remove_useless_parenthesis_pair(tokens, before_open_index, after_close_index, open_index, close_index, t);
+            self.remove_useless_parenthesis_pair(
+                tokens,
+                before_open_index,
+                after_close_index,
+                open_index,
+                close_index,
+                t,
+            );
         }
     }
 
@@ -211,7 +293,14 @@ impl NoUnneededControlParenthesesFixer {
             || is_wrapped_sequence_element(tokens, before, after)
     }
 
-    fn is_wrapped_clone_argument(&self, tokens: &Tokens, before: usize, mut open: usize, close: usize, after: usize) -> bool {
+    fn is_wrapped_clone_argument(
+        &self,
+        tokens: &Tokens,
+        before: usize,
+        mut open: usize,
+        close: usize,
+        after: usize,
+    ) -> bool {
         let before = prev(tokens, before);
         if !(tokens[before].equals("?", true) // For BC reasons
             || is_simple_assignment(tokens, before, after)
@@ -229,8 +318,18 @@ impl NoUnneededControlParenthesesFixer {
         !contains_operation(tokens, open, close)
     }
 
-    fn is_wrapped_instance_of(&self, tokens: &Tokens, instance_of: usize, mut before: usize, open: usize, close: usize, after: usize) -> bool {
-        if contains_operation(tokens, open, instance_of) || contains_operation(tokens, instance_of, close) {
+    fn is_wrapped_instance_of(
+        &self,
+        tokens: &Tokens,
+        instance_of: usize,
+        mut before: usize,
+        open: usize,
+        close: usize,
+        after: usize,
+    ) -> bool {
+        if contains_operation(tokens, open, instance_of)
+            || contains_operation(tokens, instance_of, close)
+        {
             return false;
         }
         if tokens[before].equals("!", true) {
@@ -243,7 +342,14 @@ impl NoUnneededControlParenthesesFixer {
             || is_wrapped_sequence_element(tokens, before, after)
     }
 
-    fn is_wrapped_part_of_operation(&self, tokens: &Tokens, mut before: usize, open: usize, close: usize, mut after: usize) -> bool {
+    fn is_wrapped_part_of_operation(
+        &self,
+        tokens: &Tokens,
+        mut before: usize,
+        open: usize,
+        close: usize,
+        mut after: usize,
+    ) -> bool {
         if contains_operation(tokens, open, close) {
             return false;
         }
@@ -277,9 +383,13 @@ impl NoUnneededControlParenthesesFixer {
         }
         let before_token = &tokens[before];
         let after_token = &tokens[after];
-        let before_is_block_open_or_comma = before_token.equals(",", true) || get_block(tokens, before, true).is_some();
-        let after_is_block_end_or_comma = after_token.equals(",", true) || get_block(tokens, after, false).is_some();
-        if (before_is_block_open_or_comma && after_is_binary_operation) || (before_is_binary_operation && after_is_block_end_or_comma) {
+        let before_is_block_open_or_comma =
+            before_token.equals(",", true) || get_block(tokens, before, true).is_some();
+        let after_is_block_end_or_comma =
+            after_token.equals(",", true) || get_block(tokens, after, false).is_some();
+        if (before_is_block_open_or_comma && after_is_binary_operation)
+            || (before_is_binary_operation && after_is_block_end_or_comma)
+        {
             return true;
         }
         let before_is_statement_open = if before_token.equals("}", true) {
@@ -287,8 +397,10 @@ impl NoUnneededControlParenthesesFixer {
         } else {
             before_token.equals_any(BEFORE_TYPES, true) || before_token.is_kind(T_CASE)
         };
-        let after_is_statement_end = after_token.equals_any(&[";".into(), T_CLOSE_TAG.into()], true);
-        (before_is_statement_open && after_is_binary_operation) || (before_is_binary_operation && after_is_statement_end)
+        let after_is_statement_end =
+            after_token.equals_any(&[";".into(), T_CLOSE_TAG.into()], true);
+        (before_is_statement_open && after_is_binary_operation)
+            || (before_is_binary_operation && after_is_statement_end)
     }
 
     fn remove_useless_parenthesis_pair(
@@ -300,14 +412,17 @@ impl NoUnneededControlParenthesesFixer {
         close: usize,
         config_type: Option<&str>,
     ) {
-        let Some(config_type) = config_type else { return };
+        let Some(config_type) = config_type else {
+            return;
+        };
         if !self.statements.iter().any(|s| s == config_type) {
             return;
         }
         let needs_space_after = !is_access(tokens, after)
             && !tokens[after].equals_any(&[";".into(), ",".into(), T_CLOSE_TAG.into()], true)
             && get_block(tokens, after, false).is_none()
-            && !(tokens[after].equals_any(&[":".into(), ";".into()], true) && tokens[before].is_kind(T_CASE));
+            && !(tokens[after].equals_any(&[":".into(), ";".into()], true)
+                && tokens[before].is_kind(T_CASE));
         let needs_space_before = !is_pre_unary_operation(tokens, before)
             && !tokens[before].equals_any(&["}".into(), T_EXIT.into(), T_OPEN_TAG.into()], true)
             && get_block(tokens, before, true).is_none();
@@ -318,7 +433,15 @@ impl NoUnneededControlParenthesesFixer {
 
 // bounded `print|yield|yield from|require|require_once|include|include_once (X)`
 fn is_wrapped_language_construct_argument(tokens: &Tokens, before: usize, after: usize) -> bool {
-    if !tokens[before].is_given_kind(&[T_PRINT, T_YIELD, T_YIELD_FROM, T_REQUIRE, T_REQUIRE_ONCE, T_INCLUDE, T_INCLUDE_ONCE]) {
+    if !tokens[before].is_given_kind(&[
+        T_PRINT,
+        T_YIELD,
+        T_YIELD_FROM,
+        T_REQUIRE,
+        T_REQUIRE_ONCE,
+        T_INCLUDE,
+        T_INCLUDE_ONCE,
+    ]) {
         return false;
     }
     is_wrapped_sequence_element(tokens, prev(tokens, before), after)
@@ -339,7 +462,8 @@ fn is_single_statement(tokens: &Tokens, before: usize, after: usize) -> bool {
 }
 
 fn is_simple_assignment(tokens: &Tokens, before: usize, after: usize) -> bool {
-    tokens[before].equals("=", true) && tokens[after].equals_any(&[";".into(), T_CLOSE_TAG.into()], true)
+    tokens[before].equals("=", true)
+        && tokens[after].equals_any(&[";".into(), T_CLOSE_TAG.into()], true)
 }
 
 fn is_wrapped_sequence_element(tokens: &Tokens, start: usize, end: usize) -> bool {
@@ -357,10 +481,14 @@ fn is_wrapped_sequence_element(tokens: &Tokens, start: usize, end: usize) -> boo
 
 // any of `for( (X); ;(X)) ;`
 fn is_wrapped_for_element(tokens: &Tokens, before: usize, after: usize) -> bool {
-    let for_candidate_index = if tokens[before].equals("(", true) && tokens[after].equals(";", true) {
+    let for_candidate_index = if tokens[before].equals("(", true) && tokens[after].equals(";", true)
+    {
         Some(prev(tokens, before))
     } else if tokens[after].equals(")", true) && tokens[before].equals(";", true) {
-        Some(prev(tokens, tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, after)))
+        Some(prev(
+            tokens,
+            tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, after),
+        ))
     } else {
         None
     };
@@ -376,7 +504,8 @@ fn is_wrapped_fn_body(tokens: &Tokens, before: usize, after: usize) -> bool {
     if tokens[before].is_kind(T_STRING) {
         loop {
             before = prev(tokens, before);
-            if !tokens[before].is_given_kind(&[T_STRING, CT_TYPE_INTERSECTION, CT_TYPE_ALTERNATION]) {
+            if !tokens[before].is_given_kind(&[T_STRING, CT_TYPE_INTERSECTION, CT_TYPE_ALTERNATION])
+            {
                 break;
             }
         }
@@ -388,7 +517,10 @@ fn is_wrapped_fn_body(tokens: &Tokens, before: usize, after: usize) -> bool {
     if !tokens[before].equals(")", true) {
         return false;
     }
-    before = prev(tokens, tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, before));
+    before = prev(
+        tokens,
+        tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, before),
+    );
     if tokens[before].is_kind(CT_RETURN_REF) {
         before = prev(tokens, before);
     }
@@ -414,7 +546,9 @@ fn get_before_pre_unary_operation(tokens: &Tokens, mut index: usize) -> usize {
 // array access `(X)[` or `(X){` or object access `(X)->` or `(X)?->`
 fn is_access(tokens: &Tokens, index: usize) -> bool {
     let token = &tokens[index];
-    token.is_object_operator() || token.equals("[", true) || token.is_kind(CT_ARRAY_INDEX_BRACE_OPEN)
+    token.is_object_operator()
+        || token.equals("[", true)
+        || token.is_kind(CT_ARRAY_INDEX_BRACE_OPEN)
 }
 
 fn get_after_access(tokens: &Tokens, mut index: usize) -> usize {
@@ -424,7 +558,15 @@ fn get_after_access(tokens: &Tokens, mut index: usize) -> usize {
             continue;
         }
         if tokens[index].is_object_operator()
-            || tokens[index].equals_any(&["$".into(), T_DOUBLE_COLON.into(), T_STRING.into(), T_VARIABLE.into()], true)
+            || tokens[index].equals_any(
+                &[
+                    "$".into(),
+                    T_DOUBLE_COLON.into(),
+                    T_STRING.into(),
+                    T_VARIABLE.into(),
+                ],
+                true,
+            )
         {
             index = next(tokens, index);
             continue;
@@ -484,12 +626,17 @@ fn remove_brace(tokens: &mut Tokens, index: usize, mut needs_space: bool) {
 }
 
 fn close_curly_belongs_to_dynamic_element(tokens: &Tokens, before: usize) -> bool {
-    let index = prev(tokens, tokens.find_block_start(Tokens::BLOCK_TYPE_BRACE, before));
+    let index = prev(
+        tokens,
+        tokens.find_block_start(Tokens::BLOCK_TYPE_BRACE, before),
+    );
     if tokens[index].is_kind(T_DOUBLE_COLON) {
         return true;
     }
     if tokens[index].equals(":", true) {
-        let index = tokens.get_prev_token_of_kind(index, &[T_CASE.into(), "?".into()], true).unwrap();
+        let index = tokens
+            .get_prev_token_of_kind(index, &[T_CASE.into(), "?".into()], true)
+            .unwrap();
         return !tokens[index].is_kind(T_CASE);
     }
     false

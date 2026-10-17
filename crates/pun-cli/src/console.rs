@@ -13,7 +13,11 @@ pub fn decorated(fd: i32, ansi: bool, no_ansi: bool) -> bool {
     if no_ansi {
         return false;
     }
-    let tty = if fd == 1 { std::io::stdout().is_terminal() } else { std::io::stderr().is_terminal() };
+    let tty = if fd == 1 {
+        std::io::stdout().is_terminal()
+    } else {
+        std::io::stderr().is_terminal()
+    };
     has_color_support(tty, &|k| std::env::var(k).ok())
 }
 
@@ -26,19 +30,25 @@ fn has_color_support(tty: bool, env: &dyn Fn(&str) -> Option<String>) -> bool {
     if set("FORCE_COLOR") {
         return true;
     }
-    let msys = env("MSYSTEM").is_some_and(|v| matches!(v.to_ascii_uppercase().as_str(), "MINGW32" | "MINGW64"));
+    let msys = env("MSYSTEM")
+        .is_some_and(|v| matches!(v.to_ascii_uppercase().as_str(), "MINGW32" | "MINGW64"));
     if !tty && !msys {
         return false;
     }
-    if env("TERM_PROGRAM").as_deref() == Some("Hyper") || env("COLORTERM").is_some() || env("ANSICON").is_some() || env("ConEmuANSI").as_deref() == Some("ON") {
+    if env("TERM_PROGRAM").as_deref() == Some("Hyper")
+        || env("COLORTERM").is_some()
+        || env("ANSICON").is_some()
+        || env("ConEmuANSI").as_deref() == Some("ON")
+    {
         return true;
     }
     let term = env("TERM").unwrap_or_default();
     if term == "dumb" {
         return false;
     }
-    static TERM_RE: LazyLock<Regex> =
-        LazyLock::new(|| Regex::new(r"^((screen|xterm|vt100|vt220|putty|rxvt|ansi|cygwin|linux).*)|(.*-256(color)?(-bce)?)$").unwrap());
+    static TERM_RE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"^((screen|xterm|vt100|vt220|putty|rxvt|ansi|cygwin|linux).*)|(.*-256(color)?(-bce)?)$").unwrap()
+    });
     TERM_RE.is_match(term.as_bytes()).unwrap_or(false)
 }
 
@@ -52,10 +62,22 @@ pub fn width() -> usize {
     if let Ok(c) = std::env::var("COLUMNS") {
         return php_int(c.trim());
     }
-    let stty = std::process::Command::new("stty").arg("-a").stdin(std::process::Stdio::inherit()).stderr(std::process::Stdio::null()).output();
-    let text = stty.map(|o| String::from_utf8_lossy(&o.stdout).into_owned()).unwrap_or_default();
-    static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?is)rows.(\d+);.columns.(\d+);|;.(\d+).rows;.(\d+).columns").unwrap());
-    let cols = RE.captures(text.as_bytes()).ok().flatten().and_then(|c| c.get(2).or(c.get(4)).map(|m| php_int(&String::from_utf8_lossy(m.as_bytes()))));
+    let stty = std::process::Command::new("stty")
+        .arg("-a")
+        .stdin(std::process::Stdio::inherit())
+        .stderr(std::process::Stdio::null())
+        .output();
+    let text = stty
+        .map(|o| String::from_utf8_lossy(&o.stdout).into_owned())
+        .unwrap_or_default();
+    static RE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"(?is)rows.(\d+);.columns.(\d+);|;.(\d+).rows;.(\d+).columns").unwrap()
+    });
+    let cols = RE.captures(text.as_bytes()).ok().flatten().and_then(|c| {
+        c.get(2)
+            .or(c.get(4))
+            .map(|m| php_int(&String::from_utf8_lossy(m.as_bytes())))
+    });
     match cols {
         Some(w) if w > 0 => w,
         _ => 80,
@@ -64,7 +86,11 @@ pub fn width() -> usize {
 
 /// PHP `(int) "12abc"` = 12, `(int) "abc"` = 0 (non-negative only; widths are never negative).
 fn php_int(s: &str) -> usize {
-    s.bytes().take_while(u8::is_ascii_digit).fold(0usize, |n, d| n.saturating_mul(10).saturating_add(usize::from(d - b'0')))
+    s.bytes()
+        .take_while(u8::is_ascii_digit)
+        .fold(0usize, |n, d| {
+            n.saturating_mul(10).saturating_add(usize::from(d - b'0'))
+        })
 }
 
 /// OutputFormatter::escape.
@@ -101,13 +127,33 @@ struct Style {
 impl Style {
     fn new(fg: Option<&str>, bg: Option<&str>, options: &[&str]) -> Option<Style> {
         let color = |c: &str, base: u8| -> Option<String> {
-            const COLORS: [&str; 8] = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"];
-            const BRIGHT: [&str; 8] = ["gray", "bright-red", "bright-green", "bright-yellow", "bright-blue", "bright-magenta", "bright-cyan", "bright-white"];
+            const COLORS: [&str; 8] = [
+                "black", "red", "green", "yellow", "blue", "magenta", "cyan", "white",
+            ];
+            const BRIGHT: [&str; 8] = [
+                "gray",
+                "bright-red",
+                "bright-green",
+                "bright-yellow",
+                "bright-blue",
+                "bright-magenta",
+                "bright-cyan",
+                "bright-white",
+            ];
             if c == "default" {
                 return Some(format!("{base}9"));
             }
             // ponytail: `#rgb` colours and unknown names throw in Symfony (Pint crashes); we print the tag literally.
-            COLORS.iter().position(|&n| n == c).map(|i| format!("{base}{i}")).or_else(|| BRIGHT.iter().position(|&n| n == c).map(|i| format!("{}{i}", base + 6)))
+            COLORS
+                .iter()
+                .position(|&n| n == c)
+                .map(|i| format!("{base}{i}"))
+                .or_else(|| {
+                    BRIGHT
+                        .iter()
+                        .position(|&n| n == c)
+                        .map(|i| format!("{}{i}", base + 6))
+                })
         };
         let (mut set, mut unset) = (vec![], vec![]);
         if let Some(f) = fg {
@@ -134,8 +180,17 @@ impl Style {
                 unset.push(u.to_string());
             }
         }
-        let esc = |codes: Vec<String>| if codes.is_empty() { String::new() } else { format!("\x1b[{}m", codes.join(";")) };
-        Some(Style { set: esc(set), unset: esc(unset) })
+        let esc = |codes: Vec<String>| {
+            if codes.is_empty() {
+                String::new()
+            } else {
+                format!("\x1b[{}m", codes.join(";"))
+            }
+        };
+        Some(Style {
+            set: esc(set),
+            unset: esc(unset),
+        })
     }
 
     /// OutputFormatter::createStyleFromString.
@@ -161,15 +216,24 @@ impl Style {
                 _ => return None,
             }
         }
-        let opts: Vec<&str> = options.split([',', ';']).filter(|o| !o.is_empty()).collect();
-        if any { Style::new(fg.as_deref(), bg.as_deref(), &opts) } else { None }
+        let opts: Vec<&str> = options
+            .split([',', ';'])
+            .filter(|o| !o.is_empty())
+            .collect();
+        if any {
+            Style::new(fg.as_deref(), bg.as_deref(), &opts)
+        } else {
+            None
+        }
     }
 }
 
 /// OutputFormatter::format: `<fg=..;bg=..;options=..>`, `<info>` etc. become ANSI (or vanish when not decorated);
 /// unknown tags stay as text; `\<` is an escaped `<`.
 pub fn format(message: &str, decorated: bool) -> String {
-    static TAG: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?i)<(([a-z](?:[^\\<>]*+|\\.)*)|/([a-z][^<>]*+)?)>").unwrap());
+    static TAG: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"(?i)<(([a-z](?:[^\\<>]*+|\\.)*)|/([a-z][^<>]*+)?)>").unwrap()
+    });
     let b = message.as_bytes();
     // ponytail: Symfony keeps one style stack per output across writes; Pint never leaves a tag open, so one per call.
     let mut stack: Vec<Style> = vec![];
@@ -192,7 +256,9 @@ pub fn format(message: &str, decorated: bool) -> String {
         offset = m.end();
         let text = &message[m.start()..m.end()];
         let open = !text.starts_with("</");
-        let tag = c.get(if open { 2 } else { 3 }).map_or("", |t| &message[t.start()..t.end()]);
+        let tag = c
+            .get(if open { 2 } else { 3 })
+            .map_or("", |t| &message[t.start()..t.end()]);
         if !open && tag.is_empty() {
             stack.pop();
         } else if let Some(style) = Style::parse(tag) {
@@ -234,25 +300,58 @@ mod tests {
     fn formats_like_symfony() {
         for (input, want) in [
             ("<options=bold;fg=red>!</>", "\x1b[31;1m!\x1b[39;22m"),
-            ("<bg=green;fg=gray;options=bold>  PASS  </>", "\x1b[90;42;1m  PASS  \x1b[39;49;22m"),
-            ("<fg=red;options=bold><options=bold;fg=green>✓</></>", "\x1b[32;1m✓\x1b[39;22m"),
-            ("  <error>ERROR</error> a<b>: \\<info>", "  \x1b[37;41mERROR\x1b[39;49m a<b>: <info>"),
-            ("<comment>x</comment><question>q</question><info>i</info>", "\x1b[33mx\x1b[39m\x1b[30;46mq\x1b[39;49m\x1b[32mi\x1b[39m"),
-            ("<fg=cyan>a<fg=default>b</fg=default>c</fg=cyan>d</>", "\x1b[36ma\x1b[39m\x1b[39mb\x1b[39m\x1b[36mc\x1b[39md"),
-            ("<options=underscore,blink,reverse,conceal,bold,bold>u</>", "\x1b[4;5;7;8;1mu\x1b[24;25;27;28;22m"),
-            ("<INFO>y</INFO> <fg=red;bg>w</>", "<INFO>y</INFO> \x1b[31mw\x1b[39m"),
+            (
+                "<bg=green;fg=gray;options=bold>  PASS  </>",
+                "\x1b[90;42;1m  PASS  \x1b[39;49;22m",
+            ),
+            (
+                "<fg=red;options=bold><options=bold;fg=green>✓</></>",
+                "\x1b[32;1m✓\x1b[39;22m",
+            ),
+            (
+                "  <error>ERROR</error> a<b>: \\<info>",
+                "  \x1b[37;41mERROR\x1b[39;49m a<b>: <info>",
+            ),
+            (
+                "<comment>x</comment><question>q</question><info>i</info>",
+                "\x1b[33mx\x1b[39m\x1b[30;46mq\x1b[39;49m\x1b[32mi\x1b[39m",
+            ),
+            (
+                "<fg=cyan>a<fg=default>b</fg=default>c</fg=cyan>d</>",
+                "\x1b[36ma\x1b[39m\x1b[39mb\x1b[39m\x1b[36mc\x1b[39md",
+            ),
+            (
+                "<options=underscore,blink,reverse,conceal,bold,bold>u</>",
+                "\x1b[4;5;7;8;1mu\x1b[24;25;27;28;22m",
+            ),
+            (
+                "<INFO>y</INFO> <fg=red;bg>w</>",
+                "<INFO>y</INFO> \x1b[31mw\x1b[39m",
+            ),
             ("trail\0\0", "trail\\\\"),
         ] {
             assert_eq!(format(input, true), want, "{input:?}");
         }
-        assert_eq!(format("<options=bold;fg=red>!</> <fg=gray>x</> \\<b> <x=y>", false), "! x <b> <x=y>");
+        assert_eq!(
+            format("<options=bold;fg=red>!</> <fg=gray>x</> \\<b> <x=y>", false),
+            "! x <b> <x=y>"
+        );
     }
 
     /// Hand-derived: Symfony throws on these (Pint would crash); Pun prints the tag as text instead.
     #[test]
     fn unsupported_styles_stay_text() {
-        assert_eq!(format("<fg=nope>x</> <bg=nope>y</> <options=wavy>z</> <href=http://x>h</>", true), "<fg=nope>x <bg=nope>y <options=wavy>z <href=http://x>h");
-        assert_eq!(format("<fg=red>a</fg=blue>b</>", true), "\x1b[31ma\x1b[39m\x1b[31mb\x1b[39m");
+        assert_eq!(
+            format(
+                "<fg=nope>x</> <bg=nope>y</> <options=wavy>z</> <href=http://x>h</>",
+                true
+            ),
+            "<fg=nope>x <bg=nope>y <options=wavy>z <href=http://x>h"
+        );
+        assert_eq!(
+            format("<fg=red>a</fg=blue>b</>", true),
+            "\x1b[31ma\x1b[39m\x1b[31mb\x1b[39m"
+        );
     }
 
     #[test]
@@ -266,12 +365,26 @@ mod tests {
 
     #[test]
     fn color_support_like_symfony() {
-        let env = |pairs: &'static [(&'static str, &'static str)]| move |k: &str| pairs.iter().find(|p| p.0 == k).map(|p| p.1.to_string());
-        assert!(!has_color_support(true, &env(&[("TERM", "xterm"), ("NO_COLOR", "1")])));
-        assert!(has_color_support(false, &env(&[("NO_COLOR", ""), ("FORCE_COLOR", "1")])));
+        let env = |pairs: &'static [(&'static str, &'static str)]| {
+            move |k: &str| pairs.iter().find(|p| p.0 == k).map(|p| p.1.to_string())
+        };
+        assert!(!has_color_support(
+            true,
+            &env(&[("TERM", "xterm"), ("NO_COLOR", "1")])
+        ));
+        assert!(has_color_support(
+            false,
+            &env(&[("NO_COLOR", ""), ("FORCE_COLOR", "1")])
+        ));
         assert!(!has_color_support(false, &env(&[("TERM", "xterm")])));
-        assert!(has_color_support(false, &env(&[("MSYSTEM", "mingw64"), ("COLORTERM", "")])));
-        assert!(has_color_support(true, &env(&[("TERM_PROGRAM", "Hyper"), ("TERM", "dumb")])));
+        assert!(has_color_support(
+            false,
+            &env(&[("MSYSTEM", "mingw64"), ("COLORTERM", "")])
+        ));
+        assert!(has_color_support(
+            true,
+            &env(&[("TERM_PROGRAM", "Hyper"), ("TERM", "dumb")])
+        ));
         assert!(has_color_support(true, &env(&[("ANSICON", "1")])));
         assert!(has_color_support(true, &env(&[("ConEmuANSI", "ON")])));
         assert!(!has_color_support(true, &env(&[("TERM", "dumb")])));
@@ -279,6 +392,9 @@ mod tests {
         assert!(has_color_support(true, &env(&[("TERM", "foot-256color")])));
         assert!(!has_color_support(true, &env(&[("TERM", "foot")])));
         assert!(!has_color_support(true, &env(&[])));
-        assert_eq!((php_int("120"), php_int("12abc"), php_int("abc")), (120, 12, 0));
+        assert_eq!(
+            (php_int("120"), php_int("12abc"), php_int("abc")),
+            (120, 12, 0)
+        );
     }
 }

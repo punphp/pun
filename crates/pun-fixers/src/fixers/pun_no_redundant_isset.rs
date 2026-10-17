@@ -28,18 +28,29 @@ impl Fixer for NoRedundantIsset {
             if !tokens[i].is_kind(T_ISSET) {
                 continue;
             }
-            let Some(open) = tokens.get_next_meaningful_token(i).filter(|&o| tokens[o].equals("(", true)) else { continue };
+            let Some(open) = tokens
+                .get_next_meaningful_token(i)
+                .filter(|&o| tokens[o].equals("(", true))
+            else {
+                continue;
+            };
             let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
             let args = split_list(tokens, open, close);
             if args.len() < 2 || (open..=close).any(|k| tokens[k].is_comment()) {
                 continue;
             }
-            let paths: Vec<Option<Vec<Vec<u8>>>> = args.iter().map(|&(s, e)| access_path(tokens, s, e)).collect();
+            let paths: Vec<Option<Vec<Vec<u8>>>> = args
+                .iter()
+                .map(|&(s, e)| access_path(tokens, s, e))
+                .collect();
             let redundant: Vec<bool> = (0..args.len())
                 .map(|a| {
                     let Some(pa) = &paths[a] else { return false };
                     paths.iter().enumerate().any(|(b, pb)| {
-                        pb.as_ref().is_some_and(|pb| (b != a && pa.len() < pb.len() && pb.starts_with(pa)) || (b > a && pa == pb))
+                        pb.as_ref().is_some_and(|pb| {
+                            (b != a && pa.len() < pb.len() && pb.starts_with(pa))
+                                || (b > a && pa == pb)
+                        })
                     })
                 })
                 .collect();
@@ -74,11 +85,17 @@ fn access_path(tokens: &Tokens, s: usize, e: usize) -> Option<Vec<Vec<u8>>> {
     while k != e {
         let op = tokens.get_next_meaningful_token(k)?;
         let next = tokens.get_next_meaningful_token(op)?;
-        if tokens[op].is_given_kind(&[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR]) && tokens[next].is_kind(T_STRING) {
+        if tokens[op].is_given_kind(&[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR])
+            && tokens[next].is_kind(T_STRING)
+        {
             path.push([tokens[op].get_content(), tokens[next].get_content()].concat());
             k = next;
-        } else if tokens[op].equals("[", true) && tokens[next].is_given_kind(&[T_CONSTANT_ENCAPSED_STRING, T_LNUMBER]) {
-            let close = tokens.get_next_meaningful_token(next).filter(|&c| tokens[c].equals("]", true))?;
+        } else if tokens[op].equals("[", true)
+            && tokens[next].is_given_kind(&[T_CONSTANT_ENCAPSED_STRING, T_LNUMBER])
+        {
+            let close = tokens
+                .get_next_meaningful_token(next)
+                .filter(|&c| tokens[c].equals("]", true))?;
             path.push([b"[", tokens[next].get_content(), b"]"].concat());
             k = close;
         } else {
@@ -127,12 +144,24 @@ mod tests {
         for (from, to) in [
             ("<?php isset($a[0], $a[0][1]);", "<?php isset($a[0][1]);"),
             ("<?php isset($d, $d['first']);", "<?php isset($d['first']);"),
-            ("<?php isset($d, $d['first'], $d['first']['second']);", "<?php isset($d['first']['second']);"),
-            ("<?php isset($d['first']['second'], $d['first'], $d);", "<?php isset($d['first']['second']);"),
+            (
+                "<?php isset($d, $d['first'], $d['first']['second']);",
+                "<?php isset($d['first']['second']);",
+            ),
+            (
+                "<?php isset($d['first']['second'], $d['first'], $d);",
+                "<?php isset($d['first']['second']);",
+            ),
             ("<?php isset($o, $o->foo);", "<?php isset($o->foo);"),
-            ("<?php isset($d, $d['first']['second']);", "<?php isset($d['first']['second']);"),
+            (
+                "<?php isset($d, $d['first']['second']);",
+                "<?php isset($d['first']['second']);",
+            ),
             ("<?php isset($d, $d);", "<?php isset($d);"),
-            ("<?php isset($foo, $foo->bar, $foo->bar->baz, $foo->bar->baz['x'], $foo->bar->baz['x']['y']);", "<?php isset($foo->bar->baz['x']['y']);"),
+            (
+                "<?php isset($foo, $foo->bar, $foo->bar->baz, $foo->bar->baz['x'], $foo->bar->baz['x']['y']);",
+                "<?php isset($foo->bar->baz['x']['y']);",
+            ),
         ] {
             assert_eq!(fix(from), to);
         }
@@ -151,10 +180,22 @@ mod tests {
 
     #[test]
     fn edge_cases() {
-        assert_eq!(fix("<?php isset(\n    $a,\n    $b,\n    $a['x'],\n);"), "<?php isset(\n    $b,\n    $a['x'],\n);");
-        assert_eq!(fix("<?php isset($a['x'], $b, $a);"), "<?php isset($a['x'], $b);");
-        assert_eq!(fix("<?php isset($a, $b, $a->c, $b->d);"), "<?php isset($a->c, $b->d);");
-        assert_eq!(fix("<?php isset($a, $a?->b->c, $a::$d);"), "<?php isset($a?->b->c, $a::$d);");
+        assert_eq!(
+            fix("<?php isset(\n    $a,\n    $b,\n    $a['x'],\n);"),
+            "<?php isset(\n    $b,\n    $a['x'],\n);"
+        );
+        assert_eq!(
+            fix("<?php isset($a['x'], $b, $a);"),
+            "<?php isset($a['x'], $b);"
+        );
+        assert_eq!(
+            fix("<?php isset($a, $b, $a->c, $b->d);"),
+            "<?php isset($a->c, $b->d);"
+        );
+        assert_eq!(
+            fix("<?php isset($a, $a?->b->c, $a::$d);"),
+            "<?php isset($a?->b->c, $a::$d);"
+        );
         for same in [
             "<?php isset($a['x'], $a[\"x\"]);",
             "<?php isset($a, /* c */ $a['b']);",

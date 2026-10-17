@@ -11,7 +11,11 @@ struct Range {
 /// True if any version below `bound` satisfies the composer constraint.
 pub fn allows_below(constraint: &str, bound: V) -> Result<bool, String> {
     let mut any = false;
-    for alt in constraint.split('|').map(str::trim).filter(|s| !s.is_empty()) {
+    for alt in constraint
+        .split('|')
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+    {
         let r = conjunction(alt).map_err(|e| format!("invalid constraint `{constraint}`: {e}"))?;
         let nonempty = match r.hi {
             None => true,
@@ -31,7 +35,10 @@ fn conjunction(s: &str) -> Result<Range, String> {
             (x, Some(y), None) => ((x, y + 1, 0), false),
             (x, None, _) => ((x + 1, 0, 0), false),
         };
-        return Ok(Range { lo: pad(a), hi: Some(hi) });
+        return Ok(Range {
+            lo: pad(a),
+            hi: Some(hi),
+        });
     }
     // Split on spaces/commas, re-attaching bare operators ("> = 8.1" style is not valid composer).
     let mut parts: Vec<String> = Vec::new();
@@ -46,20 +53,30 @@ fn conjunction(s: &str) -> Result<Range, String> {
     if !pending.is_empty() {
         return Err(format!("missing version after `{pending}`"));
     }
-    let mut r = Range { lo: (0, 0, 0), hi: None };
+    let mut r = Range {
+        lo: (0, 0, 0),
+        hi: None,
+    };
     for p in parts {
         let c = single(&p)?;
         r.lo = r.lo.max(c.lo);
         r.hi = match (r.hi, c.hi) {
             (None, h) | (h, None) => h,
-            (Some(a), Some(b)) => Some(if b.0 < a.0 || (b.0 == a.0 && !b.1) { b } else { a }),
+            (Some(a), Some(b)) => Some(if b.0 < a.0 || (b.0 == a.0 && !b.1) {
+                b
+            } else {
+                a
+            }),
         };
     }
     Ok(r)
 }
 
 fn single(p: &str) -> Result<Range, String> {
-    let any = Range { lo: (0, 0, 0), hi: None };
+    let any = Range {
+        lo: (0, 0, 0),
+        hi: None,
+    };
     let at = |v: V, hi: Option<(V, bool)>| Range { lo: v, hi };
     let (op, ver) = match p.find(|c: char| !"<>=!^~".contains(c)) {
         Some(i) => p.split_at(i),
@@ -84,11 +101,30 @@ fn single(p: &str) -> Result<Range, String> {
                 false,
             )),
         ),
-        "~" => at(full, Some((if let (Some(y), Some(_)) = (y, z) { (x, y + 1, 0) } else { (x + 1, 0, 0) }, false))),
+        "~" => at(
+            full,
+            Some((
+                if let (Some(y), Some(_)) = (y, z) {
+                    (x, y + 1, 0)
+                } else {
+                    (x + 1, 0, 0)
+                },
+                false,
+            )),
+        ),
         ">=" => at(full, None),
-        ">" => Range { lo: bump_tiny(full), hi: None },
-        "<" => Range { lo: (0, 0, 0), hi: Some((full, false)) },
-        "<=" => Range { lo: (0, 0, 0), hi: Some((full, true)) },
+        ">" => Range {
+            lo: bump_tiny(full),
+            hi: None,
+        },
+        "<" => Range {
+            lo: (0, 0, 0),
+            hi: Some((full, false)),
+        },
+        "<=" => Range {
+            lo: (0, 0, 0),
+            hi: Some((full, true)),
+        },
         "!=" | "<>" => any,
         "" | "=" | "==" if is_wild(ver) => at(full, Some((wild_upper(v), false))),
         "" | "=" | "==" => at(full, Some((full, true))),
@@ -123,11 +159,18 @@ fn parse(s: &str) -> Result<(u64, Option<u64>, Option<u64>), String> {
     let s = s.split(['@', '-', '+']).next().unwrap_or("");
     let mut it = s.split('.').map(|c| match c {
         "*" | "x" | "X" => Ok(None),
-        _ => c.parse::<u64>().map(Some).map_err(|_| format!("bad version `{s}`")),
+        _ => c
+            .parse::<u64>()
+            .map(Some)
+            .map_err(|_| format!("bad version `{s}`")),
     });
     let x = it.next().ok_or("empty version")??.ok_or("bad major")?;
     let y = it.next().transpose()?.flatten();
-    let z = if y.is_some() { it.next().transpose()?.flatten() } else { None };
+    let z = if y.is_some() {
+        it.next().transpose()?.flatten()
+    } else {
+        None
+    };
     Ok((x, y, z))
 }
 
@@ -140,15 +183,57 @@ mod tests {
     fn php_84_gate_matches_composer() {
         let b = (8, 4, 0);
         let cases = [
-            ("^8.4", false), ("~8.4.0", false), (">=8.4", false), (">= 8.4", false), ("8.4.*", false), ("^8.4.0", false),
-            (">=8.4 <9.0", false), ("<9 >=8.4", false), ("8.4", false), ("==8.4", false), ("v8.4", false), ("8.4@stable", false),
-            ("8.4.0-dev", false), (">8.3.99 <8.3.99|^8.4", false), (">=8.4 <8.3", false), ("8.4 - 8.5", false), ("8.4 - 8.3", false),
-            ("^8.2", true), (">=8.1", true), ("8.3.*|^8.4", true), ("8.3.* || ^8.4", true), ("~8.3", true), ("~8.3.1", true),
-            ("~8", true), ("^7.4|^8.0", true), ("*", true), ("x", true), (">=8.2,<8.5", true), (">8.3", true), ("<9", true),
-            ("8.1 - 8.4", true), ("8.1 - 8.3.2", true), ("8.1 - 8", true), ("^0.0.3", true), ("^0.2", true), ("^0", true),
-            ("^0.0", true), ("<8.4", true), ("<=8.4", true), ("!=8.4", true), ("<>8.0", true), ("=8.3", true), ("8.*", true),
-            ("8.x", true), ("8.3.x", true), ("8.3.1.*", true), ("^8.3 <8.3.5", true), ("<8.5 <=8.5", true), ("<8.5, <=8.5", true),
-            ("<8.5 <8.5", true), ("<=8.3 <8.3", true),
+            ("^8.4", false),
+            ("~8.4.0", false),
+            (">=8.4", false),
+            (">= 8.4", false),
+            ("8.4.*", false),
+            ("^8.4.0", false),
+            (">=8.4 <9.0", false),
+            ("<9 >=8.4", false),
+            ("8.4", false),
+            ("==8.4", false),
+            ("v8.4", false),
+            ("8.4@stable", false),
+            ("8.4.0-dev", false),
+            (">8.3.99 <8.3.99|^8.4", false),
+            (">=8.4 <8.3", false),
+            ("8.4 - 8.5", false),
+            ("8.4 - 8.3", false),
+            ("^8.2", true),
+            (">=8.1", true),
+            ("8.3.*|^8.4", true),
+            ("8.3.* || ^8.4", true),
+            ("~8.3", true),
+            ("~8.3.1", true),
+            ("~8", true),
+            ("^7.4|^8.0", true),
+            ("*", true),
+            ("x", true),
+            (">=8.2,<8.5", true),
+            (">8.3", true),
+            ("<9", true),
+            ("8.1 - 8.4", true),
+            ("8.1 - 8.3.2", true),
+            ("8.1 - 8", true),
+            ("^0.0.3", true),
+            ("^0.2", true),
+            ("^0", true),
+            ("^0.0", true),
+            ("<8.4", true),
+            ("<=8.4", true),
+            ("!=8.4", true),
+            ("<>8.0", true),
+            ("=8.3", true),
+            ("8.*", true),
+            ("8.x", true),
+            ("8.3.x", true),
+            ("8.3.1.*", true),
+            ("^8.3 <8.3.5", true),
+            ("<8.5 <=8.5", true),
+            ("<8.5, <=8.5", true),
+            ("<8.5 <8.5", true),
+            ("<=8.3 <8.3", true),
         ];
         for (c, below) in cases {
             assert_eq!(allows_below(c, b), Ok(below), "{c}");

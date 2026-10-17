@@ -28,22 +28,40 @@ impl Fixer for SelfAccessorFixer {
         for namespace in NamespacesAnalyzer.get_declarations(tokens) {
             let mut index = namespace.scope_start_index;
             while index < namespace.scope_end_index {
-                if !tokens[index].is_given_kind(&[Kind::T_CLASS, Kind::T_INTERFACE]) || TokensAnalyzer::new(tokens).is_anonymous_class(index) {
+                if !tokens[index].is_given_kind(&[Kind::T_CLASS, Kind::T_INTERFACE])
+                    || TokensAnalyzer::new(tokens).is_anonymous_class(index)
+                {
                     index += 1;
                     continue;
                 }
-                let name_index = tokens.get_next_token_of_kind(index, &[Kind::T_STRING.into()], true).unwrap();
-                let start_index = tokens.get_next_token_of_kind(name_index, &["{".into()], true).unwrap();
+                let name_index = tokens
+                    .get_next_token_of_kind(index, &[Kind::T_STRING.into()], true)
+                    .unwrap();
+                let start_index = tokens
+                    .get_next_token_of_kind(name_index, &["{".into()], true)
+                    .unwrap();
                 let end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, start_index);
                 let name = tokens[name_index].content.clone();
-                replace_name_occurrences(tokens, &namespace.full_name, &name, start_index, end_index);
+                replace_name_occurrences(
+                    tokens,
+                    &namespace.full_name,
+                    &name,
+                    start_index,
+                    end_index,
+                );
                 index = end_index + 1;
             }
         }
     }
 }
 
-fn replace_name_occurrences(tokens: &mut Tokens, namespace: &[u8], name: &[u8], start_index: usize, end_index: usize) {
+fn replace_name_occurrences(
+    tokens: &mut Tokens,
+    namespace: &[u8],
+    name: &[u8],
+    start_index: usize,
+    end_index: usize,
+) {
     let mut inside_method_signature_until: Option<usize> = None;
     let mut i = start_index;
     while i < end_index {
@@ -52,7 +70,9 @@ fn replace_name_occurrences(tokens: &mut Tokens, namespace: &[u8], name: &[u8], 
         }
         let token = &tokens[i];
         if token.is_kind(Kind::T_CLASS) && TokensAnalyzer::new(tokens).is_anonymous_class(i) {
-            i = tokens.get_next_token_of_kind(i, &["{".into()], true).unwrap();
+            i = tokens
+                .get_next_token_of_kind(i, &["{".into()], true)
+                .unwrap();
             i = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, i) + 1;
             continue;
         }
@@ -63,12 +83,17 @@ fn replace_name_occurrences(tokens: &mut Tokens, namespace: &[u8], name: &[u8], 
         }
         if token.is_kind(Kind::T_FUNCTION) {
             if TokensAnalyzer::new(tokens).is_lambda(i) {
-                i = tokens.get_next_token_of_kind(i, &["{".into()], true).unwrap();
+                i = tokens
+                    .get_next_token_of_kind(i, &["{".into()], true)
+                    .unwrap();
                 i = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, i) + 1;
                 continue;
             }
-            i = tokens.get_next_token_of_kind(i, &["(".into()], true).unwrap();
-            inside_method_signature_until = tokens.get_next_token_of_kind(i, &["{".into(), ";".into()], true);
+            i = tokens
+                .get_next_token_of_kind(i, &["(".into()], true)
+                .unwrap();
+            inside_method_signature_until =
+                tokens.get_next_token_of_kind(i, &["{".into(), ";".into()], true);
             i += 1;
             continue;
         }
@@ -95,7 +120,9 @@ fn replace_name_occurrences(tokens: &mut Tokens, namespace: &[u8], name: &[u8], 
                 }
             }
         }
-        if prev_token.is_given_kind(&[Kind::T_STRING, Kind::T_PAAMAYIM_NEKUDOTAYIM]) || prev_token.is_object_operator() {
+        if prev_token.is_given_kind(&[Kind::T_STRING, Kind::T_PAAMAYIM_NEKUDOTAYIM])
+            || prev_token.is_object_operator()
+        {
             i += 1;
             continue;
         }
@@ -103,7 +130,13 @@ fn replace_name_occurrences(tokens: &mut Tokens, namespace: &[u8], name: &[u8], 
             || next_token.is_kind(Kind::T_PAAMAYIM_NEKUDOTAYIM)
             || (inside_method_signature_until.is_some_and(|u| i < u)
                 && prev_token.equals_any(
-                    &["(".into(), ",".into(), Kind::CT_NULLABLE_TYPE.into(), Kind::CT_TYPE_ALTERNATION.into(), Kind::CT_TYPE_COLON.into()],
+                    &[
+                        "(".into(),
+                        ",".into(),
+                        Kind::CT_NULLABLE_TYPE.into(),
+                        Kind::CT_TYPE_ALTERNATION.into(),
+                        Kind::CT_TYPE_COLON.into(),
+                    ],
                     true,
                 ))
         {
@@ -117,8 +150,24 @@ fn replace_name_occurrences(tokens: &mut Tokens, namespace: &[u8], name: &[u8], 
 }
 
 fn get_class_start(tokens: &Tokens, mut index: usize, namespace: &[u8]) -> Option<usize> {
-    let ns = [if namespace.is_empty() { vec![] } else { [&b"\\"[..], namespace].concat() }, b"\\".to_vec()].concat();
-    for piece in Preg::split(r"/(\\)/", &ns, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE).iter().rev() {
+    let ns = [
+        if namespace.is_empty() {
+            vec![]
+        } else {
+            [&b"\\"[..], namespace].concat()
+        },
+        b"\\".to_vec(),
+    ]
+    .concat();
+    for piece in Preg::split(
+        r"/(\\)/",
+        &ns,
+        -1,
+        PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE,
+    )
+    .iter()
+    .rev()
+    {
         index = tokens.get_prev_meaningful_token(index)?;
         if piece.text == b"\\" {
             if !tokens[index].is_kind(Kind::T_NS_SEPARATOR) {

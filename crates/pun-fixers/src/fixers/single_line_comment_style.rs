@@ -3,7 +3,7 @@ use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
 use anyhow::Result;
 use pun_format::Fixer;
-use pun_tokens::{php_compat, Kind::*, Token, Tokens};
+use pun_tokens::{Kind::*, Token, Tokens, php_compat};
 use serde_json::Value;
 use std::path::Path;
 
@@ -13,7 +13,10 @@ struct SingleLineCommentStyleFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SingleLineCommentStyleFixer { asterisk_enabled: true, hash_enabled: true })
+    Box::new(SingleLineCommentStyleFixer {
+        asterisk_enabled: true,
+        hash_enabled: true,
+    })
 }
 
 impl Fixer for SingleLineCommentStyleFixer {
@@ -28,7 +31,11 @@ impl Fixer for SingleLineCommentStyleFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let o = resolve(self.name(), options, &["comment_types"])?;
-        let types = o.strings("comment_types", &["asterisk", "hash"], &["asterisk", "hash"])?;
+        let types = o.strings(
+            "comment_types",
+            &["asterisk", "hash"],
+            &["asterisk", "hash"],
+        )?;
         self.asterisk_enabled = types.iter().any(|t| t == "asterisk");
         self.hash_enabled = types.iter().any(|t| t == "hash");
         Ok(())
@@ -41,11 +48,21 @@ impl Fixer for SingleLineCommentStyleFixer {
             let token = tokens[index].clone();
             let content = &token.content;
             // substr($content, 2, -2) ?: ''
-            let comment_content: &[u8] = if content.len() > 4 { &content[2..content.len() - 2] } else { b"" };
+            let comment_content: &[u8] = if content.len() > 4 {
+                &content[2..content.len() - 2]
+            } else {
+                b""
+            };
 
             if self.hash_enabled && content.starts_with(b"#") {
                 // upstream skips `#[` (an attribute before PHP 8); PHP 8 never lexes it as a comment
-                tokens.set(index, Token { id: token.id, content: [&b"//"[..], &content[1..]].concat() });
+                tokens.set(
+                    index,
+                    Token {
+                        id: token.id,
+                        content: [&b"//"[..], &content[1..]].concat(),
+                    },
+                );
                 continue;
             }
 
@@ -65,7 +82,10 @@ impl Fixer for SingleLineCommentStyleFixer {
                 }
                 tokens.set(
                     next_token_index,
-                    Token { id: next_token.id, content: php_compat::ltrim_chars(&next_token.content, b" \t").to_vec() },
+                    Token {
+                        id: next_token.id,
+                        content: php_compat::ltrim_chars(&next_token.content, b" \t").to_vec(),
+                    },
                 );
             }
 
@@ -73,11 +93,21 @@ impl Fixer for SingleLineCommentStyleFixer {
             if Preg::r#match("/[^\\s\\*]/", comment_content) {
                 new_content = [
                     &b"// "[..],
-                    &Preg::replace("/[\\s\\*]*([^\\s\\*](?:.+[^\\s\\*])?)[\\s\\*]*/", "\\1", comment_content),
+                    &Preg::replace(
+                        "/[\\s\\*]*([^\\s\\*](?:.+[^\\s\\*])?)[\\s\\*]*/",
+                        "\\1",
+                        comment_content,
+                    ),
                 ]
                 .concat();
             }
-            tokens.set(index, Token { id: token.id, content: new_content });
+            tokens.set(
+                index,
+                Token {
+                    id: token.id,
+                    content: new_content,
+                },
+            );
         }
     }
 }

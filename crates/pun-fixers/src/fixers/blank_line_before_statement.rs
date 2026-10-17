@@ -7,11 +7,29 @@ use serde_json::Value;
 use std::path::Path;
 
 const TOKEN_MAP: &[(&str, Kind)] = &[
-    ("break", T_BREAK), ("case", T_CASE), ("continue", T_CONTINUE), ("declare", T_DECLARE), ("default", T_DEFAULT),
-    ("do", T_DO), ("exit", T_EXIT), ("for", T_FOR), ("foreach", T_FOREACH), ("goto", T_GOTO), ("if", T_IF),
-    ("include", T_INCLUDE), ("include_once", T_INCLUDE_ONCE), ("phpdoc", T_DOC_COMMENT), ("require", T_REQUIRE),
-    ("require_once", T_REQUIRE_ONCE), ("return", T_RETURN), ("switch", T_SWITCH), ("throw", T_THROW), ("try", T_TRY),
-    ("while", T_WHILE), ("yield", T_YIELD), ("yield_from", T_YIELD_FROM),
+    ("break", T_BREAK),
+    ("case", T_CASE),
+    ("continue", T_CONTINUE),
+    ("declare", T_DECLARE),
+    ("default", T_DEFAULT),
+    ("do", T_DO),
+    ("exit", T_EXIT),
+    ("for", T_FOR),
+    ("foreach", T_FOREACH),
+    ("goto", T_GOTO),
+    ("if", T_IF),
+    ("include", T_INCLUDE),
+    ("include_once", T_INCLUDE_ONCE),
+    ("phpdoc", T_DOC_COMMENT),
+    ("require", T_REQUIRE),
+    ("require_once", T_REQUIRE_ONCE),
+    ("return", T_RETURN),
+    ("switch", T_SWITCH),
+    ("throw", T_THROW),
+    ("try", T_TRY),
+    ("while", T_WHILE),
+    ("yield", T_YIELD),
+    ("yield_from", T_YIELD_FROM),
 ];
 
 struct BlankLineBeforeStatementFixer {
@@ -20,7 +38,10 @@ struct BlankLineBeforeStatementFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = BlankLineBeforeStatementFixer { fix_token_map: Vec::new(), whitespaces_config: Default::default() };
+    let mut f = BlankLineBeforeStatementFixer {
+        fix_token_map: Vec::new(),
+        whitespaces_config: Default::default(),
+    };
     f.configure(&Value::Null).unwrap();
     Box::new(f)
 }
@@ -32,7 +53,9 @@ fn newlines(s: &[u8]) -> usize {
 impl BlankLineBeforeStatementFixer {
     fn get_insert_blank_line_index(tokens: &Tokens, mut index: usize) -> usize {
         while index > 0 {
-            if tokens[index - 1].is_whitespace(None) && newlines(tokens[index - 1].get_content()) > 1 {
+            if tokens[index - 1].is_whitespace(None)
+                && newlines(tokens[index - 1].get_content()) > 1
+            {
                 break;
             }
             let prev_index = tokens.get_prev_non_whitespace(index, None).unwrap();
@@ -73,14 +96,31 @@ impl BlankLineBeforeStatementFixer {
         if prev_token.is_whitespace(None) {
             let newlines_count = newlines(prev_token.get_content());
             if newlines_count == 0 {
-                let t = Token::new(T_WHITESPACE, [rtrim_chars(prev_token.get_content(), b" \t"), line_ending, line_ending].concat());
+                let t = Token::new(
+                    T_WHITESPACE,
+                    [
+                        rtrim_chars(prev_token.get_content(), b" \t"),
+                        line_ending,
+                        line_ending,
+                    ]
+                    .concat(),
+                );
                 tokens.set(prev_index, t);
             } else if newlines_count == 1 {
-                let t = Token::new(T_WHITESPACE, [line_ending, prev_token.get_content()].concat());
+                let t = Token::new(
+                    T_WHITESPACE,
+                    [line_ending, prev_token.get_content()].concat(),
+                );
                 tokens.set(prev_index, t);
             }
         } else {
-            tokens.insert_at(index, vec![Token::new(T_WHITESPACE, [line_ending, line_ending].concat())]);
+            tokens.insert_at(
+                index,
+                vec![Token::new(
+                    T_WHITESPACE,
+                    [line_ending, line_ending].concat(),
+                )],
+            );
         }
     }
 }
@@ -97,7 +137,11 @@ impl Fixer for BlankLineBeforeStatementFixer {
     fn configure(&mut self, options: &Value) -> Result<()> {
         let r = resolve(self.name(), options, &["statements"])?;
         let keys: Vec<&str> = TOKEN_MAP.iter().map(|(k, _)| *k).collect();
-        let statements = r.strings("statements", &["break", "continue", "declare", "return", "throw", "try"], &keys)?;
+        let statements = r.strings(
+            "statements",
+            &["break", "continue", "declare", "return", "throw", "try"],
+            &keys,
+        )?;
         // `$fixTokenMap[$key] = ...` then array_values: duplicates keep their first position.
         let mut fix_token_map: Vec<(&str, Kind)> = Vec::new();
         for key in &statements {
@@ -133,7 +177,9 @@ impl Fixer for BlankLineBeforeStatementFixer {
                 continue;
             }
             let insert_blank_line_index = Self::get_insert_blank_line_index(tokens, index);
-            let prev_non_whitespace = tokens.get_prev_non_whitespace(insert_blank_line_index, None).unwrap();
+            let prev_non_whitespace = tokens
+                .get_prev_non_whitespace(insert_blank_line_index, None)
+                .unwrap();
             if Self::should_add_blank_line(tokens, prev_non_whitespace) {
                 self.insert_blank_line(tokens, insert_blank_line_index);
             }

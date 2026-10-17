@@ -9,8 +9,21 @@ use serde_json::Value;
 use std::path::Path;
 
 const AVAILABLE_TOKENS: &[&str] = &[
-    "attribute", "break", "case", "comma", "continue", "curly_brace_block", "default", "extra",
-    "parenthesis_brace_block", "return", "square_brace_block", "switch", "throw", "use", "use_trait",
+    "attribute",
+    "break",
+    "case",
+    "comma",
+    "continue",
+    "curly_brace_block",
+    "default",
+    "extra",
+    "parenthesis_brace_block",
+    "return",
+    "square_brace_block",
+    "switch",
+    "throw",
+    "use",
+    "use_trait",
 ];
 
 #[derive(Clone, Copy)]
@@ -52,7 +65,9 @@ impl Run<'_> {
             Callback::FixAfterToken => self.fix_after_token(index),
             Callback::FixAfterCaseToken => self.fix_after_case_token(index),
             Callback::FixAfterThrowToken => self.fix_after_throw_token(index),
-            Callback::FixStructureOpenCloseIfMultiLine => self.fix_structure_open_close_if_multi_line(index),
+            Callback::FixStructureOpenCloseIfMultiLine => {
+                self.fix_structure_open_close_if_multi_line(index)
+            }
             Callback::RemoveBetweenUse => self.remove_between_use(index),
             Callback::RemoveMultipleBlankLines => self.remove_multiple_blank_lines(index),
         }
@@ -75,14 +90,18 @@ impl Run<'_> {
     }
 
     fn remove_between_use(&mut self, index: usize) {
-        let next = self.tokens.get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true);
+        let next =
+            self.tokens
+                .get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true);
         let Some(next) = next else { return };
         if self.tokens[next].is_kind(T_CLOSE_TAG) {
             return;
         }
         let next_use_candidate = self.tokens.get_next_meaningful_token(next);
         let Some(n) = next_use_candidate else { return };
-        if !self.tokens[n].is_kind(self.tokens[index].get_id().unwrap()) || !self.contains_linebreak(index, n) {
+        if !self.tokens[n].is_kind(self.tokens[index].get_id().unwrap())
+            || !self.contains_linebreak(index, n)
+        {
             return;
         }
         self.remove_empty_lines_after_line_with_token_at(next);
@@ -90,11 +109,23 @@ impl Run<'_> {
 
     fn remove_multiple_blank_lines(&mut self, index: usize) {
         let prev = &self.tokens[index - 1];
-        let expected = if prev.is_kind(T_OPEN_TAG) && Preg::r#match("/\\R$/", prev.get_content()) { 1 } else { 2 };
-        let parts = Preg::split("/(.*\\R)/", self.tokens[index].get_content(), -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        let expected = if prev.is_kind(T_OPEN_TAG) && Preg::r#match("/\\R$/", prev.get_content()) {
+            1
+        } else {
+            2
+        };
+        let parts = Preg::split(
+            "/(.*\\R)/",
+            self.tokens[index].get_content(),
+            -1,
+            PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY,
+        );
         let count = parts.len();
         if count > expected {
-            let mut content: Vec<u8> = parts[..expected].iter().flat_map(|p| p.text.iter().copied()).collect();
+            let mut content: Vec<u8> = parts[..expected]
+                .iter()
+                .flat_map(|p| p.text.iter().copied())
+                .collect();
             content.extend_from_slice(rtrim_chars(&parts[count - 1].text, b"\r\n"));
             self.tokens.set(index, Token::new(T_WHITESPACE, content));
         }
@@ -122,7 +153,10 @@ impl Run<'_> {
     }
 
     fn fix_after_case_token(&mut self, index: usize) {
-        let enum_switch_index = self.tokens.get_prev_token_of_kind(index, &[T_SWITCH.into(), T_ENUM.into()], true).unwrap();
+        let enum_switch_index = self
+            .tokens
+            .get_prev_token_of_kind(index, &[T_SWITCH.into(), T_ENUM.into()], true)
+            .unwrap();
         if !self.tokens[enum_switch_index].is_kind(T_SWITCH) {
             return;
         }
@@ -131,10 +165,21 @@ impl Run<'_> {
 
     fn fix_after_throw_token(&mut self, index: usize) {
         let prev_index = self.tokens.get_prev_meaningful_token(index).unwrap();
-        if !self.tokens[prev_index].equals_any(&[";".into(), "{".into(), "}".into(), ":".into(), T_OPEN_TAG.into()], true) {
+        if !self.tokens[prev_index].equals_any(
+            &[
+                ";".into(),
+                "{".into(),
+                "}".into(),
+                ":".into(),
+                T_OPEN_TAG.into(),
+            ],
+            true,
+        ) {
             return;
         }
-        if self.tokens[prev_index].equals(":", true) && !SwitchAnalyzer::belongs_to_switch(self.tokens, prev_index) {
+        if self.tokens[prev_index].equals(":", true)
+            && !SwitchAnalyzer::belongs_to_switch(self.tokens, prev_index)
+        {
             return;
         }
         self.fix_after_token(index);
@@ -196,7 +241,9 @@ impl Run<'_> {
     }
 
     fn contains_linebreak(&self, start_index: usize, end_index: usize) -> bool {
-        (start_index + 1..=end_index).rev().any(|i| Preg::r#match("/\\R/", self.tokens[i].get_content()))
+        (start_index + 1..=end_index)
+            .rev()
+            .any(|i| Preg::r#match("/\\R/", self.tokens[i].get_content()))
     }
 }
 
@@ -217,10 +264,16 @@ impl Fixer for NoExtraBlankLinesFixer {
         if tokens_configuration.iter().any(|t| t == "comma") {
             token_equals_map.push((",", Callback::FixAfterToken));
         }
-        if tokens_configuration.iter().any(|t| t == "curly_brace_block") {
+        if tokens_configuration
+            .iter()
+            .any(|t| t == "curly_brace_block")
+        {
             token_equals_map.push(("{", Callback::FixStructureOpenCloseIfMultiLine)); // i.e. not: CT::T_ARRAY_INDEX_BRACE_OPEN
         }
-        if tokens_configuration.iter().any(|t| t == "parenthesis_brace_block") {
+        if tokens_configuration
+            .iter()
+            .any(|t| t == "parenthesis_brace_block")
+        {
             token_equals_map.push(("(", Callback::FixStructureOpenCloseIfMultiLine)); // i.e. not: CT::T_CLASS_INSTANTIATION_PARENTHESIS_OPEN
         }
         let config_map = |c: &str| -> Option<(Kind, Callback)> {
@@ -232,7 +285,10 @@ impl Fixer for NoExtraBlankLinesFixer {
                 "default" => (T_DEFAULT, Callback::FixAfterToken),
                 "extra" => (T_WHITESPACE, Callback::RemoveMultipleBlankLines),
                 "return" => (T_RETURN, Callback::FixAfterToken),
-                "square_brace_block" => (CT_ARRAY_BRACKET_OPEN, Callback::FixStructureOpenCloseIfMultiLine),
+                "square_brace_block" => (
+                    CT_ARRAY_BRACKET_OPEN,
+                    Callback::FixStructureOpenCloseIfMultiLine,
+                ),
                 "switch" => (T_SWITCH, Callback::FixAfterToken),
                 "throw" => (T_THROW, Callback::FixAfterThrowToken),
                 "use" => (T_USE, Callback::RemoveBetweenUse),
@@ -261,7 +317,10 @@ impl Fixer for NoExtraBlankLinesFixer {
         self.whitespaces_config = config.clone();
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        let mut run = Run { fixer: self, tokens };
+        let mut run = Run {
+            fixer: self,
+            tokens,
+        };
         let mut index = run.tokens.count() - 1;
         while index > 0 {
             run.fix_by_token(index);

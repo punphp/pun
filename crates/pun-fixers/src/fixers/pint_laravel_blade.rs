@@ -20,11 +20,11 @@ use anyhow::{Result, bail};
 use line_formatters::*;
 use pun_format::Fixer;
 use pun_tokens::Tokens;
+use std::cell::RefCell;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, channel};
-use std::cell::RefCell;
 use std::time::Duration;
 
 const WORKER: &str = include_str!("pint_laravel_blade/worker.cjs");
@@ -102,7 +102,9 @@ fn format(path: &str, content: &[u8]) -> Result<Vec<u8>> {
     let formatted = join_dangling_open_bracket::post_format(&formatted);
     let formatted = dedent_hugged_terminator::post_format(&formatted);
     let formatted = masker.post_format(&formatted);
-    let blocks = php_block_formatting::PhpBlockFormatting::new(php_block_formatting::PhpFragmentFormatter::new(crate::analyzers::active_preset::get()));
+    let blocks = php_block_formatting::PhpBlockFormatting::new(
+        php_block_formatting::PhpFragmentFormatter::new(crate::analyzers::active_preset::get()),
+    );
     Ok(blocks.post_format(&formatted))
 }
 
@@ -150,7 +152,13 @@ fn start() -> Result<Worker> {
         .spawn()?;
     let stdin = child.stdin.take().unwrap();
     let (tx, events) = channel();
-    for (mut pipe, is_err) in [(Box::new(child.stdout.take().unwrap()) as Box<dyn Read + Send>, false), (Box::new(child.stderr.take().unwrap()), true)] {
+    for (mut pipe, is_err) in [
+        (
+            Box::new(child.stdout.take().unwrap()) as Box<dyn Read + Send>,
+            false,
+        ),
+        (Box::new(child.stderr.take().unwrap()), true),
+    ] {
         let tx = tx.clone();
         std::thread::spawn(move || {
             let mut buf = [0u8; 65536];
@@ -162,13 +170,21 @@ fn start() -> Result<Worker> {
                     }
                     Ok(n) => {
                         let chunk = buf[..n].to_vec();
-                        let _ = tx.send(if is_err { Chunk::Err(chunk) } else { Chunk::Out(chunk) });
+                        let _ = tx.send(if is_err {
+                            Chunk::Err(chunk)
+                        } else {
+                            Chunk::Out(chunk)
+                        });
                     }
                 }
             }
         });
     }
-    Ok(Worker { child, stdin, events })
+    Ok(Worker {
+        child,
+        stdin,
+        events,
+    })
 }
 
 const START: &[u8] = b"[PINT_PRETTIER_WORKER_START]";
@@ -203,11 +219,21 @@ fn prettier_format_with(guard: &mut Option<Worker>, path: &str, content: &[u8]) 
     // worker down (the next file starts a fresh one) and report the file.
     std::thread::sleep(Duration::from_millis(100));
     let timed_out = matches!(failure, Err(RecvTimeoutError::Timeout));
-    let error: Vec<u8> = std::iter::once(failure.ok()).flatten().chain(worker.events.try_iter()).flat_map(|e| if let Chunk::Err(c) = e { c } else { Vec::new() }).collect();
+    let error: Vec<u8> = std::iter::once(failure.ok())
+        .flatten()
+        .chain(worker.events.try_iter())
+        .flat_map(|e| if let Chunk::Err(c) = e { c } else { Vec::new() })
+        .collect();
     let mut dead = guard.take().unwrap();
     let _ = dead.child.kill();
     let _ = dead.child.wait();
-    let message = if timed_out { format!("Laravel Pint's Prettier worker timed out while formatting [{path}].") } else if error.is_empty() { "Laravel Pint's Prettier worker terminated unexpectedly.".into() } else { String::from_utf8_lossy(&error).into_owned() };
+    let message = if timed_out {
+        format!("Laravel Pint's Prettier worker timed out while formatting [{path}].")
+    } else if error.is_empty() {
+        "Laravel Pint's Prettier worker terminated unexpectedly.".into()
+    } else {
+        String::from_utf8_lossy(&error).into_owned()
+    };
     bail!("{message}")
 }
 
@@ -220,13 +246,16 @@ mod tests {
 
     #[test]
     fn oracle_blade_formatters() {
-        let cases: Vec<serde_json::Value> = serde_json::from_str(include_str!("../../tests/blade_formatters.json")).unwrap();
+        let cases: Vec<serde_json::Value> =
+            serde_json::from_str(include_str!("../../tests/blade_formatters.json")).unwrap();
         for (i, case) in cases.iter().enumerate() {
             let formatter = case["formatter"].as_str().unwrap();
             let input = case["input"].as_str().unwrap().as_bytes();
             let mut masker = embedded_blade_masker::EmbeddedBladeMasker::default();
             let got = match formatter {
-                "StripSensitiveLeadingBlankLines" => strip_sensitive_leading_blank_lines::post_format(input),
+                "StripSensitiveLeadingBlankLines" => {
+                    strip_sensitive_leading_blank_lines::post_format(input)
+                }
                 "DirectiveTrailingCommas" => directive_trailing_commas::post_format(input),
                 "NotOperatorSpacing" => not_operator_spacing::post_format(input),
                 "CollapseShortSlots" => collapse_short_slots::post_format(input),
@@ -235,13 +264,23 @@ mod tests {
                 "JoinDanglingOpenBracket" => join_dangling_open_bracket::post_format(input),
                 "DedentHuggedTerminator" => dedent_hugged_terminator::post_format(input),
                 "EmbeddedBladeMasker" => masker.pre_format(input),
-                _ => php_block_formatting::PhpBlockFormatting::new(php_block_formatting::PhpFragmentFormatter::new("laravel".into()))
-                    .post_format(input),
+                _ => php_block_formatting::PhpBlockFormatting::new(
+                    php_block_formatting::PhpFragmentFormatter::new("laravel".into()),
+                )
+                .post_format(input),
             };
-            assert_eq!(String::from_utf8_lossy(&got), case["expected"].as_str().unwrap(), "case {i} {formatter}");
+            assert_eq!(
+                String::from_utf8_lossy(&got),
+                case["expected"].as_str().unwrap(),
+                "case {i} {formatter}"
+            );
             if let Some(post_input) = case.get("post_input") {
                 let got = masker.post_format(post_input.as_str().unwrap().as_bytes());
-                assert_eq!(String::from_utf8_lossy(&got), case["expected_post"].as_str().unwrap(), "case {i} {formatter} postFormat");
+                assert_eq!(
+                    String::from_utf8_lossy(&got),
+                    case["expected_post"].as_str().unwrap(),
+                    "case {i} {formatter} postFormat"
+                );
             }
         }
     }

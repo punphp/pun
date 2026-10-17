@@ -13,7 +13,10 @@ use std::sync::LazyLock;
 /// Internal classes of the oracle's PHP (`get_declared_classes()` filtered by `ReflectionClass::isInternal`). Regenerate:
 /// `php -r '$c=[];foreach(get_declared_classes() as $x){if((new ReflectionClass($x))->isInternal())$c[]=$x;} sort($c); echo implode("\n",$c),"\n";'`
 static CLASS_NAMES: LazyLock<HashMap<Vec<u8>, &'static str>> = LazyLock::new(|| {
-    include_str!("../analyzers/php_internal_classes.txt").lines().map(|c| (strtolower(c.as_bytes()), c)).collect()
+    include_str!("../analyzers/php_internal_classes.txt")
+        .lines()
+        .map(|c| (strtolower(c.as_bytes()), c))
+        .collect()
 });
 
 const NOT_BEFORE_KINDS: [Kind; 13] = [
@@ -100,10 +103,17 @@ fn get_class_reference(tokens: &Tokens, namespace: &NamespaceAnalysis) -> Vec<us
         } else if tokens[prev_index].is_given_kind(&NOT_BEFORE_KINDS) {
             continue;
         }
-        if tokens[prev_index].equals_any(&before, true) && tokens[next_index].equals_any(&after, true) {
+        if tokens[prev_index].equals_any(&before, true)
+            && tokens[next_index].equals_any(&after, true)
+        {
             continue;
         }
-        if !tokens[prev_index].is_kind(T_NEW) && tokens[next_index].equals_any(&["(".into(), ";".into(), "=".into(), T_CLOSE_TAG.into()], true) {
+        if !tokens[prev_index].is_kind(T_NEW)
+            && tokens[next_index].equals_any(
+                &["(".into(), ";".into(), "=".into(), T_CLOSE_TAG.into()],
+                true,
+            )
+        {
             continue;
         }
         references.push(index);

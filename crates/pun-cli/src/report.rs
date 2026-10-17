@@ -35,7 +35,10 @@ pub struct FileResult {
 
 impl FileResult {
     pub fn is_error(&self) -> bool {
-        matches!(self.status, Status::Invalid | Status::Exception | Status::Lint)
+        matches!(
+            self.status,
+            Status::Invalid | Status::Exception | Status::Lint
+        )
     }
 }
 
@@ -48,14 +51,31 @@ pub struct Ctx<'a> {
     pub no_ansi: bool,
 }
 
-pub const ABOUT: &str = "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.";
+pub const ABOUT: &str =
+    "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.";
 
 /// laravel/agent-detector: Pint switches to its agent reporter under coding agents.
 pub fn running_in_agent() -> bool {
     const VARS: [&str; 19] = [
-        "CURSOR_AGENT", "GEMINI_CLI", "CODEX_SANDBOX", "CODEX_CI", "CODEX_THREAD_ID", "AUGMENT_AGENT", "OPENCODE_CLIENT",
-        "OPENCODE", "AMP_CURRENT_THREAD_ID", "CLAUDECODE", "CLAUDE_CODE", "REPL_ID", "COPILOT_MODEL", "COPILOT_ALLOW_ALL",
-        "COPILOT_GITHUB_TOKEN", "COPILOT_CLI", "ANTIGRAVITY_AGENT", "PI_CODING_AGENT", "KIRO_AGENT_PATH",
+        "CURSOR_AGENT",
+        "GEMINI_CLI",
+        "CODEX_SANDBOX",
+        "CODEX_CI",
+        "CODEX_THREAD_ID",
+        "AUGMENT_AGENT",
+        "OPENCODE_CLIENT",
+        "OPENCODE",
+        "AMP_CURRENT_THREAD_ID",
+        "CLAUDECODE",
+        "CLAUDE_CODE",
+        "REPL_ID",
+        "COPILOT_MODEL",
+        "COPILOT_ALLOW_ALL",
+        "COPILOT_GITHUB_TOKEN",
+        "COPILOT_CLI",
+        "ANTIGRAVITY_AGENT",
+        "PI_CODING_AGENT",
+        "KIRO_AGENT_PATH",
     ];
     std::env::var("AI_AGENT").is_ok_and(|v| !v.trim().is_empty())
         || VARS.iter().any(|v| std::env::var_os(v).is_some())
@@ -70,24 +90,41 @@ pub fn abort_box(title: Option<&str>, message: &str, decorated: bool) -> String 
     };
     let chunk = width.saturating_sub(4).max(1);
     let mut lines: Vec<String> = vec![];
-    for line in message.split('\n').map(|l| l.strip_suffix('\r').unwrap_or(l)) {
+    for line in message
+        .split('\n')
+        .map(|l| l.strip_suffix('\r').unwrap_or(l))
+    {
         // splitStringByWidth: every piece is padded to the chunk width once a line needs splitting.
         let chars: Vec<char> = line.chars().collect();
         if chars.len() <= chunk {
             lines.push(line.to_string());
         } else {
-            lines.extend(chars.chunks(chunk).map(|c| format!("{:chunk$}", c.iter().collect::<String>())));
+            lines.extend(
+                chars
+                    .chunks(chunk)
+                    .map(|c| format!("{:chunk$}", c.iter().collect::<String>())),
+            );
         }
     }
     let title_len = title.map_or(0, |t| t.chars().count());
-    let len = lines.iter().map(|l| l.chars().count() + 4).max().unwrap_or(0).max(title_len);
+    let len = lines
+        .iter()
+        .map(|l| l.chars().count() + 4)
+        .max()
+        .unwrap_or(0)
+        .max(title_len);
     let empty = format!("<error>{}</error>", " ".repeat(len));
     let mut o = format!("{empty}\n");
     if let Some(t) = title {
         let _ = writeln!(o, "<error>{t}{}</error>", " ".repeat(len - title_len));
     }
     for l in &lines {
-        let _ = writeln!(o, "<error>  {}  {}</error>", escape(l), " ".repeat(len - l.chars().count() - 4));
+        let _ = writeln!(
+            o,
+            "<error>  {}  {}</error>",
+            escape(l),
+            " ".repeat(len - l.chars().count() - 4)
+        );
     }
     let _ = write!(o, "{empty}\n\n");
     fmt(&o, decorated)
@@ -102,7 +139,11 @@ pub fn ensure_prettier(root: &Path, enabled: bool) -> Option<String> {
     if !enabled {
         return None;
     }
-    const REQUIRED: [(&str, &str); 3] = [("prettier", "^3.8.4"), ("prettier-plugin-blade", "^3.2.2"), ("prettier-plugin-tailwindcss", "^0.8.0")];
+    const REQUIRED: [(&str, &str); 3] = [
+        ("prettier", "^3.8.4"),
+        ("prettier-plugin-blade", "^3.2.2"),
+        ("prettier-plugin-tailwindcss", "^0.8.0"),
+    ];
     // Pint's `node -v` plus resources/js/version-probe.cjs per package, in one Node start: a JSON list with, per
     // package, null when it doesn't resolve, else its version ("" when no manifest names it).
     const PROBE: &str = r#"const path = require('path'); const fs = require('fs');
@@ -115,10 +156,20 @@ const probe = (pkg) => { let entry;
     dir = path.dirname(dir); }
   return ''; };
 process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
-    let out = Command::new("node").args(["-e", PROBE]).args(REQUIRED.map(|r| r.0)).current_dir(root).stderr(Stdio::null()).output();
-    let probes = out.ok().filter(|o| o.status.success()).and_then(|o| serde_json::from_slice::<Vec<Option<String>>>(&o.stdout).ok());
+    let out = Command::new("node")
+        .args(["-e", PROBE])
+        .args(REQUIRED.map(|r| r.0))
+        .current_dir(root)
+        .stderr(Stdio::null())
+        .output();
+    let probes = out
+        .ok()
+        .filter(|o| o.status.success())
+        .and_then(|o| serde_json::from_slice::<Vec<Option<String>>>(&o.stdout).ok());
     let Some(probes) = probes else {
-        return Some(pint_error::render("The rules enabled in your pint configuration require Node.js to be installed."));
+        return Some(pint_error::render(
+            "The rules enabled in your pint configuration require Node.js to be installed.",
+        ));
     };
     let manager = if root.join("bun.lock").exists() || root.join("bun.lockb").exists() {
         ("bun", "add -d")
@@ -134,7 +185,9 @@ process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
     for ((pkg, constraint), probe) in REQUIRED.into_iter().zip(probes) {
         match probe {
             None => missing.push(pkg),
-            Some(v) if !v.is_empty() && !caret_satisfies(&v, &constraint[1..]) => outdated.push((pkg, v, constraint)),
+            Some(v) if !v.is_empty() && !caret_satisfies(&v, &constraint[1..]) => {
+                outdated.push((pkg, v, constraint))
+            }
             Some(_) => {}
         }
     }
@@ -144,12 +197,21 @@ process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
             manager.0,
             missing.join(", ")
         );
-        let msg = format!("The rules enabled in your pint configuration require the following prettier dependencies to be installed: {}.", missing.join(", "));
+        let msg = format!(
+            "The rules enabled in your pint configuration require the following prettier dependencies to be installed: {}.",
+            missing.join(", ")
+        );
         return Some(warning + &pint_error::render(&msg));
     }
     if !outdated.is_empty() {
-        let list: Vec<String> = outdated.iter().map(|(p, v, c)| format!("  - {p} (installed: {v}, required: {c})")).collect();
-        let specs: Vec<String> = outdated.iter().map(|(p, _, c)| format!("{p}@{c}")).collect();
+        let list: Vec<String> = outdated
+            .iter()
+            .map(|(p, v, c)| format!("  - {p} (installed: {v}, required: {c})"))
+            .collect();
+        let specs: Vec<String> = outdated
+            .iter()
+            .map(|(p, _, c)| format!("{p}@{c}"))
+            .collect();
         let msg = format!(
             "The following prettier dependencies do not satisfy the versions required by your pint configuration:\n{}\n\nUpdate them using [{}]: {} {} {}",
             list.join("\n"),
@@ -166,7 +228,13 @@ process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
 /// Composer Semver `^x.y.z` for plain `a.b.c` versions.
 /// ponytail: pre-release/build suffixes are ignored (Composer treats them by stability); real installs are tagged releases.
 fn caret_satisfies(version: &str, base: &str) -> bool {
-    let parse = |s: &str| -> Vec<u64> { s.trim_start_matches('v').split(['.', '-', '+']).take(3).map(|p| p.parse().unwrap_or(0)).collect() };
+    let parse = |s: &str| -> Vec<u64> {
+        s.trim_start_matches('v')
+            .split(['.', '-', '+'])
+            .take(3)
+            .map(|p| p.parse().unwrap_or(0))
+            .collect()
+    };
     let (v, b) = (parse(version), parse(base));
     let first = b.iter().position(|&n| n != 0).unwrap_or(2);
     v >= b && v[..=first] == b[..=first]
@@ -174,11 +242,22 @@ fn caret_satisfies(version: &str, base: &str) -> bool {
 
 /// The `on line N.` at the end of a lint message (the exception's line, used for the `-v` snippet).
 fn error_line(message: &str) -> usize {
-    message.rsplit(" on line ").next().and_then(|n| n.trim_end_matches('.').parse().ok()).unwrap_or(0)
+    message
+        .rsplit(" on line ")
+        .next()
+        .and_then(|n| n.trim_end_matches('.').parse().ok())
+        .unwrap_or(0)
 }
 
 /// ElaborateSummary::execute (output part). Errors (bad `--format`) are Pint aborts.
-pub fn emit(ctx: &Ctx, results: &[FileResult], format: Option<&str>, quiet: bool, to_file: Option<&Path>, file_format: Option<&str>) -> Result<u8> {
+pub fn emit(
+    ctx: &Ctx,
+    results: &[FileResult],
+    format: Option<&str>,
+    quiet: bool,
+    to_file: Option<&Path>,
+    file_format: Option<&str>,
+) -> Result<u8> {
     let out_dec = console::decorated(1, ctx.ansi, ctx.no_ansi);
     match emit_inner(ctx, results, format, quiet, to_file, file_format, out_dec) {
         Err(e) => {
@@ -189,7 +268,15 @@ pub fn emit(ctx: &Ctx, results: &[FileResult], format: Option<&str>, quiet: bool
     }
 }
 
-fn emit_inner(ctx: &Ctx, results: &[FileResult], format: Option<&str>, quiet: bool, to_file: Option<&Path>, file_format: Option<&str>, out_dec: bool) -> Result<u8> {
+fn emit_inner(
+    ctx: &Ctx,
+    results: &[FileResult],
+    format: Option<&str>,
+    quiet: bool,
+    to_file: Option<&Path>,
+    file_format: Option<&str>,
+    out_dec: bool,
+) -> Result<u8> {
     let err_dec = console::decorated(2, ctx.ansi, ctx.no_ansi);
     let mut out = String::new();
     if running_in_agent() {
@@ -198,7 +285,18 @@ fn emit_inner(ctx: &Ctx, results: &[FileResult], format: Option<&str>, quiet: bo
         out = reporter(ctx, results, f, out_dec)?;
     } else if quiet {
         for i in issues(results) {
-            eprintln!("{}", fmt(&format!("  {} {}: {}", symbol(i.status, ctx.dry_run, out_dec), i.rel, description(i)), err_dec));
+            eprintln!(
+                "{}",
+                fmt(
+                    &format!(
+                        "  {} {}: {}",
+                        symbol(i.status, ctx.dry_run, out_dec),
+                        i.rel,
+                        description(i)
+                    ),
+                    err_dec
+                )
+            );
         }
     } else {
         out = summary(ctx, results, out_dec)?;
@@ -209,14 +307,24 @@ fn emit_inner(ctx: &Ctx, results: &[FileResult], format: Option<&str>, quiet: bo
         if let Err(e) = std::fs::write(path, reporter(ctx, results, f, out_dec)?) {
             // PHP's warning, rendered as an uncaught ErrorException. Rust adds " (os error N)" after the same strerror.
             let e = e.to_string();
-            let msg = format!("file_put_contents({}): Failed to open stream: {}", path.display(), e.split(" (os error").next().unwrap_or(&e));
+            let msg = format!(
+                "file_put_contents({}): Failed to open stream: {}",
+                path.display(),
+                e.split(" (os error").next().unwrap_or(&e)
+            );
             print!("{}", pint_error::render(&msg));
             return Ok(1);
         }
     }
     if format.is_some() {
         for r in errors(results) {
-            eprintln!("{}", fmt(&format!("  <error>ERROR</error> {}: {}", r.path.display(), r.message), err_dec));
+            eprintln!(
+                "{}",
+                fmt(
+                    &format!("  <error>ERROR</error> {}: {}", r.path.display(), r.message),
+                    err_dec
+                )
+            );
         }
     }
     Ok(0)
@@ -230,17 +338,27 @@ fn symbol(s: Status, testing: bool, decorated: bool) -> String {
         Status::Invalid | Status::Exception | Status::Lint => ("!", "options=bold;fg=red"),
         _ => (".", "fg=gray"),
     };
-    if decorated { format!("<{style}>{sym}</>") } else { sym.to_string() }
+    if decorated {
+        format!("<{style}>{sym}</>")
+    } else {
+        sym.to_string()
+    }
 }
 
 fn description(r: &FileResult) -> String {
-    if r.is_error() { r.message.clone() } else { r.applied.join(", ") }
+    if r.is_error() {
+        r.message.clone()
+    } else {
+        r.applied.join(", ")
+    }
 }
 
 /// ErrorsManager: invalid errors, then lint errors (each in processing order).
 fn errors(results: &[FileResult]) -> impl Iterator<Item = &FileResult> {
     let of = move |s| results.iter().filter(move |r| r.status == s);
-    of(Status::Invalid).chain(of(Status::Exception)).chain(of(Status::Lint))
+    of(Status::Invalid)
+        .chain(of(Status::Exception))
+        .chain(of(Status::Lint))
 }
 
 /// SummaryOutput::getIssues: changes, then `invalid + exception + lint` (a PHP array union: each list only adds
@@ -255,13 +373,24 @@ fn issues(results: &[FileResult]) -> Vec<&FileResult> {
         v.extend(of(s).skip(taken));
         taken = taken.max(n);
     }
-    let key = |r: &FileResult| if r.is_error() { r.path.to_string_lossy().into_owned() } else { r.rel.clone() };
+    let key = |r: &FileResult| {
+        if r.is_error() {
+            r.path.to_string_lossy().into_owned()
+        } else {
+            r.rel.clone()
+        }
+    };
     v.sort_by(|a, b| key(a).as_bytes().cmp(key(b).as_bytes()));
     v
 }
 
 /// ProgressOutput: one symbol per processed file, `width - 4` per line.
-pub fn progress<'a>(results: impl Iterator<Item = &'a FileResult>, width: usize, dry_run: bool, decorated: bool) -> String {
+pub fn progress<'a>(
+    results: impl Iterator<Item = &'a FileResult>,
+    width: usize,
+    dry_run: bool,
+    decorated: bool,
+) -> String {
     let per_line = width.saturating_sub(4).max(1);
     let mut o = String::new();
     for (n, r) in results.filter(|r| r.status != Status::Link).enumerate() {
@@ -290,7 +419,11 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String>
         // SummaryOutput's `$this->presets[$preset]` for a preset Pint 1.29 let through.
         p => anyhow::bail!("Undefined array key \"{p}\""),
     };
-    let _ = writeln!(o, "\n\n  <fg=gray>{}</> <fg=gray>{label}</>  ", "─".repeat(inner.saturating_sub(1 + label.chars().count())));
+    let _ = writeln!(
+        o,
+        "\n\n  <fg=gray>{}</> <fg=gray>{label}</>  ",
+        "─".repeat(inner.saturating_sub(1 + label.chars().count()))
+    );
 
     let (status, style) = if issues.is_empty() {
         ("  PASS  ", "bg=green;fg=gray")
@@ -299,16 +432,31 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String>
     } else {
         ("  FAIL  ", "bg=red;fg=white")
     };
-    let plural = |n: usize, s: &str| if n == 1 { s.to_string() } else { format!("{s}s") };
+    let plural = |n: usize, s: &str| {
+        if n == 1 {
+            s.to_string()
+        } else {
+            format!("{s}s")
+        }
+    };
     let mut right = format!("{} {}", ctx.total, plural(ctx.total, "file"));
     if errors > 0 {
         let _ = write!(right, ", {errors} {}", plural(errors, "error"));
     }
     if fixable > 0 {
-        let _ = write!(right, ", {fixable} style {}{}", plural(fixable, "issue"), if ctx.dry_run { "" } else { " fixed" });
+        let _ = write!(
+            right,
+            ", {fixable} style {}{}",
+            plural(fixable, "issue"),
+            if ctx.dry_run { "" } else { " fixed" }
+        );
     }
     let dots = inner.saturating_sub(status.len() + 2 + right.chars().count());
-    let _ = writeln!(o, "  <{style};options=bold>{status}</> <fg=gray>{}</> {right}  ", ".".repeat(dots));
+    let _ = writeln!(
+        o,
+        "  <{style};options=bold>{status}</> <fg=gray>{}</> {right}  ",
+        ".".repeat(dots)
+    );
 
     let colors = console::collision_colors();
     for i in &issues {
@@ -320,7 +468,8 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String>
         // A path wider than the box leaves no room (width 0): Termwind prints the description whole.
         // ponytail: lengths are chars, Termwind's are mb_strwidth (East Asian wide = 2); messages are ASCII.
         if room > 0 {
-            let cut = |s: &str, n: usize| s.chars().take(n).collect::<String>().trim_end().to_string();
+            let cut =
+                |s: &str, n: usize| s.chars().take(n).collect::<String>().trim_end().to_string();
             // Styles::truncate (not with -v): anything over room-1 is cut to room-1, right-trimmed, plus "…".
             if !ctx.verbose && tw_len(&desc) > room - 1 {
                 desc = cut(&desc, room - 1) + "…";
@@ -331,7 +480,11 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String>
                 pad = 0;
             }
         }
-        let _ = writeln!(o, "  {left} <fg=gray>{}{desc}</>  ", " ".repeat(pad.saturating_sub(tw_len(&desc))));
+        let _ = writeln!(
+            o,
+            "  {left} <fg=gray>{}{desc}</>  ",
+            " ".repeat(pad.saturating_sub(tw_len(&desc)))
+        );
         if ctx.verbose {
             // Issue::code() highlights the exception's line, for a fixer's exception a line of PHP-CS-Fixer's source.
             // ponytail: taken as past the end of the file (no snippet); files longer than that line would show one.
@@ -340,7 +493,11 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String>
             } else if i.is_error() {
                 // Issue::code(): the file as it is on disk, around the exception's line.
                 let content = std::fs::read(&i.path).unwrap_or_default();
-                highlight::snippet(&String::from_utf8_lossy(&content), error_line(&i.message), colors)
+                highlight::snippet(
+                    &String::from_utf8_lossy(&content),
+                    error_line(&i.message),
+                    colors,
+                )
             } else {
                 highlight::diff(&i.diff, colors)
             };
@@ -356,9 +513,14 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String>
 /// Termwind's getLength: width without anything STYLING_REGEX takes for a tag (`<x>`, `</a>`, `\e[1m`).
 /// ponytail: Termwind's trimText puts such tags back after cutting; we cut them like text (paths with `<…>`).
 fn tw_len(s: &str) -> usize {
-    static RE: std::sync::LazyLock<pcre2::bytes::Regex> =
-        std::sync::LazyLock::new(|| pcre2::bytes::Regex::new(r"<[\w=#/;,:.&,%?-]+>|\e\[\d+m").unwrap());
-    let stripped: usize = RE.find_iter(s.as_bytes()).flatten().map(|m| String::from_utf8_lossy(m.as_bytes()).chars().count()).sum();
+    static RE: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
+        pcre2::bytes::Regex::new(r"<[\w=#/;,:.&,%?-]+>|\e\[\d+m").unwrap()
+    });
+    let stripped: usize = RE
+        .find_iter(s.as_bytes())
+        .flatten()
+        .map(|m| String::from_utf8_lossy(m.as_bytes()).chars().count())
+        .sum();
     s.chars().count() - stripped
 }
 
@@ -368,7 +530,11 @@ fn console_diff(diff: &str, decorated: bool) -> String {
     let mut rest = diff;
     while let Some(i) = rest.find(['\r', '\n', '\x0b', '\x0c', '\u{85}', '\u{2028}', '\u{2029}']) {
         lines.push(&rest[..i]);
-        let sep = if rest[i..].starts_with("\r\n") { 2 } else { rest[i..].chars().next().unwrap().len_utf8() };
+        let sep = if rest[i..].starts_with("\r\n") {
+            2
+        } else {
+            rest[i..].chars().next().unwrap().len_utf8()
+        };
         rest = &rest[i + sep..];
     }
     lines.push(rest);
@@ -386,14 +552,30 @@ fn console_diff(diff: &str, decorated: bool) -> String {
             }
         })
         .collect();
-    let (open, close) = if decorated { ("<comment>", "</comment>") } else { ("", "") };
-    format!("{open}      ---------- begin diff ----------{close}\n{}\n{open}      ----------- end diff -----------{close}", body.join("\n"))
+    let (open, close) = if decorated {
+        ("<comment>", "</comment>")
+    } else {
+        ("", "")
+    };
+    format!(
+        "{open}      ---------- begin diff ----------{close}\n{}\n{open}      ----------- end diff -----------{close}",
+        body.join("\n")
+    )
 }
 
 fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) -> Result<String> {
-    let changed: Vec<&FileResult> = results.iter().filter(|r| r.status == Status::Fixed).collect();
-    let changes: Vec<Change> =
-        changed.iter().map(|r| Change { file: &r.rel, fixers: &r.applied, diff: if ctx.verbose { &r.diff } else { "" } }).collect();
+    let changed: Vec<&FileResult> = results
+        .iter()
+        .filter(|r| r.status == Status::Fixed)
+        .collect();
+    let changes: Vec<Change> = changed
+        .iter()
+        .map(|r| Change {
+            file: &r.rel,
+            fixers: &r.applied,
+            diff: if ctx.verbose { &r.diff } else { "" },
+        })
+        .collect();
     let escaped = |s: String| if decorated { escape(&s) } else { s };
     Ok(match format {
         "json" => {
@@ -410,7 +592,9 @@ fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) ->
                     f
                 })
                 .collect();
-            escaped(php_json(&serde_json::json!({ "about": ABOUT, "files": files, "time": { "total": 0 }, "memory": 0 })))
+            escaped(php_json(
+                &serde_json::json!({ "about": ABOUT, "files": files, "time": { "total": 0 }, "memory": 0 }),
+            ))
         }
         "txt" => {
             let mut o = String::new();
@@ -418,15 +602,32 @@ fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) ->
                 let _ = write!(o, "{:4}) {}", n + 1, c.file);
                 if ctx.verbose {
                     let list = c.fixers.join(", ");
-                    let _ = write!(o, "{}", if decorated { format!(" (<comment>{list}</comment>)") } else { format!(" ({list})") });
+                    let _ = write!(
+                        o,
+                        "{}",
+                        if decorated {
+                            format!(" (<comment>{list}</comment>)")
+                        } else {
+                            format!(" ({list})")
+                        }
+                    );
                 }
                 if !c.diff.is_empty() {
                     let _ = write!(o, "\n{}\n", console_diff(c.diff, decorated));
                 }
                 o.push('\n');
             }
-            let (verb, what) = if ctx.dry_run { ("Found", "files that can be fixed") } else { ("Fixed", "files") };
-            let _ = writeln!(o, "\n{verb} {} of {} {what} in 0.000 seconds, 0.00 MB memory used", changes.len(), ctx.total);
+            let (verb, what) = if ctx.dry_run {
+                ("Found", "files that can be fixed")
+            } else {
+                ("Fixed", "files")
+            };
+            let _ = writeln!(
+                o,
+                "\n{verb} {} of {} {what} in 0.000 seconds, 0.00 MB memory used",
+                changes.len(),
+                ctx.total
+            );
             o
         }
         "agent" => {
@@ -442,10 +643,16 @@ fn reporter(ctx: &Ctx, results: &[FileResult], format: &str, decorated: bool) ->
             };
             let mut v = serde_json::json!({ "tool": "pint", "result": result });
             if !changed.is_empty() {
-                v["files"] = changed.iter().map(|r| serde_json::json!({ "path": r.rel, "fixers": r.applied })).collect();
+                v["files"] = changed
+                    .iter()
+                    .map(|r| serde_json::json!({ "path": r.rel, "fixers": r.applied }))
+                    .collect();
             }
             if !errors.is_empty() {
-                v["errors"] = errors.iter().map(|r| serde_json::json!({ "path": r.rel, "message": r.message })).collect();
+                v["errors"] = errors
+                    .iter()
+                    .map(|r| serde_json::json!({ "path": r.rel, "message": r.message }))
+                    .collect();
             }
             php_json(&v)
         }
@@ -482,5 +689,10 @@ pub fn diff(old: &str, new: &str, path: &Path) -> String {
     if p.contains(char::is_whitespace) {
         p = format!("\"{p}\"");
     }
-    String::from_utf8_lossy(&crate::php_diff::unified(old.as_bytes(), new.as_bytes(), &p)).into_owned()
+    String::from_utf8_lossy(&crate::php_diff::unified(
+        old.as_bytes(),
+        new.as_bytes(),
+        &p,
+    ))
+    .into_owned()
 }

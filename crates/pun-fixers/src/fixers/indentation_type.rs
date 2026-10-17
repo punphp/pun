@@ -31,15 +31,27 @@ fn str_replace(search: &[u8], replace: &[u8], s: &[u8]) -> Vec<u8> {
 
 impl IndentationTypeFixer {
     fn fix_indent_in_comment(&self, tokens: &Tokens, index: usize) -> Token {
-        let (mut content, mut count) = Preg::replace_limit("/^(?:(?<! ) {1,3})?\\t/m", "\\1    ", tokens[index].get_content(), -1);
+        let (mut content, mut count) = Preg::replace_limit(
+            "/^(?:(?<! ) {1,3})?\\t/m",
+            "\\1    ",
+            tokens[index].get_content(),
+            -1,
+        );
         // Also check for more tabs.
         while count != 0 {
             (content, count) = Preg::replace_limit("/^(\\ +)?\\t/m", "\\1    ", &content, -1);
         }
         let indent = self.whitespaces_config.get_indent();
         // change indent to expected one
-        let content = Preg::replace_callback("/^(?:    )+/m", |m| Self::get_expected_indent(m.str(0), indent), &content);
-        Token { id: tokens[index].get_id(), content }
+        let content = Preg::replace_callback(
+            "/^(?:    )+/m",
+            |m| Self::get_expected_indent(m.str(0), indent),
+            &content,
+        );
+        Token {
+            id: tokens[index].get_id(),
+            content,
+        }
     }
 
     fn fix_indent_token(&self, tokens: &Tokens, index: usize) -> Token {

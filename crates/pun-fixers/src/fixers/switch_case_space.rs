@@ -24,7 +24,9 @@ impl Fixer for SwitchCaseSpaceFixer {
         'analysis: for analysis in ControlCaseStructuresAnalyzer::find_switch_structures(tokens) {
             if let Some(default) = analysis.get_default_analysis() {
                 let index = default.get_index();
-                if !tokens[index + 1].is_whitespace(None) || !tokens[index + 2].equals_any(&[":".into(), ";".into()], true) {
+                if !tokens[index + 1].is_whitespace(None)
+                    || !tokens[index + 2].equals_any(&[":".into(), ";".into()], true)
+                {
                     continue 'analysis;
                 }
                 tokens.clear_at(index + 1);

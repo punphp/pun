@@ -4,8 +4,19 @@ use super::php::{contains, ctype_alnum, stripos, strpos};
 use crate::analyzers::preg::RawPreg;
 use std::cell::RefCell;
 
-const BLOCK_OPENERS: &[&[u8]] = &[b"if", b"unless", b"foreach", b"for", b"while", b"isset", b"switch"];
-const BLOCK_CLOSERS: &[&[u8]] = &[b"endif", b"endunless", b"endforeach", b"endfor", b"endwhile", b"endisset", b"endempty", b"endswitch"];
+const BLOCK_OPENERS: &[&[u8]] = &[
+    b"if", b"unless", b"foreach", b"for", b"while", b"isset", b"switch",
+];
+const BLOCK_CLOSERS: &[&[u8]] = &[
+    b"endif",
+    b"endunless",
+    b"endforeach",
+    b"endfor",
+    b"endwhile",
+    b"endisset",
+    b"endempty",
+    b"endswitch",
+];
 
 #[derive(Clone, Copy)]
 enum Context {
@@ -57,7 +68,12 @@ impl EmbeddedBladeMasker {
             "/(<(style|script)\\b(?:\"[^\"]*\"|'[^']*'|[^>])*>)(.*?)(<\\/\\2>)/is",
             |m| {
                 let is_css = m.str(2).eq_ignore_ascii_case(b"style");
-                [m.str(1), &this.borrow_mut().mask_region(m.str(3), is_css), m.str(4)].concat()
+                [
+                    m.str(1),
+                    &this.borrow_mut().mask_region(m.str(3), is_css),
+                    m.str(4),
+                ]
+                .concat()
             },
             content,
         );
@@ -92,7 +108,14 @@ impl EmbeddedBladeMasker {
                 let end = scan_string_literal(region, length, offset, c);
                 let literal = &region[offset..end];
                 if contains_echo(literal) {
-                    let masked = self.mask(literal, if is_css { Context::Value } else { Context::JsExpression });
+                    let masked = self.mask(
+                        literal,
+                        if is_css {
+                            Context::Value
+                        } else {
+                            Context::JsExpression
+                        },
+                    );
                     result.extend_from_slice(&masked);
                 } else {
                     result.extend_from_slice(literal);
@@ -105,7 +128,11 @@ impl EmbeddedBladeMasker {
                 offset += 1;
                 continue;
             };
-            let context = if is_css { css_context(region, offset) } else { js_context(region, offset) };
+            let context = if is_css {
+                css_context(region, offset)
+            } else {
+                js_context(region, offset)
+            };
             let masked = self.mask(&region[offset..(offset + span).min(length)], context);
             result.extend_from_slice(&masked);
             offset += span;

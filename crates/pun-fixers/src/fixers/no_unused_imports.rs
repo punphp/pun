@@ -35,7 +35,10 @@ impl Fixer for NoUnusedImportsFixer {
         for namespace in NamespacesAnalyzer.get_declarations(tokens) {
             let current: Vec<&NamespaceUseAnalysis> = use_declarations
                 .iter()
-                .filter(|u| u.start_index >= namespace.scope_start_index && u.end_index <= namespace.scope_end_index)
+                .filter(|u| {
+                    u.start_index >= namespace.scope_start_index
+                        && u.end_index <= namespace.scope_end_index
+                })
                 .collect();
             // `$ignoredIndices` (use statement start => end) as a dense jump table: looked up for every token of
             // the namespace once per import.
@@ -53,11 +56,21 @@ impl Fixer for NoUnusedImportsFixer {
     }
 }
 
-fn is_import_used(tokens: &Tokens, namespace: &NamespaceAnalysis, import: &NamespaceUseAnalysis, ignored: &[usize]) -> bool {
+fn is_import_used(
+    tokens: &Tokens,
+    namespace: &NamespaceAnalysis,
+    import: &NamespaceUseAnalysis,
+    ignored: &[usize],
+) -> bool {
     let end = namespace.scope_end_index;
     let mut in_attribute = false;
     let mut index = namespace.scope_start_index;
-    let comment_pattern = [&br"/(?<![[:alnum:]\$_])(?<!\\)"[..], &import.short_name, br"(?![[:alnum:]_])/i"].concat();
+    let comment_pattern = [
+        &br"/(?<![[:alnum:]\$_])(?<!\\)"[..],
+        &import.short_name,
+        br"(?![[:alnum:]_])/i",
+    ]
+    .concat();
     while index <= end {
         let token = &tokens[index];
         if token.is_kind(Kind::T_ATTRIBUTE) {
@@ -81,14 +94,25 @@ fn is_import_used(tokens: &Tokens, namespace: &NamespaceAnalysis, import: &Names
             }
             let prev = &tokens[tokens.get_prev_meaningful_token(index).unwrap()];
             if prev.is_kind(Kind::T_NAMESPACE) {
-                index = tokens.get_next_token_of_kind(index, &[";".into(), "{".into(), Kind::T_CLOSE_TAG.into()], true).unwrap() + 1;
+                index = tokens
+                    .get_next_token_of_kind(
+                        index,
+                        &[";".into(), "{".into(), Kind::T_CLOSE_TAG.into()],
+                        true,
+                    )
+                    .unwrap()
+                    + 1;
                 continue;
             }
-            if prev.is_given_kind(&[Kind::T_NS_SEPARATOR, Kind::T_FUNCTION, Kind::T_DOUBLE_COLON]) || prev.is_object_operator() {
+            if prev.is_given_kind(&[Kind::T_NS_SEPARATOR, Kind::T_FUNCTION, Kind::T_DOUBLE_COLON])
+                || prev.is_object_operator()
+            {
                 index += 1;
                 continue;
             }
-            if prev.is_kind(Kind::T_CONST) && tokens[tokens.get_next_meaningful_token(index).unwrap()].equals("=", true) {
+            if prev.is_kind(Kind::T_CONST)
+                && tokens[tokens.get_next_meaningful_token(index).unwrap()].equals("=", true)
+            {
                 index += 1;
                 continue;
             }
@@ -102,7 +126,9 @@ fn is_import_used(tokens: &Tokens, namespace: &NamespaceAnalysis, import: &Names
             }
             let ty = if is_constant_invocation(tokens, index) {
                 NamespaceUseType::Constant
-            } else if tokens[next_index].equals("(", true) && !prev.is_given_kind(TOKENS_NOT_BEFORE_FUNCTION_CALL) {
+            } else if tokens[next_index].equals("(", true)
+                && !prev.is_given_kind(TOKENS_NOT_BEFORE_FUNCTION_CALL)
+            {
                 NamespaceUseType::Function
             } else {
                 NamespaceUseType::Class
@@ -113,7 +139,10 @@ fn is_import_used(tokens: &Tokens, namespace: &NamespaceAnalysis, import: &Names
             index += 1;
             continue;
         }
-        if token.is_comment() && may_mention(&token.content, &import.short_name) && Preg::r#match(&comment_pattern, &token.content) {
+        if token.is_comment()
+            && may_mention(&token.content, &import.short_name)
+            && Preg::r#match(&comment_pattern, &token.content)
+        {
             return true;
         }
         index += 1;
@@ -121,13 +150,21 @@ fn is_import_used(tokens: &Tokens, namespace: &NamespaceAnalysis, import: &Names
     false
 }
 
-fn remove_use_declaration(tokens: &mut Tokens, u: &NamespaceUseAnalysis, force_complete_removal: bool) {
+fn remove_use_declaration(
+    tokens: &mut Tokens,
+    u: &NamespaceUseAnalysis,
+    force_complete_removal: bool,
+) {
     let (start, end) = if u.is_in_multi && !force_complete_removal {
         (u.chunk_start_index.unwrap(), u.chunk_end_index.unwrap())
     } else {
         (u.start_index, u.end_index)
     };
-    let loop_start = if u.is_in_multi || force_complete_removal { end } else { end - 1 };
+    let loop_start = if u.is_in_multi || force_complete_removal {
+        end
+    } else {
+        end - 1
+    };
     let mut index = loop_start as isize;
     while index >= start as isize {
         let i = index as usize;
@@ -159,7 +196,11 @@ fn remove_use_declaration(tokens: &mut Tokens, u: &NamespaceUseAnalysis, force_c
     clean_up_surrounding_new_lines(tokens, u);
 }
 
-fn remove_uses_in_same_namespace(tokens: &mut Tokens, uses: &[&NamespaceUseAnalysis], ns: &NamespaceAnalysis) {
+fn remove_uses_in_same_namespace(
+    tokens: &mut Tokens,
+    uses: &[&NamespaceUseAnalysis],
+    ns: &NamespaceAnalysis,
+) {
     let prefix = [&ns.full_name[..], b"\\"].concat();
     for u in uses {
         if u.is_aliased {
@@ -176,12 +217,22 @@ fn remove_uses_in_same_namespace(tokens: &mut Tokens, uses: &[&NamespaceUseAnaly
 }
 
 fn clean_up_after_import_chunk_removal(tokens: &mut Tokens, u: &NamespaceUseAnalysis) {
-    let before = tokens.get_prev_meaningful_token(u.chunk_start_index.unwrap()).unwrap();
-    let after = tokens.get_next_meaningful_token(u.chunk_end_index.unwrap()).unwrap();
+    let before = tokens
+        .get_prev_meaningful_token(u.chunk_start_index.unwrap())
+        .unwrap();
+    let after = tokens
+        .get_next_meaningful_token(u.chunk_end_index.unwrap())
+        .unwrap();
     let has_before = scan_for_non_empty_tokens_until_new_line_found(tokens, after, -1);
     let has_after = scan_for_non_empty_tokens_until_new_line_found(tokens, after, 1);
     let safe = has_before.1 || has_after.1;
-    let clear = |tokens: &mut Tokens, i: usize| if safe { tokens.clear_token_and_merge_surrounding_whitespace(i) } else { tokens.clear_at(i) };
+    let clear = |tokens: &mut Tokens, i: usize| {
+        if safe {
+            tokens.clear_token_and_merge_surrounding_whitespace(i)
+        } else {
+            tokens.clear_at(i)
+        }
+    };
     if tokens[after].equals(",", true) {
         clear(tokens, after);
     } else if tokens[before].equals(",", true) {
@@ -192,7 +243,10 @@ fn clean_up_after_import_chunk_removal(tokens: &mut Tokens, u: &NamespaceUseAnal
             continue;
         }
         let next = tokens.get_next_meaningful_token(index).unwrap();
-        if tokens[next].equals(",", true) || tokens[next].equals(";", true) || tokens[next].is_kind(Kind::CT_GROUP_IMPORT_BRACE_CLOSE) {
+        if tokens[next].equals(",", true)
+            || tokens[next].equals(";", true)
+            || tokens[next].is_kind(Kind::CT_GROUP_IMPORT_BRACE_CLOSE)
+        {
             tokens.clear_at(index);
         } else {
             tokens.set(index, Token::new(Kind::T_WHITESPACE, b" ".to_vec()));
@@ -215,9 +269,17 @@ fn clean_up_surrounding_new_lines(tokens: &mut Tokens, u: &NamespaceUseAnalysis)
     if u.end_index + 1 >= tokens.count() {
         return;
     }
-    let Some(next_index) = tokens.get_non_empty_sibling(u.end_index, 1) else { return };
+    let Some(next_index) = tokens.get_non_empty_sibling(u.end_index, 1) else {
+        return;
+    };
     if tokens[next_index].is_whitespace(None) {
-        let content = Preg::replace_limit("#^\r\n|^\n#", "", ltrim_chars(&tokens[next_index].content, b" \t"), 1).0;
+        let content = Preg::replace_limit(
+            "#^\r\n|^\n#",
+            "",
+            ltrim_chars(&tokens[next_index].content, b" \t"),
+            1,
+        )
+        .0;
         tokens.ensure_whitespace_at_index(next_index, 0, &content);
     }
     if tokens[prev_index].is_whitespace(None) && tokens[next_index].is_whitespace(None) {
@@ -228,7 +290,11 @@ fn clean_up_surrounding_new_lines(tokens: &mut Tokens, u: &NamespaceUseAnalysis)
 }
 
 fn remove_import_statement_if_empty(tokens: &mut Tokens, u: &NamespaceUseAnalysis) {
-    let ending = tokens.get_prev_token_of_kind(u.end_index, &[Kind::CT_GROUP_IMPORT_BRACE_CLOSE.into()], true);
+    let ending = tokens.get_prev_token_of_kind(
+        u.end_index,
+        &[Kind::CT_GROUP_IMPORT_BRACE_CLOSE.into()],
+        true,
+    );
     if let Some(e) = ending.filter(|&e| e > u.start_index) {
         let opening = tokens.get_prev_meaningful_token(e).unwrap();
         if tokens[opening].is_kind(Kind::CT_GROUP_IMPORT_BRACE_OPEN) {
@@ -244,14 +310,20 @@ fn remove_import_statement_if_empty(tokens: &mut Tokens, u: &NamespaceUseAnalysi
 
 /// Upstream first returns for non-multi imports; the only caller handles multi-import chunks.
 fn remove_line_if_empty(tokens: &mut Tokens, u: &NamespaceUseAnalysis) {
-    let before = scan_for_non_empty_tokens_until_new_line_found(tokens, u.chunk_start_index.unwrap(), -1);
-    let after = scan_for_non_empty_tokens_until_new_line_found(tokens, u.chunk_end_index.unwrap(), 1);
+    let before =
+        scan_for_non_empty_tokens_until_new_line_found(tokens, u.chunk_start_index.unwrap(), -1);
+    let after =
+        scan_for_non_empty_tokens_until_new_line_found(tokens, u.chunk_end_index.unwrap(), 1);
     if let (Some(b), false, Some(a), false) = (before.0, before.1, after.0, after.1) {
         tokens.clear_range(b, a - 1);
     }
 }
 
-fn scan_for_non_empty_tokens_until_new_line_found(tokens: &Tokens, index: usize, direction: isize) -> (Option<usize>, bool) {
+fn scan_for_non_empty_tokens_until_new_line_found(
+    tokens: &Tokens,
+    index: usize,
+    direction: isize,
+) -> (Option<usize>, bool) {
     let mut has_non_empty = false;
     let mut index = Some(index);
     while let Some(i) = index {
@@ -274,5 +346,7 @@ fn scan_for_non_empty_tokens_until_new_line_found(tokens: &Tokens, index: usize,
 fn may_mention(comment: &[u8], name: &[u8]) -> bool {
     !comment.is_ascii()
         || name.is_empty()
-        || comment.windows(name.len()).any(|w| w[0].eq_ignore_ascii_case(&name[0]) && w.eq_ignore_ascii_case(name))
+        || comment
+            .windows(name.len())
+            .any(|w| w[0].eq_ignore_ascii_case(&name[0]) && w.eq_ignore_ascii_case(name))
 }

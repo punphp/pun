@@ -12,7 +12,9 @@ struct SpaceAfterSemicolonFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SpaceAfterSemicolonFixer { remove_in_empty_for_expressions: false })
+    Box::new(SpaceAfterSemicolonFixer {
+        remove_in_empty_for_expressions: false,
+    })
 }
 
 impl Fixer for SpaceAfterSemicolonFixer {
@@ -38,7 +40,8 @@ impl Fixer for SpaceAfterSemicolonFixer {
             if self.remove_in_empty_for_expressions {
                 if tokens[index].is_kind(T_FOR) {
                     index = tokens.get_next_meaningful_token(index).unwrap();
-                    inside_for_parentheses_until = Some(tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index));
+                    inside_for_parentheses_until =
+                        Some(tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index));
                     index += 1;
                     continue;
                 }
@@ -56,7 +59,8 @@ impl Fixer for SpaceAfterSemicolonFixer {
 
             if !tokens[index + 1].is_whitespace(None) {
                 if !tokens[index + 1].equals_any(&[")".into(), T_INLINE_HTML.into()], true)
-                    && (!self.remove_in_empty_for_expressions || !tokens[index + 1].equals(";", true))
+                    && (!self.remove_in_empty_for_expressions
+                        || !tokens[index + 1].equals(";", true))
                 {
                     tokens.insert_at(index + 1, vec![Token::new(T_WHITESPACE, " ")]);
                     max += 1;

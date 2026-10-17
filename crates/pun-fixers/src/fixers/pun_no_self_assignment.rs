@@ -29,22 +29,52 @@ impl Fixer for NoSelfAssignment {
             if !tokens[i].is_kind(T_VARIABLE) || tokens[i].get_content() == b"$this" {
                 continue;
             }
-            let Some(prev) = tokens.get_prev_meaningful_token(i) else { continue };
-            if !(tokens[prev].equals_any(&[";".into(), "{".into(), "}".into()], true) || tokens[prev].is_kind(T_OPEN_TAG)) {
+            let Some(prev) = tokens.get_prev_meaningful_token(i) else {
+                continue;
+            };
+            if !(tokens[prev].equals_any(&[";".into(), "{".into(), "}".into()], true)
+                || tokens[prev].is_kind(T_OPEN_TAG))
+            {
                 continue;
             }
-            let Some(eq) = tokens.get_next_meaningful_token(i).filter(|&e| tokens[e].equals("=", true)) else { continue };
-            let Some(rhs) = tokens.get_next_meaningful_token(eq).filter(|&r| tokens[r].is_kind(T_VARIABLE) && tokens[r].get_content() == tokens[i].get_content()) else { continue };
-            let Some(semi) = tokens.get_next_meaningful_token(rhs).filter(|&s| tokens[s].equals(";", true)) else { continue };
+            let Some(eq) = tokens
+                .get_next_meaningful_token(i)
+                .filter(|&e| tokens[e].equals("=", true))
+            else {
+                continue;
+            };
+            let Some(rhs) = tokens.get_next_meaningful_token(eq).filter(|&r| {
+                tokens[r].is_kind(T_VARIABLE) && tokens[r].get_content() == tokens[i].get_content()
+            }) else {
+                continue;
+            };
+            let Some(semi) = tokens
+                .get_next_meaningful_token(rhs)
+                .filter(|&s| tokens[s].equals(";", true))
+            else {
+                continue;
+            };
             if (i..semi).any(|k| tokens[k].is_comment()) {
                 continue;
             }
             tokens.clear_range(i, semi);
             // Drop the statement's line: merge the whitespace before and after it, keeping the later one.
-            if i > 0 && tokens[i - 1].is_whitespace(None) && semi + 1 < tokens.count() && tokens[semi + 1].is_whitespace(None) {
+            if i > 0
+                && tokens[i - 1].is_whitespace(None)
+                && semi + 1 < tokens.count()
+                && tokens[semi + 1].is_whitespace(None)
+            {
                 let before = tokens[i - 1].get_content();
                 let after = tokens[semi + 1].get_content();
-                let keep = if after.contains(&b'\n') { [&before[..before.iter().rposition(|&c| c == b'\n').unwrap_or(0)], after].concat() } else { before.to_vec() };
+                let keep = if after.contains(&b'\n') {
+                    [
+                        &before[..before.iter().rposition(|&c| c == b'\n').unwrap_or(0)],
+                        after,
+                    ]
+                    .concat()
+                } else {
+                    before.to_vec()
+                };
                 tokens.clear_at(semi + 1);
                 tokens.set(i - 1, Token::new(T_WHITESPACE, keep));
             }

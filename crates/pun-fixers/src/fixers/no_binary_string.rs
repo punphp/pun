@@ -18,7 +18,8 @@ impl Fixer for NoBinaryStringFixer {
         40
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_any_token_kinds_found(&[T_CONSTANT_ENCAPSED_STRING, T_START_HEREDOC]) || tokens.is_token_kind_found("b\"")
+        tokens.is_any_token_kinds_found(&[T_CONSTANT_ENCAPSED_STRING, T_START_HEREDOC])
+            || tokens.is_token_kind_found("b\"")
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let mut index = 0;

@@ -10,7 +10,11 @@ pub fn set(preset: &str) {
 }
 
 pub fn get() -> String {
-    PRESET.read().unwrap().clone().unwrap_or_else(|| "laravel".into())
+    PRESET
+        .read()
+        .unwrap()
+        .clone()
+        .unwrap_or_else(|| "laravel".into())
 }
 
 #[cfg(test)]

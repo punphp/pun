@@ -34,7 +34,9 @@ impl Fixer for NoUnneededBracesFixer {
         let mut i = tokens.count();
         while i > 1 {
             i -= 1;
-            if tokens[i].equals_any(&["{".into(), CT_GROUP_IMPORT_BRACE_OPEN.into()], true) && is_over_complete(tokens, i) {
+            if tokens[i].equals_any(&["{".into(), CT_GROUP_IMPORT_BRACE_OPEN.into()], true)
+                && is_over_complete(tokens, i)
+            {
                 clear_over_complete_braces(tokens, i);
             }
         }
@@ -53,22 +55,37 @@ fn clear_over_complete_braces(tokens: &mut Tokens, open_index: usize) {
 
 fn is_over_complete(tokens: &Tokens, index: usize) -> bool {
     if tokens[index].is_kind(CT_GROUP_IMPORT_BRACE_OPEN) {
-        let comma_or_close_brace_index =
-            tokens.get_next_token_of_kind(index, &[",".into(), CT_GROUP_IMPORT_BRACE_CLOSE.into()], true).unwrap();
+        let comma_or_close_brace_index = tokens
+            .get_next_token_of_kind(
+                index,
+                &[",".into(), CT_GROUP_IMPORT_BRACE_CLOSE.into()],
+                true,
+            )
+            .unwrap();
         if TokensAnalyzer::new(tokens).is_block_multiline(index) {
             return false;
         }
         return tokens[comma_or_close_brace_index].is_kind(CT_GROUP_IMPORT_BRACE_CLOSE);
     }
-    tokens[tokens.get_prev_meaningful_token(index).unwrap()]
-        .equals_any(&["{".into(), "}".into(), T_OPEN_TAG.into(), ":".into(), ";".into()], true)
+    tokens[tokens.get_prev_meaningful_token(index).unwrap()].equals_any(
+        &[
+            "{".into(),
+            "}".into(),
+            T_OPEN_TAG.into(),
+            ":".into(),
+            ";".into(),
+        ],
+        true,
+    )
 }
 
 fn clear_if_is_over_complete_namespace_block(tokens: &mut Tokens) {
     if tokens.count_token_kind(T_NAMESPACE) != 1 {
         return; // fast check, we never fix if multiple namespaces are defined
     }
-    let index = tokens.get_next_token_of_kind(0, &[T_NAMESPACE.into()], true).unwrap();
+    let index = tokens
+        .get_next_token_of_kind(0, &[T_NAMESPACE.into()], true)
+        .unwrap();
     let mut namespace_is_named = false;
     let mut index = tokens.get_next_meaningful_token(index).unwrap();
     while tokens[index].is_given_kind(&[T_STRING, T_NS_SEPARATOR]) {
@@ -83,7 +100,11 @@ fn clear_if_is_over_complete_namespace_block(tokens: &mut Tokens) {
     }
     let close_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
     if let Some(after_close_index) = tokens.get_next_meaningful_token(close_index) {
-        if !tokens[after_close_index].is_kind(T_CLOSE_TAG) || tokens.get_next_meaningful_token(after_close_index).is_some() {
+        if !tokens[after_close_index].is_kind(T_CLOSE_TAG)
+            || tokens
+                .get_next_meaningful_token(after_close_index)
+                .is_some()
+        {
             return;
         }
     }

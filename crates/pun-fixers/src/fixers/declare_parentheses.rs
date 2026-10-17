@@ -25,9 +25,12 @@ impl Fixer for DeclareParenthesesFixer {
                 continue;
             }
             tokens.remove_trailing_whitespace(index, None);
-            let start_parenthesis_index = tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap();
+            let start_parenthesis_index = tokens
+                .get_next_token_of_kind(index, &["(".into()], true)
+                .unwrap();
             tokens.remove_trailing_whitespace(start_parenthesis_index, None);
-            let end_parenthesis_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_parenthesis_index);
+            let end_parenthesis_index =
+                tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_parenthesis_index);
             tokens.remove_leading_whitespace(end_parenthesis_index, None);
         }
     }

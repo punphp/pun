@@ -15,7 +15,11 @@ impl NoSpaceAroundDoubleColonFixer {
         if !tokens[side].is_whitespace(None) {
             return;
         }
-        if tokens[tokens.get_non_whitespace_sibling(index, direction, None).unwrap()].is_comment() {
+        if tokens[tokens
+            .get_non_whitespace_sibling(index, direction, None)
+            .unwrap()]
+        .is_comment()
+        {
             return;
         }
         tokens.clear_at(side);

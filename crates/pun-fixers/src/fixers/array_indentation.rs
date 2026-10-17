@@ -1,5 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\Whitespace\ArrayIndentationFixer`.
-use crate::analyzers::indentation_trait::{compute_new_line_content, extract_indent, is_new_line_token};
+use crate::analyzers::indentation_trait::{
+    compute_new_line_content, extract_indent, is_new_line_token,
+};
 use crate::analyzers::preg::{Preg, preg_quote};
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use pun_tokens::{Kind::*, Token, Tokens};
@@ -22,13 +24,18 @@ struct Scope {
 }
 
 impl ArrayIndentationFixer {
-    fn find_expression_end_index(tokens: &Tokens, index: usize, parent_scope_end_index: usize) -> usize {
+    fn find_expression_end_index(
+        tokens: &Tokens,
+        index: usize,
+        parent_scope_end_index: usize,
+    ) -> usize {
         let mut end_index = None;
         let mut search_end_index = index + 1;
         while search_end_index < parent_scope_end_index {
             let search_end_token = &tokens[search_end_index];
             if search_end_token.equals_any(&["(".into(), "{".into()], true)
-                || search_end_token.is_given_kind(&[CT_ARRAY_BRACKET_OPEN, CT_DESTRUCTURING_BRACKET_OPEN])
+                || search_end_token
+                    .is_given_kind(&[CT_ARRAY_BRACKET_OPEN, CT_DESTRUCTURING_BRACKET_OPEN])
             {
                 let (t, _) = Tokens::detect_block_type(search_end_token).unwrap();
                 search_end_index = tokens.find_block_end(t, search_end_index) + 1;
@@ -40,7 +47,11 @@ impl ArrayIndentationFixer {
             }
             search_end_index += 1;
         }
-        end_index.unwrap_or_else(|| tokens.get_prev_meaningful_token(parent_scope_end_index).unwrap())
+        end_index.unwrap_or_else(|| {
+            tokens
+                .get_prev_meaningful_token(parent_scope_end_index)
+                .unwrap()
+        })
     }
 }
 
@@ -54,7 +65,12 @@ impl Fixer for ArrayIndentationFixer {
         29
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_any_token_kinds_found(&[T_ARRAY, T_LIST, CT_ARRAY_BRACKET_OPEN, CT_DESTRUCTURING_BRACKET_OPEN])
+        tokens.is_any_token_kinds_found(&[
+            T_ARRAY,
+            T_LIST,
+            CT_ARRAY_BRACKET_OPEN,
+            CT_DESTRUCTURING_BRACKET_OPEN,
+        ])
     }
     fn set_whitespaces_config(&mut self, config: &WhitespacesFixerConfig) {
         self.whitespaces_config = config.clone();
@@ -73,11 +89,18 @@ impl Fixer for ArrayIndentationFixer {
                 continue;
             }
             if token.is_given_kind(&[CT_ARRAY_BRACKET_OPEN, CT_DESTRUCTURING_BRACKET_OPEN])
-                || (token.equals("(", true) && tokens[tokens.get_prev_meaningful_token(i).unwrap()].is_given_kind(&[T_ARRAY, T_LIST]))
+                || (token.equals("(", true)
+                    && tokens[tokens.get_prev_meaningful_token(i).unwrap()]
+                        .is_given_kind(&[T_ARRAY, T_LIST]))
             {
                 let (block_type, _) = Tokens::detect_block_type(&token).unwrap();
                 let end_index = tokens.find_block_end(block_type, i);
-                scopes.push(Scope { is_array: true, end_index, initial_indent: last_indent.clone(), new_indent: Vec::new() });
+                scopes.push(Scope {
+                    is_array: true,
+                    end_index,
+                    initial_indent: last_indent.clone(),
+                    new_indent: Vec::new(),
+                });
                 continue;
             }
             if is_new_line_token(tokens, i) {
@@ -98,7 +121,8 @@ impl Fixer for ArrayIndentationFixer {
                     for search_end_index in i + 1..scope.end_index {
                         let search_end_token = &tokens[search_end_index];
                         if (!search_end_token.is_whitespace(None) && !search_end_token.is_comment())
-                            || (search_end_token.is_whitespace(None) && Preg::r#match("/\\R/", search_end_token.get_content()))
+                            || (search_end_token.is_whitespace(None)
+                                && Preg::r#match("/\\R/", search_end_token.get_content()))
                         {
                             indent = true;
                             break;
@@ -107,14 +131,23 @@ impl Fixer for ArrayIndentationFixer {
                     let replacement = [
                         b"$1".as_slice(),
                         &scope.initial_indent,
-                        if indent { self.whitespaces_config.get_indent().as_bytes() } else { b"" },
+                        if indent {
+                            self.whitespaces_config.get_indent().as_bytes()
+                        } else {
+                            b""
+                        },
                     ]
                     .concat();
                     content = Preg::replace("/(\\R+)\\h*$/", replacement, token.get_content());
                     previous_line_initial_indent = extract_indent(token.get_content());
                     previous_line_new_indent = extract_indent(&content);
                 } else {
-                    let pattern = [b"/(\\R)".as_slice(), &preg_quote(&scope.initial_indent, Some(b'/')), b"(\\h*)$/"].concat();
+                    let pattern = [
+                        b"/(\\R)".as_slice(),
+                        &preg_quote(&scope.initial_indent, Some(b'/')),
+                        b"(\\h*)$/",
+                    ]
+                    .concat();
                     let replacement = [b"$1".as_slice(), &scope.new_indent, b"$2"].concat();
                     content = Preg::replace(pattern, replacement, token.get_content());
                 }
@@ -132,7 +165,8 @@ impl Fixer for ArrayIndentationFixer {
                 continue;
             }
             if scopes[current_scope].is_array {
-                let end_index = Self::find_expression_end_index(tokens, i, scopes[current_scope].end_index);
+                let end_index =
+                    Self::find_expression_end_index(tokens, i, scopes[current_scope].end_index);
                 if end_index == i {
                     continue;
                 }

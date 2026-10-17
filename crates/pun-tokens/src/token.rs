@@ -69,23 +69,106 @@ impl<'a> From<&'a str> for FoundKey<'a> {
     }
 }
 
-pub const CAST_KINDS: &[Kind] =
-    &[T_ARRAY_CAST, T_BOOL_CAST, T_DOUBLE_CAST, T_INT_CAST, T_OBJECT_CAST, T_STRING_CAST, T_UNSET_CAST, T_VOID_CAST];
+pub const CAST_KINDS: &[Kind] = &[
+    T_ARRAY_CAST,
+    T_BOOL_CAST,
+    T_DOUBLE_CAST,
+    T_INT_CAST,
+    T_OBJECT_CAST,
+    T_STRING_CAST,
+    T_UNSET_CAST,
+    T_VOID_CAST,
+];
 pub const CLASSY_KINDS: &[Kind] = &[T_CLASS, T_TRAIT, T_INTERFACE, T_ENUM];
 pub const OBJECT_OPERATOR_KINDS: &[Kind] = &[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR];
-pub const MAGIC_CONSTANTS: &[Kind] = &[T_CLASS_C, T_DIR, T_FILE, T_FUNC_C, T_LINE, T_METHOD_C, T_NS_C, T_TRAIT_C];
+pub const MAGIC_CONSTANTS: &[Kind] = &[
+    T_CLASS_C, T_DIR, T_FILE, T_FUNC_C, T_LINE, T_METHOD_C, T_NS_C, T_TRAIT_C,
+];
 pub const KEYWORDS: &[Kind] = &[
-    T_ABSTRACT, T_ARRAY, T_AS, T_BREAK, T_CALLABLE, T_CASE, T_CATCH, T_CLASS, T_CLONE, T_CONST, T_CONTINUE,
-    T_DECLARE, T_DEFAULT, T_DO, T_ECHO, T_ELSE, T_ELSEIF, T_EMPTY, T_ENDDECLARE, T_ENDFOR, T_ENDFOREACH,
-    T_ENDIF, T_ENDSWITCH, T_ENDWHILE, T_EVAL, T_EXIT, T_EXTENDS, T_FINAL, T_FINALLY, T_FN, T_FOR, T_FOREACH,
-    T_FUNCTION, T_GLOBAL, T_GOTO, T_HALT_COMPILER, T_IF, T_IMPLEMENTS, T_INCLUDE, T_INCLUDE_ONCE, T_INSTANCEOF,
-    T_INSTEADOF, T_INTERFACE, T_ISSET, T_LIST, T_LOGICAL_AND, T_LOGICAL_OR, T_LOGICAL_XOR, T_NAMESPACE, T_NEW,
-    T_PRINT, T_PRIVATE, T_PROTECTED, T_PUBLIC, T_REQUIRE, T_REQUIRE_ONCE, T_RETURN, T_STATIC, T_SWITCH,
-    T_THROW, T_TRAIT, T_TRY, T_UNSET, T_USE, T_VAR, T_WHILE, T_YIELD, T_YIELD_FROM, CT_ARRAY_TYPEHINT,
-    CT_CLASS_CONSTANT, CT_CONST_IMPORT, CT_CONSTRUCTOR_PROPERTY_PROMOTION_PRIVATE,
-    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PROTECTED, CT_CONSTRUCTOR_PROPERTY_PROMOTION_PUBLIC, CT_FUNCTION_IMPORT,
-    CT_NAMESPACE_OPERATOR, CT_USE_LAMBDA, CT_USE_TRAIT, T_ENUM, T_MATCH, T_PRIVATE_SET, T_PROTECTED_SET,
-    T_PUBLIC_SET, T_READONLY,
+    T_ABSTRACT,
+    T_ARRAY,
+    T_AS,
+    T_BREAK,
+    T_CALLABLE,
+    T_CASE,
+    T_CATCH,
+    T_CLASS,
+    T_CLONE,
+    T_CONST,
+    T_CONTINUE,
+    T_DECLARE,
+    T_DEFAULT,
+    T_DO,
+    T_ECHO,
+    T_ELSE,
+    T_ELSEIF,
+    T_EMPTY,
+    T_ENDDECLARE,
+    T_ENDFOR,
+    T_ENDFOREACH,
+    T_ENDIF,
+    T_ENDSWITCH,
+    T_ENDWHILE,
+    T_EVAL,
+    T_EXIT,
+    T_EXTENDS,
+    T_FINAL,
+    T_FINALLY,
+    T_FN,
+    T_FOR,
+    T_FOREACH,
+    T_FUNCTION,
+    T_GLOBAL,
+    T_GOTO,
+    T_HALT_COMPILER,
+    T_IF,
+    T_IMPLEMENTS,
+    T_INCLUDE,
+    T_INCLUDE_ONCE,
+    T_INSTANCEOF,
+    T_INSTEADOF,
+    T_INTERFACE,
+    T_ISSET,
+    T_LIST,
+    T_LOGICAL_AND,
+    T_LOGICAL_OR,
+    T_LOGICAL_XOR,
+    T_NAMESPACE,
+    T_NEW,
+    T_PRINT,
+    T_PRIVATE,
+    T_PROTECTED,
+    T_PUBLIC,
+    T_REQUIRE,
+    T_REQUIRE_ONCE,
+    T_RETURN,
+    T_STATIC,
+    T_SWITCH,
+    T_THROW,
+    T_TRAIT,
+    T_TRY,
+    T_UNSET,
+    T_USE,
+    T_VAR,
+    T_WHILE,
+    T_YIELD,
+    T_YIELD_FROM,
+    CT_ARRAY_TYPEHINT,
+    CT_CLASS_CONSTANT,
+    CT_CONST_IMPORT,
+    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PRIVATE,
+    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PROTECTED,
+    CT_CONSTRUCTOR_PROPERTY_PROMOTION_PUBLIC,
+    CT_FUNCTION_IMPORT,
+    CT_NAMESPACE_OPERATOR,
+    CT_USE_LAMBDA,
+    CT_USE_TRAIT,
+    T_ENUM,
+    T_MATCH,
+    T_PRIVATE_SET,
+    T_PROTECTED_SET,
+    T_PUBLIC_SET,
+    T_READONLY,
 ];
 
 const DEFAULT_WHITESPACES: &[u8] = b" \t\n\r\0\x0B";
@@ -94,13 +177,22 @@ impl Token {
     /// `new Token([$id, $content])`.
     pub fn new(id: Kind, content: impl Into<Vec<u8>>) -> Token {
         let content = content.into();
-        debug_assert!(!content.is_empty(), "Cannot set empty content for id-based Token.");
-        Token { id: Some(id), content }
+        debug_assert!(
+            !content.is_empty(),
+            "Cannot set empty content for id-based Token."
+        );
+        Token {
+            id: Some(id),
+            content,
+        }
     }
 
     /// `new Token($content)` (non-array token).
     pub fn char(content: impl Into<Vec<u8>>) -> Token {
-        Token { id: None, content: content.into() }
+        Token {
+            id: None,
+            content: content.into(),
+        }
     }
 
     pub fn is_array(&self) -> bool {
@@ -121,7 +213,13 @@ impl Token {
 
     fn is_amp(&self) -> bool {
         self.content == b"&"
-            && matches!(self.id, None | Some(T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG | T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG))
+            && matches!(
+                self.id,
+                None | Some(
+                    T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG
+                        | T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG
+                )
+            )
     }
 
     /// `Token::equals($other, $caseSensitive)`.
@@ -133,7 +231,11 @@ impl Token {
             Proto::Kind(k) => self.id == Some(k),
             Proto::KindContent(k, c) => {
                 self.id == Some(k)
-                    && if case_sensitive { self.content == c } else { self.content.eq_ignore_ascii_case(c) }
+                    && if case_sensitive {
+                        self.content == c
+                    } else {
+                        self.content.eq_ignore_ascii_case(c)
+                    }
             }
         }
     }
@@ -146,7 +248,11 @@ impl Token {
         match (self.id, other.id) {
             (None, None) => self.content == other.content,
             (Some(a), Some(b)) if a == b => {
-                if case_sensitive { self.content == other.content } else { self.content.eq_ignore_ascii_case(&other.content) }
+                if case_sensitive {
+                    self.content == other.content
+                } else {
+                    self.content.eq_ignore_ascii_case(&other.content)
+                }
             }
             _ => false,
         }
@@ -186,7 +292,9 @@ impl Token {
     }
     pub fn is_native_constant(&self) -> bool {
         self.is_array()
-            && [&b"true"[..], b"false", b"null"].iter().any(|c| self.content.eq_ignore_ascii_case(c))
+            && [&b"true"[..], b"false", b"null"]
+                .iter()
+                .any(|c| self.content.eq_ignore_ascii_case(c))
     }
 
     /// `isWhitespace($whitespaces)`; `None` = PHP's default `" \t\n\r\0\x0B"`. Note that an

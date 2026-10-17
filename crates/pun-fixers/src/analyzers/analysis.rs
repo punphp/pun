@@ -57,8 +57,25 @@ impl NamespaceUseAnalysis {
 }
 
 const RESERVED_TYPES: &[&[u8]] = &[
-    b"array", b"bool", b"callable", b"false", b"float", b"int", b"iterable", b"list", b"mixed", b"never", b"null",
-    b"object", b"parent", b"resource", b"self", b"static", b"string", b"true", b"void",
+    b"array",
+    b"bool",
+    b"callable",
+    b"false",
+    b"float",
+    b"int",
+    b"iterable",
+    b"list",
+    b"mixed",
+    b"never",
+    b"null",
+    b"object",
+    b"parent",
+    b"resource",
+    b"self",
+    b"static",
+    b"string",
+    b"true",
+    b"void",
 ];
 
 /// `TypeAnalysis`.
@@ -77,9 +94,17 @@ impl TypeAnalysis {
             (rest.to_vec(), true)
         } else {
             let lower = strtolower(name);
-            (name.to_vec(), lower.split(|&c| c == b'|').any(|p| trim(p) == b"null"))
+            (
+                name.to_vec(),
+                lower.split(|&c| c == b'|').any(|p| trim(p) == b"null"),
+            )
         };
-        TypeAnalysis { name, start_index, end_index, nullable }
+        TypeAnalysis {
+            name,
+            start_index,
+            end_index,
+            nullable,
+        }
     }
     pub fn get_start_index(&self) -> usize {
         self.start_index.expect("TypeAnalysis: no start index.")

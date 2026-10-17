@@ -32,7 +32,9 @@ impl Fixer for ElseifFixer {
 }
 
 fn fix_else(tokens: &mut Tokens, index: usize) {
-    let Some(if_token_index) = tokens.get_next_meaningful_token(index) else { return };
+    let Some(if_token_index) = tokens.get_next_meaningful_token(index) else {
+        return;
+    };
     // if next meaningful token is not T_IF - continue searching, this is not the case for fixing
     if !tokens[if_token_index].is_kind(T_IF) {
         return;
@@ -40,7 +42,9 @@ fn fix_else(tokens: &mut Tokens, index: usize) {
     // if next meaningful token is T_IF, but uses an alternative syntax - this is not the case for fixing neither
     let open = tokens.get_next_meaningful_token(if_token_index).unwrap();
     let condition_end_brace_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
-    let after_condition_index = tokens.get_next_meaningful_token(condition_end_brace_index).unwrap();
+    let after_condition_index = tokens
+        .get_next_meaningful_token(condition_end_brace_index)
+        .unwrap();
     if tokens[after_condition_index].equals(":", true) {
         return;
     }
@@ -50,9 +54,12 @@ fn fix_else(tokens: &mut Tokens, index: usize) {
     tokens.set(index, Token::new(T_ELSEIF, "elseif"));
     // 3. clear succeeding T_IF
     tokens.clear_at(if_token_index);
-    let before_if_token_index = tokens.get_prev_non_whitespace(if_token_index, None).unwrap();
+    let before_if_token_index = tokens
+        .get_prev_non_whitespace(if_token_index, None)
+        .unwrap();
     // 4. clear extra whitespace after T_IF in T_COMMENT,T_WHITESPACE?,T_IF,T_WHITESPACE sequence
-    if tokens[before_if_token_index].is_comment() && tokens[if_token_index + 1].is_whitespace(None) {
+    if tokens[before_if_token_index].is_comment() && tokens[if_token_index + 1].is_whitespace(None)
+    {
         tokens.clear_at(if_token_index + 1);
     }
 }

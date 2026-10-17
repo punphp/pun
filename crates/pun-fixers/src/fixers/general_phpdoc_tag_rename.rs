@@ -3,7 +3,11 @@ use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
 use anyhow::{Result, bail};
 use pun_format::Fixer;
-use pun_tokens::{Kind::*, Token, Tokens, php_compat::{strtolower, trim}};
+use pun_tokens::{
+    Kind::*,
+    Token, Tokens,
+    php_compat::{strtolower, trim},
+};
 use serde_json::Value;
 use std::path::Path;
 
@@ -16,12 +20,24 @@ struct GeneralPhpdocTagRenameFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(GeneralPhpdocTagRenameFixer { fix_annotation: true, fix_inline: true, replacements: Vec::new(), case_sensitive: false })
+    Box::new(GeneralPhpdocTagRenameFixer {
+        fix_annotation: true,
+        fix_inline: true,
+        replacements: Vec::new(),
+        case_sensitive: false,
+    })
 }
 
 /// PHP turns canonical decimal-integer string keys into int keys.
 fn is_int_key(s: &str) -> bool {
-    s == "0" || (!s.starts_with('0') && s.trim_start_matches('-').bytes().all(|b| b.is_ascii_digit()) && !s.trim_start_matches('-').is_empty() && !s.starts_with("-0") && s.len() < 20)
+    s == "0"
+        || (!s.starts_with('0')
+            && s.trim_start_matches('-')
+                .bytes()
+                .all(|b| b.is_ascii_digit())
+            && !s.trim_start_matches('-').is_empty()
+            && !s.starts_with("-0")
+            && s.len() < 20)
 }
 
 impl Fixer for GeneralPhpdocTagRenameFixer {
@@ -35,33 +51,60 @@ impl Fixer for GeneralPhpdocTagRenameFixer {
         11
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let r = resolve(self.name(), options, &["fix_annotation", "fix_inline", "replacements", "case_sensitive"])?;
+        let r = resolve(
+            self.name(),
+            options,
+            &[
+                "fix_annotation",
+                "fix_inline",
+                "replacements",
+                "case_sensitive",
+            ],
+        )?;
         let fix_annotation = r.bool("fix_annotation", true)?;
         let fix_inline = r.bool("fix_inline", true)?;
         let case_sensitive = r.bool("case_sensitive", false)?;
         let mut normalized: Vec<(Vec<u8>, Vec<u8>)> = Vec::new();
         let entries: Vec<(String, &Value)> = match r.get("replacements") {
             None => Vec::new(),
-            Some(Value::Array(a)) => a.iter().enumerate().map(|(i, v)| (i.to_string(), v)).collect(),
+            Some(Value::Array(a)) => a
+                .iter()
+                .enumerate()
+                .map(|(i, v)| (i.to_string(), v))
+                .collect(),
             Some(Value::Object(o)) => o.iter().map(|(k, v)| (k.clone(), v)).collect(),
-            Some(v) => bail!("[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value {v} is expected to be of type \"array<string, string>\"."),
+            Some(v) => bail!(
+                "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value {v} is expected to be of type \"array<string, string>\"."
+            ),
         };
         for (from, to) in entries {
             let Value::String(to) = to else {
-                bail!("[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value {to} is expected to be of type \"array<string, string>\".");
+                bail!(
+                    "[general_phpdoc_tag_rename] Invalid configuration: The option \"replacements\" with value {to} is expected to be of type \"array<string, string>\"."
+                );
             };
             if is_int_key(&from) {
-                bail!("[general_phpdoc_tag_rename] Invalid configuration: Tag to replace must be a string.");
+                bail!(
+                    "[general_phpdoc_tag_rename] Invalid configuration: Tag to replace must be a string."
+                );
             }
             if !Preg::r#match("#^\\S+$#", to) || to.contains("*/") {
-                bail!("[general_phpdoc_tag_rename] Invalid configuration: Tag \"{from}\" cannot be replaced by invalid tag \"{to}\".");
+                bail!(
+                    "[general_phpdoc_tag_rename] Invalid configuration: Tag \"{from}\" cannot be replaced by invalid tag \"{to}\"."
+                );
             }
             let mut from = trim(from.as_bytes()).to_vec();
             let to = trim(to.as_bytes()).to_vec();
             if !case_sensitive {
                 let lowercase_from = strtolower(&from);
-                if normalized.iter().any(|(f, t)| *f == lowercase_from && *t != to) {
-                    bail!("[general_phpdoc_tag_rename] Invalid configuration: Tag \"{}\" cannot be configured to be replaced with several different tags when case sensitivity is off.", String::from_utf8_lossy(&from));
+                if normalized
+                    .iter()
+                    .any(|(f, t)| *f == lowercase_from && *t != to)
+                {
+                    bail!(
+                        "[general_phpdoc_tag_rename] Invalid configuration: Tag \"{}\" cannot be configured to be replaced with several different tags when case sensitivity is off.",
+                        String::from_utf8_lossy(&from)
+                    );
                 }
                 from = lowercase_from;
             }
@@ -75,12 +118,20 @@ impl Fixer for GeneralPhpdocTagRenameFixer {
                 if to2 != to {
                     bail!(
                         "[general_phpdoc_tag_rename] Invalid configuration: Cannot change tag \"{}\" to tag \"{}\", as the tag \"{}\" is configured to be replaced to \"{}\".",
-                        String::from_utf8_lossy(from), String::from_utf8_lossy(to), String::from_utf8_lossy(to), String::from_utf8_lossy(to2)
+                        String::from_utf8_lossy(from),
+                        String::from_utf8_lossy(to),
+                        String::from_utf8_lossy(to),
+                        String::from_utf8_lossy(to2)
                     );
                 }
             }
         }
-        *self = GeneralPhpdocTagRenameFixer { fix_annotation, fix_inline, replacements: normalized, case_sensitive };
+        *self = GeneralPhpdocTagRenameFixer {
+            fix_annotation,
+            fix_inline,
+            replacements: normalized,
+            case_sensitive,
+        };
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
@@ -100,7 +151,12 @@ impl Fixer for GeneralPhpdocTagRenameFixer {
             b"/(?<={@)(?P<tag>%s)(?=[ \\t}])/"
         };
         let case_insensitive = !self.case_sensitive;
-        let keys = self.replacements.iter().map(|(f, _)| f.clone()).collect::<Vec<_>>().join(&b'|');
+        let keys = self
+            .replacements
+            .iter()
+            .map(|(f, _)| f.clone())
+            .collect::<Vec<_>>()
+            .join(&b'|');
         let at = regex.windows(2).position(|w| w == b"%s").unwrap();
         let mut regex = [&regex[..at], &keys, &regex[at + 2..]].concat();
         if case_insensitive {
@@ -117,7 +173,11 @@ impl Fixer for GeneralPhpdocTagRenameFixer {
                     if case_insensitive {
                         tag = strtolower(&tag);
                     }
-                    self.replacements.iter().find(|(f, _)| *f == tag).map(|(_, t)| t.clone()).unwrap()
+                    self.replacements
+                        .iter()
+                        .find(|(f, _)| *f == tag)
+                        .map(|(_, t)| t.clone())
+                        .unwrap()
                 },
                 tokens[index].get_content(),
             );
@@ -137,19 +197,40 @@ mod tests {
         let err = |c: Value| fixer().configure(&c).unwrap_err().to_string();
         let p = "[general_phpdoc_tag_rename] Invalid configuration: ";
         assert!(fixer().configure(&json!({"replacements": "x"})).is_err());
-        assert!(fixer().configure(&json!({"replacements": {"a": 1}})).is_err());
-        assert_eq!(err(json!({"replacements": ["b"]})), format!("{p}Tag to replace must be a string."));
-        assert_eq!(err(json!({"replacements": {"a": "b c"}})), format!("{p}Tag \"a\" cannot be replaced by invalid tag \"b c\"."));
-        assert_eq!(err(json!({"replacements": {"a": "b*/"}})), format!("{p}Tag \"a\" cannot be replaced by invalid tag \"b*/\"."));
+        assert!(
+            fixer()
+                .configure(&json!({"replacements": {"a": 1}}))
+                .is_err()
+        );
+        assert_eq!(
+            err(json!({"replacements": ["b"]})),
+            format!("{p}Tag to replace must be a string.")
+        );
+        assert_eq!(
+            err(json!({"replacements": {"a": "b c"}})),
+            format!("{p}Tag \"a\" cannot be replaced by invalid tag \"b c\".")
+        );
+        assert_eq!(
+            err(json!({"replacements": {"a": "b*/"}})),
+            format!("{p}Tag \"a\" cannot be replaced by invalid tag \"b*/\".")
+        );
         assert_eq!(
             err(json!({"replacements": {"A": "b", "a": "c"}})),
-            format!("{p}Tag \"a\" cannot be configured to be replaced with several different tags when case sensitivity is off.")
+            format!(
+                "{p}Tag \"a\" cannot be configured to be replaced with several different tags when case sensitivity is off."
+            )
         );
         assert_eq!(
             err(json!({"replacements": {"a": "b", "b": "c"}})),
-            format!("{p}Cannot change tag \"a\" to tag \"b\", as the tag \"b\" is configured to be replaced to \"c\".")
+            format!(
+                "{p}Cannot change tag \"a\" to tag \"b\", as the tag \"b\" is configured to be replaced to \"c\"."
+            )
         );
-        for ok in [json!({"replacements": {"A": "b", "a": "b"}}), json!({"replacements": {"a": "b", "b": "b"}}), json!({"replacements": []})] {
+        for ok in [
+            json!({"replacements": {"A": "b", "a": "b"}}),
+            json!({"replacements": {"a": "b", "b": "b"}}),
+            json!({"replacements": []}),
+        ] {
             assert!(fixer().configure(&ok).is_ok(), "{ok}");
         }
     }

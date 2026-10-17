@@ -28,7 +28,9 @@ impl Fixer for ArrayPushFixer {
         let mut index = tokens.count() as isize - 7;
         while index > 0 {
             let i = index as usize;
-            if !tokens[i].equals((T_STRING, "array_push"), false) || !functions_analyzer.is_global_function_call(tokens, i) {
+            if !tokens[i].equals((T_STRING, "array_push"), false)
+                || !functions_analyzer.is_global_function_call(tokens, i)
+            {
                 index -= 1;
                 continue;
             }
@@ -41,18 +43,30 @@ impl Fixer for ArrayPushFixer {
                 i = tokens.get_prev_meaningful_token(i).unwrap();
             }
             index = i as isize - 1;
-            if !tokens[i].equals_any(&[";".into(), "{".into(), "}".into(), ")".into(), T_OPEN_TAG.into()], true) {
+            if !tokens[i].equals_any(
+                &[
+                    ";".into(),
+                    "{".into(),
+                    "}".into(),
+                    ")".into(),
+                    T_OPEN_TAG.into(),
+                ],
+                true,
+            ) {
                 continue;
             }
 
             // figure out where the arguments list opens
             let open_brace_index = tokens.get_next_meaningful_token(call_index).unwrap();
             // figure out where the arguments list closes
-            let close_brace_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_brace_index);
+            let close_brace_index =
+                tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_brace_index);
             // meaningful after `)` must be `;`, `? >` or nothing
             if tokens
                 .get_next_meaningful_token(close_brace_index)
-                .is_some_and(|after| !tokens[after].equals_any(&[";".into(), T_CLOSE_TAG.into()], true))
+                .is_some_and(|after| {
+                    !tokens[after].equals_any(&[";".into(), T_CLOSE_TAG.into()], true)
+                })
             {
                 continue;
             }
@@ -62,14 +76,18 @@ impl Fixer for ArrayPushFixer {
             // after that nothing meaningful should be there till the next `,` or `)`
             // if `)` than we cannot fix it (it is a single argument call)
             let first_argument_stop = get_first_argument_end(tokens, open_brace_index);
-            let first_argument_stop = tokens.get_next_meaningful_token(first_argument_stop).unwrap();
+            let first_argument_stop = tokens
+                .get_next_meaningful_token(first_argument_stop)
+                .unwrap();
             if !tokens[first_argument_stop].equals(",", true) {
                 continue;
             }
 
             // second argument can be about anything but ellipsis, we must make sure there is not
             // a third argument (or more) passed to `array_push`
-            let second_argument_start = tokens.get_next_meaningful_token(first_argument_stop).unwrap();
+            let second_argument_start = tokens
+                .get_next_meaningful_token(first_argument_stop)
+                .unwrap();
             if get_second_argument_end(tokens, second_argument_start, close_brace_index).is_none() {
                 continue;
             }
@@ -79,7 +97,12 @@ impl Fixer for ArrayPushFixer {
             tokens.clear_token_and_merge_surrounding_whitespace(first_argument_stop);
             tokens.insert_at(
                 first_argument_stop,
-                vec![Token::char("["), Token::char("]"), Token::new(T_WHITESPACE, " "), Token::char("=")],
+                vec![
+                    Token::char("["),
+                    Token::char("]"),
+                    Token::new(T_WHITESPACE, " "),
+                    Token::char("="),
+                ],
             );
             tokens.clear_token_and_merge_surrounding_whitespace(open_brace_index);
             tokens.clear_token_and_merge_surrounding_whitespace(call_index);
@@ -96,9 +119,17 @@ fn get_first_argument_end(tokens: &Tokens, mut index: usize) -> usize {
         let next_token = &tokens[next_index];
         if !next_token.equals_any(
             &[
-                "$".into(), "[".into(), "(".into(), CT_ARRAY_INDEX_BRACE_OPEN.into(), CT_DYNAMIC_PROP_BRACE_OPEN.into(),
-                CT_DYNAMIC_VAR_BRACE_OPEN.into(), CT_NAMESPACE_OPERATOR.into(), T_NS_SEPARATOR.into(), T_STATIC.into(),
-                T_STRING.into(), T_VARIABLE.into(),
+                "$".into(),
+                "[".into(),
+                "(".into(),
+                CT_ARRAY_INDEX_BRACE_OPEN.into(),
+                CT_DYNAMIC_PROP_BRACE_OPEN.into(),
+                CT_DYNAMIC_VAR_BRACE_OPEN.into(),
+                CT_NAMESPACE_OPERATOR.into(),
+                T_NS_SEPARATOR.into(),
+                T_STATIC.into(),
+                T_STRING.into(),
+                T_VARIABLE.into(),
             ],
             true,
         ) {
@@ -115,7 +146,10 @@ fn get_first_argument_end(tokens: &Tokens, mut index: usize) -> usize {
         return get_first_argument_end(tokens, next_index);
     }
     if next_token.is_kind(T_DOUBLE_COLON) {
-        return get_first_argument_end(tokens, tokens.get_next_meaningful_token(next_index).unwrap());
+        return get_first_argument_end(
+            tokens,
+            tokens.get_next_meaningful_token(next_index).unwrap(),
+        );
     }
     index
 }
@@ -132,7 +166,13 @@ fn get_second_argument_end(tokens: &Tokens, mut index: usize, end_index: usize) 
             block_type = Tokens::detect_block_type(&tokens[index]);
         }
         if tokens[index].equals(",", true)
-            || tokens[index].is_given_kind(&[T_YIELD, T_YIELD_FROM, T_LOGICAL_AND, T_LOGICAL_OR, T_LOGICAL_XOR])
+            || tokens[index].is_given_kind(&[
+                T_YIELD,
+                T_YIELD_FROM,
+                T_LOGICAL_AND,
+                T_LOGICAL_OR,
+                T_LOGICAL_XOR,
+            ])
         {
             return None;
         }

@@ -14,8 +14,13 @@ pub fn fixer() -> Box<dyn Fixer> {
     Box::new(IncrementStyleFixer { pre: true })
 }
 
-const STATEMENT_START: [Proto<'static>; 5] =
-    [Proto::Char(b";"), Proto::Char(b"{"), Proto::Char(b"}"), Proto::Kind(T_OPEN_TAG), Proto::Char(b")")];
+const STATEMENT_START: [Proto<'static>; 5] = [
+    Proto::Char(b";"),
+    Proto::Char(b"{"),
+    Proto::Char(b"}"),
+    Proto::Kind(T_OPEN_TAG),
+    Proto::Char(b")"),
+];
 const STATEMENT_END: [Proto<'static>; 2] = [Proto::Char(b";"), Proto::Char(b")")];
 
 impl Fixer for IncrementStyleFixer {
@@ -50,7 +55,8 @@ impl Fixer for IncrementStyleFixer {
                     tokens.clear_at(index);
                     tokens.insert_at(start_index, vec![token]);
                 }
-            } else if !self.pre && TokensAnalyzer::new(tokens).is_unary_predecessor_operator(index) {
+            } else if !self.pre && TokensAnalyzer::new(tokens).is_unary_predecessor_operator(index)
+            {
                 let prev_token = &tokens[tokens.get_prev_meaningful_token(index).unwrap()];
                 if !prev_token.equals_any(&STATEMENT_START, true) {
                     continue;
@@ -96,7 +102,10 @@ fn find_end(tokens: &Tokens, mut index: usize) -> usize {
         return find_end(tokens, next_index);
     }
     if next_token.is_kind(T_DOUBLE_COLON) {
-        return find_end(tokens, tokens.get_next_meaningful_token(next_index).unwrap());
+        return find_end(
+            tokens,
+            tokens.get_next_meaningful_token(next_index).unwrap(),
+        );
     }
     index
 }
@@ -125,7 +134,9 @@ fn find_start(tokens: &Tokens, mut index: usize) -> usize {
         if !tokens[prev_prev_index].is_given_kind(&[T_STATIC, T_STRING]) {
             return find_start(tokens, prev_index);
         }
-        index = tokens.get_token_not_of_kinds_sibling(prev_index, -1, &[T_NS_SEPARATOR, T_STATIC, T_STRING]).unwrap();
+        index = tokens
+            .get_token_not_of_kinds_sibling(prev_index, -1, &[T_NS_SEPARATOR, T_STATIC, T_STRING])
+            .unwrap();
         index = tokens.get_next_meaningful_token(index).unwrap();
     }
     index

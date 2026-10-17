@@ -18,7 +18,11 @@ fn project(case: &Value, i: usize) -> PathBuf {
     if let Some(toml) = case.get("pun.toml") {
         std::fs::write(d.join("pun.toml"), toml.as_str().unwrap()).unwrap();
     }
-    std::fs::write(d.join(case["file"].as_str().unwrap()), case["input"].as_str().unwrap()).unwrap();
+    std::fs::write(
+        d.join(case["file"].as_str().unwrap()),
+        case["input"].as_str().unwrap(),
+    )
+    .unwrap();
     d
 }
 
@@ -32,7 +36,10 @@ fn pun(dir: &Path, args: &[&str]) -> (i32, String) {
         .env("HOME", std::env::var("HOME").unwrap_or_default())
         .output()
         .unwrap();
-    (out.status.code().unwrap_or(-1), String::from_utf8_lossy(&out.stdout).into_owned())
+    (
+        out.status.code().unwrap_or(-1),
+        String::from_utf8_lossy(&out.stdout).into_owned(),
+    )
 }
 
 #[test]
@@ -45,31 +52,57 @@ fn every_rule_matches_pint() {
         let dir = project(case, i);
         if rule == "Pint/laravel_blade" {
             if !node_modules.join("prettier").exists() {
-                eprintln!("skipping {rule}: no prettier in crates/pun-fixers/node_modules (npm install there)");
+                eprintln!(
+                    "skipping {rule}: no prettier in crates/pun-fixers/node_modules (npm install there)"
+                );
                 continue;
             }
             #[cfg(unix)]
-            std::os::unix::fs::symlink(node_modules.canonicalize().unwrap(), dir.join("node_modules")).unwrap();
+            std::os::unix::fs::symlink(
+                node_modules.canonicalize().unwrap(),
+                dir.join("node_modules"),
+            )
+            .unwrap();
         }
         let (code, stdout) = pun(&dir, &["format", "--test"]);
         if code != case["test_exit"].as_i64().unwrap() as i32 {
-            failures.push(format!("{rule}: `--test` exited {code}, Pint {}\n{stdout}", case["test_exit"]));
+            failures.push(format!(
+                "{rule}: `--test` exited {code}, Pint {}\n{stdout}",
+                case["test_exit"]
+            ));
         }
         if let Some(want) = case.get("test_stdout").and_then(Value::as_str) {
             if stdout != want {
-                failures.push(format!("{rule}: `--test` output\n--- pint\n{want}\n--- pun\n{stdout}"));
+                failures.push(format!(
+                    "{rule}: `--test` output\n--- pint\n{want}\n--- pun\n{stdout}"
+                ));
             }
         } else if !stdout.contains(rule) {
-            failures.push(format!("{rule}: `--test` output does not name the rule\n{stdout}"));
+            failures.push(format!(
+                "{rule}: `--test` output does not name the rule\n{stdout}"
+            ));
         }
         let file = dir.join(case["file"].as_str().unwrap());
-        assert_eq!(std::fs::read_to_string(&file).unwrap(), case["input"].as_str().unwrap(), "{rule}: --test wrote the file");
+        assert_eq!(
+            std::fs::read_to_string(&file).unwrap(),
+            case["input"].as_str().unwrap(),
+            "{rule}: --test wrote the file"
+        );
         pun(&dir, &["format"]);
         let got = std::fs::read_to_string(&file).unwrap();
         if got != case["expected"].as_str().unwrap() {
-            failures.push(format!("{rule}: written file\n--- expected\n{}\n--- pun\n{got}", case["expected"].as_str().unwrap()));
+            failures.push(format!(
+                "{rule}: written file\n--- expected\n{}\n--- pun\n{got}",
+                case["expected"].as_str().unwrap()
+            ));
         }
         let _ = std::fs::remove_dir_all(&dir);
     }
-    assert!(failures.is_empty(), "{} of {} rules differ:\n{}", failures.len(), cases.len(), failures.join("\n"));
+    assert!(
+        failures.is_empty(),
+        "{} of {} rules differ:\n{}",
+        failures.len(),
+        cases.len(),
+        failures.join("\n")
+    );
 }

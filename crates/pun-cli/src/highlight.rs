@@ -31,7 +31,11 @@ const MARKED_LINE_NUMBER: &str = "3;1";
 const LINE_DIVIDER: &str = "90";
 
 fn apply(colors: bool, codes: &str, text: &str) -> String {
-    if colors { format!("\x1b[{codes}m{text}\x1b[0m") } else { text.to_string() }
+    if colors {
+        format!("\x1b[{codes}m{text}\x1b[0m")
+    } else {
+        text.to_string()
+    }
 }
 
 /// Highlighter::tokenize: token_get_all, adjacent tokens of one type merged; whitespace joins the current run.
@@ -43,14 +47,21 @@ fn tokenize(source: &str) -> Vec<(Ty, String)> {
         match t.kind {
             Some(T_WHITESPACE) => {}
             Some(
-                T_OPEN_TAG | T_OPEN_TAG_WITH_ECHO | T_CLOSE_TAG | T_STRING | T_VARIABLE | T_DIR | T_FILE | T_METHOD_C | T_DNUMBER | T_LNUMBER | T_NS_C | T_LINE
-                | T_CLASS_C | T_FUNC_C | T_TRAIT_C,
+                T_OPEN_TAG | T_OPEN_TAG_WITH_ECHO | T_CLOSE_TAG | T_STRING | T_VARIABLE | T_DIR
+                | T_FILE | T_METHOD_C | T_DNUMBER | T_LNUMBER | T_NS_C | T_LINE | T_CLASS_C
+                | T_FUNC_C | T_TRAIT_C,
             ) => new = Some(Ty::Default),
             Some(T_COMMENT | T_DOC_COMMENT) => new = Some(Ty::Comment),
             Some(T_ENCAPSED_AND_WHITESPACE | T_CONSTANT_ENCAPSED_STRING) => new = Some(Ty::Str),
             Some(T_INLINE_HTML) => new = Some(Ty::Html),
             Some(_) => new = Some(Ty::Keyword),
-            None => new = Some(if t.text == b"\"" { Ty::Str } else { Ty::Keyword }),
+            None => {
+                new = Some(if t.text == b"\"" {
+                    Ty::Str
+                } else {
+                    Ty::Keyword
+                })
+            }
         }
         if current.is_none() {
             current = new;
@@ -91,17 +102,33 @@ pub fn snippet(source: &str, mark: usize, colors: bool) -> String {
     let all = lines(source, colors);
     let offset = mark.saturating_sub(5);
     let shown: Vec<(usize, &String)> = all.iter().enumerate().skip(offset).take(9).collect();
-    let width = shown.last().map_or(1, |(i, _)| (i + 1).to_string().len()).max(3);
+    let width = shown
+        .last()
+        .map_or(1, |(i, _)| (i + 1).to_string().len())
+        .max(3);
     let mut out = String::new();
     for (i, line) in shown {
         let marked = mark == i + 1;
-        out.push_str(&if marked { apply(colors, ACTUAL_LINE_MARK, "  ➜ ") } else { "    ".to_string() });
-        out.push_str(&apply(colors, if marked { MARKED_LINE_NUMBER } else { LINE_NUMBER }, &format!("{:>width$}", i + 1)));
+        out.push_str(&if marked {
+            apply(colors, ACTUAL_LINE_MARK, "  ➜ ")
+        } else {
+            "    ".to_string()
+        });
+        out.push_str(&apply(
+            colors,
+            if marked {
+                MARKED_LINE_NUMBER
+            } else {
+                LINE_NUMBER
+            },
+            &format!("{:>width$}", i + 1),
+        ));
         out.push_str(&apply(colors, LINE_DIVIDER, "▕ "));
         out.push_str(line);
         out.push('\n');
     }
-    out.trim_end_matches([' ', '\t', '\n', '\r', '\0', '\x0b']).to_string()
+    out.trim_end_matches([' ', '\t', '\n', '\r', '\0', '\x0b'])
+        .to_string()
 }
 
 /// Issue::diff: `+`/`-` lines wrapped as `//+<fg=green>…</>` comments, highlighted after a `<?php` line, header
@@ -145,7 +172,16 @@ mod tests {
     fn like_collision() {
         for (colors, oracle) in [(false, PLAIN), (true, COLOR)] {
             let want: Vec<String> = serde_json::from_str(oracle).unwrap();
-            assert_eq!([snippet(SRC, 3, colors), snippet(SRC, 13, colors), snippet("", 1, colors), diff(DIFF, colors)], want[..], "colors={colors}");
+            assert_eq!(
+                [
+                    snippet(SRC, 3, colors),
+                    snippet(SRC, 13, colors),
+                    snippet("", 1, colors),
+                    diff(DIFF, colors)
+                ],
+                want[..],
+                "colors={colors}"
+            );
         }
     }
 }

@@ -7,7 +7,9 @@ use std::path::Path;
 struct PhpdocNoAccessFixer(GeneralPhpdocAnnotationRemove);
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocNoAccessFixer(GeneralPhpdocAnnotationRemove { annotations: &["access"] }))
+    Box::new(PhpdocNoAccessFixer(GeneralPhpdocAnnotationRemove {
+        annotations: &["access"],
+    }))
 }
 
 impl Fixer for PhpdocNoAccessFixer {
