@@ -1,6 +1,6 @@
 # Component: terminal output for every command
 
-Status: **proposal, under review with Pushpak** (opened 2026-10-17). Pushpak wants one consistent output for format,
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Pushpak wants one consistent output for format,
 lint, analyse, check, migrate and init. The approved starting point is format.md §10 (✔/✖ per file, a summary line
 with counts and time, colour, rustc-style code frames). This file extends it to every command. Nothing is built.
 Answers go into "Decisions" and DECISIONS.md. Part of PLAN.md C4.
@@ -121,3 +121,7 @@ Answered 2026-10-17 (Pushpak):
 - **Q5: Pint's human screen is dropped** once Pun's output lands. Exit codes and machine formats stay Pint- and
   PHPStan-compatible; scripts/cli-parity.sh then covers only those. AGENTS.md ("output, messages and exit codes must
   match upstream") needs updating when this is built.
+- **Q6: Pun's brand colours** from design/tokens.json (Sticker Pop) instead of the terminal's standard colours. Pun
+  uses truecolor when `COLORTERM` is `truecolor` or `24bit`, the nearest 256-colour value otherwise, and the standard 16
+  colours on basic terminals. It picks the light or dark token variant for readability on the terminal's background
+  (dark by default when it can't tell). `NO_COLOR`, piping and `--color` work as in §1.

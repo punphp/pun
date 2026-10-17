@@ -102,7 +102,7 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
   improvements (typed config, routes, views, translations, env keys, Inertia pages, fresh model data) ship in 1.0.
 - **Output** (components/output.md, 2026-10-17): Pun's own human output for every command, problem blocks with code
   by default (`--concise` for one line), `pun check` grouped by step like Vite+, automatic GitHub annotations, and
-  Pint's human screen dropped. Exit codes and machine formats stay Pint and PHPStan compatible.
+  Pint's human screen dropped, and Pun's brand colours (design/tokens.json) with fallbacks to 256 and 16 colours. Exit codes and machine formats stay Pint and PHPStan compatible.
 - **No extension system before 1.0** (2026-10-17). Framework support is compiled in, as Mago's plugins are: Laravel
   (full) and Pest (with the PHPUnit typing it needs), plus deprecation-rules and strict-rules as plain rules. Mockery,
   Livewire, Filament and others come later as extensions; migrate names them unsupported.
