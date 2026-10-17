@@ -325,3 +325,23 @@ also timed with 30 plain spawn-and-wait runs (median; "precise" below).
 - round 4, what is left: in a laravel-framework profile the checkers now wait for sources (`__psynch_cvwait`) in
   42% of the samples and `open` is 15%, so the readers are the critical path again and each of them spends 82% of
   its time in `open`. Mago's parser is 18% and the walk 6%. More readers make `open` slower, not faster.
+- round 5, no change: nothing over 3% is left. Before (and after): bench.py RUNS=10 pinkary 43.3 ms, 12.7 MB and
+  laravel-framework 45.6 ms, 78.6 MB; precise laravel-framework 40.7-41.8 ms, 78-80 MB, pinkary 6.7-6.9 ms,
+  12.8 MB. On laravel-framework, 35 ms of the 41 ms run is spent in the process and 3 ms is the fixed cost of
+  starting it (an empty directory takes 3.0 ms). The run uses 0.18 s user and 0.07 s system time, so 7.1 of the
+  8 cores are busy and the run is CPU-bound. The readers finish at 34 ms, and alone, without parsing, they take
+  26.6 ms. So the wall time follows the total CPU time: removing the walk (an experiment) cut wall time 13%
+  (41.9 to 36.2 ms). Single-thread `check` is 80% Mago's parser and 19% the walk. Of the walk, about 11 ms of
+  95 ms is Pun's hooks (the ancestor push and pop and the rule lookup), and about 10 ms is Mago's bare walker.
+  None of these tries moved wall time outside the run-to-run noise:
+  - Leaf node types skip the ancestor push and pop, and a per-kind table replaces the rule lookup. Single-thread
+    `check` went from 95.5 to 93.3 ms (-2.2%).
+  - 5, 6 or 7 checkers, 2 or 4 readers, and QoS classes on either kind of thread.
+  - Handing sources to the checkers through park/unpark, or through an mpsc channel, instead of a condvar.
+  - Reading each file with a single `read`, with the UTF-8 check moved to the checkers.
+  - A reused arena on each checker thread: +30 MB.
+  - mimalloc: +1.5 ms and +52 MB.
+
+  `open` costs 10.5 us per file on one thread and 15 us on three, whatever the flags. The corpus files'
+  `com.apple.provenance` xattr cannot be removed (`xattr -d` leaves it), so the round 4 follow-up about it is
+  still open.
