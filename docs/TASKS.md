@@ -45,7 +45,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | --- | --- | --- |
 | Phase 2 M2.1: PHPStan config + baseline (crates/pun-phpstan, .oracle/phpstan) | lint-config agent (target-lintcfg/) | done |
 | Phase 2 M2.2: symbol parity (crates/pun-phpstan) | symbols agent (target-symbols/) | done |
-| Phase 2 M2.3: analyse rules, level 0 (crates/pun-phpstan) | analyse agent (target-analyse/) | doing |
+| Phase 2 M2.3: analyse rules, level 0 (crates/pun-analyse) | analyse agent (target-analyse/) | todo: done = calls/new/class-name/const/typehint/property/use rules, trait contexts, ignores, rule fixtures (142 test classes, 40 gaps in gaps.txt), project fixture, corpus diff (pinkary 1, larastan 6, pest 5, laravel 15 diffs; 5-25x faster). Remains: ~100 unported level-0 rules, gaps.txt to empty, Larastan facade aliases + trait-method declaring class (uncommitted WIP), coverage 100%, then `pun analyse` CLI |
 | pun lsp = PHPantom + Pun rules (evaluation + prototype): PHPantom embedded in-process, JSON-RPC router (crates/pun-lsp, docs/LSP.md); wiring into `pun lsp` after cleanup, see docs/LSP.md | - | done |
 | Rule placement + naming design (docs/RULES.md, crates/pun-config/rules/mapping.toml) | rules-design agent | done |
 | Tiered presets (essential/recommended/strict/pedantic): docs/RULES.md §5, `tier` in mapping.toml, checker | presets agent | done |
