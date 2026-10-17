@@ -126,9 +126,12 @@ pub fn resolve(node: &Node, class: Option<&str>) -> Type {
                     variadic: p.variadic,
                 })
                 .collect();
-            let asserts = matches!(&**ret, Node::ConditionalForParameter { param, .. } if params.iter().any(|p| format!("${}", p.name) == *param));
-            let ret = if asserts { Type::Bool } else { r(ret) };
-            let sig = Box::new(Signature { params, ret });
+            // ponytail: a conditional return on the callable's own parameter is a type assertion in PHPStan
+            // (`callable(mixed $x): ($x is int ? true : false)`); kept as a plain conditional return here.
+            let sig = Box::new(Signature {
+                params,
+                ret: r(ret),
+            });
             match main {
                 Type::Callable(_) => Type::Callable(Some(sig)),
                 Type::Object(c, args) if args.is_empty() && c == "Closure" => Type::Closure(sig),
@@ -142,11 +145,13 @@ pub fn resolve(node: &Node, class: Option<&str>) -> Type {
             unsealed,
         } => {
             let mut builder = ShapeBuilder::new();
+            let mut explicit = Vec::new();
             for item in items {
                 let key = item.key.as_ref().map(|k| match k {
                     ShapeKey::Int(i) => Type::ConstInt(int_value(i)),
                     ShapeKey::Str(s) | ShapeKey::Ident(s) => Type::ConstString(s.clone()),
                 });
+                explicit.extend(key.clone());
                 builder.set(key, r(&item.value), item.optional);
             }
             let is_list = kind.ends_with("list");
@@ -162,7 +167,25 @@ pub fn resolve(node: &Node, class: Option<&str>) -> Type {
                     None => builder.make_unsealed(default_key(), mixed()),
                     Some((key, value)) => {
                         let key = key.as_ref().map_or_else(default_key, |k| array_key(r(k)));
-                        builder.make_unsealed(key, r(value));
+                        let value = r(value);
+                        // finite extra keys are optional keys, except those written explicitly
+                        let finite = match &key {
+                            Type::ConstInt(_) | Type::ConstString(_) => vec![key.clone()],
+                            Type::Union(types)
+                                if types.iter().all(|t| {
+                                    matches!(t, Type::ConstInt(_) | Type::ConstString(_))
+                                }) =>
+                            {
+                                types.clone()
+                            }
+                            _ => vec![],
+                        };
+                        for k in finite.iter().filter(|k| !explicit.contains(k)) {
+                            builder.set(Some(k.clone()), value.clone(), true);
+                        }
+                        if finite.is_empty() {
+                            builder.make_unsealed(key, value);
+                        }
                     }
                 }
             }
@@ -187,22 +210,20 @@ pub fn resolve(node: &Node, class: Option<&str>) -> Type {
                 .collect(),
         ),
         Node::Const(c) => constant(c, class),
-        Node::OffsetAccess(..) => Type::Error,
     }
 }
 
-/// PHP's `(int)` of a phpdoc-parser integer literal.
+/// PHP's `(int)` of a phpdoc-parser integer literal: the leading decimal digits (`0x1A` is 0), saturating.
 fn int_value(s: &str) -> i64 {
     let s = s.replace('_', "");
-    if let Ok(v) = s.parse::<i64>() {
-        return v;
-    }
-    let (neg, digits) = match s.strip_prefix('-') {
-        Some(rest) => (true, rest.to_string()),
-        None => (false, s),
-    };
-    let v = digits.parse::<i64>().unwrap_or(i64::MAX);
-    if neg { -v } else { v }
+    let sign = usize::from(s.starts_with(['-', '+']));
+    let digits = s[sign..].bytes().take_while(u8::is_ascii_digit).count();
+    let n = &s[..sign + digits];
+    n.parse::<i64>().unwrap_or(if n.starts_with('-') {
+        i64::MIN
+    } else {
+        i64::MAX
+    })
 }
 
 /// `transformUnsafeArrayKey()` without the opt-in string-key check: `intersect(toArrayKey(), int|string)`.
@@ -224,7 +245,8 @@ fn to_array_key(t: &Type) -> Type {
             Type::Union(types) => Type::Benevolent(types),
             t => t,
         },
-        Type::Float | Type::Bool => Type::Int,
+        Type::Float => Type::Int,
+        Type::Bool => Type::Union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
         Type::Null => Type::ConstString(String::new()),
         Type::ConstBool(b) => Type::ConstInt(*b as i64),
         Type::ConstString(s) if s.parse::<i64>().is_ok_and(|i| i.to_string() == *s) => {
@@ -585,6 +607,7 @@ fn constant(c: &ConstExpr, class: Option<&str>) -> Type {
         ConstExpr::Float(f) => Type::ConstFloat(f.replace('_', "").parse().unwrap_or(0.0)),
         ConstExpr::Str(s) => Type::ConstString(s.clone()),
         ConstExpr::Fetch(class_name, name) => {
+            let is_static = class.is_some() && class_name.eq_ignore_ascii_case("static");
             let class_name = match (class, class_name.to_ascii_lowercase().as_str()) {
                 (Some(c), "self" | "static") => c,
                 _ => class_name.trim_start_matches('\\'),
@@ -593,6 +616,11 @@ fn constant(c: &ConstExpr, class: Option<&str>) -> Type {
                 return Type::Error;
             };
             if name.eq_ignore_ascii_case("class") {
+                if is_static && !reflection.is_final {
+                    return Type::ClassString(Some(Box::new(Type::Static(
+                        reflection.name.clone(),
+                    ))));
+                }
                 return Type::ConstString(reflection.name.clone());
             }
             let matches = |constant: &str| match name.split_once('*') {

@@ -61,6 +61,9 @@ pub struct Class {
     pub ancestors: Vec<String>,
     pub templates: Vec<Template>,
     pub cases: Vec<String>,
+    pub is_interface: bool,
+    /// `isFinalByKeyword()`
+    pub is_final: bool,
     pub constants: Vec<(String, String)>,
     /// by lowercase name
     pub methods: HashMap<String, Function>,
@@ -144,6 +147,8 @@ fn read_class(v: &Value) -> Class {
             .iter()
             .map(string)
             .collect(),
+        is_interface: v["interface"] == true,
+        is_final: v["final"] == true,
         constants: entries(&v["constants"])
             .into_iter()
             .map(|(k, t)| (k.clone(), string(t)))
