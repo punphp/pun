@@ -29,7 +29,7 @@ sets = ["dead-code", "modernize"]
 
 [lint.groups]                         # a level for a whole group
 style = "warn"
-laravel-11 = "error"                  # turn an upgrade on
+laravel-12 = "error"                  # turn an upgrade on
 
 [lint.rules]                          # a rule's own line wins over its group
 "style/require-final-class" = "error"
@@ -46,7 +46,7 @@ exclude = ["tests/**"]                # added to [files] exclude, for analyse on
 baseline = "pun-baseline.toml"
 
 [analyse.rules]
-"types/missing-iterable-value-type" = "off"
+"types/missing-return-type" = "off"
 "undefined/method" = { magic = true } # options in a table mean "on, with these options"
 ```
 
@@ -87,7 +87,7 @@ A rule a set turns on is an `error`. A group's level wins over the sets, and a r
 
 Not yet at run time: a `warn` rule still fails a run like an `error` one, and `[[lint.overrides]]` are checked but not yet applied per file.
 
-The Laravel, Pest and PHPUnit rules of a set run when composer.lock locks `laravel/framework`, `pestphp/pest` or `phpunit/phpunit`. Switch one off with its group: `[lint.groups] laravel = "off"`. A set's PHP upgrade rules (`php-8.4/...`) run from that `[php] version` on; upgrade groups such as `laravel-11` run when you turn the group on.
+The Laravel, Pest and PHPUnit rules of a set run when composer.lock locks `laravel/framework`, `pestphp/pest` or `phpunit/phpunit`. Switch one off with its group: `[lint.groups] laravel = "off"`. A set's PHP upgrade rules (`php-8.4/...`) run from that `[php] version` on; upgrade groups such as `laravel-12` run when you turn the group on.
 
 ## [analyse]
 

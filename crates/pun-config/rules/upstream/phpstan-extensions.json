@@ -1,0 +1,1258 @@
+[
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#checkdispatchargumenttypescompatiblewithclassconstructorrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\CheckDispatchArgumentTypesCompatibleWithClassConstructorRule",
+  "gated_by": null,
+  "identifiers": [
+   "larastan.jobs.noConstructor",
+   "larastan.events.noConstructor",
+   "arguments.count",
+   "argument.type",
+   "argument.byRef",
+   "argument.missing",
+   "argument.unknown",
+   "argument.templateType",
+   "argument.unresolvableType"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon services tags phpstan.rules.rule; registered twice (Illuminate\\Foundation\\Bus\\Dispatchable -> jobs, Illuminate\\Foundation\\Events\\Dispatchable -> events)",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#configcollectionrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\ConfigCollectionRule",
+  "gated_by": "checkConfigTypes (default false)",
+  "identifiers": [
+   "larastan.configCollection"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md",
+  "fqcn": "Larastan\\Larastan\\Rules\\ConsoleCommand\\UndefinedArgumentOrOptionRule",
+  "gated_by": null,
+  "identifiers": [
+   "larastan.console.undefinedArgument",
+   "larastan.console.undefinedOption"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon rules:",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#deferrableserviceprovidermissingprovidesrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\DeferrableServiceProviderMissingProvidesRule",
+  "gated_by": null,
+  "identifiers": [
+   "larastan.deferrableServiceProvider.missingProvides"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon rules:",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#modelappendsrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\ModelAppendsRule",
+  "gated_by": "checkModelAppends (default true)",
+  "identifiers": [
+   "rules.modelAppends"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#modelpropertyrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\ModelPropertyRule",
+  "gated_by": "checkModelProperties (default false)",
+  "identifiers": [
+   "argument.type"
+  ],
+  "in_scope": false,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": "no Rule class in 3.10.0: documented check is done via the model-property PHPDoc type (Types\\ModelProperty) and core argument.type; docs mark it beta",
+  "package": "larastan/larastan",
+  "registered_in": "none (docs only; parameter consumed by Methods\\BuilderHelper)",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#noauthfacadeinrequestscoperule-and-noauthhelperinrequestscoperule",
+  "fqcn": "Larastan\\Larastan\\Rules\\NoAuthFacadeInRequestScopeRule",
+  "gated_by": "checkAuthCallsWhenInRequestScope (default false)",
+  "identifiers": [
+   "larastan.noAuthFacadeInRequestScope"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#noauthfacadeinrequestscoperule-and-noauthhelperinrequestscoperule",
+  "fqcn": "Larastan\\Larastan\\Rules\\NoAuthHelperInRequestScopeRule",
+  "gated_by": "checkAuthCallsWhenInRequestScope (default false)",
+  "identifiers": [
+   "larastan.noAuthHelperInRequestScope"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#noenvcallsoutsideofconfig",
+  "fqcn": "Larastan\\Larastan\\Rules\\NoEnvCallsOutsideOfConfigRule",
+  "gated_by": "noEnvCallsOutsideOfConfig (default true)",
+  "identifiers": [
+   "larastan.noEnvCallsOutsideOfConfig"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nomissingtranslationsrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\NoMissingTranslationsRule",
+  "gated_by": "checkMissingTranslations (default false)",
+  "identifiers": [
+   "larastan.missingTranslations"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nomodelmake",
+  "fqcn": "Larastan\\Larastan\\Rules\\NoModelMakeRule",
+  "gated_by": "noModelMake (default true)",
+  "identifiers": [
+   "larastan.noModelMake"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nopublicmodelscopeandaccessorrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\NoPublicModelScopeAndAccessorRule",
+  "gated_by": "checkModelMethodVisibility (default false)",
+  "identifiers": [
+   "larastan.noPublicModelScopeMethod",
+   "larastan.noPublicModelAccessorMethod"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nounnecessarycollectioncall",
+  "fqcn": "Larastan\\Larastan\\Rules\\NoUnnecessaryCollectionCallRule",
+  "gated_by": "noUnnecessaryCollectionCall (default true; noUnnecessaryCollectionCallOnly/Except)",
+  "identifiers": [
+   "larastan.noUnnecessaryCollectionCall"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nounnecessaryenumerabletoarraycalls",
+  "fqcn": "Larastan\\Larastan\\Rules\\NoUnnecessaryEnumerableToArrayCallsRule",
+  "gated_by": "noUnnecessaryEnumerableToArrayCalls (default false)",
+  "identifiers": [
+   "larastan.unnecessaryEnumerableToArrayCall"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#octanecompatibilityrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\OctaneCompatibilityRule",
+  "gated_by": "checkOctaneCompatibility (default false)",
+  "identifiers": [
+   "larastan.octaneCompatibility"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#relationexistencerule",
+  "fqcn": "Larastan\\Larastan\\Rules\\RelationExistenceRule",
+  "gated_by": null,
+  "identifiers": [
+   "larastan.relationExistence"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon services tags phpstan.rules.rule",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#unusedviewsrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\UnusedViewsRule",
+  "gated_by": "checkUnusedViews (default false)",
+  "identifiers": [
+   "larastan.unusedViews"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon conditionalTags",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nouselessvaluefunctioncallsrule",
+  "fqcn": "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessValueFunctionCallsRule",
+  "gated_by": null,
+  "identifiers": [
+   "larastan.uselessConstructs.value"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon rules:",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/larastan/larastan/blob/v3.10.0/docs/rules.md#nouselesswithfunctioncallsruletest",
+  "fqcn": "Larastan\\Larastan\\Rules\\UselessConstructs\\NoUselessWithFunctionCallsRule",
+  "gated_by": null,
+  "identifiers": [
+   "larastan.uselessConstructs.with"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "larastan/larastan",
+  "registered_in": "extension.neon rules:",
+  "version": "3.10.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-deprecation-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Deprecations\\CallWithDeprecatedIniOptionRule",
+  "gated_by": "bleedingEdge",
+  "identifiers": [
+   "function.deprecated"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-deprecation-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.5"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-deprecation-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Deprecations\\FetchingDeprecatedConstRule",
+  "gated_by": null,
+  "identifiers": [
+   "constant.deprecated"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-deprecation-rules",
+  "registered_in": "rules.neon rules:",
+  "version": "2.0.5"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-deprecation-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Deprecations\\RestrictedDeprecatedClassConstantUsageExtension",
+  "gated_by": null,
+  "identifiers": [
+   "classConstant.deprecated",
+   "classConstant.deprecatedClass",
+   "classConstant.deprecatedInterface",
+   "classConstant.deprecatedTrait",
+   "classConstant.deprecatedEnum"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-deprecation-rules",
+  "registered_in": "rules.neon services tag phpstan.restrictedClassConstantUsageExtension (errors emitted by core RestrictedUsage rules)",
+  "version": "2.0.5"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-deprecation-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Deprecations\\RestrictedDeprecatedClassNameUsageExtension",
+  "gated_by": null,
+  "identifiers": [
+   "<location>.deprecatedClass",
+   "<location>.deprecatedInterface",
+   "<location>.deprecatedTrait",
+   "<location>.deprecatedEnum"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-deprecation-rules",
+  "registered_in": "rules.neon services tag phpstan.restrictedClassNameUsageExtension; identifier prefix from ClassNameUsageLocation::createIdentifier (new., parameter., return., extends., implements., traitUse., instanceof., catch., staticMethod., classConstant., property., attribute., phpDoc. ...); message variant depends on bleedingEdge",
+  "version": "2.0.5"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-deprecation-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Deprecations\\RestrictedDeprecatedFunctionUsageExtension",
+  "gated_by": null,
+  "identifiers": [
+   "function.deprecated"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-deprecation-rules",
+  "registered_in": "rules.neon services tag phpstan.restrictedFunctionUsageExtension",
+  "version": "2.0.5"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-deprecation-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Deprecations\\RestrictedDeprecatedMethodUsageExtension",
+  "gated_by": null,
+  "identifiers": [
+   "method.deprecated",
+   "staticMethod.deprecated",
+   "method.deprecatedClass",
+   "method.deprecatedInterface",
+   "method.deprecatedTrait",
+   "method.deprecatedEnum",
+   "staticMethod.deprecatedClass",
+   "staticMethod.deprecatedInterface",
+   "staticMethod.deprecatedTrait",
+   "staticMethod.deprecatedEnum"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-deprecation-rules",
+  "registered_in": "rules.neon services tag phpstan.restrictedMethodUsageExtension",
+  "version": "2.0.5"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-deprecation-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Deprecations\\RestrictedDeprecatedPropertyUsageExtension",
+  "gated_by": null,
+  "identifiers": [
+   "property.deprecated",
+   "staticProperty.deprecated",
+   "property.deprecatedClass",
+   "property.deprecatedInterface",
+   "property.deprecatedTrait",
+   "property.deprecatedEnum",
+   "staticProperty.deprecatedClass",
+   "staticProperty.deprecatedInterface",
+   "staticProperty.deprecatedTrait",
+   "staticProperty.deprecatedEnum"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-deprecation-rules",
+  "registered_in": "rules.neon services tag phpstan.restrictedPropertyUsageExtension",
+  "version": "2.0.5"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\BooleansInConditions\\BooleanInBooleanAndRule",
+  "gated_by": "strictRules.booleansInConditions",
+  "identifiers": [
+   "booleanAnd.leftNotBoolean",
+   "booleanAnd.rightNotBoolean",
+   "logicalAnd.leftNotBoolean",
+   "logicalAnd.rightNotBoolean"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\BooleansInConditions\\BooleanInBooleanNotRule",
+  "gated_by": "strictRules.booleansInConditions",
+  "identifiers": [
+   "booleanNot.exprNotBoolean"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\BooleansInConditions\\BooleanInBooleanOrRule",
+  "gated_by": "strictRules.booleansInConditions",
+  "identifiers": [
+   "booleanOr.leftNotBoolean",
+   "booleanOr.rightNotBoolean",
+   "logicalOr.leftNotBoolean",
+   "logicalOr.rightNotBoolean"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\BooleansInConditions\\BooleanInDoWhileConditionRule",
+  "gated_by": "strictRules.booleansInLoopConditions + bleedingEdge",
+  "identifiers": [
+   "doWhile.condNotBoolean"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\BooleansInConditions\\BooleanInElseIfConditionRule",
+  "gated_by": "strictRules.booleansInConditions",
+  "identifiers": [
+   "elseif.condNotBoolean"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\BooleansInConditions\\BooleanInIfConditionRule",
+  "gated_by": "strictRules.booleansInConditions",
+  "identifiers": [
+   "if.condNotBoolean"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\BooleansInConditions\\BooleanInTernaryOperatorRule",
+  "gated_by": "strictRules.booleansInConditions",
+  "identifiers": [
+   "ternary.condNotBoolean"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\BooleansInConditions\\BooleanInWhileConditionRule",
+  "gated_by": "strictRules.booleansInLoopConditions + bleedingEdge",
+  "identifiers": [
+   "while.condNotBoolean"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Cast\\UselessCastRule",
+  "gated_by": "strictRules.uselessCast",
+  "identifiers": [
+   "cast.useless"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Classes\\RequireParentConstructCallRule",
+  "gated_by": "strictRules.requireParentConstructorCall",
+  "identifiers": [
+   "constructor.missingParentCall"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\DisallowedConstructs\\DisallowedBacktickRule",
+  "gated_by": "strictRules.disallowedBacktick",
+  "identifiers": [
+   "backtick.notAllowed"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\DisallowedConstructs\\DisallowedEmptyRule",
+  "gated_by": "strictRules.disallowedEmpty",
+  "identifiers": [
+   "empty.notAllowed"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\DisallowedConstructs\\DisallowedImplicitArrayCreationRule",
+  "gated_by": "strictRules.disallowedImplicitArrayCreation",
+  "identifiers": [
+   "variable.implicitArray"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\DisallowedConstructs\\DisallowedLooseComparisonRule",
+  "gated_by": "strictRules.disallowedLooseComparison",
+  "identifiers": [
+   "equal.notAllowed",
+   "notEqual.notAllowed"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\DisallowedConstructs\\DisallowedShortTernaryRule",
+  "gated_by": "strictRules.disallowedShortTernary",
+  "identifiers": [
+   "ternary.shortNotAllowed"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\ForLoop\\OverwriteVariablesWithForLoopInitRule",
+  "gated_by": "strictRules.overwriteVariablesWithLoop",
+  "identifiers": [
+   "for.variableOverwrite"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\ForeachLoop\\OverwriteVariablesWithForeachRule",
+  "gated_by": "strictRules.overwriteVariablesWithLoop",
+  "identifiers": [
+   "foreach.keyOverwrite",
+   "foreach.valueOverwrite"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Functions\\ArrayFilterStrictRule",
+  "gated_by": "strictRules.strictArrayFilter",
+  "identifiers": [
+   "arrayFilter.strict"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Functions\\ClosureUsesThisRule",
+  "gated_by": "strictRules.closureUsesThis",
+  "identifiers": [
+   "closure.useThis"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Methods\\IllegalConstructorMethodCallRule",
+  "gated_by": "strictRules.illegalConstructorMethodCall",
+  "identifiers": [
+   "constructor.call"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Methods\\IllegalConstructorStaticCallRule",
+  "gated_by": "strictRules.illegalConstructorMethodCall",
+  "identifiers": [
+   "constructor.call"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Methods\\WrongCaseOfInheritedMethodRule",
+  "gated_by": "strictRules.matchingInheritedMethodNames",
+  "identifiers": [
+   "method.nameCase"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandInArithmeticPostDecrementRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "postDec.nonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandInArithmeticPostIncrementRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "postInc.nonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandInArithmeticPreDecrementRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "preDec.nonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandInArithmeticPreIncrementRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "preInc.nonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandInArithmeticUnaryMinusRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators + bleedingEdge",
+  "identifiers": [
+   "unaryMinus.nonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandInArithmeticUnaryPlusRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators + bleedingEdge",
+  "identifiers": [
+   "unaryPlus.nonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandsInArithmeticAdditionRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "plus.leftNonNumeric",
+   "plus.rightNonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandsInArithmeticDivisionRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "div.leftNonNumeric",
+   "div.rightNonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandsInArithmeticExponentiationRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "pow.leftNonNumeric",
+   "pow.rightNonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandsInArithmeticModuloRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "mod.leftNonNumeric",
+   "mod.rightNonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandsInArithmeticMultiplicationRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "mul.leftNonNumeric",
+   "mul.rightNonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\Operators\\OperandsInArithmeticSubtractionRule",
+  "gated_by": "strictRules.numericOperandsInArithmeticOperators",
+  "identifiers": [
+   "minus.leftNonNumeric",
+   "minus.rightNonNumeric"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\StrictCalls\\DynamicCallOnStaticMethodsCallableRule",
+  "gated_by": "strictRules.dynamicCallOnStaticMethod",
+  "identifiers": [
+   "staticMethod.dynamicCall"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\StrictCalls\\DynamicCallOnStaticMethodsRule",
+  "gated_by": "strictRules.dynamicCallOnStaticMethod",
+  "identifiers": [
+   "staticMethod.dynamicCall"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\StrictCalls\\StrictFunctionCallsRule",
+  "gated_by": "strictRules.strictFunctionCalls",
+  "identifiers": [
+   "function.strict"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\SwitchConditions\\MatchingTypeInSwitchCaseConditionRule",
+  "gated_by": "strictRules.switchConditionsMatchingType",
+  "identifiers": [
+   "switch.type"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\VariableVariables\\VariableMethodCallRule",
+  "gated_by": "strictRules.noVariableVariables",
+  "identifiers": [
+   "method.dynamicName"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\VariableVariables\\VariableMethodCallableRule",
+  "gated_by": "strictRules.noVariableVariables",
+  "identifiers": [
+   "method.dynamicName"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\VariableVariables\\VariablePropertyFetchRule",
+  "gated_by": "strictRules.noVariableVariables",
+  "identifiers": [
+   "property.dynamicName"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\VariableVariables\\VariableStaticMethodCallRule",
+  "gated_by": "strictRules.noVariableVariables",
+  "identifiers": [
+   "staticMethod.dynamicName"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\VariableVariables\\VariableStaticMethodCallableRule",
+  "gated_by": "strictRules.noVariableVariables",
+  "identifiers": [
+   "staticMethod.dynamicName"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\VariableVariables\\VariableStaticPropertyFetchRule",
+  "gated_by": "strictRules.noVariableVariables",
+  "identifiers": [
+   "staticProperty.dynamicName"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://github.com/phpstan/phpstan-strict-rules#readme",
+  "fqcn": "PHPStan\\Rules\\VariableVariables\\VariableVariablesRule",
+  "gated_by": "strictRules.noVariableVariables",
+  "identifiers": [
+   "variable.dynamicName"
+  ],
+  "in_scope": true,
+  "kind": "phpstan-rule",
+  "level": null,
+  "out_of_scope_reason": null,
+  "package": "phpstan/phpstan-strict-rules",
+  "registered_in": "rules.neon conditionalTags",
+  "version": "2.0.12"
+ }
+]

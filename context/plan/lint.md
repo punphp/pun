@@ -54,19 +54,22 @@ the `warn` / `error` difference are not applied at run time yet (lint 1-2).
 
 ## 4. Rules: what exists
 
-There are 542 lint rules in crates/pun-config/rules/mapping.toml. Each has its group, fix safety, default severity,
-tier, add-on and upstream sources. The naming pass is done: verb prefixes (`no-`, `prefer-`, `add-`, `require-`),
-109 merged rules, and a shared vocabulary (rules.md §3). The topic-group rename is config.md Build 1.
+There are 703 lint rules in crates/pun-config/rules/mapping.toml. Each has its group, fix safety, sets and upstream
+sources. Each maps to exactly one in-scope upstream rule (a Rector rule in one of the planned sets, a risky
+PHP-CS-Fixer fixer, or a strict-rules class), or is Mago-derived (`origin = "mago"`); rules.md §7 has the reasons and
+the lists of what was removed and added on 2026-10-18.
 
 | | Count |
 | --- | ---: |
-| Lint rules | 542 |
-| Ported (run natively today) | 31 (risky CS-Fixer fixers plus Pun's ports of Mago rules) |
-| From Rector core / rector-laravel / rector-phpunit / pest-plugin-rector | 271 / 82 / 57 / 20 (some rules have several sources) |
-| From Mago (only Mago / shared with others) | 65 / 119 |
-| Fix safety: safe / unsafe / mixed / report only | 252 / 219 / 3 / 68 |
-| Old tier (replaced by sets in config.md Build 1): essential / recommended / strict / pedantic / opt-in only | 53 / 166 / 157 / 107 / 59 |
-| Add-on: laravel / phpunit / pest | 76 / 61 / 18 |
+| Lint rules | 703 |
+| Ported (run natively today) | 50 (risky CS-Fixer fixers plus Pun's ports of Mago rules) |
+| Its one upstream rule: Rector core / rector-laravel / rector-phpunit / pest-plugin-rector | 264 / 80 / 79 / 59 |
+| Its one upstream rule: PHP-CS-Fixer risky fixer / Pint / strict-rules class | 115 / 1 / 17 |
+| Mago-derived (no other source) / Pun-only | 87 / 1 |
+| Also carrying a Mago mapping | 43 |
+| Fix safety: safe / unsafe / mixed / report only | 310 / 307 / 7 / 79 |
+| Sets: dead-code / modernize / code-quality / types / early-return / privatization / naming / coding-style / none | 78 / 37 / 238 / 87 / 6 / 5 / 0 / 117 / 138 |
+| Ecosystem groups: laravel (+ laravel-12) / phpunit / pest | 89 (+1) / 111 / 62 |
 
 Groups today are intent groups, as in Biome: `correctness`, `suspicious`, `style`, `complexity`, `performance`,
 `security`, plus `dead-code`, `types`, `modernize`, `laravel`, `testing` and `refactor` (configurable codemods such as
@@ -107,7 +110,7 @@ Type-aware rules (`add-return-type` and others) ask pun-analyse for types, as Re
 
 ## 7. Build
 
-Done: the rule catalogue (542 rules with names, groups, safety and upstream mapping), the 31 token-path rules, and
+Done: the rule catalogue (703 rules with names, groups, safety and upstream mapping), the 31 token-path rules, and
 `pun check --fix` equal to Pint. The steps, after config.md Build 1-6 (names, sets, levels and overrides in pun.toml):
 
 1. **The engine on Mago's syntax tree**, starting as a spike alongside PLAN.md Step 1 (Pushpak, 2026-10-17). A rule visits the tree and returns problems (span, message, help) and text
@@ -124,7 +127,7 @@ Done: the rule catalogue (542 rules with names, groups, safety and upstream mapp
 7. **Rules in usage order,** each passing Rector's own fixtures: Pinkary's rector.php, then dead-code and modernize
    (init's default sets), then code-quality, types, early-return, privatization, naming, coding-style, then
    rector-laravel, Pest's Rector plugin, PHPUnit, and the PHP and Laravel upgrade groups.
-   *Done when* all 542 are native (the 1.0 bar).
+   *Done when* all 703 are native (the 1.0 bar).
 8. **Type-aware rules** query analyse's index (analyse.md Build 3) instead of PHPStan.
 9. **`pun migrate` for rector.php** (migrate.md Build 4).
 
@@ -161,7 +164,7 @@ Rector has no ladder. Its config is a set of independent toggles, `withPreparedS
 | pest-plugin-rector `coding-style` | 19 | Pest idioms |
 | version sets (`laravel110`, `phpunit100`, ...) | 1-7 each | upgrades; in Pun these are the upgrade groups (`lint/laravel-13/...`) |
 
-116 lint rules come from no Rector set: CS-Fixer's risky fixers and Mago's rules (mostly `pedantic` today).
+221 lint rules have no Rector source: CS-Fixer's risky fixers, strict-rules' syntax-only classes and Mago's rules.
 Rector also has gradual levels for adoption (`withDeadCodeLevel(n)`, `withTypeCoverageLevel(n)`), which turn on the
 first n rules of one set.
 
@@ -230,7 +233,8 @@ Answered 2026-10-17 (Pushpak):
   - `--deny-warnings` makes warnings fail the run, and `--max-warnings <n>` fails above n warnings.
   - `-A` / `-W` / `-D <rule or group>` (allow / warn / deny) set a level for one run from the command line.
   - `[[lint.overrides]]` with `files = ["tests/**"]` changes levels for some paths, like oxlint's `overrides`.
-- **Every lint rule runs natively before 1.0** (all 542; Symfony, Doctrine and downgrade sets stay unsupported).
+- **Every lint rule runs natively before 1.0** (all 703; Symfony, Doctrine and downgrade sets, upgrade sets below PHP
+  8.4 and Laravel 12, and rules Rector deprecated stay unsupported).
   Porting order follows usage (§7 item 7), but 1.0 waits for all of them.
 - **Mago's rules become normal lint rules** and `pun lint --mago` goes away (assistant's default, not objected to).
 - **`pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §3).
@@ -246,7 +250,9 @@ Lint spike (Build 1, 2026-10-17; report: ../reports/lint-spike.md):
   leaves the file unchanged and is an error naming the rules.
 - **Assistant's call: the sample rules** are `CombinedAssignRector` (unsafe) and `RemoveUnusedVariableInCatchRector`
   (safe), both in Pinkary's rector.php sets, with provisional IDs `lint/style/prefer-compound-assignment` and
-  `lint/php-8.0/no-unused-catch-variable` until config 1 fixes the groups.
+  `lint/php-8.0/no-unused-catch-variable` until config 1 fixes the groups. The second is out of scope since the
+  one-to-one mapping (its Rector rule is only in the php80 set); pun-lint keeps it as a local ID until the perf rounds
+  end, then it goes.
 - **Assistant's call: keep meaning over Rector's bytes.** Where Rector's printer drops parentheses that change what
   the code does (`$a = $a + ($b or $c)` becomes `$a += $b or $c`), Pun keeps them.
 - **Assistant's call: the Rector oracle** is rector-src at the tag Pinkary's lock pins (fixtures, `.oracle/rector`)

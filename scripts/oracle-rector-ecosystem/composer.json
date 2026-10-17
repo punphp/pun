@@ -1,0 +1,15 @@
+{
+    "require": {
+        "rector/rector": "2.6.1",
+        "driftingly/rector-laravel": "2.5.0",
+        "pestphp/pest-plugin-rector": "5.x-dev#1a4b6b7424f134af3849f1811997c7b46f90f91f",
+        "phpstan/phpstan": "2.2.7"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": false
+        }
+    }
+}

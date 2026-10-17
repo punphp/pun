@@ -13,6 +13,9 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | friendsofphp/php-cs-fixer | v3.95.17 (bundled in Pint's PHAR and its composer.lock) | `0ee88422118f3cc59c8c3def222ba7f1493b6d5b` |
 | rector/rector | 2.6.1 (what Pinkary's composer.lock pins; the released build in `.oracle/rector-bin`, locked by `scripts/oracle-rector/composer.lock`) | |
 | rectorphp/rector-src | 2.6.1 (source and `rules-tests/` fixtures in `.oracle/rector`) | `16be33c1c2364d51038752a299fce01043d42576` |
+| rector/rector-phpunit | dev-main@e68085d (bundled in rector/rector 2.6.1) | |
+| driftingly/rector-laravel | 2.5.0 (`.oracle/rector-ecosystem`, locked by `scripts/oracle-rector-ecosystem/composer.lock`) | |
+| pestphp/pest-plugin-rector | 5.x-dev (no release yet; `.oracle/rector-ecosystem`, same lock, `minimum-stability: dev` with `prefer-stable`) | `1a4b6b7424f134af3849f1811997c7b46f90f91f` |
 | prettier / prettier-plugin-blade / prettier-plugin-tailwindcss | 3.9.10 / 3.3.3 / 0.8.1 (only for `Pint/laravel_blade`, installed into `corpus/pinkary/node_modules`) | |
 | Node | v22.23.3 (system) | |
 
@@ -131,7 +134,10 @@ Intentional differences:
   `php .oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar`. Its `vendor/` also serves the corpus parity
   tests (symlinked into a farm, so `%rootDir%` and `includes: vendor/...` resolve as in a real project).
 - `.oracle/neon`: nette/neon source + tests at the bundled tag (`git fetch --depth 1 https://github.com/nette/neon.git v3.3.4`).
-- `.oracle/phpstan-src`: phpstan-src at the tag 2.2.7 (only its `tests/` are used, for data providers).
+- `.oracle/phpstan-src`: phpstan-src at the tag 2.2.7 (`scripts/oracle.sh` fetches it; its `tests/` give data
+  providers, its `src/Rules/` and `conf/` the PHPStan inventory).
+- phpstan/phpstan-strict-rules 2.0.12 and phpstan/phpstan-deprecation-rules 2.0.5 are the versions the rule mapping's
+  inventory read (`crates/pun-config/rules/upstream/phpstan-extensions.json`).
 - `.oracle/phpstan-phar`: an extracted copy of the PHAR, for reading only (nothing runs it).
 
 All exporters run the PHAR's real classes (private methods through reflection, test data providers with stub
@@ -201,3 +207,13 @@ snapshot per statement). Gaps found:
 - No class aliases (`class_alias()`), so the API stub declares them as subclasses; Laravel facade aliases that
   Larastan registers at runtime (`use Blade;`) are not known yet.
 - Built-ins come from PHPStan's reflection (`symbols.json`), not Mago's prelude, for every rule decision.
+
+## The rule mapping's inventories
+
+`crates/pun-config/rules/upstream/{rector-core,rector-ecosystem,phpstan-core,phpstan-extensions}.json` list every
+upstream rule at the pinned versions above: its class, package, sets (Rector) or identifiers and level (PHPStan),
+whether a planned set registers it (`in_scope`, with `out_of_scope_reason`), and whether it is deprecated. Deprecation
+was read from the source (`DeprecatedInterface`, `@deprecated`) at the pinned tag and at rector-src 2.7.0 and main, and
+from getrector.com's rule pages. `scripts/check-rule-mapping.py` checks mapping.toml against them (rules.md §5, §7).
+Rector core and rector-phpunit come from `.oracle/rector-bin`, rector-laravel and Pest from `.oracle/rector-ecosystem`,
+PHPStan from `.oracle/phpstan` and `.oracle/phpstan-src`.

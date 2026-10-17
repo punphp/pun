@@ -36,7 +36,7 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 - **Positioning:** Pun is to PHP what Bun is to JavaScript. Laravel first, PHP 8.4+ projects only.
 - **1.0 ships everything at once.** Nothing is published or tagged until `pun format`, `pun analyse`, `pun lint` and
   `pun migrate` all exist and meet the 1.0 bar below. The site presents that release as 1.0. Publishing needs Pushpak's go.
-- **The 1.0 bar:** every lint rule (542) native; every PHPStan core rule native; Larastan built in with seven
+- **The 1.0 bar:** every lint rule (703) native; every PHPStan core rule (327 Rule classes) native; Larastan built in with seven
   improvements (typed config, routes, views, translations, env keys, Inertia pages, fresh model data); Pest built in
   with the PHPUnit typing it needs; deprecation-rules and strict-rules as plain rules; a result cache. Speed and memory
   come first in every command.
@@ -217,12 +217,12 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint 1-2 follow-up (from perf lint 2): when `pun lint` is wired into pun-cli, check files while pun-workspace's finder is still walking (shared LIFO work stack, as in examples/check.rs) instead of discovering every file first, and take the entry type from `DirEntry::file_type` instead of a stat per entry | todo |
 | pun-lint: replace `syntax::same_code` with a structural node comparator (Rector's NodeComparator), shared by rules | todo |
 | pun-lint: name resolution for rules that need resolved names (mago-names or analyse's index) | todo |
-| pun-lint: rename the two sample rule IDs (`lint/style/prefer-compound-assignment`, `lint/php-8.0/no-unused-catch-variable`) once config 1 lands the groups | todo |
+| pun-lint: remove the sample rule `lint/php-8.0/no-unused-catch-variable` after the perf rounds: its Rector rule is only in the php80 set, below the PHP 8.4 floor (rules.md §7) | todo |
 | lint: the engine uses `pun_problem::{Problem, apply_fixes}` for diagnostics and the fix loop | todo |
 | lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
 | lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | todo |
 | lint (from config 4): give the options of lint rules that are fixers (risky and code-deleting) Pun names through mapping.toml's `[options]` tables; they are still PHP-CS-Fixer names, kebab-cased | todo |
-| lint 7: all 542 rules native, in usage order | todo |
+| lint 7: all 703 rules native, in usage order | todo |
 | migrate 4: rector.php | todo |
 
 **Gate:** `format(pun lint --fix)` equals `format(rector process)` on Rector's fixtures and the corpus, for every rule.

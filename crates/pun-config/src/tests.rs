@@ -284,9 +284,12 @@ fn lint_sets() {
     let l = lint(&[("pun.toml", "[lint]\nsets = [\"early-return\"]\n")]);
     assert_eq!(l.sets, ["early-return"]);
     let early = [
+        ("lint/control-flow/no-else-after-return", None),
         ("lint/control-flow/no-useless-else", Some("no_useless_else")),
         ("lint/style/prefer-early-continue", None),
         ("lint/style/prefer-early-return", None),
+        ("lint/style/prefer-early-return-of-variable", None),
+        ("lint/style/prefer-early-return-over-prepared-value", None),
     ];
     assert_eq!(
         l.rules,
@@ -295,37 +298,37 @@ fn lint_sets() {
             ..lr(id, Level::Error, true, Value::Null, fixer)
         })
     );
-    // `types` has 12 rules, two of them Laravel's: those need laravel/framework in composer.lock.
+    // `types` has 79 rules, four of them Laravel's: those need laravel/framework in composer.lock.
     let types = "[lint]\nsets = [\"types\"]\n";
     let l = lint(&[("pun.toml", types)]);
-    assert_eq!((l.rules.len(), l.ecosystems.len()), (10, 0));
+    assert_eq!((l.rules.len(), l.ecosystems.len()), (75, 0));
     assert!(!ids(&l.rules).contains(&"lint/laravel/add-relation-generics"));
     let l = lint(&[("pun.toml", types), ("composer.lock", LARAVEL_LOCK)]);
     assert_eq!(
         (l.rules.len(), l.ecosystems),
-        (12, vec!["laravel".to_string()])
+        (79, vec!["laravel".to_string()])
     );
     assert!(ids(&l.rules).contains(&"lint/laravel/add-relation-generics"));
     // The laravel group switched off.
     let off = format!("{types}[lint.groups]\nlaravel = \"off\"\n");
     let l = lint(&[("pun.toml", &off), ("composer.lock", LARAVEL_LOCK)]);
-    assert_eq!((l.rules.len(), l.ecosystems.len()), (10, 0));
-    // `modernize` has 99 rules; an upgrade group's run from its PHP version on: on 8.4, the 6 php-8.5 rules and the
+    assert_eq!((l.rules.len(), l.ecosystems.len()), (75, 0));
+    // `modernize` has 37 rules; an upgrade group's run from its PHP version on: on 8.4, the 6 php-8.5 rules and the
     // 1 php-8.6 rule are off.
     let modernize = "[lint]\nsets = [\"modernize\"]\n";
     let l = lint(&[("pun.toml", modernize)]);
-    assert_eq!(l.rules.len(), 92);
+    assert_eq!(l.rules.len(), 30);
     assert!(ids(&l.rules).contains(&"lint/php-8.4/prefer-array-find"));
     assert!(!ids(&l.rules).contains(&"lint/php-8.5/no-null-array-key"));
     let l = lint(&[(
         "pun.toml",
         &format!("[php]\nversion = \"8.5\"\n{modernize}"),
     )]);
-    assert_eq!(l.rules.len(), 98);
+    assert_eq!(l.rules.len(), 36);
     assert!(ids(&l.rules).contains(&"lint/php-8.5/no-null-array-key"));
-    // Two sets: the union, a rule in both counted once (no-useless-else is only early-return's).
+    // Two sets: the union, 6 + 75 (no rule is in both).
     let l = lint(&[("pun.toml", "[lint]\nsets = [\"early-return\", \"types\"]\n")]);
-    assert_eq!(l.rules.len(), 13);
+    assert_eq!(l.rules.len(), 81);
 }
 
 /// A group's level covers every rule of the group, whether a set has it or not; a rule's own line wins.
@@ -337,14 +340,11 @@ fn lint_groups() {
             .lint
     };
     let level = |l: &Lint, id: &str| l.rules.iter().find(|r| r.id == id).map(|r| r.level);
-    // 84 style rules at warn, no-useless-else at error from its set.
+    // 92 style rules at warn, the set's two control-flow rules at error.
     let l = lint("[lint]\nsets = [\"early-return\"]\n[lint.groups]\nstyle = \"warn\"\n");
-    assert_eq!(l.rules.len(), 85);
-    assert!(
-        l.rules
-            .iter()
-            .all(|r| r.level == Level::Warn || r.id == "lint/control-flow/no-useless-else")
-    );
+    assert_eq!(l.rules.len(), 94);
+    assert!(l.rules.iter().all(|r| r.level == Level::Warn
+        || r.id.starts_with("lint/control-flow/no-")));
     assert_eq!(
         level(&l, "lint/control-flow/no-useless-else"),
         Some(Level::Error)
@@ -355,6 +355,7 @@ fn lint_groups() {
     assert_eq!(
         ids(&l.rules),
         [
+            "lint/control-flow/no-else-after-return",
             "lint/control-flow/no-useless-else",
             "lint/style/prefer-early-return"
         ]
@@ -366,7 +367,7 @@ fn lint_groups() {
     let l = lint(
         "[lint]\nsets = [\"early-return\"]\n[lint.rules]\n\"control-flow/no-useless-else\" = \"off\"\n",
     );
-    assert_eq!(l.rules.len(), 2);
+    assert_eq!(l.rules.len(), 5);
     // A rule no fixer runs keeps its options as written (they are Pun's own names, not PHP-CS-Fixer's).
     let l =
         lint("[lint.rules]\n\"style/prefer-early-return\" = { level = \"warn\", max-depth = 2 }\n");
@@ -382,15 +383,8 @@ fn lint_groups() {
         }]
     );
     // A group turns an upgrade on whatever the Laravel version (no composer.lock here).
-    let l = lint("[lint.groups]\nlaravel-11 = \"error\"\n");
-    assert_eq!(
-        ids(&l.rules),
-        [
-            "lint/laravel-11/prefer-assert-see-html",
-            "lint/laravel-11/prefer-geometry-column",
-            "lint/laravel-11/prefer-queueable-trait"
-        ]
-    );
+    let l = lint("[lint.groups]\nlaravel-12 = \"error\"\n");
+    assert_eq!(ids(&l.rules), ["lint/laravel-12/prefer-scope-attribute"]);
     assert!(l.rules.iter().all(|r| !r.named && r.level == Level::Error));
 }
 
@@ -465,8 +459,8 @@ fn lint_overrides() {
     assert!(c.lint.rules.is_empty());
 }
 
-/// Rule counts hand-counted in [rules.analyse] of rules/mapping.toml: basic 133, essential 51, recommended 49, strict
-/// 17, max 4; 20 of them Laravel's (0, 5, 9, 4, 2); one rule has no preset.
+/// Rule counts counted in [rules.analyse] of rules/mapping.toml: basic 155, essential 104, recommended 80, strict
+/// 35, max 4; 18 of them Laravel's (0, 4, 9, 4, 1).
 #[test]
 fn analyse() {
     let an = |files: &[(&str, &str)]| load(&dir(files), &Options::default()).unwrap().analyse;
@@ -488,10 +482,9 @@ fn analyse() {
             rules: a.rules.clone(),
         }
     );
-    assert_eq!(a.rules.len(), 133 + 51 + 49 - 14);
+    assert_eq!(a.rules.len(), 155 + 104 + 80 - 13);
     assert!(
-        has(&a, "analyse/undefined/method")
-            && !has(&a, "analyse/types/missing-iterable-value-type")
+        has(&a, "analyse/undefined/method") && !has(&a, "analyse/types/missing-return-type")
     );
     let preset = |p: &str, lock: bool| {
         let toml = format!("[analyse]\npreset = \"{p}\"\n");
@@ -502,17 +495,17 @@ fn analyse() {
         let a = an(&files);
         (a.rules.len(), a.switches)
     };
-    assert_eq!(preset("basic", false), (133, vec![]));
-    assert_eq!(preset("essential", true), (184, vec![]));
-    assert_eq!(preset("recommended", true), (233, vec![]));
+    assert_eq!(preset("basic", false), (155, vec![]));
+    assert_eq!(preset("essential", true), (155 + 104, vec![]));
+    assert_eq!(preset("recommended", true), (155 + 104 + 80, vec![]));
     assert_eq!(
         preset("strict", true),
-        (250, vec!["union-types", "nullables"])
+        (155 + 104 + 80 + 35, vec!["union-types", "nullables"])
     );
     assert_eq!(
         preset("max", false),
         (
-            234,
+            378 - 18,
             vec![
                 "union-types",
                 "nullables",
@@ -532,10 +525,10 @@ paths = ["app", "routes"]
 exclude = ["tests/**"]
 baseline = "pun-baseline.toml"
 [analyse.rules]
-"types/missing-iterable-value-type" = "on"
+"types/missing-return-type" = "on"
 "analyse/undefined/method" = { magic = true }
 "undefined/function" = "off"
-"imports/prefixed-class-reference" = "on"
+"types/argument-not-numeric" = "on"
 laravel = "on"
 "laravel/useless-with-call" = "off"
 "#,
@@ -548,8 +541,8 @@ laravel = "on"
             Some("pun-baseline.toml".into())
         )
     );
-    // basic, plus 2 named, plus the 20 Laravel rules but one, minus undefined/function.
-    assert_eq!(a.rules.len(), 133 + 2 + 19 - 1);
+    // basic, plus 2 named, plus the 18 Laravel rules but one, minus undefined/function.
+    assert_eq!(a.rules.len(), 155 + 2 + 17 - 1);
     let rule = |id: &str| {
         a.rules
             .iter()
@@ -561,7 +554,7 @@ laravel = "on"
         Some(json!({"magic": true}))
     );
     assert_eq!(
-        rule("analyse/types/missing-iterable-value-type"),
+        rule("analyse/types/missing-return-type"),
         Some(Value::Null)
     );
     assert_eq!(rule("analyse/undefined/function"), None);
@@ -571,7 +564,7 @@ laravel = "on"
         ("pun.toml", "[analyse.rules]\nlaravel = \"off\"\n"),
         ("composer.lock", LARAVEL_LOCK),
     ]);
-    assert_eq!((a.rules.len(), a.ecosystems.len()), (219, 0));
+    assert_eq!((a.rules.len(), a.ecosystems.len()), (155 + 104 + 80 - 13, 0));
 }
 #[test]
 fn composer_gate() {
@@ -639,7 +632,7 @@ fn rule_metadata() {
     );
     // Analyse rules have no fix.
     assert_eq!(
-        rule("analyse/functions/argument-count").unwrap().fix,
+        rule("analyse/types/argument").unwrap().fix,
         "none"
     );
     assert!(rule("dead-code/no-self-assignment").is_none());
@@ -735,7 +728,6 @@ group     arrays: Array literals, list() destructuring and array access
 presets   laravel
 fix       safe
 upstream  array_syntax (php-cs-fixer)
-          LongArrayToShortArray (rector)
           array-style (mago-linter)
 "
     );
@@ -764,7 +756,8 @@ upstream  no_alias_functions (php-cs-fixer)
 group     undefined: References to something declared nowhere
 preset    basic
 fix       none
-upstream  method.notFound (phpstan)
+upstream  CallMethodsRule (phpstan-classes)
+          method.notFound (phpstan)
           checkThisOnly (phpstan-parameters)
           reportMagicMethods (phpstan-parameters)
           NonExistentMethod (mago-analyzer)
@@ -1014,7 +1007,7 @@ fn pun_toml_errors() {
         (
             "lint",
             "simplify-mirror-assign",
-            "lint/dead-code/no-self-assignment",
+            "lint/dead-code/no-mirror-assignment",
         ),
         (
             "lint",
@@ -1030,7 +1023,7 @@ fn pun_toml_errors() {
         // Upstream names: PHP-CS-Fixer, Pint, Rector, PHPStan.
         ("format", "array_syntax", "format/arrays/syntax"),
         ("format", "Pint/laravel_blade", "format/laravel/blade"),
-        ("lint", "StrictInArray", "lint/types/require-strict-param"),
+        ("lint", "StrictInArray", "lint/functions/require-strict-in-array"),
         ("lint", "method.notFound", "analyse/undefined/method"),
         ("analyse", "method.notFound", "analyse/undefined/method"),
         // A rule of the other command, full or short.

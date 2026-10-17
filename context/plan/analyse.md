@@ -66,16 +66,19 @@ baseline = "pun-baseline.toml"
 
 ## 4. Rules: what exists
 
-There are 255 analyse rules in rules/mapping.toml, built from 559 PHPStan identifiers plus strict-rules, deprecation-rules
-and Larastan. Many PHPStan identifiers merge into one Pun rule (20 `generics.*` identifiers become `invalid-generics`),
-and each identifier stays in the mapping as a variant, so migrated ignores and baselines keep their narrow scope.
+There are 378 analyse rules in rules/mapping.toml: one per in-scope PHPStan `Rule` class (`[upstream.phpstan-classes]`,
+from crates/pun-config/rules/upstream/phpstan-*.json): 326 from PHPStan core, 27 strict-rules, 7 deprecation-rules and
+18 Larastan. A rule carries every identifier its class emits; each of the 688 identifiers of the family stays in the
+mapping as a `variant` pointing at one class's rule, so migrated ignores and baselines keep their narrow scope. Of the
+426 classes, 17 strict-rules and 1 core class are lint or format rules (rules.md O4) and 29 are unsupported (the
+`phpstanApi.*` checks, playground-only and stub-only classes, one Larastan class that does not exist).
 
 | | Count |
 | --- | ---: |
-| Analyse rules | 255 |
-| By group: correctness / types / dead-code / laravel / undefined / deprecated / strict / phpdoc / meta | 89 / 74 / 27 / 20 / 16 / 12 / 8 / 7 / 2 |
-| By old tier (replaced by the five presets in config.md Build 1): essential / recommended / strict / pedantic / opt-in | 96 / 135 / 19 / 4 / 1 |
-| PHPStan identifiers by level: 0 / 1 / 2 / 3 / 4 / 5 / 6 / opt-in | 318 / 7 / 97 / 36 / 57 / 8 / 6 / 30 |
+| Analyse rules | 378 |
+| By group: types / classes / dead-code / phpdoc / laravel / undefined / functions / operators / attributes / deprecated / other | 119 / 63 / 44 / 32 / 18 / 18 / 15 / 15 / 14 / 10 / 30 |
+| By preset (from the class's PHPStan level): basic / essential / recommended / strict / max | 155 / 104 / 80 / 35 / 4 |
+| PHPStan core identifiers by level: 0 / 1 / 2 / 3 / 4 / 5 / 6 / opt-in | 327 / 13 / 137 / 36 / 57 / 8 / 6 / 30 |
 | Running today | 54 PHPStan identifiers (part of level 0) |
 
 These groups still follow the old intent-style list. With topic groups (decided), `undefined/method` and

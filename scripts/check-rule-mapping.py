@@ -8,10 +8,21 @@ tier, severity, group); format `presets`, lint `sets` or analyse `preset` outsid
 `fixed_by` / `conflicts` / `merged` reference; an upstream entry that is not exactly one of pun / drop / unsupported; a
 Rector entry without its class; a rule that no upstream entry maps to (unless `pun_only = true`); a PHPStan/Larastan
 entry without `variant` when its rule replaces several identifiers; and a conflict whose two sides one format preset,
-the lint sets together, or one analyse preset would enable. Prints rule counts per command, set and preset.
+the lint sets together, or one analyse preset would enable.
+
+Against the pinned upstream inventories in crates/pun-config/rules/upstream/*.json (context/plan/rules.md §5) it also
+fails on: an in-scope Rector, rector-laravel, rector-phpunit or Pest rule, or an in-scope PHPStan, strict-rules,
+deprecation-rules or Larastan rule class, that has no entry or maps to no Pun rule; an entry that maps a deprecated or
+out-of-scope upstream rule (old PHP or Laravel upgrade set, no set, outside the in-scope sets) to a Pun rule; a lint or
+analyse rule with no or several primary sources (one Rector rule, CS-Fixer fixer, Pint fixer or PHPStan-family rule
+class) unless it is Mago-derived (`origin = "mago"`, Mago sources only) or `pun_only`; `merged` on a lint or analyse
+rule; a class entry whose identifiers differ from the inventory; an emitted identifier with no entry, or one whose rule
+is not the rule of a class that emits it; and a rule with a Rector source in an upgrade group below the floor (PHP 8.4,
+Laravel 12). Prints rule counts per command, set, preset and source.
 
 Usage: scripts/check-rule-mapping.py [path/to/mapping.toml]
 """
+import json
 import re
 import sys
 import tomllib
@@ -33,6 +44,16 @@ GONE = ("aliases", "tier", "severity", "group")
 PHPSTAN_FAMILY = ("phpstan", "phpstan-strict-rules", "phpstan-deprecation-rules", "larastan")
 # [analyse] switches (PHPStan levels 7-10) are settings, not rules.
 SWITCH = re.compile(r"\[analyse\] [a-z-]+ = true")
+INVENTORY = DEFAULT.parent / "upstream"
+RECTOR_TOOLS = ("rector", "rector-laravel", "pest-plugin-rector", "rector-phpunit", "rector-symfony")
+# A lint or analyse rule has exactly one primary source from these sections (the one-to-one rule, PLAN.md §2).
+PRIMARY = ("php-cs-fixer", "pint", "phpstan-classes") + RECTOR_TOOLS
+# Mago-derived rules (`origin = "mago"`) have only these.
+MAGO = ("pun", "mago-linter", "mago-analyzer")
+# Plan-level exclusions on top of the inventories' own scope (rules.md §2 O9): rector-symfony, PHPStan's extension API.
+EXCLUDED_PREFIXES = ("Rector\\Symfony\\", "PHPStan\\Rules\\Api\\")
+# Upgrade groups below the floor (PHP 8.4, Laravel 12): no rule with a Rector source may sit in one.
+BELOW_FLOOR = re.compile(r"php-([57]\.\d|8\.[0-3])|laravel-([5-9](\.\d)?|1[01])")
 
 
 def duplicates(text):
@@ -175,6 +196,122 @@ def check(data):
     return errors
 
 
+def inventory(directory=INVENTORY):
+    """The pinned upstream inventories: Rector-family rules by class (a core rule a Laravel set configures is listed in
+    both files and is in scope when either says so) and PHPStan-family rule classes by class."""
+    def load(name):
+        return json.loads((directory / f"{name}.json").read_text())
+    rector = {}
+    for r in load("rector-core") + load("rector-ecosystem"):
+        o = rector.setdefault(r["fqcn"], dict(r))
+        if r["in_scope"]:
+            o["in_scope"] = True
+    phpstan = {r["fqcn"]: r for r in load("phpstan-core") + load("phpstan-extensions")}
+    return rector, phpstan
+
+
+def in_scope(r):
+    return r["in_scope"] and not r["deprecated"] and not r["fqcn"].startswith(EXCLUDED_PREFIXES)
+
+
+def why_out(r):
+    if r["deprecated"]:
+        return "deprecated upstream"
+    return r.get("out_of_scope_reason") or "out of scope (rules.md §2 O9)"
+
+
+def check_upstream(data, inv):
+    """The one-to-one rule against the inventories (PLAN.md §2, 2026-10-17)."""
+    rector, phpstan = inv
+    errors = []
+    err = errors.append
+    up = data["upstream"]
+
+    seen = defaultdict(list)
+    for tool in RECTOR_TOOLS:
+        for key, u in up.get(tool, {}).items():
+            cls = u.get("class", key)
+            seen[cls].append(f"upstream.{tool}.{key}")
+            r = rector.get(cls)
+            where = f"upstream.{tool}.{key}"
+            if "pun" in u and r is None:
+                err(f"{where}: {cls} is not a rule in the pinned inventory, so it maps to no Pun rule")
+            elif "pun" in u and not in_scope(r):
+                err(f"{where}: {why_out(r)}, so it maps to no Pun rule")
+            elif r is not None and in_scope(r) and "pun" not in u:
+                err(f"{where}: in scope upstream but maps to no Pun rule")
+    for cls, r in rector.items():
+        if in_scope(r) and not seen[cls]:
+            err(f"{cls}: in scope upstream but has no [upstream.*] entry")
+        if len(seen[cls]) > 1:
+            err(f"{cls}: listed {len(seen[cls])} times ({', '.join(seen[cls])})")
+
+    classes = up.get("phpstan-classes", {})
+    by_class = defaultdict(list)
+    for key, u in classes.items():
+        cls = u.get("class", "")
+        by_class[cls].append(key)
+        r = phpstan.get(cls)
+        where = f"upstream.phpstan-classes.{key}"
+        if r is None:
+            err(f"{where}: {cls!r} is not a rule class in the pinned inventory")
+            continue
+        if "pun" in u and not in_scope(r):
+            err(f"{where}: {why_out(r)}, so it maps to no Pun rule")
+        if "pun" not in u and in_scope(r):
+            err(f"{where}: in scope upstream but maps to no Pun rule")
+        if u.get("identifiers", []) != r["identifiers"]:
+            err(f"{where}: identifiers differ from the inventory")
+    for cls in phpstan:
+        if len(by_class[cls]) != 1:
+            err(f"{cls}: needs exactly one [upstream.phpstan-classes] entry, has {len(by_class[cls])}")
+
+    # One primary source per lint and analyse rule.
+    primary, mago = defaultdict(list), defaultdict(list)
+    for tool, entries in up.items():
+        for key, u in entries.items():
+            p = u.get("pun")
+            if p and tool in PRIMARY:
+                primary[p].append(f"{tool}:{key}")
+            elif p and tool in MAGO:
+                mago[p].append(f"{tool}:{key}")
+    for c in ("lint", "analyse"):
+        for key, r in data["rules"].get(c, {}).items():
+            rid = f"{c}/{key}"
+            if "merged" in r:
+                err(f"{rid}: `merged` is gone (one upstream rule per Pun rule)")
+            if r.get("origin") == "mago":
+                if primary[rid] or not mago[rid]:
+                    err(f"{rid}: origin = \"mago\" needs Mago sources and no primary source, has {primary[rid]}")
+            elif not r.get("pun_only") and len(primary[rid]) != 1:
+                err(f"{rid}: needs exactly one primary upstream rule, has {sorted(primary[rid]) or 'none'}")
+            g = key.split("/")[0]
+            if BELOW_FLOOR.fullmatch(g) and any(s.split(":")[0] in RECTOR_TOOLS for s in primary[rid]):
+                err(f"{rid}: group {g} is an upgrade below the floor (PHP 8.4, Laravel 12)")
+
+    # Every emitted identifier has an entry, and it points at the rule of a class that emits it.
+    rule_of = {u.get("class"): u["pun"] for u in classes.values() if "pun" in u}
+    emitters = defaultdict(set)
+    for cls, r in phpstan.items():
+        if cls in rule_of:
+            for i in r["identifiers"]:
+                emitters[i].add(rule_of[cls])
+    family = {}
+    for tool in PHPSTAN_FAMILY:
+        family.update(up.get(tool, {}))
+    patterns = [re.compile(re.escape(k).replace("%s", ".*")) for k in family if "%s" in k]
+    for i, rules in sorted(emitters.items()):
+        if "<" in i or i.startswith("phpstanApi."):
+            continue
+        if i not in family and not any(p.fullmatch(i) for p in patterns):
+            err(f"identifier {i}: emitted by {sorted(rules)[0]} but has no [upstream.phpstan*] entry")
+        elif "pun" in family.get(i, {}):
+            p = family[i]["pun"]
+            if p not in rules and not p.startswith("format/"):
+                err(f"identifier {i}: maps to {p}, which no class that emits it maps to")
+    return errors
+
+
 def enabled(data, cmd, test):
     return {f"{cmd}/{k}" for k, r in data["rules"].get(cmd, {}).items() if test(r)}
 
@@ -279,8 +416,67 @@ def selftest():
         "rules.lint: 'a/no-x' is listed twice"]
 
 
+
+def selftest_upstream():
+    def rec(fqcn, in_scope=True, deprecated=False, reason=None):
+        return {"fqcn": fqcn, "in_scope": in_scope, "deprecated": deprecated, "out_of_scope_reason": reason}
+    rector = {r["fqcn"]: r for r in [rec("R\\FooRector"), rec("R\\OldRector", False, False, "only in php70"),
+                                     rec("R\\GoneRector", False, True)]}
+    phpstan = {"P\\BarRule": {**rec("P\\BarRule"), "identifiers": ["bar.x", "bar.y"]},
+               "PHPStan\\Rules\\Api\\ApiRule": {**rec("PHPStan\\Rules\\Api\\ApiRule"), "identifiers": []}}
+    inv = (rector, phpstan)
+    good = {
+        "rules": {"lint": {"style/no-foo": {}, "style/no-mago": {"origin": "mago"}},
+                  "analyse": {"types/bar": {}}},
+        "upstream": {
+            "rector": {"Foo": {"class": "R\\FooRector", "pun": "lint/style/no-foo"},
+                       "Old": {"class": "R\\OldRector", "unsupported": "x"},
+                       "Gone": {"class": "R\\GoneRector", "unsupported": "x"}},
+            "mago-linter": {"m": {"pun": "lint/style/no-mago"}, "n": {"pun": "lint/style/no-foo"}},
+            "phpstan-classes": {"BarRule": {"class": "P\\BarRule", "pun": "analyse/types/bar",
+                                            "identifiers": ["bar.x", "bar.y"]},
+                                "ApiRule": {"class": "PHPStan\\Rules\\Api\\ApiRule", "unsupported": "x"}},
+            "phpstan": {"bar.x": {"pun": "analyse/types/bar"}, "bar.%s": {"pun": "analyse/types/bar"}},
+        },
+    }
+    assert check_upstream(good, inv) == [], check_upstream(good, inv)
+    import copy
+
+    def bad(mutate, expect):
+        d = copy.deepcopy(good)
+        mutate(d)
+        out = check_upstream(d, inv)
+        assert any(expect in e for e in out), (expect, out)
+
+    bad(lambda d: d["upstream"]["rector"]["Old"].update(pun="lint/style/no-foo"), "only in php70")
+    bad(lambda d: d["upstream"]["rector"]["Gone"].update(pun="lint/style/no-foo"), "deprecated upstream")
+    bad(lambda d: d["upstream"]["rector"]["Foo"].pop("pun"), "in scope upstream but maps to no Pun rule")
+    bad(lambda d: d["upstream"]["rector"].pop("Foo"), "has no [upstream.*] entry")
+    bad(lambda d: d["upstream"]["rector"].update(Post={"class": "R\\PostRector", "pun": "lint/style/no-foo"}),
+        "not a rule in the pinned inventory")
+    bad(lambda d: d["upstream"]["rector"].update(Foo2={"class": "R\\FooRector", "pun": "lint/style/no-x"}),
+        "listed 2 times")
+    bad(lambda d: d["upstream"]["phpstan-classes"]["ApiRule"].update(pun="analyse/types/bar"), "maps to no Pun rule")
+    bad(lambda d: d["upstream"]["phpstan-classes"].pop("BarRule"), "needs exactly one [upstream.phpstan-classes]")
+    bad(lambda d: d["upstream"]["phpstan-classes"]["BarRule"].update(identifiers=["bar.x"]), "identifiers differ")
+    bad(lambda d: d["upstream"]["php-cs-fixer"] if False else d["upstream"].update(
+        **{"php-cs-fixer": {"foo": {"pun": "lint/style/no-foo"}}}), "needs exactly one primary upstream rule")
+    bad(lambda d: d["rules"]["lint"].update({"style/no-bare": {}}), "has none")
+    bad(lambda d: d["rules"]["lint"]["style/no-foo"].update(origin="mago"), "origin = \"mago\" needs")
+    bad(lambda d: d["rules"]["lint"]["style/no-foo"].update(merged=["a", "b"]), "`merged` is gone")
+    bad(lambda d: d["upstream"]["phpstan"].update({"bar.x": {"pun": "analyse/types/other"}}), "which no class")
+    bad(lambda d: d["upstream"]["phpstan"].pop("bar.%s"), "identifier bar.y")
+
+    def below_floor(d):
+        d["rules"]["lint"]["php-8.0/no-foo"] = d["rules"]["lint"].pop("style/no-foo")
+        d["upstream"]["rector"]["Foo"]["pun"] = "lint/php-8.0/no-foo"
+        d["upstream"]["mago-linter"]["n"]["pun"] = "lint/php-8.0/no-foo"
+    bad(below_floor, "below the floor")
+
+
 if __name__ == "__main__":
     selftest()
+    selftest_upstream()
     path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT
     text = path.read_text()
     dups = duplicates(text)
@@ -288,7 +484,7 @@ if __name__ == "__main__":
         print("\n".join(dups))
         sys.exit(1)
     data = tomllib.loads(text)
-    errors = check(data)
+    errors = check(data) + check_upstream(data, inventory(path.parent / "upstream"))
     for e in errors:
         print(e)
     for c in COMMANDS:
@@ -305,6 +501,15 @@ if __name__ == "__main__":
     print("analyse presets (cumulative): " + ", ".join(
         f"{p} {len(analyse_preset(data, p))}" for p in data["meta"]["presets"]["analyse"])
         + f", opt-in {sum('preset' not in r for r in data['rules']['analyse'].values())}")
+    origin = defaultdict(int)
+    for tool, entries in data["upstream"].items():
+        for u in entries.values():
+            if tool in PRIMARY and u.get("pun", "").startswith(("lint/", "analyse/")):
+                origin[(u["pun"].split("/")[0], tool)] += 1
+    for c in ("lint", "analyse"):
+        mago = sum(r.get("origin") == "mago" for r in data["rules"][c].values())
+        print(f"{c} sources: " + ", ".join(f"{t} {n}" for (cc, t), n in sorted(origin.items()) if cc == c)
+              + f", Mago-derived {mago}, Pun-only {sum(bool(r.get('pun_only')) for r in data['rules'][c].values())}")
     print(f"{path.name}: {sum(len(r) for r in data['rules'].values())} rules, "
           f"{sum(len(u) for u in data['upstream'].values())} upstream entries, {len(errors)} error(s)")
     sys.exit(1 if errors else 0)

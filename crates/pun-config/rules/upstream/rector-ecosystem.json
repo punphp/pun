@@ -1,0 +1,3852 @@
+[
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/array-to-arr-get-rector",
+  "fqcn": "RectorLaravel\\Rector\\ArrayDimFetch\\ArrayToArrGetRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/ArrayToArrGetRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/env-variable-to-env-helper-rector",
+  "fqcn": "RectorLaravel\\Rector\\ArrayDimFetch\\EnvVariableToEnvHelperRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/EnvVariableToEnvHelperRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/request-variables-to-request-facade-rector",
+  "fqcn": "RectorLaravel\\Rector\\ArrayDimFetch\\RequestVariablesToRequestFacadeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/RequestVariablesToRequestFacadeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/server-variable-to-request-facade-rector",
+  "fqcn": "RectorLaravel\\Rector\\ArrayDimFetch\\ServerVariableToRequestFacadeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/ServerVariableToRequestFacadeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/session-variable-to-session-facade-rector",
+  "fqcn": "RectorLaravel\\Rector\\ArrayDimFetch\\SessionVariableToSessionFacadeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ArrayDimFetch/SessionVariableToSessionFacadeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/call-on-app-array-access-to-standalone-assign-rector",
+  "fqcn": "RectorLaravel\\Rector\\Assign\\CallOnAppArrayAccessToStandaloneAssignRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Assign/CallOnAppArrayAccessToStandaloneAssignRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/avoid-negated-collection-contains-or-doesnt-contain-rector",
+  "fqcn": "RectorLaravel\\Rector\\BooleanNot\\AvoidNegatedCollectionContainsOrDoesntContainRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-collection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/BooleanNot/AvoidNegatedCollectionContainsOrDoesntContainRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/database-expression-casts-to-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\Cast\\DatabaseExpressionCastsToMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-100",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Cast/DatabaseExpressionCastsToMethodCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-argument-default-value-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\AddArgumentDefaultValueRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-80",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddArgumentDefaultValueRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-generic-return-type-to-relations-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\AddGenericReturnTypeToRelationsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-type-declarations"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddGenericReturnTypeToRelationsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-parent-boot-to-model-class-method-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\AddParentBootToModelClassMethodRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-57",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddParentBootToModelClassMethodRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-parent-register-to-event-service-provider-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\AddParentRegisterToEventServiceProviderRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-80",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/AddParentRegisterToEventServiceProviderRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/make-model-attributes-and-scopes-protected-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\MakeModelAttributesAndScopesProtectedRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/MakeModelAttributesAndScopesProtectedRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/migrate-to-simplified-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\MigrateToSimplifiedAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-90",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/MigrateToSimplifiedAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/scope-named-class-method-to-scope-attributed-class-method-rector",
+  "fqcn": "RectorLaravel\\Rector\\ClassMethod\\ScopeNamedClassMethodToScopeAttributedClassMethodRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-120",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/ClassMethod/ScopeNamedClassMethodToScopeAttributedClassMethodRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-extends-annotation-to-model-factories-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\AddExtendsAnnotationToModelFactoriesRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-90",
+   "laravel-factories",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AddExtendsAnnotationToModelFactoriesRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-has-factory-to-models-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\AddHasFactoryToModelsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-factories"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AddHasFactoryToModelsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-mock-console-output-false-to-console-tests-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\AddMockConsoleOutputFalseToConsoleTestsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-57",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AddMockConsoleOutputFalseToConsoleTestsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/aliases-property-to-aliases-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\AliasesPropertyToAliasesAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AliasesPropertyToAliasesAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/anonymous-migrations-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\AnonymousMigrationsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AnonymousMigrationsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/appends-property-to-appends-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\AppendsPropertyToAppendsAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/AppendsPropertyToAppendsAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/backoff-property-to-backoff-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\BackoffPropertyToBackoffAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/BackoffPropertyToBackoffAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/cashier-stripe-options-to-stripe-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\CashierStripeOptionsToStripeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "package upgrade set below the current major (cashier-13)",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "cashier-13",
+   "up-to-cashier-13",
+   "up-to-cashier-14"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/CashierStripeOptionsToStripeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/collected-by-property-to-collected-by-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\CollectedByPropertyToCollectedByAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/CollectedByPropertyToCollectedByAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/collects-property-to-collects-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\CollectsPropertyToCollectsAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/CollectsPropertyToCollectsAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/command-hidden-property-to-hidden-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\CommandHiddenPropertyToHiddenAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/CommandHiddenPropertyToHiddenAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/connection-property-to-connection-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\ConnectionPropertyToConnectionAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ConnectionPropertyToConnectionAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/date-format-property-to-date-format-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\DateFormatPropertyToDateFormatAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/DateFormatPropertyToDateFormatAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/delay-property-to-delay-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\DelayPropertyToDelayAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/DelayPropertyToDelayAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/delete-when-missing-models-property-to-delete-when-missing-models-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\DeleteWhenMissingModelsPropertyToDeleteWhenMissingModelsAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/DeleteWhenMissingModelsPropertyToDeleteWhenMissingModelsAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/description-property-to-description-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\DescriptionPropertyToDescriptionAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/DescriptionPropertyToDescriptionAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/error-bag-property-to-error-bag-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\ErrorBagPropertyToErrorBagAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ErrorBagPropertyToErrorBagAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/fail-on-timeout-property-to-fail-on-timeout-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\FailOnTimeoutPropertyToFailOnTimeoutAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/FailOnTimeoutPropertyToFailOnTimeoutAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/fillable-property-to-fillable-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\FillablePropertyToFillableAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/FillablePropertyToFillableAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/guarded-property-to-guarded-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\GuardedPropertyToGuardedAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/GuardedPropertyToGuardedAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/help-property-to-help-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\HelpPropertyToHelpAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/HelpPropertyToHelpAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/hidden-property-to-hidden-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\HiddenPropertyToHiddenAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/HiddenPropertyToHiddenAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/job-connection-property-to-job-connection-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\JobConnectionPropertyToJobConnectionAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/JobConnectionPropertyToJobConnectionAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/livewire-component-computed-method-to-computed-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\LivewireComponentComputedMethodToComputedAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "package upgrade set below the current major (livewire-30)",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "livewire-30",
+   "up-to-livewire-30"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/LivewireComponentComputedMethodToComputedAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/livewire-component-query-string-to-url-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\LivewireComponentQueryStringToUrlAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "package upgrade set below the current major (livewire-30)",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "livewire-30",
+   "up-to-livewire-30"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/LivewireComponentQueryStringToUrlAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/max-exceptions-property-to-max-exceptions-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\MaxExceptionsPropertyToMaxExceptionsAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/MaxExceptionsPropertyToMaxExceptionsAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/model-casts-property-to-casts-method-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\ModelCastsPropertyToCastsMethodRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-110",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ModelCastsPropertyToCastsMethodRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/preserve-keys-property-to-preserve-keys-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\PreserveKeysPropertyToPreserveKeysAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/PreserveKeysPropertyToPreserveKeysAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/property-defer-to-deferrable-provider-to-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\PropertyDeferToDeferrableProviderToRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-58",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/PropertyDeferToDeferrableProviderToRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/queue-property-to-queue-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\QueuePropertyToQueueAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/QueuePropertyToQueueAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/remove-model-property-from-factories-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\RemoveModelPropertyFromFactoriesRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/RemoveModelPropertyFromFactoriesRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/replace-expects-methods-in-tests-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\ReplaceExpectsMethodsInTestsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-100",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ReplaceExpectsMethodsInTestsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/replace-queue-traits-with-queueable-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\ReplaceQueueTraitsWithQueueableRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-110",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/ReplaceQueueTraitsWithQueueableRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/signature-property-to-signature-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\SignaturePropertyToSignatureAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/SignaturePropertyToSignatureAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/stop-on-first-failure-property-to-stop-on-first-failure-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\StopOnFirstFailurePropertyToStopOnFirstFailureAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/StopOnFirstFailurePropertyToStopOnFirstFailureAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/table-property-to-table-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\TablePropertyToTableAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/TablePropertyToTableAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/timeout-property-to-timeout-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\TimeoutPropertyToTimeoutAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/TimeoutPropertyToTimeoutAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/touches-property-to-touches-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\TouchesPropertyToTouchesAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/TouchesPropertyToTouchesAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/tries-property-to-tries-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\TriesPropertyToTriesAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/TriesPropertyToTriesAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/unify-model-dates-with-casts-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\UnifyModelDatesWithCastsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-100",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/UnifyModelDatesWithCastsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/unique-for-property-to-unique-for-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\UniqueForPropertyToUniqueForAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/UniqueForPropertyToUniqueForAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/use-forwards-calls-trait-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\UseForwardsCallsTraitRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/UseForwardsCallsTraitRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/visible-property-to-visible-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\VisiblePropertyToVisibleAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/VisiblePropertyToVisibleAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/without-incrementing-property-to-without-incrementing-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\WithoutIncrementingPropertyToWithoutIncrementingAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/WithoutIncrementingPropertyToWithoutIncrementingAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/without-timestamps-property-to-without-timestamps-attribute-rector",
+  "fqcn": "RectorLaravel\\Rector\\Class_\\WithoutTimestampsPropertyToWithoutTimestampsAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-130",
+   "laravel-130-attributes",
+   "up-to-laravel-130"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Class_/WithoutTimestampsPropertyToWithoutTimestampsAttributeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/apply-default-instead-of-null-coalesce-rector",
+  "fqcn": "RectorLaravel\\Rector\\Coalesce\\ApplyDefaultInsteadOfNullCoalesceRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Coalesce/ApplyDefaultInsteadOfNullCoalesceRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/empty-to-blank-and-filled-func-rector",
+  "fqcn": "RectorLaravel\\Rector\\Empty_\\EmptyToBlankAndFilledFuncRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Empty_/EmptyToBlankAndFilledFuncRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/app-environment-comparison-to-parameter-rector",
+  "fqcn": "RectorLaravel\\Rector\\Expr\\AppEnvironmentComparisonToParameterRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Expr/AppEnvironmentComparisonToParameterRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/sub-str-to-starts-with-or-ends-with-static-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\Expr\\SubStrToStartsWithOrEndsWithStaticMethodCallRector\\SubStrToStartsWithOrEndsWithStaticMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Expr/SubStrToStartsWithOrEndsWithStaticMethodCallRector/SubStrToStartsWithOrEndsWithStaticMethodCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/app-to-resolve-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\AppToResolveRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/AppToResolveRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/argument-func-call-to-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\ArgumentFuncCallToMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-static-to-injection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/ArgumentFuncCallToMethodCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/config-to-typed-config-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\ConfigToTypedConfigMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/ConfigToTypedConfigMethodCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/dispatch-non-should-queue-to-dispatch-sync-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\DispatchNonShouldQueueToDispatchSyncRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-100",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/DispatchNonShouldQueueToDispatchSyncRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/factory-func-call-to-static-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\FactoryFuncCallToStaticCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "legacy-factories migration (Laravel 7 to 8 upgrade), below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-legacy-factories-to-classes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/FactoryFuncCallToStaticCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/helper-func-call-to-facade-class-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\HelperFuncCallToFacadeClassRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-static-to-injection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/HelperFuncCallToFacadeClassRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/not-filled-blank-func-call-to-blank-filled-func-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\NotFilledBlankFuncCallToBlankFilledFuncCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/NotFilledBlankFuncCallToBlankFilledFuncCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/now-func-with-start-of-day-method-call-to-today-func-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\NowFuncWithStartOfDayMethodCallToTodayFuncRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/NowFuncWithStartOfDayMethodCallToTodayFuncRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/remove-dump-data-dead-code-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\RemoveDumpDataDeadCodeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/RemoveDumpDataDeadCodeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/remove-redundant-value-calls-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\RemoveRedundantValueCallsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/RemoveRedundantValueCallsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/remove-redundant-with-calls-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\RemoveRedundantWithCallsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/RemoveRedundantWithCallsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/sleep-func-to-sleep-static-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\SleepFuncToSleepStaticCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/SleepFuncToSleepStaticCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/throw-if-and-throw-unless-exceptions-to-use-class-string-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\ThrowIfAndThrowUnlessExceptionsToUseClassStringRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/ThrowIfAndThrowUnlessExceptionsToUseClassStringRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/type-hint-tappable-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\FuncCall\\TypeHintTappableCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-type-declarations"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/FuncCall/TypeHintTappableCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/abort-if-rector",
+  "fqcn": "RectorLaravel\\Rector\\If_\\AbortIfRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-if-helpers"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/If_/AbortIfRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/report-if-rector",
+  "fqcn": "RectorLaravel\\Rector\\If_\\ReportIfRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-if-helpers"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/If_/ReportIfRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/throw-if-rector",
+  "fqcn": "RectorLaravel\\Rector\\If_\\ThrowIfRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-if-helpers"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/If_/ThrowIfRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/assert-see-to-assert-see-html-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\AssertSeeToAssertSeeHtmlRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-110",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/AssertSeeToAssertSeeHtmlRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/assert-status-to-assert-method-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\AssertStatusToAssertMethodRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-testing"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/AssertStatusToAssertMethodRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/avoid-negated-collection-filter-or-reject-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\AvoidNegatedCollectionFilterOrRejectRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-collection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/AvoidNegatedCollectionFilterOrRejectRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/change-query-where-date-value-with-carbon-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\ChangeQueryWhereDateValueWithCarbonRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-57",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ChangeQueryWhereDateValueWithCarbonRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/container-bind-concrete-with-closure-only-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\ContainerBindConcreteWithClosureOnlyRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-120",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ContainerBindConcreteWithClosureOnlyRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/convert-enumerable-to-array-to-all-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\ConvertEnumerableToArrayToAllRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-collection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ConvertEnumerableToArrayToAllRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/database-expression-to-string-to-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\DatabaseExpressionToStringToMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-100",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/DatabaseExpressionToStringToMethodCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/date-where-clause-to-shorthand-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\DateWhereClauseToShorthandRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/DateWhereClauseToShorthandRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/eloquent-order-by-to-latest-or-oldest-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\EloquentOrderByToLatestOrOldestRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/EloquentOrderByToLatestOrOldestRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/eloquent-where-relation-type-hinting-parameter-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\EloquentWhereRelationTypeHintingParameterRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-type-declarations"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/EloquentWhereRelationTypeHintingParameterRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/eloquent-where-type-hint-closure-parameter-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\EloquentWhereTypeHintClosureParameterRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-type-declarations"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/EloquentWhereTypeHintClosureParameterRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/factory-applying-states-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\FactoryApplyingStatesRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "legacy-factories migration (Laravel 7 to 8 upgrade), below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-legacy-factories-to-classes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/FactoryApplyingStatesRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/json-call-to-explicit-json-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\JsonCallToExplicitJsonCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-testing"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/JsonCallToExplicitJsonCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/lumen-routes-string-action-to-uses-array-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\LumenRoutesStringActionToUsesArrayRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "lumen set (Lumen framework only)",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "lumen"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/LumenRoutesStringActionToUsesArrayRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/lumen-routes-string-middleware-to-array-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\LumenRoutesStringMiddlewareToArrayRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "lumen set (Lumen framework only)",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "lumen"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/LumenRoutesStringMiddlewareToArrayRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/redirect-back-to-back-helper-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\RedirectBackToBackHelperRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/RedirectBackToBackHelperRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/redirect-route-to-to-route-helper-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\RedirectRouteToToRouteHelperRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/RedirectRouteToToRouteHelperRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/refactor-blueprint-geometry-columns-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\RefactorBlueprintGeometryColumnsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-110",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/RefactorBlueprintGeometryColumnsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/replace-service-container-call-arg-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\ReplaceServiceContainerCallArgRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-container-string-to-fully-qualified-name"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ReplaceServiceContainerCallArgRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/replace-without-jobs-events-and-notifications-with-facade-fake-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\ReplaceWithoutJobsEventsAndNotificationsWithFacadeFakeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-100",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ReplaceWithoutJobsEventsAndNotificationsWithFacadeFakeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/response-helper-call-to-json-response-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\ResponseHelperCallToJsonResponseRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ResponseHelperCallToJsonResponseRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/reverse-conditionable-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\ReverseConditionableMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ReverseConditionableMethodCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/unalias-collection-methods-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\UnaliasCollectionMethodsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-collection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/UnaliasCollectionMethodsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/use-component-property-within-commands-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\UseComponentPropertyWithinCommandsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/UseComponentPropertyWithinCommandsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/validation-rule-array-string-value-to-array-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\ValidationRuleArrayStringValueToArrayRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/ValidationRuleArrayStringValueToArrayRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/where-null-comparison-to-where-null-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\WhereNullComparisonToWhereNullRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/WhereNullComparisonToWhereNullRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/where-to-where-like-rector",
+  "fqcn": "RectorLaravel\\Rector\\MethodCall\\WhereToWhereLikeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/MethodCall/WhereToWhereLikeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/factory-definition-rector",
+  "fqcn": "RectorLaravel\\Rector\\Namespace_\\FactoryDefinitionRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "legacy-factories migration (Laravel 7 to 8 upgrade), below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-legacy-factories-to-classes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/Namespace_/FactoryDefinitionRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/add-guard-to-login-event-rector",
+  "fqcn": "RectorLaravel\\Rector\\New_\\AddGuardToLoginEventRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-57",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/New_/AddGuardToLoginEventRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/optional-to-nullsafe-operator-rector",
+  "fqcn": "RectorLaravel\\Rector\\PropertyFetch\\OptionalToNullsafeOperatorRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/PropertyFetch/OptionalToNullsafeOperatorRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/replace-faker-instance-with-helper-rector",
+  "fqcn": "RectorLaravel\\Rector\\PropertyFetch\\ReplaceFakerInstanceWithHelperRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-90",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/PropertyFetch/ReplaceFakerInstanceWithHelperRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/replace-faker-property-fetch-with-method-call-rector",
+  "fqcn": "RectorLaravel\\Rector\\PropertyFetch\\ReplaceFakerPropertyFetchWithMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "package upgrade set below the current major (faker-10)",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "faker-10"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/PropertyFetch/ReplaceFakerPropertyFetchWithMethodCallRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/assert-with-class-string-to-type-hinted-closure-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\AssertWithClassStringToTypeHintedClosureRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-testing"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/AssertWithClassStringToTypeHintedClosureRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/carbon-set-test-now-to-travel-to-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\CarbonSetTestNowToTravelToRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-testing"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/CarbonSetTestNowToTravelToRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/carbon-to-date-facade-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\CarbonToDateFacadeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/CarbonToDateFacadeRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/dispatch-to-helper-functions-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\DispatchToHelperFunctionsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-code-quality"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/DispatchToHelperFunctionsRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/eloquent-magic-method-to-query-builder-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\EloquentMagicMethodToQueryBuilderRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-eloquent-magic-method-to-query-builder"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/EloquentMagicMethodToQueryBuilderRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/minutes-to-seconds-in-cache-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\MinutesToSecondsInCacheRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/MinutesToSecondsInCacheRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/redirect301-to-permanent-redirect-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\Redirect301ToPermanentRedirectRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-57",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/Redirect301ToPermanentRedirectRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/replace-assert-times-send-with-assert-sent-times-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\ReplaceAssertTimesSendWithAssertSentTimesRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-100",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/ReplaceAssertTimesSendWithAssertSentTimesRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/request-static-validate-to-inject-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\RequestStaticValidateToInjectRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "driftingly/rector-laravel",
+  "sets": [
+   "laravel-static-to-injection"
+  ],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/RequestStaticValidateToInjectRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://getrector.com/rule-detail/route-action-callable-rector",
+  "fqcn": "RectorLaravel\\Rector\\StaticCall\\RouteActionCallableRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "in no rector-laravel/Pest set",
+  "package": "driftingly/rector-laravel",
+  "sets": [],
+  "source": "vendor/driftingly/rector-laravel/src/Rector/StaticCall/RouteActionCallableRector.php",
+  "version": "2.5.0"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-chainexpectcallsrector",
+  "fqcn": "Pest\\Rector\\Rules\\ChainExpectCallsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ChainExpectCallsRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-convertasserttoexpectrector",
+  "fqcn": "Pest\\Rector\\Rules\\ConvertAssertToExpectRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ConvertAssertToExpectRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-convertbeforeallindescriberector",
+  "fqcn": "Pest\\Rector\\Rules\\ConvertBeforeAllInDescribeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ConvertBeforeAllInDescribeRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-convertexpectexceptiontothrowrector",
+  "fqcn": "Pest\\Rector\\Rules\\ConvertExpectExceptionToThrowRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ConvertExpectExceptionToThrowRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-ensuretypechecksfirstrector",
+  "fqcn": "Pest\\Rector\\Rules\\EnsureTypeChecksFirstRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/EnsureTypeChecksFirstRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-fixinvalidrepeatvaluerector",
+  "fqcn": "Pest\\Rector\\Rules\\FixInvalidRepeatValueRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/FixInvalidRepeatValueRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-taptodeferrector",
+  "fqcn": "Pest\\Rector\\Rules\\Pest2ToPest3\\TapToDeferRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/Pest2ToPest3/TapToDeferRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-tohavemethodonclassrector",
+  "fqcn": "Pest\\Rector\\Rules\\Pest2ToPest3\\ToHaveMethodOnClassRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/Pest2ToPest3/ToHaveMethodOnClassRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usestoextendrector",
+  "fqcn": "Pest\\Rector\\Rules\\Pest2ToPest3\\UsesToExtendRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/Pest2ToPest3/UsesToExtendRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-removedebugexpectationsrector",
+  "fqcn": "Pest\\Rector\\Rules\\RemoveDebugExpectationsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveDebugExpectationsRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-removeonlyrector",
+  "fqcn": "Pest\\Rector\\Rules\\RemoveOnlyRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveOnlyRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-removeredundantliteraltypeexpectationrector",
+  "fqcn": "Pest\\Rector\\Rules\\RemoveRedundantLiteralTypeExpectationRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveRedundantLiteralTypeExpectationRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-removeredundantpestusesrector",
+  "fqcn": "Pest\\Rector\\Rules\\RemoveRedundantPestUsesRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveRedundantPestUsesRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-removestatictestclosurerector",
+  "fqcn": "Pest\\Rector\\Rules\\RemoveStaticTestClosureRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/RemoveStaticTestClosureRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-simplifycomparisonexpectationsrector",
+  "fqcn": "Pest\\Rector\\Rules\\SimplifyComparisonExpectationsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyComparisonExpectationsRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-simplifyexpectnotrector",
+  "fqcn": "Pest\\Rector\\Rules\\SimplifyExpectNotRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyExpectNotRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-simplifyfilesystemmatchersrector",
+  "fqcn": "Pest\\Rector\\Rules\\SimplifyFilesystemMatchersRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyFilesystemMatchersRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-simplifytobetruthyfalsyrector",
+  "fqcn": "Pest\\Rector\\Rules\\SimplifyToBeTruthyFalsyRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyToBeTruthyFalsyRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-simplifytoliteralbooleanrector",
+  "fqcn": "Pest\\Rector\\Rules\\SimplifyToLiteralBooleanRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/SimplifyToLiteralBooleanRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-tobetruenotfalserector",
+  "fqcn": "Pest\\Rector\\Rules\\ToBeTrueNotFalseRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/ToBeTrueNotFalseRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-useeachmodifierrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseEachModifierRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseEachModifierRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-useinstanceofmatcherrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseInstanceOfMatcherRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseInstanceOfMatcherRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usesequencematcherrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseSequenceMatcherRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseSequenceMatcherRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usestrictequalitymatchersrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseStrictEqualityMatchersRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseStrictEqualityMatchersRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobealphanumericrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeAlphaNumericRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeAlphaNumericRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobealpharector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeAlphaRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeAlphaRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobebetweenrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeBetweenRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeBetweenRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobedigitsrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeDigitsRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeDigitsRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobedirectoryrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeDirectoryRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeDirectoryRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobeemptyrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeEmptyRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeEmptyRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobefilerector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeFileRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeFileRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobeinrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeInRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeInRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobeinfiniterector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeInfiniteRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeInfiniteRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobejsonrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeJsonRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeJsonRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobelistrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeListRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeListRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobelowercaserector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeLowercaseRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeLowercaseRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobenanrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeNanRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeNanRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": true,
+  "deprecation_evidence": "vendor/pestphp/pest-plugin-rector/config/sets/coding-style.php:148 (intentionally not registered: emits toBeReadable()/toBeWritable(), which exist only as custom expectations)",
+  "docs_url": null,
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeReadableWritableRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "out_of_scope_reason": "not correctly added upstream (registered in no set)",
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeReadableWritableRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobeuppercaserector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeUppercaseRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeUppercaseRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobeurlrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeUrlRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeUrlRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetobeuuidrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToBeUuidRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToBeUuidRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetocontainequalrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToContainEqualRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToContainEqualRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetocontainonlyinstancesofrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToContainOnlyInstancesOfRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToContainOnlyInstancesOfRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetocontainrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToContainRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToContainRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetoendwithrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToEndWithRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToEndWithRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetoequalcanonicalizingrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToEqualCanonicalizingRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToEqualCanonicalizingRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetoequalwithdeltarector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToEqualWithDeltaRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToEqualWithDeltaRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetohavecountrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToHaveCountRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveCountRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetohavekeyrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToHaveKeyRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveKeyRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetohavekeysrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToHaveKeysRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveKeysRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetohavelengthrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToHaveLengthRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveLengthRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetohavepropertiesrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToHavePropertiesRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHavePropertiesRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetohavepropertyrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToHavePropertyRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHavePropertyRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetohavesamesizerector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToHaveSameSizeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToHaveSameSizeRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetomatcharrayrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToMatchArrayRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToMatchArrayRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetomatchobjectrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToMatchObjectRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToMatchObjectRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetomatchrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToMatchRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToMatchRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetostartwithrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToStartWithRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToStartWithRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetothrowrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseToThrowRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseToThrowRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": "https://pestphp.com/docs/rector#content-usetypematchersrector",
+  "fqcn": "Pest\\Rector\\Rules\\UseTypeMatchersRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "out_of_scope_reason": null,
+  "package": "pestphp/pest-plugin-rector",
+  "sets": [
+   "pest-coding-style"
+  ],
+  "source": "vendor/pestphp/pest-plugin-rector/src/Rules/UseTypeMatchersRector.php",
+  "version": "5.x-dev@1a4b6b7424f134af3849f1811997c7b46f90f91f"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Arguments\\Rector\\ClassMethod\\ArgumentAdderRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-57",
+   "laravel-60",
+   "laravel-70",
+   "laravel-80",
+   "laravel-90",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Removing\\Rector\\ClassMethod\\ArgumentRemoverRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-57",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Removing\\Rector\\Class_\\RemoveInterfacesRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-53",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-53",
+   "up-to-laravel-54",
+   "up-to-laravel-55",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Removing\\Rector\\Class_\\RemoveTraitUseRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-53",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-53",
+   "up-to-laravel-54",
+   "up-to-laravel-55",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Renaming\\Rector\\Class_\\RenameAttributeRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "package upgrade set below the current major (livewire-30)",
+  "package": "rector/rector",
+  "sets": [
+   "livewire-30",
+   "up-to-livewire-30"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Renaming\\Rector\\FuncCall\\RenameFunctionRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-100",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Renaming\\Rector\\MethodCall\\RenameMethodRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set; laravel-120 tries to configure it (Request::get -> input) via a discarded RectorConfig::configure() builder (vendor/driftingly/rector-laravel/config/sets/laravel120.php:21), so laravel-120 does not register it; list-rules confirms",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12; package upgrade set below the current major (cashier-13); package upgrade set below the current major (cashier-14)",
+  "package": "rector/rector",
+  "sets": [
+   "cashier-13",
+   "cashier-14",
+   "laravel-100",
+   "laravel-50",
+   "laravel-53",
+   "laravel-54",
+   "laravel-55",
+   "laravel-56",
+   "laravel-60",
+   "laravel-70",
+   "laravel-80",
+   "laravel-90",
+   "up-to-cashier-13",
+   "up-to-cashier-14",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-51",
+   "up-to-laravel-52",
+   "up-to-laravel-53",
+   "up-to-laravel-54",
+   "up-to-laravel-55",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Renaming\\Rector\\Name\\RenameClassRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": null,
+  "package": "rector/rector",
+  "sets": [
+   "laravel-130",
+   "laravel-130-core",
+   "laravel-130-without-attributes",
+   "laravel-50",
+   "laravel-51",
+   "laravel-52",
+   "laravel-53",
+   "laravel-54",
+   "laravel-55",
+   "laravel-60",
+   "laravel-70",
+   "laravel-facade-aliases-to-full-names",
+   "livewire-40",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-51",
+   "up-to-laravel-52",
+   "up-to-laravel-53",
+   "up-to-laravel-54",
+   "up-to-laravel-55",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Renaming\\Rector\\PropertyFetch\\RenamePropertyRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-100",
+   "laravel-55",
+   "laravel-58",
+   "laravel-80",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-55",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Renaming\\Rector\\StaticCall\\RenameStaticMethodRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-60",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Transform\\Rector\\ArrayDimFetch\\ArrayDimFetchToMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": null,
+  "package": "rector/rector",
+  "sets": [
+   "laravel-arrayaccess-to-method-call"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Transform\\Rector\\FuncCall\\FuncCallToNewRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": null,
+  "package": "rector/rector",
+  "sets": [
+   "laravel-static-to-injection"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Transform\\Rector\\FuncCall\\FuncCallToStaticCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": null,
+  "package": "rector/rector",
+  "sets": [
+   "laravel-58",
+   "laravel-array-str-functions-to-static-call",
+   "laravel-static-to-injection",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Transform\\Rector\\StaticCall\\StaticCallToFuncCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-53",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-53",
+   "up-to-laravel-54",
+   "up-to-laravel-55",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Transform\\Rector\\StaticCall\\StaticCallToMethodCallRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": true,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": null,
+  "package": "rector/rector",
+  "sets": [
+   "laravel-static-to-injection"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Transform\\Rector\\String_\\StringToClassConstantRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-52",
+   "laravel-54",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-52",
+   "up-to-laravel-53",
+   "up-to-laravel-54",
+   "up-to-laravel-55",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddParamTypeDeclarationRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-70",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddReturnTypeDeclarationRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-58",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ },
+ {
+  "deprecated": false,
+  "deprecation_evidence": null,
+  "docs_url": null,
+  "fqcn": "Rector\\Visibility\\Rector\\ClassMethod\\ChangeMethodVisibilityRector",
+  "gated_by": null,
+  "identifiers": [],
+  "in_scope": false,
+  "kind": "rector-rule",
+  "note": "core Rector rule, listed here only for its configured use inside these sets; its config differs per set",
+  "out_of_scope_reason": "laravel upgrade set below laravel-12",
+  "package": "rector/rector",
+  "sets": [
+   "laravel-56",
+   "laravel-57",
+   "laravel-60",
+   "laravel-90",
+   "up-to-laravel-100",
+   "up-to-laravel-110",
+   "up-to-laravel-120",
+   "up-to-laravel-130",
+   "up-to-laravel-130-without-attributes",
+   "up-to-laravel-56",
+   "up-to-laravel-57",
+   "up-to-laravel-58",
+   "up-to-laravel-60",
+   "up-to-laravel-70",
+   "up-to-laravel-80",
+   "up-to-laravel-90"
+  ],
+  "version": "2.6.1"
+ }
+]

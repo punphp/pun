@@ -9,11 +9,16 @@
 #                         fixtures (rules-tests/). No composer install: the runnable Rector is .oracle/rector-bin.
 #   .oracle/rector-bin    rector/rector 2.6.1 (the released, scoped build), pinned by scripts/oracle-rector/composer.lock.
 #                         Binary: php .oracle/rector-bin/vendor/bin/rector
+#   .oracle/rector-ecosystem  rector/rector 2.6.1 + driftingly/rector-laravel 2.5.0 + pestphp/pest-plugin-rector
+#                         5.x-dev@1a4b6b7, pinned by scripts/oracle-rector-ecosystem/composer.lock (the rule mapping's
+#                         rector-laravel and Pest inventories; rector-phpunit is bundled in rector/rector).
+#   .oracle/phpstan-src   phpstan-src at the tag 2.2.7 (Rule classes and tests; the PHPStan inventories).
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 PINT_REF=cef1b260c611f92e66902d678092e26932c9ea00
 FIXER_REF=0ee88422118f3cc59c8c3def222ba7f1493b6d5b # v3.95.17
 RECTOR_REF=16be33c1c2364d51038752a299fce01043d42576 # rector-src 2.6.1
+PHPSTAN_SRC_REF=88a9c7bcc61b7e8c2d95ef94427c8c34b9c8789f # phpstan-src 2.2.7
 
 fetch() { # dir url ref
   if [ "$(git -C "$1" rev-parse HEAD 2>/dev/null)" = "$3" ]; then return; fi
@@ -26,6 +31,7 @@ mkdir -p "$root/.oracle"
 fetch "$root/.oracle/pint" https://github.com/laravel/pint.git "$PINT_REF"
 fetch "$root/.oracle/php-cs-fixer" https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git "$FIXER_REF"
 fetch "$root/.oracle/rector" https://github.com/rectorphp/rector-src.git "$RECTOR_REF"
+fetch "$root/.oracle/phpstan-src" https://github.com/phpstan/phpstan-src.git "$PHPSTAN_SRC_REF"
 (cd "$root/.oracle/pint" && composer install -q --no-interaction --no-progress)
 (cd "$root/.oracle/php-cs-fixer" && composer install -q --no-interaction --no-progress)
 
@@ -38,6 +44,11 @@ cp "$root/scripts/oracle-phpstan/composer.json" "$root/scripts/oracle-phpstan/co
 mkdir -p "$root/.oracle/rector-bin"
 cp "$root/scripts/oracle-rector/composer.json" "$root/scripts/oracle-rector/composer.lock" "$root/.oracle/rector-bin/"
 (cd "$root/.oracle/rector-bin" && composer install -q --no-interaction --no-progress)
+
+# Rector ecosystem (the rule mapping's inventories, crates/pun-config/rules/upstream/): pinned by the committed lock file.
+mkdir -p "$root/.oracle/rector-ecosystem"
+cp "$root/scripts/oracle-rector-ecosystem/composer.json" "$root/scripts/oracle-rector-ecosystem/composer.lock" "$root/.oracle/rector-ecosystem/"
+(cd "$root/.oracle/rector-ecosystem" && composer install -q --no-interaction --no-progress)
 
 php "$root/.oracle/pint/builds/pint" --version
 php "$root/.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar" --version
