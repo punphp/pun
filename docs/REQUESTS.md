@@ -58,3 +58,10 @@
   run). Repro: laravel preset, `<?php\n\n// @php-cs-fixer-ignore single_quote\n$a = "x";\n` — Pint keeps `"x"`, Pun
   writes `'x'`. Delegate mode does it (crates/pun-delegate/src/worker.php has the exact messages). **Done**: `Pipeline::run` skips the
   annotated rules, `Pipeline::check_annotations` raises the run-level errors (pun-format/src/fixer_annotation.rs).
+- **pun-cli (from lsp agent, after the cleanup):** `pun lsp` should become `pun_lsp::run()` (crates/pun-lsp, docs/LSP.md).
+  For that, move `Engine2` / `fix_text` / `isolated` and the LSP config reload (`setup` / `stamp`) out of the binary into
+  a library (pun-format or a small engine crate) that `pun format`, `--stdin` and pun-lsp share; pun-lsp has only the
+  native subset today (no PHP-CS-Fixer delegation, no pint.json reload). Same for `lint::RULES` (the `--mago` rule
+  list), copied in crates/pun-lsp/src/pun.rs.
+- **pun-format (from lsp agent):** `LintError` could carry the line (and column, if php_parser has it) of a syntax error;
+  pun-lsp parses "on line N." out of the message to place the diagnostic.
