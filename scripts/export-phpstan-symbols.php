@@ -178,11 +178,14 @@ function dump(int $phpVersion, array &$typeStrings): array
         $functions[$n] = callable_entry($provider->getFunction($name($n), null));
     }
 
+    // Constant types as a PHPDoc type names them (TypeNodeResolver -> ConstantResolver, InitializerExprTypeResolver),
+    // which can be more precise than the reflection's getValueType() (typed class constants: `int` vs `16`).
+    $resolver = $c->getByType(TypeStringResolver::class);
     $constants = [];
     foreach (array_keys($stubs::CONSTANTS) as $n) {
         if ($provider->hasConstant($name($n), null)) {
             $constant = $provider->getConstant($name($n), null);
-            $constants[$constant->getName()] = t($constant->getValueType());
+            $constants[$constant->getName()] = t($resolver->resolve($constant->getName(), new NameScope(null, [])));
         }
     }
     ksort($constants);
@@ -198,13 +201,15 @@ function dump(int $phpVersion, array &$typeStrings): array
             'name' => $class->getName(),
             // every parent class and interface (not the class itself), for isSuperTypeOf between object types
             'ancestors' => array_values(array_filter(array_map(fn ($a) => $a->getName(), $class->getAncestors()), fn ($a) => $a !== $class->getName())),
-            'templates' => array_map(fn ($t) => $t instanceof PHPStan\Type\Generic\TemplateType && $t->getDefault() !== null ? t($t->getDefault()) : null, $class->getTemplateTypeMap()->getTypes()),
+            // name => [bound, default or null]
+            'templates' => array_map(fn ($t) => $t instanceof PHPStan\Type\Generic\TemplateType ? [t($t->getBound()), $t->getDefault() !== null ? t($t->getDefault()) : null] : [t($t), null], $class->getTemplateTypeMap()->getTypes()),
+            'cases' => $class->isEnum() ? array_keys($class->getEnumCases()) : [],
             'constants' => [],
             'methods' => [],
         ];
         foreach ($class->getNativeReflection()->getReflectionConstants() as $const) {
             if ($const->getDeclaringClass()->getName() === $class->getName() && !($class->isEnum() && $class->hasEnumCase($const->getName()))) {
-                $entry['constants'][$const->getName()] = t($class->getConstant($const->getName())->getValueType());
+                $entry['constants'][$const->getName()] = t($resolver->resolve('\\'.$class->getName().'::'.$const->getName(), new NameScope(null, [])));
             }
         }
         foreach ($class->getNativeReflection()->getMethods() as $method) {

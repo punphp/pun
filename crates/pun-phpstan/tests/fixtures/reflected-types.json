@@ -99,13 +99,6 @@
     ],
     [
         null,
-        "'.:/usr/share/php'",
-        "'.:/usr/share/php'",
-        "'.:/usr/share/php'",
-        "string"
-    ],
-    [
-        null,
         "'/'",
         "'/'",
         "'/'",
@@ -113,93 +106,9 @@
     ],
     [
         null,
-        "'/etc'",
-        "'/etc'",
-        "'/etc'",
-        "string"
-    ],
-    [
-        null,
-        "'/etc/php/8.5/cli'",
-        "'/etc/php/8.5/cli'",
-        "'/etc/php/8.5/cli'",
-        "string"
-    ],
-    [
-        null,
-        "'/etc/php/8.5/cli/conf.d'",
-        "'/etc/php/8.5/cli/conf.d'",
-        "'/etc/php/8.5/cli…'",
-        "string"
-    ],
-    [
-        null,
-        "'/usr'",
-        "'/usr'",
-        "'/usr'",
-        "string"
-    ],
-    [
-        null,
-        "'/usr/bin'",
-        "'/usr/bin'",
-        "'/usr/bin'",
-        "string"
-    ],
-    [
-        null,
-        "'/usr/bin/php8.5'",
-        "'/usr/bin/php8.5'",
-        "'/usr/bin/php8.5'",
-        "string"
-    ],
-    [
-        null,
-        "'/usr/lib/php'",
-        "'/usr/lib/php'",
-        "'/usr/lib/php'",
-        "string"
-    ],
-    [
-        null,
-        "'/usr/lib/php/20250925'",
-        "'/usr/lib/php/20250925'",
-        "'/usr/lib/php…'",
-        "string"
-    ],
-    [
-        null,
         "'/usr/sbin'",
         "'/usr/sbin'",
         "'/usr/sbin'",
-        "string"
-    ],
-    [
-        null,
-        "'/usr/share/man'",
-        "'/usr/share/man'",
-        "'/usr/share/man'",
-        "string"
-    ],
-    [
-        null,
-        "'/usr/share/php'",
-        "'/usr/share/php'",
-        "'/usr/share/php'",
-        "string"
-    ],
-    [
-        null,
-        "'/usr/share/php/8.5'",
-        "'/usr/share/php/8.5'",
-        "'/usr/share/php/8.5'",
-        "string"
-    ],
-    [
-        null,
-        "'/var'",
-        "'/var'",
-        "'/var'",
         "string"
     ],
     [
@@ -242,13 +151,6 @@
         "'1.0.18'",
         "'1.0.18'",
         "'1.0.18'",
-        "string"
-    ],
-    [
-        null,
-        "'1.0.6'",
-        "'1.0.6'",
-        "'1.0.6'",
         "string"
     ],
     [
@@ -470,13 +372,6 @@
     ],
     [
         null,
-        "'10.46 2025-08-27'",
-        "'10.46 2025-08-27'",
-        "'10.46 2025-08-27'",
-        "string"
-    ],
-    [
-        null,
         "'10112'",
         "'10112'",
         "'10112'",
@@ -494,13 +389,6 @@
         "'18.6'",
         "'18.6'",
         "'18.6'",
-        "string"
-    ],
-    [
-        null,
-        "'2.15.2'",
-        "'2.15.2'",
-        "'2.15.2'",
         "string"
     ],
     [
@@ -666,13 +554,6 @@
     ],
     [
         null,
-        "'8.5.11'",
-        "'8.5.11'",
-        "'8.5.11'",
-        "string"
-    ],
-    [
-        null,
         "':'",
         "':'",
         "':'",
@@ -683,6 +564,13 @@
         "'::'",
         "'::'",
         "'::'",
+        "string"
+    ],
+    [
+        null,
+        "';'",
+        "';'",
+        "';'",
         "string"
     ],
     [
@@ -729,6 +617,13 @@
     ],
     [
         null,
+        "'BSD'",
+        "'BSD'",
+        "'BSD'",
+        "string"
+    ],
+    [
+        null,
         "'D, d M Y H:i:s O'",
         "'D, d M Y H:i:s O'",
         "'D, d M Y H:i:s O'",
@@ -760,6 +655,13 @@
         "'DES'",
         "'DES'",
         "'DES'",
+        "string"
+    ],
+    [
+        null,
+        "'Darwin'",
+        "'Darwin'",
+        "'Darwin'",
         "string"
     ],
     [
@@ -1170,13 +1072,6 @@
     ],
     [
         null,
-        "'Sep 24 2026 14:33:50'",
-        "'Sep 24 2026 14:33:50'",
-        "'Sep 24 2026 14:33:50'",
-        "string"
-    ],
-    [
-        null,
         "'September'",
         "'September'",
         "'September'",
@@ -1187,6 +1082,13 @@
         "'SimpleXMLElement'",
         "'SimpleXMLElement'",
         "'SimpleXMLElement'",
+        "string"
+    ],
+    [
+        null,
+        "'Solaris'",
+        "'Solaris'",
+        "'Solaris'",
         "string"
     ],
     [
@@ -1240,9 +1142,23 @@
     ],
     [
         null,
+        "'Unknown'",
+        "'Unknown'",
+        "'Unknown'",
+        "string"
+    ],
+    [
+        null,
         "'Wednesday'",
         "'Wednesday'",
         "'Wednesday'",
+        "string"
+    ],
+    [
+        null,
+        "'Windows'",
+        "'Windows'",
+        "'Windows'",
         "string"
     ],
     [
@@ -1317,6 +1233,20 @@
     ],
     [
         null,
+        "'apache'",
+        "'apache'",
+        "'apache'",
+        "string"
+    ],
+    [
+        null,
+        "'apache2handler'",
+        "'apache2handler'",
+        "'apache2handler'",
+        "string"
+    ],
+    [
+        null,
         "'argon2i'",
         "'argon2i'",
         "'argon2i'",
@@ -1380,6 +1310,13 @@
     ],
     [
         null,
+        "'cgi'",
+        "'cgi'",
+        "'cgi'",
+        "string"
+    ],
+    [
+        null,
         "'char'",
         "'char'",
         "'char'",
@@ -1394,6 +1331,13 @@
     ],
     [
         null,
+        "'cli-server'",
+        "'cli-server'",
+        "'cli-server'",
+        "string"
+    ],
+    [
+        null,
         "'direct'",
         "'direct'",
         "'direct'",
@@ -1401,9 +1345,23 @@
     ],
     [
         null,
+        "'dll'",
+        "'dll'",
+        "'dll'",
+        "string"
+    ],
+    [
+        null,
         "'dynamic'",
         "'dynamic'",
         "'dynamic'",
+        "string"
+    ],
+    [
+        null,
+        "'embed'",
+        "'embed'",
+        "'embed'",
         "string"
     ],
     [
@@ -1422,6 +1380,13 @@
     ],
     [
         null,
+        "'fpm-fcgi'",
+        "'fpm-fcgi'",
+        "'fpm-fcgi'",
+        "string"
+    ],
+    [
+        null,
         "'fs-type'",
         "'fs-type'",
         "'fs-type'",
@@ -1432,13 +1397,6 @@
         "'fsfs'",
         "'fsfs'",
         "'fsfs'",
-        "string"
-    ],
-    [
-        null,
-        "'glibc'",
-        "'glibc'",
-        "'glibc'",
         "string"
     ],
     [
@@ -1520,6 +1478,13 @@
     ],
     [
         null,
+        "'litespeed'",
+        "'litespeed'",
+        "'litespeed'",
+        "string"
+    ],
+    [
+        null,
         "'modtype'",
         "'modtype'",
         "'modtype'",
@@ -1579,6 +1544,13 @@
         "'php:svn:auth:ignore-ssl-verify-errors'",
         "'php:svn:auth:ignore-ssl-verify-errors'",
         "'php:svn:auth:ignore…'",
+        "string"
+    ],
+    [
+        null,
+        "'phpdbg'",
+        "'phpdbg'",
+        "'phpdbg'",
         "string"
     ],
     [
@@ -1863,6 +1835,13 @@
     ],
     [
         null,
+        "(\"\\n\" | \"\\r\\n\")",
+        "\"\\n\"|\"\\r\\n\"",
+        "\"\\n\"|\"\\r\\n\"",
+        "string"
+    ],
+    [
+        null,
         "($allow_string is false ? ($object_or_class is object ? bool : false) : bool)",
         "($allow_string is false ? ($object_or_class is object ? bool : false) : bool)",
         "($allow_string is false ? ($object_or_class is object ? bool : false) : bool)",
@@ -2066,9 +2045,30 @@
     ],
     [
         null,
+        "('/' | '\\\\')",
+        "'/'|'\\\\'",
+        "'/'|'\\\\'",
+        "string"
+    ],
+    [
+        null,
+        "(':' | ';')",
+        "':'|';'",
+        "':'|';'",
+        "string"
+    ],
+    [
+        null,
         "('AES' | 'AES128' | 'DES')",
         "'AES'|'AES128'|'DES'",
         "'AES'|'AES128'|'DES'",
+        "string"
+    ],
+    [
+        null,
+        "('BSD' | 'Darwin' | 'Linux' | 'Solaris' | 'Unknown' | 'Windows')",
+        "'BSD'|'Darwin'|'Linux'|'Solaris'|'Unknown'|'Windows'",
+        "'BSD'|'Darwin'|'Linux'|'Solaris'|'Unknown'|'Windows'",
         "string"
     ],
     [
@@ -2080,9 +2080,23 @@
     ],
     [
         null,
+        "('apache' | 'apache2handler' | 'cgi' | 'cli' | 'cli-server' | 'embed' | 'fpm-fcgi' | 'litespeed' | 'phpdbg' | non-falsy-string)",
+        "'apache'|'apache2handler'|'cgi'|'cli'|'cli-server'|'embed'|'fpm-fcgi'|'litespeed'|'phpdbg'|non-falsy-string",
+        "'apache'|'apache2handler'|'cgi'|'cli'|'cli-server'|'embed'|'fpm-fcgi'|'litespeed'|'phpdbg'|non-falsy-string",
+        "string"
+    ],
+    [
+        null,
         "('authNoPriv' | 'authPriv' | 'noAuthNoPriv')",
         "'authNoPriv'|'authPriv'|'noAuthNoPriv'",
         "'authNoPriv'|'authPriv'|'noAuthNoPriv'",
+        "string"
+    ],
+    [
+        null,
+        "('dll' | 'so')",
+        "'dll'|'so'",
+        "'dll'|'so'",
         "string"
     ],
     [
@@ -2237,6 +2251,13 @@
         "(2147483647 | 9223372036854775807)",
         "2147483647|9223372036854775807",
         "2147483647|9223372036854775807",
+        "int"
+    ],
+    [
+        null,
+        "(4 | 8)",
+        "4|8",
+        "4|8",
         "int"
     ],
     [
@@ -4922,20 +4943,6 @@
     ],
     [
         null,
-        "2.2250738585072014E-308",
-        "2.2250738585072014E-308",
-        "2.2250738585072014E-308",
-        "float"
-    ],
-    [
-        null,
-        "2.220446049250313E-16",
-        "2.220446049250313E-16",
-        "2.220446049250313E-16",
-        "float"
-    ],
-    [
-        null,
         "0.001",
         "0.001",
         "0.001",
@@ -15310,13 +15317,6 @@
     ],
     [
         null,
-        "21502",
-        "21502",
-        "21502",
-        "int"
-    ],
-    [
-        null,
         "24576",
         "24576",
         "24576",
@@ -15523,13 +15523,6 @@
         "30270",
         "30270",
         "30270",
-        "int"
-    ],
-    [
-        null,
-        "30719",
-        "30719",
-        "30719",
         "int"
     ],
     [
@@ -16283,13 +16276,6 @@
     ],
     [
         null,
-        "80511",
-        "80511",
-        "80511",
-        "int"
-    ],
-    [
-        null,
         "100000",
         "100000",
         "100000",
@@ -16790,20 +16776,6 @@
         "327683",
         "327683",
         "327683",
-        "int"
-    ],
-    [
-        null,
-        "393216",
-        "393216",
-        "393216",
-        "int"
-    ],
-    [
-        null,
-        "458752",
-        "458752",
-        "458752",
         "int"
     ],
     [
@@ -17616,13 +17588,6 @@
         "536870947",
         "536870947",
         "536870947",
-        "int"
-    ],
-    [
-        null,
-        "810549328",
-        "810549328",
-        "810549328",
         "int"
     ],
     [
@@ -17715,13 +17680,6 @@
         "9223372036854775807",
         "9223372036854775807",
         "int"
-    ],
-    [
-        null,
-        "1.7976931348623157E+308",
-        "1.7976931348623157E+308",
-        "1.7976931348623157E+308",
-        "float"
     ],
     [
         null,
@@ -17732,6 +17690,13 @@
     ],
     [
         null,
+        "Accel",
+        "Accel",
+        "Accel",
+        "Accel"
+    ],
+    [
+        null,
         "AddressInfo",
         "AddressInfo",
         "AddressInfo",
@@ -17739,10 +17704,94 @@
     ],
     [
         null,
+        "AppWindow",
+        "AppWindow",
+        "AppWindow",
+        "AppWindow"
+    ],
+    [
+        null,
         "CURLFile",
         "CURLFile",
         "CURLFile",
         "CURLFile"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_MAX_TLSv1_0",
+        "CURL_SSLVERSION_MAX_TLSv1_0",
+        "CURL_SSLVERSION_MAX_TLSv1_0",
+        "CURL_SSLVERSION_MAX_TLSv1_0"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_MAX_TLSv1_1",
+        "CURL_SSLVERSION_MAX_TLSv1_1",
+        "CURL_SSLVERSION_MAX_TLSv1_1",
+        "CURL_SSLVERSION_MAX_TLSv1_1"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_MAX_TLSv1_2",
+        "CURL_SSLVERSION_MAX_TLSv1_2",
+        "CURL_SSLVERSION_MAX_TLSv1_2",
+        "CURL_SSLVERSION_MAX_TLSv1_2"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_MAX_TLSv1_3",
+        "CURL_SSLVERSION_MAX_TLSv1_3",
+        "CURL_SSLVERSION_MAX_TLSv1_3",
+        "CURL_SSLVERSION_MAX_TLSv1_3"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_SSLv2",
+        "CURL_SSLVERSION_SSLv2",
+        "CURL_SSLVERSION_SSLv2",
+        "CURL_SSLVERSION_SSLv2"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_SSLv3",
+        "CURL_SSLVERSION_SSLv3",
+        "CURL_SSLVERSION_SSLv3",
+        "CURL_SSLVERSION_SSLv3"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_TLSv1",
+        "CURL_SSLVERSION_TLSv1",
+        "CURL_SSLVERSION_TLSv1",
+        "CURL_SSLVERSION_TLSv1"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_TLSv1_0",
+        "CURL_SSLVERSION_TLSv1_0",
+        "CURL_SSLVERSION_TLSv1_0",
+        "CURL_SSLVERSION_TLSv1_0"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_TLSv1_1",
+        "CURL_SSLVERSION_TLSv1_1",
+        "CURL_SSLVERSION_TLSv1_1",
+        "CURL_SSLVERSION_TLSv1_1"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_TLSv1_2",
+        "CURL_SSLVERSION_TLSv1_2",
+        "CURL_SSLVERSION_TLSv1_2",
+        "CURL_SSLVERSION_TLSv1_2"
+    ],
+    [
+        null,
+        "CURL_SSLVERSION_TLSv1_3",
+        "CURL_SSLVERSION_TLSv1_3",
+        "CURL_SSLVERSION_TLSv1_3",
+        "CURL_SSLVERSION_TLSv1_3"
     ],
     [
         null,
@@ -17830,6 +17879,20 @@
     ],
     [
         null,
+        "Calendar",
+        "Calendar",
+        "Calendar",
+        "Calendar"
+    ],
+    [
+        null,
+        "CheckBox",
+        "CheckBox",
+        "CheckBox",
+        "CheckBox"
+    ],
+    [
+        null,
         "Closure",
         "Closure",
         "Closure",
@@ -17876,6 +17939,13 @@
         "Collator",
         "Collator",
         "Collator"
+    ],
+    [
+        null,
+        "ComboBox",
+        "ComboBox",
+        "ComboBox",
+        "ComboBox"
     ],
     [
         null,
@@ -18054,6 +18124,13 @@
     ],
     [
         null,
+        "EditBox",
+        "EditBox",
+        "EditBox",
+        "EditBox"
+    ],
+    [
+        null,
         "EnchantBroker",
         "EnchantBroker",
         "EnchantBroker",
@@ -18089,6 +18166,13 @@
     ],
     [
         null,
+        "Frame",
+        "Frame",
+        "Frame",
+        "Frame"
+    ],
+    [
+        null,
         "GEOSGeometry",
         "GEOSGeometry",
         "GEOSGeometry",
@@ -18103,6 +18187,20 @@
     ],
     [
         null,
+        "GNUPG_PROTOCOL_OpenPGP",
+        "GNUPG_PROTOCOL_OpenPGP",
+        "GNUPG_PROTOCOL_OpenPGP",
+        "GNUPG_PROTOCOL_OpenPGP"
+    ],
+    [
+        null,
+        "Gauge",
+        "Gauge",
+        "Gauge",
+        "Gauge"
+    ],
+    [
+        null,
         "GdFont",
         "GdFont",
         "GdFont",
@@ -18114,6 +18212,34 @@
         "GdImage",
         "GdImage",
         "GdImage"
+    ],
+    [
+        null,
+        "HTMLControl",
+        "HTMLControl",
+        "HTMLControl",
+        "HTMLControl"
+    ],
+    [
+        null,
+        "HTTP_SSL_VERSION_SSLv2",
+        "HTTP_SSL_VERSION_SSLv2",
+        "HTTP_SSL_VERSION_SSLv2",
+        "HTTP_SSL_VERSION_SSLv2"
+    ],
+    [
+        null,
+        "HTTP_SSL_VERSION_SSLv3",
+        "HTTP_SSL_VERSION_SSLv3",
+        "HTTP_SSL_VERSION_SSLv3",
+        "HTTP_SSL_VERSION_SSLv3"
+    ],
+    [
+        null,
+        "HTTP_SSL_VERSION_TLSv1",
+        "HTTP_SSL_VERSION_TLSv1",
+        "HTTP_SSL_VERSION_TLSv1",
+        "HTTP_SSL_VERSION_TLSv1"
     ],
     [
         null,
@@ -18145,6 +18271,13 @@
     ],
     [
         null,
+        "HyperLink",
+        "HyperLink",
+        "HyperLink",
+        "HyperLink"
+    ],
+    [
+        null,
         "IMAP\\Connection",
         "IMAP\\Connection",
         "IMAP\\Connection",
@@ -18156,6 +18289,13 @@
         "INF",
         "INF",
         "float"
+    ],
+    [
+        null,
+        "ImageButton",
+        "ImageButton",
+        "ImageButton",
+        "ImageButton"
     ],
     [
         null,
@@ -18201,6 +18341,13 @@
     ],
     [
         null,
+        "InvisibleArea",
+        "InvisibleArea",
+        "InvisibleArea",
+        "InvisibleArea"
+    ],
+    [
+        null,
         "LDAP\\Connection",
         "LDAP\\Connection",
         "LDAP\\Connection",
@@ -18222,10 +18369,31 @@
     ],
     [
         null,
+        "Label",
+        "Label",
+        "Label",
+        "Label"
+    ],
+    [
+        null,
         "LibXMLError",
         "LibXMLError",
         "LibXMLError",
         "LibXMLError"
+    ],
+    [
+        null,
+        "ListBox",
+        "ListBox",
+        "ListBox",
+        "ListBox"
+    ],
+    [
+        null,
+        "ListView",
+        "ListView",
+        "ListView",
+        "ListView"
     ],
     [
         null,
@@ -18243,10 +18411,31 @@
     ],
     [
         null,
+        "Menu",
+        "Menu",
+        "Menu",
+        "Menu"
+    ],
+    [
+        null,
         "MessageFormatter",
         "MessageFormatter",
         "MessageFormatter",
         "MessageFormatter"
+    ],
+    [
+        null,
+        "ModalDialog",
+        "ModalDialog",
+        "ModalDialog",
+        "ModalDialog"
+    ],
+    [
+        null,
+        "ModelessDialog",
+        "ModelessDialog",
+        "ModelessDialog",
+        "ModelessDialog"
     ],
     [
         null,
@@ -18275,6 +18464,13 @@
         "NAN",
         "NAN",
         "float"
+    ],
+    [
+        null,
+        "NakedWindow",
+        "NakedWindow",
+        "NakedWindow",
+        "NakedWindow"
     ],
     [
         null,
@@ -18390,10 +18586,38 @@
     ],
     [
         null,
+        "PopupWindow",
+        "PopupWindow",
+        "PopupWindow",
+        "PopupWindow"
+    ],
+    [
+        null,
+        "PushButton",
+        "PushButton",
+        "PushButton",
+        "PushButton"
+    ],
+    [
+        null,
         "QDomDocument",
         "QDomDocument",
         "QDomDocument",
         "QDomDocument"
+    ],
+    [
+        null,
+        "RTFEditBox",
+        "RTFEditBox",
+        "RTFEditBox",
+        "RTFEditBox"
+    ],
+    [
+        null,
+        "RadioButton",
+        "RadioButton",
+        "RadioButton",
+        "RadioButton"
     ],
     [
         null,
@@ -18408,6 +18632,13 @@
         "RarEntry",
         "RarEntry",
         "RarEntry"
+    ],
+    [
+        null,
+        "ResizableWindow",
+        "ResizableWindow",
+        "ResizableWindow",
+        "ResizableWindow"
     ],
     [
         null,
@@ -18432,6 +18663,27 @@
     ],
     [
         null,
+        "SOAP_SSL_METHOD_SSLv2",
+        "SOAP_SSL_METHOD_SSLv2",
+        "SOAP_SSL_METHOD_SSLv2",
+        "SOAP_SSL_METHOD_SSLv2"
+    ],
+    [
+        null,
+        "SOAP_SSL_METHOD_SSLv23",
+        "SOAP_SSL_METHOD_SSLv23",
+        "SOAP_SSL_METHOD_SSLv23",
+        "SOAP_SSL_METHOD_SSLv23"
+    ],
+    [
+        null,
+        "SOAP_SSL_METHOD_SSLv3",
+        "SOAP_SSL_METHOD_SSLv3",
+        "SOAP_SSL_METHOD_SSLv3",
+        "SOAP_SSL_METHOD_SSLv3"
+    ],
+    [
+        null,
         "SQLiteDatabase",
         "SQLiteDatabase",
         "SQLiteDatabase",
@@ -18453,10 +18705,290 @@
     ],
     [
         null,
+        "STREAM_CRYPTO_METHOD_SSLv23_CLIENT",
+        "STREAM_CRYPTO_METHOD_SSLv23_CLIENT",
+        "STREAM_CRYPTO_METHOD_SSLv23_CLIENT",
+        "STREAM_CRYPTO_METHOD_SSLv23_CLIENT"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_SSLv23_SERVER",
+        "STREAM_CRYPTO_METHOD_SSLv23_SERVER",
+        "STREAM_CRYPTO_METHOD_SSLv23_SERVER",
+        "STREAM_CRYPTO_METHOD_SSLv23_SERVER"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_SSLv2_CLIENT",
+        "STREAM_CRYPTO_METHOD_SSLv2_CLIENT",
+        "STREAM_CRYPTO_METHOD_SSLv2_CLIENT",
+        "STREAM_CRYPTO_METHOD_SSLv2_CLIENT"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_SSLv2_SERVER",
+        "STREAM_CRYPTO_METHOD_SSLv2_SERVER",
+        "STREAM_CRYPTO_METHOD_SSLv2_SERVER",
+        "STREAM_CRYPTO_METHOD_SSLv2_SERVER"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_SSLv3_CLIENT",
+        "STREAM_CRYPTO_METHOD_SSLv3_CLIENT",
+        "STREAM_CRYPTO_METHOD_SSLv3_CLIENT",
+        "STREAM_CRYPTO_METHOD_SSLv3_CLIENT"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_SSLv3_SERVER",
+        "STREAM_CRYPTO_METHOD_SSLv3_SERVER",
+        "STREAM_CRYPTO_METHOD_SSLv3_SERVER",
+        "STREAM_CRYPTO_METHOD_SSLv3_SERVER"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_TLSv1_0_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_0_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_0_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_0_SERVER"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_TLSv1_1_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_1_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_1_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_1_SERVER"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_TLSv1_2_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_2_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_2_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_2_SERVER"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT",
+        "STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_METHOD_TLSv1_3_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_3_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_3_SERVER",
+        "STREAM_CRYPTO_METHOD_TLSv1_3_SERVER"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_PROTO_SSLv3",
+        "STREAM_CRYPTO_PROTO_SSLv3",
+        "STREAM_CRYPTO_PROTO_SSLv3",
+        "STREAM_CRYPTO_PROTO_SSLv3"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_PROTO_TLSv1_0",
+        "STREAM_CRYPTO_PROTO_TLSv1_0",
+        "STREAM_CRYPTO_PROTO_TLSv1_0",
+        "STREAM_CRYPTO_PROTO_TLSv1_0"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_PROTO_TLSv1_1",
+        "STREAM_CRYPTO_PROTO_TLSv1_1",
+        "STREAM_CRYPTO_PROTO_TLSv1_1",
+        "STREAM_CRYPTO_PROTO_TLSv1_1"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_PROTO_TLSv1_2",
+        "STREAM_CRYPTO_PROTO_TLSv1_2",
+        "STREAM_CRYPTO_PROTO_TLSv1_2",
+        "STREAM_CRYPTO_PROTO_TLSv1_2"
+    ],
+    [
+        null,
+        "STREAM_CRYPTO_PROTO_TLSv1_3",
+        "STREAM_CRYPTO_PROTO_TLSv1_3",
+        "STREAM_CRYPTO_PROTO_TLSv1_3",
+        "STREAM_CRYPTO_PROTO_TLSv1_3"
+    ],
+    [
+        null,
         "SWFSound",
         "SWFSound",
         "SWFSound",
         "SWFSound"
+    ],
+    [
+        null,
+        "SWOOLE_SSL_SSLv2",
+        "SWOOLE_SSL_SSLv2",
+        "SWOOLE_SSL_SSLv2",
+        "SWOOLE_SSL_SSLv2"
+    ],
+    [
+        null,
+        "SWOOLE_SSL_TLSv1",
+        "SWOOLE_SSL_TLSv1",
+        "SWOOLE_SSL_TLSv1",
+        "SWOOLE_SSL_TLSv1"
+    ],
+    [
+        null,
+        "SWOOLE_SSL_TLSv1_1",
+        "SWOOLE_SSL_TLSv1_1",
+        "SWOOLE_SSL_TLSv1_1",
+        "SWOOLE_SSL_TLSv1_1"
+    ],
+    [
+        null,
+        "SWOOLE_SSL_TLSv1_2",
+        "SWOOLE_SSL_TLSv1_2",
+        "SWOOLE_SSL_TLSv1_2",
+        "SWOOLE_SSL_TLSv1_2"
+    ],
+    [
+        null,
+        "SWOOLE_SSL_TLSv1_3",
+        "SWOOLE_SSL_TLSv1_3",
+        "SWOOLE_SSL_TLSv1_3",
+        "SWOOLE_SSL_TLSv1_3"
+    ],
+    [
+        null,
+        "SWOOLE_SSLv23_CLIENT_METHOD",
+        "SWOOLE_SSLv23_CLIENT_METHOD",
+        "SWOOLE_SSLv23_CLIENT_METHOD",
+        "SWOOLE_SSLv23_CLIENT_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_SSLv23_METHOD",
+        "SWOOLE_SSLv23_METHOD",
+        "SWOOLE_SSLv23_METHOD",
+        "SWOOLE_SSLv23_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_SSLv23_SERVER_METHOD",
+        "SWOOLE_SSLv23_SERVER_METHOD",
+        "SWOOLE_SSLv23_SERVER_METHOD",
+        "SWOOLE_SSLv23_SERVER_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_SSLv3_CLIENT_METHOD",
+        "SWOOLE_SSLv3_CLIENT_METHOD",
+        "SWOOLE_SSLv3_CLIENT_METHOD",
+        "SWOOLE_SSLv3_CLIENT_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_SSLv3_METHOD",
+        "SWOOLE_SSLv3_METHOD",
+        "SWOOLE_SSLv3_METHOD",
+        "SWOOLE_SSLv3_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_SSLv3_SERVER_METHOD",
+        "SWOOLE_SSLv3_SERVER_METHOD",
+        "SWOOLE_SSLv3_SERVER_METHOD",
+        "SWOOLE_SSLv3_SERVER_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_TLSv1_1_CLIENT_METHOD",
+        "SWOOLE_TLSv1_1_CLIENT_METHOD",
+        "SWOOLE_TLSv1_1_CLIENT_METHOD",
+        "SWOOLE_TLSv1_1_CLIENT_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_TLSv1_1_METHOD",
+        "SWOOLE_TLSv1_1_METHOD",
+        "SWOOLE_TLSv1_1_METHOD",
+        "SWOOLE_TLSv1_1_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_TLSv1_1_SERVER_METHOD",
+        "SWOOLE_TLSv1_1_SERVER_METHOD",
+        "SWOOLE_TLSv1_1_SERVER_METHOD",
+        "SWOOLE_TLSv1_1_SERVER_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_TLSv1_2_CLIENT_METHOD",
+        "SWOOLE_TLSv1_2_CLIENT_METHOD",
+        "SWOOLE_TLSv1_2_CLIENT_METHOD",
+        "SWOOLE_TLSv1_2_CLIENT_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_TLSv1_2_METHOD",
+        "SWOOLE_TLSv1_2_METHOD",
+        "SWOOLE_TLSv1_2_METHOD",
+        "SWOOLE_TLSv1_2_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_TLSv1_2_SERVER_METHOD",
+        "SWOOLE_TLSv1_2_SERVER_METHOD",
+        "SWOOLE_TLSv1_2_SERVER_METHOD",
+        "SWOOLE_TLSv1_2_SERVER_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_TLSv1_CLIENT_METHOD",
+        "SWOOLE_TLSv1_CLIENT_METHOD",
+        "SWOOLE_TLSv1_CLIENT_METHOD",
+        "SWOOLE_TLSv1_CLIENT_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_TLSv1_METHOD",
+        "SWOOLE_TLSv1_METHOD",
+        "SWOOLE_TLSv1_METHOD",
+        "SWOOLE_TLSv1_METHOD"
+    ],
+    [
+        null,
+        "SWOOLE_TLSv1_SERVER_METHOD",
+        "SWOOLE_TLSv1_SERVER_METHOD",
+        "SWOOLE_TLSv1_SERVER_METHOD",
+        "SWOOLE_TLSv1_SERVER_METHOD"
+    ],
+    [
+        null,
+        "ScrollBar",
+        "ScrollBar",
+        "ScrollBar",
+        "ScrollBar"
     ],
     [
         null,
@@ -18481,10 +19013,31 @@
     ],
     [
         null,
+        "Slider",
+        "Slider",
+        "Slider",
+        "Slider"
+    ],
+    [
+        null,
         "Socket",
         "Socket",
         "Socket",
         "Socket"
+    ],
+    [
+        null,
+        "Spinner",
+        "Spinner",
+        "Spinner",
+        "Spinner"
+    ],
+    [
+        null,
+        "StatusBar",
+        "StatusBar",
+        "StatusBar",
+        "StatusBar"
     ],
     [
         null,
@@ -18523,10 +19076,38 @@
     ],
     [
         null,
+        "TabControl",
+        "TabControl",
+        "TabControl",
+        "TabControl"
+    ],
+    [
+        null,
         "Throwable",
         "Throwable",
         "Throwable",
         "Throwable"
+    ],
+    [
+        null,
+        "Timer",
+        "Timer",
+        "Timer",
+        "Timer"
+    ],
+    [
+        null,
+        "ToolBar",
+        "ToolBar",
+        "ToolBar",
+        "ToolBar"
+    ],
+    [
+        null,
+        "ToolDialog",
+        "ToolDialog",
+        "ToolDialog",
+        "ToolDialog"
     ],
     [
         null,
@@ -18541,6 +19122,13 @@
         "Traversable",
         "Traversable",
         "Traversable"
+    ],
+    [
+        null,
+        "TreeView",
+        "TreeView",
+        "TreeView",
+        "TreeView"
     ],
     [
         null,
@@ -18817,6 +19405,62 @@
     ],
     [
         null,
+        "__class__",
+        "__class__",
+        "__class__",
+        "__class__"
+    ],
+    [
+        null,
+        "__dir__",
+        "__dir__",
+        "__dir__",
+        "__dir__"
+    ],
+    [
+        null,
+        "__file__",
+        "__file__",
+        "__file__",
+        "__file__"
+    ],
+    [
+        null,
+        "__function__",
+        "__function__",
+        "__function__",
+        "__function__"
+    ],
+    [
+        null,
+        "__line__",
+        "__line__",
+        "__line__",
+        "__line__"
+    ],
+    [
+        null,
+        "__method__",
+        "__method__",
+        "__method__",
+        "__method__"
+    ],
+    [
+        null,
+        "__namespace__",
+        "__namespace__",
+        "__namespace__",
+        "__namespace__"
+    ],
+    [
+        null,
+        "__property__",
+        "__property__",
+        "__property__",
+        "__property__"
+    ],
+    [
+        null,
         "__template<T, 'function mysqli_fetch_object()', object>",
         "T of object (function mysqli_fetch_object(), parameter)",
         "T of object",
@@ -18912,6 +19556,13 @@
         "TWrite of array<resource>|null (function stream_select(), parameter)",
         "TWrite of array<resource>|null",
         "TWrite of array<resource>|null"
+    ],
+    [
+        null,
+        "__trait__",
+        "__trait__",
+        "__trait__",
+        "__trait__"
     ],
     [
         null,
@@ -19636,6 +20287,125 @@
     ],
     [
         null,
+        "bgrBLACK",
+        "bgrBLACK",
+        "bgrBLACK",
+        "bgrBLACK"
+    ],
+    [
+        null,
+        "bgrBLUE",
+        "bgrBLUE",
+        "bgrBLUE",
+        "bgrBLUE"
+    ],
+    [
+        null,
+        "bgrCYAN",
+        "bgrCYAN",
+        "bgrCYAN",
+        "bgrCYAN"
+    ],
+    [
+        null,
+        "bgrDARKBLUE",
+        "bgrDARKBLUE",
+        "bgrDARKBLUE",
+        "bgrDARKBLUE"
+    ],
+    [
+        null,
+        "bgrDARKCYAN",
+        "bgrDARKCYAN",
+        "bgrDARKCYAN",
+        "bgrDARKCYAN"
+    ],
+    [
+        null,
+        "bgrDARKGRAY",
+        "bgrDARKGRAY",
+        "bgrDARKGRAY",
+        "bgrDARKGRAY"
+    ],
+    [
+        null,
+        "bgrDARKGREEN",
+        "bgrDARKGREEN",
+        "bgrDARKGREEN",
+        "bgrDARKGREEN"
+    ],
+    [
+        null,
+        "bgrDARKMAGENTA",
+        "bgrDARKMAGENTA",
+        "bgrDARKMAGENTA",
+        "bgrDARKMAGENTA"
+    ],
+    [
+        null,
+        "bgrDARKRED",
+        "bgrDARKRED",
+        "bgrDARKRED",
+        "bgrDARKRED"
+    ],
+    [
+        null,
+        "bgrDARKYELLOW",
+        "bgrDARKYELLOW",
+        "bgrDARKYELLOW",
+        "bgrDARKYELLOW"
+    ],
+    [
+        null,
+        "bgrGREEN",
+        "bgrGREEN",
+        "bgrGREEN",
+        "bgrGREEN"
+    ],
+    [
+        null,
+        "bgrLIGHTGRAY",
+        "bgrLIGHTGRAY",
+        "bgrLIGHTGRAY",
+        "bgrLIGHTGRAY"
+    ],
+    [
+        null,
+        "bgrMAGENTA",
+        "bgrMAGENTA",
+        "bgrMAGENTA",
+        "bgrMAGENTA"
+    ],
+    [
+        null,
+        "bgrNOCOLOR",
+        "bgrNOCOLOR",
+        "bgrNOCOLOR",
+        "bgrNOCOLOR"
+    ],
+    [
+        null,
+        "bgrRED",
+        "bgrRED",
+        "bgrRED",
+        "bgrRED"
+    ],
+    [
+        null,
+        "bgrWHITE",
+        "bgrWHITE",
+        "bgrWHITE",
+        "bgrWHITE"
+    ],
+    [
+        null,
+        "bgrYELLOW",
+        "bgrYELLOW",
+        "bgrYELLOW",
+        "bgrYELLOW"
+    ],
+    [
+        null,
         "bool",
         "bool",
         "bool",
@@ -20112,6 +20882,48 @@
     ],
     [
         null,
+        "http\\Client\\Curl\\SSL_VERSION_SSLv2",
+        "http\\Client\\Curl\\SSL_VERSION_SSLv2",
+        "http\\Client\\Curl\\SSL_VERSION_SSLv2",
+        "http\\Client\\Curl\\SSL_VERSION_SSLv2"
+    ],
+    [
+        null,
+        "http\\Client\\Curl\\SSL_VERSION_SSLv3",
+        "http\\Client\\Curl\\SSL_VERSION_SSLv3",
+        "http\\Client\\Curl\\SSL_VERSION_SSLv3",
+        "http\\Client\\Curl\\SSL_VERSION_SSLv3"
+    ],
+    [
+        null,
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1"
+    ],
+    [
+        null,
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_0",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_0",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_0",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_0"
+    ],
+    [
+        null,
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_1",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_1",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_1",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_1"
+    ],
+    [
+        null,
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_2",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_2",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_2",
+        "http\\Client\\Curl\\SSL_VERSION_TLSv1_2"
+    ],
+    [
+        null,
         "hw_api_object",
         "hw_api_object",
         "hw_api_object",
@@ -20193,6 +21005,27 @@
         "int<1, max>",
         "int<1, max>",
         "int<1, max>"
+    ],
+    [
+        null,
+        "int<4, max>",
+        "int<4, max>",
+        "int<4, max>",
+        "int<4, max>"
+    ],
+    [
+        null,
+        "int<5, max>",
+        "int<5, max>",
+        "int<5, max>",
+        "int<5, max>"
+    ],
+    [
+        null,
+        "int<50207, max>",
+        "int<50207, max>",
+        "int<50207, max>",
+        "int<50207, max>"
     ],
     [
         null,
@@ -20546,6 +21379,34 @@
     ],
     [
         null,
+        "pcov\\all",
+        "pcov\\all",
+        "pcov\\all",
+        "pcov\\all"
+    ],
+    [
+        null,
+        "pcov\\exclusive",
+        "pcov\\exclusive",
+        "pcov\\exclusive",
+        "pcov\\exclusive"
+    ],
+    [
+        null,
+        "pcov\\inclusive",
+        "pcov\\inclusive",
+        "pcov\\inclusive",
+        "pcov\\inclusive"
+    ],
+    [
+        null,
+        "pcov\\version",
+        "pcov\\version",
+        "pcov\\version",
+        "pcov\\version"
+    ],
+    [
+        null,
         "reference",
         "reference",
         "reference",
@@ -20634,6 +21495,174 @@
         "xpathcontext",
         "xpathcontext",
         "xpathcontext"
+    ],
+    [
+        null,
+        "yaf\\environ",
+        "yaf\\environ",
+        "yaf\\environ",
+        "yaf\\environ"
+    ],
+    [
+        null,
+        "yaf\\err\\autoload\\failed",
+        "yaf\\err\\autoload\\failed",
+        "yaf\\err\\autoload\\failed",
+        "yaf\\err\\autoload\\failed"
+    ],
+    [
+        null,
+        "yaf\\err\\call\\failed",
+        "yaf\\err\\call\\failed",
+        "yaf\\err\\call\\failed",
+        "yaf\\err\\call\\failed"
+    ],
+    [
+        null,
+        "yaf\\err\\dispatch\\failed",
+        "yaf\\err\\dispatch\\failed",
+        "yaf\\err\\dispatch\\failed",
+        "yaf\\err\\dispatch\\failed"
+    ],
+    [
+        null,
+        "yaf\\err\\notfound\\action",
+        "yaf\\err\\notfound\\action",
+        "yaf\\err\\notfound\\action",
+        "yaf\\err\\notfound\\action"
+    ],
+    [
+        null,
+        "yaf\\err\\notfound\\controller",
+        "yaf\\err\\notfound\\controller",
+        "yaf\\err\\notfound\\controller",
+        "yaf\\err\\notfound\\controller"
+    ],
+    [
+        null,
+        "yaf\\err\\notfound\\module",
+        "yaf\\err\\notfound\\module",
+        "yaf\\err\\notfound\\module",
+        "yaf\\err\\notfound\\module"
+    ],
+    [
+        null,
+        "yaf\\err\\notfound\\view",
+        "yaf\\err\\notfound\\view",
+        "yaf\\err\\notfound\\view",
+        "yaf\\err\\notfound\\view"
+    ],
+    [
+        null,
+        "yaf\\err\\route\\failed",
+        "yaf\\err\\route\\failed",
+        "yaf\\err\\route\\failed",
+        "yaf\\err\\route\\failed"
+    ],
+    [
+        null,
+        "yaf\\err\\startup\\failed",
+        "yaf\\err\\startup\\failed",
+        "yaf\\err\\startup\\failed",
+        "yaf\\err\\startup\\failed"
+    ],
+    [
+        null,
+        "yaf\\err\\type\\error",
+        "yaf\\err\\type\\error",
+        "yaf\\err\\type\\error",
+        "yaf\\err\\type\\error"
+    ],
+    [
+        null,
+        "yaf\\version",
+        "yaf\\version",
+        "yaf\\version",
+        "yaf\\version"
+    ],
+    [
+        null,
+        "yaf_environ",
+        "yaf_environ",
+        "yaf_environ",
+        "yaf_environ"
+    ],
+    [
+        null,
+        "yaf_err_autoload_failed",
+        "yaf_err_autoload_failed",
+        "yaf_err_autoload_failed",
+        "yaf_err_autoload_failed"
+    ],
+    [
+        null,
+        "yaf_err_call_failed",
+        "yaf_err_call_failed",
+        "yaf_err_call_failed",
+        "yaf_err_call_failed"
+    ],
+    [
+        null,
+        "yaf_err_dispatch_failed",
+        "yaf_err_dispatch_failed",
+        "yaf_err_dispatch_failed",
+        "yaf_err_dispatch_failed"
+    ],
+    [
+        null,
+        "yaf_err_notfound_action",
+        "yaf_err_notfound_action",
+        "yaf_err_notfound_action",
+        "yaf_err_notfound_action"
+    ],
+    [
+        null,
+        "yaf_err_notfound_controller",
+        "yaf_err_notfound_controller",
+        "yaf_err_notfound_controller",
+        "yaf_err_notfound_controller"
+    ],
+    [
+        null,
+        "yaf_err_notfound_module",
+        "yaf_err_notfound_module",
+        "yaf_err_notfound_module",
+        "yaf_err_notfound_module"
+    ],
+    [
+        null,
+        "yaf_err_notfound_view",
+        "yaf_err_notfound_view",
+        "yaf_err_notfound_view",
+        "yaf_err_notfound_view"
+    ],
+    [
+        null,
+        "yaf_err_route_failed",
+        "yaf_err_route_failed",
+        "yaf_err_route_failed",
+        "yaf_err_route_failed"
+    ],
+    [
+        null,
+        "yaf_err_startup_failed",
+        "yaf_err_startup_failed",
+        "yaf_err_startup_failed",
+        "yaf_err_startup_failed"
+    ],
+    [
+        null,
+        "yaf_err_type_error",
+        "yaf_err_type_error",
+        "yaf_err_type_error",
+        "yaf_err_type_error"
+    ],
+    [
+        null,
+        "yaf_version",
+        "yaf_version",
+        "yaf_version",
+        "yaf_version"
     ],
     [
         "AMQPBasicProperties",
@@ -23472,6 +24501,20 @@
     ],
     [
         "ArrayIterator",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "ArrayIterator",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "ArrayIterator",
         "__benevolent<(int | string)>",
         "(int|string)",
         "(int|string)",
@@ -23626,6 +24669,20 @@
     ],
     [
         "ArrayObject",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "ArrayObject",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "ArrayObject",
         "ArrayIterator<__template<TKey, 'class ArrayObject', __benevolent<(int | string)>>, __template<TValue, 'class ArrayObject', mixed>>",
         "ArrayIterator<TKey of (int|string) (class ArrayObject, parameter), TValue (class ArrayObject, parameter)>",
         "ArrayIterator<TKey of (int|string), TValue>",
@@ -23759,6 +24816,48 @@
     ],
     [
         "Attribute",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Attribute",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Attribute",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "Attribute",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "Attribute",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "Attribute",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "Attribute",
         "64",
         "64",
         "64",
@@ -23769,6 +24868,13 @@
         "127",
         "127",
         "127",
+        "int"
+    ],
+    [
+        "Attribute",
+        "128",
+        "128",
+        "128",
         "int"
     ],
     [
@@ -28330,9 +29436,114 @@
     ],
     [
         "Collator",
+        "-1",
+        "-1",
+        "-1",
+        "int"
+    ],
+    [
+        "Collator",
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "Collator",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Collator",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Collator",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "Collator",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "Collator",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "Collator",
+        "6",
+        "6",
+        "6",
+        "int"
+    ],
+    [
+        "Collator",
+        "7",
+        "7",
+        "7",
+        "int"
+    ],
+    [
+        "Collator",
+        "15",
+        "15",
+        "15",
+        "int"
+    ],
+    [
+        "Collator",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "Collator",
+        "17",
+        "17",
+        "17",
+        "int"
+    ],
+    [
+        "Collator",
+        "20",
+        "20",
+        "20",
+        "int"
+    ],
+    [
+        "Collator",
+        "21",
+        "21",
+        "21",
+        "int"
+    ],
+    [
+        "Collator",
+        "24",
+        "24",
+        "24",
+        "int"
+    ],
+    [
+        "Collator",
+        "25",
+        "25",
+        "25",
         "int"
     ],
     [
@@ -34483,6 +35694,13 @@
     ],
     [
         "DDTrace\\Integration",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "DDTrace\\Integration",
         "int",
         "int",
         "int",
@@ -35316,6 +36534,48 @@
     ],
     [
         "DOMNode",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "DOMNode",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "DOMNode",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "DOMNode",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "DOMNode",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "DOMNode",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "DOMNode",
         "DOMNameSpaceNode",
         "DOMNameSpaceNode",
         "DOMNameSpaceNode",
@@ -35848,6 +37108,20 @@
     ],
     [
         "DatePeriod",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "DatePeriod",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "DatePeriod",
         "DateInterval",
         "DateInterval",
         "DateInterval",
@@ -36254,6 +37528,69 @@
     ],
     [
         "DateTimeInterface",
+        "'D, d M Y H:i:s O'",
+        "'D, d M Y H:i:s O'",
+        "'D, d M Y H:i:s O'",
+        "string"
+    ],
+    [
+        "DateTimeInterface",
+        "'D, d M Y H:i:s \\\\G\\\\M\\\\T'",
+        "'D, d M Y H:i:s \\\\G\\\\M\\\\T'",
+        "'D, d M Y H:i:s \\\\G\\\\M…'",
+        "string"
+    ],
+    [
+        "DateTimeInterface",
+        "'D, d M y H:i:s O'",
+        "'D, d M y H:i:s O'",
+        "'D, d M y H:i:s O'",
+        "string"
+    ],
+    [
+        "DateTimeInterface",
+        "'X-m-d\\\\TH:i:sP'",
+        "'X-m-d\\\\TH:i:sP'",
+        "'X-m-d\\\\TH:i:sP'",
+        "string"
+    ],
+    [
+        "DateTimeInterface",
+        "'Y-m-d\\\\TH:i:s.vP'",
+        "'Y-m-d\\\\TH:i:s.vP'",
+        "'Y-m-d\\\\TH:i:s.vP'",
+        "string"
+    ],
+    [
+        "DateTimeInterface",
+        "'Y-m-d\\\\TH:i:sO'",
+        "'Y-m-d\\\\TH:i:sO'",
+        "'Y-m-d\\\\TH:i:sO'",
+        "string"
+    ],
+    [
+        "DateTimeInterface",
+        "'Y-m-d\\\\TH:i:sP'",
+        "'Y-m-d\\\\TH:i:sP'",
+        "'Y-m-d\\\\TH:i:sP'",
+        "string"
+    ],
+    [
+        "DateTimeInterface",
+        "'l, d-M-Y H:i:s T'",
+        "'l, d-M-Y H:i:s T'",
+        "'l, d-M-Y H:i:s T'",
+        "string"
+    ],
+    [
+        "DateTimeInterface",
+        "'l, d-M-y H:i:s T'",
+        "'l, d-M-y H:i:s T'",
+        "'l, d-M-y H:i:s T'",
+        "string"
+    ],
+    [
+        "DateTimeInterface",
         "(DateInterval & object{days: int})",
         "DateInterval&object{days: int}",
         "DateInterval&object{days: int}",
@@ -36359,9 +37696,100 @@
     ],
     [
         "DateTimeZone",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "64",
+        "64",
+        "64",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "128",
+        "128",
+        "128",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "256",
+        "256",
+        "256",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "512",
+        "512",
+        "512",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "1024",
+        "1024",
+        "1024",
+        "int"
+    ],
+    [
+        "DateTimeZone",
         "2047",
         "2047",
         "2047",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "4095",
+        "4095",
+        "4095",
+        "int"
+    ],
+    [
+        "DateTimeZone",
+        "4096",
+        "4096",
+        "4096",
         "int"
     ],
     [
@@ -37560,6 +38988,48 @@
         "string|null",
         "string|null",
         "string|null"
+    ],
+    [
+        "Dom\\Node",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Dom\\Node",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Dom\\Node",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "Dom\\Node",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "Dom\\Node",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "Dom\\Node",
+        "32",
+        "32",
+        "32",
+        "int"
     ],
     [
         "Dom\\Node",
@@ -43254,6 +44724,13 @@
     ],
     [
         "FFI",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "FFI",
         "FFI",
         "FFI",
         "FFI",
@@ -43576,6 +45053,34 @@
     ],
     [
         "FFI\\CType",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "FFI\\CType",
+        "64",
+        "64",
+        "64",
+        "int"
+    ],
+    [
+        "FFI\\CType",
+        "128",
+        "128",
+        "128",
+        "int"
+    ],
+    [
+        "FFI\\CType",
+        "256",
+        "256",
+        "256",
+        "int"
+    ],
+    [
+        "FFI\\CType",
         "FFI\\CType",
         "FFI\\CType",
         "FFI\\CType",
@@ -43587,13 +45092,6 @@
         "array<string>",
         "array<string>",
         "array<string>"
-    ],
-    [
-        "FFI\\CType",
-        "int",
-        "int",
-        "int",
-        "int"
     ],
     [
         "FFI\\CType",
@@ -43723,9 +45221,72 @@
     ],
     [
         "FilesystemIterator",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "FilesystemIterator",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "FilesystemIterator",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "FilesystemIterator",
+        "240",
+        "240",
+        "240",
+        "int"
+    ],
+    [
+        "FilesystemIterator",
+        "256",
+        "256",
+        "256",
+        "int"
+    ],
+    [
+        "FilesystemIterator",
+        "3840",
+        "3840",
+        "3840",
+        "int"
+    ],
+    [
+        "FilesystemIterator",
         "4096",
         "4096",
         "4096",
+        "int"
+    ],
+    [
+        "FilesystemIterator",
+        "8192",
+        "8192",
+        "8192",
+        "int"
+    ],
+    [
+        "FilesystemIterator",
+        "16384",
+        "16384",
+        "16384",
+        "int"
+    ],
+    [
+        "FilesystemIterator",
+        "28672",
+        "28672",
+        "28672",
         "int"
     ],
     [
@@ -44329,6 +45890,13 @@
         "TValue (class Generator, parameter)",
         "TValue",
         "TValue"
+    ],
+    [
+        "Generator",
+        "__template<TYield, 'class Generator', mixed>",
+        "TYield (class Generator, parameter)",
+        "TYield",
+        "TYield"
     ],
     [
         "Generator",
@@ -48196,9 +49764,51 @@
     ],
     [
         "IntlBreakIterator",
+        "-1",
+        "-1",
+        "-1",
+        "int"
+    ],
+    [
+        "IntlBreakIterator",
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "IntlBreakIterator",
+        "100",
+        "100",
+        "100",
+        "int"
+    ],
+    [
+        "IntlBreakIterator",
+        "200",
+        "200",
+        "200",
+        "int"
+    ],
+    [
+        "IntlBreakIterator",
+        "300",
+        "300",
+        "300",
+        "int"
+    ],
+    [
+        "IntlBreakIterator",
+        "400",
+        "400",
+        "400",
+        "int"
+    ],
+    [
+        "IntlBreakIterator",
+        "500",
+        "500",
+        "500",
         "int"
     ],
     [
@@ -48308,6 +49918,174 @@
     ],
     [
         "IntlCalendar",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "6",
+        "6",
+        "6",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "7",
+        "7",
+        "7",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "9",
+        "9",
+        "9",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "10",
+        "10",
+        "10",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "11",
+        "11",
+        "11",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "12",
+        "12",
+        "12",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "13",
+        "13",
+        "13",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "14",
+        "14",
+        "14",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "15",
+        "15",
+        "15",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "17",
+        "17",
+        "17",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "18",
+        "18",
+        "18",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "19",
+        "19",
+        "19",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "20",
+        "20",
+        "20",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "21",
+        "21",
+        "21",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "22",
+        "22",
+        "22",
+        "int"
+    ],
+    [
+        "IntlCalendar",
+        "24",
+        "24",
+        "24",
+        "int"
+    ],
+    [
+        "IntlCalendar",
         "DateTime",
         "DateTime",
         "DateTime",
@@ -48399,6 +50177,13 @@
     ],
     [
         "IntlChar",
+        "'17.0'",
+        "'17.0'",
+        "'17.0'",
+        "string"
+    ],
+    [
+        "IntlChar",
         "(int | string | null)",
         "int|string|null",
         "int|string|null",
@@ -48413,6 +50198,20 @@
     ],
     [
         "IntlChar",
+        "-123456789.0",
+        "-123456789.0",
+        "-123456789.0",
+        "float"
+    ],
+    [
+        "IntlChar",
+        "-1",
+        "-1",
+        "-1",
+        "int"
+    ],
+    [
+        "IntlChar",
         "0",
         "0",
         "0",
@@ -48427,9 +50226,2081 @@
     ],
     [
         "IntlChar",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "6",
+        "6",
+        "6",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "7",
+        "7",
+        "7",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "9",
+        "9",
+        "9",
+        "int"
+    ],
+    [
+        "IntlChar",
         "10",
         "10",
         "10",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "11",
+        "11",
+        "11",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "12",
+        "12",
+        "12",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "13",
+        "13",
+        "13",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "14",
+        "14",
+        "14",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "15",
+        "15",
+        "15",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "17",
+        "17",
+        "17",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "18",
+        "18",
+        "18",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "19",
+        "19",
+        "19",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "20",
+        "20",
+        "20",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "21",
+        "21",
+        "21",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "22",
+        "22",
+        "22",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "23",
+        "23",
+        "23",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "24",
+        "24",
+        "24",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "25",
+        "25",
+        "25",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "26",
+        "26",
+        "26",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "27",
+        "27",
+        "27",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "28",
+        "28",
+        "28",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "29",
+        "29",
+        "29",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "30",
+        "30",
+        "30",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "31",
+        "31",
+        "31",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "33",
+        "33",
+        "33",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "34",
+        "34",
+        "34",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "35",
+        "35",
+        "35",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "36",
+        "36",
+        "36",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "37",
+        "37",
+        "37",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "38",
+        "38",
+        "38",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "39",
+        "39",
+        "39",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "40",
+        "40",
+        "40",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "41",
+        "41",
+        "41",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "42",
+        "42",
+        "42",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "43",
+        "43",
+        "43",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "44",
+        "44",
+        "44",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "45",
+        "45",
+        "45",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "46",
+        "46",
+        "46",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "47",
+        "47",
+        "47",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "48",
+        "48",
+        "48",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "49",
+        "49",
+        "49",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "50",
+        "50",
+        "50",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "51",
+        "51",
+        "51",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "52",
+        "52",
+        "52",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "53",
+        "53",
+        "53",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "54",
+        "54",
+        "54",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "55",
+        "55",
+        "55",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "56",
+        "56",
+        "56",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "57",
+        "57",
+        "57",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "58",
+        "58",
+        "58",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "59",
+        "59",
+        "59",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "60",
+        "60",
+        "60",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "61",
+        "61",
+        "61",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "62",
+        "62",
+        "62",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "63",
+        "63",
+        "63",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "64",
+        "64",
+        "64",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "65",
+        "65",
+        "65",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "66",
+        "66",
+        "66",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "67",
+        "67",
+        "67",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "68",
+        "68",
+        "68",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "69",
+        "69",
+        "69",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "70",
+        "70",
+        "70",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "71",
+        "71",
+        "71",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "72",
+        "72",
+        "72",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "73",
+        "73",
+        "73",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "74",
+        "74",
+        "74",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "75",
+        "75",
+        "75",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "76",
+        "76",
+        "76",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "77",
+        "77",
+        "77",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "78",
+        "78",
+        "78",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "79",
+        "79",
+        "79",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "80",
+        "80",
+        "80",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "81",
+        "81",
+        "81",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "82",
+        "82",
+        "82",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "83",
+        "83",
+        "83",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "84",
+        "84",
+        "84",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "85",
+        "85",
+        "85",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "86",
+        "86",
+        "86",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "87",
+        "87",
+        "87",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "88",
+        "88",
+        "88",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "89",
+        "89",
+        "89",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "90",
+        "90",
+        "90",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "91",
+        "91",
+        "91",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "92",
+        "92",
+        "92",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "93",
+        "93",
+        "93",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "94",
+        "94",
+        "94",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "95",
+        "95",
+        "95",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "96",
+        "96",
+        "96",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "97",
+        "97",
+        "97",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "98",
+        "98",
+        "98",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "99",
+        "99",
+        "99",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "100",
+        "100",
+        "100",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "101",
+        "101",
+        "101",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "102",
+        "102",
+        "102",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "103",
+        "103",
+        "103",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "104",
+        "104",
+        "104",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "105",
+        "105",
+        "105",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "106",
+        "106",
+        "106",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "107",
+        "107",
+        "107",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "108",
+        "108",
+        "108",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "109",
+        "109",
+        "109",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "110",
+        "110",
+        "110",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "111",
+        "111",
+        "111",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "112",
+        "112",
+        "112",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "113",
+        "113",
+        "113",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "114",
+        "114",
+        "114",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "115",
+        "115",
+        "115",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "116",
+        "116",
+        "116",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "117",
+        "117",
+        "117",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "118",
+        "118",
+        "118",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "119",
+        "119",
+        "119",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "120",
+        "120",
+        "120",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "121",
+        "121",
+        "121",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "122",
+        "122",
+        "122",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "123",
+        "123",
+        "123",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "124",
+        "124",
+        "124",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "125",
+        "125",
+        "125",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "126",
+        "126",
+        "126",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "127",
+        "127",
+        "127",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "128",
+        "128",
+        "128",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "129",
+        "129",
+        "129",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "130",
+        "130",
+        "130",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "131",
+        "131",
+        "131",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "132",
+        "132",
+        "132",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "133",
+        "133",
+        "133",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "134",
+        "134",
+        "134",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "135",
+        "135",
+        "135",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "136",
+        "136",
+        "136",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "137",
+        "137",
+        "137",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "138",
+        "138",
+        "138",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "139",
+        "139",
+        "139",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "140",
+        "140",
+        "140",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "141",
+        "141",
+        "141",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "142",
+        "142",
+        "142",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "143",
+        "143",
+        "143",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "144",
+        "144",
+        "144",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "145",
+        "145",
+        "145",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "146",
+        "146",
+        "146",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "147",
+        "147",
+        "147",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "148",
+        "148",
+        "148",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "149",
+        "149",
+        "149",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "150",
+        "150",
+        "150",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "151",
+        "151",
+        "151",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "152",
+        "152",
+        "152",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "153",
+        "153",
+        "153",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "154",
+        "154",
+        "154",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "155",
+        "155",
+        "155",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "156",
+        "156",
+        "156",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "157",
+        "157",
+        "157",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "158",
+        "158",
+        "158",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "159",
+        "159",
+        "159",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "160",
+        "160",
+        "160",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "161",
+        "161",
+        "161",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "162",
+        "162",
+        "162",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "163",
+        "163",
+        "163",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "164",
+        "164",
+        "164",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "165",
+        "165",
+        "165",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "166",
+        "166",
+        "166",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "167",
+        "167",
+        "167",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "168",
+        "168",
+        "168",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "169",
+        "169",
+        "169",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "170",
+        "170",
+        "170",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "171",
+        "171",
+        "171",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "172",
+        "172",
+        "172",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "173",
+        "173",
+        "173",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "174",
+        "174",
+        "174",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "175",
+        "175",
+        "175",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "176",
+        "176",
+        "176",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "177",
+        "177",
+        "177",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "178",
+        "178",
+        "178",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "179",
+        "179",
+        "179",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "180",
+        "180",
+        "180",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "181",
+        "181",
+        "181",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "182",
+        "182",
+        "182",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "183",
+        "183",
+        "183",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "184",
+        "184",
+        "184",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "185",
+        "185",
+        "185",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "186",
+        "186",
+        "186",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "187",
+        "187",
+        "187",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "188",
+        "188",
+        "188",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "189",
+        "189",
+        "189",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "190",
+        "190",
+        "190",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "191",
+        "191",
+        "191",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "192",
+        "192",
+        "192",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "193",
+        "193",
+        "193",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "194",
+        "194",
+        "194",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "195",
+        "195",
+        "195",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "196",
+        "196",
+        "196",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "197",
+        "197",
+        "197",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "198",
+        "198",
+        "198",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "199",
+        "199",
+        "199",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "200",
+        "200",
+        "200",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "201",
+        "201",
+        "201",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "202",
+        "202",
+        "202",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "203",
+        "203",
+        "203",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "204",
+        "204",
+        "204",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "205",
+        "205",
+        "205",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "206",
+        "206",
+        "206",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "207",
+        "207",
+        "207",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "208",
+        "208",
+        "208",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "209",
+        "209",
+        "209",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "210",
+        "210",
+        "210",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "211",
+        "211",
+        "211",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "212",
+        "212",
+        "212",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "213",
+        "213",
+        "213",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "214",
+        "214",
+        "214",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "215",
+        "215",
+        "215",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "216",
+        "216",
+        "216",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "217",
+        "217",
+        "217",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "218",
+        "218",
+        "218",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "219",
+        "219",
+        "219",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "220",
+        "220",
+        "220",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "221",
+        "221",
+        "221",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "222",
+        "222",
+        "222",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "223",
+        "223",
+        "223",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "224",
+        "224",
+        "224",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "225",
+        "225",
+        "225",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "226",
+        "226",
+        "226",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "227",
+        "227",
+        "227",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "228",
+        "228",
+        "228",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "229",
+        "229",
+        "229",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "230",
+        "230",
+        "230",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "231",
+        "231",
+        "231",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "232",
+        "232",
+        "232",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "233",
+        "233",
+        "233",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "234",
+        "234",
+        "234",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "235",
+        "235",
+        "235",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "236",
+        "236",
+        "236",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "237",
+        "237",
+        "237",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "238",
+        "238",
+        "238",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "239",
+        "239",
+        "239",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "240",
+        "240",
+        "240",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "241",
+        "241",
+        "241",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "242",
+        "242",
+        "242",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "243",
+        "243",
+        "243",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "244",
+        "244",
+        "244",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "245",
+        "245",
+        "245",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "246",
+        "246",
+        "246",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "247",
+        "247",
+        "247",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "248",
+        "248",
+        "248",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "249",
+        "249",
+        "249",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "250",
+        "250",
+        "250",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "251",
+        "251",
+        "251",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "252",
+        "252",
+        "252",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "347",
+        "347",
+        "347",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4096",
+        "4096",
+        "4096",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4097",
+        "4097",
+        "4097",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4098",
+        "4098",
+        "4098",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4099",
+        "4099",
+        "4099",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4100",
+        "4100",
+        "4100",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4101",
+        "4101",
+        "4101",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4102",
+        "4102",
+        "4102",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4103",
+        "4103",
+        "4103",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4104",
+        "4104",
+        "4104",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4105",
+        "4105",
+        "4105",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4106",
+        "4106",
+        "4106",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4107",
+        "4107",
+        "4107",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4108",
+        "4108",
+        "4108",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4109",
+        "4109",
+        "4109",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4110",
+        "4110",
+        "4110",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4111",
+        "4111",
+        "4111",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4112",
+        "4112",
+        "4112",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4113",
+        "4113",
+        "4113",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4114",
+        "4114",
+        "4114",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4115",
+        "4115",
+        "4115",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4116",
+        "4116",
+        "4116",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4117",
+        "4117",
+        "4117",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "4123",
+        "4123",
+        "4123",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "8192",
+        "8192",
+        "8192",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "8193",
+        "8193",
+        "8193",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "12288",
+        "12288",
+        "12288",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "12289",
+        "12289",
+        "12289",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16384",
+        "16384",
+        "16384",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16385",
+        "16385",
+        "16385",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16386",
+        "16386",
+        "16386",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16387",
+        "16387",
+        "16387",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16388",
+        "16388",
+        "16388",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16389",
+        "16389",
+        "16389",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16390",
+        "16390",
+        "16390",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16391",
+        "16391",
+        "16391",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16392",
+        "16392",
+        "16392",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16393",
+        "16393",
+        "16393",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16394",
+        "16394",
+        "16394",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16395",
+        "16395",
+        "16395",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16396",
+        "16396",
+        "16396",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16397",
+        "16397",
+        "16397",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "16398",
+        "16398",
+        "16398",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "28672",
+        "28672",
+        "28672",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "28674",
+        "28674",
+        "28674",
+        "int"
+    ],
+    [
+        "IntlChar",
+        "1114111",
+        "1114111",
+        "1114111",
         "int"
     ],
     [
@@ -48595,9 +52466,72 @@
     ],
     [
         "IntlDateFormatter",
+        "-2",
+        "-2",
+        "-2",
+        "int"
+    ],
+    [
+        "IntlDateFormatter",
+        "-1",
+        "-1",
+        "-1",
+        "int"
+    ],
+    [
+        "IntlDateFormatter",
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "IntlDateFormatter",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "IntlDateFormatter",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "IntlDateFormatter",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "IntlDateFormatter",
+        "128",
+        "128",
+        "128",
+        "int"
+    ],
+    [
+        "IntlDateFormatter",
+        "129",
+        "129",
+        "129",
+        "int"
+    ],
+    [
+        "IntlDateFormatter",
+        "130",
+        "130",
+        "130",
+        "int"
+    ],
+    [
+        "IntlDateFormatter",
+        "131",
+        "131",
+        "131",
         "int"
     ],
     [
@@ -48889,6 +52823,20 @@
     ],
     [
         "IntlListFormatter",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "IntlListFormatter",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "IntlListFormatter",
         "array",
         "array",
         "array",
@@ -48921,6 +52869,27 @@
         "string",
         "string",
         "string"
+    ],
+    [
+        "IntlPartsIterator",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "IntlPartsIterator",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "IntlPartsIterator",
+        "2",
+        "2",
+        "2",
+        "int"
     ],
     [
         "IntlPartsIterator",
@@ -49015,9 +52984,65 @@
     ],
     [
         "IntlTimeZone",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "IntlTimeZone",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "IntlTimeZone",
         "2",
         "2",
         "2",
+        "int"
+    ],
+    [
+        "IntlTimeZone",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "IntlTimeZone",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "IntlTimeZone",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "IntlTimeZone",
+        "6",
+        "6",
+        "6",
+        "int"
+    ],
+    [
+        "IntlTimeZone",
+        "7",
+        "7",
+        "7",
+        "int"
+    ],
+    [
+        "IntlTimeZone",
+        "8",
+        "8",
+        "8",
         "int"
     ],
     [
@@ -49652,6 +53677,55 @@
     ],
     [
         "Locale",
+        "'extlang'",
+        "'extlang'",
+        "'extlang'",
+        "string"
+    ],
+    [
+        "Locale",
+        "'grandfathered'",
+        "'grandfathered'",
+        "'grandfathered'",
+        "string"
+    ],
+    [
+        "Locale",
+        "'language'",
+        "'language'",
+        "'language'",
+        "string"
+    ],
+    [
+        "Locale",
+        "'private'",
+        "'private'",
+        "'private'",
+        "string"
+    ],
+    [
+        "Locale",
+        "'region'",
+        "'region'",
+        "'region'",
+        "string"
+    ],
+    [
+        "Locale",
+        "'script'",
+        "'script'",
+        "'script'",
+        "string"
+    ],
+    [
+        "Locale",
+        "'variant'",
+        "'variant'",
+        "'variant'",
+        "string"
+    ],
+    [
+        "Locale",
         "(array | null)",
         "array|null",
         "array|null",
@@ -49694,6 +53768,20 @@
     ],
     [
         "Locale",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "Locale",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Locale",
         "array",
         "array",
         "array",
@@ -49722,13 +53810,6 @@
     ],
     [
         "Locale",
-        "int",
-        "int",
-        "int",
-        "int"
-    ],
-    [
-        "Locale",
         "non-empty-string",
         "non-empty-string",
         "non-empty-string",
@@ -49754,6 +53835,13 @@
         "$this(Lua)",
         "$this(Lua)",
         "$this(Lua)"
+    ],
+    [
+        "Lua",
+        "'5.1.4'",
+        "'5.1.4'",
+        "'5.1.4'",
+        "string"
     ],
     [
         "Lua",
@@ -55721,9 +59809,23 @@
     ],
     [
         "MultipleIterator",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "MultipleIterator",
         "1",
         "1",
         "1",
+        "int"
+    ],
+    [
+        "MultipleIterator",
+        "2",
+        "2",
+        "2",
         "int"
     ],
     [
@@ -55882,9 +59984,37 @@
     ],
     [
         "Normalizer",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "Normalizer",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "Normalizer",
         "16",
         "16",
         "16",
+        "int"
+    ],
+    [
+        "Normalizer",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "Normalizer",
+        "48",
+        "48",
+        "48",
         "int"
     ],
     [
@@ -55966,9 +60096,135 @@
     ],
     [
         "NumberFormatter",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "NumberFormatter",
         "3",
         "3",
         "3",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "6",
+        "6",
+        "6",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "7",
+        "7",
+        "7",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "9",
+        "9",
+        "9",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "10",
+        "10",
+        "10",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "11",
+        "11",
+        "11",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "12",
+        "12",
+        "12",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "13",
+        "13",
+        "13",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "14",
+        "14",
+        "14",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "15",
+        "15",
+        "15",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "17",
+        "17",
+        "17",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "18",
+        "18",
+        "18",
+        "int"
+    ],
+    [
+        "NumberFormatter",
+        "19",
+        "19",
+        "19",
         "int"
     ],
     [
@@ -56456,6 +60712,13 @@
     ],
     [
         "PDO",
+        "'00000'",
+        "'00000'",
+        "'00000'",
+        "string"
+    ],
+    [
+        "PDO",
         "'READ_COMMITTED'",
         "'READ_COMMITTED'",
         "'READ_COMMITTED'",
@@ -56610,6 +60873,83 @@
     ],
     [
         "PDO",
+        "9",
+        "9",
+        "9",
+        "int"
+    ],
+    [
+        "PDO",
+        "10",
+        "10",
+        "10",
+        "int"
+    ],
+    [
+        "PDO",
+        "11",
+        "11",
+        "11",
+        "int"
+    ],
+    [
+        "PDO",
+        "12",
+        "12",
+        "12",
+        "int"
+    ],
+    [
+        "PDO",
+        "13",
+        "13",
+        "13",
+        "int"
+    ],
+    [
+        "PDO",
+        "14",
+        "14",
+        "14",
+        "int"
+    ],
+    [
+        "PDO",
+        "15",
+        "15",
+        "15",
+        "int"
+    ],
+    [
+        "PDO",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "PDO",
+        "17",
+        "17",
+        "17",
+        "int"
+    ],
+    [
+        "PDO",
+        "18",
+        "18",
+        "18",
+        "int"
+    ],
+    [
+        "PDO",
+        "19",
+        "19",
+        "19",
+        "int"
+    ],
+    [
+        "PDO",
         "20",
         "20",
         "20",
@@ -56617,9 +60957,30 @@
     ],
     [
         "PDO",
+        "21",
+        "21",
+        "21",
+        "int"
+    ],
+    [
+        "PDO",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "PDO",
         "42",
         "42",
         "42",
+        "int"
+    ],
+    [
+        "PDO",
+        "64",
+        "64",
+        "64",
         "int"
     ],
     [
@@ -56704,6 +61065,13 @@
         "113",
         "113",
         "113",
+        "int"
+    ],
+    [
+        "PDO",
+        "128",
+        "128",
+        "128",
         "int"
     ],
     [
@@ -56851,6 +61219,27 @@
         "65001",
         "65001",
         "65001",
+        "int"
+    ],
+    [
+        "PDO",
+        "536870912",
+        "536870912",
+        "536870912",
+        "int"
+    ],
+    [
+        "PDO",
+        "1073741824",
+        "1073741824",
+        "1073741824",
+        "int"
+    ],
+    [
+        "PDO",
+        "2147483648",
+        "2147483648",
+        "2147483648",
         "int"
     ],
     [
@@ -57583,9 +61972,23 @@
     ],
     [
         "Parle\\Token",
-        "int",
-        "int",
-        "int",
+        "-2",
+        "-2",
+        "-2",
+        "int"
+    ],
+    [
+        "Parle\\Token",
+        "-1",
+        "-1",
+        "-1",
+        "int"
+    ],
+    [
+        "Parle\\Token",
+        "0",
+        "0",
+        "0",
         "int"
     ],
     [
@@ -57597,9 +62000,107 @@
     ],
     [
         "Pdo\\Dblib",
-        "int",
-        "int",
-        "int",
+        "1000",
+        "1000",
+        "1000",
+        "int"
+    ],
+    [
+        "Pdo\\Dblib",
+        "1001",
+        "1001",
+        "1001",
+        "int"
+    ],
+    [
+        "Pdo\\Dblib",
+        "1002",
+        "1002",
+        "1002",
+        "int"
+    ],
+    [
+        "Pdo\\Dblib",
+        "1003",
+        "1003",
+        "1003",
+        "int"
+    ],
+    [
+        "Pdo\\Dblib",
+        "1004",
+        "1004",
+        "1004",
+        "int"
+    ],
+    [
+        "Pdo\\Dblib",
+        "1005",
+        "1005",
+        "1005",
+        "int"
+    ],
+    [
+        "Pdo\\Dblib",
+        "1006",
+        "1006",
+        "1006",
+        "int"
+    ],
+    [
+        "Pdo\\Firebird",
+        "1000",
+        "1000",
+        "1000",
+        "int"
+    ],
+    [
+        "Pdo\\Firebird",
+        "1001",
+        "1001",
+        "1001",
+        "int"
+    ],
+    [
+        "Pdo\\Firebird",
+        "1002",
+        "1002",
+        "1002",
+        "int"
+    ],
+    [
+        "Pdo\\Firebird",
+        "1003",
+        "1003",
+        "1003",
+        "int"
+    ],
+    [
+        "Pdo\\Firebird",
+        "1004",
+        "1004",
+        "1004",
+        "int"
+    ],
+    [
+        "Pdo\\Firebird",
+        "1005",
+        "1005",
+        "1005",
+        "int"
+    ],
+    [
+        "Pdo\\Firebird",
+        "1006",
+        "1006",
+        "1006",
+        "int"
+    ],
+    [
+        "Pdo\\Firebird",
+        "1007",
+        "1007",
+        "1007",
         "int"
     ],
     [
@@ -57611,6 +62112,118 @@
     ],
     [
         "Pdo\\Mysql",
+        "20",
+        "20",
+        "20",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1000",
+        "1000",
+        "1000",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1001",
+        "1001",
+        "1001",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1002",
+        "1002",
+        "1002",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1003",
+        "1003",
+        "1003",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1004",
+        "1004",
+        "1004",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1005",
+        "1005",
+        "1005",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1006",
+        "1006",
+        "1006",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1007",
+        "1007",
+        "1007",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1008",
+        "1008",
+        "1008",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1009",
+        "1009",
+        "1009",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1010",
+        "1010",
+        "1010",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1011",
+        "1011",
+        "1011",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1012",
+        "1012",
+        "1012",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1013",
+        "1013",
+        "1013",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
+        "1014",
+        "1014",
+        "1014",
+        "int"
+    ],
+    [
+        "Pdo\\Mysql",
         "int",
         "int",
         "int",
@@ -57618,9 +62231,37 @@
     ],
     [
         "Pdo\\Odbc",
-        "int",
-        "int",
-        "int",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "Pdo\\Odbc",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Pdo\\Odbc",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Pdo\\Odbc",
+        "1000",
+        "1000",
+        "1000",
+        "int"
+    ],
+    [
+        "Pdo\\Odbc",
+        "1001",
+        "1001",
+        "1001",
         "int"
     ],
     [
@@ -57684,6 +62325,48 @@
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "Pdo\\Pgsql",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Pdo\\Pgsql",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Pdo\\Pgsql",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "Pdo\\Pgsql",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "Pdo\\Pgsql",
+        "1000",
+        "1000",
+        "1000",
+        "int"
+    ],
+    [
+        "Pdo\\Pgsql",
+        "1001",
+        "1001",
+        "1001",
         "int"
     ],
     [
@@ -57800,6 +62483,69 @@
     ],
     [
         "Pdo\\Sqlite",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Pdo\\Sqlite",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "Pdo\\Sqlite",
+        "1000",
+        "1000",
+        "1000",
+        "int"
+    ],
+    [
+        "Pdo\\Sqlite",
+        "1001",
+        "1001",
+        "1001",
+        "int"
+    ],
+    [
+        "Pdo\\Sqlite",
+        "1002",
+        "1002",
+        "1002",
+        "int"
+    ],
+    [
+        "Pdo\\Sqlite",
+        "1003",
+        "1003",
+        "1003",
+        "int"
+    ],
+    [
+        "Pdo\\Sqlite",
+        "1004",
+        "1004",
+        "1004",
+        "int"
+    ],
+    [
+        "Pdo\\Sqlite",
+        "1005",
+        "1005",
+        "1005",
+        "int"
+    ],
+    [
+        "Pdo\\Sqlite",
+        "2048",
+        "2048",
+        "2048",
+        "int"
+    ],
+    [
+        "Pdo\\Sqlite",
         "bool",
         "bool",
         "bool",
@@ -57912,9 +62658,79 @@
     ],
     [
         "Phar",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Phar",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Phar",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "Phar",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "Phar",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "Phar",
+        "17",
+        "17",
+        "17",
+        "int"
+    ],
+    [
+        "Phar",
+        "18",
+        "18",
+        "18",
+        "int"
+    ],
+    [
+        "Phar",
+        "4096",
+        "4096",
+        "4096",
+        "int"
+    ],
+    [
+        "Phar",
+        "8192",
+        "8192",
+        "8192",
+        "int"
+    ],
+    [
+        "Phar",
         "12288",
         "12288",
         "12288",
+        "int"
+    ],
+    [
+        "Phar",
+        "61440",
+        "61440",
+        "61440",
         "int"
     ],
     [
@@ -60054,6 +64870,13 @@
     ],
     [
         "RecursiveArrayIterator",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "RecursiveArrayIterator",
         "RecursiveArrayIterator<__template<TKey, 'class RecursiveArrayIterator', __benevolent<(int | string)>>, __template<TValue, 'class RecursiveArrayIterator', mixed>>",
         "RecursiveArrayIterator<TKey of (int|string) (class RecursiveArrayIterator, parameter), TValue (class RecursiveArrayIterator, parameter)>",
         "RecursiveArrayIterator<TKey of (int|string), TValue>",
@@ -60298,6 +65121,13 @@
         "bool"
     ],
     [
+        "RecursiveIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
         "RecursiveIteratorIterator",
         "(0 | 1 | 2)",
         "0|1|2",
@@ -60495,9 +65325,44 @@
     ],
     [
         "RecursiveTreeIterator",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "RecursiveTreeIterator",
         "1",
         "1",
         "1",
+        "int"
+    ],
+    [
+        "RecursiveTreeIterator",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "RecursiveTreeIterator",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "RecursiveTreeIterator",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "RecursiveTreeIterator",
+        "5",
+        "5",
+        "5",
         "int"
     ],
     [
@@ -62700,6 +67565,13 @@
     ],
     [
         "ReflectionAttribute",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "ReflectionAttribute",
         "__template<T, 'class ReflectionAttribute', object>",
         "T of object (class ReflectionAttribute, parameter)",
         "T of object",
@@ -62857,6 +67729,41 @@
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "ReflectionClass",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "ReflectionClass",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "ReflectionClass",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "ReflectionClass",
+        "64",
+        "64",
+        "64",
+        "int"
+    ],
+    [
+        "ReflectionClass",
+        "65536",
+        "65536",
+        "65536",
         "int"
     ],
     [
@@ -63102,6 +68009,34 @@
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "ReflectionClassConstant",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "ReflectionClassConstant",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "ReflectionClassConstant",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "ReflectionClassConstant",
+        "32",
+        "32",
+        "32",
         "int"
     ],
     [
@@ -63596,6 +68531,13 @@
     ],
     [
         "ReflectionFunction",
+        "2048",
+        "2048",
+        "2048",
+        "int"
+    ],
+    [
+        "ReflectionFunction",
         "Closure",
         "Closure",
         "Closure",
@@ -63614,13 +68556,6 @@
         "bool",
         "bool",
         "bool"
-    ],
-    [
-        "ReflectionFunction",
-        "int",
-        "int",
-        "int",
-        "int"
     ],
     [
         "ReflectionFunction",
@@ -63908,6 +68843,48 @@
         "object|string",
         "object|string",
         "object|string"
+    ],
+    [
+        "ReflectionMethod",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "ReflectionMethod",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "ReflectionMethod",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "ReflectionMethod",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "ReflectionMethod",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "ReflectionMethod",
+        "64",
+        "64",
+        "64",
+        "int"
     ],
     [
         "ReflectionMethod",
@@ -64215,6 +69192,76 @@
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "64",
+        "64",
+        "64",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "128",
+        "128",
+        "128",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "512",
+        "512",
+        "512",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "2048",
+        "2048",
+        "2048",
+        "int"
+    ],
+    [
+        "ReflectionProperty",
+        "4096",
+        "4096",
+        "4096",
         "int"
     ],
     [
@@ -64538,6 +69585,13 @@
         "Iterator<TKey (class RegexIterator, parameter), TValue (class RegexIterator, parameter)>",
         "Iterator<TKey, TValue>",
         "Iterator<TKey, TValue>"
+    ],
+    [
+        "RegexIterator",
+        "Traversable<__template<TKey, 'class RegexIterator', mixed>, __template<TValue, 'class RegexIterator', mixed>>",
+        "Traversable<TKey (class RegexIterator, parameter), TValue (class RegexIterator, parameter)>",
+        "Traversable<TKey, TValue>",
+        "Traversable<TKey, TValue>"
     ],
     [
         "RegexIterator",
@@ -64898,6 +69952,34 @@
     ],
     [
         "Relay\\Cluster",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Relay\\Cluster",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "Relay\\Cluster",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "Relay\\Cluster",
+        "110",
+        "110",
+        "110",
+        "int"
+    ],
+    [
+        "Relay\\Cluster",
         "Generator",
         "Generator",
         "Generator",
@@ -64996,9 +70078,16 @@
     ],
     [
         "Relay\\Event",
-        "int",
-        "int",
-        "int",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Relay\\Event",
+        "2",
+        "2",
+        "2",
         "int"
     ],
     [
@@ -65048,6 +70137,41 @@
         "string",
         "string",
         "string",
+        "string"
+    ],
+    [
+        "Relay\\Relay",
+        "'0.12.0'",
+        "'0.12.0'",
+        "'0.12.0'",
+        "string"
+    ],
+    [
+        "Relay\\Relay",
+        "'AFTER'",
+        "'AFTER'",
+        "'AFTER'",
+        "string"
+    ],
+    [
+        "Relay\\Relay",
+        "'BEFORE'",
+        "'BEFORE'",
+        "'BEFORE'",
+        "string"
+    ],
+    [
+        "Relay\\Relay",
+        "'LEFT'",
+        "'LEFT'",
+        "'LEFT'",
+        "string"
+    ],
+    [
+        "Relay\\Relay",
+        "'RIGHT'",
+        "'RIGHT'",
+        "'RIGHT'",
         "string"
     ],
     [
@@ -65325,13 +70449,6 @@
     ],
     [
         "Relay\\Relay",
-        "0.0",
-        "0.0",
-        "0.0",
-        "float"
-    ],
-    [
-        "Relay\\Relay",
         "0",
         "0",
         "0",
@@ -65339,9 +70456,184 @@
     ],
     [
         "Relay\\Relay",
+        "0.0",
+        "0.0",
+        "0.0",
+        "float"
+    ],
+    [
+        "Relay\\Relay",
         "1",
         "1",
         "1",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "6",
+        "6",
+        "6",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "7",
+        "7",
+        "7",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "9",
+        "9",
+        "9",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "10",
+        "10",
+        "10",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "11",
+        "11",
+        "11",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "12",
+        "12",
+        "12",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "13",
+        "13",
+        "13",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "14",
+        "14",
+        "14",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "15",
+        "15",
+        "15",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "100",
+        "100",
+        "100",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "101",
+        "101",
+        "101",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "102",
+        "102",
+        "102",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "103",
+        "103",
+        "103",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "104",
+        "104",
+        "104",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "105",
+        "105",
+        "105",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "106",
+        "106",
+        "106",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "107",
+        "107",
+        "107",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "108",
+        "108",
+        "108",
+        "int"
+    ],
+    [
+        "Relay\\Relay",
+        "109",
+        "109",
+        "109",
         "int"
     ],
     [
@@ -65482,6 +70774,20 @@
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "Relay\\Sentinel",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Relay\\Sentinel",
+        "2",
+        "2",
+        "2",
         "int"
     ],
     [
@@ -65878,6 +71184,76 @@
     ],
     [
         "SNMP",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "SNMP",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "SNMP",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "SNMP",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "SNMP",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "SNMP",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "SNMP",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "SNMP",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "SNMP",
+        "64",
+        "64",
+        "64",
+        "int"
+    ],
+    [
+        "SNMP",
+        "126",
+        "126",
+        "126",
+        "int"
+    ],
+    [
+        "SNMP",
         "array",
         "array",
         "array",
@@ -66025,9 +71401,226 @@
     ],
     [
         "SQLite3",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "SQLite3",
         "6",
         "6",
         "6",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "7",
+        "7",
+        "7",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "9",
+        "9",
+        "9",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "10",
+        "10",
+        "10",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "11",
+        "11",
+        "11",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "12",
+        "12",
+        "12",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "13",
+        "13",
+        "13",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "14",
+        "14",
+        "14",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "15",
+        "15",
+        "15",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "17",
+        "17",
+        "17",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "18",
+        "18",
+        "18",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "19",
+        "19",
+        "19",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "20",
+        "20",
+        "20",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "21",
+        "21",
+        "21",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "22",
+        "22",
+        "22",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "23",
+        "23",
+        "23",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "24",
+        "24",
+        "24",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "25",
+        "25",
+        "25",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "26",
+        "26",
+        "26",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "27",
+        "27",
+        "27",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "28",
+        "28",
+        "28",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "29",
+        "29",
+        "29",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "30",
+        "30",
+        "30",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "31",
+        "31",
+        "31",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "SQLite3",
+        "33",
+        "33",
+        "33",
         "int"
     ],
     [
@@ -66253,6 +71846,27 @@
         "int|string",
         "int|string",
         "int|string"
+    ],
+    [
+        "SQLite3Stmt",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "SQLite3Stmt",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "SQLite3Stmt",
+        "2",
+        "2",
+        "2",
+        "int"
     ],
     [
         "SQLite3Stmt",
@@ -67936,6 +73550,13 @@
     ],
     [
         "SeekableIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "SeekableIterator",
         "void",
         "void",
         "void",
@@ -69133,6 +74754,48 @@
     ],
     [
         "SolrClient",
+        "'admin/ping'",
+        "'admin/ping'",
+        "'admin/ping'",
+        "string"
+    ],
+    [
+        "SolrClient",
+        "'admin/system'",
+        "'admin/system'",
+        "'admin/system'",
+        "string"
+    ],
+    [
+        "SolrClient",
+        "'admin/threads'",
+        "'admin/threads'",
+        "'admin/threads'",
+        "string"
+    ],
+    [
+        "SolrClient",
+        "'select'",
+        "'select'",
+        "'select'",
+        "string"
+    ],
+    [
+        "SolrClient",
+        "'terms'",
+        "'terms'",
+        "'terms'",
+        "string"
+    ],
+    [
+        "SolrClient",
+        "'update'",
+        "'update'",
+        "'update'",
+        "string"
+    ],
+    [
+        "SolrClient",
         "0",
         "0",
         "0",
@@ -69143,6 +74806,41 @@
         "1",
         "1",
         "1",
+        "int"
+    ],
+    [
+        "SolrClient",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "SolrClient",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "SolrClient",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "SolrClient",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "SolrClient",
+        "32",
+        "32",
+        "32",
         "int"
     ],
     [
@@ -69252,6 +74950,27 @@
     ],
     [
         "SolrCollapseFunction",
+        "'collapse'",
+        "'collapse'",
+        "'collapse'",
+        "string"
+    ],
+    [
+        "SolrCollapseFunction",
+        "'expand'",
+        "'expand'",
+        "'expand'",
+        "string"
+    ],
+    [
+        "SolrCollapseFunction",
+        "'ignore'",
+        "'ignore'",
+        "'ignore'",
+        "string"
+    ],
+    [
+        "SolrCollapseFunction",
         "SolrCollapseFunction",
         "SolrCollapseFunction",
         "SolrCollapseFunction",
@@ -69332,6 +75051,20 @@
         "1",
         "1",
         "1",
+        "int"
+    ],
+    [
+        "SolrDocument",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "SolrDocument",
+        "4",
+        "4",
+        "4",
         "int"
     ],
     [
@@ -69483,6 +75216,20 @@
     ],
     [
         "SolrInputDocument",
+        "-1",
+        "-1",
+        "-1",
+        "int"
+    ],
+    [
+        "SolrInputDocument",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "SolrInputDocument",
         "0.0",
         "0.0",
         "0.0",
@@ -69493,6 +75240,34 @@
         "1",
         "1",
         "1",
+        "int"
+    ],
+    [
+        "SolrInputDocument",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "SolrInputDocument",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "SolrInputDocument",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "SolrInputDocument",
+        "5",
+        "5",
+        "5",
         "int"
     ],
     [
@@ -69693,6 +75468,13 @@
     ],
     [
         "SolrQuery",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "SolrQuery",
         "1",
         "1",
         "1",
@@ -69773,6 +75555,13 @@
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "SolrResponse",
+        "1",
+        "1",
+        "1",
         "int"
     ],
     [
@@ -69868,13 +75657,6 @@
     ],
     [
         "SplBool",
-        "null",
-        "null",
-        "null",
-        "null"
-    ],
-    [
-        "SplBool",
         "true",
         "true",
         "true",
@@ -69886,6 +75668,27 @@
         "int|null",
         "int|null",
         "int|null"
+    ],
+    [
+        "SplDoublyLinkedList",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "SplDoublyLinkedList",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "SplDoublyLinkedList",
+        "2",
+        "2",
+        "2",
+        "int"
     ],
     [
         "SplDoublyLinkedList",
@@ -70288,6 +76091,27 @@
     ],
     [
         "SplFileObject",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "SplFileObject",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "SplFileObject",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "SplFileObject",
         "array",
         "array",
         "array",
@@ -70484,10 +76308,10 @@
     ],
     [
         "SplFloat",
-        "null",
-        "null",
-        "null",
-        "null"
+        "0",
+        "0",
+        "0",
+        "int"
     ],
     [
         "SplHeap",
@@ -70540,10 +76364,10 @@
     ],
     [
         "SplInt",
-        "null",
-        "null",
-        "null",
-        "null"
+        "0",
+        "0",
+        "0",
+        "int"
     ],
     [
         "SplMaxHeap",
@@ -70743,6 +76567,27 @@
     ],
     [
         "SplPriorityQueue",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "SplPriorityQueue",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "SplPriorityQueue",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "SplPriorityQueue",
         "__template<TPriority, 'class SplPriorityQueue', mixed>",
         "TPriority (class SplPriorityQueue, parameter)",
         "TPriority",
@@ -70848,6 +76693,13 @@
     ],
     [
         "SplStack",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "SplStack",
         "void",
         "void",
         "void",
@@ -70855,10 +76707,10 @@
     ],
     [
         "SplString",
-        "null",
-        "null",
-        "null",
-        "null"
+        "0",
+        "0",
+        "0",
+        "int"
     ],
     [
         "SplSubject",
@@ -70942,6 +76794,118 @@
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "6",
+        "6",
+        "6",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "32",
+        "32",
+        "32",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "64",
+        "64",
+        "64",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "128",
+        "128",
+        "128",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "256",
+        "256",
+        "256",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "268435456",
+        "268435456",
+        "268435456",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "536870912",
+        "536870912",
+        "536870912",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "805306368",
+        "805306368",
+        "805306368",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "1073741824",
+        "1073741824",
+        "1073741824",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "1342177280",
+        "1342177280",
+        "1342177280",
+        "int"
+    ],
+    [
+        "Spoofchecker",
+        "1610612736",
+        "1610612736",
+        "1610612736",
         "int"
     ],
     [
@@ -73732,6 +79696,13 @@
     ],
     [
         "Transliterator",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "Transliterator",
         "Transliterator",
         "Transliterator",
         "Transliterator",
@@ -73780,6 +79751,13 @@
         "string"
     ],
     [
+        "Traversable",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
         "UConverter",
         "(array | int | string | null)",
         "array|int|string|null",
@@ -73799,6 +79777,244 @@
         "string|null",
         "string|null",
         "string|null"
+    ],
+    [
+        "UConverter",
+        "-1",
+        "-1",
+        "-1",
+        "int"
+    ],
+    [
+        "UConverter",
+        "0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        "UConverter",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "UConverter",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "UConverter",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "UConverter",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "UConverter",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "UConverter",
+        "6",
+        "6",
+        "6",
+        "int"
+    ],
+    [
+        "UConverter",
+        "7",
+        "7",
+        "7",
+        "int"
+    ],
+    [
+        "UConverter",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "UConverter",
+        "9",
+        "9",
+        "9",
+        "int"
+    ],
+    [
+        "UConverter",
+        "10",
+        "10",
+        "10",
+        "int"
+    ],
+    [
+        "UConverter",
+        "11",
+        "11",
+        "11",
+        "int"
+    ],
+    [
+        "UConverter",
+        "12",
+        "12",
+        "12",
+        "int"
+    ],
+    [
+        "UConverter",
+        "13",
+        "13",
+        "13",
+        "int"
+    ],
+    [
+        "UConverter",
+        "14",
+        "14",
+        "14",
+        "int"
+    ],
+    [
+        "UConverter",
+        "15",
+        "15",
+        "15",
+        "int"
+    ],
+    [
+        "UConverter",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "UConverter",
+        "17",
+        "17",
+        "17",
+        "int"
+    ],
+    [
+        "UConverter",
+        "18",
+        "18",
+        "18",
+        "int"
+    ],
+    [
+        "UConverter",
+        "19",
+        "19",
+        "19",
+        "int"
+    ],
+    [
+        "UConverter",
+        "20",
+        "20",
+        "20",
+        "int"
+    ],
+    [
+        "UConverter",
+        "21",
+        "21",
+        "21",
+        "int"
+    ],
+    [
+        "UConverter",
+        "22",
+        "22",
+        "22",
+        "int"
+    ],
+    [
+        "UConverter",
+        "23",
+        "23",
+        "23",
+        "int"
+    ],
+    [
+        "UConverter",
+        "24",
+        "24",
+        "24",
+        "int"
+    ],
+    [
+        "UConverter",
+        "25",
+        "25",
+        "25",
+        "int"
+    ],
+    [
+        "UConverter",
+        "26",
+        "26",
+        "26",
+        "int"
+    ],
+    [
+        "UConverter",
+        "27",
+        "27",
+        "27",
+        "int"
+    ],
+    [
+        "UConverter",
+        "28",
+        "28",
+        "28",
+        "int"
+    ],
+    [
+        "UConverter",
+        "29",
+        "29",
+        "29",
+        "int"
+    ],
+    [
+        "UConverter",
+        "30",
+        "30",
+        "30",
+        "int"
+    ],
+    [
+        "UConverter",
+        "31",
+        "31",
+        "31",
+        "int"
+    ],
+    [
+        "UConverter",
+        "32",
+        "32",
+        "32",
+        "int"
     ],
     [
         "UConverter",
@@ -75632,6 +81848,125 @@
         "0",
         "0",
         "0",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "2",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "3",
+        "3",
+        "3",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "4",
+        "4",
+        "4",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "5",
+        "5",
+        "5",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "6",
+        "6",
+        "6",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "7",
+        "7",
+        "7",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "8",
+        "8",
+        "8",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "9",
+        "9",
+        "9",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "10",
+        "10",
+        "10",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "11",
+        "11",
+        "11",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "12",
+        "12",
+        "12",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "13",
+        "13",
+        "13",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "14",
+        "14",
+        "14",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "15",
+        "15",
+        "15",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "16",
+        "16",
+        "16",
+        "int"
+    ],
+    [
+        "XMLReader",
+        "17",
+        "17",
+        "17",
         "int"
     ],
     [
@@ -80102,6 +86437,13 @@
     ],
     [
         "ZipArchive",
+        "'1.11.4'",
+        "'1.11.4'",
+        "'1.11.4'",
+        "string"
+    ],
+    [
+        "ZipArchive",
         "(0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | true)",
         "0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|true",
         "0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|true",
@@ -80151,6 +86493,20 @@
     ],
     [
         "ZipArchive",
+        "-2",
+        "-2",
+        "-2",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "-1",
+        "-1",
+        "-1",
+        "int"
+    ],
+    [
+        "ZipArchive",
         "0",
         "0",
         "0",
@@ -80396,9 +86752,114 @@
     ],
     [
         "ZipArchive",
+        "64",
+        "64",
+        "64",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "93",
+        "93",
+        "93",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "95",
+        "95",
+        "95",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "97",
+        "97",
+        "97",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "98",
+        "98",
+        "98",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "128",
+        "128",
+        "128",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "256",
+        "256",
+        "256",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "257",
+        "257",
+        "257",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "258",
+        "258",
+        "258",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "259",
+        "259",
+        "259",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "512",
+        "512",
+        "512",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "2048",
+        "2048",
+        "2048",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "4096",
+        "4096",
+        "4096",
+        "int"
+    ],
+    [
+        "ZipArchive",
         "8192",
         "8192",
         "8192",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "65535",
+        "65535",
+        "65535",
+        "int"
+    ],
+    [
+        "ZipArchive",
+        "1073741824",
+        "1073741824",
+        "1073741824",
         "int"
     ],
     [
