@@ -45935,6 +45935,13 @@
     ],
     [
         "Generator",
+        "__template<TYield, 'class Generator', mixed>",
+        "TYield (class Generator, parameter)",
+        "TYield",
+        "TYield"
+    ],
+    [
+        "Generator",
         "array",
         "array",
         "array",

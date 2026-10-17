@@ -1152,16 +1152,11 @@ fn compare_in_union(a: &Type, b: &Type) -> Ordering {
 }
 
 impl Type {
-    /// `$t instanceof IntegerType` for `IntegerRangeType` comparisons (a `ConstantIntegerType` too).
+    /// `$t instanceof IntegerType` for `IntegerRangeType` comparisons: TemplateIntegerType /
+    /// TemplateConstantIntegerType.
     fn is_plain_integer_class(&self) -> bool {
-        match self {
-            Type::Int | Type::ConstInt(_) => true,
-            // TemplateIntegerType / TemplateConstantIntegerType
-            Type::Template(t) => {
-                matches!(t.bound, Type::Int | Type::ConstInt(_) | Type::IntRange(..))
-            }
-            _ => false,
-        }
+        // (an `int` or a constant int never meets a range when sorting: it was merged, or sorted as a scalar)
+        matches!(self, Type::Template(t) if matches!(t.bound, Type::Int | Type::ConstInt(_) | Type::IntRange(..)))
     }
 }
 
@@ -1183,24 +1178,9 @@ fn describe_union(types: &[Type], level: Level) -> String {
             };
             names.push(if wrap { format!("({d})") } else { d });
         }
-        if level == Level::Precise {
-            let mut counts = std::collections::HashMap::<String, usize>::new();
-            let dup: std::collections::HashSet<String> = {
-                let mut seen = std::collections::HashSet::new();
-                names
-                    .iter()
-                    .filter(|n| !seen.insert((*n).clone()))
-                    .cloned()
-                    .collect()
-            };
-            for n in &mut names {
-                if dup.contains(n) {
-                    let c = counts.entry(n.clone()).or_insert(0);
-                    *c += 1;
-                    *n = format!("{n}#{c}");
-                }
-            }
-        } else {
+        // ponytail: at the precise level PHPStan numbers equal descriptions (`T#1|T#2`); no union of Pun's holds two
+        // members that describe the same precisely, so only the other levels dedupe
+        if level != Level::Precise {
             let mut seen = std::collections::HashSet::new();
             names.retain(|n| seen.insert(n.clone()));
         }
@@ -1348,15 +1328,15 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
     }
     'base: for (i, t) in base {
         let d = t.describe(level);
-        if (d == "object" || d == "string") && skip_names.contains(&d.as_str()) {
-            if let Some(pos) = to_describe
+        if (d == "object" || d == "string")
+            && skip_names.contains(&d.as_str())
+            && let Some(pos) = to_describe
                 .iter()
                 .position(|(_, x)| matches!(x, Type::Callable(None)))
-            {
-                described.push((i, format!("callable-{d}")));
-                to_describe.remove(pos);
-                continue 'base;
-            }
+        {
+            described.push((i, format!("callable-{d}")));
+            to_describe.remove(pos);
+            continue 'base;
         }
         if skip_names.contains(&d.as_str()) {
             continue;
@@ -1447,10 +1427,7 @@ pub fn to_phpdoc(t: &Type) -> String {
             format!("iterable<{}, {}>", to_phpdoc(key), to_phpdoc(item))
         }
         Type::Union(types) | Type::Benevolent(types) => join_phpdoc(&sort_types(types), "|"),
-        Type::Intersection(_) => {
-            let d = t.describe(Level::Precise);
-            d
-        }
+        Type::Intersection(_) => t.describe(Level::Precise),
         Type::Template(tpl) => tpl.name.clone(),
         Type::Callable(None) => "callable".to_string(),
         Type::Callable(Some(sig)) => print_callable_named("callable", sig),
@@ -1894,6 +1871,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             T::Template(_) => Tri::Maybe,
             _ => Tri::No,
         },
+        T::Conditional(c) => conditional_super(c, b),
         T::Union(types) | T::Benevolent(types) => {
             if matches!(
                 b,
@@ -2017,6 +1995,11 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                 if matches!(**g, T::Mixed { .. }) {
                     return Tri::Yes;
                 }
+                // a template's bound: not the uncertainty of the template itself
+                let g = match &**g {
+                    T::Template(t) => &t.bound,
+                    g => g,
+                };
                 let r = is_super_type_of(g, &T::Object(s.clone(), vec![]));
                 if b.is_class_string().yes() {
                     r
@@ -2051,15 +2034,14 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             }
             _ => Tri::No,
         },
-        T::Array(key, item) => match b {
+        T::Array(_, item) => match b {
             T::Array(..) | T::ConstArray(_) => is_super_type_of(item, &b.iterable_value_type())
                 .and(is_super_type_of(
                     &a.iterable_key_type(),
                     &b.iterable_key_type(),
                 )),
             _ => Tri::No,
-        }
-        .and(if key.is_never() { Tri::Yes } else { Tri::Yes }),
+        },
         T::ConstArray(ca) => match b {
             T::ConstArray(cb) => const_array_super(ca, cb),
             T::Array(..) => {
@@ -2115,31 +2097,113 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             T::Object(..) | T::Static(_) | T::This(_) => Tri::Maybe,
             _ => Tri::No,
         },
-        T::Iterable(..) | T::Accessory(_) | T::Conditional(_) => {
-            // Not compound-dispatched (b is not compound here).
-            match a {
-                T::Iterable(key, value) => b
-                    .is_iterable()
-                    .and(is_super_type_of(value, &b.iterable_value_type()))
-                    .and(is_super_type_of(key, &b.iterable_key_type())),
-                T::Accessory(acc) => accessory_super(acc, b),
-                _ => Tri::Maybe,
-            }
+        // (b is not compound here)
+        T::Iterable(key, value) => b
+            .is_iterable()
+            .and(is_super_type_of(value, &b.iterable_value_type()))
+            .and(is_super_type_of(key, &b.iterable_key_type())),
+        T::Accessory(acc) => accessory_super(acc, b),
+    }
+}
+
+impl Conditional {
+    /// `LateResolvableType::resolve()`: the branch the subject takes, both when it may take either.
+    /// ponytail: the subject inside the branches is not narrowed (`getNormalizedIf()`); add for `(T is int ? T : ...)`.
+    fn resolve(&self) -> Type {
+        let Subject::Type(subject) = &self.subject else {
+            return union(vec![self.then.clone(), self.otherwise.clone()]);
+        };
+        let (yes, no) = if self.negated {
+            (&self.otherwise, &self.then)
+        } else {
+            (&self.then, &self.otherwise)
+        };
+        match is_super_type_of(&self.target, subject) {
+            Tri::Yes => yes.clone(),
+            Tri::No => no.clone(),
+            Tri::Maybe => union(vec![self.then.clone(), self.otherwise.clone()]),
         }
+    }
+
+    /// `isResolvable()`: no templates involved, or the subject's branch is certain (never for a parameter).
+    fn is_resolvable(&self) -> bool {
+        let Subject::Type(subject) = &self.subject else {
+            return false;
+        };
+        !contains_template(subject) && !contains_template(&self.target)
+            || !is_super_type_of(&self.target, subject).maybe()
+    }
+}
+
+fn contains_template(t: &Type) -> bool {
+    let found = std::cell::Cell::new(matches!(t, Type::Template(_)));
+    t.traverse(&|x| {
+        found.set(found.get() || contains_template(x));
+        x.clone()
+    });
+    found.get()
+}
+
+/// `ConditionalType::isSuperTypeOf()`: branch by branch against its own kind, else as what it resolves to.
+fn conditional_super(c: &Conditional, b: &Type) -> Tri {
+    if let Type::Conditional(other) = b
+        && std::mem::discriminant(&c.subject) == std::mem::discriminant(&other.subject)
+    {
+        return is_super_type_of(&c.then, &other.then)
+            .and(is_super_type_of(&c.otherwise, &other.otherwise));
+    }
+    if b.is_never() {
+        return Tri::Yes;
+    }
+    let b = match b {
+        Type::Conditional(other) => other.resolve(),
+        b => b.clone(),
+    };
+    let r = is_super_type_of(&c.resolve(), &b);
+    if c.is_resolvable() {
+        r
+    } else {
+        r.and(Tri::Maybe)
     }
 }
 
 /// `CallableTypeHelper::isParametersAcceptorSuperTypeOf()` against `$b`'s callable variant (a callable without
 /// a signature is the trivial `(...): mixed` one).
+/// A function name's variants are its signatures (`'Class::method'` strings are taken as trivial).
 fn signature_super(ours: &Signature, b: &Type) -> Tri {
-    let trivial = Signature {
-        params: vec![],
-        ret: mixed(),
+    let variants = match b {
+        Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
+        Type::ConstString(name) if let Some(f) = symbols::function(name) => f
+            .variants
+            .iter()
+            .map(|v| Signature {
+                params: v
+                    .params
+                    .iter()
+                    .map(|p| Param {
+                        name: p.name.clone(),
+                        ty: crate::resolve::resolve_str(&p.ty, None),
+                        optional: p.optional,
+                        by_ref: p.by_ref != symbols::ByRef::No,
+                        variadic: p.variadic,
+                    })
+                    .collect(),
+                ret: crate::resolve::resolve_str(&v.ret, None),
+            })
+            .collect(),
+        _ => vec![Signature {
+            params: vec![],
+            ret: mixed(),
+        }],
     };
-    let theirs = match b {
-        Type::Callable(Some(s)) | Type::Closure(s) => s,
-        _ => &trivial,
-    };
+    variants
+        .iter()
+        .map(|theirs| variant_super(ours, theirs))
+        .reduce(Tri::or)
+        .expect("a variant")
+}
+
+fn variant_super(ours: &Signature, theirs: &Signature) -> Tri {
     let mut their_params: Vec<&Param> = theirs.params.iter().collect();
     if let Some(last) = theirs.params.last()
         && last.variadic
@@ -2210,12 +2274,12 @@ fn int_range_super(a: &Type, b: &Type) -> Tri {
 }
 
 fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
-    let names = b.object_class_names();
-    if names.is_empty() && !matches!(b, Type::ObjectWithoutClass | Type::Closure(_)) {
+    let names = match b {
+        Type::Closure(_) => vec!["Closure".to_string()],
+        b => b.object_class_names(),
+    };
+    if names.is_empty() && !matches!(b, Type::ObjectWithoutClass) {
         return Tri::No;
-    }
-    if let Type::Closure(_) = b {
-        return Tri::from(class_is(class, "Closure"));
     }
     if let Type::ObjectWithoutClass = b {
         return Tri::Maybe;
@@ -2223,9 +2287,9 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     let that = &names[0];
     let result = match (symbols::class(class), symbols::class(that)) {
         (Some(this), Some(other)) => {
-            if this.name == other.name || other.ancestors.iter().any(|a| *a == this.name) {
+            if this.name == other.name || other.ancestors.contains(&this.name) {
                 Tri::Yes
-            } else if this.ancestors.iter().any(|a| *a == other.name)
+            } else if this.ancestors.contains(&other.name)
                 || (this.is_interface && !other.is_final)
                 || (other.is_interface && !this.is_final)
             {
@@ -2245,17 +2309,17 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     if args.is_empty() || result.no() {
         return result;
     }
-    // GenericObjectType: compare with `$b`'s arguments for this class (templates matched by name), invariantly
+    // GenericObjectType: `$b`'s arguments for this class, each a valid (invariant) variance
     match b {
         Type::Object(b_class, b_args) if !b_args.is_empty() => {
             match ancestor_args(b_class, b_args, class) {
                 Some(b_args) if b_args.len() == args.len() => args
                     .iter()
                     .zip(&b_args)
-                    .map(|(x, y)| is_super_type_of(x, y).and(is_super_type_of(y, x)))
-                    .fold(result, Tri::and),
+                    .map(|(x, y)| valid_variance(x, y))
+                    .fold(Tri::Yes, Tri::and),
                 Some(_) => Tri::No,
-                None => result.and(Tri::Maybe),
+                None => result,
             }
         }
         // a raw reference to the generic class itself is maybe; to a descendant, it is the class relation
@@ -2266,24 +2330,33 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     }
 }
 
-/// The type arguments `class<args>` has for its ancestor (or itself) `ancestor`, when every template of the
-/// ancestor is a same-named template of the class (the SPL convention: `TKey`, `TValue`).
+/// `getAncestorWithClassName()`'s type arguments: `class<args>` as its generic ancestor (or itself) `ancestor`.
 fn ancestor_args(class: &str, args: &[Type], ancestor: &str) -> Option<Vec<Type>> {
-    let (c, a) = (symbols::class(class)?, symbols::class(ancestor)?);
-    a.templates
-        .iter()
-        .map(|t| {
-            c.templates
-                .iter()
-                .position(|ct| ct.name == t.name)
-                .and_then(|i| args.get(i).cloned())
-        })
-        .collect()
+    let c = symbols::class(class)?;
+    let ancestor = canonical_class(ancestor);
+    if c.name == ancestor {
+        return Some(args.to_vec());
+    }
+    Some(
+        c.generics
+            .get(&ancestor)?
+            .iter()
+            .map(|s| with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), c, args))
+            .collect(),
+    )
 }
 
-fn class_is(class: &str, target: &str) -> bool {
-    symbols::class(class)
-        .is_some_and(|c| c.name == target || c.ancestors.iter().any(|a| a == target))
+/// `TemplateTypeVariance::isValidVariance()` + `validPosition()` of an invariant template, `*` being bivariant.
+/// ponytail: `covariant`/`contravariant` call-site variance is not modelled.
+fn valid_variance(a: &Type, b: &Type) -> Tri {
+    match (a, b) {
+        (Type::Wildcard, _) => Tri::Yes,
+        (_, Type::Wildcard) => Tri::No,
+        (_, Type::Never(_)) | (Type::Mixed { .. }, _) | (_, Type::Mixed { .. }) => Tri::Yes,
+        (Type::Benevolent(_), _) if !is_super_type_of(a, b).no() => Tri::Yes,
+        (_, Type::Benevolent(_)) if !is_super_type_of(b, a).no() => Tri::Yes,
+        _ => Tri::from(a == b),
+    }
 }
 
 fn const_array_super(a: &ConstArray, b: &ConstArray) -> Tri {
@@ -2315,27 +2388,17 @@ fn const_array_super(a: &ConstArray, b: &ConstArray) -> Tri {
     result
 }
 
-/// `$a->isSubTypeOf($b)` for compound `$a`.
+/// `$a->isSubTypeOf($b)` for compound `$a`. `$b` is compound only for a union `$b` (and an iterable, never,
+/// range, template or conditional `$a`): other compound pairs are answered by `isSuperTypeOf()` first.
 fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
     use Type as T;
     match a {
-        T::Mixed { .. } | T::Error => {
-            if matches!(b, T::Mixed { .. }) {
-                Tri::Yes
-            } else {
-                Tri::Maybe
-            }
-        }
-        T::Never(_) => Tri::Yes,
+        // (against a mixed `$b`, isSuperTypeOf() answers yes first)
+        T::Mixed { .. } | T::Error => Tri::Maybe,
         T::Union(types) | T::Benevolent(types) => {
             Tri::extreme_identity(types.iter().map(|t| is_super_type_of(b, t)))
         }
-        T::Intersection(types) => {
-            if matches!(b, T::Intersection(_) | T::Union(_) | T::Benevolent(_)) {
-                return is_super_type_of(b, a);
-            }
-            Tri::max_min(types.iter().map(|t| is_super_type_of(b, t)))
-        }
+        T::Intersection(types) => Tri::max_min(types.iter().map(|t| is_super_type_of(b, t))),
         T::IntRange(min, max) => match b {
             T::Int | T::ConstInt(_) | T::IntRange(..) | T::Intersection(_) => {
                 is_super_type_of(b, a)
@@ -2387,20 +2450,9 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                     &a.iterable_key_type(),
                 ))
         }
-        T::Callable(_) => {
-            if matches!(b, T::Intersection(_) | T::Union(_) | T::Benevolent(_)) {
-                return is_super_type_of(b, a);
-            }
-            b.is_callable().and(if matches!(b, T::Callable(_)) {
-                Tri::Yes
-            } else {
-                Tri::Maybe
-            })
-        }
+        // (two callables meet in isSuperTypeOf())
+        T::Callable(_) => b.is_callable().and(Tri::Maybe),
         T::Accessory(acc) => {
-            if matches!(b, T::Union(_) | T::Benevolent(_) | T::Intersection(_)) {
-                return is_super_type_of(b, a);
-            }
             let same = matches!(b, T::Accessory(x) if x == acc);
             match acc {
                 Accessory::NonFalsyString
@@ -2423,49 +2475,35 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                 }
             }
         }
-        T::Template(tpl) => {
-            if !matches!(b, T::Template(_))
-                && matches!(b, T::Union(_) | T::Benevolent(_) | T::Intersection(_))
-                && !same_kind(&tpl.bound, b)
-            {
-                return is_super_type_of(b, a);
-            }
-            match b {
-                T::Template(other) => {
-                    let r = is_super_type_of(&other.bound, &tpl.bound);
-                    if other.scope == tpl.scope && other.name == tpl.name {
-                        r
-                    } else {
-                        r.and(Tri::Maybe)
-                    }
+        // (a union `$b` reaches here only for a union-bound template, which compares by its bound)
+        T::Template(tpl) => match b {
+            T::Template(other) => {
+                let r = is_super_type_of(&other.bound, &tpl.bound);
+                if other.scope == tpl.scope && other.name == tpl.name {
+                    r
+                } else {
+                    r.and(Tri::Maybe)
                 }
-                _ => is_super_type_of(b, &tpl.bound),
             }
-        }
+            _ => is_super_type_of(b, &tpl.bound),
+        },
         T::Conditional(c) => {
-            let r = is_super_type_of(b, &c.then).and(is_super_type_of(b, &c.otherwise));
-            if r.yes() {
-                r
+            let r = c.resolve();
+            if r.is_compound() {
+                is_sub_type_of(&r, b)
             } else {
-                Tri::Maybe.and(r.or(Tri::Maybe))
+                is_super_type_of(b, &r)
             }
         }
-        _ => is_super_type_of(b, a),
+        // never, the remaining compound type
+        _ => Tri::Yes,
     }
-}
-
-/// `$type instanceof $bound` in `TemplateTypeTrait::isSubTypeOf()`.
-fn same_kind(bound: &Type, b: &Type) -> bool {
-    std::mem::discriminant(bound) == std::mem::discriminant(b)
 }
 
 // ---- TypeCombinator::union ----
 
 pub fn union(types: Vec<Type>) -> Type {
     let mut types = types;
-    if types.is_empty() {
-        return Type::Never(NeverKind::Implicit);
-    }
     if types.len() == 1
         && !matches!(types[0], Type::Union(_) | Type::Benevolent(_))
         && !types[0].is_array().yes()
@@ -2486,12 +2524,14 @@ pub fn union(types: Vec<Type>) -> Type {
                 }
                 flat.extend(inner);
             }
-            Type::Template(tpl) if matches!(tpl.bound, Type::Benevolent(_)) => {
+            Type::Template(tpl) => {
                 if let Type::Benevolent(inner) = &tpl.bound {
                     benevolent.extend(inner.iter().map(|i| i.describe(Level::Value)));
                     flat.extend(inner.iter().cloned());
+                    benevolent_template.get_or_insert(tpl);
+                    continue;
                 }
-                benevolent_template.get_or_insert(tpl);
+                flat.push(Type::Template(tpl));
             }
             Type::Union(inner) => flat.extend(inner),
             t => flat.push(t),
@@ -2606,9 +2646,6 @@ pub fn union(types: Vec<Type>) -> Type {
         i += 1;
     }
     types.extend(kept_scalars);
-    if types.is_empty() {
-        return Type::Never(NeverKind::Implicit);
-    }
     if types.len() == 1 {
         return types.pop().expect("one type");
     }
@@ -2638,12 +2675,10 @@ fn scalar_class(t: &Type) -> u8 {
     }
 }
 
+/// `TypeUtils::getAccessoryTypes() !== []` of a string type that is not a class string (plain `string` answers
+/// maybe to that, so only intersections get here)
 fn has_accessory(t: &Type) -> bool {
-    match t {
-        Type::Intersection(types) => types.iter().any(|t| matches!(t, Type::Accessory(_))),
-        Type::Accessory(_) => true,
-        _ => false,
-    }
+    matches!(t, Type::Intersection(types) if types.iter().any(|t| matches!(t, Type::Accessory(_))))
 }
 
 enum Merge {
@@ -2699,21 +2734,7 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
     if is_super_type_of(a, b).yes() {
         return Some(Merge::A(a.clone()));
     }
-    if let Type::ConstString(s) = a
-        && s.is_empty()
-        && matches!(
-            b.describe(Level::Value).as_str(),
-            "non-empty-string" | "non-falsy-string"
-        )
-    {
-        return Some(Merge::B(intersect(case_accessories(b))));
-    }
-    if let Type::ConstString(s) = a
-        && s == "0"
-        && let Some(t) = downgrade_non_falsy(b)
-    {
-        return Some(Merge::B(t));
-    }
+    // (a constant string is always `b`: constant scalars merge into the other types one by one)
     if let Type::ConstString(s) = b
         && s.is_empty()
         && matches!(

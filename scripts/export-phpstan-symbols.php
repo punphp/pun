@@ -217,6 +217,19 @@ function dump(int $phpVersion, array &$typeStrings): array
             $object = $own === [] ? new PHPStan\Type\ObjectType($class->getName()) : new PHPStan\Type\Generic\GenericObjectType($class->getName(), $own);
             $entry['iterable'] = [t($object->getIterableKeyType()), t($object->getIterableValueType())];
         }
+        // generic ancestors' type arguments over the class's own templates (GenericObjectType::isSuperTypeOf). Not
+        // reflected types: an inherited `static` stays the declaring class's (SimpleXMLIterator's
+        // `static(SimpleXMLElement)`), which Pun reads as this class's.
+        $reflected = $GLOBALS['reflected'];
+        $own = array_values($class->getTemplateTypeMap()->getTypes());
+        $object = $own === [] ? new PHPStan\Type\ObjectType($class->getName()) : new PHPStan\Type\Generic\GenericObjectType($class->getName(), $own);
+        foreach ($entry['ancestors'] as $ancestor) {
+            $generic = $object->getAncestorWithClassName($ancestor);
+            if ($generic instanceof PHPStan\Type\Generic\GenericObjectType) {
+                $entry['generics'][$ancestor] = array_map('t', $generic->getTypes());
+            }
+        }
+        $GLOBALS['reflected'] = $reflected;
         foreach ($class->getNativeReflection()->getReflectionConstants() as $const) {
             if ($const->getDeclaringClass()->getName() === $class->getName() && !($class->isEnum() && $class->hasEnumCase($const->getName()))) {
                 $entry['constants'][$const->getName()] = t($resolver->resolve('\\'.$class->getName().'::'.$const->getName(), new NameScope(null, [])));
@@ -470,8 +483,15 @@ if (($argv[1] ?? '') === 'probes') {
     $templates = probe_templates($resolver);
     $pun = fn (string $s) => preg_replace_callback('~\\b[TUV]\\b~', fn ($m) => sprintf("__template<%s, 'function probe()', %s>", $m[0], PROBE_TEMPLATES[$m[0]] ?? 'mixed'), $s);
     $rows = [];
-    foreach ([[$atoms, 'ArrayIterator'], [$strings, null], [$arrays, null], [$ints, null], [['T', 'U', 'V', '(U&int)', 'int', 'string', "'a'", '1', 'Countable', 'Traversable<int>', 'array', 'mixed', 'never', 'object', 'null', 'int|string', 'Countable|int'], 'templates'], [['true', 'false', 'bool', '1.5', '2.5', 'float', 'null', 'void', 'WeakMap', 'static', '$this', 'Closure', 'Closure(int): void', 'callable', 'object', 'stdClass', 'resource',
-        'object{a: int}', 'array{}', 'iterable<int>', 'Countable', "'Countable'", "'a'", 'class-string<Countable>', 'class-string<static>', 'class-string'], 'WeakMap']] as [$set, $ctx]) {
+    foreach ([[$atoms, 'ArrayIterator'], [$strings, null], [$arrays, null], [$ints, null], [['T', 'U', 'V', '(U&int)', 'int', 'string', "'a'", '1', 'Countable', 'Traversable<int>', 'array', 'mixed', 'never', 'object', 'null', 'int|string', 'Countable|int',
+        "'Countable'", 'class-string<V>', '(T is int ? 1 : 2)', '(T is int ? 1 : string)', '__benevolent<int|string>'], 'templates'], [['true', 'false', 'bool', '1.5', '2.5', 'float', 'null', 'void', 'WeakMap', 'static', '$this', 'Closure', 'Closure(int): void', 'callable', 'object', 'stdClass', 'resource',
+        'object{a: int}', 'array{}', 'iterable<int>', 'Countable', "'Countable'", "'a'", 'class-string<Countable>', 'class-string<static>', 'class-string'], 'WeakMap'],
+        [['static', '$this', 'Closure', 'object', 'Countable'], 'Closure'],
+        [['callable', 'callable(): void', 'callable(int): void', 'callable(int=): void', 'callable(int...): void', 'callable(int, string): void',
+            'callable(int, string=): int', 'callable(int=, string...): void', 'Closure(int): void', 'Closure(int...): void', 'Closure', 'callable(mixed): mixed',
+            'callable(string): void', "'strlen'", 'callable-string', 'array', 'Foo', 'Bar', 'ArrayIterator', 'ArrayIterator<int, string>', 'ArrayIterator<string, int>',
+            'Iterator<int, string>', 'Traversable<int, string>', 'SplObjectStorage<*, *>', 'SplObjectStorage<Countable, int>', 'Generator<int, string>', 'Iterator',
+            'IteratorAggregate<int, string>', 'ArrayObject<int, string>', 'WeakMap<Countable, int>', '1|2|3', 'int<1, 3>', '(1|2)', 'int<1, 2>'], null]] as [$set, $ctx]) {
         $scope = $ctx === 'templates' ? new NameScope(null, [], null, null, $templates) : new NameScope(null, [], $ctx);
         foreach ($set as $a) {
             foreach ($set as $b) {

@@ -71,6 +71,8 @@ pub struct Class {
     pub methods: HashMap<String, Function>,
     /// a `Traversable`'s iterable key and value types, over its own templates
     pub iterable: Option<(String, String)>,
+    /// generic ancestors' type arguments over the class's own templates
+    pub generics: HashMap<String, Vec<String>>,
 }
 
 pub struct Symbols {
@@ -168,6 +170,20 @@ fn read_class(v: &Value) -> Class {
             .map(|(k, m)| (k.clone(), read_function(m)))
             .collect(),
         iterable: v.get("iterable").map(|i| (string(&i[0]), string(&i[1]))),
+        generics: v
+            .get("generics")
+            .map(|g| {
+                entries(g)
+                    .into_iter()
+                    .map(|(k, args)| {
+                        (
+                            k.clone(),
+                            args.as_array().expect("args").iter().map(string).collect(),
+                        )
+                    })
+                    .collect()
+            })
+            .unwrap_or_default(),
     }
 }
 
