@@ -119,3 +119,62 @@ file already formatted, content-hash cache hit).
   worker per thread, so cold Pun is 3.2x Pint; warm is 67x. Of the 0.20 s warm run, ~0.17 s is
   `ensure_prettier` launching Node four times (`node -v` + three package probes) before any file is read.
 - Stage timings: `PUN_PROFILE=1 pun format ...` prints time and call count per fixer, tokenize, lint and generate.
+
+## Analyse benchmark
+
+2026-10-17, `BENCH=analyse scripts/bench.py <project>`, one project per call with nothing else running
+(`HEAVY_EXCLUSIVE=1`). Machine: this Mac (Apple M3, 8 cores, 16 GB), PHP 8.4.25 with `XDEBUG_MODE=off`. Each cell is
+the median of 3 measured runs after 1 untimed run. Memory is the peak summed RSS of the process tree, PHPStan's
+parallel workers included. A ratio is the other tool's number divided by Pun's, so above 1x Pun is faster or smaller.
+
+- **phpstan-cold**: PHPStan 2.2.7 (the oracle's phar, copied into each scratch copy's `vendor/`) at level 0 with the
+  project's own includes (Larastan on Pinkary and laravel-pint) and paths, without its ignoreErrors and baseline,
+  `--no-progress`, default parallelism, the result cache deleted before every run.
+- **phpstan-warm**: the same with the result cache warm. A reference row: Pun has no result cache yet.
+- **pun**: `pun-analyse`'s `examples/analyse` (no `pun analyse` command yet), profiling build, on the same config.
+- **mago**: `mago analyze` 1.57.0 on the same paths, `vendor/` as includes. A speed and memory reference only:
+  its rules are not PHPStan's.
+- **count**: PHPStan's errors (including `ignore.unmatchedLine`, since the config drops the ignores), Pun's errors,
+  Mago's issues. **Pun runs fewer rules than PHPStan level 0 today** (54 ported identifiers), so its count is a sanity
+  check that the work is comparable, not parity.
+
+| project | files | phpstan-cold | phpstan-warm | pun | mago | count (cold / warm / pun / mago) | pun vs cold | pun vs warm | pun vs mago |
+|---|---:|---:|---:|---:|---:|---|---:|---:|---:|
+| pinkary | 162 | 4.88 s, 1447 MB | 0.44 s, 150 MB | 1.06 s, 834 MB | 0.72 s, 931 MB | 8 / 8 / 9 / 421 | 4.6x, 1.7x mem | 0.42x, 0.18x mem | 0.68x, 1.1x mem |
+| larastan (v3.10.0) | 151 | 4.93 s, 1199 MB | 0.39 s, 129 MB | 0.58 s, 592 MB | 0.40 s, 610 MB | 24 / 24 / 24 / 3802 | 8.5x, 2.0x mem | 0.67x, 0.22x mem | 0.68x, 1.0x mem |
+| laravel-framework | 1664 | 40.20 s, 3271 MB | 0.79 s, 353 MB | 1.81 s, 1133 MB | 0.99 s, 907 MB | 380 / 380 / 358 / 20616 | 22.3x, 2.9x mem | 0.44x, 0.31x mem | 0.55x, 0.80x mem |
+| pest | 257 | 6.56 s, 1347 MB | 0.41 s, 122 MB | 0.68 s, 505 MB | 0.37 s, 500 MB | 69 / 69 / 74 / 597 | 9.7x, 2.7x mem | 0.60x, 0.24x mem | 0.54x, 0.99x mem |
+| laravel-pint | 58 | 3.97 s, 578 MB | 0.38 s, 117 MB | 0.52 s, 395 MB | 0.24 s, 361 MB | 0 / 0 / 1 / 232 | 7.6x, 1.5x mem | 0.72x, 0.30x mem | 0.46x, 0.91x mem |
+
+- Cold, Pun is 4.6-22x faster than PHPStan and uses 1.5-2.9x less memory. A warm PHPStan result cache beats Pun on
+  every project (0.4-0.8 s against 0.5-1.8 s), and Mago's analyser is 1.5-2.2x faster than Pun at about the same
+  memory.
+- laravel-framework's cold PHPStan runs varied: 23 s in a non-exclusive smoke run, 35-41 s in the measured runs.
+- larastan is analysed at its v3.10.0 tag (the corpus commit needs PHPStan 2.3); laravel-pint keeps its own
+  Larastan 3.12.0 next to PHPStan 2.2.7.
+- Files: the PHP files under the paths, without Blade templates (PHPStan also skips laravel-framework's excludePaths).
+
+## Lint benchmark
+
+2026-10-17, `BENCH=lint scripts/bench.py <project>`, same machine and method as the analyse benchmark. Every tool
+is check-only, in a scratch copy with the project's `vendor/`.
+
+- **rector-ported**: Rector 2.6.1 (`.oracle/rector-bin`), `process --dry-run --clear-cache`, with exactly the Rector
+  rules Pun has ported (today `CombinedAssignRector` and `RemoveUnusedVariableInCatchRector`, read from pun-lint's
+  rule IDs and `rules/mapping.toml`), the paths of the project's rector.php, `withPhpVersion(80400)`.
+- **rector-full**: the project's own Rector (Pinkary 2.6.1, laravel-framework 2.6.3) with its own rector.php,
+  `--dry-run --clear-cache`. A reference row: Rector's cost with all its rules.
+- **pun**: `pun-lint`'s `examples/check` (no `pun lint` engine wiring yet), profiling build, the same rules on the
+  same paths, all cores, PHP 8.4. It skips Blade templates, which Rector includes (129 in laravel-framework's views).
+- **mago**: `mago lint` 1.57.0 on the same paths, default config. A reference only: its rules are not Rector's.
+- **count**: files Rector would change, files Pun flags, Mago's issues.
+
+| project | files | rector-ported | rector-full | pun | mago | count (ported / full / pun / mago) | pun vs ported | pun vs full | pun vs mago |
+|---|---:|---:|---:|---:|---:|---|---:|---:|---:|
+| pinkary | 342 | 2.27 s, 951 MB | 12.38 s, 2538 MB | 0.04 s, 14 MB | 0.04 s, 44 MB | 0 / 0 / 0 / 446 | 54x, 70x mem | 293x, 186x mem | 0.89x, 3.2x mem |
+| laravel-framework | 3027 | 37.68 s, 2528 MB | 85.40 s, 4440 MB | 0.12 s, 85 MB | 0.23 s, 227 MB | 9 / 7 / 9 / 24431 | 312x, 30x mem | 707x, 52x mem | 1.9x, 2.7x mem |
+
+- With the same two rules, Pun is 54-312x faster than Rector and uses 30-70x less memory, and both find the same 9
+  files on laravel-framework. These rules are cheap, so the ratio shrinks as heavier rules are ported.
+- laravel-framework's rector-full is 3 single-run calls (90.2, 83.8 and 85.4 s): one call of 4 runs would not fit
+  in a 10-minute slot.

@@ -20,6 +20,14 @@ Pun's mago crates pin) under .oracle/mago/ or MAGO_BIN. Every tool is check-only
 Memory is the peak summed RSS of the command's whole process tree (PHP, Node and worker processes included), sampled
 every 20 ms, and never below the command's own maxrss (wait4). Exit codes are ignored (1 = files would change).
 Prints a per-run table, then medians.
+
+BENCH=analyse and BENCH=lint (format is the default) compare Pun's analyser and lint engine the same way, adding each
+tool's error count and Pun's memory ratio to the medians (AGENTS.md "Analyse and lint modes"):
+
+    BENCH=analyse SETUP_ONLY=1 scripts/bench.py pinkary   # scratch copy + composer install, no measurement
+    BENCH=analyse scripts/bench.py pinkary                # phpstan-cold, phpstan-warm, pun, mago
+    BENCH=lint BENCH_RESULTS=lint.json TOOLS=rector-full RUNS=1 scripts/bench.py laravel-framework
+                                                          # rector-ported, rector-full, pun, mago; runs accumulate
 """
 
 import os
@@ -52,9 +60,9 @@ def tree_rss_bytes(root: int) -> int:
     return total * 1024
 
 
-def run_once(cmd: list[str], cwd: Path) -> tuple[float, int]:
+def run_once(cmd: list[str], cwd: Path, stdout=subprocess.DEVNULL, env=None) -> tuple[float, int]:
     start = time.perf_counter()
-    p = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    p = subprocess.Popen(cmd, cwd=cwd, stdout=stdout, stderr=subprocess.DEVNULL, env=env)
     peak = 0
     while True:
         pid, _, usage = os.wait4(p.pid, os.WNOHANG)
@@ -68,7 +76,7 @@ def run_once(cmd: list[str], cwd: Path) -> tuple[float, int]:
     return elapsed, max(peak, maxrss)
 
 
-def main() -> None:
+def bench_format() -> None:
     pun = os.environ.get("PUN_BIN", str(ROOT / "target/profiling/pun"))
     pint = ROOT / ".oracle/pint/builds/pint"
     mago = os.environ.get("MAGO_BIN") or next((str(p) for p in sorted((ROOT / ".oracle/mago").glob("**/mago")) if p.is_file()), None)
@@ -142,6 +150,284 @@ def main() -> None:
                     other = summary.get((name, t))
                     row += f" {other[1] / pun_cell[1]:.1f}x |" if other else " - |"
         print(row)
+
+# ---- BENCH=analyse and BENCH=lint -------------------------------------------------------------------------------
+
+SCRATCH = Path(os.environ.get("BENCH_SCRATCH", ROOT / "target-bench"))
+PHPSTAN = ROOT / ".oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar"
+RECTOR = ROOT / ".oracle/rector-bin/vendor/bin/rector"
+# project -> (PHPStan includes, paths, extra parameter lines): the project's own config at level 0, without its
+# ignoreErrors and baseline (scripts/analyse-corpus.py's configs, plus laravel-pint).
+ANALYSE = {
+    "pinkary": (["vendor/larastan/larastan/extension.neon", "vendor/phpstan/phpstan/conf/bleedingEdge.neon"],
+                ["app", "config", "bootstrap", "database/factories", "routes"], []),
+    "larastan": (["vendor/phpstan/phpstan/conf/bleedingEdge.neon", "vendor/phpstan/phpstan-deprecation-rules/rules.neon",
+                  "extension.neon"], ["src"], ["phpVersion: 80200"]),
+    "laravel-framework": ([], ["src"], ["excludePaths: [src/Illuminate/Testing/ParallelRunner.php, 'src/*/views/*']"]),
+    "pest": (["phpstan-pest-extension.neon", "vendor/pestphp/pest-plugin-phpstan/extension.neon"], ["src"], []),
+    "laravel-pint": (["vendor/larastan/larastan/extension.neon"], ["app", "bootstrap", "config", "resources"], []),
+}
+# project -> the paths of its rector.php
+LINT = {
+    "pinkary": ["app", "bootstrap/app.php", "config", "database", "public", "tests"],
+    "laravel-framework": ["config", "src", "tests", "types"],
+}
+MODES = {
+    "analyse": (["phpstan-cold", "phpstan-warm", "pun", "mago"], ANALYSE),
+    "lint": (["rector-ported", "rector-full", "pun", "mago"], LINT),
+}
+# The corpus larastan commit needs PHPStan 2.3; the oracle pins PHPStan 2.2.7 and Larastan v3.10.0, so analyse that tag.
+TAGS = {"larastan": ("https://github.com/larastan/larastan.git", "v3.10.0")}
+# Packages without a composer.lock that require packages which require themselves: their own version.
+ROOT_VERSION = {"pest": "5.99.0", "laravel-framework": "13.99.0"}
+# Packages replaced by copies of the oracle's, so every project runs PHPStan 2.2.7 from its own vendor/ (Larastan stays
+# the project's). Copies, not symlinks: PHPStan loads the vendor/autoload.php next to its real path.
+PINNED = ["phpstan/phpstan", "phpstan/phpstan-deprecation-rules"]
+# PHPStan 2.2 switches to its agent output format when it sees one of these (src/Internal/AgentDetector.php).
+AGENT_ENV = ["AUGMENT_AGENT", "AMP_CURRENT_THREAD_ID", "AI_AGENT", "CURSOR_TRACE_ID", "CURSOR_AGENT", "GEMINI_CLI",
+             "CODEX_SANDBOX", "CODEX_THREAD_ID", "OPENCODE_CLIENT", "OPENCODE", "CLAUDECODE", "CLAUDE_CODE", "REPL_ID"]
+
+
+def php_files(work: Path, paths: list[str]) -> int:
+    """The PHP files Pun's lint example and Pun's analyser walk: no vendor/, node_modules/, dot dirs or Blade."""
+    n = 0
+    for rel in paths:
+        p = work / rel
+        if p.is_file():
+            n += 1
+            continue
+        for f in p.rglob("*.php"):
+            parts = f.relative_to(work).parts
+            if not f.name.endswith(".blade.php") and not {"vendor", "node_modules"} & set(parts) \
+                    and not any(x.startswith(".") for x in parts):
+                n += 1
+    return n
+
+
+def setup(name: str) -> Path:
+    """Scratch copy of corpus/<name> with composer's vendor/ (made once, reused); PHPStan and Larastan pinned."""
+    work = SCRATCH / name
+    if not (work / "vendor/autoload.php").is_file():
+        work.parent.mkdir(parents=True, exist_ok=True)
+        if name in TAGS:
+            shutil.rmtree(work, ignore_errors=True)
+            subprocess.run(["git", "-c", "advice.detachedHead=false", "clone", "-q", "--depth", "1", "-b", TAGS[name][1], TAGS[name][0], str(work)],
+                           check=True)
+            shutil.rmtree(work / ".git")
+        else:
+            work.mkdir(exist_ok=True)
+            subprocess.run(["rsync", "-a", "--exclude", ".git", "--exclude", "node_modules", "--exclude", "vendor",
+                            f"{ROOT / 'corpus' / name}/", f"{work}/"], check=True)
+        env = {**os.environ, "COMPOSER_ROOT_VERSION": ROOT_VERSION[name]} if name in ROOT_VERSION else None
+        r = subprocess.run(["composer", "install", "--no-scripts", "--no-interaction", "--no-progress",
+                            "--ignore-platform-reqs", "-q"], cwd=work, env=env, capture_output=True, text=True)
+        if r.returncode:
+            raise RuntimeError(f"composer install failed: {r.stderr.strip()[-500:]}")
+    for pkg in PINNED:
+        dst, src = work / "vendor" / pkg, ROOT / ".oracle/phpstan/vendor" / pkg
+        if not dst.exists() and not dst.is_symlink():
+            continue
+        if dst.is_symlink() or (dst / "composer.json").read_bytes() != (src / "composer.json").read_bytes():
+            dst.unlink() if dst.is_symlink() else shutil.rmtree(dst)
+            shutil.copytree(src, dst)
+    return work
+
+
+def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> None:
+    if mode == "analyse":
+        includes, paths, extra = ANALYSE[name]
+        for kind in ["cold", "warm"]:
+            lines = (["includes:"] + [f"    - {i}" for i in includes]) if includes else []
+            lines += ["parameters:", "    level: 0", f"    tmpDir: {work / '.bench-tmp' / kind}",
+                      f"    paths: [{', '.join(paths)}]"] + [f"    {l}" for l in extra]
+            (work / f"pun-bench-{kind}.neon").write_text("\n".join(lines) + "\n")
+        (work / "pun-bench-mago.toml").write_text(
+            "[source]\npaths = [" + ", ".join(f'"{p}"' for p in paths) + ']\nincludes = ["vendor"]\n')
+    else:
+        paths = ", ".join(f"__DIR__.'/{p}'" for p in LINT[name])
+        rules = ", ".join(f"\\{c}::class" for c in rector_rules)
+        (work / "pun-bench-rector.php").write_text(
+            "<?php\n\nreturn Rector\\Config\\RectorConfig::configure()\n"
+            f"    ->withPaths([{paths}])\n    ->withRules([{rules}])\n    ->withPhpVersion(80400);\n")
+
+
+def ported_rector_rules(lint_bin: str) -> list[str]:
+    """The Rector classes of the rules pun-lint has ported: its rule IDs, looked up in rules/mapping.toml."""
+    import tomllib
+    ids = subprocess.run([lint_bin, "--rules"], capture_output=True, text=True, check=True).stdout.split()
+    mapping = tomllib.loads((ROOT / "crates/pun-config/rules/mapping.toml").read_text())
+    classes = [entry["class"] for table, rules in mapping["upstream"].items() if "rector" in table
+               for entry in rules.values() if isinstance(entry, dict) and entry.get("pun") in ids and "class" in entry]
+    if not classes:
+        sys.exit(f"no Rector class in rules/mapping.toml for {ids}")
+    return sorted(classes)
+
+
+def count(tool: str, out: str) -> int | None:
+    """The tool's error count: PHPStan's errors, Pun's analyse errors, Mago's issues, Rector's changed files, the
+    files Pun's lint flags."""
+    import json
+    try:
+        data = json.loads(out[min(i for i in (out.find("{"), out.find("[")) if i >= 0):])
+    except ValueError:
+        return None
+    try:
+        return count_of(tool, data)
+    except (KeyError, TypeError):
+        return None
+
+
+def count_of(tool: str, data) -> int:
+    if tool.startswith("phpstan"):
+        return data["totals"]["errors"] + data["totals"]["file_errors"]
+    if tool.startswith("rector"):
+        return data["totals"]["changed_files"]
+    if tool == "mago":
+        return len(data["issues"] if isinstance(data, dict) else data)
+    return data["flagged"] if "flagged" in data else len(data["errors"])
+
+
+def ratio(other: float, pun: float) -> str:
+    """How many times Pun's time or memory fits in the other tool's: above 1 Pun is faster or smaller."""
+    r = other / pun
+    return f"{r:.1f}x" if r >= 1 else f"{r:.2f}x"
+
+
+def bench_mode(mode: str) -> None:
+    import json
+    all_tools, configs = MODES[mode]
+    analyse_bin = os.environ.get("PUN_ANALYSE_BIN", str(ROOT / "target/profiling/examples/analyse"))
+    lint_bin = os.environ.get("PUN_LINT_BIN", str(ROOT / "target/profiling/examples/check"))
+    pun = analyse_bin if mode == "analyse" else lint_bin
+    mago = os.environ.get("MAGO_BIN") or next((str(p) for p in sorted((ROOT / ".oracle/mago").glob("**/mago")) if p.is_file()), None)
+    runs = int(os.environ.get("RUNS", "3"))
+    warmup = int(os.environ.get("WARMUP", "1"))
+    tools = os.environ.get("TOOLS", ",".join(all_tools)).split(",")
+    projects = sys.argv[1:] or list(configs)
+    if "pun" in tools and not os.access(pun, os.X_OK):
+        example = "-p punphp-analyse --example analyse" if mode == "analyse" else "-p punphp-lint --example check"
+        sys.exit(f"missing {pun}: cargo build --profile profiling {example}")
+    if "mago" in tools and not mago:
+        sys.exit("missing Mago: put the 1.57.0 binary under .oracle/mago/ or set MAGO_BIN (or drop it from TOOLS)")
+    upstream = PHPSTAN if mode == "analyse" else RECTOR
+    if not upstream.is_file():
+        sys.exit(f"missing {upstream}: run scripts/oracle.sh")
+    rector_rules = ported_rector_rules(lint_bin) if mode == "lint" else []
+    env = {k: v for k, v in os.environ.items() if k not in AGENT_ENV}
+    env.update({"PUN_AGENT": "0", "PUN_IGNORE_PHP_CONSTRAINT": "1", "XDEBUG_MODE": "off"})
+
+    # BENCH_RESULTS=file.json keeps the runs of earlier calls (split by project, tool or run) and adds these runs to
+    # them; the tables cover every run in the file. Delete the file to start over.
+    results_file = os.environ.get("BENCH_RESULTS")
+    store = json.loads(Path(results_file).read_text()) if results_file and Path(results_file).is_file() else {}
+    results = store.setdefault(mode, {})
+    skipped = []
+    for name in projects:
+        if name not in configs:
+            skipped.append(f"{name}: no {mode} config in scripts/bench.py")
+            continue
+        if not (ROOT / "corpus" / name).is_dir():
+            skipped.append(f"{name}: no corpus/{name}")
+            continue
+        try:
+            work = setup(name)
+        except (RuntimeError, subprocess.CalledProcessError) as e:
+            skipped.append(f"{name}: {e}")
+            continue
+        write_configs(mode, name, work, rector_rules)
+        if os.environ.get("SETUP_ONLY") == "1":
+            print(f"set up {work}", file=sys.stderr)
+            continue
+        paths = configs[name][1] if mode == "analyse" else configs[name]
+        phpstan = ["php", "vendor/phpstan/phpstan/phpstan.phar", "analyse", "--no-progress", "--error-format=json", "--memory-limit=-1", "-c"]
+        rector = ["process", "--dry-run", "--clear-cache", "--no-progress-bar", "--output-format=json",
+                  "--memory-limit=-1", "--config"]
+        commands = {
+            "phpstan-cold": phpstan + ["pun-bench-cold.neon"],
+            "phpstan-warm": phpstan + ["pun-bench-warm.neon"],
+            "rector-ported": ["php", str(RECTOR)] + rector + ["pun-bench-rector.php"],
+            # The project's own Rector install: its rector.php loads sets (Pest's, for one) from its vendor/.
+            "rector-full": ["php", "vendor/bin/rector"] + rector + ["rector.php"],
+            "pun": [pun, str(work), str(work / "pun-bench-cold.neon")] if mode == "analyse" else [pun, *paths],
+            "mago": [mago or "mago", "--config", str(work / "pun-bench-mago.toml"), "analyze",
+                     "--reporting-format", "json"] if mode == "analyse"
+                    else [mago or "mago", "lint", "--reporting-format", "json", *paths],
+        }
+        for tool in tools:
+            cmd = commands[tool]
+            out_path = work / ".bench-tmp" / f"{mode}-{tool}.out"
+            out_path.parent.mkdir(exist_ok=True)
+
+            def once() -> tuple[float, int]:
+                if tool == "phpstan-cold":
+                    shutil.rmtree(work / ".bench-tmp" / "cold", ignore_errors=True)
+                with open(out_path, "w") as out:
+                    return run_once(cmd, work, out, env)
+
+            # The warm row needs one run that fills PHPStan's result cache.
+            for _ in range(max(warmup, 1) if tool == "phpstan-warm" else warmup):
+                once()
+            timed = []
+            for i in range(1, runs + 1):
+                t, m = once()
+                timed.append((t, m))
+                print(f"{name} {tool} run {i}: {t:.2f} s, {m / 1048576:.0f} MB", file=sys.stderr, flush=True)
+            n = count(tool, out_path.read_text(errors="replace"))
+            if n is None:
+                print(f"{name} {tool}: no count in {out_path}", file=sys.stderr)
+            earlier = results.get(f"{name}|{tool}", {}).get("runs", [])
+            results[f"{name}|{tool}"] = {"files": php_files(work, paths), "runs": earlier + timed, "count": n}
+    if os.environ.get("SETUP_ONLY") == "1":
+        for s in skipped:
+            print(f"skipped {s}")
+        return
+    if results_file:
+        Path(results_file).write_text(json.dumps(store, indent=1) + "\n")
+
+    order = [p for p in configs if any(k.startswith(p + "|") for k in results)]
+    shown = [t for t in all_tools if any(k.endswith("|" + t) for k in results)]
+    print("| project | tool | run | time | peak memory |")
+    print("|---|---|---:|---:|---:|")
+    for name in order:
+        for tool in shown:
+            r = results.get(f"{name}|{tool}")
+            for i, (t, m) in enumerate(r["runs"] if r else [], 1):
+                print(f"| {name} | {tool} | {i} | {t:.2f} s | {m / 1048576:.0f} MB |")
+    print()
+    med = {k: (statistics.median(r[0] for r in v["runs"]), statistics.median(r[1] for r in v["runs"]))
+           for k, v in results.items() if v["runs"]}
+    head = "| project | files |" + "".join(f" {t} time | {t} mem | {t} count |" for t in shown)
+    if "pun" in shown:
+        head += "".join(f" pun vs {t} time | pun vs {t} mem |" for t in shown if t != "pun")
+    print(head)
+    print("|---|---:|" + "---:|" * (head.count("|") - 3))
+    for name in order:
+        files = next(results[f"{name}|{t}"]["files"] for t in shown if f"{name}|{t}" in results)
+        row = f"| {name} | {files} |"
+        for t in shown:
+            k = f"{name}|{t}"
+            c = results.get(k, {}).get("count")
+            row += (f" {med[k][0]:.2f} s | {med[k][1] / 1048576:.0f} MB |" if k in med else " - | - |") \
+                + (f" {c} |" if c is not None else " - |")
+        p = med.get(f"{name}|pun")
+        if p:
+            for t in shown:
+                if t != "pun":
+                    o = med.get(f"{name}|{t}")
+                    row += f" {ratio(o[0], p[0])} | {ratio(o[1], p[1])} |" if o else " - | - |"
+        print(row)
+    for s in skipped:
+        print(f"skipped {s}")
+
+
+def main() -> None:
+    mode = os.environ.get("BENCH", "format")
+    if mode == "format":
+        bench_format()
+    elif mode in MODES:
+        bench_mode(mode)
+    else:
+        sys.exit(f"BENCH={mode}: expected format, analyse or lint")
 
 
 if __name__ == "__main__":
