@@ -3,12 +3,29 @@ title: Coding agents
 description: Pun detects coding agents and switches to compact output, so agents spend fewer tokens.
 ---
 
-When Pun runs under a coding agent, it switches to the compact `agent` output format on its own, like Pint does: one `path:line:col rule message` line per problem instead of a human summary. It detects Claude Code, Cursor, Codex, Gemini CLI, Copilot CLI, Amp, OpenCode, Augment, Kiro, Devin and others from their environment, and any agent that sets `AI_AGENT`.
+When Pun runs under a coding agent, every command (`format`, `lint`, `check`, `migrate`, `config`) switches to a compact plain-text format. It is not JSON, because quotes, braces and repeated keys cost tokens. The first line is a summary, then each finding gets its own line (`path:line:col rule [fix:safe|unsafe] message`), with paths relative to the project:
 
-Force it anywhere with:
-
-```bash
-pun format --test --format=agent
 ```
+pun check: fail, 1 error, 2 files with fixes (412 checked, 0.21s)
+app/A.php format.array-syntax, format.blank-line-after-opening-tag
+app/B.php lint.no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.
+app/D.php:2 syntax-error Parse error: syntax error, unexpected token ";" on line 2.
+```
+
+- A passing run prints only the summary line: `pun format: pass (412 checked, 0.21s)`.
+- Lists stop after 20 items and end with `+N more; run with -v for all`. With `-v` you get every item, each followed by its bare unified diff.
+- There are no colours, progress dots or boxes. A run error is one line: `pun format: error: <message>`.
+- Exit codes are the same as without an agent.
+- `pun migrate` prints the written config (preset and rule counts), with each unsupported rule or unmigrated ignore comment as a finding. `pun config` prints a summary line, then the TOML.
+
+Pun detects agents from their environment variables with the [agent-detector](https://crates.io/crates/agent-detector) crate: Claude Code, Cursor, Codex, Gemini CLI, Copilot, OpenCode, Augment, Cline, Goose, Roo, Replit and others, plus any agent that sets `AI_AGENT` or `AGENT`. A missing TTY doesn't count as an agent. You can override detection, highest priority first:
+
+| Override | Effect |
+| --- | --- |
+| `--agent` / `--no-agent` | Force agent output on or off for this run |
+| `PUN_AGENT=1` / `PUN_AGENT=0` | Same, from the environment |
+| `PAO_DISABLE=1` / `PAO_FORCE=1` | [Laravel PAO](https://laravel.com/blog/introducing-laravel-pao-cleaner-output-for-ai-agents)'s switches, honoured too (disable wins) |
+
+An explicit `--format` keeps its reporter under an agent. `--format=json` is PHP-CS-Fixer's JSON, and `--format=agent` is Pint's JSON agent reporter.
 
 This site is agent-ready too: every page is available as Markdown by adding `.md` to its URL, and the whole site is summarised at [`/llms.txt`](/llms.txt).
