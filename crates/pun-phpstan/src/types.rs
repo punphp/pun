@@ -602,8 +602,8 @@ impl Type {
             | Type::This(class)
             | Type::EnumCase(class, _) => vec![class.clone()],
             Type::Closure(_) => vec!["Closure".to_string()],
-            Type::Intersection(types) => types.iter().flat_map(Type::object_class_names).collect(),
-            Type::Template(t) => t.bound.object_class_names(),
+            // ponytail: intersections and templates are compound, so isSuperTypeOf() never asks them; add their
+            // arms when something else does
             _ => vec![],
         }
     }
@@ -614,7 +614,7 @@ impl Type {
                 Type::Union(vec![Type::ConstInt(0), Type::ConstInt(1)])
             }
             Type::Array(key, _) => {
-                if key.is_implicit_mixed() {
+                if matches!(**key, Type::Mixed { .. }) {
                     array_key()
                 } else {
                     (**key).clone()
@@ -629,6 +629,7 @@ impl Type {
             Type::Union(types) => union(types.iter().map(Type::iterable_key_type).collect()),
             Type::Template(t) => t.bound.iterable_key_type(),
             Type::Object(class, args) => iterable_arg(class, args, true),
+            Type::Static(class) | Type::This(class) => static_object(class).iterable_key_type(),
             Type::Never(_) => Type::Never(NeverKind::Implicit),
             _ => mixed(),
         }
@@ -654,6 +655,7 @@ impl Type {
             Type::Union(types) => union(types.iter().map(Type::iterable_value_type).collect()),
             Type::Template(t) => t.bound.iterable_value_type(),
             Type::Object(class, args) => iterable_arg(class, args, false),
+            Type::Static(class) | Type::This(class) => static_object(class).iterable_value_type(),
             Type::Never(_) => Type::Never(NeverKind::Implicit),
             _ => mixed(),
         }
@@ -827,6 +829,7 @@ impl Type {
             Type::ConstString(_) => Type::String,
             Type::Accessory(a) if a.is_string_accessory() => Type::String,
             Type::ConstArray(a) => a.generalize(),
+            Type::EnumCase(class, _) => Type::Object(class.clone(), vec![]),
             _ => self.traverse(&Type::generalize),
         }
     }
@@ -930,8 +933,8 @@ fn static_object(class: &str) -> Type {
     Type::Object(c.name.clone(), args)
 }
 
-/// A generic object's argument for the class template named `name` (the iterable key / value of SPL classes).
-/// `getIterableKeyType()` (`key`) or `getIterableValueType()` of a class with these template arguments.
+/// `getIterableKeyType()` (`key`) or `getIterableValueType()` of a class with these template arguments (an error
+/// for a class that is not `Traversable`).
 fn iterable_arg(class: &str, args: &[Type], key: bool) -> Type {
     symbols::class(class)
         .and_then(|c| {
@@ -939,7 +942,7 @@ fn iterable_arg(class: &str, args: &[Type], key: bool) -> Type {
                 .as_ref()
                 .map(|(k, v)| (c, if key { k } else { v }))
         })
-        .map_or_else(mixed, |(c, s)| {
+        .map_or(Type::Error, |(c, s)| {
             with_class_args(&crate::resolve::resolve_str(s, Some(&c.name)), c, args)
         })
 }
@@ -950,7 +953,12 @@ fn with_class_args(t: &Type, c: &symbols::Class, args: &[Type]) -> Type {
         && tpl.scope == format!("class {}", c.name)
         && let Some(i) = c.templates.iter().position(|x| x.name == tpl.name)
     {
-        return args.get(i).cloned().unwrap_or_else(|| tpl.bound.clone());
+        return match args.get(i) {
+            // the bound (a `mixed` one implicit, as `ObjectType::getIterableKeyType()` resolves it)
+            Some(Type::Wildcard) | None if matches!(tpl.bound, Type::Mixed { .. }) => mixed(),
+            Some(Type::Wildcard) | None => tpl.bound.clone(),
+            Some(arg) => arg.clone(),
+        };
     }
     t.traverse(&|x| with_class_args(x, c, args))
 }
@@ -1146,7 +1154,14 @@ fn compare_in_union(a: &Type, b: &Type) -> Ordering {
 impl Type {
     /// `$t instanceof IntegerType` for `IntegerRangeType` comparisons (a `ConstantIntegerType` too).
     fn is_plain_integer_class(&self) -> bool {
-        matches!(self, Type::Int | Type::ConstInt(_))
+        match self {
+            Type::Int | Type::ConstInt(_) => true,
+            // TemplateIntegerType / TemplateConstantIntegerType
+            Type::Template(t) => {
+                matches!(t.bound, Type::Int | Type::ConstInt(_) | Type::IntRange(..))
+            }
+            _ => false,
+        }
     }
 }
 
@@ -1297,9 +1312,12 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
                         } else {
                             String::new()
                         };
-                        // ponytail: a non-list array intersection is non-empty here (NonEmptyArray is the only
-                        // other array accessory Pun models); print `array` once HasOffset* accessories land.
-                        described.push((i, format!("non-empty-array{inner}")));
+                        let kind = if is_non_empty_array {
+                            "non-empty-array"
+                        } else {
+                            "array"
+                        };
+                        described.push((i, format!("{kind}{inner}")));
                     }
                     continue;
                 }
@@ -1480,18 +1498,13 @@ fn print_callable_named(ident: &str, sig: &Signature) -> String {
             format!("{}{}", s.trim(), if p.optional { "=" } else { "" })
         })
         .collect();
-    let ret = to_phpdoc(&sig.ret);
-    let ret = if matches!(
-        sig.ret,
-        Type::Union(_)
-            | Type::Benevolent(_)
-            | Type::Intersection(_)
-            | Type::Callable(Some(_))
-            | Type::Closure(_)
-    ) {
-        format!("({ret})")
-    } else {
-        ret
+    let ret = match &sig.ret {
+        r @ (Type::Union(_)
+        | Type::Benevolent(_)
+        | Type::Intersection(_)
+        | Type::Callable(Some(_))
+        | Type::Closure(_)) => format!("({})", to_phpdoc(r)),
+        r => to_phpdoc(r),
     };
     format!("{ident}({}): {ret}", params.join(", "))
 }
@@ -1522,12 +1535,9 @@ impl ConstArray {
     }
 
     fn is_iterable_at_least_once(&self) -> Tri {
+        // (an unsealed shape without keys is an `ArrayType`)
         if self.keys.is_empty() {
-            return if self.is_unsealed().yes() {
-                Tri::Maybe
-            } else {
-                Tri::No
-            };
+            return Tri::No;
         }
         if self.optional.len() < self.keys.len() {
             Tri::Yes
@@ -1786,37 +1796,23 @@ fn is_valid_identifier(s: &str) -> bool {
 /// `ConstantArrayTypeBuilder` (array degradation disabled, as for PHPDoc shapes).
 pub(crate) struct ShapeBuilder {
     array: ConstArray,
-    non_empty: bool,
 }
 
 impl ShapeBuilder {
     pub fn new() -> Self {
         ShapeBuilder {
             array: ConstArray::empty(),
-            non_empty: false,
         }
     }
 
     pub fn set(&mut self, key: Option<Type>, value: Type, optional: bool) {
         let a = &mut self.array;
-        if !optional {
-            self.non_empty = true;
-        }
+        // a PHPDoc item without a key is never optional (`value?` is not a shape item)
         let Some(key) = key else {
-            let mut new_auto = if optional {
-                a.next_auto_indexes.clone()
-            } else {
-                vec![]
-            };
             let max = *a.next_auto_indexes.iter().max().expect("auto index");
             a.keys.push(Type::ConstInt(max));
             a.values.push(value);
-            new_auto.push(max + 1);
-            new_auto.dedup();
-            a.next_auto_indexes = new_auto;
-            if optional {
-                a.optional.push(a.keys.len() - 1);
-            }
+            a.next_auto_indexes = vec![max + 1];
             return;
         };
         if let Some(i) = a.keys.iter().position(|k| *k == key) {
@@ -1867,27 +1863,14 @@ impl ShapeBuilder {
     }
 
     pub fn get(self) -> Type {
-        let ShapeBuilder {
-            mut array,
-            non_empty,
-        } = self;
+        let mut array = self.array;
+        // without keys nothing was set: still an empty list
         if array.keys.is_empty() {
             if let Some((key, value)) = array.unsealed.clone()
                 && key != Type::Never(NeverKind::Explicit)
             {
-                let a = Type::array(key, value);
-                return if non_empty {
-                    intersect(vec![a, Type::Accessory(Accessory::NonEmptyArray)])
-                } else {
-                    a
-                };
+                return Type::array(key, value);
             }
-            array.next_auto_indexes = vec![0];
-            array.is_list = if array.unsealed.is_none() {
-                Tri::Yes
-            } else {
-                array.is_list
-            };
             return Type::ConstArray(Box::new(array));
         }
         if let Some((key, _)) = &mut array.unsealed
@@ -1895,11 +1878,7 @@ impl ShapeBuilder {
         {
             *key = mixed();
         }
-        let a = Type::ConstArray(Box::new(array));
-        if non_empty && !a.is_iterable_at_least_once().yes() {
-            return intersect(vec![a, Type::Accessory(Accessory::NonEmptyArray)]);
-        }
-        a
+        Type::ConstArray(Box::new(array))
     }
 }
 
@@ -2470,6 +2449,8 @@ pub fn union(types: Vec<Type>) -> Type {
         return types.pop().expect("one type");
     }
     let mut benevolent: Vec<String> = Vec::new();
+    // a TemplateBenevolentUnionType is flattened too, and comes back when only its members are left
+    let mut benevolent_template: Option<Box<Template>> = None;
     let mut flat = Vec::new();
     for t in types {
         match t {
@@ -2480,6 +2461,13 @@ pub fn union(types: Vec<Type>) -> Type {
                     benevolent.push(i.describe(Level::Value));
                 }
                 flat.extend(inner);
+            }
+            Type::Template(tpl) if matches!(tpl.bound, Type::Benevolent(_)) => {
+                if let Type::Benevolent(inner) = &tpl.bound {
+                    benevolent.extend(inner.iter().map(|i| i.describe(Level::Value)));
+                    flat.extend(inner.iter().cloned());
+                }
+                benevolent_template.get_or_insert(tpl);
             }
             Type::Union(inner) => flat.extend(inner),
             t => flat.push(t),
@@ -2605,7 +2593,13 @@ pub fn union(types: Vec<Type>) -> Type {
             .iter()
             .all(|t| benevolent.contains(&t.describe(Level::Value)))
     {
-        return Type::Benevolent(types);
+        return match benevolent_template {
+            Some(tpl) => Type::Template(Box::new(Template {
+                bound: Type::Benevolent(types),
+                ..*tpl
+            })),
+            None => Type::Benevolent(types),
+        };
     }
     Type::Union(types)
 }
@@ -3154,7 +3148,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
         }
         if let Type::Template(tpl) = &types[i] {
             return Type::Template(Box::new(Template {
-                bound: u,
+                bound: template_bound(u),
                 ..(**tpl).clone()
             }));
         }
@@ -3178,6 +3172,18 @@ pub fn intersect(types: Vec<Type>) -> Type {
                 && let Some(t) = range_try_intersect(min, max, &types[j])
             {
                 types[j] = t;
+                types.remove(i);
+                continue 'outer;
+            }
+            // the SubtractableType pre-check, `MixedType::isSuperTypeOfMixed()`: an explicit mixed is no wider
+            // than an implicit one (or an error)
+            let mixedish = |t: &Type| matches!(t, Type::Mixed { .. } | Type::Error);
+            if mixedish(&types[i]) && mixedish(&types[j]) {
+                let explicit = Type::Mixed { explicit: true };
+                if types[j] != explicit || types[i] == explicit {
+                    types.remove(j);
+                    continue;
+                }
                 types.remove(i);
                 continue 'outer;
             }
@@ -3316,6 +3322,34 @@ pub fn intersect(types: Vec<Type>) -> Type {
         return intersect(all);
     }
     Type::Intersection(types)
+}
+
+/// `TemplateTypeFactory::create()`: a template keeps only the bounds it has a template type for (other bounds,
+/// such as `class-string` or a constant float, make it a plain mixed template).
+fn template_bound(bound: Type) -> Type {
+    match bound {
+        Type::Object(..)
+        | Type::EnumCase(..)
+        | Type::ObjectWithoutClass
+        | Type::Array(..)
+        | Type::ConstArray(_)
+        | Type::ObjectShape(_)
+        | Type::String
+        | Type::ConstString(_)
+        | Type::Int
+        | Type::IntRange(..)
+        | Type::ConstInt(_)
+        | Type::Float
+        | Type::Bool
+        | Type::ConstBool(_)
+        | Type::Mixed { .. }
+        | Type::Union(_)
+        | Type::Benevolent(_)
+        | Type::Intersection(_)
+        | Type::Iterable(..)
+        | Type::Null => bound,
+        _ => Type::Mixed { explicit: true },
+    }
 }
 
 /// `IterableType::isSuperTypeOfMixed()`
