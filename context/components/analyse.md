@@ -201,8 +201,7 @@ composer.lock has laravel/framework.
 | Macros | `Str::macro`, `Collection::macro` and `Builder::macro` calls become real methods | the `macro(...)` calls in service providers |
 | Factories, requests, jobs | `User::factory()` is `UserFactory`; `FormRequest::validated()` and `safe()`; `dispatch()` arguments match the job's constructor | factories, form requests, jobs |
 
-None of this needs PHP to run: Pun reads the files, as Larastan does (except `config()` values, which Larastan can't
-type at all).
+None of this needs PHP to run: Pun reads the files.
 
 **2. Larastan's 20 rules.** Already mapped to Pun analyse rules (rules/mapping.toml): `undefined-relation`,
 `undefined-model-append`, `undefined-console-argument` and `-option`, `unexpected-dispatch-arguments`,
