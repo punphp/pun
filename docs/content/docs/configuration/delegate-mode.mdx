@@ -1,9 +1,9 @@
 ---
 title: Delegate mode
-description: How Pun stays Pint-identical for rules it hasn't ported yet and for custom PHP-CS-Fixer fixers.
+description: How Pun stays Pint-identical for rules it hasn't ported natively.
 ---
 
-If an enabled rule has no native port yet, or the project configures PHP-CS-Fixer with `.php-cs-fixer.php` and custom fixer classes, Pun runs the files through the real PHP-CS-Fixer. Output stays identical to Pint, while discovery, caching, reporting and exit codes stay Pun's.
+If an enabled rule has no native port, Pun runs the files through the real PHP-CS-Fixer. Output stays identical to Pint, while discovery, caching, reporting and exit codes stay Pun's.
 
 ## How it runs
 
@@ -25,4 +25,4 @@ pun format --native-only   # skip delegated rules and list them
 
 ## Cache
 
-The cache signature includes the PHP runtime, the `.php-cs-fixer.php` content and `vendor/composer/installed.json`. Edits to project-local fixer classes aren't detected, as with PHP-CS-Fixer's own cache: pass `--no-cache` after changing one.
+The cache signature includes the PHP runtime and `vendor/composer/installed.json`, so upgrading Pint or PHP-CS-Fixer invalidates it. Pass `--no-cache` to check every file.

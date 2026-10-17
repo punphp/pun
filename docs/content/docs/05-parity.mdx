@@ -19,7 +19,7 @@ That's 51× faster cold, and over 2,700× faster warm.
 
 ## Byte-for-byte output
 
-Each project's own `pint.json`, every file compared against Pint's output. `differing` must be 0.
+For each project the harness runs Pint on one copy, and `pun migrate` then `pun check --fix` on another, then compares every file. So every run also proves the migration. `differing` must be 0.
 
 | Project | Files | Identical | Differing |
 | --- | --- | --- | --- |

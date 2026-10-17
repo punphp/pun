@@ -1,9 +1,9 @@
 ---
 title: pun.toml
-description: One config file for format, lint and analyse. Pun also reads pint.json, phpstan.neon and rector.php as they are.
+description: The one config file for every Pun command, with Pun's own rule IDs.
 ---
 
-A project needs one file. Write it by hand, or let [`pun migrate`](/docs/commands/migrate) write it from your current configs.
+Pun reads only `pun.toml`. Write it with [`pun migrate`](/docs/commands/migrate), or by hand:
 
 ```toml pun.toml
 preset = "recommended"        # lint + analyse tier: essential, recommended, strict, pedantic
@@ -12,16 +12,19 @@ laravel = true                # add-ons: laravel, pest, phpunit
 [php]
 version = "8.4"
 
-[format]                      # Pint presets; tiers don't apply to format
-preset = "laravel"
-rules.ordered-imports = { sort-algorithm = "alpha" }
+[format]
+preset = "laravel"            # Pint's preset; its risky rules are lint rules
+exclude = ["build"]
 
-[lint]
-rules.prefer-early-return = "error"
-rules.no-loose-comparison = "off"
+[format.rules]
+concat-space = { spacing = "one" }
+array-syntax = false
+
+[lint.rules]
+require-final-class = { fix = "apply" }   # applied by pun lint --fix / pun check --fix
+no-loose-comparison = "warn"              # reported, never applied
 
 [analyse]
-preset = "strict"             # per-command override of the tier
 paths = ["app", "tests"]
 baseline = "pun-baseline.toml"
 rules.missing-iterable-value-type = "off"
@@ -31,22 +34,35 @@ rules.missing-iterable-value-type = "off"
 
 | Key | Meaning |
 | --- | --- |
-| `preset` | The [tier](/docs/configuration/presets) for lint and analyse: `essential`, `recommended`, `strict`, `pedantic` |
-| `laravel`, `pest`, `phpunit` | Add-ons. Each turns on that ecosystem's rules within the tier |
-| `[php] version` | The PHP version rules target, such as `"8.4"` |
+| `preset` | The [tier](/docs/configuration/presets) for lint and analyse |
+| `laravel`, `pest`, `phpunit` | Add-ons: each turns on that ecosystem's rules within the tier |
+| `[php] version` | The PHP version rules target |
 
 ## [format]
 
-Everything `pint.json` holds: `preset` (`laravel`, `per`, `psr12`, `symfony`, `empty`), `paths`, `exclude`, `not-name`, `not-path`, and `rules`. Keys set here win over `pint.json`'s, key by key.
+| Key | Meaning |
+| --- | --- |
+| `preset` | `laravel` (default), `per`, `psr12`, `symfony` or `empty` |
+| `paths` | Paths to format when none are given |
+| `exclude`, `not-name`, `not-path` | Folders, file names and paths to skip |
+| `rules` | `true`, `false`, or an options table, per rule |
+
+Format rules are behaviour-safe only. Risky ones, like `final_class` or `strict_comparison` in PHP-CS-Fixer terms, are [lint rules](/docs/commands/lint).
 
 ## [lint] and [analyse]
 
-Each takes its own `preset` to override the top-level tier, `paths`, and `rules.<name>` set to `"error"`, `"warning"`, `"off"` or an options table. `[analyse]` also takes `baseline`.
+`[lint.rules]` takes a severity (`"error"`, `"warn"`, `"info"`, `"off"`) or a table with `fix` (`"apply"`, `"safe-only"`, `"off"`) and the rule's options. `[analyse]` takes its own `preset`, `paths`, `baseline` and `rules`.
+
+## Rule names
+
+Rules use Pun IDs: kebab-case names grouped as `format.*`, `lint.*` and `analyse.*` (the group is implied inside its own table). A PHP-CS-Fixer name gets an error that names its Pun ID, so a copied rule is never silently ignored. `pun config` prints everything resolved.
 
 ## Without pun.toml
 
-Pun reads `pint.json`, `phpstan.neon` and `rector.php` directly, so trying it needs no changes, and prints a one-line hint to run `pun migrate`. Run `pun config --show` to see the resolved configuration either way.
+Every command stops with:
 
-:::tip
-Unknown keys are an error, so typos are caught before they silently do nothing.
-:::
+```text
+No pun.toml found. Run `pun migrate`.
+```
+
+`--preset <name>` or `--no-config` runs a built-in preset without a file, as in Pint.
