@@ -34,7 +34,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
   PHPDoc type tags (`@phpstan-param` ...) are kept by default; `pun migrate --phpdoc` rewrites them (opt-in, apps only).
 - **Pun's own rule names** are `group/name` in kebab-case, full ID `<command>/<group>/<name>` (`format/imports/ordered`),
   with one shared group list across format, lint and analyse (2026-10-17, components/format.md §9). No aliases: renames
-  are breaking and that's fine until the release. The upstream mapping is kept as data in
+  are breaking and that's fine until the release. Lint uses topic groups too, not intent groups; each upgrade target is its
+  own lint group (`lint/laravel-13/...`). The upstream mapping is kept as data in
   crates/pun-config/rules/mapping.toml (used by migrate, `pun explain` and the docs).
 - **No levels.** Presets are tiers: `essential` < `recommended` (default) < `strict` < `pedantic`, cumulative, one tier
   for lint + analyse; add-ons `laravel` / `pest` / `phpunit`.

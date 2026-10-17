@@ -185,6 +185,9 @@ Answered 2026-10-17 (Pushpak):
 - **Q1: text edits.** Rules return text edits on byte ranges found through Mago's syntax tree, and format tidies the
   layout afterwards. There is no php-parser printer port. Parity is `format(pun lint --fix)` equal to
   `format(rector process)`, on Rector's fixtures and the corpus.
+- **Q3: topic groups**, the same group list as format and analyse (`lint/imports/no-unused`,
+  `lint/laravel/no-request-all`); intent (correctness, suspicious, style) stays as data. Each upgrade target gets its
+  own group (`lint/laravel-13/...`, `lint/php-8.5/...`), so one line turns a whole upgrade on.
 - **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
 - **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
   support yet (commands.md decisions).
