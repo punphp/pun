@@ -69,8 +69,10 @@ change, `pun lint --fix` applies the ones with `fix = "apply"`. `pun check` runs
 (fixers in PHP-CS-Fixer's priority order, as Pint runs them), so `pun check --fix` on a migrated project writes exactly
 what `pint` wrote; `pun analyse` joins it once it exists. Output is Pint's for all three (outside coding agents, see below).
 
-**Coding agents.** Under a coding agent (detected by the [agent-detector](https://crates.io/crates/agent-detector)
-crate from the agent's environment variables) every command prints a summary line and one line per finding instead of
+**Coding agents.** Under a coding agent (detected from the agent's environment variables with
+[laravel/agent-detector](https://github.com/laravel/agent-detector)'s list, then the
+[agent-detector](https://crates.io/crates/agent-detector) crate; Cursor's `CURSOR_TRACE_ID` alone doesn't count, as
+Cursor sets it in human terminals too) every command prints a summary line and one line per finding instead of
 Pint's output, with no colours, boxes or progress. The list stops after 20 items (`-v` shows all, with diffs):
 
 ```
