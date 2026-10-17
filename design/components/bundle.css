@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Martian+Mono:wght@400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wdth,wght@75..125,300..700&family=Martian+Mono:wght@400..700&display=swap");
 
 /* Pun: Sticker Pop. Every value comes from tokens.json; this file only composes them. */
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-display); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
@@ -32,9 +32,9 @@ body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(
 .pun-hl-marker::before { content: ""; position: absolute; z-index: -1; left: -.06em; right: -.06em; bottom: .06em; height: .38em; background: var(--zap); border-radius: var(--radius-xs); transform: skewX(-8deg); }
 
 /* Headline helpers */
-.pun-display { font: 800 var(--pun-size, 104px)/.9 var(--font-display); letter-spacing: -.045em; margin: 0; }
-.pun-h1 { font: 800 64px/.95 var(--font-display); letter-spacing: -.04em; margin: 0; }
-.pun-h2 { font: 800 40px/1 var(--font-display); letter-spacing: -.035em; margin: 0; }
+.pun-display { font: 700 var(--pun-size, 104px)/.9 var(--font-display); letter-spacing: -.02em; margin: 0; }
+.pun-h1 { font: 700 64px/.95 var(--font-display); letter-spacing: -.02em; margin: 0; }
+.pun-h2 { font: 700 40px/1 var(--font-display); letter-spacing: -.015em; margin: 0; }
 .pun-kicker { font: 600 12px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 var(--space-3); }
 .pun-lede { font-size: 20px; line-height: 1.45; color: var(--ink-2); max-width: 30ch; margin: 0; }
 
@@ -79,17 +79,17 @@ body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(
 .pun-tool { position: relative; display: flex; flex-direction: column; gap: var(--space-3); min-height: 220px; padding: var(--space-6) var(--space-5) var(--space-5); border: var(--stroke) solid var(--outline); border-radius: var(--radius-lg); background: var(--card); color: var(--ink); box-shadow: var(--pop); transform: rotate(var(--pun-tilt, 0deg)); transition: transform .15s ease, box-shadow .15s ease; }
 .pun-tool:hover { transform: rotate(0deg) translate(-2px, -2px); box-shadow: var(--pop-hover); }
 .pun-tool .pun-tag { position: absolute; top: -13px; right: 16px; box-shadow: var(--pop-sm); }
-.pun-tile { width: 48px; height: 48px; display: grid; place-items: center; border: var(--stroke) solid var(--outline); border-radius: var(--radius-md); font: 800 22px/1 var(--font-display); color: #17121F; }
-.pun-tool h3 { margin: 0; font: 800 24px/1.1 var(--font-display); letter-spacing: -.02em; }
+.pun-tile { width: 48px; height: 48px; display: grid; place-items: center; border: var(--stroke) solid var(--outline); border-radius: var(--radius-md); font: 700 22px/1 var(--font-display); color: #17121F; }
+.pun-tool h3 { margin: 0; font: 700 24px/1.1 var(--font-display); letter-spacing: -.02em; }
 .pun-tool p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
 .pun-tool .pun-replaces { font: 500 11px/1.4 var(--font-mono); color: var(--ink-3); }
 .pun-tool code { margin-top: auto; display: block; padding: 9px 12px; border-radius: var(--radius-sm); background: var(--code-bg); color: var(--zap); font: 500 12px/1.2 var(--font-mono); }
 
 /* Callout (docs) */
 .pun-callout { display: grid; grid-template-columns: auto 1fr; gap: var(--space-3) var(--space-4); padding: var(--space-4) var(--space-5); border: var(--stroke) solid var(--outline); border-radius: var(--radius-md); background: var(--card); box-shadow: var(--pop-sm); }
-.pun-callout-ic { width: 32px; height: 32px; display: grid; place-items: center; border: var(--stroke-thin) solid var(--outline); border-radius: var(--radius-sm); font: 800 16px/1 var(--font-display); color: #17121F; }
+.pun-callout-ic { width: 32px; height: 32px; display: grid; place-items: center; border: var(--stroke-thin) solid var(--outline); border-radius: var(--radius-sm); font: 700 16px/1 var(--font-display); color: #17121F; }
 .pun-callout-note .pun-callout-ic { background: var(--lilac); } .pun-callout-tip .pun-callout-ic { background: var(--mint); } .pun-callout-warn .pun-callout-ic { background: var(--zap); }
-.pun-callout b { display: block; font: 800 16px/1.3 var(--font-display); margin-bottom: 2px; }
+.pun-callout b { display: block; font: 700 16px/1.3 var(--font-display); margin-bottom: 2px; }
 .pun-callout div { font-size: 15px; line-height: 1.55; color: var(--ink-2); }
 .pun-callout code, .pun-docs code.inl { font: 500 .85em/1 var(--font-mono); background: var(--paper-2); border: 1px solid var(--hairline); border-radius: var(--radius-xs); padding: 2px 6px; color: var(--ink); }
 
@@ -103,7 +103,7 @@ body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(
 @media (prefers-reduced-motion: reduce) { .pun-ribbon-track { animation: none; } }
 
 /* Burst badge */
-.pun-burst { width: 104px; height: 104px; display: grid; place-content: center; text-align: center; border: var(--stroke) solid var(--outline); border-radius: 50%; background: var(--gum); color: #17121F; box-shadow: var(--pop); transform: rotate(var(--tilt-burst)); font: 800 28px/1 var(--font-display); letter-spacing: -.03em; }
+.pun-burst { width: 120px; height: 120px; padding: 16px; display: grid; place-content: center; text-align: center; border: var(--stroke) solid var(--outline); border-radius: 50%; background: var(--gum); color: #17121F; box-shadow: var(--pop); transform: rotate(var(--tilt-burst)); font: 700 28px/1 var(--font-display); letter-spacing: -.015em; }
 .pun-burst small { display: block; margin-top: 4px; font: 600 10.5px/1.2 var(--font-mono); letter-spacing: 0; }
 .pun-burst-zap { background: var(--zap); } .pun-burst-mint { background: var(--mint); } .pun-burst-lilac { background: var(--lilac); }
 

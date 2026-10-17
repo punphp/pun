@@ -7,7 +7,7 @@ Pun is one fast Rust binary for the whole PHP toolchain: `pun format`, `pun lint
 Pun talks like a fast friend who also reads the benchmark methodology.
 
 - **Lead with the number, then the joke.** "Format laravel/framework in 3.7 s. Pint takes 190." One pun or wink per page, never in docs headings.
-- **Short.** Headlines under eight words. Ledes one sentence, max 30ch: "One Rust binary. Your pint.json. The exact same output."
+- **Short.** Headlines under eight words. Ledes one sentence, max 30ch: "One Rust binary for format, lint, analyse and migrate."
 - **Concrete nouns.** Name the tool replaced (Pint, PHP-CS-Fixer, Rector, PHPStan, Larastan), the file (`pint.json`, `pun.toml`), the flag (`--test`). No "blazing", "revolutionary", "seamless", "supercharge".
 - **Prove it.** Only publish timings the repo measured (today: laravel/framework, Pint 190 s, pun 3.7 s cold, 0.07 s warm, so "51×"). Every chart links to "reproduce →".
 - **Casing.** The product is "Pun" in sentences and "pun" in the wordmark, commands and the Ribbon. Sentence case for headings and buttons. Commands always in mono with `$`.
@@ -35,9 +35,9 @@ Two themes: **Paper** (light, the default) and **Night** (dark). Most surfaces a
 
 ## Type
 
-Two families, both from Google Fonts: **Bricolage Grotesque** (`display`) for everything you read, **Martian Mono** (`mono`) for everything you type or measure.
+Two families, both from Google Fonts: **Fredoka** (`display`) for everything you read, **Martian Mono** (`mono`) for everything you type or measure. Fredoka's round terminals and circular bowls match the hand-drawn "pun" lettering in the wordmark, so headlines, body copy, buttons and the logo read as one voice.
 
-- Headlines are heavy (800) and tight (-0.035 to -0.06em). `display` for the hero, `h1` for sections, `h2` for docs and the CTA, `h3` for cards.
+- Headlines are bold (700) with light negative tracking (-0.01 to -0.03em); rounded letters need more air than a grotesque. `display` for the hero, `h1` for sections, `h2` for docs and the CTA, `h3` for cards.
 - `mega` is reserved for the one speed multiple on a page (51×).
 - Body copy is `body` at 16/1.6, max 68ch; ledes `lede` in `ink-2`, max 30ch.
 - Mono covers commands, flags, file names, numbers in charts, Tags, Pills and the uppercase `kicker` above section headlines.
