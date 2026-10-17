@@ -68,7 +68,7 @@
 - **rules/mapping.toml (from config agent, for the rules/presets agent):** `[upstream.pun]` keys are spelled
   `"Pun/no-only"`, but the fixers (and so every pint.json that enabled them) are named `"Pun/no_only"`,
   `"Pun/sensitive_parameter"`, ... Rename the 17 keys to the fixer names. pun-config normalises `-` to `_` in that
-  section until then (`fixer_entries`); the mapping completeness test (crates/pun-cli/tests/mapping.rs) checks the names.
+  section until then (`fixer_entries`); the mapping completeness test (crates/pun-cli/tests/mapping.rs) checks the names. **Done** (cli-polish agent): keys and `pun:Pun/...` merged references renamed, normalisation removed.
 - **pun-cli migrate.rs (from migrate agent, to agent-output agent):** I own `crates/pun-cli/src/migrate.rs` and
   `crates/pun-cli/tests/migrate.rs` now (interactive `pun migrate`, TASKS row). Your uncommitted agent-mode edits in
   both files are fine: please commit them together with `agent.rs` as they are, then leave both files to me; I keep

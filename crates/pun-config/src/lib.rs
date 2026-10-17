@@ -142,8 +142,7 @@ pub fn fixer_entries() -> &'static toml::Table {
             let body = MAPPING.split_once(&head).expect("mapping section").1;
             let body = body.split("\n[").next().unwrap();
             let entries = toml::from_str::<toml::Table>(body).expect("mapping.toml");
-            // The fixers are `Pun/no_only`; the mapping spells them `Pun/no-only` (docs/REQUESTS.md).
-            out.extend(entries.into_iter().map(|(k, v)| (k.replace('-', "_"), v)));
+            out.extend(entries);
         }
         out
     });
@@ -311,10 +310,23 @@ fn fixer(path: &Path, command: &str, name: &str) -> Result<&'static str> {
     }
 }
 
-/// The current name of an earlier Pun rule name (`aliases` in `[rules.<command>]` of mapping.toml).
-fn alias(command: &str, name: &str) -> Option<&'static str> {
-    static T: LazyLock<Vec<(String, String)>> = LazyLock::new(|| {
-        ["format", "lint"]
+/// A Pun rule's metadata from `[rules.<command>]` of rules/mapping.toml.
+#[derive(Debug)]
+pub struct RuleMeta {
+    /// `safe`, `unsafe`, `mixed` or `none` (analyse rules have no fix).
+    pub fix: &'static str,
+    /// Lowest preset tier that enables it (lint/analyse); `None` for format rules and opt-in rules.
+    pub tier: Option<&'static str>,
+    pub summary: Option<&'static str>,
+    /// Earlier Pun names, without the `command.` prefix.
+    pub aliases: Vec<&'static str>,
+}
+
+/// Every `[rules.format]`, `[rules.lint]` and `[rules.analyse]` entry by rule ID. Parsed on first use: a plain
+/// `pun format` run never needs it.
+fn rules() -> &'static Vec<(String, toml::Value)> {
+    static T: LazyLock<Vec<(String, toml::Value)>> = LazyLock::new(|| {
+        ["format", "lint", "analyse"]
             .iter()
             .flat_map(|c| {
                 let body = MAPPING
@@ -323,21 +335,39 @@ fn alias(command: &str, name: &str) -> Option<&'static str> {
                     .1;
                 let rules =
                     toml::from_str::<toml::Table>(body.split("\n[").next().unwrap()).unwrap();
-                rules.into_iter().flat_map(move |(rule, e)| {
-                    let aliases = e
-                        .get("aliases")
-                        .and_then(|a| a.as_array())
-                        .cloned()
-                        .unwrap_or_default();
-                    aliases
-                        .into_iter()
-                        .map(move |a| (format!("{c}.{}", a.as_str().unwrap()), rule.clone()))
-                })
+                rules
+                    .into_iter()
+                    .map(move |(rule, e)| (format!("{c}.{rule}"), e))
             })
             .collect()
     });
-    let key = format!("{command}.{name}");
-    T.iter().find(|(a, _)| *a == key).map(|(_, r)| r.as_str())
+    &T
+}
+
+/// The metadata of a Pun rule ID (`lint.no-self-assignment`).
+pub fn rule(id: &str) -> Option<RuleMeta> {
+    let (_, e) = rules().iter().find(|(r, _)| r == id)?;
+    let str = |k| e.get(k).and_then(toml::Value::as_str);
+    Some(RuleMeta {
+        fix: str("fix").unwrap_or("none"),
+        tier: str("tier").filter(|t| *t != "none"),
+        summary: str("summary"),
+        aliases: e
+            .get("aliases")
+            .and_then(toml::Value::as_array)
+            .map_or_else(Vec::new, |a| {
+                a.iter().filter_map(toml::Value::as_str).collect()
+            }),
+    })
+}
+
+/// The current name of an earlier Pun rule name (`aliases` in `[rules.<command>]` of mapping.toml).
+fn alias(command: &str, name: &str) -> Option<&'static str> {
+    let prefix = format!("{command}.");
+    rules().iter().find_map(|(id, _)| {
+        let r = id.strip_prefix(&prefix)?;
+        rule(id)?.aliases.contains(&name).then_some(r)
+    })
 }
 
 /// A rule's value in pun.toml as PHP-CS-Fixer takes it: `true`/`false`, or options with snake_case keys.
