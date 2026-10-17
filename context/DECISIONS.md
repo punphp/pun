@@ -41,6 +41,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 - **No levels** (confirmed 2026-10-17: named presets for new projects; migrate writes explicit rules and, when
   interactive, offers the closest preset with a count of the new problems it would report). Presets are tiers (analyse, revised 2026-10-17): `basic` < `essential` < `recommended` (default) < `strict` < `max`, cumulative; lint uses sets instead (originally one tier
   for lint + analyse); add-ons `laravel` / `pest` / `phpunit`.
+- **`pun init`** (components/init.md, 2026-10-17): offers `pun migrate` when old configs exist; writes only the chosen
+  presets; runs one `pun check` and offers fix and baseline; does not wire composer, CI or hooks (agent skills later).
 - **`pun init`** asks the format preset (laravel / psr12), the analyse preset and the lint preset; lint and analyse
   presets are chosen separately (2026-10-17, components/lint.md §9). Lint's preset is a checklist of sets
   (`[lint] sets = ["dead-code", "modernize"]`), like Rector's prepared sets; analyse keeps a five-step preset (`basic` to `max`). Laravel, Pest and PHPUnit rules turn on

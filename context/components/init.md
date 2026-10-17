@@ -1,6 +1,6 @@
 # Component: `pun init`
 
-Status: **proposal, under review with Pushpak** (opened 2026-10-17). Nothing is built. The journey comes from
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Nothing is built. The journey comes from
 Pushpak (lint.md §9); the details below are proposals with questions. Answers go into "Decisions" and DECISIONS.md.
 Part of PLAN.md C3/C4.
 
@@ -31,9 +31,9 @@ $ pun init
 
 ? Fix what can be fixed now (pun check --fix)?          › yes
 ? Write a baseline for the 3 remaining analyse errors?  › no
-? Add pun to composer scripts and CI?                    › yes   (composer.json "lint" script, .github/workflows/pun.yml)
 
   Done. Run `pun check` any time; `pun check --fix` before you commit.
+  Add `pun check` to CI and your composer scripts.
 ```
 
 1. **Detect** from composer.json and composer.lock: the PHP version, Laravel, Pest, PHPUnit and their versions.
@@ -70,3 +70,6 @@ Answered 2026-10-17 (Pushpak):
 - **Q1: old configs present → offer migrate** ("Found phpstan.neon. Migrate it instead? › yes"); yes runs `pun migrate`.
 - **Q2: pun.toml holds only the three choices**; presets carry the rules, `pun config` prints the resolved list.
 - **Q3: init runs one `pun check`** after writing pun.toml, then offers `--fix` and a baseline (interactive only).
+- **Q4: no workflow wiring in init** (too much code to maintain for now). init prints the commands; the user adds them.
+  Later: agent skills (a `pun-init` and a `pun-migrate` skill) do the composer, CI and hook wiring instead of Pun code.
+- **Q5: `empty` is hidden from init** (assistant default); it stays a valid `[format] preset`.

@@ -277,7 +277,9 @@ unsupported rules, is idempotent; the harness proves it (`pun migrate` + `pun ch
   pun-phpstan today.
 - rector.php to `[lint]`. Needs C8's config.
 - `.php-cs-fixer.php` Finder not migrated.
-- Workflow switch: composer scripts, CI steps, pre-commit hook, editor settings, Laravel Boost guideline, `--remove-tools`.
+- Workflow switch (composer scripts, CI steps, pre-commit hook, editor settings, Laravel Boost guideline): decided
+  2026-10-17 to leave it out of Pun's code; `pun-init` / `pun-migrate` agent skills will do it later. `--remove-tools`
+  is still open.
 
 ## C10. Editor (pun lsp)
 
