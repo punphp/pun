@@ -23,7 +23,7 @@ The one-screen summary of what Pun is going to be. Detail and reasons: `componen
 - `pun migrate`: moves pint.json, .php-cs-fixer.php, rector.php and phpstan.neon onto pun.toml completely, and names
   anything not supported yet. It never copies a baseline.
 - `pun init`: a new project's pun.toml. It asks three questions: format preset, lint sets, analyse preset.
-- `pun lsp` ships last.
+- No LSP until the last step, after the embedded PHP interpreter (removed from the repo for now).
 
 **Config: pun.toml only.** No pun.toml means stop, with "run `pun migrate`, or `pun init` for a new project".
 
@@ -69,7 +69,7 @@ format.md) are still open.
 | C7 | Analyse (PHPStan + Larastan) | pun-phpstan, pun-analyse, (pun-laravel) | In progress, actively worked on main | 54 identifiers, about 100 level-0 rules left; not in the CLI; Larastan, levels 1-10 not started |
 | C8 | Lint (Rector) | pun-cli lint, (pun-refactor) | Started (CS-Fixer risky rules + 17 Pun rules) | Everything Rector: config, printer, rules (31 of 542 lint rules ported) |
 | C9 | Migrate | pun-cli migrate, pun-config migrate | Format part and interactive picker done | PHPStan, Rector, baseline, ignore comments, composer/CI rewrites |
-| C10 | Editor (pun lsp) | pun-lsp, pun-cli lsp | Deferred: ships last (user, 2026-10-17) | Nothing now; prototype stays as is |
+| C10 | Editor (LSP) | - | Removed; last step, after the PHP interpreter (user, 2026-10-17) | Everything, when its turn comes |
 | C11 | Parity harness, corpus, fuzz | pun-harness, scripts/, corpus/ | Done for format | Analyse and lint harness; move harness out of shipped crates |
 | C12 | Docs site and brand | docs/, design/ | Built | Keep in sync as commands land |
 | C13 | Release and distribution | dist-workspace.toml, packaging/, release.yml | Configured, not published | Gated on C7, C8, C9 (decision) |
@@ -92,7 +92,7 @@ format.md) are still open.
 - CLI polish item 7: a `script` check in CI and the skip message in tests/migrate.rs; then the full gates under
   `CLAUDECODE=1` (TASKS.md).
 - Coverage gate is red: CI measures every crate at 100% except pun-analyse at 97.59% (2066/2117 lines, run 39015344878),
-  the crate under active work. The committed reports/COVERAGE.md table is older and lists neither pun-analyse nor pun-lsp.
+  the crate under active work. The committed reports/COVERAGE.md table is older and does not list pun-analyse.
 - Parallel work: AGENTS.md is written for agents sharing one 2-core box and one git index. With several cloud threads,
   each thread works on its own branch and PR per component; TASKS.md rows name the thread. Decide this together (Q1).
 
@@ -162,8 +162,7 @@ aliases (format.md §9 has the format table); lint sets; five analyse presets; o
 
 **Done.**
 - `pun format` (every Pint flag and reporter, `--dirty`, `--diff`, `--staged`, `--since`, `--stdin`, `--watch`,
-  `--explain`, `--native-only`, cache), `pun lint`, `pun check [--fix]`, `pun migrate`, `pun config`, `pun lsp`
-  (formatting only).
+  `--explain`, `--native-only`, cache), `pun lint`, `pun check [--fix]`, `pun migrate`, `pun config`.
 - `pun lint --fix` / `pun check --fix` report the lint rules they don't apply as remaining, and exit 1 when any remain.
 - Agent-optimised output for every command (7fd15f4, 4d47eaa); see the spec below. `pun lint --mago` and
   `pun format --watch` still print their own output.
@@ -281,19 +280,11 @@ unsupported rules, is idempotent; the harness proves it (`pun migrate` + `pun ch
   2026-10-17 to leave it out of Pun's code; `pun-init` / `pun-migrate` agent skills will do it later. `--remove-tools`
   is still open.
 
-## C10. Editor (pun lsp)
+## C10. Editor (LSP)
 
-**Deferred (user decision, 2026-10-17): the LSP ships last.** No LSP work until the other components are done; the
-notes below are kept for when we get there.
-
-**Goal.** One language server: PHPantom for code intelligence, Pun for formatting, diagnostics and fixes.
-
-**Done.** `pun lsp` serves Pint-identical formatting. `crates/pun-lsp` embeds PHPantom in-process with a JSON-RPC router,
-merged capabilities, syntax-error and Mago diagnostics, fix-all; 100% coverage on its own (reference/lsp.md).
-
-**Pending.** Wire `pun lsp` to `pun_lsp::run()`; extract the shared formatting engine from pun-cli (REQUESTS.md);
-diagnostics from `pun analyse`; quick fixes from `pun lint --fix`; editor setup docs; PHPantom is a git dependency
-(blocks crates.io publishing) and grows the binary from about 8 to 47 MB (Q5).
+**Removed (user decision, 2026-10-17).** The LSP is the last step, after the embedded PHP interpreter. The formatting-only
+`pun lsp`, the PHPantom prototype (`crates/pun-lsp`) and their docs are gone; git history has them. Nothing in the repo
+depends on an LSP or on PHPantom until then.
 
 ## C11. Parity harness, corpus and fuzz (pun-harness, scripts/)
 
@@ -339,7 +330,7 @@ These are the calls we need to make while walking through the components; each o
 3. **Embedded PHP (C6).** May the release require a system `php` for delegated rules, or is pun-php a release blocker?
 4. **Unported format rules (C2).** Are the 64 delegated format rules acceptable at release, or which must be native?
    Still open (format.md Q7). With presets cut to laravel, psr12 and empty, none of the preset rules is unported.
-5. ~~LSP dependency (C10)~~ Deferred: the LSP ships last.
+5. ~~LSP dependency (C10)~~ Removed: the LSP is the last step.
 6. **1.0 scope (C14).** Memory says one 1.0 release where everything ships at once; the task board says the release needs
    format, analyse, lint and migrate. Are install, run and test part of 1.0 or after it?
 

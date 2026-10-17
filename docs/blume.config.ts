@@ -47,7 +47,7 @@ export default defineConfig({
   agents: {
     llmsTxt: {
       details:
-        "Pun is a single Rust binary that replaces Pint, PHP-CS-Fixer, Rector, PHPStan and Larastan for PHP 8.4+ projects, with output identical to the tools it replaces: `pun format` (layout, behaviour-safe), `pun lint` (risky fixers, Rector and Mago rules), `pun analyse` (PHPStan + Larastan), `pun check` (all three in one pass; `pun check --fix` writes exactly what Pint wrote), `pun migrate` (writes pun.toml from pint.json, phpstan.neon and rector.php) and `pun lsp` (editor server). Pun reads only pun.toml. Under a coding agent, every command switches to compact agent output automatically.",
+        "Pun is a single Rust binary that replaces Pint, PHP-CS-Fixer, Rector, PHPStan and Larastan for PHP 8.4+ projects, with output identical to the tools it replaces: `pun format` (layout, behaviour-safe), `pun lint` (risky fixers, Rector and Mago rules), `pun analyse` (PHPStan + Larastan), `pun check` (all three in one pass; `pun check --fix` writes exactly what Pint wrote) and `pun migrate` (writes pun.toml from pint.json, phpstan.neon and rector.php). Pun reads only pun.toml. Under a coding agent, every command switches to compact agent output automatically.",
     },
   },
 

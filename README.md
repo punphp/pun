@@ -101,21 +101,6 @@ in no preset, so default output stays identical to Pint; enable them under `[lin
 **Watch.** `pun format --watch [paths...]` does a normal run, then re-formats files as they change (same
 discovery, config and exclusions, Pint's output per run). Pun's own writes don't trigger runs.
 
-**Editors.** `pun lsp` is a formatting-only language server on stdio: it formats the open document exactly like
-`pun format --stdin` with the document's path, so the project's config and exclusions apply (config is read at
-startup; restart the server after editing it).
-
-- VS Code: any generic LSP client extension, with command `pun`, arguments `["lsp"]`, document selector / language
-  `php`; then pick that extension as the default formatter for PHP.
-- Neovim (0.11+):
-  ```lua
-  vim.lsp.config('pun', { cmd = { 'pun', 'lsp' }, filetypes = { 'php' }, root_markers = { 'pun.toml', 'composer.json', '.git' } })
-  vim.lsp.enable('pun')
-  -- format: vim.lsp.buf.format({ name = 'pun' }), e.g. from a BufWritePre autocmd
-  ```
-- PhpStorm (LSP4IJ plugin): Settings > Languages & Frameworks > Language Servers > `+`: name `Pun`, command
-  `pun lsp`; under Mappings > File type add `PHP`. Reformat Code then goes through Pun.
-
 ## Parity
 
 Per-project parity with the pinned Pint (benchmarks to follow): [context/reports/scoreboard.md](context/reports/scoreboard.md).

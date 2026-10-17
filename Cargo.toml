@@ -34,18 +34,9 @@ mago-reporting = "=1.57.0"
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
 pun-delegate = { path = "crates/pun-delegate", package = "punphp-delegate" }
 notify = "8"
-lsp-server = "0.10"
-lsp-types = "0.97"
 pun-phpstan = { path = "crates/pun-phpstan", package = "punphp-phpstan" }
 indexmap = "2"
 libc = "0.2"
-# pun-lsp: PHPantom main (mago =1.57.0; release 0.11.1 still pins =1.47.5). No mimalloc: it would become Pun's global allocator.
-phpantom_lsp = { git = "https://github.com/PHPantom-dev/phpantom_lsp", rev = "86e6c49d4", default-features = false }
-tower-lsp = "0.20"
-tower = "0.4"
-futures = "0.3"
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync"] }
-crossbeam-channel = "0.5"
 # pun-analyse (Phase 2 M2.3)
 mago-codex = "=1.57.0"
 mago-analyzer = "=1.57.0"

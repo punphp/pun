@@ -1,6 +1,6 @@
 ---
 title: Migrating from Pint
-description: Switch a project from Pint to Pun without a single changed byte, then move scripts, CI and editors over.
+description: Switch a project from Pint to Pun without a single changed byte, then move scripts and CI over.
 ---
 
 <Steps>
@@ -36,9 +36,9 @@ On a project Pint already formatted, the diff is empty: `pun check --fix` writes
 ```
 
   </Step>
-  <Step title="Switch CI and editors">
+  <Step title="Switch CI">
 
-Replace `vendor/bin/pint --test` with `pun check` ([CI](/docs/guides/ci)), and point format-on-save at `pun lsp` ([Editors](/docs/guides/editors)).
+Replace `vendor/bin/pint --test` with `pun check` ([CI](/docs/guides/ci)).
 
   </Step>
 </Steps>

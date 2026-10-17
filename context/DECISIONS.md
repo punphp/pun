@@ -21,7 +21,7 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 
 - **Command layout:** `pun format` (layout, Pint parity), `pun lint [--fix]` (code rules, Rector parity; Mago rules opt-in
   as `mago.*`), `pun analyse` / `analyze` (type errors, PHPStan + Larastan parity, never edits), `pun check [--fix]`
-  (all of them in one pass), `pun migrate` (one-time move onto pun.toml), `pun lsp` (PHPantom + Pun).
+  (all of them in one pass), `pun migrate` (one-time move onto pun.toml).
   `pun lint --fix` does not format afterwards (Rector doesn't).
 - **pun.toml only.** Commands never read pint.json, .php-cs-fixer.php, phpstan.neon or rector.php. Without pun.toml:
   "No pun.toml found. Run `pun migrate`." The old-config readers live only inside `pun migrate` (and the harness). The
@@ -91,8 +91,9 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 - **Own lexer** in pun-tokens instead of mapping mago-syntax tokens (reference/tokens.md).
 - **Built-in symbols for analyse** come from PHPStan's own reflection, exported once into
   crates/pun-phpstan/data/symbols.json, not from Mago's prelude.
-- **pun lsp ships last** (2026-10-17): no LSP work now. When it comes: embed PHPantom in-process, routed at the
-  JSON-RPC level (reference/lsp.md).
+- **No LSP until the last step** (2026-10-17): the `pun lsp` command, the pun-lsp crate and the PHPantom dependency
+  were removed. The LSP comes after the embedded PHP interpreter; the PHPantom prototype and its evaluation are in git
+  history.
 - **FrankenPHP:** Pun links libphp itself first (Rust SAPI); FrankenPHP is linked in later. Assistant's call, delegated.
 - **Analyse builds on Mago's analyser** (2026-10-17, components/analyse.md §8; assistant's call, delegated): one Pun rule per
   PHPStan rule in the mapping, messages may be reworded, Laravel is a built-in Mago plugin. The baseline is its own

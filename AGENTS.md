@@ -70,7 +70,6 @@ Pinkary is the slowest project for Pun because Blade formatting runs through Pre
 - If a rule has no Pun port, `pun-delegate` sends every file of the run through the real PHP-CS-Fixer in `php` worker processes. See `context/reference/oracle.md#delegate-mode`.
 - `pun-cli` builds the `pun` binary. The binary also answers as `pint` when `argv[0]` is `pint`. The crate holds Pint-identical reporters, the compact output for coding agents (`agent.rs`), the cache, `--watch`, and the interactive `migrate`.
 - `pun-phpstan` ports PHPStan's config, ignore, and type-string behavior. Its built-in symbols are in `data/symbols.json`. `pun-analyse` builds `pun analyse` on `pun-phpstan` and Mago's analyzer.
-- `pun-lsp` embeds PHPantom (`context/reference/lsp.md`).
 - `pun-harness` is local tooling. It regenerates `context/reports/scoreboard.md`.
 - The commands divide the work like this. `format` changes layout only. `lint` applies code rules, including PHP-CS-Fixer's risky fixers. `analyse` reports type errors. `check` runs all three in one pass.
 - The Mago crates are pinned to `=1.57.0`. Bump them together.

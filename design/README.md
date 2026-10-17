@@ -1,6 +1,6 @@
 # Pun design system
 
-Pun is one fast Rust binary for the whole PHP toolchain: `pun format`, `pun lint`, `pun analyse`, `pun check`, and `pun lsp`. It is to PHP what Bun is to JavaScript.
+Pun is one fast Rust binary for the whole PHP toolchain: `pun format`, `pun lint`, `pun analyse`, `pun check`, and `pun migrate`. It is to PHP what Bun is to JavaScript.
 
 The brand is **Sticker Pop**: cream paper, pastel fills, thick ink outlines, and hard offset shadows, like a laptop lid covered in stickers. The surface is loud and cheeky. Underneath, every claim is a number that the repo can reproduce.
 

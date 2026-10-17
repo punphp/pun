@@ -28,9 +28,8 @@ History before the 2026-10-17 reset (every finished Phase 1 row, with its eviden
 | C7 | `pun analyse` subcommand, agent output, join `pun check` | - | todo |
 | C9 | Migrate `.php-cs-fixer.php` Finder | - | todo |
 | C4 | CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) and the final gates | - | todo (stopped by user) |
-| C10 | LSP | - | deferred: ships last (user) |
+| C10 | LSP | - | removed; last step, after the PHP interpreter (user) |
 | C11 | pun-harness as dev-only tooling; fixtures into pun-fixers | - | todo (after release) |
 | C13 | Publish | user | deferred until format, analyse, lint and migrate exist |
 
-The rest of each component (Larastan, levels 1-10, Rector printer and rules, migrate for PHPStan / Rector, LSP
-diagnostics) gets rows once we've walked through that component in PLAN.md.
+The rest of each component (Larastan, levels 1-10, Rector printer and rules, migrate for PHPStan / Rector) gets rows once we've walked through that component in PLAN.md.

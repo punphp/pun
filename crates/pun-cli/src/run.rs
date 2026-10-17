@@ -378,7 +378,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     Ok(code.max(u8::from(failed)))
 }
 
-pub(crate) fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine> {
+fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine> {
     pun_fixers::analyzers::active_preset::set(&cfg.preset);
     let mut p = Pipeline::new(&cfg.rules, &pun_fixers::all)?;
     // PUN_PROFILE=1: per-stage timings on stderr after the run.
@@ -469,9 +469,9 @@ fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine) -> Result<u8> {
     Ok(0)
 }
 
-/// Stdin / LSP formatting of `code` as `path`: the fixed code, or `None` when excluded, clean or invalid (Pint
+/// Stdin formatting of `code` as `path`: the fixed code, or `None` when excluded, clean or invalid (Pint
 /// reports syntax errors through its unshown JSON report and echoes the input).
-pub(crate) fn fix_text(
+fn fix_text(
     cfg: &Config,
     engine: &Engine,
     path: &Path,

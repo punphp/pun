@@ -7,7 +7,6 @@ mod fix_report;
 mod highlight;
 #[cfg(feature = "mago-lint")]
 mod lint;
-mod lsp;
 mod migrate;
 mod php_diff;
 mod pint_error;
@@ -58,8 +57,6 @@ enum Cmd {
     Check(Box<StageCmd>),
     /// Write pun.toml from pint.json (or .php-cs-fixer(.dist).php) and rewrite `@php-cs-fixer-ignore` comments.
     Migrate(migrate::MigrateArgs),
-    /// Formatting-only language server on stdio (textDocument/formatting).
-    Lsp,
     /// Print the resolved configuration.
     Config {
         /// Accepted for compatibility; showing is all `pun config` does.
@@ -197,7 +194,6 @@ fn main() -> ExitCode {
         Cmd::Lint { .. } => "lint",
         Cmd::Check(_) => "check",
         Cmd::Migrate(_) => "migrate",
-        Cmd::Lsp => "lsp",
         Cmd::Config { .. } => "config",
     };
     let flag = (cli.agent || cli.no_agent).then_some(cli.agent);
@@ -210,7 +206,6 @@ fn main() -> ExitCode {
         Cmd::Lint { cmd, .. } => (stage(*cmd, Stage::Lint), true),
         Cmd::Check(cmd) => (stage(*cmd, Stage::Check), true),
         Cmd::Migrate(a) => (migrate::run(a), false),
-        Cmd::Lsp => (lsp::run(), false),
         Cmd::Config {
             format,
             config,
