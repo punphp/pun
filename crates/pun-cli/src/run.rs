@@ -91,6 +91,14 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             return Ok(1);
         }
     };
+    // `--fix`: the lint rules it doesn't apply (no `fix = "apply"`) still run on the result, reported as remaining.
+    let pending: Vec<_> = match stage {
+        Stage::Lint(true) | Stage::Check(true) => (cfg.lint.iter())
+            .filter(|(_, apply)| !apply)
+            .map(|(r, _)| r.clone())
+            .collect(),
+        _ => vec![],
+    };
     if let Stage::Lint(fix) | Stage::Check(fix) = stage {
         let lint = (cfg.lint.iter())
             .filter(|(_, apply)| *apply || !fix)
@@ -111,6 +119,18 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         print!("{out}");
         return Ok(1);
     }
+    let pending_engine = (!pending.is_empty())
+        .then(|| {
+            engine(
+                &a,
+                &Config {
+                    rules: pending.clone(),
+                    ..cfg.clone()
+                },
+                &root,
+            )
+        })
+        .transpose()?;
     let engine = engine(&a, &cfg, &root)?;
     if a.pun.explain || a.verbose > 0 {
         explain(&cfg, &engine, a.pun.explain);
@@ -155,6 +175,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             .or_else(|| cache::default_path(&root))
             .map(|p| {
                 let mut sig = cache::signature(&cfg);
+                sig["pending"] = pending.iter().map(|r| r.name.clone()).collect();
                 if let Engine::Delegate(d, _) = &engine {
                     sig["delegate"] = d.signature();
                 }
@@ -162,8 +183,10 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             })
     };
     // Unreadable / unwritable files abort the whole run, like Pint (FileReader / Runner exceptions).
-    // Besides the result: the content hash when the file is clean (for the cache), and whether the cache said so.
-    let process = |path: &PathBuf| -> Result<(FileResult, Option<String>, bool)> {
+    // Besides the result: the content hash when the file is clean (for the cache), whether the cache said so, and
+    // the pending rules' fixes (`--fix`).
+    type Processed = (FileResult, Option<String>, bool, Option<FileResult>);
+    let process = |path: &PathBuf| -> Result<Processed> {
         let rel = path
             .strip_prefix(&root)
             .unwrap_or(path)
@@ -180,19 +203,19 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         // Runner FileFilterIterator: symlinks are dropped silently, empty files are "skipped".
         if path.is_symlink() {
             r.status = Status::Link;
-            return Ok((r, None, false));
+            return Ok((r, None, false, None));
         }
         let code = std::fs::read(path)
             .with_context(|| format!("Failed to read content from \"{}\".", path.display()))?;
         if code.is_empty() {
             r.status = Status::Skipped;
-            return Ok((r, None, false));
+            return Ok((r, None, false, None));
         }
         let hash = cache.as_ref().map(|_| cache::hash(&code));
         if let (Some(c), Some(h)) = (&cache, &hash)
             && c.is_clean(&r.rel, h)
         {
-            return Ok((r, hash, true));
+            return Ok((r, hash, true, None));
         }
         let mut clean = None;
         let outcome = match isolated(|| engine.run(path, &code)) {
@@ -200,10 +223,26 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             Err(message) => {
                 r.status = Status::Exception;
                 r.message = message;
-                return Ok((r, None, false));
+                return Ok((r, None, false, None));
             }
         };
-        match outcome {
+        // Reports show diffs only with -v (sebastian/diff's LCS is quadratic, so skip it otherwise).
+        let diff = |old: &[u8], new: &[u8]| {
+            if a.verbose == 0 {
+                return String::new();
+            }
+            report::diff(
+                &String::from_utf8_lossy(old),
+                &String::from_utf8_lossy(new),
+                // Agent mode: paths relative to the project, as everywhere in its output.
+                if crate::agent::enabled() {
+                    Path::new(&r.rel)
+                } else {
+                    path
+                },
+            )
+        };
+        let result = match outcome {
             Err(e) => {
                 r.status = if e.after_fix {
                     Status::Lint
@@ -211,35 +250,48 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
                     Status::Invalid
                 };
                 r.message = e.message;
+                None
             }
-            Ok(None) => clean = hash,
+            Ok(None) => {
+                clean = hash;
+                pending_engine.as_ref().map(|_| code.clone())
+            }
             Ok(Some((new, applied))) => {
-                // Reports show diffs only with -v (sebastian/diff's LCS is quadratic, so skip it otherwise).
-                if a.verbose > 0 {
-                    r.diff = report::diff(
-                        &String::from_utf8_lossy(&code),
-                        &String::from_utf8_lossy(&new),
-                        // Agent mode: paths relative to the project, as everywhere in its output.
-                        if crate::agent::enabled() {
-                            Path::new(&r.rel)
-                        } else {
-                            path
-                        },
-                    );
-                }
+                r.diff = diff(&code, &new);
                 r.applied = applied;
                 r.status = Status::Fixed;
                 if !dry_run {
-                    std::fs::write(path, new).with_context(|| {
+                    std::fs::write(path, &new).with_context(|| {
                         format!(
                             "Cannot write to file \"{}\" as it is not writable.",
                             path.display()
                         )
                     })?;
                 }
+                Some(new)
             }
+        };
+        // A pending rule's failure (lint error, panic) is not reported: the file was already fixed and checked.
+        let left = match (&pending_engine, &result) {
+            (Some(e), Some(now)) => isolated(|| e.run(path, now))
+                .ok()
+                .transpose()?
+                .and_then(Result::ok)
+                .flatten(),
+            _ => None,
+        };
+        let left = left.map(|(new, applied)| FileResult {
+            diff: diff(result.as_deref().unwrap(), &new),
+            applied,
+            status: Status::Fixed,
+            message: String::new(),
+            path: path.clone(),
+            rel: r.rel.clone(),
+        });
+        if left.is_some() {
+            clean = None;
         }
-        Ok((r, clean, false))
+        Ok((r, clean, false, left))
     };
 
     let all: Vec<Result<_>> = if a.bail {
@@ -261,12 +313,16 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     if a.format.is_none() && !a.quiet && !a.parallel {
         pint_error::progress_before_abort(&all, dry_run, a.ansi, a.no_ansi);
     }
-    let results: Vec<(FileResult, Option<String>, bool)> =
-        all.into_iter().collect::<Result<_>>()?;
+    let results: Vec<Processed> = all.into_iter().collect::<Result<_>>()?;
 
     let hits = results.iter().filter(|r| r.2).count();
-    let (results, clean): (Vec<FileResult>, Vec<Option<String>>) =
-        results.into_iter().map(|(r, c, _)| (r, c)).unzip();
+    let mut remaining = vec![];
+    let (results, clean): (Vec<FileResult>, Vec<Option<String>>) = (results.into_iter())
+        .map(|(r, c, _, left)| {
+            remaining.extend(left);
+            (r, c)
+        })
+        .unzip();
     if let Some(c) = cache {
         if a.pun.explain {
             eprintln!(
@@ -282,6 +338,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         preset: &cfg.preset,
         total: files.len(),
         dry_run,
+        remaining: &remaining,
         verbose: a.verbose > 0,
         ansi: a.ansi,
         no_ansi: a.no_ansi,
@@ -295,7 +352,8 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         a.output_format.as_deref(),
     );
     let failed = ((dry_run || a.repair) && results.iter().any(|r| r.status == Status::Fixed))
-        || results.iter().any(FileResult::is_error);
+        || results.iter().any(FileResult::is_error)
+        || !remaining.is_empty();
 
     if let Engine::Native(p) = &engine {
         eprint!("{}", p.profile_report());
