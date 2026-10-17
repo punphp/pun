@@ -59,6 +59,10 @@ Command layout (user-approved direction, 2026-10-17):
 - `pun lint --fix` does not format afterwards (Rector doesn't); `--format` opt-in flag may run both.
 - `pun lint --mago` stays as is.
 
+- One config: `pun.toml` with `[php]`, `[format]`, `[lint]` (from rector.php), `[analyse]` (from phpstan.neon, explicit rules instead of levels; Larastan = `laravel = true`). `pun migrate` writes it, converts the baseline, rewrites `@phpstan-ignore*` / `@php-cs-fixer-ignore` to `@pun-ignore*`, removes old configs and composer deps, and lists unsupported rules up front (`--dry-run`). PHPDoc type tags (`@phpstan-param` etc.) are kept by default; `pun migrate --phpdoc` (opt-in, apps only) rewrites them to `@pun-*`. Pun reads all three forms.
+  Open choices: (1) keep reading legacy configs with a "run pun migrate" hint (proposed) or require pun.toml; (2) Pun's own rule names, with `pun explain` mapping (proposed), or upstream names under a prefix.
+- `pun lsp` = PHPantom (completion, hover, definitions, references) + Pun (formatting, diagnostics, code actions). Evaluation and prototype in crates/pun-lsp.
+
 ### Open questions for the user
 
 - Drop the `--engine=pun` (Mago formatter) path? ("remove unnecessary things about formatter")
