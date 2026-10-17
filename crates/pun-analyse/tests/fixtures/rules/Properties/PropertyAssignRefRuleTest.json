@@ -1,0 +1,88 @@
+{
+    "test": "Properties/PropertyAssignRefRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/property-assign-ref.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-assign-ref.php",
+                    "line": 8,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyAssignRef\\Foo has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-assign-ref.php",
+                    "line": 10,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class PropertyAssignRef\\Foo has an uninitialized readonly property $bar. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-assign-ref.php",
+                    "line": 25,
+                    "identifier": "property.assignByRef",
+                    "message": "Property PropertyAssignRef\\Foo::$foo with private visibility is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-assign-ref.php",
+                    "line": 26,
+                    "identifier": "property.assignByRef",
+                    "message": "Property PropertyAssignRef\\Foo::$bar with protected(set) visibility is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-assign-ref.php",
+                    "line": 41,
+                    "identifier": "property.assignByRef",
+                    "message": "Property PropertyAssignRef\\Baz::$a with protected visibility is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-assign-ref.php",
+                    "line": 42,
+                    "identifier": "property.assignByRef",
+                    "message": "Property PropertyAssignRef\\Baz::$b with private visibility is assigned by reference.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAsymmetricVisibility",
+            "files": [
+                "Properties/data/property-assign-ref-asymmetric.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-assign-ref-asymmetric.php",
+                    "line": 28,
+                    "identifier": "property.assignByRef",
+                    "message": "Property PropertyAssignRefAsymmetric\\Foo::$a with private(set) visibility is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-assign-ref-asymmetric.php",
+                    "line": 36,
+                    "identifier": "property.assignByRef",
+                    "message": "Property PropertyAssignRefAsymmetric\\Foo::$a with private(set) visibility is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-assign-ref-asymmetric.php",
+                    "line": 37,
+                    "identifier": "property.assignByRef",
+                    "message": "Property PropertyAssignRefAsymmetric\\Foo::$b with protected(set) visibility is assigned by reference.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

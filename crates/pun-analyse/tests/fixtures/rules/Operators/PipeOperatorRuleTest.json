@@ -1,0 +1,23 @@
+{
+    "test": "Operators/PipeOperatorRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Operators/data/pipe-operator.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14150",
+            "files": [
+                "Operators/data/bug-14150-pipe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

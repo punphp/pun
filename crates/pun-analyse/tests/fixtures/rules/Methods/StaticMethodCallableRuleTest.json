@@ -1,0 +1,66 @@
+{
+    "test": "Methods/StaticMethodCallableRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/static-method-callable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/static-method-callable.php",
+                    "line": 12,
+                    "identifier": "class.notFound",
+                    "message": "Call to static method doFoo() on an unknown class StaticMethodCallable\\Nonexistent.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/static-method-callable.php",
+                    "line": 13,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method StaticMethodCallable\\Foo::nonexistent().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-callable.php",
+                    "line": 14,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method StaticMethodCallable\\Foo::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-callable.php",
+                    "line": 15,
+                    "identifier": "staticMethod.private",
+                    "message": "Call to private static method doBar() of class StaticMethodCallable\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-callable.php",
+                    "line": 16,
+                    "identifier": "staticMethod.callToAbstract",
+                    "message": "Cannot call abstract static method StaticMethodCallable\\Bar::doBaz().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/static-method-callable.php",
+                    "line": 19,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $n of method StaticMethodCallable\\Foo::doBar() has invalid type StaticMethodCallable\\Nonexistent.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallsOnGenericClassString",
+            "files": [
+                "Comparison/data/impossible-method-exists-on-generic-class-string.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

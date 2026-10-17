@@ -1,0 +1,50 @@
+{
+    "test": "Properties/ExistingClassesInPropertyHookTypehintsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/existing-classes-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/existing-classes-property-hooks.php",
+                    "line": 9,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $v of set hook for property ExistingClassesPropertyHooks\\Foo::$i has invalid type ExistingClassesPropertyHooks\\Nonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/existing-classes-property-hooks.php",
+                    "line": 9,
+                    "identifier": "propertySetHook.nativeParameterType",
+                    "message": "Native type ExistingClassesPropertyHooks\\Nonexistent of set hook parameter $v is not contravariant with native type int of property ExistingClassesPropertyHooks\\Foo::$i.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/existing-classes-property-hooks.php",
+                    "line": 15,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $v of set hook for property ExistingClassesPropertyHooks\\Foo::$j has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/existing-classes-property-hooks.php",
+                    "line": 15,
+                    "identifier": "propertySetHook.nativeParameterType",
+                    "message": "Native type *NEVER* of set hook parameter $v is not contravariant with native type stdClass of property ExistingClassesPropertyHooks\\Foo::$j.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/existing-classes-property-hooks.php",
+                    "line": 22,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property ExistingClassesPropertyHooks\\Foo::$k should return ExistingClassesPropertyHooks\\Undefined but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

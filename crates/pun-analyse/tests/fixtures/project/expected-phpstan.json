@@ -1,0 +1,33 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "src/Main.php",
+   "line": null,
+   "identifier": "ignore.unmatched",
+   "message": "Ignored error pattern #^Function never_reported not found\\.$# in path {root}/src/Main.php was not matched in reported errors.",
+   "tip": null
+  },
+  {
+   "file": "src/Main.php",
+   "line": 25,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Excluded\\Gone not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/Main.php",
+   "line": 31,
+   "identifier": "function.notFound",
+   "message": "Function really_missing not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/Other.inc",
+   "line": 4,
+   "identifier": "function.notFound",
+   "message": "Function inc_missing not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

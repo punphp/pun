@@ -1,0 +1,47 @@
+{
+    "test": "Namespaces/ExistingNamesInGroupUseRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Namespaces/data/group-uses.php"
+            ],
+            "scan": [
+                "Namespaces/data/uses-defined.php"
+            ],
+            "errors": [
+                {
+                    "file": "Namespaces/data/group-uses.php",
+                    "line": 7,
+                    "identifier": "function.notFound",
+                    "message": "Used function Uses\\baz not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Namespaces/data/group-uses.php",
+                    "line": 11,
+                    "identifier": "interface.nameCase",
+                    "message": "Interface Uses\\Lorem referenced with incorrect case: Uses\\LOREM.",
+                    "tip": null
+                },
+                {
+                    "file": "Namespaces/data/group-uses.php",
+                    "line": 15,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant Uses\\OTHER_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14617UseFunctionGroupAlias",
+            "files": [
+                "Namespaces/data/bug-14617-use-function-group-alias.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

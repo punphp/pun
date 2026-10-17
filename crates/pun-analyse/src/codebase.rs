@@ -47,7 +47,14 @@ fn scan(metadata: &mut CodebaseMetadata, file: &File, version: PHPVersion) {
     let arena = LocalArena::new();
     let program = parse_file(&arena, file);
     let names = NameResolver::new(&arena).resolve(program);
-    metadata.extend(scan_program(&arena, file, program, &names, version));
+    // ponytail: Mago's scanner trips a debug assertion on some hints (an empty TUnion::from_vec, debug builds
+    // only); the file's symbols are then unknown
+    let scanned = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        scan_program(&arena, file, program, &names, version)
+    }));
+    if let Ok(scanned) = scanned {
+        metadata.extend(scanned);
+    }
 }
 
 pub fn build(project: &Project) -> CodebaseMetadata {

@@ -1,0 +1,234 @@
+{
+    "test": "Variables/InvalidVariableAssignRuleTest",
+    "cases": [
+        {
+            "method": "testBug3585",
+            "files": [
+                "Operators/data/bug-3585.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 9,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 10,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 11,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 12,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 17,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 23,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 28,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14352",
+            "files": [
+                "Variables/data/bug-14352.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14352.php",
+                    "line": 16,
+                    "identifier": "return.missing",
+                    "message": "Method Bug14352\\TestArrayAccess::offsetExists() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14352.php",
+                    "line": 20,
+                    "identifier": "return.missing",
+                    "message": "Method Bug14352\\TestArrayAccess::offsetGet() should return mixed but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14352.php",
+                    "line": 37,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14352.php",
+                    "line": 39,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14352.php",
+                    "line": 47,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14352.php",
+                    "line": 49,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14352.php",
+                    "line": 57,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14352.php",
+                    "line": 63,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14351",
+            "files": [
+                "Variables/data/bug-14351.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14351.php",
+                    "line": 9,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14351.php",
+                    "line": 15,
+                    "identifier": "global.this",
+                    "message": "Cannot use $this as global variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14351.php",
+                    "line": 19,
+                    "identifier": "static.this",
+                    "message": "Cannot use $this as static variable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14349",
+            "files": [
+                "Variables/data/bug-14349.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14349.php",
+                    "line": 11,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14349.php",
+                    "line": 15,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14349.php",
+                    "line": 19,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14349.php",
+                    "line": 27,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14349.php",
+                    "line": 28,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14349.php",
+                    "line": 29,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14349.php",
+                    "line": 30,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14349.php",
+                    "line": 35,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14349.php",
+                    "line": 42,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

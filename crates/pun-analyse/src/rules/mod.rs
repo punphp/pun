@@ -86,6 +86,10 @@ pub const IDENTIFIERS: &[&str] = &[
     "ignore.unmatchedLine",
     "ignore.unmatchedIdentifier",
     "ignore.parseError",
+    "ignore.noComment",
+    "ignore.unmatched",
+    "ignore.count",
+    "ignore.allLineErrors",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -219,7 +223,11 @@ fn infer<'arena>(
     let settings = Settings::new(crate::codebase::php_version(php_version));
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());
-    let Ok(artifacts) = analyzer.analyze_with_artifacts(program, &mut result) else {
+    // ponytail: Mago's analyzer trips debug assertions on some code (an empty TUnion::from_vec); no types then
+    let analysed = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        analyzer.analyze_with_artifacts(program, &mut result)
+    }));
+    let Ok(Ok(artifacts)) = analysed else {
         return HashMap::new();
     };
     wanted

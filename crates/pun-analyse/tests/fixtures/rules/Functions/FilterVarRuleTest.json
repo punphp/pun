@@ -1,0 +1,54 @@
+{
+    "test": "Functions/FilterVarRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/filter_var_null_and_throw.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/filter_var_null_and_throw.php",
+                    "line": 5,
+                    "identifier": "filterVar.nullOnFailureAndThrowOnFailure",
+                    "message": "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/filter_var_null_and_throw.php",
+                    "line": 8,
+                    "identifier": "filterVar.nullOnFailureAndThrowOnFailure",
+                    "message": "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/filter_var_null_and_throw.php",
+                    "line": 10,
+                    "identifier": "filterVar.nullOnFailureAndThrowOnFailure",
+                    "message": "Cannot use both FILTER_NULL_ON_FAILURE and FILTER_THROW_ON_FAILURE.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithGlobalRange",
+            "files": [
+                "Functions/data/filter_var_null_and_throw_global_range.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleGlobalRangePhp85",
+            "files": [
+                "Functions/data/filter_var_null_and_global_range_php85.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

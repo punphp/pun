@@ -1,0 +1,246 @@
+{
+    "test": "Functions/PrintfParametersRuleTest",
+    "cases": [
+        {
+            "method": "testFile",
+            "files": [
+                "Functions/data/printf.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 6,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 7,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 0 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 8,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 1 placeholder, 2 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 9,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 10,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 0 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 11,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 4 placeholders, 0 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 13,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 5 placeholders, 2 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 15,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 1 placeholder, 2 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 16,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 6 placeholders, 0 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 17,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 0 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 18,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 1 placeholder, 0 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 21,
+                    "identifier": "argument.sscanf",
+                    "message": "Call to sscanf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 25,
+                    "identifier": "argument.fscanf",
+                    "message": "Call to fscanf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 27,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 29,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 38,
+                    "identifier": "argument.sscanf",
+                    "message": "Call to sscanf contains an invalid placeholder.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 39,
+                    "identifier": "argument.fscanf",
+                    "message": "Call to fscanf contains an invalid placeholder.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 45,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 52,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/printf.php",
+                    "line": 54,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 2 placeholders, 3 values given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4717",
+            "files": [
+                "Functions/data/bug-4717.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2342",
+            "files": [
+                "Functions/data/bug-2342.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-2342.php",
+                    "line": 5,
+                    "identifier": "argument.sprintf",
+                    "message": "Call to sprintf contains 1 placeholder, 0 values given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug1889",
+            "files": [
+                "Functions/data/bug-1889.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-1889.php",
+                    "line": 3,
+                    "identifier": "argument.printf",
+                    "message": "Call to printf contains an invalid placeholder.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-1889.php",
+                    "line": 5,
+                    "identifier": "argument.printf",
+                    "message": "Call to printf contains an invalid placeholder.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-1889.php",
+                    "line": 7,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains an invalid placeholder.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-1889.php",
+                    "line": 9,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains an invalid placeholder.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8774",
+            "files": [
+                "Functions/data/bug-8774.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10260",
+            "files": [
+                "Functions/data/bug-10260.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14567",
+            "files": [
+                "Functions/data/bug-14567.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "test": "Operators/BacktickRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Operators/data/backtick.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/backtick.php",
+                    "line": 4,
+                    "identifier": "backtick.deprecated",
+                    "message": "Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/backtick.php",
+                    "line": 5,
+                    "identifier": "backtick.deprecated",
+                    "message": "Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/backtick.php",
+                    "line": 6,
+                    "identifier": "backtick.deprecated",
+                    "message": "Backtick operator is deprecated in PHP 8.5. Use shell_exec() function call instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

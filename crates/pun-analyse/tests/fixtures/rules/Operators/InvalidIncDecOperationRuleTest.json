@@ -1,0 +1,83 @@
+{
+    "test": "Operators/InvalidIncDecOperationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Operators/data/invalid-inc-dec.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 11,
+                    "identifier": "postInc.expr",
+                    "message": "Cannot use ++ on a non-variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-inc-dec.php",
+                    "line": 12,
+                    "identifier": "postDec.expr",
+                    "message": "Cannot use -- on a non-variable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMixed",
+            "files": [
+                "Operators/data/invalid-inc-dec-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnion",
+            "files": [
+                "Operators/data/invalid-inc-dec-union.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDecNonNumericString",
+            "files": [
+                "Operators/data/dec-non-numeric-string.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testIncNonNumericString",
+            "files": [
+                "Operators/data/inc-non-numeric-string.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBcMathNumber",
+            "files": [
+                "Operators/data/inc-dec-bcmath-number.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGmp",
+            "files": [
+                "Operators/data/inc-dec-gmp.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

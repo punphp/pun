@@ -1,0 +1,151 @@
+{
+    "test": "Operators/InvalidAssignVarRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Operators/data/invalid-assign-var.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 12,
+                    "identifier": "nullsafe.assign",
+                    "message": "Nullsafe operator cannot be on left side of assignment.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 13,
+                    "identifier": "nullsafe.assign",
+                    "message": "Nullsafe operator cannot be on left side of assignment.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 14,
+                    "identifier": "nullsafe.assign",
+                    "message": "Nullsafe operator cannot be on left side of assignment.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 16,
+                    "identifier": "nullsafe.assign",
+                    "message": "Nullsafe operator cannot be on left side of assignment.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 17,
+                    "identifier": "nullsafe.assign",
+                    "message": "Nullsafe operator cannot be on left side of assignment.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 17,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $f",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 29,
+                    "identifier": "property.staticAccess",
+                    "message": "Static access to instance property stdClass::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 31,
+                    "identifier": "assign.invalidExpr",
+                    "message": "Expression on left side of assignment is not assignable.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 33,
+                    "identifier": "assign.invalidExpr",
+                    "message": "Expression on left side of assignment is not assignable.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 39,
+                    "identifier": "nullsafe.byRef",
+                    "message": "Nullsafe operator cannot be on right side of assignment by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-assign-var.php",
+                    "line": 40,
+                    "identifier": "nullsafe.byRef",
+                    "message": "Nullsafe operator cannot be on right side of assignment by reference.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3585",
+            "files": [
+                "Operators/data/bug-3585.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 9,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 10,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 11,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 12,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 17,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 23,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3585.php",
+                    "line": 28,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,78 @@
+{
+    "test": "Methods/AbstractPrivateMethodRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/abstract-private-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/abstract-private-method.php",
+                    "line": 8,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method PrivateAbstractMethod\\HelloWorld::sayHello().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-private-method.php",
+                    "line": 9,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method PrivateAbstractMethod\\HelloWorld::sayWorld().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-private-method.php",
+                    "line": 12,
+                    "identifier": "method.abstractPrivate",
+                    "message": "Private method PrivateAbstractMethod\\HelloWorld::sayPrivate() cannot be abstract.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-private-method.php",
+                    "line": 24,
+                    "identifier": "method.abstract",
+                    "message": "Interface PrivateAbstractMethod\\fooInterface contains abstract method sayPrivate().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-private-method.php",
+                    "line": 24,
+                    "identifier": "method.abstractPrivate",
+                    "message": "Private method PrivateAbstractMethod\\fooInterface::sayPrivate() cannot be abstract.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-private-method.php",
+                    "line": 24,
+                    "identifier": "method.visibility",
+                    "message": "Method PrivateAbstractMethod\\fooInterface::sayPrivate() cannot use non-public visibility in interface.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-private-method.php",
+                    "line": 25,
+                    "identifier": "method.abstract",
+                    "message": "Interface PrivateAbstractMethod\\fooInterface contains abstract method sayProtected().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-private-method.php",
+                    "line": 25,
+                    "identifier": "method.visibility",
+                    "message": "Method PrivateAbstractMethod\\fooInterface::sayProtected() cannot use non-public visibility in interface.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-private-method.php",
+                    "line": 26,
+                    "identifier": "method.abstract",
+                    "message": "Interface PrivateAbstractMethod\\fooInterface contains abstract method sayPublic().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

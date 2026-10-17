@@ -1,0 +1,139 @@
+{
+    "test": "Properties/WritingToReadOnlyPropertiesRuleTest",
+    "cases": [
+        {
+            "method": "testCheckThisOnlyProperties",
+            "files": [
+                "Properties/data/writing-to-read-only-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 20,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$readOnlyProperty is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 21,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$readOnlyProperty is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 27,
+                    "identifier": "property.writeOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$writeOnlyProperty is not readable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCheckAllProperties",
+            "files": [
+                "Properties/data/writing-to-read-only-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 20,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$readOnlyProperty is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 21,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$readOnlyProperty is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/writing-to-read-only-properties.php",
+                    "line": 27,
+                    "identifier": "property.writeOnly",
+                    "message": "Property WritingToReadOnlyProperties\\Foo::$writeOnlyProperty is not readable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testObjectShapes",
+            "files": [
+                "Properties/data/properties-object-shapes.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConflictingAnnotationProperty",
+            "files": [
+                "Properties/data/conflicting-annotation-property.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "Properties/data/writing-to-read-only-hooked-properties.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12553",
+            "files": [
+                "Variables/data/bug-12553.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPrivatePropertyTagRead",
+            "files": [
+                "Properties/data/private-property-tag-read.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11241",
+            "files": [
+                "Properties/data/bug-11241.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13530",
+            "files": [
+                "Properties/data/bug-13530.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCloneWith",
+            "files": [
+                "Properties/data/writing-to-readonly-properties-clone-with.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

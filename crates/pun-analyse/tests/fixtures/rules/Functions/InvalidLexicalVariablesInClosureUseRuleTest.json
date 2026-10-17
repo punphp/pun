@@ -1,0 +1,197 @@
+{
+    "test": "Functions/InvalidLexicalVariablesInClosureUseRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/invalid-lexical-variables-in-closure-use.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 25,
+                    "identifier": "closure.useThis",
+                    "message": "Cannot use $this as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 35,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $GLOBALS as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 35,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_COOKIE as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 35,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_ENV as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 35,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_FILES as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 35,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_GET as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 35,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_POST as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 35,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_REQUEST as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 35,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_SERVER as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 35,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_SESSION as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 55,
+                    "identifier": "closure.useDuplicate",
+                    "message": "Cannot use lexical variable $baz since a parameter with the same name already exists.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 55,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $baz",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 68,
+                    "identifier": "closure.useThis",
+                    "message": "Cannot use $this as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 81,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $GLOBALS as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 82,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_COOKIE as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 83,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_ENV as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 84,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_FILES as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 85,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_GET as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 86,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_POST as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 87,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_REQUEST as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 88,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_SERVER as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 89,
+                    "identifier": "closure.useSuperGlobal",
+                    "message": "Cannot use superglobal variable $_SESSION as lexical variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 111,
+                    "identifier": "closure.useDuplicate",
+                    "message": "Cannot use lexical variable $baz since a parameter with the same name already exists.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 111,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $baz",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 112,
+                    "identifier": "closure.useDuplicate",
+                    "message": "Cannot use lexical variable $bar since a parameter with the same name already exists.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/invalid-lexical-variables-in-closure-use.php",
+                    "line": 112,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $bar",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

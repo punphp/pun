@@ -1,0 +1,22 @@
+{
+    "test": "Functions/FunctionAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/function-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/function-attributes.php",
+                    "line": 23,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class FunctionAttributes\\Foo does not have the function target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

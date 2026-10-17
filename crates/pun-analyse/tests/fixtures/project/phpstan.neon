@@ -1,0 +1,15 @@
+parameters:
+    level: 0
+    phpVersion: 80200
+    fileExtensions: [php, inc]
+    paths: [src, entry.php]
+    excludePaths:
+        analyseAndScan: [src/Excluded]
+        analyse: [src/ScanOnly]
+    scanFiles: [stubs/scan.php]
+    scanDirectories: [stubs/dir]
+    ignoreErrors:
+        - message: '#^Function ignored_missing not found\.$#'
+          path: src/Main.php
+        - message: '#^Function never_reported not found\.$#'
+          path: src/Main.php

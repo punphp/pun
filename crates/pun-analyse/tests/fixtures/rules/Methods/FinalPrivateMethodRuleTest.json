@@ -1,0 +1,36 @@
+{
+    "test": "Methods/FinalPrivateMethodRuleTest",
+    "cases": [
+        {
+            "method": "testRulePhpVersions",
+            "files": [
+                "Methods/data/final-private-method-phpversions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/final-private-method-phpversions.php",
+                    "line": 9,
+                    "identifier": "method.finalPrivate",
+                    "message": "Private method FinalPrivateMethodPhpVersions\\FooBarPhp8orHigher::foo() cannot be final as it is never overridden by other classes.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/final-private-method-phpversions.php",
+                    "line": 29,
+                    "identifier": "method.finalPrivate",
+                    "message": "Private method FinalPrivateMethodPhpVersions\\FooBarPhp74OrHigher::foo() cannot be final as it is never overridden by other classes.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/final-private-method-phpversions.php",
+                    "line": 39,
+                    "identifier": "method.finalPrivate",
+                    "message": "Private method FinalPrivateMethodPhpVersions\\FooBarBaz::foo() cannot be final as it is never overridden by other classes.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

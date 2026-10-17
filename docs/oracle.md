@@ -167,3 +167,36 @@ Pun does not re-implement that chain: the exporter asks PHPStan's own `Reflectio
 and stores the result (`crates/pun-phpstan/data/symbols.json`); `pun-phpstan`'s type parser (`phpdoc.rs`),
 resolver (`resolve.rs`) and type model (`types.rs`: `TypeCombinator` union/intersect, `isSuperTypeOf`,
 `describe()`) read it back and are tested against the fixtures above.
+
+### `pun analyse` (crate `pun-analyse`, M2.3)
+
+Rule fixtures and corpus parity run the real PHAR at level 0. Two environment traps, both handled by the scripts:
+
+- PHPStan 2.2.7 detects AI agents (`src/Internal/AgentDetector.php`: `AI_AGENT`, `CLAUDECODE`,
+  `AMP_CURRENT_THREAD_ID`, ...) and switches its output format; the scripts unset those variables.
+- PHP 8.5's `max_memory_limit` (512M in php.ini) caps `--memory-limit`, also in worker processes, which don't
+  inherit `-d`. The scripts set `PHP_INI_SCAN_DIR=:target-analyse/php-ini` with `max_memory_limit = -1` there.
+
+| script | writes |
+|---|---|
+| `php scripts/export-rule-fixtures.php [--resume] [--budget=SECONDS]` | `crates/pun-analyse/tests/fixtures/rules/<Dir>/<Test>.json`: every `analyse()` call of every level-0 RuleTestCase (data providers expanded, `RequiresPhp` applied), re-run as `phpstan analyse --level 0` on the same files, plus copies of the data files under `data/` |
+| `php scripts/export-phpstan-api-stub.php > crates/pun-analyse/data/phpstan-api.php` | the PHAR's unprefixed classes (PHPStan\, PhpParser\ with its `class_alias()` compatibility names, phpdoc-parser, BetterReflection), bodies stripped; Pun scans it when an analysed file names those namespaces |
+| `python3 scripts/analyse-corpus.py setup\|oracle\|diff\|rank <project>` | corpus checkouts under `target-analyse/corpus` (larastan at tag v3.10.0), PHPStan's level-0 JSON in `target-analyse/oracle/<p>.json` (cold, one worker), and the per-identifier diff against `examples/analyse` |
+
+`tests/rules.rs` compares only the identifiers `pun_analyse::IDENTIFIERS` lists; cases that still differ are
+listed, with reasons, in `tests/fixtures/rules/gaps.txt` (the list must be exact).
+
+What Mago 1.57 provides: parsing, name resolution (`ResolvedNames`), the codex (`scan_program` +
+`populate_codebase`, with the prelude for built-ins), and per-expression types from
+`Analyzer::analyze_with_artifacts` (`AnalysisArtifacts::expression_types`, final types per span; no scope
+snapshot per statement). Gaps found:
+
+- `MetadataFlags::USER_DEFINED` is set only for Host files: vendored symbols need `!is_built_in()`.
+- Constructors are inherited only from "consistent" parents, and private parent methods are dropped; Pun's own
+  `rules/members.rs` follows `ClassReflection::getMethod()` (own, trait with `as` aliases, parents, interfaces;
+  built-in classes from `symbols.json`).
+- `CONSISTENT_CONSTRUCTOR` is set by both `@consistent-constructor` and a final constructor.
+- An object of an unknown class is typed `mixed`, so `new $object` on it can't report the missing class.
+- No class aliases (`class_alias()`), so the API stub declares them as subclasses; Laravel facade aliases that
+  Larastan registers at runtime (`use Blade;`) are not known yet.
+- Built-ins come from PHPStan's reflection (`symbols.json`), not Mago's prelude, for every rule decision.

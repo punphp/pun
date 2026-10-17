@@ -1,0 +1,550 @@
+{
+    "test": "Missing/MissingReturnRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Missing/data/missing-return.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\Foo::doFoo() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\Foo::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 21,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 21,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\Foo::doBaz() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 38,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 39,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\Foo::doLorem() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 41,
+                    "identifier": "function.notFound",
+                    "message": "Function blabla not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 47,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\Foo::doLorem() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 94,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 105,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 112,
+                    "identifier": "return.missing",
+                    "message": "Function MissingReturn\\doFoo() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 146,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\SwitchBranches::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 172,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\SwitchBranches::doLorem() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 182,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\SwitchBranches::doIpsum() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 193,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\SwitchBranches::doDolor() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 234,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\TryCatchFinally::doBaz() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 235,
+                    "identifier": "function.notFound",
+                    "message": "Function maybeThrow not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 263,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\TryCatchFinally::doDolor() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 290,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\ReturnInPhpDoc::doFoo() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 321,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\FooTemplateMixedType::doFoo() should return T but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 331,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\MissingReturnGenerators::emptyBodyUnspecifiedTReturn() should return Generator but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 344,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\MissingReturnGenerators::emptyBodyUnspecifiedTReturn2() should return Generator<int, int, mixed, mixed> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 360,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\MissingReturnGenerators::emptyBodySpecifiedTReturn() should return Generator<int, int, int, string> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 473,
+                    "identifier": "return.never",
+                    "message": "Method MissingReturn\\NeverReturn::doBaz() should always throw an exception or terminate script execution but doesn't do that.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 481,
+                    "identifier": "return.never",
+                    "message": "Method MissingReturn\\NeverReturn::doBaz2() should always throw an exception or terminate script execution but doesn't do that.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 514,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\MorePreciseMissingReturnLines::doFoo() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 515,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 515,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\MorePreciseMissingReturnLines::doFoo() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 524,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturn\\MorePreciseMissingReturnLines::doFoo2() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/missing-return.php",
+                    "line": 526,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCheckMissingReturnWithTemplateMixedType",
+            "files": [
+                "Missing/data/missing-return-template-mixed-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Missing/data/missing-return-template-mixed-type.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturnTemplateMixedType\\Foo::doFoo() should return T but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2875",
+            "files": [
+                "Missing/data/bug-2875.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMissingMixedReturnInEmptyBody",
+            "files": [
+                "Missing/data/missing-mixed-return-empty-body.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3488",
+            "files": [
+                "Missing/data/bug-3488.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3669",
+            "files": [
+                "Missing/data/bug-3669.php"
+            ],
+            "scan": [
+                "Missing/data/bug-3669.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCheckPhpDocMissingReturn#0",
+            "files": [
+                "Missing/data/check-phpdoc-missing-return.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 11,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Foo::doFoo() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Foo::doFoo3() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 59,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 64,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo2() should return string|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 71,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo3() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 78,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo4() should return string|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 85,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo5() should return mixed but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCheckPhpDocMissingReturn#1",
+            "files": [
+                "Missing/data/check-phpdoc-missing-return.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 11,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Foo::doFoo() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Foo::doFoo3() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 59,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 64,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo2() should return string|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 71,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo3() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 78,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo4() should return string|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/check-phpdoc-missing-return.php",
+                    "line": 85,
+                    "identifier": "return.missing",
+                    "message": "Method CheckPhpDocMissingReturn\\Bar::doFoo5() should return mixed but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6257",
+            "files": [
+                "Missing/data/bug-6257.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Missing/data/bug-6257.php",
+                    "line": 27,
+                    "identifier": "return.never",
+                    "message": "Function ReturnTypes\\sometimesThrows() should always throw an exception or terminate script execution but doesn't do that.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7384",
+            "files": [
+                "Missing/data/bug-7384.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9309",
+            "files": [
+                "Missing/data/bug-9309.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6807",
+            "files": [
+                "Missing/data/bug-6807.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Missing/data/bug-6807.php",
+                    "line": 11,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug6807\\Exception not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8463",
+            "files": [
+                "Missing/data/bug-8463.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9374",
+            "files": [
+                "Missing/data/bug-9374.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "Missing/data/property-hooks-missing-return.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Missing/data/property-hooks-missing-return.php",
+                    "line": 10,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property PropertyHooksMissingReturn\\Foo::$i should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/property-hooks-missing-return.php",
+                    "line": 23,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property PropertyHooksMissingReturn\\Foo::$j should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3488Two",
+            "files": [
+                "Missing/data/bug-3488-2.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Missing/data/bug-3488-2.php",
+                    "line": 30,
+                    "identifier": "return.missing",
+                    "message": "Method Bug3488\\C::invalidCase() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Missing/data/bug-3488-2.php",
+                    "line": 35,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug3488\\Exception not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Missing/data/bug-3488-2.php",
+                    "line": 49,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug3488\\Exception not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12722",
+            "files": [
+                "Missing/data/bug-12722.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14638",
+            "files": [
+                "Missing/data/bug-14638.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5681",
+            "files": [
+                "Missing/data/bug-5681.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

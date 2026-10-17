@@ -1,0 +1,36 @@
+{
+    "test": "Functions/VariadicParametersDeclarationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/variadic-parameters-declaration.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/variadic-parameters-declaration.php",
+                    "line": 7,
+                    "identifier": "parameter.variadicNotLast",
+                    "message": "Only the last parameter can be variadic.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/variadic-parameters-declaration.php",
+                    "line": 11,
+                    "identifier": "parameter.variadicNotLast",
+                    "message": "Only the last parameter can be variadic.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/variadic-parameters-declaration.php",
+                    "line": 21,
+                    "identifier": "parameter.variadicNotLast",
+                    "message": "Only the last parameter can be variadic.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

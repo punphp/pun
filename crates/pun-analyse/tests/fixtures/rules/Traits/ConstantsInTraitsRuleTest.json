@@ -1,0 +1,23 @@
+{
+    "test": "Traits/ConstantsInTraitsRuleTest",
+    "cases": [
+        {
+            "method": "testRule#0",
+            "files": [
+                "Traits/data/constants-in-traits.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRule#1",
+            "files": [
+                "Traits/data/constants-in-traits.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

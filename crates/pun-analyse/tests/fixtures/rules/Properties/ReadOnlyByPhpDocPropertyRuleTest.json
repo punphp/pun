@@ -1,0 +1,91 @@
+{
+    "test": "Properties/ReadOnlyByPhpDocPropertyRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/read-only-property-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/read-only-property-phpdoc.php",
+                    "line": 21,
+                    "identifier": "property.readOnlyByPhpDocDefaultValue",
+                    "message": "@readonly property cannot have a default value.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/read-only-property-phpdoc.php",
+                    "line": 39,
+                    "identifier": "property.readOnlyByPhpDocDefaultValue",
+                    "message": "@readonly property cannot have a default value.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/read-only-property-phpdoc.php",
+                    "line": 46,
+                    "identifier": "property.readOnlyByPhpDocDefaultValue",
+                    "message": "@readonly property cannot have a default value.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/read-only-property-phpdoc.php",
+                    "line": 53,
+                    "identifier": "property.readOnlyByPhpDocDefaultValue",
+                    "message": "@readonly property cannot have a default value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleIgnoresNativeReadonly",
+            "files": [
+                "Properties/data/read-only-property-phpdoc-and-native.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/read-only-property-phpdoc-and-native.php",
+                    "line": 9,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadOnlyPropertyAndNative\\Foo has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/read-only-property-phpdoc-and-native.php",
+                    "line": 11,
+                    "identifier": "property.readOnlyNoNativeType",
+                    "message": "Readonly property must have a native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/read-only-property-phpdoc-and-native.php",
+                    "line": 13,
+                    "identifier": "property.readOnlyDefaultValue",
+                    "message": "Readonly property cannot have a default value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleAllowedPrivateMutation",
+            "files": [
+                "Properties/data/read-only-property-phpdoc-allowed-private-mutation.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/read-only-property-phpdoc-allowed-private-mutation.php",
+                    "line": 9,
+                    "identifier": "property.readOnlyByPhpDocDefaultValue",
+                    "message": "@readonly property cannot have a default value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

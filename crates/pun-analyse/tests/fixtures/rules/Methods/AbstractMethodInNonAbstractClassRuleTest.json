@@ -1,0 +1,242 @@
+{
+    "test": "Methods/AbstractMethodInNonAbstractClassRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/abstract-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/abstract-method.php",
+                    "line": 12,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class AbstractMethod\\Bar contains abstract method doBar() from class AbstractMethod\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-method.php",
+                    "line": 15,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class AbstractMethod\\Bar contains abstract method doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/abstract-method.php",
+                    "line": 22,
+                    "identifier": "method.abstract",
+                    "message": "Interface AbstractMethod\\Baz contains abstract method doBar().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTraitProblem",
+            "files": [
+                "Methods/data/trait-method-problem.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3406",
+            "files": [
+                "Methods/data/bug-3406.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testbug3406AnotherCase",
+            "files": [
+                "Methods/data/bug-3406_2.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4214",
+            "files": [
+                "Methods/data/bug-4214.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNonAbstractMethodWithNoBody",
+            "files": [
+                "Methods/data/bug-4244.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-4244.php",
+                    "line": 7,
+                    "identifier": "method.nonAbstract",
+                    "message": "Non-abstract method Bug4244\\HelloWorld::sayHello() must contain a body.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnum",
+            "files": [
+                "Methods/data/method-in-enum-without-body.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-in-enum-without-body.php",
+                    "line": 5,
+                    "identifier": "method.abstract",
+                    "message": "Enum MethodInEnumWithoutBody\\Foo contains abstract method doBar() from class MethodInEnumWithoutBody\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-in-enum-without-body.php",
+                    "line": 8,
+                    "identifier": "method.nonAbstract",
+                    "message": "Non-abstract method MethodInEnumWithoutBody\\Foo::doFoo() must contain a body.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-in-enum-without-body.php",
+                    "line": 10,
+                    "identifier": "method.abstract",
+                    "message": "Enum MethodInEnumWithoutBody\\Foo contains abstract method doBar().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11592",
+            "files": [
+                "Classes/data/bug-11592.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 14,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test contains abstract method from() from class Bug11592\\Test.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 14,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test contains abstract method tryFrom() from class Bug11592\\Test.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 19,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test2 contains abstract method from() from class Bug11592\\Test2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 19,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test2 contains abstract method tryFrom() from class Bug11592\\Test2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 22,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum Bug11592\\Test2 cannot redeclare native method cases().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 24,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test2 contains abstract method from().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 26,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test2 contains abstract method tryFrom().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 37,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum Bug11592\\BackedTest2 cannot redeclare native method cases().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 39,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum Bug11592\\BackedTest2 cannot redeclare native method from().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 39,
+                    "identifier": "parameter.missing",
+                    "message": "Method Bug11592\\BackedTest2::from() overrides method BackedEnum::from() but misses parameter #1 $value.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 41,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum Bug11592\\BackedTest2 cannot redeclare native method tryFrom().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 41,
+                    "identifier": "parameter.missing",
+                    "message": "Method Bug11592\\BackedTest2::tryFrom() overrides method BackedEnum::tryFrom() but misses parameter #1 $value.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 44,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\EnumWithAbstractMethod contains abstract method foo() from class Bug11592\\EnumWithAbstractMethod.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 46,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\EnumWithAbstractMethod contains abstract method foo().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php (in context of class Bug11592\\Test)",
+                    "line": 9,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test contains abstract method from().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php (in context of class Bug11592\\Test)",
+                    "line": 11,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test contains abstract method tryFrom().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

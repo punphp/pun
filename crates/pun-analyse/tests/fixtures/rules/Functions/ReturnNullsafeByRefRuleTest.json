@@ -1,0 +1,81 @@
+{
+    "test": "Functions/ReturnNullsafeByRefRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/return-null-safe-by-ref.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/return-null-safe-by-ref.php",
+                    "line": 15,
+                    "identifier": "nullsafe.byRef",
+                    "message": "Nullsafe cannot be returned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/return-null-safe-by-ref.php",
+                    "line": 22,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/return-null-safe-by-ref.php",
+                    "line": 25,
+                    "identifier": "nullsafe.byRef",
+                    "message": "Nullsafe cannot be returned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/return-null-safe-by-ref.php",
+                    "line": 25,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/return-null-safe-by-ref.php",
+                    "line": 33,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/return-null-safe-by-ref.php",
+                    "line": 36,
+                    "identifier": "nullsafe.byRef",
+                    "message": "Nullsafe cannot be returned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/return-null-safe-by-ref.php",
+                    "line": 36,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "Functions/data/return-null-safe-by-ref-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/return-null-safe-by-ref-property-hooks.php",
+                    "line": 13,
+                    "identifier": "nullsafe.byRef",
+                    "message": "Nullsafe cannot be returned by reference.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

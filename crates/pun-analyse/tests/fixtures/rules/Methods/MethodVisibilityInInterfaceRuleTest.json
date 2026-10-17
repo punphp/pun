@@ -1,0 +1,36 @@
+{
+    "test": "Methods/MethodVisibilityInInterfaceRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/visibility-in-interace.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/visibility-in-interace.php",
+                    "line": 7,
+                    "identifier": "method.visibility",
+                    "message": "Method VisibilityInInterface\\FooInterface::sayPrivate() cannot use non-public visibility in interface.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/visibility-in-interace.php",
+                    "line": 8,
+                    "identifier": "method.visibility",
+                    "message": "Method VisibilityInInterface\\FooInterface::sayProtected() cannot use non-public visibility in interface.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/visibility-in-interace.php",
+                    "line": 25,
+                    "identifier": "method.abstractPrivate",
+                    "message": "Private method VisibilityInInterface\\AbstractFoo::sayPrivate() cannot be abstract.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

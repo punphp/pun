@@ -1,0 +1,136 @@
+{
+    "test": "Traits/ConflictingTraitConstantsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Traits/data/conflicting-trait-constants.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Traits/data/conflicting-trait-constants.php",
+                    "line": 23,
+                    "identifier": "classConstant.visibility",
+                    "message": "Protected constant ConflictingTraitConstants\\Bar::PUBLIC_CONSTANT overriding public constant ConflictingTraitConstants\\Foo::PUBLIC_CONSTANT should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants.php",
+                    "line": 32,
+                    "identifier": "classConstant.visibility",
+                    "message": "Private constant ConflictingTraitConstants\\Bar2::PUBLIC_CONSTANT overriding public constant ConflictingTraitConstants\\Foo::PUBLIC_CONSTANT should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants.php",
+                    "line": 41,
+                    "identifier": "classConstant.visibility",
+                    "message": "Public constant ConflictingTraitConstants\\Bar3::PROTECTED_CONSTANT overriding protected constant ConflictingTraitConstants\\Foo::PROTECTED_CONSTANT should also be protected.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants.php",
+                    "line": 50,
+                    "identifier": "classConstant.visibility",
+                    "message": "Private constant ConflictingTraitConstants\\Bar4::PROTECTED_CONSTANT overriding protected constant ConflictingTraitConstants\\Foo::PROTECTED_CONSTANT should also be protected.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants.php",
+                    "line": 59,
+                    "identifier": "classConstant.visibility",
+                    "message": "Protected constant ConflictingTraitConstants\\Bar5::PRIVATE_CONSTANT overriding private constant ConflictingTraitConstants\\Foo::PRIVATE_CONSTANT should also be private.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants.php",
+                    "line": 68,
+                    "identifier": "classConstant.visibility",
+                    "message": "Public constant ConflictingTraitConstants\\Bar6::PRIVATE_CONSTANT overriding private constant ConflictingTraitConstants\\Foo::PRIVATE_CONSTANT should also be private.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants.php",
+                    "line": 77,
+                    "identifier": "classConstant.nonFinal",
+                    "message": "Non-final constant ConflictingTraitConstants\\Bar7::PUBLIC_FINAL_CONSTANT overriding final constant ConflictingTraitConstants\\Foo::PUBLIC_FINAL_CONSTANT should also be final.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants.php",
+                    "line": 86,
+                    "identifier": "classConstant.final",
+                    "message": "Final constant ConflictingTraitConstants\\Bar8::PUBLIC_CONSTANT overriding non-final constant ConflictingTraitConstants\\Foo::PUBLIC_CONSTANT should also be non-final.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants.php",
+                    "line": 96,
+                    "identifier": "classConstant.value",
+                    "message": "Constant ConflictingTraitConstants\\Bar9::PUBLIC_CONSTANT with value 2 overriding constant ConflictingTraitConstants\\Foo::PUBLIC_CONSTANT with different value 1 should have the same value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativeTypes",
+            "files": [
+                "Traits/data/conflicting-trait-constants-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Traits/data/conflicting-trait-constants-types.php",
+                    "line": 28,
+                    "identifier": "classConstant.nativeType",
+                    "message": "Constant ConflictingTraitConstantsTypes\\Baz::FOO_CONST (int) overriding constant ConflictingTraitConstantsTypes\\Foo::FOO_CONST (int|string) should have the same native type int|string.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants-types.php",
+                    "line": 30,
+                    "identifier": "classConstant.nativeType",
+                    "message": "Constant ConflictingTraitConstantsTypes\\Baz::BAR_CONST (int) overriding constant ConflictingTraitConstantsTypes\\Foo::BAR_CONST should not have a native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Traits/data/conflicting-trait-constants-types.php",
+                    "line": 39,
+                    "identifier": "classConstant.missingNativeType",
+                    "message": "Constant ConflictingTraitConstantsTypes\\Lorem::FOO_CONST overriding constant ConflictingTraitConstantsTypes\\Foo::FOO_CONST (int|string) should also have native type int|string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11088",
+            "files": [
+                "Traits/data/bug-11088.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13119",
+            "files": [
+                "Traits/data/bug-13119.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11351",
+            "files": [
+                "Traits/data/bug-11351.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

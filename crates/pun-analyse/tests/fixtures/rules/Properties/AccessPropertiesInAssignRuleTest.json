@@ -1,0 +1,226 @@
+{
+    "test": "Properties/AccessPropertiesInAssignRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/access-properties-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-properties-assign.php",
+                    "line": 10,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessPropertiesAssign\\AccessPropertyWithDimFetch::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties-assign.php",
+                    "line": 15,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessPropertiesAssign\\AccessPropertyWithDimFetch::$foo.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleAssignOp",
+            "files": [
+                "Properties/data/access-properties-assign-op.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-properties-assign-op.php",
+                    "line": 10,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AssignOpNonexistentProperty::$flags.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                },
+                {
+                    "file": "Properties/data/access-properties-assign-op.php",
+                    "line": 15,
+                    "identifier": "property.notFound",
+                    "message": "Access to an undefined property TestAccessProperties\\AssignOpNonexistentProperty::$flags.",
+                    "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleExpressionNames",
+            "files": [
+                "Properties/data/properties-from-variable-into-object.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleExpressionNames2",
+            "files": [
+                "Properties/data/properties-from-array-into-object.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4492",
+            "files": [
+                "Properties/data/bug-4492.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDynamicStringableAccess",
+            "files": [
+                "Properties/data/dynamic-stringable-access.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDynamicStringableNullsafeAccess",
+            "files": [
+                "Properties/data/dynamic-stringable-nullsafe-access.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testObjectShapes",
+            "files": [
+                "Properties/data/properties-object-shapes.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConflictingAnnotationProperty",
+            "files": [
+                "Properties/data/conflicting-annotation-property.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAsymmetricVisibility",
+            "files": [
+                "Properties/data/write-asymmetric-visibility.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/write-asymmetric-visibility.php",
+                    "line": 26,
+                    "identifier": "assign.propertyPrivateSet",
+                    "message": "Assign to private(set) property $this(WriteAsymmetricVisibility\\Bar)::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/write-asymmetric-visibility.php",
+                    "line": 42,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class WriteAsymmetricVisibility\\ReadonlyProps has an uninitialized readonly property $a. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/write-asymmetric-visibility.php",
+                    "line": 44,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class WriteAsymmetricVisibility\\ReadonlyProps has an uninitialized readonly property $b. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/write-asymmetric-visibility.php",
+                    "line": 46,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class WriteAsymmetricVisibility\\ReadonlyProps has an uninitialized readonly property $c. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/write-asymmetric-visibility.php",
+                    "line": 64,
+                    "identifier": "property.private",
+                    "message": "Access to private property $c of parent class WriteAsymmetricVisibility\\ReadonlyProps.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13123",
+            "files": [
+                "Properties/data/bug-13123.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14063",
+            "files": [
+                "Properties/data/bug-14063.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCloneWith",
+            "files": [
+                "Properties/data/clone-with.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/clone-with.php",
+                    "line": 36,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class AccessPropertiesInAssignCloneWith\\FooReadonly has an uninitialized readonly property $priv. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/clone-with.php",
+                    "line": 38,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class AccessPropertiesInAssignCloneWith\\FooReadonly has an uninitialized readonly property $prot. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/clone-with.php",
+                    "line": 40,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class AccessPropertiesInAssignCloneWith\\FooReadonly has an uninitialized readonly property $pub. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/clone-with.php",
+                    "line": 42,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class AccessPropertiesInAssignCloneWith\\FooReadonly has an uninitialized readonly property $pubSet. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2861",
+            "files": [
+                "Properties/data/bug-2861-assign.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

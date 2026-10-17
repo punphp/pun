@@ -1,0 +1,45 @@
+{
+    "test": "Methods/MethodCallableRuleTest",
+    "cases": [
+        {
+            "method": "testBug13596",
+            "files": [
+                "Methods/data/bug-13596.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/method-callable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-callable.php",
+                    "line": 12,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method MethodCallable\\Foo::doNonexistent().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-callable.php",
+                    "line": 21,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $n of method MethodCallable\\Foo::doBaz() has invalid type MethodCallable\\Nonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-callable.php",
+                    "line": 53,
+                    "identifier": "method.private",
+                    "message": "Call to private method doFoo() of class MethodCallable\\ParentClass.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

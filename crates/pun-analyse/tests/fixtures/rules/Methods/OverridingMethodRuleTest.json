@@ -1,0 +1,1953 @@
+{
+    "test": "Methods/OverridingMethodRuleTest",
+    "cases": [
+        {
+            "method": "testOverridingFinalMethod#0",
+            "files": [
+                "Methods/data/overriding-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 43,
+                    "identifier": "method.parentMethodFinal",
+                    "message": "Method OverridingFinalMethod\\Bar::doFoo() overrides final method OverridingFinalMethod\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 48,
+                    "identifier": "method.visibility",
+                    "message": "Private method OverridingFinalMethod\\Bar::doBar() overriding public method OverridingFinalMethod\\Foo::doBar() should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 53,
+                    "identifier": "method.visibility",
+                    "message": "Protected method OverridingFinalMethod\\Bar::doBaz() overriding public method OverridingFinalMethod\\Foo::doBaz() should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 58,
+                    "identifier": "method.visibility",
+                    "message": "Private method OverridingFinalMethod\\Bar::doLorem() overriding protected method OverridingFinalMethod\\Foo::doLorem() should be protected or public.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 63,
+                    "identifier": "method.nonStatic",
+                    "message": "Non-static method OverridingFinalMethod\\Bar::doIpsum() overrides static method OverridingFinalMethod\\Foo::doIpsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 68,
+                    "identifier": "method.static",
+                    "message": "Static method OverridingFinalMethod\\Bar::doDolor() overrides non-static method OverridingFinalMethod\\Foo::doDolor().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 110,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $s (string) of method OverridingFinalMethod\\Dolor::__construct() is not contravariant with parameter #1 $i (int) of method OverridingFinalMethod\\Ipsum::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 115,
+                    "identifier": "parameter.missing",
+                    "message": "Method OverridingFinalMethod\\Dolor::doFoo() overrides method OverridingFinalMethod\\Ipsum::doFoo() but misses parameter #1 $i.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 125,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingFinalMethod\\FixedArray::setSize() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 135,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $j (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 155,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $i (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 155,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $j (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 160,
+                    "identifier": "parameter.notVariadic",
+                    "message": "Parameter #1 $j of method OverridingFinalMethod\\Amet::doBar() is not variadic but parameter #1 $j of method OverridingFinalMethod\\Sit::doBar() is variadic.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 175,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #2 $j of method OverridingFinalMethod\\Consecteur::doFoo() is required but parameter #2 $j of method OverridingFinalMethod\\Sit::doFoo() is optional.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 195,
+                    "identifier": "parameter.byRef",
+                    "message": "Parameter #2 $j of method OverridingFinalMethod\\Lacus::doFoo() is passed by reference but parameter #2 $j of method OverridingFinalMethod\\Etiam::doFoo() is not passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 195,
+                    "identifier": "parameter.notByRef",
+                    "message": "Parameter #1 $i of method OverridingFinalMethod\\Lacus::doFoo() is not passed by reference but parameter #1 $i of method OverridingFinalMethod\\Etiam::doFoo() is passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 205,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #1 $i of method OverridingFinalMethod\\BazBaz::doBar() is not optional.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 215,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $i (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 222,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class OverridingFinalMethod\\FooFoo contains abstract method __construct() from class OverridingFinalMethod\\Ipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 225,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #2 $j of method OverridingFinalMethod\\FooFoo::doFoo() is not optional.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 232,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class OverridingFinalMethod\\FooFooFoo contains abstract method __construct() from class OverridingFinalMethod\\Ipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 235,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $j (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 250,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method OverridingFinalMethod\\SomeIterator::getIterator() is not covariant with tentative return type Traversable of method IteratorAggregate<int,OverridingFinalMethod\\Foo>::getIterator().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 280,
+                    "identifier": "method.parentMethodFinal",
+                    "message": "Method OverridingFinalMethod\\SomeOtherException::__construct() overrides final method OverridingFinalMethod\\OtherException::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 303,
+                    "identifier": "method.parentMethodFinalByPhpDoc",
+                    "message": "Method OverridingFinalMethod\\ExtendsFinalWithAnnotation::doFoo() overrides @final method OverridingFinalMethod\\FinalWithAnnotation::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 313,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $index (int) of method OverridingFinalMethod\\FixedArrayOffsetExists::offsetExists() is not contravariant with parameter #1 $index (mixed) of method SplFixedArray<mixed>::offsetExists().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 313,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method OverridingFinalMethod\\FixedArrayOffsetExists::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<int,mixed>::offsetExists().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 313,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingFinalMethod\\FixedArrayOffsetExists::offsetExists() should return bool but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverridingFinalMethod#1",
+            "files": [
+                "Methods/data/overriding-method.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 43,
+                    "identifier": "method.parentMethodFinal",
+                    "message": "Method OverridingFinalMethod\\Bar::doFoo() overrides final method OverridingFinalMethod\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 48,
+                    "identifier": "method.visibility",
+                    "message": "Private method OverridingFinalMethod\\Bar::doBar() overriding public method OverridingFinalMethod\\Foo::doBar() should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 53,
+                    "identifier": "method.visibility",
+                    "message": "Protected method OverridingFinalMethod\\Bar::doBaz() overriding public method OverridingFinalMethod\\Foo::doBaz() should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 58,
+                    "identifier": "method.visibility",
+                    "message": "Private method OverridingFinalMethod\\Bar::doLorem() overriding protected method OverridingFinalMethod\\Foo::doLorem() should be protected or public.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 63,
+                    "identifier": "method.nonStatic",
+                    "message": "Non-static method OverridingFinalMethod\\Bar::doIpsum() overrides static method OverridingFinalMethod\\Foo::doIpsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 68,
+                    "identifier": "method.static",
+                    "message": "Static method OverridingFinalMethod\\Bar::doDolor() overrides non-static method OverridingFinalMethod\\Foo::doDolor().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 110,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $s (string) of method OverridingFinalMethod\\Dolor::__construct() is not contravariant with parameter #1 $i (int) of method OverridingFinalMethod\\Ipsum::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 115,
+                    "identifier": "parameter.missing",
+                    "message": "Method OverridingFinalMethod\\Dolor::doFoo() overrides method OverridingFinalMethod\\Ipsum::doFoo() but misses parameter #1 $i.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 125,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingFinalMethod\\FixedArray::setSize() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 135,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $j (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 155,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $i (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 155,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $j (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 160,
+                    "identifier": "parameter.notVariadic",
+                    "message": "Parameter #1 $j of method OverridingFinalMethod\\Amet::doBar() is not variadic but parameter #1 $j of method OverridingFinalMethod\\Sit::doBar() is variadic.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 175,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #2 $j of method OverridingFinalMethod\\Consecteur::doFoo() is required but parameter #2 $j of method OverridingFinalMethod\\Sit::doFoo() is optional.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 195,
+                    "identifier": "parameter.byRef",
+                    "message": "Parameter #2 $j of method OverridingFinalMethod\\Lacus::doFoo() is passed by reference but parameter #2 $j of method OverridingFinalMethod\\Etiam::doFoo() is not passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 195,
+                    "identifier": "parameter.notByRef",
+                    "message": "Parameter #1 $i of method OverridingFinalMethod\\Lacus::doFoo() is not passed by reference but parameter #1 $i of method OverridingFinalMethod\\Etiam::doFoo() is passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 205,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #1 $i of method OverridingFinalMethod\\BazBaz::doBar() is not optional.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 215,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $i (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 222,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class OverridingFinalMethod\\FooFoo contains abstract method __construct() from class OverridingFinalMethod\\Ipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 225,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #2 $j of method OverridingFinalMethod\\FooFoo::doFoo() is not optional.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 232,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class OverridingFinalMethod\\FooFooFoo contains abstract method __construct() from class OverridingFinalMethod\\Ipsum.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 235,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $j (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 250,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method OverridingFinalMethod\\SomeIterator::getIterator() is not covariant with tentative return type Traversable of method IteratorAggregate<int,OverridingFinalMethod\\Foo>::getIterator().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 280,
+                    "identifier": "method.parentMethodFinal",
+                    "message": "Method OverridingFinalMethod\\SomeOtherException::__construct() overrides final method OverridingFinalMethod\\OtherException::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 303,
+                    "identifier": "method.parentMethodFinalByPhpDoc",
+                    "message": "Method OverridingFinalMethod\\ExtendsFinalWithAnnotation::doFoo() overrides @final method OverridingFinalMethod\\FinalWithAnnotation::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 313,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $index (int) of method OverridingFinalMethod\\FixedArrayOffsetExists::offsetExists() is not contravariant with parameter #1 $index (mixed) of method SplFixedArray<mixed>::offsetExists().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 313,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method OverridingFinalMethod\\FixedArrayOffsetExists::offsetExists() is not covariant with tentative return type bool of method ArrayAccess<int,mixed>::offsetExists().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/overriding-method.php",
+                    "line": 313,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingFinalMethod\\FixedArrayOffsetExists::offsetExists() should return bool but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParameterContravariance#0",
+            "files": [
+                "Methods/data/parameter-contravariance-array.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/parameter-contravariance-array.php",
+                    "line": 43,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $a (iterable) of method ParameterContravarianceArray\\Baz::doBar() is not contravariant with parameter #1 $a (array|null) of method ParameterContravarianceArray\\Foo::doBar().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParameterContravariance#1",
+            "files": [
+                "Methods/data/parameter-contravariance-array.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/parameter-contravariance-array.php",
+                    "line": 43,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $a (iterable) of method ParameterContravarianceArray\\Baz::doBar() is not contravariant with parameter #1 $a (array|null) of method ParameterContravarianceArray\\Foo::doBar().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParameterContravariance#2",
+            "files": [
+                "Methods/data/parameter-contravariance-traversable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/parameter-contravariance-traversable.php",
+                    "line": 43,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $a (iterable) of method ParameterContravarianceTraversable\\Baz::doBar() is not contravariant with parameter #1 $a (Traversable|null) of method ParameterContravarianceTraversable\\Foo::doBar().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParameterContravariance#3",
+            "files": [
+                "Methods/data/parameter-contravariance-traversable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/parameter-contravariance-traversable.php",
+                    "line": 43,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $a (iterable) of method ParameterContravarianceTraversable\\Baz::doBar() is not contravariant with parameter #1 $a (Traversable|null) of method ParameterContravarianceTraversable\\Foo::doBar().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParameterContravariance#4",
+            "files": [
+                "Methods/data/parameter-contravariance.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/parameter-contravariance.php",
+                    "line": 48,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $e (InvalidArgumentException) of method ParameterContravariance\\Lorem::doFoo() is not contravariant with parameter #1 $e (Exception) of method ParameterContravariance\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/parameter-contravariance.php",
+                    "line": 58,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $e (InvalidArgumentException|null) of method ParameterContravariance\\Ipsum::doFoo() is not contravariant with parameter #1 $e (Exception) of method ParameterContravariance\\Foo::doFoo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParameterContravariance#5",
+            "files": [
+                "Methods/data/parameter-contravariance.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/parameter-contravariance.php",
+                    "line": 48,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $e (InvalidArgumentException) of method ParameterContravariance\\Lorem::doFoo() is not contravariant with parameter #1 $e (Exception) of method ParameterContravariance\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/parameter-contravariance.php",
+                    "line": 58,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $e (InvalidArgumentException|null) of method ParameterContravariance\\Ipsum::doFoo() is not contravariant with parameter #1 $e (Exception) of method ParameterContravariance\\Foo::doFoo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReturnTypeCovariance#0",
+            "files": [
+                "Methods/data/return-type-covariance.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Foo::doFoo() should return iterable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Foo::doBar() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 18,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Foo::doBaz() should return Exception but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 23,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Foo::doLorem() should return InvalidArgumentException but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Bar::doFoo() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 38,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type iterable of method ReturnTypeCovariance\\Bar::doBar() is not covariant with return type array of method ReturnTypeCovariance\\Foo::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Bar::doBar() should return iterable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 43,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Bar::doBaz() should return InvalidArgumentException but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 48,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type Exception of method ReturnTypeCovariance\\Bar::doLorem() is not covariant with return type InvalidArgumentException of method ReturnTypeCovariance\\Foo::doLorem().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Bar::doLorem() should return Exception but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\A::foo() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 66,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method ReturnTypeCovariance\\B::foo() is not covariant with return type stdClass|null of method ReturnTypeCovariance\\A::foo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 68,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypeCovariance\\stdClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReturnTypeCovariance#1",
+            "files": [
+                "Methods/data/return-type-covariance.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Foo::doFoo() should return iterable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Foo::doBar() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 18,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Foo::doBaz() should return Exception but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 23,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Foo::doLorem() should return InvalidArgumentException but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Bar::doFoo() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 38,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type iterable of method ReturnTypeCovariance\\Bar::doBar() is not covariant with return type array of method ReturnTypeCovariance\\Foo::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Bar::doBar() should return iterable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 43,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Bar::doBaz() should return InvalidArgumentException but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 48,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type Exception of method ReturnTypeCovariance\\Bar::doLorem() is not covariant with return type InvalidArgumentException of method ReturnTypeCovariance\\Foo::doLorem().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\Bar::doLorem() should return Exception but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method ReturnTypeCovariance\\A::foo() should return stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 66,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method ReturnTypeCovariance\\B::foo() is not covariant with return type stdClass|null of method ReturnTypeCovariance\\A::foo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/return-type-covariance.php",
+                    "line": 68,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypeCovariance\\stdClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParle#0",
+            "files": [
+                "Methods/data/parle.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/parle.php",
+                    "line": 8,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $state (int) of method OverridingParle\\Foo::pushState() is not contravariant with parameter #1 $state (string) of method Parle\\RLexer::pushState().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/parle.php",
+                    "line": 8,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type string of method OverridingParle\\Foo::pushState() is not covariant with return type int of method Parle\\RLexer::pushState().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/parle.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingParle\\Foo::pushState() should return string but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParle#1",
+            "files": [
+                "Methods/data/parle.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/parle.php",
+                    "line": 8,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $state (int) of method OverridingParle\\Foo::pushState() is not contravariant with parameter #1 $state (string) of method Parle\\RLexer::pushState().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/parle.php",
+                    "line": 8,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type string of method OverridingParle\\Foo::pushState() is not covariant with return type int of method Parle\\RLexer::pushState().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/parle.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingParle\\Foo::pushState() should return string but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testVariadicParameterIsAlwaysOptional",
+            "files": [
+                "Methods/data/variadic-always-optional.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3403#0",
+            "files": [
+                "Methods/data/bug-3403.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3403#1",
+            "files": [
+                "Methods/data/bug-3403.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3443",
+            "files": [
+                "Methods/data/bug-3443.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3478",
+            "files": [
+                "Methods/data/bug-3478.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-3478.php",
+                    "line": 8,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $node (DOMNode) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3629",
+            "files": [
+                "Methods/data/bug-3629.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testVariadics",
+            "files": [
+                "Methods/data/overriding-variadics.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 24,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingVariadics\\Translator::translate() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 34,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #2 $lang of method OverridingVariadics\\OtherTranslator::translate() is not optional.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 34,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingVariadics\\OtherTranslator::translate() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 44,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #2 $lang of method OverridingVariadics\\AnotherTranslator::translate() is not optional.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 44,
+                    "identifier": "parameter.notVariadic",
+                    "message": "Parameter #3 $parameters of method OverridingVariadics\\AnotherTranslator::translate() is not variadic.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 44,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $parameters follows optional parameter $lang.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 44,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingVariadics\\AnotherTranslator::translate() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 54,
+                    "identifier": "parameter.notVariadic",
+                    "message": "Parameter #2 $lang of method OverridingVariadics\\YetAnotherTranslator::translate() is not variadic.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 54,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingVariadics\\YetAnotherTranslator::translate() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-variadics.php",
+                    "line": 64,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingVariadics\\ReflectionClass::newInstance() should return object but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testLessOverridenParametersWithVariadic#0",
+            "files": [
+                "Methods/data/less-parameters-variadics.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/less-parameters-variadics.php",
+                    "line": 28,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 ...$everything (int) of method LessParametersVariadics\\Baz::doFoo() is not contravariant with parameter #2 $parameters (string) of method LessParametersVariadics\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/less-parameters-variadics.php",
+                    "line": 28,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 ...$everything (int) of method LessParametersVariadics\\Baz::doFoo() is not contravariant with parameter #3 $here (string) of method LessParametersVariadics\\Foo::doFoo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testLessOverridenParametersWithVariadic#1",
+            "files": [
+                "Methods/data/less-parameters-variadics.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/less-parameters-variadics.php",
+                    "line": 28,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 ...$everything (int) of method LessParametersVariadics\\Baz::doFoo() is not contravariant with parameter #2 $parameters (string) of method LessParametersVariadics\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/less-parameters-variadics.php",
+                    "line": 28,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 ...$everything (int) of method LessParametersVariadics\\Baz::doFoo() is not contravariant with parameter #3 $here (string) of method LessParametersVariadics\\Foo::doFoo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParameterTypeWidening#0",
+            "files": [
+                "Methods/data/parameter-type-widening.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testParameterTypeWidening#1",
+            "files": [
+                "Methods/data/parameter-type-widening.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4516",
+            "files": [
+                "Methods/data/bug-4516.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTentativeReturnTypes#0",
+            "files": [
+                "Methods/data/tentative-return-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 8,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\Foo::getIterator() is not covariant with tentative return type Traversable of method IteratorAggregate<mixed,mixed>::getIterator().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Foo::getIterator() should return Traversable<mixed, mixed> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 18,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Bar::getIterator() should return Traversable<mixed, mixed> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Baz::getIterator() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 40,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type string of method TentativeReturnTypes\\Lorem::getIterator() is not covariant with tentative return type Traversable of method IteratorAggregate<mixed,mixed>::getIterator().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 40,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Lorem::getIterator() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\TypedIterator::current() should return mixed but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\TypedIterator::key() should return mixed but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 62,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\TypedIterator::valid() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 75,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::current() is not covariant with tentative return type mixed of method Iterator<mixed,mixed>::current().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 79,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::next() is not covariant with tentative return type void of method Iterator<mixed,mixed>::next().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 83,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::key() is not covariant with tentative return type mixed of method Iterator<mixed,mixed>::key().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 87,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::valid() is not covariant with tentative return type bool of method Iterator<mixed,mixed>::valid().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 87,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\UntypedIterator::valid() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 91,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::rewind() is not covariant with tentative return type void of method Iterator<mixed,mixed>::rewind().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 103,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\MetadataFilter::getInnerIterator() should return ArrayIterator<int, string> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTentativeReturnTypes#1",
+            "files": [
+                "Methods/data/tentative-return-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 8,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\Foo::getIterator() is not covariant with tentative return type Traversable of method IteratorAggregate<mixed,mixed>::getIterator().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Foo::getIterator() should return Traversable<mixed, mixed> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 18,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Bar::getIterator() should return Traversable<mixed, mixed> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Baz::getIterator() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 40,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type string of method TentativeReturnTypes\\Lorem::getIterator() is not covariant with tentative return type Traversable of method IteratorAggregate<mixed,mixed>::getIterator().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 40,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Lorem::getIterator() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\TypedIterator::current() should return mixed but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\TypedIterator::key() should return mixed but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 62,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\TypedIterator::valid() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 75,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::current() is not covariant with tentative return type mixed of method Iterator<mixed,mixed>::current().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 79,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::next() is not covariant with tentative return type void of method Iterator<mixed,mixed>::next().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 83,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::key() is not covariant with tentative return type mixed of method Iterator<mixed,mixed>::key().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 87,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::valid() is not covariant with tentative return type bool of method Iterator<mixed,mixed>::valid().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 87,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\UntypedIterator::valid() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 91,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::rewind() is not covariant with tentative return type void of method Iterator<mixed,mixed>::rewind().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 103,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\MetadataFilter::getInnerIterator() should return ArrayIterator<int, string> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTentativeReturnTypes#2",
+            "files": [
+                "Methods/data/tentative-return-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 8,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\Foo::getIterator() is not covariant with tentative return type Traversable of method IteratorAggregate<mixed,mixed>::getIterator().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Foo::getIterator() should return Traversable<mixed, mixed> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 18,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Bar::getIterator() should return Traversable<mixed, mixed> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Baz::getIterator() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 40,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type string of method TentativeReturnTypes\\Lorem::getIterator() is not covariant with tentative return type Traversable of method IteratorAggregate<mixed,mixed>::getIterator().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 40,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\Lorem::getIterator() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\TypedIterator::current() should return mixed but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\TypedIterator::key() should return mixed but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 62,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\TypedIterator::valid() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 75,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::current() is not covariant with tentative return type mixed of method Iterator<mixed,mixed>::current().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 79,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::next() is not covariant with tentative return type void of method Iterator<mixed,mixed>::next().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 83,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::key() is not covariant with tentative return type mixed of method Iterator<mixed,mixed>::key().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 87,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::valid() is not covariant with tentative return type bool of method Iterator<mixed,mixed>::valid().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 87,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\UntypedIterator::valid() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 91,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method TentativeReturnTypes\\UntypedIterator::rewind() is not covariant with tentative return type void of method Iterator<mixed,mixed>::rewind().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/tentative-return-types.php",
+                    "line": 103,
+                    "identifier": "return.missing",
+                    "message": "Method TentativeReturnTypes\\MetadataFilter::getInnerIterator() should return ArrayIterator<int, string> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCountableBug",
+            "files": [
+                "Methods/data/countable-bug.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6264",
+            "files": [
+                "Methods/data/bug-6264.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7717",
+            "files": [
+                "Methods/data/bug-7717.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6104",
+            "files": [
+                "Methods/data/bug-6104.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9391",
+            "files": [
+                "Methods/data/bug-9391.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugWithIndirectPrototype",
+            "files": [
+                "Methods/data/overriding-indirect-prototype.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/overriding-indirect-prototype.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingIndirectPrototype\\Foo::doFoo() should return mixed but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-indirect-prototype.php",
+                    "line": 18,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingIndirectPrototype\\Bar::doFoo() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-indirect-prototype.php",
+                    "line": 28,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method OverridingIndirectPrototype\\Baz::doFoo() is not covariant with return type string of method OverridingIndirectPrototype\\Bar::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-indirect-prototype.php",
+                    "line": 28,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingIndirectPrototype\\Baz::doFoo() should return mixed but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10043",
+            "files": [
+                "Methods/data/bug-10043.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-10043.php",
+                    "line": 17,
+                    "identifier": "method.parentMethodFinal",
+                    "message": "Method Bug10043\\C::foo() overrides final method Bug10043\\B::foo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7859",
+            "files": [
+                "Methods/data/bug-7859.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-7859.php",
+                    "line": 21,
+                    "identifier": "parameter.missing",
+                    "message": "Method Bug7859\\ExtendingClassImplementingSomeInterface::getList() overrides method Bug7859\\ImplementingSomeInterface::getList() but misses parameter #2 $b.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-7859.php",
+                    "line": 37,
+                    "identifier": "parameter.missing",
+                    "message": "Method Bug7859\\ExtendingClassNotImplementingSomeInterface::getList() overrides method Bug7859\\NotImplementingSomeInterface::getList() but misses parameter #2 $b.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8081",
+            "files": [
+                "Methods/data/bug-8081.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-8081.php",
+                    "line": 21,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method Bug8081\\three::foo() is not covariant with return type array of method Bug8081\\two::foo().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8500",
+            "files": [
+                "Methods/data/bug-8500.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-8500.php",
+                    "line": 30,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method Bug8500\\DBOHB::test() is not covariant with return type Bug8500\\DBOA of method Bug8500\\DBOHA::test().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9014",
+            "files": [
+                "Methods/data/bug-9014.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-9014.php",
+                    "line": 16,
+                    "identifier": "parameter.missing",
+                    "message": "Method Bug9014\\Bar::test() overrides method Bug9014\\Foo::test() but misses parameter #2 $test.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-9014.php",
+                    "line": 31,
+                    "identifier": "return.missing",
+                    "message": "Method Bug9014\\middle::renderForUser() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-9014.php",
+                    "line": 42,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method Bug9014\\extended::renderForUser() is not covariant with return type string of method Bug9014\\middle::renderForUser().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9135",
+            "files": [
+                "Methods/data/bug-9135.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-9135.php",
+                    "line": 15,
+                    "identifier": "method.parentMethodFinalByPhpDoc",
+                    "message": "Method Bug9135\\Sub::sayHello() overrides @final method Bug9135\\HelloWorld::sayHello().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10101",
+            "files": [
+                "Methods/data/bug-10101.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-10101.php",
+                    "line": 10,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method Bug10101\\B::next() is not covariant with return type void of method Bug10101\\A::next().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9615",
+            "files": [
+                "Methods/data/bug-9615.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-9615.php",
+                    "line": 19,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug9615\\ExpectComplaintsHere::accept() is not covariant with tentative return type bool of method FilterIterator<mixed,mixed,Traversable<mixed, mixed>>::accept().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/bug-9615.php",
+                    "line": 20,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug9615\\ExpectComplaintsHere::getChildren() is not covariant with tentative return type RecursiveIterator|null of method RecursiveIterator<mixed,mixed>::getChildren().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10149",
+            "files": [
+                "Methods/data/bug-10149.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-10149.php (in context of class Bug10149\\StdSat)",
+                    "line": 10,
+                    "identifier": "method.override",
+                    "message": "Method Bug10149\\StdSat::__get() has #[\\Override] attribute but does not override any method.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTraits",
+            "files": [
+                "Methods/data/overriding-trait-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 24,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingTraitMethods\\Bar::doFoo() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 27,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $i (int) of method OverridingTraitMethods\\Bar::doBar() is not contravariant with parameter #1 $i (string) of method OverridingTraitMethods\\Foo::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingTraitMethods\\Bar::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 45,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $i (int) of method OverridingTraitMethods\\Baz::doBar() is not contravariant with parameter #1 $i (string) of method OverridingTraitMethods\\FooPrivate::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 45,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingTraitMethods\\Baz::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 55,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingTraitMethods\\Lorem::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 65,
+                    "identifier": "method.static",
+                    "message": "Static method OverridingTraitMethods\\Ipsum::doBar() overrides non-static method OverridingTraitMethods\\Foo::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 65,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingTraitMethods\\Ipsum::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 80,
+                    "identifier": "method.nonStatic",
+                    "message": "Non-static method OverridingTraitMethods\\Dolor::doBar() overrides static method OverridingTraitMethods\\FooStatic::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php",
+                    "line": 80,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingTraitMethods\\Dolor::doBar() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php (in context of class OverridingTraitMethods\\Ipsum)",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingTraitMethods\\Ipsum::doFoo() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/overriding-trait-methods.php (in context of class OverridingTraitMethods\\Lorem)",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method OverridingTraitMethods\\Lorem::doFoo() should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute",
+            "files": [
+                "Methods/data/override-attribute.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/override-attribute.php",
+                    "line": 24,
+                    "identifier": "method.override",
+                    "message": "Method OverrideAttribute\\Bar::test2() has #[\\Override] attribute but does not override any method.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/override-attribute.php",
+                    "line": 42,
+                    "identifier": "method.override",
+                    "message": "Method OverrideAttribute\\ChildOfParentWithConstructor::__construct() has #[\\Override] attribute but does not override any method.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCheckMissingOverrideAttribute#0",
+            "files": [
+                "Methods/data/check-missing-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCheckMissingOverrideAttribute#1",
+            "files": [
+                "Methods/data/check-missing-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCheckMissingOverrideAttribute#2",
+            "files": [
+                "Methods/data/check-missing-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCheckMissingOverrideAttribute#3",
+            "files": [
+                "Methods/data/check-missing-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10153",
+            "files": [
+                "Methods/data/bug-10153.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-10153.php",
+                    "line": 24,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type Bug10153\\MyClass2|null of method Bug10153\\MyClass2::drc() is not covariant with return type Bug10153\\MyClass2 of method Bug10153\\MyTrait::drc().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12471",
+            "files": [
+                "Methods/data/bug-12471.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10165",
+            "files": [
+                "Methods/data/bug-10165.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11067",
+            "files": [
+                "Methods/data/bug-11067.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-11067.php",
+                    "line": 41,
+                    "identifier": "method.parentMethodFinal",
+                    "message": "Method Bug11067\\BooleanBuilder2::__construct() overrides final method Bug11067\\BaseBuilder2::__construct().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12272",
+            "files": [
+                "Methods/data/bug-12272.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-12272.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Class Bug12272\\BaseException extends unknown class Bug12272\\Exception.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/bug-12272.php",
+                    "line": 12,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $previous of method Bug12272\\BaseException::__construct() has invalid type Bug12272\\Throwable.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-12272.php",
+                    "line": 14,
+                    "identifier": "class.noParent",
+                    "message": "Bug12272\\BaseException::__construct() calls parent::__construct() but Bug12272\\BaseException does not extend any class.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12830",
+            "files": [
+                "Methods/data/bug-12830.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9524",
+            "files": [
+                "Methods/data/bug-9524.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testSimpleXmlElementChildClass",
+            "files": [
+                "Methods/data/simple-xml-element-child.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14457",
+            "files": [
+                "Methods/data/bug-14457.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-14457.php",
+                    "line": 12,
+                    "identifier": "method.abstractOverridingNonAbstract",
+                    "message": "Cannot make non-abstract method Bug14457\\ParentClass::foo() abstract in class Bug14457\\ChildClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-14457.php",
+                    "line": 56,
+                    "identifier": "method.abstractOverridingNonAbstract",
+                    "message": "Cannot make non-abstract method Bug14457\\StaticParent::staticMethod() abstract in class Bug14457\\StaticChild.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-14457.php",
+                    "line": 67,
+                    "identifier": "method.abstractOverridingNonAbstract",
+                    "message": "Cannot make non-abstract method Bug14457\\ProtectedParent::protectedMethod() abstract in class Bug14457\\ProtectedChild.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-14457.php",
+                    "line": 81,
+                    "identifier": "method.abstractOverridingNonAbstract",
+                    "message": "Cannot make non-abstract method Bug14457\\GrandParent_::inherited() abstract in class Bug14457\\Child_.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-14457.php",
+                    "line": 91,
+                    "identifier": "method.abstractOverridingNonAbstract",
+                    "message": "Cannot make non-abstract method Bug14457\\ConstructorParent::__construct() abstract in class Bug14457\\ConstructorChild.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

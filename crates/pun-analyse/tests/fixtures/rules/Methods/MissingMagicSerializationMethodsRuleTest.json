@@ -1,0 +1,43 @@
+{
+    "test": "Methods/MissingMagicSerializationMethodsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/missing-serialization.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/missing-serialization.php",
+                    "line": 14,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class MissingMagicSerializationMethods\\myObj implements the Serializable interface, but does not implement __serialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Methods/data/missing-serialization.php",
+                    "line": 14,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class MissingMagicSerializationMethods\\myObj implements the Serializable interface, but does not implement __unserialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Methods/data/missing-serialization.php",
+                    "line": 21,
+                    "identifier": "enum.serializable",
+                    "message": "Enum MissingMagicSerializationMethods\\myEnum cannot implement the Serializable interface.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-serialization.php",
+                    "line": 36,
+                    "identifier": "return.missing",
+                    "message": "Method MissingMagicSerializationMethods\\allGood::__serialize() should return array<mixed, mixed> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

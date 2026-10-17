@@ -1,0 +1,81 @@
+{
+    "test": "Keywords/GotoUndefinedLabelRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Keywords/data/goto-undefined-label.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/goto-undefined-label.php",
+                    "line": 15,
+                    "identifier": "goto.labelUndefined",
+                    "message": "Goto to undefined label 'nonexistent'.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/goto-undefined-label.php",
+                    "line": 22,
+                    "identifier": "goto.labelUndefined",
+                    "message": "Goto to undefined label 'outside'.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/goto-undefined-label.php",
+                    "line": 32,
+                    "identifier": "goto.labelUndefined",
+                    "message": "Goto to undefined label 'outside'.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/goto-undefined-label.php",
+                    "line": 40,
+                    "identifier": "function.inner",
+                    "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/goto-undefined-label.php",
+                    "line": 42,
+                    "identifier": "goto.labelUndefined",
+                    "message": "Goto to undefined label 'outside'.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/goto-undefined-label.php",
+                    "line": 52,
+                    "identifier": "goto.labelUndefined",
+                    "message": "Goto to undefined label 'inside'.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHook",
+            "files": [
+                "Keywords/data/goto-undefined-label-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/goto-undefined-label-property-hook.php",
+                    "line": 21,
+                    "identifier": "goto.labelUndefined",
+                    "message": "Goto to undefined label 'nonexistent'.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/goto-undefined-label-property-hook.php",
+                    "line": 35,
+                    "identifier": "goto.labelUndefined",
+                    "message": "Goto to undefined label 'outside'.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

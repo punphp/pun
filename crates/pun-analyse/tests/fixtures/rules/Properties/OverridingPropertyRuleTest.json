@@ -1,0 +1,664 @@
+{
+    "test": "Properties/OverridingPropertyRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/overriding-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 25,
+                    "identifier": "property.static",
+                    "message": "Static property OverridingProperty\\Bar::$protectedFoo overrides non-static property OverridingProperty\\Foo::$protectedFoo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 26,
+                    "identifier": "property.nonStatic",
+                    "message": "Non-static property OverridingProperty\\Bar::$protectedStaticFoo overrides static property OverridingProperty\\Foo::$protectedStaticFoo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 28,
+                    "identifier": "property.static",
+                    "message": "Static property OverridingProperty\\Bar::$publicFoo overrides non-static property OverridingProperty\\Foo::$publicFoo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 29,
+                    "identifier": "property.nonStatic",
+                    "message": "Non-static property OverridingProperty\\Bar::$publicStaticFoo overrides static property OverridingProperty\\Foo::$publicStaticFoo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 37,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class OverridingProperty\\ReadonlyParent has an uninitialized readonly property $readOnly. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 38,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class OverridingProperty\\ReadonlyParent has an uninitialized readonly property $readonly2. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 45,
+                    "identifier": "property.readOnly",
+                    "message": "Readonly property OverridingProperty\\ReadonlyChild::$readWrite overrides readwrite property OverridingProperty\\ReadonlyParent::$readWrite.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 45,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class OverridingProperty\\ReadonlyChild has an uninitialized readonly property $readWrite. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 46,
+                    "identifier": "property.readWrite",
+                    "message": "Readwrite property OverridingProperty\\ReadonlyChild::$readOnly overrides readonly property OverridingProperty\\ReadonlyParent::$readOnly.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 47,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class OverridingProperty\\ReadonlyChild has an uninitialized readonly property $readonly2. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 55,
+                    "identifier": "property.readOnly",
+                    "message": "Readonly property OverridingProperty\\ReadonlyChild2::$readWrite overrides readwrite property OverridingProperty\\ReadonlyParent::$readWrite.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 56,
+                    "identifier": "property.readWrite",
+                    "message": "Readwrite property OverridingProperty\\ReadonlyChild2::$readOnly overrides readonly property OverridingProperty\\ReadonlyParent::$readOnly.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 76,
+                    "identifier": "property.visibility",
+                    "message": "Private property OverridingProperty\\PrivateDolor::$protectedFoo overriding protected property OverridingProperty\\Dolor::$protectedFoo should be protected or public.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 77,
+                    "identifier": "property.visibility",
+                    "message": "Private property OverridingProperty\\PrivateDolor::$publicFoo overriding public property OverridingProperty\\Dolor::$publicFoo should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 78,
+                    "identifier": "property.visibility",
+                    "message": "Private property OverridingProperty\\PrivateDolor::$anotherPublicFoo overriding public property OverridingProperty\\Dolor::$anotherPublicFoo should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 87,
+                    "identifier": "property.visibility",
+                    "message": "Protected property OverridingProperty\\ProtectedDolor::$publicFoo overriding public property OverridingProperty\\Dolor::$publicFoo should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 88,
+                    "identifier": "property.visibility",
+                    "message": "Protected property OverridingProperty\\ProtectedDolor::$anotherPublicFoo overriding public property OverridingProperty\\Dolor::$anotherPublicFoo should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 125,
+                    "identifier": "property.missingNativeType",
+                    "message": "Property OverridingProperty\\TypeChild::$withType overriding property OverridingProperty\\Typed::$withType (int) should also have native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 126,
+                    "identifier": "property.extraNativeType",
+                    "message": "Property OverridingProperty\\TypeChild::$withoutType (int) overriding property OverridingProperty\\Typed::$withoutType should not have a native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-property.php",
+                    "line": 142,
+                    "identifier": "property.nativeType",
+                    "message": "Type string of property OverridingProperty\\Typed2Child::$foo is not the same as type int of overridden property OverridingProperty\\Typed2::$foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRulePHPDocTypes#0",
+            "files": [
+                "Properties/data/overriding-property-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRulePHPDocTypes#1",
+            "files": [
+                "Properties/data/overriding-property-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7839",
+            "files": [
+                "Properties/data/bug-7839.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7692",
+            "files": [
+                "Properties/data/bug-7692.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFinal",
+            "files": [
+                "Properties/data/overriding-final-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/overriding-final-property.php",
+                    "line": 27,
+                    "identifier": "property.parentPropertyFinal",
+                    "message": "Property OverridingFinalProperty\\Bar::$a overrides final property OverridingFinalProperty\\Foo::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-final-property.php",
+                    "line": 29,
+                    "identifier": "property.parentPropertyFinal",
+                    "message": "Property OverridingFinalProperty\\Bar::$b overrides final property OverridingFinalProperty\\Foo::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-final-property.php",
+                    "line": 31,
+                    "identifier": "property.parentPropertyFinal",
+                    "message": "Property OverridingFinalProperty\\Bar::$c overrides final property OverridingFinalProperty\\Foo::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-final-property.php",
+                    "line": 33,
+                    "identifier": "property.parentPropertyFinal",
+                    "message": "Property OverridingFinalProperty\\Bar::$d overrides final property OverridingFinalProperty\\Foo::$d.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-final-property.php",
+                    "line": 35,
+                    "identifier": "property.parentPropertyFinalByPhpDoc",
+                    "message": "Property OverridingFinalProperty\\Bar::$e overrides @final property OverridingFinalProperty\\Foo::$e.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/overriding-final-property.php",
+                    "line": 37,
+                    "identifier": "property.parentPropertyFinalByPhpDoc",
+                    "message": "Property OverridingFinalProperty\\Bar::$f overrides @final property OverridingFinalProperty\\Foo::$f.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyPrototypeFromInterface",
+            "files": [
+                "Properties/data/property-prototype-from-interface.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-prototype-from-interface.php",
+                    "line": 15,
+                    "identifier": "property.nativeType",
+                    "message": "Type string of property Bug12466\\Bar::$a is not the same as type int of overridden property Bug12466\\Foo::$a.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-prototype-from-interface.php",
+                    "line": 34,
+                    "identifier": "property.notWritable",
+                    "message": "Property Bug12466\\TestMoreProps::$a overriding writable property Bug12466\\MoreProps::$a also has to be writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-prototype-from-interface.php",
+                    "line": 41,
+                    "identifier": "property.notReadable",
+                    "message": "Property Bug12466\\TestMoreProps::$b overriding readable property Bug12466\\MoreProps::$b also has to be readable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-prototype-from-interface.php",
+                    "line": 43,
+                    "identifier": "assign.propertyReadOnly",
+                    "message": "Property Bug12466\\TestMoreProps::$a is not writable.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-prototype-from-interface.php",
+                    "line": 48,
+                    "identifier": "property.notWritable",
+                    "message": "Property Bug12466\\TestMoreProps::$c overriding writable property Bug12466\\MoreProps::$c also has to be writable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12466",
+            "files": [
+                "Properties/data/bug-12466.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-12466.php",
+                    "line": 34,
+                    "identifier": "property.nativeType",
+                    "message": "Type int|string|null of property Bug12466OverridenProperty\\Baz::$onlyGet is not covariant with type int|string of overridden property Bug12466OverridenProperty\\Foo::$onlyGet.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-12466.php",
+                    "line": 40,
+                    "identifier": "property.nativeType",
+                    "message": "Type int of property Bug12466OverridenProperty\\Baz::$onlySet is not contravariant with type int|string of overridden property Bug12466OverridenProperty\\Foo::$onlySet.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11761",
+            "files": [
+                "Properties/data/bug-11761.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12586",
+            "files": [
+                "Properties/data/bug-12586.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-12586.php",
+                    "line": 23,
+                    "identifier": "property.readOnly",
+                    "message": "Readonly property Bug12586\\FooImpl::$baz overrides readwrite property Bug12586\\Foo::$baz.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#0",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#1",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#2",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#3",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#4",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#5",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#6",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#7",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#8",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#9",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#10",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttribute#11",
+            "files": [
+                "Properties/data/property-override-attr.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-override-attr.php",
+                    "line": 19,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Bar::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-override-attr.php (in context of class PropertyOverrideAttr\\Baz)",
+                    "line": 30,
+                    "identifier": "property.override",
+                    "message": "Property PropertyOverrideAttr\\Baz::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14457",
+            "files": [
+                "Properties/data/bug-14457.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-14457.php",
+                    "line": 10,
+                    "identifier": "property.abstractOverridingNonAbstractHook",
+                    "message": "Cannot make non-abstract method Bug14457Property\\ParentClass::$bar::get() abstract in class Bug14457Property\\ChildClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-14457.php",
+                    "line": 42,
+                    "identifier": "property.abstractOverridingNonAbstractHook",
+                    "message": "Cannot make non-abstract method Bug14457Property\\SetParent::$setProp::set() abstract in class Bug14457Property\\SetChild.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-14457.php",
+                    "line": 54,
+                    "identifier": "property.abstractOverridingNonAbstractHook",
+                    "message": "Cannot make non-abstract method Bug14457Property\\BothParent::$bothProp::get() abstract in class Bug14457Property\\BothChild.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-14457.php",
+                    "line": 54,
+                    "identifier": "property.abstractOverridingNonAbstractHook",
+                    "message": "Cannot make non-abstract method Bug14457Property\\BothParent::$bothProp::set() abstract in class Bug14457Property\\BothChild.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

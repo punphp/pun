@@ -1,0 +1,26 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "entry.php",
+   "line": 4,
+   "identifier": "function.notFound",
+   "message": "Function from_scan_file not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "entry.php",
+   "line": 5,
+   "identifier": "function.notFound",
+   "message": "Function missing_in_entry not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "entry.php",
+   "line": 5,
+   "identifier": "ignore.noComment",
+   "message": "Ignore with identifier function.notFound has no comment.",
+   "tip": "Explain why this ignore is necessary in parentheses after the identifier."
+  }
+ ]
+}
