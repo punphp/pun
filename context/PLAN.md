@@ -151,8 +151,6 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| config 1: new `<command>/<group>/<name>` IDs, group list and sets in mapping.toml; no aliases | doing (workflow, wf/names) |
-| config 2: move the 40 code-deleting format rules to lint | doing (workflow, wf/names) |
 | config 3: new pun.toml schema (`[files]`, presets, sets, levels, groups, overrides, `[analyse]`) | doing (workflow, wf/schema) |
 | config 4: TOML-native option names for format rules | doing (workflow, wf/options) |
 | config 3 follow-up: default `[php] version` to `pun_config::composer::detect(root).php_version()` when pun.toml sets none; update pun-cli/tests/agent.rs (expects PHP 8.4 for a ^8.5 project) | todo |
@@ -160,6 +158,9 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | config 8: `pun config` on the new schema, `pun explain <rule>` | doing (workflow, wf/config-explain) |
 | migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | doing (workflow, wf/migrate-format) |
 | migrate 1 follow-up: read `.php-cs-fixer.php` statically (no system PHP), replacing crates/pun-cli/src/php_cs_fixer_rules.php | todo |
+| config 3 follow-up: drop the top-level `preset` tiers and rewrite docs/content/docs/configuration/presets.mdx around lint sets and analyse presets (mapping.toml has no `tier` since config 1) | todo |
+| config 1 follow-up: bring rules.md §1-§2 and §5 examples up to the new IDs (they still use names like `lint.no-loose-comparison`) | todo |
+| config 1 follow-up: decide whether `@pun-ignore-file` keeps accepting the short `group/name` form (§4 Q2); accepted today | todo |
 | config 3 follow-up: decide whether every config error exits 2 like the unported-rule error (config 6 keeps the others at 1) | todo |
 
 **Gate:** the 7-project corpus still gives 0 differing files with `pun migrate` + `pun check --fix`, and
@@ -263,6 +264,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
 | scripts/coverage.sh: runs on macOS (no `flock`, no cargo-llvm-cov): make the lock optional or document the install | todo |
 | tests: crates/pun-cli/tests/agent.rs `git_selection` passes `-c commit.gpgsign=false` so it does not fail with global gpg signing | todo |
+| tests: crates/pun-cli/tests/migrate.rs pty tests use a `script` invocation that works on macOS (BSD `script` has no `-qec`) | todo |
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
 | scripts/fuzz-parity.sh: drop the `PUN_PINT` passthrough and its comment (delegate mode removed) | todo |
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
