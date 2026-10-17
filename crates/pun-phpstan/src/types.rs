@@ -262,6 +262,16 @@ impl Type {
         }
     }
 
+    /// An integer type's bounds (`int` is unbounded).
+    fn int_bounds(&self) -> Option<(Option<i64>, Option<i64>)> {
+        match self {
+            Type::Int => Some((None, None)),
+            Type::IntRange(min, max) => Some((*min, *max)),
+            Type::ConstInt(v) => Some((Some(*v), Some(*v))),
+            _ => None,
+        }
+    }
+
     fn is_implicit_never(&self) -> bool {
         matches!(self, Type::Never(NeverKind::Implicit))
     }
@@ -899,9 +909,8 @@ impl Accessory {
 
 /// `StaticType::getStaticObjectType()`: the class, with its own templates as arguments when it is generic.
 fn static_object(class: &str) -> Type {
-    let Some(c) = symbols::class(class) else {
-        return Type::Object(class.to_string(), vec![]);
-    };
+    // the resolver makes `static` / `$this` of built-in classes only
+    let c = symbols::class(class).expect("a built-in class");
     let args = c
         .templates
         .iter()
@@ -1527,6 +1536,34 @@ impl ConstArray {
         }
     }
 
+    /// The constant-array branch of `TypeCombinator::intersect()` against an `ArrayType`: each key the array may
+    /// have, with its value intersected with the array's item type.
+    fn intersect_array(&self, array: &Type) -> Type {
+        let (array_key, item) = (array.iterable_key_type(), array.iterable_value_type());
+        let mut b = ShapeBuilder::new();
+        if self.is_unsealed().yes()
+            && let Some((k, v)) = &self.unsealed
+        {
+            let k = intersect(vec![k.clone(), array_key.clone()]);
+            let v = intersect(vec![v.clone(), item.clone()]);
+            if !k.is_never() && !v.is_never() {
+                b.make_unsealed(k, v);
+            }
+        }
+        for (i, (key, value)) in self.keys.iter().zip(&self.values).enumerate() {
+            // `ArrayType::hasOffsetValueType()` of a constant key: no when the key type excludes it, else maybe
+            if is_super_type_of(&array_key, key).no() {
+                continue;
+            }
+            b.set(
+                Some(intersect(vec![key.clone(), array_key.clone()])),
+                intersect(vec![value.clone(), item.clone()]),
+                self.is_optional_key(i),
+            );
+        }
+        b.get()
+    }
+
     /// `isCallable()`: only a `[class-string|object, method]` shape (its missing slots possibly in the unsealed
     /// extras) can be. ponytail: such a shape answers maybe, not yes/no from the class's methods; needs method
     /// reflection (M2.3).
@@ -1636,12 +1673,12 @@ impl ConstArray {
                 values_only = false;
             }
             let key = match key {
-                Type::ConstInt(k) => k.to_string(),
                 Type::ConstString(s) if s.contains('"') => format!("'{s}'"),
                 Type::ConstString(s) if s.contains('\'') => format!("\"{s}\""),
                 Type::ConstString(s) if !is_valid_identifier(s) => format!("'{s}'"),
                 Type::ConstString(s) => s.clone(),
-                _ => unreachable!("constant array keys are int or string constants"),
+                // the only other key type, a `ConstantIntegerType`
+                k => to_phpdoc(k),
             };
             let value = self.values[i].describe(level);
             items.push(format!("{key}{}: {value}", if optional { "?" } else { "" }));
@@ -1747,7 +1784,7 @@ fn is_valid_identifier(s: &str) -> bool {
 }
 
 /// `ConstantArrayTypeBuilder` (array degradation disabled, as for PHPDoc shapes).
-pub struct ShapeBuilder {
+pub(crate) struct ShapeBuilder {
     array: ConstArray,
     non_empty: bool,
 }
@@ -1863,12 +1900,6 @@ impl ShapeBuilder {
             return intersect(vec![a, Type::Accessory(Accessory::NonEmptyArray)]);
         }
         a
-    }
-}
-
-impl Default for ShapeBuilder {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -2164,16 +2195,12 @@ fn accessory_super(acc: &Accessory, b: &Type) -> Tri {
 }
 
 fn int_range_super(a: &Type, b: &Type) -> Tri {
-    let Type::IntRange(min, max) = a else {
-        unreachable!()
-    };
-    let (bmin, bmax) = match b {
-        Type::IntRange(x, y) => (*x, *y),
-        Type::ConstInt(v) => (Some(*v), Some(*v)),
-        _ => unreachable!(),
-    };
-    let disjoint = matches!((min, bmax), (Some(x), Some(y)) if x > &y)
-        || matches!((max, bmin), (Some(x), Some(y)) if x < &y);
+    let ((min, max), (bmin, bmax)) = (
+        a.int_bounds().unwrap_or_default(),
+        b.int_bounds().unwrap_or_default(),
+    );
+    let disjoint = matches!((min, bmax), (Some(x), Some(y)) if x > y)
+        || matches!((max, bmin), (Some(x), Some(y)) if x < y);
     if disjoint {
         return Tri::No;
     }
@@ -2378,8 +2405,6 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                 {
                     Tri::Yes
                 }
-                Accessory::List if same => Tri::Yes,
-                Accessory::List => b.is_list().and(Tri::Maybe),
                 _ => {
                     let q = match acc {
                         Accessory::NonEmptyString => b.is_non_empty_string(),
@@ -2389,7 +2414,7 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                         Accessory::LowercaseString => b.is_lowercase_string(),
                         Accessory::UppercaseString => b.is_uppercase_string(),
                         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
-                        Accessory::List => unreachable!(),
+                        Accessory::List => b.is_list(),
                     };
                     q.and(if same { Tri::Yes } else { Tri::Maybe })
                 }
@@ -2505,13 +2530,9 @@ pub fn union(types: Vec<Type>) -> Type {
         }
         rest.push(t);
     }
-    ranges.sort_by(|a, b| {
-        let (Type::IntRange(amin, amax), Type::IntRange(bmin, bmax)) = (a, b) else {
-            unreachable!()
-        };
-        amin.unwrap_or(i64::MIN)
-            .cmp(&bmin.unwrap_or(i64::MIN))
-            .then(amax.unwrap_or(i64::MAX).cmp(&bmax.unwrap_or(i64::MAX)))
+    ranges.sort_by_key(|t| {
+        let (min, max) = t.int_bounds().unwrap_or_default();
+        (min.unwrap_or(i64::MIN), max.unwrap_or(i64::MAX))
     });
     let mut types = rest;
     types.extend(ranges);
@@ -2614,13 +2635,13 @@ enum Merge {
 
 /// `TypeCombinator::compareTypesInUnion()`
 fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
-    if let Type::IntRange(..) = a
-        && let Some(t) = range_try_union(a, b)
+    if let Type::IntRange(min, max) = a
+        && let Some(t) = range_try_union(*min, *max, b)
     {
         return Some(Merge::A(t));
     }
-    if let Type::IntRange(..) = b
-        && let Some(t) = range_try_union(b, a)
+    if let Type::IntRange(min, max) = b
+        && let Some(t) = range_try_union(*min, *max, a)
     {
         return Some(Merge::B(t));
     }
@@ -2695,23 +2716,19 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
 
 /// `downgradeNonFalsyStringToNonEmpty()`: `'0'|non-falsy-string` is `non-empty-string`.
 fn downgrade_non_falsy(t: &Type) -> Option<Type> {
-    let Type::Intersection(types) = t else {
-        return None;
+    let non_falsy = Type::Accessory(Accessory::NonFalsyString);
+    let rest = match t {
+        Type::Intersection(types) if types.contains(&non_falsy) => {
+            types.iter().filter(|x| **x != non_falsy).cloned().collect()
+        }
+        _ => return None,
     };
-    if !types.contains(&Type::Accessory(Accessory::NonFalsyString)) {
-        return None;
-    }
-    Some(intersect(
-        types
-            .iter()
-            .map(|t| match t {
-                Type::Accessory(Accessory::NonFalsyString) => {
-                    Type::Accessory(Accessory::NonEmptyString)
-                }
-                t => t.clone(),
-            })
-            .collect(),
-    ))
+    let without = intersect(rest);
+    Some(if without.is_non_empty_string().yes() {
+        without
+    } else {
+        intersect(vec![without, Type::Accessory(Accessory::NonEmptyString)])
+    })
 }
 
 fn case_accessories(t: &Type) -> Vec<Type> {
@@ -2726,17 +2743,9 @@ fn case_accessories(t: &Type) -> Vec<Type> {
 }
 
 /// `IntegerRangeType::tryUnion()`
-fn range_try_union(a: &Type, other: &Type) -> Option<Type> {
-    let Type::IntRange(min, max) = a else {
-        unreachable!()
-    };
-    let (omin, omax) = match other {
-        Type::IntRange(x, y) => (*x, *y),
-        Type::ConstInt(v) => (Some(*v), Some(*v)),
-        Type::Int => return Some(Type::Int),
-        _ => return None,
-    };
-    let disjoint = matches!((min, omax), (Some(x), Some(y)) if *x > y.saturating_add(1))
+fn range_try_union(min: Option<i64>, max: Option<i64>, other: &Type) -> Option<Type> {
+    let (omin, omax) = other.int_bounds()?;
+    let disjoint = matches!((min, omax), (Some(x), Some(y)) if x > y.saturating_add(1))
         || matches!((max, omin), (Some(x), Some(y)) if x.saturating_add(1) < y);
     if disjoint {
         return None;
@@ -2749,9 +2758,33 @@ fn range_try_union(a: &Type, other: &Type) -> Option<Type> {
 
 impl Type {
     /// `getConstantArrays()`
-    fn constant_arrays(&self) -> Vec<&ConstArray> {
+    fn constant_arrays(&self) -> Vec<ConstArray> {
         match self {
-            Type::ConstArray(a) => vec![a],
+            // `IntersectionType::getConstantArrays()` of `callable&array`: its offsets 0 and 1
+            _ if self.is_callable_array() => {
+                let item = self.general_arrays().pop().map_or_else(mixed, |(_, v)| v);
+                vec![ConstArray {
+                    keys: vec![Type::ConstInt(0), Type::ConstInt(1)],
+                    values: vec![
+                        intersect(vec![
+                            item.clone(),
+                            Type::Union(vec![Type::ClassString(None), Type::ObjectWithoutClass]),
+                        ]),
+                        intersect(vec![
+                            item,
+                            Type::Intersection(vec![
+                                Type::String,
+                                Type::Accessory(Accessory::NonFalsyString),
+                            ]),
+                        ]),
+                    ],
+                    next_auto_indexes: vec![2],
+                    optional: vec![],
+                    is_list: Tri::Yes,
+                    unsealed: None,
+                }]
+            }
+            Type::ConstArray(a) => vec![(**a).clone()],
             Type::Intersection(types) => types.iter().flat_map(Type::constant_arrays).collect(),
             _ => vec![],
         }
@@ -2860,7 +2893,7 @@ fn reduce_arrays(arrays: &[Type], preserve_tagged_unions: bool) -> Vec<Type> {
             empty = Some(a.clone());
             continue;
         }
-        to_process.extend(a.constant_arrays().into_iter().map(|c| Some(c.clone())));
+        to_process.extend(a.constant_arrays().into_iter().map(Some));
     }
     if let Some(empty) = empty {
         match empty {
@@ -3029,7 +3062,10 @@ fn common_array_accessories(arrays: &[Type]) -> Vec<Type> {
                 }
             }
         }
-        if let Type::ConstArray(ca) = a {
+        if !a.is_constant_array().yes() {
+            continue;
+        }
+        for ca in a.constant_arrays() {
             if ca.is_list.yes() {
                 add(Type::Accessory(Accessory::List), i);
             }
@@ -3138,15 +3174,15 @@ pub fn intersect(types: Vec<Type>) -> Type {
     'outer: while i < types.len() {
         let mut j = i + 1;
         'inner: while j < types.len() {
-            if let Type::IntRange(..) = types[i]
-                && let Some(t) = range_try_intersect(&types[i], &types[j])
+            if let Type::IntRange(min, max) = types[i]
+                && let Some(t) = range_try_intersect(min, max, &types[j])
             {
                 types[j] = t;
                 types.remove(i);
                 continue 'outer;
             }
-            let a_super = if let Type::Iterable(..) = types[j] {
-                iterable_super_of_mixed(&types[j], &types[i])
+            let a_super = if let Type::Iterable(key, value) = &types[j] {
+                iterable_super_of_mixed(key, value, &types[i])
             } else {
                 is_super_type_of(&types[j], &types[i])
             };
@@ -3154,8 +3190,8 @@ pub fn intersect(types: Vec<Type>) -> Type {
                 types.remove(j);
                 continue;
             }
-            let b_super = if let Type::Iterable(..) = types[i] {
-                iterable_super_of_mixed(&types[i], &types[j])
+            let b_super = if let Type::Iterable(key, value) = &types[i] {
+                iterable_super_of_mixed(key, value, &types[j])
             } else {
                 is_super_type_of(&types[i], &types[j])
             };
@@ -3191,16 +3227,35 @@ pub fn intersect(types: Vec<Type>) -> Type {
                     }
                     continue 'inner;
                 }
-                let arrayish = |t: &Type| matches!(t, Type::Array(..) | Type::Iterable(..));
-                if arrayish(&types[i]) && arrayish(&types[j]) {
-                    let (Type::Array(jk, jv) | Type::Iterable(jk, jv)) = &types[j] else {
-                        unreachable!()
+                // ConstantArrayType & ArrayType: key by key (constant arrays sort first, so the shape is i).
+                // ponytail: two constant arrays meet only through isSuperTypeOf(), not key by key.
+                // As PHPStan's `continue 2`, the merged shape is not compared with the later types again.
+                if let (Type::ConstArray(ca), Type::Array(..)) = (&types[i], &types[j]) {
+                    types[i] = ca.intersect_array(&types[j]);
+                    types.remove(j);
+                    i += 1;
+                    continue 'outer;
+                }
+                let arrayish = |t: &Type| {
+                    matches!(
+                        t,
+                        Type::Array(..) | Type::Iterable(..) | Type::ConstArray(_)
+                    )
+                };
+                if arrayish(&types[i])
+                    && arrayish(&types[j])
+                    && !matches!(types[j], Type::ConstArray(_))
+                {
+                    // `getKeyType()`: the raw key of an array, not its iterable key
+                    let jk = match &types[j] {
+                        Type::Array(k, _) | Type::Iterable(k, _) => (**k).clone(),
+                        t => t.iterable_key_type(),
                     };
-                    let key = intersect(vec![types[i].iterable_key_type(), (**jk).clone()]);
-                    let (Type::Array(_, iv) | Type::Iterable(_, iv)) = &types[i] else {
-                        unreachable!()
-                    };
-                    let item = intersect(vec![(**iv).clone(), (**jv).clone()]);
+                    let key = intersect(vec![types[i].iterable_key_type(), jk]);
+                    let item = intersect(vec![
+                        types[i].iterable_value_type(),
+                        types[j].iterable_value_type(),
+                    ]);
                     types[j] = if matches!(
                         (&types[i], &types[j]),
                         (Type::Iterable(..), Type::Iterable(..))
@@ -3264,10 +3319,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
 }
 
 /// `IterableType::isSuperTypeOfMixed()`
-fn iterable_super_of_mixed(a: &Type, b: &Type) -> Tri {
-    let Type::Iterable(key, value) = a else {
-        unreachable!()
-    };
+fn iterable_super_of_mixed(key: &Type, value: &Type, b: &Type) -> Tri {
     let nested = |x: &Type, y: &Type| {
         if matches!(x, Type::Mixed { .. }) {
             Tri::Yes
@@ -3281,23 +3333,15 @@ fn iterable_super_of_mixed(a: &Type, b: &Type) -> Tri {
 }
 
 /// `IntegerRangeType::tryIntersect()`
-fn range_try_intersect(a: &Type, other: &Type) -> Option<Type> {
-    let Type::IntRange(min, max) = a else {
-        unreachable!()
-    };
-    let (omin, omax) = match other {
-        Type::IntRange(x, y) => (*x, *y),
-        Type::ConstInt(v) => (Some(*v), Some(*v)),
-        Type::Int => return Some(a.clone()),
-        _ => return None,
-    };
-    let new_min = match (min, omin) {
-        (Some(x), Some(y)) => Some(*x.max(&y)),
+fn range_try_intersect(min: Option<i64>, max: Option<i64>, other: &Type) -> Option<Type> {
+    let (omin, omax) = other.int_bounds()?;
+    // the tighter bound of each side; a missing one is unbounded
+    let bound = |x: Option<i64>, y: Option<i64>, tighter: fn(i64, i64) -> i64| match (x, y) {
+        (Some(x), Some(y)) => Some(tighter(x, y)),
         (x, y) => x.or(y),
     };
-    let new_max = match (max, omax) {
-        (Some(x), Some(y)) => Some(*x.min(&y)),
-        (x, y) => x.or(y),
-    };
-    Some(Type::int_range(new_min, new_max))
+    Some(Type::int_range(
+        bound(min, omin, i64::max),
+        bound(max, omax, i64::min),
+    ))
 }

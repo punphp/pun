@@ -151,15 +151,11 @@ fn constants() {
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
-/// Probes Pun does not model yet (open for M2.3): unsealed shapes and key-narrowing in intersections with
-/// arrays/lists, subtracted mixed, object-shape and conditional intersections, callable arrays checked against
-/// the class's methods.
+/// Probes Pun does not model yet (open for M2.3): a constant-key array type against `list`, subtracted mixed,
+/// object-shape and conditional intersections, callable arrays checked against the class's methods.
 const PROBE_GAPS: &[&str] = &[
     "array{'Countable', 'count'}&callable",
-    "array{a: int, ...}&list",
     "array<1|2, int>&list",
-    "array{a: int, b?: string}&array<string, int>",
-    "array{a: int, ...}&array<string, int>",
     "non-empty-mixed",
     "object{a: int}&object{b: int}",
     "(T is int ? string : bool)&int",
