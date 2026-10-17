@@ -1,8 +1,5 @@
 import { defineConfig } from "blume";
 
-// The Pun docs site and homepage. Run from this folder: `bun install`, then `bun run dev` / `bun run build`.
-// Content lives in content/ (routes under /docs); the homepage is pages/index.astro.
-// Internal notes (plan, tasks, rules design) live in ../context/, not here.
 export default defineConfig({
   title: "Pun",
   description:
@@ -26,9 +23,7 @@ export default defineConfig({
   },
 
   theme: {
-    // lilac-deep, the only brand colour used as text (5.6:1 on paper; lighter in dark mode)
     accent: { light: "#5B3FD9", dark: "#B3A3FF" },
-    // zap, the primary call to action (labels render dark on it)
     action: "#FFE53D",
     background: { light: "#FBF6EC", dark: "#120E18" },
     radius: "lg",
