@@ -1,0 +1,75 @@
+/* Pun: Sticker Pop. Values mirror design/tokens.json; keep them in sync. */
+
+:root {
+  /* Blume tokens */
+  --blume-background: #fbf6ec;
+  --blume-foreground: #17121f;
+  --blume-muted: #f3ebdc;
+  --blume-muted-foreground: #4a4256;
+  --blume-border: #e3dacb;
+  --blume-accent: #5b3fd9;
+  --blume-accent-foreground: #ffffff;
+  --blume-action: #ffe53d;
+  --blume-action-foreground: #17121f;
+  --blume-code-background: #ffffff;
+
+  /* Pun brand tokens, used by the homepage (pages/_home) */
+  --pun-paper: #fbf6ec;
+  --pun-paper-2: #f3ebdc;
+  --pun-card: #ffffff;
+  --pun-ink: #17121f;
+  --pun-ink-2: #4a4256;
+  --pun-ink-3: #6b6280;
+  --pun-outline: #17121f;
+  --pun-hairline: #e3dacb;
+  --pun-lilac: #bbaaff;
+  --pun-lilac-deep: #5b3fd9;
+  --pun-zap: #ffe53d;
+  --pun-gum: #ff7ab8;
+  --pun-mint: #8ef0c8;
+  --pun-on-fill: #17121f;
+  --pun-code-bg: #17121f;
+  --pun-code-bar: #231c2e;
+  --pun-code-ink: #ede8f7;
+  --pun-code-dim: #8d85a0;
+  --pun-code-add: #9bf0c9;
+  --pun-code-del: #ff9cc8;
+  --pun-shadow: #17121f;
+  --pun-stroke: 3px;
+  --pun-stroke-thin: 2px;
+  --pun-pop-sm: 3px 3px 0 0 var(--pun-shadow);
+  --pun-pop: 4px 4px 0 0 var(--pun-shadow);
+  --pun-pop-hover: 6px 6px 0 0 var(--pun-shadow);
+  --pun-pop-press: 1px 1px 0 0 var(--pun-shadow);
+  --pun-pop-lg: 8px 8px 0 0 var(--pun-shadow);
+  --pun-pop-lilac: 6px 6px 0 0 #5b3fd9;
+  --pun-stripe: repeating-linear-gradient(-45deg, #f3ebdc 0 8px, #e8decc 8px 16px);
+  --pun-dot-grid: radial-gradient(#17121f 1.5px, transparent 1.7px);
+}
+
+:root[data-theme="dark"] {
+  --blume-background: #120e18;
+  --blume-foreground: #f5f1ff;
+  --blume-muted: #1c1625;
+  --blume-muted-foreground: #c9c0d8;
+  --blume-border: #2e2638;
+  --blume-accent: #b3a3ff;
+  --blume-accent-foreground: #17121f;
+  --blume-action: #ffe53d;
+  --blume-action-foreground: #17121f;
+  --blume-code-background: #0b0810;
+
+  --pun-paper: #120e18;
+  --pun-paper-2: #0b0810;
+  --pun-card: #1c1625;
+  --pun-ink: #f5f1ff;
+  --pun-ink-2: #c9c0d8;
+  --pun-ink-3: #9c92ae;
+  --pun-outline: #ede7f7;
+  --pun-hairline: #2e2638;
+  --pun-lilac-deep: #b3a3ff;
+  --pun-code-bg: #0b0810;
+  --pun-code-bar: #1a1422;
+  --pun-shadow: #5b3fd9;
+  --pun-pop-lilac: 6px 6px 0 0 #bbaaff;
+}

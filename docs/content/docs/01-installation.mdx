@@ -1,0 +1,68 @@
+---
+title: Installation
+description: Install the pun binary with the shell installer, Homebrew, npm or Composer, or build it from source.
+---
+
+Pun is one native binary. Prebuilt binaries cover Linux x64 and arm64 (glibc and musl) and macOS x64 and arm64.
+
+:::note[Before v0.1]
+The installers below go live with the first release. Until then, build from source.
+:::
+
+<Tabs param="install">
+  <Tab title="Shell">
+
+```bash
+curl -LsSf https://github.com/punphp/pun/releases/latest/download/punphp-installer.sh | sh
+```
+
+  </Tab>
+  <Tab title="Homebrew">
+
+```bash
+brew install punphp/tap/pun
+```
+
+  </Tab>
+  <Tab title="npm">
+
+```bash
+npm install --save-dev @punphp/pun
+```
+
+  </Tab>
+  <Tab title="Composer">
+
+```bash
+composer require --dev punphp/pun
+```
+
+The Composer package downloads the native binary on first run.
+
+  </Tab>
+  <Tab title="From source">
+
+```bash
+cargo install --git https://github.com/punphp/pun punphp --features mago-lint
+```
+
+Release builds ship with the `mago-lint` feature, which `pun lint --mago` needs.
+
+  </Tab>
+</Tabs>
+
+Check it works:
+
+```bash
+pun --version
+```
+
+## The pint alias
+
+Invoked as `pint`, Pun behaves exactly like Pint: same flags, same output, and it ignores `pun.toml`. Opt in with a symlink:
+
+```bash
+ln -s "$(command -v pun)" ~/.local/bin/pint
+```
+
+Scripts, CI steps and editor plugins that call `pint` then run Pun without any other change.

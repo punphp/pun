@@ -1,0 +1,16 @@
+---
+title: pun lsp
+description: A language server on stdio that formats PHP exactly like pun format, for VS Code, Neovim and PhpStorm.
+---
+
+`pun lsp` is a formatting language server on stdio. It formats the open document exactly like `pun format --stdin` with the document's path, so the project's config and exclusions apply.
+
+```bash
+pun lsp
+```
+
+Config is read at startup: restart the server after editing `pint.json` or `pun.toml`. Setup for each editor is in [Editors](/docs/guides/editors).
+
+:::note[What's next]
+`pun lsp` is growing into one language server: [PHPantom](https://github.com/PHPantom-dev/phpantom_lsp) for code intelligence (completion, hover, definitions, references, rename) plus Pun for formatting, diagnostics and fix-all.
+:::

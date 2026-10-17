@@ -1,0 +1,19 @@
+{
+  "name": "pun-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "blume dev",
+    "build": "blume build",
+    "preview": "blume preview",
+    "check": "blume check",
+    "validate": "blume validate",
+    "doctor": "blume doctor"
+  },
+  "dependencies": {
+    "blume": "^2.2.3"
+  },
+  "engines": {
+    "node": ">=22.19"
+  }
+}

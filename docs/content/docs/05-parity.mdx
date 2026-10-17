@@ -1,0 +1,40 @@
+---
+title: Parity
+description: Pun's output is checked against the real Pint on real projects, file by file, plus mutation fuzzing.
+---
+
+Every claim here is reproduced by the harness in the repository (`cargo run -p punphp-harness -- format`), against Pint 1.29.3 and PHP-CS-Fixer 3.95.17.
+
+## Speed
+
+On laravel/framework:
+
+| | Time |
+| --- | --- |
+| Pint | 190 s |
+| Pun, cold | 3.7 s |
+| Pun, warm cache | 0.07 s |
+
+That's 51× faster cold, and over 2,700× faster warm.
+
+## Byte-for-byte output
+
+Each project's own `pint.json`, every file compared against Pint's output. `differing` must be 0.
+
+| Project | Files | Identical | Differing |
+| --- | --- | --- | --- |
+| larastan | 725 | 725 | 0 |
+| laravel/framework | 3,483 | 3,483 | 0 |
+| laravel/laravel | 66 | 66 | 0 |
+| laravel/pint | 573 | 573 | 0 |
+| pest | 757 | 757 | 0 |
+| pinkary | 799 | 799 | 0 |
+| pinkary (unformatted copy) | 799 | 799 | 0 |
+
+Pinkary runs twice: as committed, and as a deliberately unformatted copy where Pint changes 346 files. The same holds with `--preset psr12` on every run.
+
+## Fuzzing
+
+`scripts/fuzz-parity.sh` applies seeded style mutations to real files so Pint has work to do, formats one copy with Pint and one with Pun, and compares every file. On pinkary and laravel/framework, three seeds each, Pint changed 1,763 of 2,196 mutated files, and Pun differed on none.
+
+The full, current tables are in [`docs/scoreboard.md`](https://github.com/punphp/pun/blob/main/docs/scoreboard.md).

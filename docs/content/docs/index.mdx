@@ -1,0 +1,48 @@
+---
+title: Introduction
+description: Pun is one fast Rust binary for the whole PHP toolchain, with the same results as the tools you use today.
+---
+
+Pun is to PHP what Bun is to JavaScript: one install that replaces the pile of tools a Laravel project runs on every commit. It formats like Pint, and next it will analyse like PHPStan and Larastan and refactor like Rector, from one `pun.toml`.
+
+![The Pun mascot, sprinting](/mascot-512.png)
+
+## Why
+
+A Laravel project runs four or five PHP tools on every commit. Each one is slow (Pint takes 190 s on laravel/framework), has its own config format, rule names and ignore comments, overlaps with the others, and prints for humans while coding agents pay for every token. Rust tools are fast but not drop-in, so switching costs a reformat diff and a new baseline.
+
+Pun goes for **exact parity first**, so migration day changes nothing. Every command is checked against pinned versions of the real tools, their own test suites, real projects and a fuzzer.
+
+## Commands
+
+| Command | Replaces | Status |
+| --- | --- | --- |
+| [`pun format`](/docs/commands/format) | Pint, PHP-CS-Fixer | Done: Pint-identical on every corpus project |
+| [`pun lsp`](/docs/commands/lsp) | Format-on-save plugins | Formatting today; code intelligence in progress |
+| [`pun lint`](/docs/commands/lint) | Rector, Mago's linter | Mago's Laravel lint rules today; Rector next |
+| `pun analyse` | PHPStan, Larastan | In progress |
+| `pun check` | All three in one pass | Designed |
+| `pun migrate` | Hand-editing configs | Designed |
+
+Under a coding agent, every command switches to compact `path:line:col rule message` output.
+
+## Principles
+
+- **Prove it.** Every speed and parity claim is checked against the real tool. See [Parity](/docs/parity).
+- **No PHP or Node needed** to check a project. PHP is only used for rules Pun hasn't ported yet ([delegate mode](/docs/configuration/delegate-mode)).
+- **Small, ported code.** Fixers are ported function by function from PHP-CS-Fixer, with 100% test coverage.
+
+<CardGroup cols={2}>
+  <Card title="Installation" href="/docs/installation" icon="download">
+    Shell, Homebrew, npm, Composer, or from source.
+  </Card>
+  <Card title="Quickstart" href="/docs/quickstart" icon="zap">
+    Swap Pint for Pun in a minute.
+  </Card>
+  <Card title="pun format" href="/docs/commands/format" icon="wand-sparkles">
+    Every flag, output format and behaviour.
+  </Card>
+  <Card title="Migrating from Pint" href="/docs/guides/migrating-from-pint" icon="arrow-right-left">
+    Switch scripts, CI and editors with zero diff.
+  </Card>
+</CardGroup>

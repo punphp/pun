@@ -1,0 +1,27 @@
+---
+title: pun lint
+description: Report Mago's lint-only Laravel rules. It never edits files.
+---
+
+```bash
+pun lint --mago            # the whole project, with pint.json excludes
+pun lint --mago app routes # specific paths
+```
+
+`pun lint --mago` reports Mago's lint-only Laravel rules as `path:line:col: level [rule] message`, plus a help line. These rules have no auto-fix, so `pun lint` never edits files. It exits 1 when it finds something. Blade files and files with syntax errors are skipped.
+
+| Rule | Flags |
+| --- | --- |
+| `no-request-all` | `$request->all()` |
+| `prefer-casts-method` | a `$casts` property instead of a `casts()` method |
+| `prefer-anonymous-migration` | named migration classes |
+| `prefer-view-array` | `view()->with()` chains instead of an array |
+| `middleware-in-routes` | middleware set in controllers instead of routes |
+
+Release builds include it. When building from source, enable the `mago-lint` feature.
+
+Rules that **do** have an auto-fix are opt-in `Pun/` format rules instead. See [Extra rules](/docs/configuration/extra-rules).
+
+:::note[Coming next]
+`pun lint --fix` will run Rector's rules natively, with Rector-identical results.
+:::

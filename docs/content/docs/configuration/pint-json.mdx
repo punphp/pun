@@ -1,0 +1,36 @@
+---
+title: pint.json
+description: Pun reads your existing pint.json as is. Presets, rules, finder keys and the precedence between config files.
+---
+
+Pun reads `pint.json` exactly as Pint does, so a project that uses Pint needs no changes.
+
+```json pint.json
+{
+  "preset": "laravel",
+  "rules": {
+    "final_class": true
+  },
+  "exclude": ["build"]
+}
+```
+
+## Presets
+
+`laravel` (the default), `per`, `psr12`, `symfony` and `empty`, copied from the pinned Pint. Rules in `pint.json` merge on top of the preset, as in Pint.
+
+## Which config wins
+
+Pun resolves the configuration in this order, each layer overriding the last key by key:
+
+1. The preset.
+2. `pint.json` (or the file given with `--config`).
+3. `pun.toml`, if present.
+
+`--preset` on the command line beats both files. Run `pun config --show` to print the result.
+
+A `.php-cs-fixer.php` (or `.php-cs-fixer.dist.php`) is used by `pun format` when there is no `pint.json`, `pun.toml` or `--config`. Its Finder picks the files unless you pass paths. See [delegate mode](/docs/configuration/delegate-mode) for how its custom fixers run.
+
+:::note[The pint alias]
+Invoked as `pint`, Pun ignores `pun.toml` and `.php-cs-fixer.php`, exactly like Pint.
+:::
