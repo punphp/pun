@@ -39,11 +39,11 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
   own lint group (`lint/laravel-13/...`). The upstream mapping is kept as data in
   crates/pun-config/rules/mapping.toml (used by migrate, `pun explain` and the docs).
 - **No levels** (confirmed 2026-10-17: named presets for new projects; migrate writes explicit rules and, when
-  interactive, offers the closest preset with a count of the new problems it would report). Presets are tiers: `essential` < `recommended` (default) < `strict` < `pedantic`, cumulative, one tier
-  for lint + analyse; add-ons `laravel` / `pest` / `phpunit`.
+  interactive, offers the closest preset with a count of the new problems it would report). Presets are tiers (analyse, revised 2026-10-17): `basic` < `essential` < `recommended` (default) < `strict` < `max`, cumulative; lint uses sets instead (originally one tier
+  for lint + analyse); add-ons `laravel` / `pest` / `phpunit`.
 - **`pun init`** asks the format preset (laravel / psr12), the analyse preset and the lint preset; lint and analyse
   presets are chosen separately (2026-10-17, components/lint.md §9). Lint's preset is a checklist of sets
-  (`[lint] sets = ["dead-code", "modernize"]`), like Rector's prepared sets; analyse keeps the four-step preset. Laravel, Pest and PHPUnit rules turn on
+  (`[lint] sets = ["dead-code", "modernize"]`), like Rector's prepared sets; analyse keeps a five-step preset (`basic` to `max`). Laravel, Pest and PHPUnit rules turn on
   automatically from composer.lock.
 - **Laravel support is built in** (2026-10-17): nothing to install, unlike Larastan or rector-laravel. Every PHPStan
   core rule is supported natively.

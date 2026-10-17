@@ -47,7 +47,7 @@ file, line and message), so CI can switch with no baseline churn.
 This comes from earlier decisions; none of it is built yet.
 
 ```toml
-preset = "recommended"          # essential | recommended | strict | pedantic (decided: named presets)
+preset = "recommended"          # basic | essential | recommended | strict | max (decided: five named presets)
 
 [analyse]
 paths = ["app", "tests"]
@@ -106,8 +106,8 @@ Left, in order (pending the answers below):
 2. **Finish level 0.** Port the remaining level-0 rules, empty gaps.txt, and bring the corpus differences to 0.
 3. **Type inference** (Q1). This is the big piece: expression types, narrowing and PHPDoc generics. Levels 2 to 10
    depend on it.
-4. **Larastan, built in.** Models (attributes from migrations, casts, accessors), relations, facades, the container,
-   config, and macros.
+4. **Larastan, built in** (§9): the Laravel knowledge (models, relations, builder, collections, facades, container,
+   helpers, macros), Larastan's 20 rules, then the improvements Pushpak picks from §9.3.
 5. **Levels 1 to 10** as rules plus the four switches, then strict-rules and deprecation-rules.
 6. **`pun migrate` for phpstan.neon**: level to rules, parameters to options, ignoreErrors and baseline to Pun IDs,
    and every unsupported extension named.
@@ -122,7 +122,7 @@ Left, in order (pending the answers below):
    identifiers.*
 2. **Messages.** Keep PHPStan's message text word for word (with Pun's rule ID instead of the identifier)?
    *Recommend: yes for 1.0. It keeps parity testable and familiar; nicer wording can come later, as a rule option.*
-3. **Presets.** Four presets: `essential`, `recommended`, `strict`, `pedantic`? You mentioned five in the user journey.
+3. **Presets.** Answered: five presets, the top one named `max` (see Decisions). The old question was four presets: `essential`, `recommended`, `strict`, `pedantic`.
    *Recommend: four. `essential` already is the loose one (about PHPStan level 0 to 1).*
 4. **Which extensions are built in.** Larastan is (decided). What about strict-rules, deprecation-rules,
    phpstan-phpunit, the Pest plugin and phpstan-mockery?
@@ -134,9 +134,7 @@ Left, in order (pending the answers below):
 6. **Baseline format.** Should migrate convert phpstan-baseline.neon into pun-baseline.toml with Pun IDs, and should
    `--generate-baseline` write the TOML file?
    *Recommend: yes. One config language, and the baseline still keeps each identifier's narrow scope.*
-7. **Larastan's model knowledge.** Larastan learns model properties by reading migrations. Do the same, without
-   running PHP?
-   *Recommend: yes, read migrations like Larastan. Running `artisan` would need PHP and a database.*
+7. **Larastan's model knowledge.** Answered by §9: read migrations and the schema dump, without running PHP.
 8. **Result cache.** Should a warm `pun analyse` re-check only changed files and their dependents before 1.0?
    *Recommend: yes. Speed and memory are a priority, and this is where analysers spend most of their time.*
 
@@ -183,6 +181,48 @@ inference.
 - **Risk:** Mago infers differently from PHPStan in edge cases, so some PHPStan errors will be missing or extra. The
   parity test measures this, and each gap gets fixed in a Pun check or a Mago plugin.
 
+## 9. Larastan, built in (Pushpak: "support Larastan, and improve on it")
+
+Larastan has two halves, and without the first one every Laravel app drowns in false "undefined method" and
+"undefined property" errors on its models. Pun builds both into the Laravel plugin (§8). It turns on by itself when
+composer.lock has laravel/framework.
+
+**1. Laravel knowledge: types PHPStan can't see.**
+
+| Area | What Pun must know (Larastan's extensions) | Where it comes from |
+| --- | --- | --- |
+| Model attributes | every column as a typed property; `$casts` / `casts()` (enums, dates, custom casts); accessors and mutators (`get…Attribute` and `Attribute::make`); `$appends` | migrations (`Schema::create` / `table`), or the schema dump in `database/schema/*.sql`, plus the model class |
+| Relations | relation properties (`$user->posts` is `Collection<Post>`), generic relation types (`HasMany<Post, User>`), `withCount` / `withSum` attributes | the relation methods' return types and bodies |
+| Query builder | `Model::where(...)` forwarded to `Builder<Model>`, dynamic `whereEmail()`, local scopes (`scope…` and `#[Scope]`), custom builders (`newEloquentBuilder`, `#[UseEloquentBuilder]`) | the model and its builder class |
+| Collections | `Collection<TKey, TValue>` generics through `map`, `filter`, `pluck` and higher-order proxies (`$users->each->notify()`); custom collections (`#[CollectedBy]`) | Laravel's own PHPDoc generics, plus the proxies |
+| Facades | `Cache::get` resolved to the class behind the facade, including real-time facades | each facade's accessor, resolved through the container |
+| Container | `app(Foo::class)`, `app('cache')`, `resolve()`, `App::make()` return the bound type | class names, and the framework's own bindings list |
+| Helpers | `auth()->user()` is the configured user model; `config('app.name')` returns the type of the value in config/; `request()`, `view()`, `response()`, `now()` (Carbon or the configured date class) | config/auth.php, config/*.php, the framework |
+| Macros | `Str::macro`, `Collection::macro` and `Builder::macro` calls become real methods | the `macro(...)` calls in service providers |
+| Factories, requests, jobs | `User::factory()` is `UserFactory`; `FormRequest::validated()` and `safe()`; `dispatch()` arguments match the job's constructor | factories, form requests, jobs |
+
+None of this needs PHP to run: Pun reads the files, as Larastan does (except `config()` values, which Larastan can't
+type at all).
+
+**2. Larastan's 20 rules.** Already mapped to Pun analyse rules (rules/mapping.toml): `undefined-relation`,
+`undefined-model-append`, `undefined-console-argument` and `-option`, `unexpected-dispatch-arguments`,
+`no-env-outside-config`, `redundant-collection-call`, `no-model-make`, `unused-view`, `missing-translation`,
+`octane-compatibility` and the rest.
+
+**3. Improvements over Larastan** (proposal; things Pun can do because it reads the whole project quickly):
+- **Typed config:** `config('services.stripe.key')` has the real type of that value, and a missing key is an error.
+- **Routes:** `route('posts.show')`, `to_route()` and `redirect()->route()` with a name that doesn't exist is an
+  error, and so are missing route parameters.
+- **Views:** `view('emails.welcome')` with no such Blade file is an error. Larastan only reports views nobody uses.
+- **Translations:** `__('auth.failed')` and `trans()` keys checked against lang/, for every locale.
+- **Env:** `env('STRIPE_KEY')` keys checked against `.env.example`.
+- **Inertia:** `Inertia::render('Posts/Show')` with no such page component is an error.
+- **No stale model data:** Larastan needs ide-helper or a fresh schema dump to stay right. Pun re-reads migrations on
+  every run, and the cache makes that free.
+
+**Testing:** Larastan's own test suite (its `tests/Type` and `tests/Rules` fixtures) becomes the parity test, as
+PHPStan's fixtures do for core. The corpus adds pinkary and larastan's own source.
+
 ## Decisions
 
 From earlier rounds (2026-10-17, Pushpak):
@@ -196,4 +236,7 @@ Answered 2026-10-17 (Pushpak):
   rule in the mapping. The choice: Mago's analyser (§8).
 - **Q2 messages:** Pun may reword them.
 - **Q6 baseline:** its own feature (`pun analyse --generate-baseline`). Migrate never copies a PHPStan baseline.
-- **Presets:** named presets instead of levels; how many (four or more) is still open.
+- **Five presets, the top one called `max`** (Pushpak). Proposed bands, by the PHPStan levels each covers:
+  `basic` (0-1), `essential` (2-3: PHPDoc and return types), `recommended` (4-5: dead code and argument types; the
+  default), `strict` (6-8: missing types, union types and nulls), `max` (9-10: mixed, like PHPStan's `level: max`).
+  Each includes the one below. The rules' `tier` field in mapping.toml moves to these five names with the rename.

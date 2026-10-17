@@ -182,7 +182,8 @@ Left, in order (pending the answers below):
 
 **A new, blank Laravel project:** `pun init` asks three things and writes pun.toml.
 1. **Format preset:** `laravel` or `psr12`.
-2. **Analyse preset:** `essential`, `recommended` (default), `strict` or `pedantic`, each including the one below.
+2. **Analyse preset:** `basic`, `essential`, `recommended` (default), `strict` or `max`, each including the one below
+   (analyse.md decisions).
 3. **Lint preset:** see the proposal below.
 
 Laravel, Pest and PHPUnit are not questions. Pun reads composer.lock and turns their rules on by itself, including the
