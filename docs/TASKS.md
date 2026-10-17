@@ -64,10 +64,17 @@ Command layout (user-approved direction, 2026-10-17):
   Open choices: (1) keep reading legacy configs with a "run pun migrate" hint (proposed) or require pun.toml; (2) Pun's own rule names, with `pun explain` mapping (proposed), or upstream names under a prefix.
 - `pun lsp` = PHPantom (completion, hover, definitions, references) + Pun (formatting, diagnostics, code actions). Evaluation and prototype in crates/pun-lsp.
 
-### Open questions for the user
+### User decisions (2026-10-17)
 
-- Drop the `--engine=pun` (Mago formatter) path? ("remove unnecessary things about formatter")
-- "creat a r": release, README or PR?
+- Licence: MIT (LICENSE + THIRD_PARTY_NOTICES.md added).
+- Release: none until four tools exist: `pun format`, `pun analyse`, `pun lint`, `pun migrate`. No publishing, no tagging.
+- Repo stays private.
+- **pun.toml only.** Commands no longer read pint.json, .php-cs-fixer.php, phpstan.neon or rector.php. Without pun.toml, Pun stops with "No pun.toml found. Run `pun migrate`." The old-config readers live on only inside `pun migrate` (and the harness, which runs `pun migrate` on a temp copy and then `pun format`; that also tests migrate). The `pint` argv[0] alias mode goes away; `pun format` output stays Pint-identical.
+- **Pun's own, modernised rule names.** The upstream-to-Pun mapping is maintained as data (used by `pun migrate`, `pun explain` and a docs page).
+- **Remove the Mago-based formatter** (`--engine=pun`, `format_pun`).
+- Mago: depend on crates.io releases; no maintainer outreach needed.
+- FrankenPHP (plan row 4): my call. Pun links libphp itself first; FrankenPHP is linked in later.
+- **Rule placement:** decide hard which rule lives in format, lint or analyse, remove overlaps, take inspiration from other ecosystems (Vite+, Biome, Ruff, Oxc, Deno). Design in docs/RULES.md.
 
 ### Overnight queue (autonomous, in order)
 
