@@ -28,7 +28,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | Verify --dirty/--diff/--repair/--parallel/--staged/--since/--stdin against Pint (crates/pun-cli/tests/flags.rs; `--since` added; stdin+`--dirty`/`--diff` intentionally does not format repo files) | - | done |
 | Agent-optimised output for every command (PLAN "Agent-optimised output"): shared detection (agent-detector v2 list, PUN_AGENT, --agent/--no-agent, PAO_FORCE/PAO_DISABLE), compact compiler-style line format (not JSON), capped lists | - | todo (after cleanup) |
 | Config rework: pun.toml only (no legacy reads, no `pint` alias), Pun rule IDs from rules/mapping.toml, `pun migrate` format part, `pun check`, risky fixers moved to lint, mapping completeness test; harness runs `pun migrate` then `pun check --fix` vs Pint | - | todo (after cleanup) |
-| Naming pass on tentative lint/analyse names | naming agent | doing |
+| Naming pass on tentative lint/analyse names (docs/RULES.md §3, scripts/check-rule-mapping.py) | naming agent | done |
 | Cleanup: /code-review --fix, architecture pass, remove restating comments, cargo fmt, clippy (59); clap: `ValueEnum` for `--engine` and `config --format` instead of string lists + manual mapping (keep `--format`/`--output-format` as strings: Pint prints its own "Format [x] is not supported." box) | cleanup agent (target-cleanup/) | doing |
 | CRLF fuzz diff + native framework benchmark: seed-2 Process.php diff was a stale target/debug/pun (fuzz-parity.sh now refuses stale binaries); crlf + mixed-eol fuzz 16 runs 0 differing; scoreboard re-measured with own pint.json, no flags | - | done |
 | Pint-mode polish: Pun-only flags rejected in pint mode, -v exception boxes (class + throw site; PHP frames dropped), --bail abort progress, list pint.json, --preset=nope, LSP config reload, per-file fixer panics, watch exits with its parent, one Node probe (crates/pun-cli, pun-config) | - | done |
@@ -85,7 +85,7 @@ Command layout (user-approved direction, 2026-10-17):
   2. Short rule names are accepted in config and ignore comments; output always prints the full ID.
   3. PHPStan core and Larastan identifiers stay in analyse until v1.
   4. Laravel first: Rector's Symfony, Doctrine and downgrade sets are unsupported, and migrate lists them and stops.
-  5. Naming pass on the 807 lint and 497 analyse names marked tentative before release.
+  5. Naming pass on the 807 lint and 497 analyse names marked tentative: done (542 lint, 255 analyse rules; RULES.md §3).
   `pun check` / `pun check --fix` will exist.
 
 
