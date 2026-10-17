@@ -151,7 +151,6 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| config 4: TOML-native option names for format rules | doing (workflow, wf/options) |
 | migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | doing (workflow, wf/migrate-format) |
 | migrate 1 follow-up: read `.php-cs-fixer.php` statically (no system PHP), replacing crates/pun-cli/src/php_cs_fixer_rules.php | todo |
 | config 1 follow-up: bring rules.md §1-§2 and §5 examples up to the new IDs (they still use names like `lint.no-loose-comparison`) | todo |
@@ -160,6 +159,9 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | config 3 follow-up: switch the no-config message to "No pun.toml found. Run `pun migrate`, or `pun init` for a new project." once `pun init` lands | todo |
 | config 8 follow-up: mapping.toml maps PHPStan parameters (`checkUnionTypes`, nullables, explicit/implicit mixed) to `[analyse] union-types = true` and similar keys that pun.toml's `[analyse]` lacks; add the switches to the schema or point them at the analyse preset that turns them on | todo |
 | config 8 follow-up: `pun explain --format json` for agents and the docs generator (not in the plan yet) | todo |
+| config 4 follow-up: `pun explain <rule>` lists a format rule's options from `pun_config::options::rule_options` (Pun name, type, values, null spelling) | todo |
+| config 4 follow-up: scripts/check-rule-mapping.py checks the `[options]` tables too (rule IDs exist, kebab-case names, known types) | todo |
+| config 4 follow-up: docs: generate a per-rule option reference page from mapping.toml's `[options]` tables | todo |
 
 **Gate:** the 7-project corpus still gives 0 differing files with `pun migrate` + `pun check --fix`, and
 `scripts/check-rule-mapping.py` passes on the new names.
@@ -216,6 +218,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | lint: the engine uses `pun_problem::{Problem, apply_fixes}` for diagnostics and the fix loop | todo |
 | lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
 | lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | todo |
+| lint (from config 4): give the options of lint rules that are fixers (risky and code-deleting) Pun names through mapping.toml's `[options]` tables; they are still PHP-CS-Fixer names, kebab-cased | todo |
 | lint 7: all 542 rules native, in usage order | todo |
 | migrate 4: rector.php | todo |
 
