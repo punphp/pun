@@ -200,8 +200,8 @@ Rector has no ladder. Its config is a set of independent toggles, `withPreparedS
 | Rector set | Pun lint rules | What it does |
 | --- | ---: | --- |
 | `deadCode` | 45 | removes unused and unreachable code |
-| `codeQuality` | 55 | simplifies code (`if` to `return`, `array_map` to a loop and so on) |
-| `codingStyle` | 13 | style choices (`sprintf` to string interpolation, `$a = $a + 1` to `+=`) |
+| `codeQuality` | 55 | simplifies code (for example an `if` that returns true or false becomes one `return`) |
+| `codingStyle` | 13 | style choices (for example `sprintf` instead of string interpolation) |
 | `typeDeclarations` (+ docblocks) | 8 (72 Rector rules merged into `add-return-type` and similar) | adds native types it can prove |
 | `earlyReturn`, `instanceOf`, `privatization`, `naming` | 8, 3, 4, 6 | each one style decision |
 | `withPhpSets()` | about 100 (`php53` to `php85`) | newest syntax your PHP allows |
