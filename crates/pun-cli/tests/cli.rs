@@ -601,7 +601,10 @@ fn pun_only_behaviour() {
     std::fs::write(dir.join("pun.toml"), "[format]\nnope = 1\n").unwrap();
     let (_, err, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
     assert_eq!(code, Some(1));
-    assert!(err.contains("invalid ") && err.contains("pun.toml"), "{err}");
+    assert!(
+        err.contains("invalid ") && err.contains("pun.toml"),
+        "{err}"
+    );
     let (_, err) = run(
         &pint_alias(),
         &[],
@@ -687,6 +690,18 @@ fn delegated_rules_match_pint() {
         b"<?php\n$s = \"a $b\";\n",
     );
     assert_eq!(r.stdout, "<?php\n\n$s = \"a {$b}\";\n");
+    // PHP startup warnings (here an ini loading a missing extension) must not reach the worker protocol on stdout.
+    let ini = tmp("delegate-ini");
+    std::fs::write(
+        ini.join("broken.ini"),
+        "extension=pun_missing\ndisplay_startup_errors=1\ndisplay_errors=1\n",
+    )
+    .unwrap();
+    let scan = format!(":{}", ini.display());
+    let args = ["format", "--test", "app/Strings.php"];
+    let clean = pun_env(&dir, &args, &env);
+    let warned = pun_env(&dir, &args, &[env[0], ("PHP_INI_SCAN_DIR", &scan)]);
+    assert_eq!((warned.0, warned.2), (clean.0, clean.2));
     // -v and --explain say why and list what ran in PHP; the `pint` alias stays silent like Pint.
     reset(&dir, &tree);
     let (_, err, _) = pun_env(&dir, &["format", "--test", "-v", "app/Clean.php"], &env);

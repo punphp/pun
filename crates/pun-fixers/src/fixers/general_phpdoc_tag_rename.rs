@@ -28,16 +28,9 @@ pub fn fixer() -> Box<dyn Fixer> {
     })
 }
 
-/// PHP turns canonical decimal-integer string keys into int keys.
+/// PHP turns canonical decimal-integer string keys that fit an int into int keys.
 fn is_int_key(s: &str) -> bool {
-    s == "0"
-        || (!s.starts_with('0')
-            && s.trim_start_matches('-')
-                .bytes()
-                .all(|b| b.is_ascii_digit())
-            && !s.trim_start_matches('-').is_empty()
-            && !s.starts_with("-0")
-            && s.len() < 20)
+    s.parse::<i64>().is_ok_and(|n| n.to_string() == s)
 }
 
 impl Fixer for GeneralPhpdocTagRenameFixer {

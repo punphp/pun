@@ -9,5 +9,84 @@
         },
         "input": "<?php\n/** @A @a {@inheritDoc} */\n",
         "expected": "<?php\n/** @b @b {@inheritDoc} */\n"
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"case_sensitive\", \"fix_annotation\", \"fix_inline\", \"replacements\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "1": "foo"
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag to replace must be a string."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "-5": "foo"
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag to replace must be a string."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "9223372036854775807": "foo"
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag to replace must be a string."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "9223372036854775808": "a b"
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag \"9223372036854775808\" cannot be replaced by invalid tag \"a b\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "9999999999999999999": "a b"
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag \"9999999999999999999\" cannot be replaced by invalid tag \"a b\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "01": "a b"
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag \"01\" cannot be replaced by invalid tag \"a b\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "-0": "a b"
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag \"-0\" cannot be replaced by invalid tag \"a b\"."
+    },
+    {
+        "fixer": "general_phpdoc_tag_rename",
+        "config": {
+            "replacements": {
+                "+1": "a b"
+            }
+        },
+        "error": "[general_phpdoc_tag_rename] Invalid configuration: Tag \"+1\" cannot be replaced by invalid tag \"a b\"."
     }
 ]

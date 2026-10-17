@@ -70,5 +70,35 @@
         "fixer": "phpdoc_align",
         "input": "<?php\n/**\n * @method static int foo()\n *   continued here\n * @method string barbaz(int $a)\n */\n",
         "expected": "<?php\n/**\n * @method static int    foo()\n *                                      continued here\n * @method        string barbaz(int $a)\n */\n"
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": 9223372036854775808
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" with value 9.2233720368548E+18 is expected to be of type \"int\" or \"int[]\", but is of type \"float\"."
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": 2.0
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" with value 2 is expected to be of type \"int\" or \"int[]\", but is of type \"float\"."
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": 1.0e+20
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" with value 1.0E+20 is expected to be of type \"int\" or \"int[]\", but is of type \"float\"."
+    },
+    {
+        "fixer": "phpdoc_align",
+        "config": {
+            "spacing": {
+                "param": -9223372036854775809
+            }
+        },
+        "error": "[phpdoc_align] Invalid configuration: The option \"spacing\" with value array is expected to be of type \"int\" or \"int[]\", but one of the elements is of type \"array|float\"."
     }
 ]

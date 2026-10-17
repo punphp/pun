@@ -57,6 +57,10 @@ fn format_value(v: &Value) -> String {
     match v {
         Value::String(s) => format!("\"{s}\""),
         Value::Array(_) | Value::Object(_) => "array".into(),
+        // json_decode makes a number beyond the int range a float.
+        Value::Number(n) if !n.is_i64() => {
+            pun_tokens::php_compat::float_to_string(n.as_f64().unwrap())
+        }
         v => v.to_string(),
     }
 }
@@ -66,7 +70,7 @@ fn debug_type(v: &Value) -> &'static str {
     match v {
         Value::Null => "null",
         Value::Bool(_) => "bool",
-        Value::Number(n) if n.is_f64() => "float",
+        Value::Number(n) if !n.is_i64() => "float",
         Value::Number(_) => "int",
         Value::String(_) => "string",
         Value::Array(_) | Value::Object(_) => "array",
@@ -208,7 +212,7 @@ fn verify_types(type_: &str, v: &Value, invalid: &mut Vec<&'static str>, level: 
         });
     }
     let ok = match type_ {
-        "int" => v.is_i64() || v.is_u64(),
+        "int" => v.is_i64(),
         "string" => v.is_string(),
         "bool" => v.is_boolean(),
         "null" => v.is_null(),

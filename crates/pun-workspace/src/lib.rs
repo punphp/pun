@@ -478,7 +478,9 @@ fn glob_to_regex(glob: &str) -> String {
     let mut re = String::new();
     let mut i = 0;
     while i < g.len() {
-        let mut car = (g[i] as char).to_string();
+        // Whole UTF-8 characters: they are literal bytes in the (non-`u`) regex, as in PHP.
+        let ch = glob[i..].chars().next().unwrap();
+        let mut car = ch.to_string();
         if first && g[i] != b'.' {
             re.push_str(r"(?=[^\.])");
         }
@@ -529,7 +531,7 @@ fn glob_to_regex(glob: &str) -> String {
             _ => re.push_str(&car),
         }
         escaping = false;
-        i += 1;
+        i += ch.len_utf8();
     }
     if unanchored {
         re.insert(1 + "(?=[^\\.])".len(), '?');

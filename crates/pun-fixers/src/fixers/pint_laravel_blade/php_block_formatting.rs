@@ -2,7 +2,7 @@
 //! islands, directive arguments, echoes and bound component attributes) and `App\Support\PhpFragmentFormatter`.
 use super::php::{contains, ltrim_chars, rtrim, strpos, strrpos, trim, trim_chars};
 use crate::analyzers::preg::RawPreg;
-use pun_format::{Fixer, Pipeline};
+use pun_format::Pipeline;
 use pun_tokens::Tokens;
 use std::cell::OnceCell;
 use std::path::Path;
@@ -62,46 +62,21 @@ impl PhpFragmentFormatter {
             } else {
                 DENYLIST.to_vec()
             };
-            let rules: Vec<pun_config::Rule> = preset_rules(&self.preset)
-                .into_iter()
-                .filter(|r| !deny.contains(&r.name.as_str()))
-                .collect();
+            // Pint unsets the denylist before `new RuleSet()`, so a denied rule a set enables still runs.
+            let mut rules = pun_config::preset_rules(&self.preset).unwrap_or_default();
+            rules.retain(|name, _| !deny.contains(&name.as_str()));
+            // A preset's sets are always booleans.
+            let rules = pun_config::rule_set(rules).unwrap();
             Pipeline::new(&rules, &|| {
                 crate::all()
                     .into_iter()
-                    .filter(|f: &Box<dyn Fixer>| f.name() != "Pint/laravel_blade")
+                    .filter(|f| f.name() != "Pint/laravel_blade")
                     .collect()
             })
             .ok()
         })
         .as_ref()
     }
-}
-
-/// `resources/presets/{$preset}.php`'s `getRules()`, read like pun_config::load reads presets.
-fn preset_rules(preset: &str) -> Vec<pun_config::Rule> {
-    let Some((_, json)) = pun_config::PRESETS.iter().find(|(n, _)| *n == preset) else {
-        return Vec::new();
-    };
-    let Ok(mut rules) = serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(json)
-    else {
-        return Vec::new();
-    };
-    if let Some(serde_json::Value::Object(r)) = rules.remove("rules_as_configured") {
-        rules = r;
-    }
-    rules
-        .into_iter()
-        .filter(|(_, v)| *v != serde_json::Value::Bool(false))
-        .map(|(name, v)| pun_config::Rule {
-            name,
-            options: if v == serde_json::Value::Bool(true) {
-                serde_json::Value::Null
-            } else {
-                v
-            },
-        })
-        .collect()
 }
 
 fn control_directive(lower: &[u8]) -> Option<&'static [u8]> {
@@ -227,10 +202,9 @@ impl PhpBlockFormatting {
                 .formatter
                 .format(&[b"<?php\n", &host[..], b"\n"].concat(), true),
         );
-        let Some(open) = strpos(&formatted, b"(", 0) else {
-            return arg.to_vec();
-        };
-        let Some(close) = match_paren(&formatted, open) else {
+        let Some((open, close)) = strpos(&formatted, b"(", 0)
+            .and_then(|open| Some((open, match_paren(&formatted, open)?)))
+        else {
             return arg.to_vec();
         };
         reindent_arg(&formatted[open + 1..close], indent)
