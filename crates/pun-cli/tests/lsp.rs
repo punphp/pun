@@ -20,8 +20,11 @@ fn project(name: &str, pint_json: &str) -> PathBuf {
     d.canonicalize().unwrap()
 }
 
-/// Pint's stdin output for `code` named `name` in `dir`.
+/// Pint's stdin output for `code` named `name` in `dir`. Each run gets its own TMPDIR: Pint names its stdin temp
+/// file with uniqid(), so concurrent runs in one /tmp can read (and delete) each other's input.
 fn pint(dir: &Path, name: &str, code: &str) -> String {
+    let tmp = dir.with_extension("tmp");
+    std::fs::create_dir_all(&tmp).unwrap();
     let mut c = Command::new("php")
         .args([
             oracle().unwrap().to_str().unwrap(),
@@ -32,6 +35,7 @@ fn pint(dir: &Path, name: &str, code: &str) -> String {
         .env_clear()
         .env("PATH", std::env::var("PATH").unwrap())
         .env("HOME", dir)
+        .env("TMPDIR", &tmp)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()

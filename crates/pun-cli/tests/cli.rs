@@ -107,7 +107,11 @@ fn run(
             c.env(k, v);
         }
     }
+    // Pint names its stdin temp file with uniqid(): concurrent runs sharing /tmp can swap inputs.
+    let tmp = dir.with_extension("tmp");
+    std::fs::create_dir_all(&tmp).unwrap();
     c.env("COLUMNS", "80")
+        .env("TMPDIR", &tmp)
         .envs(env.iter().copied())
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
