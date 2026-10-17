@@ -34,8 +34,8 @@ export default defineConfig({
     radius: "lg",
     mode: "system",
     fonts: {
-      display: { name: "Fredoka", weights: "300..700" },
-      body: { name: "Fredoka", weights: "300..700" },
+      display: { name: "Fredoka", weights: ["300..700"] },
+      body: { name: "Fredoka", weights: ["300..700"] },
       mono: { name: "Martian Mono", weights: [400, 500, 600, 700] },
     },
   },
