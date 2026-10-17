@@ -12,7 +12,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
   project (the old plan's "under shipfastlabs" default is void). Repo stays private for now.
 - **Positioning:** Pun is to PHP what Bun is to JavaScript. Laravel first, PHP 8.4+ projects only.
 - **Release:** nothing is published or tagged until `pun format`, `pun analyse`, `pun lint` and `pun migrate` all exist.
-  The site and docs present that release as 1.0, not a pre-release. Publishing needs the user's go.
+  The site and docs present that release as 1.0, not a pre-release. Every lint rule (all 542) runs natively before 1.0
+  (2026-10-17). Publishing needs the user's go.
 - **Brand:** "Sticker Pop" direction, sprinting elephant mascot in sneakers; Fredoka for all non-code text, Martian Mono
   for code (design/README.md).
 

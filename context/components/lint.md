@@ -1,6 +1,6 @@
 # Component: lint (`pun lint`)
 
-Status: **under review with Pushpak** (opened 2026-10-17). This file is the plan for the linter: what it is, how it
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". This file is the plan for the linter: what it is, how it
 works today, what is left, and the questions we still have to settle. Answers go into "Decisions" below and into
 DECISIONS.md. PLAN.md C8 points here. Same shape as format.md.
 
@@ -284,6 +284,9 @@ Answered 2026-10-17 (Pushpak):
   - `--deny-warnings` makes warnings fail the run, and `--max-warnings <n>` fails above n warnings.
   - `-A` / `-W` / `-D <rule or group>` (allow / warn / deny) set a level for one run from the command line.
   - `[[lint.overrides]]` with `files = ["tests/**"]` changes levels for some paths, like oxlint's `overrides`.
+- **Q2: every lint rule runs natively before 1.0** (all 542; Symfony, Doctrine and downgrade sets stay unsupported).
+  Porting order still follows usage (§7 item 5), but 1.0 waits for all of them.
+- **Mago's rules become normal lint rules** and `pun lint --mago` goes away (Q6, assistant's default, not objected to).
 - **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
 - **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
   support yet (commands.md decisions).
