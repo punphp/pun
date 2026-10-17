@@ -379,25 +379,16 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
     crate::agent::render(result, &detail, &checked, &items, ctx.verbose)
 }
 
-/// A lint rule's fix safety (`mixed` counts as unsafe) and ` summary` (empty without one), from rules/mapping.toml
-/// `[rules.lint]`.
+/// A lint rule's fix safety (`mixed` counts as unsafe) and ` summary` (empty without one).
 fn lint_rule(id: &str) -> (&'static str, String) {
-    static LINT: std::sync::LazyLock<toml::Table> = std::sync::LazyLock::new(|| {
-        let mapping = include_str!("../../pun-config/rules/mapping.toml");
-        let body = mapping.split_once("\n[rules.lint]\n").unwrap().1;
-        toml::from_str(body.split("\n[").next().unwrap()).unwrap()
-    });
-    let e = id.strip_prefix("lint.").and_then(|n| LINT.get(n));
-    let get = |k| e.and_then(|e| e.get(k)).and_then(toml::Value::as_str);
-    let fix = if get("fix") == Some("safe") {
+    let m = pun_config::rule(id);
+    let fix = if m.as_ref().is_some_and(|m| m.fix == "safe") {
         "safe"
     } else {
         "unsafe"
     };
-    (
-        fix,
-        get("summary").map_or(String::new(), |s| format!(" {s}")),
-    )
+    let summary = m.and_then(|m| m.summary);
+    (fix, summary.map_or(String::new(), |s| format!(" {s}")))
 }
 
 /// InteractsWithSymbols::getSymbol: markup when stdout is decorated, the bare symbol otherwise.

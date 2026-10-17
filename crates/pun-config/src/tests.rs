@@ -261,6 +261,38 @@ fn mapping_lookups() {
 }
 
 #[test]
+fn rule_metadata() {
+    // Hand-read from rules/mapping.toml.
+    let m = rule("lint.no-self-assignment").unwrap();
+    assert_eq!(
+        (m.fix, m.tier, m.summary, m.aliases.as_slice()),
+        (
+            "safe",
+            Some("recommended"),
+            None,
+            &["simplify-mirror-assign"][..]
+        )
+    );
+    let m = rule("lint.require-strict-param").unwrap();
+    assert_eq!((m.fix, m.tier), ("mixed", Some("strict")));
+    let m = rule("format.array-syntax").unwrap();
+    assert_eq!(
+        (m.fix, m.tier, m.summary, m.aliases.len()),
+        (
+            "safe",
+            None,
+            Some("PHP arrays should be declared using the configured syntax."),
+            0
+        )
+    );
+    // Analyse rules have no fix.
+    let m = rule("analyse.argument-count").unwrap();
+    assert_eq!((m.fix, m.tier), ("none", Some("essential")));
+    assert!(rule("no-self-assignment").is_none());
+    assert!(rule("lint.array-syntax").is_none());
+}
+
+#[test]
 fn show() {
     let d = dir(&[(
         "pun.toml",
