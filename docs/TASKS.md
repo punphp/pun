@@ -45,6 +45,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | Phase 2 M2.3: analyse rules, level 0 (crates/pun-phpstan) | analyse agent (target-analyse/) | doing |
 | pun lsp = PHPantom + Pun rules (evaluation + prototype): PHPantom embedded in-process, JSON-RPC router (crates/pun-lsp, docs/LSP.md); wiring into `pun lsp` after cleanup, see docs/LSP.md | - | done |
 | Rule placement + naming design (docs/RULES.md, crates/pun-config/rules/mapping.toml) | rules-design agent | done |
+| Tiered presets (essential/recommended/strict/pedantic) | presets agent | doing |
 
 ### Later phases
 
