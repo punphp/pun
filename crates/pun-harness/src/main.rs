@@ -122,7 +122,16 @@ fn main() -> Result<()> {
                     .current_dir(&pun_dir);
                 c
             };
-            run(pun_cmd(&["migrate"]).args(&args), "pun migrate")?;
+            // Without a pint.json, `pun migrate` writes the starter pun.toml, whose lint + analyse tier
+            // (`preset = "recommended"`) would add rules Pint doesn't run once tiers apply. Migrating Pint's own
+            // defaults (an explicit `{}`) keeps those projects Pint-equivalent.
+            let mut migrate_args = args.clone();
+            if fixer.is_none() && !src.join("pint.json").exists() {
+                let defaults = tmp.join(&p.name).join("pint-defaults.json");
+                fs::write(&defaults, "{}\n")?;
+                migrate_args.splice(0..0, ["--config".into(), defaults.display().to_string()]);
+            }
+            run(pun_cmd(&["migrate"]).args(&migrate_args), "pun migrate")?;
             run(&mut pun_cmd(&["check", "--fix", "--no-cache"]), "pun")?;
         }
 
