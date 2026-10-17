@@ -55,7 +55,7 @@ fn every_rule_matches_pint() {
         if rule == "Pint/laravel_blade" {
             if !node_modules.join("prettier").exists() {
                 eprintln!(
-                    "skipping {rule}: no prettier in crates/pun-fixers/node_modules (npm install there)"
+                    "skipping {rule}: no prettier in crates/pun-fixers/node_modules (bun install there)"
                 );
                 continue;
             }
