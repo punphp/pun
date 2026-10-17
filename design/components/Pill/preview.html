@@ -1,0 +1,14 @@
+<!-- @dsCard group="Status" height=90 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Pill</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var P = window.Pun, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'pun-row pun-pad' },
+    h(P.Pill, { tag: 'v0.1' }, 'pun format is Pint-identical'),
+    h(P.Pill, null, 'pun analyse is in progress')));
+</script>
+</body>
+</html>
