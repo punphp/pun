@@ -40,13 +40,13 @@ Pint). Rule names in `pun.toml` are Pun IDs (`<command>/<group>/<name>`, the com
 no aliases, so an earlier Pun name or a PHP-CS-Fixer name gets an error naming its Pun ID. `pun migrate` reads pint.json the way Pint does (`extend`, `--config`,
 `--preset`) or, without one, a `.php-cs-fixer(.dist).php` through PHP-CS-Fixer itself, and writes a `pun.toml` with
 Pun rule IDs ([context/plan/rules.md](context/plan/rules.md)): the preset plus what differs from it under `[format.rules]`, and the
-risky and code-deleting fixers under `[lint.rules]` with `fix = "apply"`, since they changed code unattended. It rewrites
+risky and code-deleting fixers under `[lint.rules]` at `"error"`, so `pun check --fix` applies them as Pint did. It rewrites
 `// @php-cs-fixer-ignore rule` comments to `// @pun-ignore-file format/<group>/<name>`, lists any rule Pun can't run before
 writing anything (and then writes nothing), and is idempotent. On a terminal it first lists the configs it found
 (pint.json, .php-cs-fixer.php, phpstan.neon, rector.php, mago.toml) as a checklist, all checked, and migrates only
 what you keep checked; `--from pint,phpstan` picks without asking, and `--yes`, agent mode or no terminal migrate
 everything found. PHPStan, Rector and Mago are listed as "not supported yet" and left untouched. With no config at all
-it writes a starter pun.toml (`preset = "recommended"`, `[format] preset = "laravel"`). `pun config` prints the
+it writes a starter pun.toml (`[format] preset = "laravel"`). `pun config` prints the
 resolved configuration.
 
 ```toml
@@ -59,14 +59,14 @@ exclude = ["build"]
 "arrays/syntax" = false
 
 [lint.rules]
-"style/require-final-class" = { fix = "apply" }   # applied by `pun lint --fix` / `pun check --fix`
-"types/no-loose-comparison" = "warn"              # reported by `pun lint` / `pun check`, never applied
+"style/require-final-class" = "error"                           # applied by `pun lint --fix` / `pun check --fix`
+"types/no-loose-comparison" = { level = "warn", fix = "off" }   # reported by `pun lint` / `pun check`, never applied
 ```
 
 **Format, lint, check.** `pun format` runs only behaviour-safe rules that change layout, casing or
 spelling. Risky PHP-CS-Fixer fixers (`strict_comparison`, `final_class`, `declare_strict_types`, ...) and the 40 that
 delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) are lint rules: `pun lint` reports
-what they would change, `pun lint --fix` applies the ones with `fix = "apply"`. `pun check` runs format and lint in one pass
+what they would change, `pun lint --fix` applies every enabled rule but those with `fix = "off"`. `pun check` runs format and lint in one pass
 (fixers in PHP-CS-Fixer's priority order, as Pint runs them), so `pun check --fix` on a migrated project writes exactly
 what `pint` wrote; `pun analyse` joins it once it exists. Output is Pint's for all three (outside coding agents, see below).
 

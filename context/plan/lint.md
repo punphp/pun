@@ -48,9 +48,9 @@ Only `error` fails; `--deny-warnings` and `--max-warnings <n>` tighten that, and
 run. `--fix` applies every fix of every enabled rule; safe or unsafe is a label in the output, not a gate. A
 PHP-CS-Fixer or Rector name in `[lint.rules]` is an error that names the Pun ID to use.
 
-*Today* the code reads the old schema: a top-level `preset` tier that applies nothing, levels `"error"` / `"warn"` /
-`"info"` treated as on or off, and `fix = "apply"` (applied by `--fix`) or `"safe-only"` (treated as don't apply).
-`pun migrate` writes the risky rules a pint.json enabled with `fix = "apply"`. All of that goes in config.md Build 3.
+*Today* pun-config reads this schema (config.md Build 3) and resolves sets, groups and rule lines into
+`Config.lint.rules`; pun-cli runs the ones a token fixer backs and `--fix` applies all but `fix = "off"`. Overrides and
+the `warn` / `error` difference are not applied at run time yet (lint 1-2).
 
 ## 4. Rules: what exists
 

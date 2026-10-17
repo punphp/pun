@@ -1,39 +1,55 @@
 ---
 title: Presets
-description: Four tiers instead of ten levels, plus Laravel, Pest and PHPUnit add-ons.
+description: Three format presets, lint sets you tick, and five analyse presets instead of ten levels.
 ---
 
-Pun has no numbered levels. A preset is one of four **tiers**, named by intent, from gentle to maximal. Each tier includes the one below it, and one tier picks rules for `pun lint` and `pun analyse` together. Format keeps Pint's presets; tiers never touch it.
+Each command picks its rules on its own. There is no top-level preset.
 
-| Tier | What it adds | Examples |
-| --- | --- | --- |
-| `essential` | Definite bugs only: code that crashes or misbehaves at runtime. Near-zero false positives, so it fits a legacy codebase on day one | `undefined/method`, `undefined/variable`, `functions/argument-count`, `types/readonly-property-write` |
-| `recommended` | **The default.** Likely bugs, dead and unused code, redundant checks, deprecations and safe modernisation | `dead-code/unused-private-method`, `dead-code/condition-always-true`, `types/argument`, `php-8.0/prefer-match` |
-| `strict` | Type and strictness policy: native types required, strict comparison and `strict_types`, early returns | `types/missing-param-type`, `types/no-loose-comparison`, `statements/require-strict-types` |
-| `pedantic` | Everything that isn't opt-in only: naming, complexity limits, final classes | `types/missing-throws`, `complexity/no-excessive-cyclomatic`, `style/require-final-class` |
+## Format presets
+
+`[format] preset` is `laravel` (the default, Pint's), `psr12` or `empty`. `[format.rules]` holds only what differs from it.
+
+## Lint sets
+
+Lint rules come in sets, Rector's prepared sets. Tick the ones you want; a rule can be in several, and a rule a set turns on is an `error`:
+
+| Set | What it turns on |
+| --- | --- |
+| `dead-code` | Code that never runs, or whose result is never used |
+| `modernize` | Newer PHP syntax, up to your `[php] version` |
+| `code-quality` | Simpler, clearer equivalents and likely bugs |
+| `types` | Missing type declarations and PHPDoc types |
+| `early-return` | Early returns and continues instead of nesting |
+| `privatization` | Narrower visibility, final classes and constants |
+| `naming` | Names that match their types |
+| `coding-style` | One consistent way to write the same thing |
 
 ```toml pun.toml
+[lint]
+sets = ["dead-code", "modernize"]
+```
+
+The Laravel, Pest and PHPUnit rules of each set turn on by themselves when composer.lock locks `laravel/framework`, `pestphp/pest` or `phpunit/phpunit`; `[lint.groups] laravel = "off"` switches one off. Rules in no set are opt-in by name or by group. See [pun.toml](/docs/configuration/pun-toml#lint) for levels, groups and overrides.
+
+## Analyse presets
+
+`[analyse] preset` groups PHPStan's levels in five bands, each including the ones before it:
+
+| Preset | PHPStan levels | Adds |
+| --- | --- | --- |
+| `basic` | 0–1 | Unknown classes, functions and methods on `$this`, wrong argument counts, undefined variables |
+| `essential` | 2–3 | Unknown methods and properties on every expression, PHPDoc, return and property types |
+| `recommended` | 4–5 | **The default.** Dead code, always-true conditions, argument types |
+| `strict` | 6–8 | Missing typehints; union types and nullables checked |
+| `max` | 9–10 | Explicit and implicit `mixed` checked |
+
+```toml pun.toml
+[analyse]
 preset = "strict"
 ```
 
-## Add-ons
-
-`laravel` (rector-laravel, Larastan, Laravel lint rules), `pest` and `phpunit` combine with any tier. An add-on rule runs when its add-on is on and the tier includes it, so `recommended` plus `laravel` gives Laravel correctness and dead-code rules, and `strict` plus `laravel` adds the code-quality rewrites.
-
-```toml pun.toml
-preset = "recommended"
-laravel = true
-pest = true
-```
+The Laravel rules (Larastan's) run when composer.lock locks `laravel/framework`; `[analyse.rules] laravel = "off"` switches them off.
 
 ## Coming from PHPStan levels
 
-A tier isn't a level, and `pun migrate` writes the exact rules your level ran rather than guessing a tier. For orientation:
-
-| PHPStan | Closest tier |
-| --- | --- |
-| level 0–1 | `essential` |
-| level 2–5 | `recommended` |
-| level 6–8 | `strict` |
-| level 9–10 | `pedantic` |
-| + Larastan | `laravel` add-on |
+`pun migrate` writes the exact rules your level ran rather than guessing a preset. In pun.toml, `[analyse] level = 5` is an error that names the preset holding that level (`recommended`).

@@ -43,8 +43,6 @@ With no config at all it says "no pint.json, .php-cs-fixer.php, phpstan.neon, re
 a starter pun.toml (written without asking when there is no terminal):
 
 ```toml
-preset = "recommended"
-
 [format]
 preset = "laravel"
 ```
@@ -62,7 +60,7 @@ Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.p
   </Step>
   <Step title="Write pun.toml">
 
-`[format]` gets the preset plus only what differs from it. The risky fixers and the fixers that delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) go under `[lint.rules]` with `fix = "apply"`, since Pint applied them unattended. Every rule gets its Pun ID (`"imports/ordered"`, `"imports/no-unused"`). Planned: PHPStan levels expanded into the exact rules they ran.
+`[format]` gets the preset plus only what differs from it. The risky fixers and the fixers that delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) go under `[lint.rules]` at `"error"`, so `pun check --fix` applies them as Pint did. Pint's `in` becomes `[files] paths`; a `per` or `symfony` preset is written as `empty` plus its rules. Every rule gets its Pun ID (`"imports/ordered"`, `"imports/no-unused"`). Planned: PHPStan levels expanded into the exact rules they ran.
 
   </Step>
   <Step title="Convert the baseline (planned)">

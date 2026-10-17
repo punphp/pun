@@ -260,7 +260,7 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
     let (from, m) = match format_source {
         Some((Source::PhpCsFixer, f)) => {
             let rules = php_cs_fixer_rules(&root, &f)?;
-            let note = "configures its own Finder, which is not migrated: check [format] paths and exclude.";
+            let note = "configures its own Finder, which is not migrated: check [files] paths and [format] exclude.";
             if human {
                 eprintln!("pun migrate: {} {note}", rel(&root, &f));
             } else {
@@ -272,12 +272,11 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
             let m = migrate::from_pint(&f, a.preset.as_deref())?;
             (Some(f), m)
         }
-        // No pint.json: Pint's defaults (its laravel preset, or --preset), plus the default lint + analyse tier.
-        None => {
-            let mut m = migrate::from_pint(&root.join(pint), a.preset.as_deref())?;
-            m.toml = format!("preset = \"recommended\"\n\n{}", m.toml);
-            (None, m)
-        }
+        // No pint.json: Pint's defaults (its laravel preset, or --preset).
+        None => (
+            None,
+            migrate::from_pint(&root.join(pint), a.preset.as_deref())?,
+        ),
     };
     if !m.unsupported.is_empty() {
         let from = rel(&root, from.as_deref().unwrap());
@@ -391,7 +390,7 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
                 state.trim_start_matches("already "),
                 cfg.preset,
                 agent::count(cfg.rules.len(), "format rule"),
-                agent::count(cfg.lint.len(), "lint rule")
+                agent::count(cfg.lint.rules.len(), "lint rule")
             ),
             format!(
                 "ignore comments {ignores} in {}",

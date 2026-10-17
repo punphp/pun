@@ -128,7 +128,7 @@ def main():
         print(f'{rule}: ok', flush=True)
     for rule, (code, expected) in PUN.items():
         name = next(v['pun'] for k, v in MAPPING['upstream']['pun'].items() if k.replace('-', '_') == rule).split('/', 1)[1]
-        cases.append({'rule': rule, 'file': 'test.php', 'pun.toml': f'[format]\npreset = "empty"\n\n[lint.rules]\n"{name}" = {{ fix = "apply" }}\n', 'input': code,
+        cases.append({'rule': rule, 'file': 'test.php', 'pun.toml': f'[format]\npreset = "empty"\n\n[lint.rules]\n"{name}" = "error"\n', 'input': code,
                       'expected': expected, 'test_exit': 1})
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     json.dump(cases, open(OUT, 'w'), indent=1, ensure_ascii=False)

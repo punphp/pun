@@ -531,7 +531,7 @@ fn gitlab_custom_rule() {
         &[
             (
                 "pun.toml",
-                "[format]\npreset = \"empty\"\n[lint.rules]\n\"pest/no-only\" = true\n",
+                "[format]\npreset = \"empty\"\n[lint.rules]\n\"pest/no-only\" = \"error\"\n",
             ),
             ("t.php", "<?php\ntest('a', fn () => 1)->only();\n"),
         ],

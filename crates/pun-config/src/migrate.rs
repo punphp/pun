@@ -1,6 +1,7 @@
 //! `pun migrate`, format part: pint.json (read like Pint: `extend`, preset, RuleSet checks) or the rules of a
-//! `.php-cs-fixer.php` become a pun.toml under Pun rule IDs. Risky fixers go to `[lint.rules]` with `fix = "apply"`,
-//! since the project already ran them unattended; the rest is written as a delta to the preset.
+//! `.php-cs-fixer.php` become a pun.toml under Pun rule IDs. Risky fixers go to `[lint.rules]` at `"error"`, so
+//! `pun check --fix` applies them as the project's old tool did; the rest is written as a delta to the preset. Pint's
+//! `in` becomes `[files] paths`; its other finder keys stay format-only under `[format]`.
 
 use crate::{Rule, fixer_entries, preset_rules, rule_of, rule_set};
 use anyhow::{Context, Result, bail};
@@ -44,7 +45,7 @@ pub fn from_pint(path: &Path, preset: Option<&str>) -> Result<Migration> {
             bail!("[{name}] {what} Other values are not allowed.{null}");
         }
     }
-    let mut finder = String::new();
+    let (mut paths, mut finder) = (String::new(), String::new());
     for (json, key) in [
         ("in", "paths"),
         ("exclude", "exclude"),
@@ -56,14 +57,19 @@ pub fn from_pint(path: &Path, preset: Option<&str>) -> Result<Migration> {
             Some(Value::Array(a)) => a.iter().filter_map(Value::as_str).collect(),
             _ => continue,
         };
-        writeln!(finder, "{key} = {}", toml::Value::try_from(list).unwrap()).unwrap();
+        let out = if json == "in" {
+            &mut paths
+        } else {
+            &mut finder
+        };
+        writeln!(out, "{key} = {}", toml::Value::try_from(list).unwrap()).unwrap();
     }
-    write(preset, rule_set(rules)?, &finder)
+    write(preset, rule_set(rules)?, &paths, &finder)
 }
 
 /// A `.php-cs-fixer.php`'s rules as its ConfigurationResolver resolves them, over preset `empty`.
 pub fn from_rules(rules: Map<String, Value>) -> Result<Migration> {
-    write("empty", rule_set(rules)?, "")
+    write("empty", rule_set(rules)?, "", "")
 }
 
 /// Pint's ConfigurationJsonRepository::get(): a missing file means "no config"; `extend` is one level deep.
@@ -140,8 +146,14 @@ fn replace_recursive(base: &mut Value, over: Value) {
 }
 
 /// pun.toml for `rules` (what the old config ran, resolved) over `preset`: `[format.rules]` holds what differs from
-/// the preset, `[lint.rules]` every risky fixer.
-fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> {
+/// the preset, `[lint.rules]` every risky fixer. A preset pun.toml doesn't take (`per`, `symfony`) is written as
+/// `empty` plus every rule it ran.
+fn write(preset: &str, mut rules: Vec<Rule>, paths: &str, finder: &str) -> Result<Migration> {
+    let preset = if crate::FORMAT_PRESETS.contains(&preset) {
+        preset
+    } else {
+        "empty"
+    };
     // Pun runs the deprecated visibility_required as modifier_keywords (as upstream's proxy does). Both on: one
     // modifier_keywords for the union of their `elements` (no options = all elements).
     if let Some(i) = rules.iter().position(|r| r.name == "visibility_required") {
@@ -191,7 +203,11 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
             continue;
         };
         let name = &id[id.find('/').unwrap() + 1..];
-        let Some(v) = toml_value(&value(&r.options, lint)) else {
+        let v = match (lint, value(&r.options)) {
+            (true, Value::Bool(true)) => Value::from("error"),
+            (_, v) => v,
+        };
+        let Some(v) = toml_value(&v) else {
             unsupported.push(format!(
                 "{}: an option is null, which TOML can't hold",
                 r.name
@@ -211,7 +227,11 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
             writeln!(format, "\"{name}\" = false").unwrap();
         }
     }
-    let mut toml = format!("[format]\npreset = \"{preset}\"\n{finder}");
+    let mut toml = String::new();
+    if !paths.is_empty() {
+        toml += &format!("[files]\n{paths}\n");
+    }
+    toml += &format!("[format]\npreset = \"{preset}\"\n{finder}");
     if !format.is_empty() {
         toml += &format!("\n[format.rules]\n{format}");
     }
@@ -221,21 +241,16 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
     Ok(Migration { toml, unsupported })
 }
 
-/// A rule's options as pun.toml writes them: `true` for none, top-level option keys kebab-cased, `fix = "apply"`
-/// first when `apply`.
-pub fn value(options: &Value, apply: bool) -> Value {
-    let mut m: Map<String, Value> = match options {
-        Value::Object(m) => m
-            .iter()
-            .map(|(k, v)| (k.replace('_', "-"), v.clone()))
-            .collect(),
-        _ if !apply => return Value::Bool(true),
-        _ => Map::new(),
-    };
-    if apply {
-        m.shift_insert(0, "fix".into(), "apply".into());
+/// A rule's options as pun.toml writes them: `true` for none, top-level option keys kebab-cased.
+pub fn value(options: &Value) -> Value {
+    match options {
+        Value::Object(m) => Value::Object(
+            m.iter()
+                .map(|(k, v)| (k.replace('_', "-"), v.clone()))
+                .collect(),
+        ),
+        _ => Value::Bool(true),
     }
-    Value::Object(m)
 }
 
 /// `v` as an inline TOML value; `None` when it holds a null.

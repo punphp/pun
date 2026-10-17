@@ -9,10 +9,11 @@ Pun doesn't read `pint.json` at run time. [`pun migrate`](/docs/commands/migrate
 | --- | --- |
 | `"preset": "laravel"` | `[format] preset = "laravel"` |
 | `"rules"` that differ from the preset | `[format.rules]`, under Pun IDs |
-| Risky rules (`final_class`, `strict_comparison`, ...) | `[lint.rules]` with `fix = "apply"` |
+| Risky rules (`final_class`, `strict_comparison`, ...) | `[lint.rules]` at `"error"` |
+| `"in"` | `[files] paths` |
 | `"exclude"`, `"notName"`, `"notPath"` | `[format] exclude`, `not-name`, `not-path` |
 | `"extend"` | Resolved the way Pint resolves it |
-| `"Pun/prefer_fake_helper": true` | `[lint.rules] prefer-fake-helper = { fix = "apply" }` |
+| `"Pun/prefer_fake_helper": true` | `[lint.rules] "laravel/prefer-fake-helper" = "error"` |
 
 A `.php-cs-fixer.php` without a `pint.json` is read through PHP-CS-Fixer itself, so whatever it computes is what gets migrated.
 
@@ -33,8 +34,8 @@ exclude = ["build"]
 "operators/concat-spacing" = { spacing = "one" }
 
 [lint.rules]
-# ...the laravel preset's 15 risky and code-deleting rules, each with fix = "apply", then:
-"style/require-final-class" = { fix = "apply" }
+# ...the laravel preset's 15 risky and code-deleting rules, each at "error", then:
+"style/require-final-class" = "error"
 ```
 
 `pun check --fix` on the migrated project writes exactly what `pint` wrote on the original.

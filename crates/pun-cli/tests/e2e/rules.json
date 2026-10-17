@@ -2487,7 +2487,7 @@
  {
   "rule": "Pun/final_controller",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/require-final-controller\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/require-final-controller\" = \"error\"\n",
   "input": "<?php\n\nclass UserController\n{\n}\n",
   "expected": "<?php\n\nfinal class UserController\n{\n}\n",
   "test_exit": 1
@@ -2495,7 +2495,7 @@
  {
   "rule": "Pun/no_implicit_model_query",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/no-implicit-model-query\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/no-implicit-model-query\" = \"error\"\n",
   "input": "<?php\n\n$users = User::where('is_active', true)->get();\n",
   "expected": "<?php\n\n$users = User::query()->where('is_active', true)->get();\n",
   "test_exit": 1
@@ -2503,7 +2503,7 @@
  {
   "rule": "Pun/no_only",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"pest/no-only\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"pest/no-only\" = \"error\"\n",
   "input": "<?php\n\ntest('example', function () {\n    expect(true)->toBeTrue();\n})->only();\n",
   "expected": "<?php\n\ntest('example', function () {\n    expect(true)->toBeTrue();\n});\n",
   "test_exit": 1
@@ -2511,7 +2511,7 @@
  {
   "rule": "Pun/no_redundant_isset",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"complexity/no-redundant-isset\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"complexity/no-redundant-isset\" = \"error\"\n",
   "input": "<?php isset($a[0], $a[0][1]);",
   "expected": "<?php isset($a[0][1]);",
   "test_exit": 1
@@ -2519,7 +2519,7 @@
  {
   "rule": "Pun/no_redundant_literal_return",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"complexity/no-redundant-literal-return\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"complexity/no-redundant-literal-return\" = \"error\"\n",
   "input": "<?php\n\nfunction getValue($x) {\n    if ($x === null) {\n        return null;\n    }\n    return $x;\n}\n",
   "expected": "<?php\n\nfunction getValue($x) {\n    return $x;\n}\n",
   "test_exit": 1
@@ -2527,7 +2527,7 @@
  {
   "rule": "Pun/no_redundant_nullsafe",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"complexity/no-redundant-nullsafe\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"complexity/no-redundant-nullsafe\" = \"error\"\n",
   "input": "<?php\n\n$name = $user?->name ?? 'Guest';\n\nif (isset($user?->profile)) {\n    // Do something with $user->profile\n}\n",
   "expected": "<?php\n\n$name = $user->name ?? 'Guest';\n\nif (isset($user->profile)) {\n    // Do something with $user->profile\n}\n",
   "test_exit": 1
@@ -2535,7 +2535,7 @@
  {
   "rule": "Pun/no_self_assignment",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"dead-code/no-self-assignment\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"dead-code/no-self-assignment\" = \"error\"\n",
   "input": "<?php\n\n$a = $a;\n$this->x = $this->x;\n$foo->bar = $foo->bar;\n",
   "expected": "<?php\n\n$this->x = $this->x;\n$foo->bar = $foo->bar;\n",
   "test_exit": 1
@@ -2543,7 +2543,7 @@
  {
   "rule": "Pun/prefer_array_spread",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"arrays/prefer-array-spread\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"arrays/prefer-array-spread\" = \"error\"\n",
   "input": "<?php\n\n$merged = array_merge($a, $b, $c);\n",
   "expected": "<?php\n\n$merged = [...$a, ...$b, ...$c];\n",
   "test_exit": 1
@@ -2551,7 +2551,7 @@
  {
   "rule": "Pun/prefer_array_validation_rules",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/prefer-array-validation-rules\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/prefer-array-validation-rules\" = \"error\"\n",
   "input": "<?php\n\nclass StoreUserRequest\n{\n    public function rules(): array\n    {\n        return [\n            'name' => 'required|string|max:255',\n        ];\n    }\n}\n",
   "expected": "<?php\n\nclass StoreUserRequest\n{\n    public function rules(): array\n    {\n        return [\n            'name' => ['required', 'string', 'max:255'],\n        ];\n    }\n}\n",
   "test_exit": 1
@@ -2559,7 +2559,7 @@
  {
   "rule": "Pun/prefer_dedicated_status_assertion",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/prefer-dedicated-status-assertion\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/prefer-dedicated-status-assertion\" = \"error\"\n",
   "input": "<?php\n\n$response->assertStatus(404);\n",
   "expected": "<?php\n\n$response->assertNotFound();\n",
   "test_exit": 1
@@ -2567,7 +2567,7 @@
  {
   "rule": "Pun/prefer_explode_over_preg_split",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"performance/prefer-explode-over-preg-split\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"performance/prefer-explode-over-preg-split\" = \"error\"\n",
   "input": "<?php\n\n$parts = preg_split('/, /', $s);\n",
   "expected": "<?php\n\n$parts = explode(', ', $s);\n",
   "test_exit": 1
@@ -2575,7 +2575,7 @@
  {
   "rule": "Pun/prefer_fake_helper",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/prefer-fake-helper\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"laravel/prefer-fake-helper\" = \"error\"\n",
   "input": "<?php\n\nclass UserFactory\n{\n    public function definition(): array\n    {\n        return ['name' => $this->faker->unique()->word()];\n    }\n}\n",
   "expected": "<?php\n\nclass UserFactory\n{\n    public function definition(): array\n    {\n        return ['name' => fake()->unique()->word()];\n    }\n}\n",
   "test_exit": 1
@@ -2583,7 +2583,7 @@
  {
   "rule": "Pun/prefer_first_class_callable",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"php-8.1/prefer-first-class-callable\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"php-8.1/prefer-first-class-callable\" = \"error\"\n",
   "input": "<?php\n\nrun(fn($x) => $this->method($x));\n",
   "expected": "<?php\n\nrun($this->method(...));\n",
   "test_exit": 1
@@ -2591,7 +2591,7 @@
  {
   "rule": "Pun/sensitive_parameter",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"security/add-sensitive-parameter\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"security/add-sensitive-parameter\" = \"error\"\n",
   "input": "<?php\n\nfunction login(string $username, string $password): void {\n    // ...\n}\n",
   "expected": "<?php\n\nfunction login(string $username, #[\\SensitiveParameter] string $password): void {\n    // ...\n}\n",
   "test_exit": 1
@@ -2599,7 +2599,7 @@
  {
   "rule": "Pun/use_dedicated_expectation",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"pest/prefer-dedicated-expectation\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"pest/prefer-dedicated-expectation\" = \"error\"\n",
   "input": "<?php\n\nexpect(is_array($value))->toBeTrue();\n",
   "expected": "<?php\n\nexpect($value)->toBeArray();\n",
   "test_exit": 1
@@ -2607,7 +2607,7 @@
  {
   "rule": "Pun/use_simpler_expectation",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"pest/prefer-simpler-expectation\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"pest/prefer-simpler-expectation\" = \"error\"\n",
   "input": "<?php\n\nexpect($a > $b)->toBeTrue();\n",
   "expected": "<?php\n\nexpect($a)->toBeGreaterThan($b);\n",
   "test_exit": 1
@@ -2615,7 +2615,7 @@
  {
   "rule": "Pun/use_specific_expectations",
   "file": "test.php",
-  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"pest/prefer-specific-expectations\" = { fix = \"apply\" }\n",
+  "pun.toml": "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"pest/prefer-specific-expectations\" = \"error\"\n",
   "input": "<?php\n\nexpect($value)->toBe(true);\n",
   "expected": "<?php\n\nexpect($value)->toBeTrue();\n",
   "test_exit": 1

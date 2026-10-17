@@ -203,3 +203,35 @@ rules.md Decisions. The top-level `preset` tiers stay accepted (and still apply 
 removes them; mapping.toml no longer carries `tier`. Moved rules keep running in the same priority-ordered token pass,
 so the 11 laravel-preset ones are written by `pun migrate` under `[lint.rules]` with `fix = "apply"`; all 7 corpus
 projects stay at 0 differing files.
+
+Build 3 (wf/schema, 2026-10-17), assistant's calls where the plan is silent. The schema is read by
+`pun_config::load` (crates/pun-config/src/schema.rs) into `Config.files`, `.lint` and `.analyse`:
+
+- **Values.** A lint rule is `"error"`, `"warn"` or `"off"`, or a table with `level` (default `error`), `fix = "off"`
+  and the rule's options; `true` / `false` are an error naming `"error"` / `"off"`. A lint group takes a level only.
+  An analyse rule is `"on"`, `"off"` or a table of options (on); every group, not only the ecosystem ones, takes
+  `"on"` / `"off"` in `[analyse.rules]`. Options of a rule a fixer runs go to it with snake_case top-level keys; other
+  rules keep them as written.
+- **Precedence and gates.** Set (at `error`) < group < the rule's own line. Only what a set or preset turns on is gated:
+  an ecosystem group's rules need the ecosystem on (locked in composer.lock and not switched off with its group), a
+  `php-X.Y` rule needs `[php] version` >= X.Y, a `laravel-N` rule needs Laravel on and a locked version >= N (a locked
+  branch has no version, so none). A group's level or a rule's line turns rules on whatever the gates. `gated_by` on a
+  rule outside an upgrade group carries no version and gates nothing. `doctrine` is never detected.
+- **Rules Pun can't run.** A rule a set or group turns on that Pun can't run yet is skipped; one named in `[lint.rules]`
+  stops the run with config 6's message (exit 2), also when no fixer exists for it (before: a config error, exit 1).
+- **Files.** `[format] paths` is an error naming `[files] paths`. `[files] exclude` plus `[format] exclude` feed Pint's
+  finder as it is (config 7 owns the glob semantics). `[lint] exclude` is accepted (each command's own exclude, §3);
+  `[analyse] paths` replaces `[files] paths` for analyse.
+- **Removed keys** are errors naming the replacement: the top-level `preset`, `[format] preset = "per" | "symfony"`,
+  `fix = "apply" | "safe-only"`, `"info"`, `severity`, and `[analyse] level` or a number as `[analyse] preset` (naming
+  the preset that holds that PHPStan level). Messages are pinned in crates/pun-config/src/tests.rs.
+- **`[php] version`** must be `major.minor`; without it the lowest version composer.json admits, else 8.4 (the config 3
+  follow-up row). composer.lock is read on every load.
+- **Migrate** (pun-config's writer, kept minimal for migrate 1): risky and code-deleting fixers are written at
+  `"error"` (a table of options without `level` when they have options), Pint's `in` becomes `[files] paths`, a `per`
+  or `symfony` preset becomes `empty` plus its rules (their sets are listed as unsupported), and the starter has no
+  top-level `preset`.
+- **Not at run time yet** (lint 1-2): `[[lint.overrides]]` are resolved but pun-cli's token pass ignores them, and a
+  `warn` rule's fix fails `pun lint` / `pun check` like an `error`. `--preset per` on the command line still works
+  (Pint's flag; format 1). The no-config message stays "Run `pun migrate`." until `pun init` exists.
+

@@ -58,6 +58,25 @@ fn needs_pun_toml() {
     assert_eq!(err(&d, preset("nope")), "Preset not found.");
 }
 
+/// A lint rule as `[lint.rules]` resolves it, for expectations.
+fn lr(id: &str, level: Level, fix: bool, options: Value, fixer: Option<&'static str>) -> LintRule {
+    LintRule {
+        id: id.into(),
+        level,
+        fix,
+        options,
+        fixer,
+        named: true,
+    }
+}
+
+fn ids(rules: &[LintRule]) -> Vec<&str> {
+    rules.iter().map(|r| r.id.as_str()).collect()
+}
+
+/// A Laravel 11 project: composer.lock locks laravel/framework v11.9.2.
+const LARAVEL_LOCK: &str = r#"{"packages":[{"name":"laravel/framework","version":"v11.9.2"}]}"#;
+
 #[test]
 fn pun_toml() {
     let d = dir(&[
@@ -66,9 +85,11 @@ fn pun_toml() {
             "pun.toml",
             r#"[php]
 version = "8.5"
+[files]
+paths = ["src", "tests"]
+exclude = ["build"]
 [format]
 preset = "laravel"
-paths = ["src"]
 exclude = ["a"]
 not-name = ["n.php"]
 not-path = ["p"]
@@ -77,17 +98,16 @@ not-path = ["p"]
 "format/arrays/syntax" = false
 "laravel/blade" = true
 [lint.rules]
-"style/no-alias-function" = { fix = "apply" }
+"style/no-alias-function" = "error"
 "lint/style/require-final-class" = "warn"
 "statements/require-strict-types" = "off"
-"functions/no-unreachable-default-argument-value" = { severity = "error", fix = "safe-only" }
-"strings/prefer-mb-functions" = false
-"types/no-loose-comparison" = true
+"functions/no-unreachable-default-argument-value" = { level = "warn", fix = "off" }
+"types/no-loose-comparison" = "error"
 "style/require-ordered-traits" = { fix = "off" }
-"style/prefer-cast-over-intval" = { fix = "apply", severity = "warn" }
-"imports/no-unused" = true
-[analyse]
-paths = ["app"]
+"style/prefer-cast-over-intval" = { level = "error" }
+"imports/no-unused" = "error"
+"phpdoc/no-superfluous-tags" = { allow-mixed = true }
+"pest/no-only" = { level = "off", fix = "off" }
 "#,
         ),
     ]);
@@ -98,8 +118,8 @@ paths = ["app"]
     let concat = n.iter().position(|n| *n == "concat_space").unwrap();
     assert!(concat < n.iter().position(|n| *n == "Pint/laravel_blade").unwrap());
     assert_eq!(c.rules[concat].options, json!({"spacing": "one"}));
-    // The laravel preset's 4 risky fixers and 11 code-deleting ones are lint rules: off unless [lint.rules] turns
-    // them on (context/plan/commands.md §4).
+    // The laravel preset's 4 risky fixers and 11 code-deleting ones are lint rules: off unless [lint] turns them on
+    // (context/plan/commands.md §4).
     for risky in [
         "no_alias_functions",
         "no_unreachable_default_argument_value",
@@ -120,20 +140,77 @@ paths = ["app"]
         assert!(!n.contains(&risky), "{risky}");
     }
     assert!(c.blade);
-    let lint: Vec<(&str, bool)> = c.lint.iter().map(|(r, a)| (r.name.as_str(), *a)).collect();
+    // By ID; fixers hand-read from [upstream.php-cs-fixer] of rules/mapping.toml.
+    use Level::{Error, Warn};
     assert_eq!(
-        lint,
+        c.lint.rules,
         [
-            ("no_alias_functions", true),
-            ("final_class", false),
-            ("no_unreachable_default_argument_value", false),
-            ("strict_comparison", false),
-            ("ordered_traits", false),
-            ("modernize_types_casting", true),
-            ("no_unused_imports", false),
+            lr(
+                "lint/functions/no-unreachable-default-argument-value",
+                Warn,
+                false,
+                Value::Null,
+                Some("no_unreachable_default_argument_value")
+            ),
+            lr(
+                "lint/imports/no-unused",
+                Error,
+                true,
+                Value::Null,
+                Some("no_unused_imports")
+            ),
+            lr(
+                "lint/phpdoc/no-superfluous-tags",
+                Error,
+                true,
+                json!({"allow_mixed": true}),
+                Some("no_superfluous_phpdoc_tags")
+            ),
+            lr(
+                "lint/style/no-alias-function",
+                Error,
+                true,
+                Value::Null,
+                Some("no_alias_functions")
+            ),
+            lr(
+                "lint/style/prefer-cast-over-intval",
+                Error,
+                true,
+                Value::Null,
+                Some("modernize_types_casting")
+            ),
+            lr(
+                "lint/style/require-final-class",
+                Warn,
+                true,
+                Value::Null,
+                Some("final_class")
+            ),
+            lr(
+                "lint/style/require-ordered-traits",
+                Error,
+                false,
+                Value::Null,
+                Some("ordered_traits")
+            ),
+            lr(
+                "lint/types/no-loose-comparison",
+                Error,
+                true,
+                Value::Null,
+                Some("strict_comparison")
+            ),
         ]
     );
-    assert!(c.lint.iter().all(|(r, _)| r.options.is_null()));
+    // [files] is every command's; each command's exclude adds to it.
+    assert_eq!(
+        c.files,
+        Files {
+            paths: vec!["src".into(), "tests".into()],
+            exclude: vec!["build".into()]
+        }
+    );
     assert_eq!(
         (
             c.finder.in_dirs,
@@ -142,12 +219,13 @@ paths = ["app"]
             c.finder.not_path
         ),
         (
-            vec!["src".into()],
-            vec!["a".into()],
+            vec!["src".into(), "tests".into()],
+            vec!["build".into(), "a".into()],
             vec!["n.php".into()],
             vec!["p".into()]
         )
     );
+    assert_eq!(c.lint.exclude, ["build"]);
     assert_eq!(c.php, "8.5");
     assert_eq!(c.sources, [d.join("composer.json"), d.join("pun.toml")]);
     // Options keep their values; only top-level keys go back to PHP-CS-Fixer's snake_case.
@@ -169,113 +247,331 @@ paths = ["app"]
         json!({"sort_algorithm": "alpha", "imports_order": ["class", "const"]})
     );
     assert!(c.blade);
+    // Nothing named, no composer.json: PHP 8.4, no lint rules, no files.
     assert_eq!(c.php, "8.4");
+    assert!(c.lint.rules.is_empty() && c.files == Files::default());
+}
+
+/// `[php] version` overrides composer.json's `require.php`, whose lowest version is the default.
+#[test]
+fn php_version() {
+    let c = |files: &[(&str, &str)]| load(&dir(files), &Options::default()).unwrap().php;
+    let toml = ("pun.toml", "");
+    assert_eq!(
+        c(&[toml, ("composer.json", r#"{"require":{"php":"^8.5"}}"#)]),
+        "8.5"
+    );
+    assert_eq!(
+        c(&[toml, ("composer.json", r#"{"require":{"php":">=8.4.3"}}"#)]),
+        "8.4"
+    );
+    assert_eq!(c(&[toml, ("composer.json", "{}")]), "8.4");
+    assert_eq!(
+        c(&[
+            ("pun.toml", "[php]\nversion = \"8.6\"\n"),
+            ("composer.json", r#"{"require":{"php":"^8.4"}}"#)
+        ]),
+        "8.6"
+    );
+}
+
+/// `[lint] sets` turn on every rule tagged with them, at `error`. Rule lists hand-read from [rules.lint] of
+/// rules/mapping.toml.
+#[test]
+fn lint_sets() {
+    let lint = |files: &[(&str, &str)]| load(&dir(files), &Options::default()).unwrap().lint;
+    let l = lint(&[("pun.toml", "[lint]\nsets = [\"early-return\"]\n")]);
+    assert_eq!(l.sets, ["early-return"]);
+    let early = [
+        ("lint/control-flow/no-useless-else", Some("no_useless_else")),
+        ("lint/style/prefer-early-continue", None),
+        ("lint/style/prefer-early-return", None),
+    ];
+    assert_eq!(
+        l.rules,
+        early.map(|(id, fixer)| LintRule {
+            named: false,
+            ..lr(id, Level::Error, true, Value::Null, fixer)
+        })
+    );
+    // `types` has 12 rules, two of them Laravel's: those need laravel/framework in composer.lock.
+    let types = "[lint]\nsets = [\"types\"]\n";
+    let l = lint(&[("pun.toml", types)]);
+    assert_eq!((l.rules.len(), l.ecosystems.len()), (10, 0));
+    assert!(!ids(&l.rules).contains(&"lint/laravel/add-relation-generics"));
+    let l = lint(&[("pun.toml", types), ("composer.lock", LARAVEL_LOCK)]);
+    assert_eq!(
+        (l.rules.len(), l.ecosystems),
+        (12, vec!["laravel".to_string()])
+    );
+    assert!(ids(&l.rules).contains(&"lint/laravel/add-relation-generics"));
+    // The laravel group switched off.
+    let off = format!("{types}[lint.groups]\nlaravel = \"off\"\n");
+    let l = lint(&[("pun.toml", &off), ("composer.lock", LARAVEL_LOCK)]);
+    assert_eq!((l.rules.len(), l.ecosystems.len()), (10, 0));
+    // `modernize` has 99 rules; an upgrade group's run from its PHP version on: on 8.4, the 6 php-8.5 rules and the
+    // 1 php-8.6 rule are off.
+    let modernize = "[lint]\nsets = [\"modernize\"]\n";
+    let l = lint(&[("pun.toml", modernize)]);
+    assert_eq!(l.rules.len(), 92);
+    assert!(ids(&l.rules).contains(&"lint/php-8.4/prefer-array-find"));
+    assert!(!ids(&l.rules).contains(&"lint/php-8.5/no-null-array-key"));
+    let l = lint(&[(
+        "pun.toml",
+        &format!("[php]\nversion = \"8.5\"\n{modernize}"),
+    )]);
+    assert_eq!(l.rules.len(), 98);
+    assert!(ids(&l.rules).contains(&"lint/php-8.5/no-null-array-key"));
+    // Two sets: the union, a rule in both counted once (no-useless-else is only early-return's).
+    let l = lint(&[("pun.toml", "[lint]\nsets = [\"early-return\", \"types\"]\n")]);
+    assert_eq!(l.rules.len(), 13);
+}
+
+/// A group's level covers every rule of the group, whether a set has it or not; a rule's own line wins.
+#[test]
+fn lint_groups() {
+    let lint = |toml: &str| {
+        load(&dir(&[("pun.toml", toml)]), &Options::default())
+            .unwrap()
+            .lint
+    };
+    let level = |l: &Lint, id: &str| l.rules.iter().find(|r| r.id == id).map(|r| r.level);
+    // 84 style rules at warn, no-useless-else at error from its set.
+    let l = lint("[lint]\nsets = [\"early-return\"]\n[lint.groups]\nstyle = \"warn\"\n");
+    assert_eq!(l.rules.len(), 85);
+    assert!(
+        l.rules
+            .iter()
+            .all(|r| r.level == Level::Warn || r.id == "lint/control-flow/no-useless-else")
+    );
+    assert_eq!(
+        level(&l, "lint/control-flow/no-useless-else"),
+        Some(Level::Error)
+    );
+    let l = lint(
+        "[lint]\nsets = [\"early-return\"]\n[lint.groups]\nstyle = \"off\"\n[lint.rules]\n\"style/prefer-early-return\" = \"warn\"\n",
+    );
+    assert_eq!(
+        ids(&l.rules),
+        [
+            "lint/control-flow/no-useless-else",
+            "lint/style/prefer-early-return"
+        ]
+    );
+    assert_eq!(
+        level(&l, "lint/style/prefer-early-return"),
+        Some(Level::Warn)
+    );
+    let l = lint(
+        "[lint]\nsets = [\"early-return\"]\n[lint.rules]\n\"control-flow/no-useless-else\" = \"off\"\n",
+    );
+    assert_eq!(l.rules.len(), 2);
+    // A rule no fixer runs keeps its options as written (they are Pun's own names, not PHP-CS-Fixer's).
+    let l =
+        lint("[lint.rules]\n\"style/prefer-early-return\" = { level = \"warn\", max-depth = 2 }\n");
+    assert_eq!(
+        l.rules,
+        [LintRule {
+            id: "lint/style/prefer-early-return".into(),
+            level: Level::Warn,
+            fix: true,
+            options: json!({"max-depth": 2}),
+            fixer: None,
+            named: true,
+        }]
+    );
+    // A group turns an upgrade on whatever the Laravel version (no composer.lock here).
+    let l = lint("[lint.groups]\nlaravel-11 = \"error\"\n");
+    assert_eq!(
+        ids(&l.rules),
+        [
+            "lint/laravel-11/prefer-assert-see-html",
+            "lint/laravel-11/prefer-geometry-column",
+            "lint/laravel-11/prefer-queueable-trait"
+        ]
+    );
+    assert!(l.rules.iter().all(|r| !r.named && r.level == Level::Error));
+}
+
+/// What a set alone may turn on in an upgrade group: the locked Laravel version gates `laravel-<n>` (no set has such
+/// a rule yet, so this is checked here and not through `load`).
+#[test]
+fn upgrade_gates() {
+    let gates = |lock: Option<&str>| {
+        let d = dir(&lock
+            .map(|l| ("composer.lock", l))
+            .into_iter()
+            .collect::<Vec<_>>());
+        composer::detect(&d).unwrap()
+    };
+    let check = |composer: &composer::Composer, group: &str| {
+        let g = schema::Gates {
+            php: (8, 4),
+            composer,
+        };
+        g.allows(group, &g.ecosystems(|_| false))
+    };
+    let l11 = gates(Some(LARAVEL_LOCK));
+    assert!(check(&l11, "laravel-11") && check(&l11, "laravel-10") && check(&l11, "laravel-5.7"));
+    assert!(!check(&l11, "laravel-12"));
+    assert!(check(&l11, "laravel") && !check(&l11, "pest") && !check(&l11, "doctrine"));
+    assert!(check(&l11, "php-8.4") && !check(&l11, "php-8.5") && check(&l11, "style"));
+    // A branch has no version, so no upgrade group runs from a set; no lock, no Laravel at all.
+    let branch = gates(Some(
+        r#"{"packages":[{"name":"laravel/framework","version":"dev-main"}]}"#,
+    ));
+    assert!(check(&branch, "laravel") && !check(&branch, "laravel-5.7"));
+    assert!(!check(&gates(None), "laravel-5.7"));
 }
 
 #[test]
-fn pun_toml_errors() {
-    let e = |toml: &str| err(&dir(&[("pun.toml", toml)]), Options::default());
-    // The four old tiers; Step 1 replaces them (context/plan/config.md §5).
-    for tier in ["essential", "recommended", "strict", "pedantic"] {
-        let toml = format!("preset = \"{tier}\"\n");
-        assert!(load(&dir(&[("pun.toml", &toml)]), &Options::default()).is_ok());
-    }
-    assert!(e("preset = \"laravel\"\n").contains(
-        "unknown variant `laravel`, expected one of `essential`, `recommended`, `strict`, `pedantic`"
-    ));
-    assert!(e("[format]\nexlude = [\"typo\"]\n").contains("unknown field `exlude`"));
-    assert!(e("[format.rules]\nnope = true\n").ends_with(
-        "`nope` is not a format rule Pun can run (see crates/pun-config/rules/mapping.toml)"
-    ));
-    assert!(e("[lint.rules]\nnope = true\n").contains("`nope` is not a lint rule"));
-    // No aliases: an old Pun name, an upstream name or a rule of the other command names the ID to use
-    // (IDs hand-read from rules/mapping.toml).
-    for (table, name, id) in [
-        // Old format names and the kebab-cased fixer, under either table.
-        ("format", "format.array-syntax", "format/arrays/syntax"),
-        ("format", "array-syntax", "format/arrays/syntax"),
-        ("lint", "laravel-blade", "format/laravel/blade"),
-        // The 40 code-deleting fixers are lint rules now (context/plan/commands.md §4).
-        ("format", "no-unused-imports", "lint/imports/no-unused"),
-        ("format", "imports/no-unused", "lint/imports/no-unused"),
-        (
-            "format",
-            "self-static-accessor",
-            "lint/classes/prefer-self-in-final",
-        ),
-        // Old lint and analyse names, and the auto-derived ones before the naming pass.
-        (
-            "lint",
-            "lint.no-alias-function",
-            "lint/style/no-alias-function",
-        ),
-        ("lint", "final-class", "lint/style/require-final-class"),
-        ("format", "final-class", "lint/style/require-final-class"),
-        (
-            "lint",
-            "simplify-mirror-assign",
-            "lint/dead-code/no-self-assignment",
-        ),
-        (
-            "lint",
-            "no-redundant-pest-uses",
-            "lint/pest/no-redundant-uses",
-        ),
-        (
-            "lint",
-            "analyse.undefined-method",
-            "analyse/undefined/method",
-        ),
-        // Upstream names: PHP-CS-Fixer, Pint, Rector, PHPStan.
-        ("format", "array_syntax", "format/arrays/syntax"),
-        ("format", "Pint/laravel_blade", "format/laravel/blade"),
-        ("lint", "StrictInArray", "lint/types/require-strict-param"),
-        ("lint", "method.notFound", "analyse/undefined/method"),
-        // A rule of the other command, full or short.
-        ("lint", "imports/ordered", "format/imports/ordered"),
-        (
-            "format",
-            "style/require-final-class",
-            "lint/style/require-final-class",
-        ),
-        ("lint", "format/imports/ordered", "format/imports/ordered"),
-    ] {
-        let got = e(&format!("[{table}.rules]\n\"{name}\" = true\n"));
-        assert!(
-            got.ends_with(&format!("`{name}` is `{id}` in pun.toml")),
-            "{got}"
-        );
-    }
-    // A name several rules share is not guessed; a rule Pun can't run yet is named as such.
-    // `ordered` is imports/ordered, attributes/ordered and types/ordered.
-    assert!(
-        e("[format.rules]\nordered = true\n")
-            .contains("`ordered` is not a format rule Pun can run")
+fn lint_overrides() {
+    let c = load(
+        &dir(&[(
+            "pun.toml",
+            "[[lint.overrides]]\nfiles = [\"tests/**\"]\nrules = { \"pest/no-only\" = \"off\", \"style/require-final-class\" = { level = \"warn\", fix = \"off\" } }\n\n[[lint.overrides]]\nfiles = [\"app/Legacy.php\", \"database/**\"]\n",
+        )]),
+        &Options::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        c.lint.overrides,
+        [
+            Override {
+                files: vec!["tests/**".into()],
+                rules: vec![
+                    LintSetting {
+                        id: "lint/pest/no-only".into(),
+                        level: None,
+                        fix: true,
+                        options: Value::Null
+                    },
+                    LintSetting {
+                        id: "lint/style/require-final-class".into(),
+                        level: Some(Level::Warn),
+                        fix: false,
+                        options: Value::Null
+                    },
+                ]
+            },
+            Override {
+                files: vec!["app/Legacy.php".into(), "database/**".into()],
+                rules: vec![]
+            },
+        ]
     );
-    assert!(
-        e("[lint.rules]\n\"dead-code/no-unused-private-method\" = true\n")
-            .contains("`dead-code/no-unused-private-method` is not a lint rule Pun can run")
-    );
-    assert!(
-        e("[format.rules]\n\"strings/single-quote\" = \"yes\"\n")
-            .ends_with("`strings/single-quote` must be true, false or a table of options")
-    );
-    assert!(
-        e("[lint.rules]\n\"style/require-final-class\" = 1\n")
-            .ends_with("`style/require-final-class` must be true, false or a table of options")
-    );
-    assert!(
-        e("[lint.rules]\n\"style/require-final-class\" = \"loud\"\n").ends_with(
-            "`style/require-final-class` = \"loud\": expected \"error\", \"warn\", \"info\" or \"off\""
-        )
-    );
-    assert!(
-        e("[lint.rules]\n\"style/require-final-class\" = { fix = \"yes\" }\n").ends_with(
-            "`style/require-final-class`: fix must be \"apply\", \"safe-only\" or \"off\""
-        )
-    );
+    // Overrides change levels per path at run time; they turn nothing on for the whole project.
+    assert!(c.lint.rules.is_empty());
 }
 
+/// Rule counts hand-counted in [rules.analyse] of rules/mapping.toml: basic 133, essential 51, recommended 49, strict
+/// 17, max 4; 20 of them Laravel's (0, 5, 9, 4, 2); one rule has no preset.
+#[test]
+fn analyse() {
+    let an = |files: &[(&str, &str)]| load(&dir(files), &Options::default()).unwrap().analyse;
+    let has = |a: &Analyse, id: &str| a.rules.iter().any(|r| r.id == id);
+    // No [analyse]: recommended, [files] paths and exclude.
+    let a = an(&[(
+        "pun.toml",
+        "[files]\npaths = [\"app\"]\nexclude = [\"storage\"]\n",
+    )]);
+    assert_eq!(
+        a,
+        Analyse {
+            preset: "recommended".into(),
+            paths: vec!["app".into()],
+            exclude: vec!["storage".into()],
+            baseline: None,
+            switches: vec![],
+            ecosystems: vec![],
+            rules: a.rules.clone(),
+        }
+    );
+    assert_eq!(a.rules.len(), 133 + 51 + 49 - 14);
+    assert!(
+        has(&a, "analyse/undefined/method")
+            && !has(&a, "analyse/types/missing-iterable-value-type")
+    );
+    let preset = |p: &str, lock: bool| {
+        let toml = format!("[analyse]\npreset = \"{p}\"\n");
+        let mut files = vec![("pun.toml", toml.as_str())];
+        if lock {
+            files.push(("composer.lock", LARAVEL_LOCK));
+        }
+        let a = an(&files);
+        (a.rules.len(), a.switches)
+    };
+    assert_eq!(preset("basic", false), (133, vec![]));
+    assert_eq!(preset("essential", true), (184, vec![]));
+    assert_eq!(preset("recommended", true), (233, vec![]));
+    assert_eq!(
+        preset("strict", true),
+        (250, vec!["union-types", "nullables"])
+    );
+    assert_eq!(
+        preset("max", false),
+        (
+            234,
+            vec![
+                "union-types",
+                "nullables",
+                "explicit-mixed",
+                "implicit-mixed"
+            ]
+        )
+    );
+    let a = an(&[(
+        "pun.toml",
+        r#"[files]
+paths = ["app"]
+exclude = ["storage"]
+[analyse]
+preset = "basic"
+paths = ["app", "routes"]
+exclude = ["tests/**"]
+baseline = "pun-baseline.toml"
+[analyse.rules]
+"types/missing-iterable-value-type" = "on"
+"analyse/undefined/method" = { magic = true }
+"undefined/function" = "off"
+"imports/prefixed-class-reference" = "on"
+laravel = "on"
+"laravel/useless-with-call" = "off"
+"#,
+    )]);
+    assert_eq!(
+        (a.paths, a.exclude, a.baseline),
+        (
+            vec!["app".into(), "routes".into()],
+            vec!["storage".into(), "tests/**".into()],
+            Some("pun-baseline.toml".into())
+        )
+    );
+    // basic, plus 2 named, plus the 20 Laravel rules but one, minus undefined/function.
+    assert_eq!(a.rules.len(), 133 + 2 + 19 - 1);
+    let rule = |id: &str| {
+        a.rules
+            .iter()
+            .find(|r| r.id == id)
+            .map(|r| r.options.clone())
+    };
+    assert_eq!(
+        rule("analyse/undefined/method"),
+        Some(json!({"magic": true}))
+    );
+    assert_eq!(
+        rule("analyse/types/missing-iterable-value-type"),
+        Some(Value::Null)
+    );
+    assert_eq!(rule("analyse/undefined/function"), None);
+    assert_eq!(rule("analyse/laravel/useless-with-call"), None);
+    // laravel/framework locked, the group switched off.
+    let a = an(&[
+        ("pun.toml", "[analyse.rules]\nlaravel = \"off\"\n"),
+        ("composer.lock", LARAVEL_LOCK),
+    ]);
+    assert_eq!((a.rules.len(), a.ecosystems.len()), (219, 0));
+}
 #[test]
 fn composer_gate() {
     let d = dir(&[("composer.json", r#"{"require":{"php":"^8.2"}}"#)]);
@@ -354,21 +650,263 @@ fn rule_metadata() {
 fn show() {
     let d = dir(&[(
         "pun.toml",
-        "[format]\npreset = \"empty\"\n[format.rules]\n\"operators/concat-spacing\" = { spacing = \"one\" }\n\"strings/single-quote\" = true\n[lint.rules]\n\"style/require-final-class\" = { fix = \"apply\" }\n\"style/no-alias-function\" = { sets = [\"@internal\"] }\n",
+        "[files]\npaths = [\"app\"]\n[format]\npreset = \"empty\"\n[format.rules]\n\"operators/concat-spacing\" = { spacing = \"one\" }\n\"strings/single-quote\" = true\n[lint.rules]\n\"style/require-final-class\" = \"error\"\n\"style/no-alias-function\" = { level = \"warn\", fix = \"off\", sets = [\"@internal\"] }\n\"types/no-loose-comparison\" = { fix = \"off\" }\n[analyse]\npreset = \"basic\"\n[analyse.rules]\n\"undefined/method\" = { magic = true }\n",
     )]);
+    let v = load(&d, &Options::default()).unwrap().show();
     assert_eq!(
-        load(&d, &Options::default()).unwrap().show(),
+        v["lint"],
         json!({
-            "sources": [d.join("pun.toml")],
-            "php": {"version": "8.4"},
-            "format": {"preset": "empty", "rules": {"format/operators/concat-spacing": {"spacing": "one"}, "format/strings/single-quote": true}},
-            "lint": {"rules": {"lint/style/require-final-class": {"fix": "apply"}, "lint/style/no-alias-function": {"sets": ["@internal"]}}},
-            "finder": {"in": [], "exclude": [], "notName": [], "notPath": []},
+            "sets": [],
+            "ecosystems": [],
+            "rules": {
+                "lint/style/no-alias-function": {"level": "warn", "fix": "off", "sets": ["@internal"]},
+                "lint/style/require-final-class": "error",
+                "lint/types/no-loose-comparison": {"fix": "off"},
+            },
         })
+    );
+    assert_eq!(
+        v["format"],
+        json!({"preset": "empty", "rules": {"format/operators/concat-spacing": {"spacing": "one"}, "format/strings/single-quote": true}})
+    );
+    assert_eq!(
+        (&v["files"], &v["php"], &v["sources"]),
+        (
+            &json!({"paths": ["app"], "exclude": []}),
+            &json!({"version": "8.4"}),
+            &json!([d.join("pun.toml")])
+        )
+    );
+    assert_eq!(
+        v["analyse"]["rules"]["analyse/undefined/method"],
+        json!({"magic": true})
+    );
+    assert_eq!(v["analyse"]["rules"]["analyse/undefined/function"], "on");
+    assert_eq!(v["analyse"]["preset"], "basic");
+    // No baseline, no key (TOML has no null); a baseline is a path.
+    assert!(v["analyse"].get("baseline").is_none());
+    let d = dir(&[("pun.toml", "[analyse]\nbaseline = \"b.toml\"\n")]);
+    assert_eq!(
+        load(&d, &Options::default()).unwrap().show()["analyse"]["baseline"],
+        "b.toml"
     );
     // A rule Pun can't run (a set it can't expand) shows under its upstream name.
     let c = load(&dir(&[]), &preset("per")).unwrap();
     assert_eq!(c.show()["format"]["rules"]["@PER-CS"], true);
+}
+
+/// Every error names what to write instead.
+#[test]
+fn pun_toml_errors() {
+    let d = dir(&[]);
+    let e = |toml: &str| {
+        std::fs::write(d.join("pun.toml"), toml).unwrap();
+        let p = d.join("pun.toml").display().to_string();
+        err(&d, Options::default()).replace(&p, "pun.toml")
+    };
+    // Removed keys and values.
+    for (toml, msg) in [
+        (
+            "preset = \"recommended\"\n",
+            "the top-level `preset = \"recommended\"` was removed: use `[lint] sets` for lint rules, `[analyse] preset` for analyse and `[format] preset` for format",
+        ),
+        (
+            "[format]\npaths = [\"app\"]\n",
+            "[format] paths moved to [files] paths, which every command shares",
+        ),
+        (
+            "[format]\npreset = \"per\"\n",
+            "[format] preset = \"per\" was removed: use preset = \"empty\" with its rules under [format.rules] (`pun migrate` expands a pint.json that used it)",
+        ),
+        (
+            "[format]\npreset = \"symfony\"\n",
+            "[format] preset = \"symfony\" was removed: use preset = \"empty\" with its rules under [format.rules] (`pun migrate` expands a pint.json that used it)",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = { fix = \"apply\" }\n",
+            "`style/require-final-class`: fix = \"apply\" was removed; `--fix` applies the fix of every enabled rule, so leave `fix` out",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = { fix = \"safe-only\" }\n",
+            "`style/require-final-class`: fix = \"safe-only\" was removed; `--fix` applies every fix, and fix = \"off\" keeps a rule report-only",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = \"info\"\n",
+            "`style/require-final-class` = \"info\": the `info` level was removed; use \"warn\"",
+        ),
+        (
+            "[lint.groups]\nstyle = \"info\"\n",
+            "`style` = \"info\": the `info` level was removed; use \"warn\"",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = { severity = \"warn\" }\n",
+            "`style/require-final-class`: `severity` was removed; use `level` (\"error\", \"warn\" or \"off\")",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = true\n",
+            "`style/require-final-class` = true: lint rules take a level; use \"error\"",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = false\n",
+            "`style/require-final-class` = false: lint rules take a level; use \"off\"",
+        ),
+        (
+            "[analyse]\nlevel = 5\n",
+            "[analyse] level: PHPStan's levels are presets in Pun; use preset = \"basic\" | \"essential\" | \"recommended\" | \"strict\" | \"max\": level 5 is preset = \"recommended\"",
+        ),
+        (
+            "[analyse]\nlevel = \"max\"\n",
+            "[analyse] level: PHPStan's levels are presets in Pun; use preset = \"basic\" | \"essential\" | \"recommended\" | \"strict\" | \"max\"",
+        ),
+        (
+            "[analyse]\npreset = 8\n",
+            "[analyse] preset = 8: PHPStan level 8 is preset = \"strict\"",
+        ),
+        (
+            "[analyse.rules]\n\"undefined/method\" = \"warn\"\n",
+            "[analyse.rules] `undefined/method` = \"warn\": analyse rules are \"on\" or \"off\" (or a table of options); there are no levels",
+        ),
+        // Bad values.
+        (
+            "[format]\npreset = \"pint\"\n",
+            "[format] preset = \"pint\": expected `laravel`, `psr12` or `empty`",
+        ),
+        (
+            "[php]\nversion = \"8\"\n",
+            "[php] version = \"8\": expected a PHP version as major.minor, such as \"8.4\"",
+        ),
+        (
+            "[php]\nversion = \"eight.four\"\n",
+            "[php] version = \"eight.four\": expected a PHP version as major.minor, such as \"8.4\"",
+        ),
+        (
+            "[lint]\nsets = [\"recommended\"]\n",
+            "[lint] sets: `recommended` is not a lint set; the sets are `dead-code`, `modernize`, `code-quality`, `types`, `early-return`, `privatization`, `naming`, `coding-style`",
+        ),
+        (
+            "[lint.groups]\nnope = \"error\"\n",
+            "[lint.groups]: `nope` is not a group (see [meta.groups] in crates/pun-config/rules/mapping.toml)",
+        ),
+        (
+            "[lint.groups]\nstyle = true\n",
+            "[lint.groups] `style` = true: expected \"error\", \"warn\" or \"off\"",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = \"loud\"\n",
+            "`style/require-final-class` = \"loud\": expected \"error\", \"warn\" or \"off\"",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = { level = 2 }\n",
+            "`style/require-final-class`: level = 2: expected \"error\", \"warn\" or \"off\"",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = { fix = \"yes\" }\n",
+            "`style/require-final-class`: fix = \"yes\": the only value is \"off\"",
+        ),
+        (
+            "[lint.rules]\n\"style/require-final-class\" = 1\n",
+            "`style/require-final-class` = 1: expected \"error\", \"warn\", \"off\" or a table",
+        ),
+        (
+            "[analyse]\npreset = \"level-5\"\n",
+            "[analyse] preset = \"level-5\": expected `basic`, `essential`, `recommended`, `strict`, `max`",
+        ),
+        (
+            "[analyse.rules]\nlaravel = { magic = true }\n",
+            "[analyse.rules] `laravel` is a group: it takes \"on\" or \"off\"",
+        ),
+        (
+            "[format.rules]\n\"strings/single-quote\" = \"yes\"\n",
+            "`strings/single-quote` must be true, false or a table of options",
+        ),
+        (
+            "[format.rules]\nnope = true\n",
+            "`nope` is not a format rule (see crates/pun-config/rules/mapping.toml)",
+        ),
+        (
+            "[lint.rules]\nnope = \"error\"\n",
+            "`nope` is not a lint rule (see crates/pun-config/rules/mapping.toml)",
+        ),
+        (
+            "[analyse.rules]\nnope = \"on\"\n",
+            "`nope` is not a analyse rule (see crates/pun-config/rules/mapping.toml)",
+        ),
+        // `ordered` is imports/ordered, attributes/ordered and types/ordered: not guessed.
+        (
+            "[format.rules]\nordered = true\n",
+            "`ordered` is not a format rule (see crates/pun-config/rules/mapping.toml)",
+        ),
+    ] {
+        let got = e(toml);
+        assert_eq!(got, format!("pun.toml: {msg}"), "{toml}");
+    }
+    // serde's own errors for unknown keys.
+    assert!(e("[format]\nexlude = [\"typo\"]\n").contains("unknown field `exlude`"));
+    assert!(e("[lint]\nset = []\n").contains("unknown field `set`"));
+    assert!(e("[[lint.overrides]]\nrules = {}\n").contains("missing field `files`"));
+    // No aliases: an old Pun name, an upstream name or a rule of the other command names the ID to use
+    // (IDs hand-read from rules/mapping.toml).
+    for (table, name, id) in [
+        // Old format names and the kebab-cased fixer, under either table.
+        ("format", "format.array-syntax", "format/arrays/syntax"),
+        ("format", "array-syntax", "format/arrays/syntax"),
+        ("lint", "laravel-blade", "format/laravel/blade"),
+        // The 40 code-deleting fixers are lint rules now (context/plan/commands.md §4).
+        ("format", "no-unused-imports", "lint/imports/no-unused"),
+        ("format", "imports/no-unused", "lint/imports/no-unused"),
+        (
+            "format",
+            "self-static-accessor",
+            "lint/classes/prefer-self-in-final",
+        ),
+        // Old lint and analyse names, and the auto-derived ones before the naming pass.
+        (
+            "lint",
+            "lint.no-alias-function",
+            "lint/style/no-alias-function",
+        ),
+        ("lint", "final-class", "lint/style/require-final-class"),
+        ("format", "final-class", "lint/style/require-final-class"),
+        (
+            "lint",
+            "simplify-mirror-assign",
+            "lint/dead-code/no-self-assignment",
+        ),
+        (
+            "lint",
+            "no-redundant-pest-uses",
+            "lint/pest/no-redundant-uses",
+        ),
+        (
+            "lint",
+            "analyse.undefined-method",
+            "analyse/undefined/method",
+        ),
+        ("analyse", "undefined-method", "analyse/undefined/method"),
+        // Upstream names: PHP-CS-Fixer, Pint, Rector, PHPStan.
+        ("format", "array_syntax", "format/arrays/syntax"),
+        ("format", "Pint/laravel_blade", "format/laravel/blade"),
+        ("lint", "StrictInArray", "lint/types/require-strict-param"),
+        ("lint", "method.notFound", "analyse/undefined/method"),
+        ("analyse", "method.notFound", "analyse/undefined/method"),
+        // A rule of the other command, full or short.
+        ("lint", "imports/ordered", "format/imports/ordered"),
+        (
+            "format",
+            "style/require-final-class",
+            "lint/style/require-final-class",
+        ),
+        ("lint", "format/imports/ordered", "format/imports/ordered"),
+    ] {
+        let value = if table == "format" { "true" } else { "\"off\"" };
+        let got = e(&format!("[{table}.rules]\n\"{name}\" = {value}\n"));
+        assert_eq!(got, format!("pun.toml: `{name}` is `{id}` in pun.toml"));
+    }
+    // The same names inside an override.
+    assert_eq!(
+        e("[[lint.overrides]]\nfiles = [\"tests/**\"]\nrules = { final_class = \"off\" }\n"),
+        "pun.toml: `final_class` is `lint/style/require-final-class` in pun.toml"
+    );
 }
 
 /// Rule sets resolve like PHP-CS-Fixer's RuleSet (tests/rule_sets.json: `(new RuleSet($rules))->getRules()` of the
@@ -445,22 +983,22 @@ not-path = ["y"]
 "arrays/syntax" = false
 
 [lint.rules]
-"refactor/rename-phpdoc-tag" = { fix = "apply" }
-"functions/no-unused-closure-use" = { fix = "apply" }
-"style/no-alias-function" = { fix = "apply" }
-"statements/no-empty" = { fix = "apply" }
-"phpdoc/no-superfluous-tags" = { fix = "apply", allow-mixed = true, allow-unused-params = true }
-"functions/no-unreachable-default-argument-value" = { fix = "apply" }
-"imports/no-unused" = { fix = "apply" }
-"control-flow/no-useless-return" = { fix = "apply" }
-"style/require-ordered-traits" = { fix = "apply" }
-"phpunit/require-method-casing" = { fix = "apply", case = "snake_case" }
-"phpunit/require-protected-setup" = { fix = "apply" }
-"phpdoc/no-access" = { fix = "apply" }
-"phpdoc/no-package" = { fix = "apply" }
-"phpdoc/no-useless-inheritdoc" = { fix = "apply" }
-"classes/prefer-self-in-final" = { fix = "apply" }
-"style/require-final-class" = { fix = "apply" }
+"refactor/rename-phpdoc-tag" = "error"
+"functions/no-unused-closure-use" = "error"
+"style/no-alias-function" = "error"
+"statements/no-empty" = "error"
+"phpdoc/no-superfluous-tags" = { allow-mixed = true, allow-unused-params = true }
+"functions/no-unreachable-default-argument-value" = "error"
+"imports/no-unused" = "error"
+"control-flow/no-useless-return" = "error"
+"style/require-ordered-traits" = "error"
+"phpunit/require-method-casing" = { case = "snake_case" }
+"phpunit/require-protected-setup" = "error"
+"phpdoc/no-access" = "error"
+"phpdoc/no-package" = "error"
+"phpdoc/no-useless-inheritdoc" = "error"
+"classes/prefer-self-in-final" = "error"
+"style/require-final-class" = "error"
 "#
         );
         // Re-running gives the same file; laravel's single_quote already is `true`, so it isn't written.
@@ -499,16 +1037,19 @@ not-path = ["y"]
                     .clone(),
             );
             let want = rule_set(want).unwrap();
-            let mut got: Vec<(String, Value)> =
-                (c.rules.iter().chain(c.lint.iter().map(|(r, _)| r)))
-                    .map(|r| (r.name.clone(), r.options.clone()))
-                    .collect();
+            let lint =
+                (c.lint.rules.iter()).map(|l| (l.fixer.unwrap().to_string(), l.options.clone()));
+            let mut got: Vec<(String, Value)> = (c.rules.iter())
+                .map(|r| (r.name.clone(), r.options.clone()))
+                .chain(lint)
+                .collect();
             let mut want: Vec<(String, Value)> =
                 want.into_iter().map(|r| (r.name, r.options)).collect();
             got.sort_by(|a, b| a.0.cmp(&b.0));
             want.sort_by(|a, b| a.0.cmp(&b.0));
             assert_eq!(got, want, "{json}");
-            assert!(c.lint.iter().all(|(_, apply)| *apply));
+            // At `error` with their fix on: `pun check --fix` applies them as Pint did.
+            assert!((c.lint.rules.iter()).all(|l| l.fix && l.level == Level::Error && l.named));
         }
     }
 
@@ -563,8 +1104,17 @@ not-path = ["y"]
                 "@PER-CS: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
             ]
         );
-        // The per preset carries @PER-CS itself, so a per project migrates (and its runs stop on it).
-        assert!(pint(r#"{"preset":"per"}"#).unsupported.is_empty());
+        // pun.toml has no per or symfony preset: their rules are written over `empty`, and the sets in them Pun
+        // can't expand are named.
+        let m = pint(r#"{"preset":"per"}"#);
+        assert_eq!(
+            m.unsupported,
+            ["@PER-CS: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)"]
+        );
+        assert_eq!(
+            m.toml,
+            "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"imports/no-unused\" = \"error\"\n"
+        );
     }
 
     #[test]
@@ -578,10 +1128,8 @@ not-path = ["y"]
             names(&c.rules).contains(&"braces_position")
                 && names(&c.rules).contains(&"concat_space")
         );
-        assert_eq!(
-            names(&c.lint.iter().map(|(r, _)| r.clone()).collect::<Vec<_>>()),
-            ["ordered_class_elements", "strict_param"]
-        );
+        let fixers: Vec<_> = c.lint.rules.iter().map(|l| l.fixer.unwrap()).collect();
+        assert_eq!(fixers, ["ordered_class_elements", "strict_param"]);
     }
 
     /// Messages are Pint's (ConfigurationJsonRepository, RuleSet; real Pint 1.29.3 on the same pint.json).
@@ -603,7 +1151,7 @@ not-path = ["y"]
             from_pint(&dir(&[]).join("pint.json"), Some("psr12"))
                 .unwrap()
                 .toml,
-            "[format]\npreset = \"psr12\"\n\n[lint.rules]\n\"classes/require-member-order\" = { fix = \"apply\", order = [\"use_trait\"] }\n\"imports/no-unused\" = { fix = \"apply\" }\n"
+            "[format]\npreset = \"psr12\"\n\n[lint.rules]\n\"classes/require-member-order\" = { order = [\"use_trait\"] }\n\"imports/no-unused\" = \"error\"\n"
         );
         assert_eq!(
             e(&[
@@ -662,7 +1210,7 @@ not-path = ["y"]
         let m = from_pint(&d.join("custom.json"), None).unwrap();
         assert_eq!(
             m.toml,
-            "[format]\npreset = \"empty\"\npaths = [\"src\"]\nexclude = [\"x\", \"b\"]\nnot-name = [\"n\", \"m\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\"operators/concat-spacing\" = { spacing = \"one\" }\n"
+            "[files]\npaths = [\"src\"]\n\n[format]\npreset = \"empty\"\nexclude = [\"x\", \"b\"]\nnot-name = [\"n\", \"m\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\"operators/concat-spacing\" = { spacing = \"one\" }\n"
         );
     }
 }

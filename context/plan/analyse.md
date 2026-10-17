@@ -44,7 +44,8 @@ file, line and rule; messages may be reworded), so CI can switch.
 
 ## 3. The config
 
-The schema is config.md §3 and §5. Nothing of it is built yet.
+The schema is config.md §3 and §5. pun-config reads it into `Config.analyse` (preset, paths, exclude, baseline, the
+type switches and the enabled rules); `pun analyse` doesn't use it yet.
 
 ```toml
 [analyse]

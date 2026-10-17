@@ -45,7 +45,7 @@ struct Cli {
 enum Cmd {
     /// Fix (or check) the layout of the given paths: the `[format]` rules.
     Format(Box<FormatArgs>),
-    /// Report the `[lint]` rules' fixes; `--fix` applies those with `fix = "apply"`.
+    /// Report the `[lint]` rules' fixes; `--fix` applies them all but those with `fix = "off"`.
     Lint {
         #[command(flatten)]
         cmd: Box<StageCmd>,
@@ -268,7 +268,7 @@ fn show_config(
             format!("preset {}", cfg.preset),
             format!("PHP {}", cfg.php),
             agent::count(cfg.rules.len(), "format rule"),
-            agent::count(cfg.lint.len(), "lint rule"),
+            agent::count(cfg.lint.rules.len(), "lint rule"),
         ];
         let from = format!("from {}", sources.join(", "));
         print!("{}", agent::render("ok", &detail, &from, &[], false));

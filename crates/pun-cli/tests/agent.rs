@@ -52,7 +52,7 @@ fn agent(dir: &Path, args: &[&str]) -> (String, Option<i32>) {
     run(dir, args, &[("PUN_AGENT", "1")])
 }
 
-const TOML: &str = "[format]\npreset = \"empty\"\n\n[format.rules]\n\"arrays/syntax\" = true\n\n[lint.rules]\n\"style/no-alias-function\" = { fix = \"apply\" }\n\"dead-code/no-self-assignment\" = true\n";
+const TOML: &str = "[format]\npreset = \"empty\"\n\n[format.rules]\n\"arrays/syntax\" = true\n\n[lint.rules]\n\"style/no-alias-function\" = \"error\"\n\"dead-code/no-self-assignment\" = { fix = \"off\" }\n";
 const ARRAY: &str = "<?php\n$a = array(1);\n";
 const ALIAS: &str = "<?php\n$n = sizeof(array());\n";
 const SELF: &str = "<?php\n$a = 1;\n$a = $a;\n";
@@ -279,7 +279,7 @@ fn lint_and_check() {
             Some(1)
         )
     );
-    // --fix applies only `fix = "apply"` rules; the others are reported as remaining, like `--test` reports them,
+    // --fix applies every rule but those with `fix = "off"`, which are reported as remaining, like `--test` reports them,
     // and fail the run.
     let remaining = "app/S.php lint/dead-code/no-self-assignment [fix:safe] [remaining]\n";
     assert_eq!(
@@ -449,7 +449,7 @@ fn config() {
         agent(&d, &["config"]),
         (
             format!(
-                "pun config: ok, preset empty, PHP 8.4, 1 format rule, 2 lint rules (from composer.json, pun.toml, Ts)\n{human}"
+                "pun config: ok, preset empty, PHP 8.5, 1 format rule, 2 lint rules (from composer.json, pun.toml, Ts)\n{human}"
             ),
             Some(0)
         )
@@ -542,7 +542,7 @@ fn migrate_without_a_config() {
     let toml = std::fs::read_to_string(d.join("pun.toml")).unwrap();
     assert!(
         toml.starts_with(&format!(
-            "# Written by `pun migrate`: {nothing}; starter config.\npreset = \"recommended\"\n\n[format]\n"
+            "# Written by `pun migrate`: {nothing}; starter config.\n[format]\n"
         )),
         "{toml}"
     );

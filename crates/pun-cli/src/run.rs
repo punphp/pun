@@ -8,8 +8,8 @@ use rayon::prelude::*;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
-/// Which rules a run applies. `bool`: `--fix` (only lint rules with `fix = "apply"`; without it every enabled lint
-/// rule is checked, nothing written).
+/// Which rules a run applies. `bool`: `--fix` (every enabled lint rule's fix but those with `fix = "off"`; without
+/// it every enabled lint rule is checked, nothing written).
 #[derive(Clone, Copy)]
 pub(crate) enum Stage {
     Format,
@@ -62,25 +62,53 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         Ok(cfg) => cfg,
         Err(e) => return config_error(&format!("{e:#}"), 1),
     };
-    // No PHP fallback: a rule without a native fixer, format or lint, stops every command (exit 2, Pun can't run).
+    // No PHP fallback: a rule without a native fixer, format or named lint rule, stops every command (exit 2, Pun
+    // can't run). A set or a group skips the rules Pun can't run yet.
+    let named_without_fixer: Vec<String> = (cfg.lint.rules.iter())
+        .filter(|l| l.named && l.fixer.is_none())
+        .map(|l| l.id.clone())
+        .collect();
+    let lint_fixers: Vec<(pun_config::Rule, bool, bool)> = (cfg.lint.rules.iter())
+        .filter_map(|l| {
+            let rule = pun_config::Rule {
+                name: l.fixer?.to_string(),
+                options: l.options.clone(),
+            };
+            Some((rule, l.fix, l.named))
+        })
+        .collect();
     let every: Vec<_> = (cfg.rules.iter().cloned())
-        .chain(cfg.lint.iter().map(|(r, _)| r.clone()))
+        .chain(lint_fixers.iter().map(|(r, _, _)| r.clone()))
         .collect();
     pun_fixers::analyzers::active_preset::set(&cfg.preset);
-    let unported = Pipeline::new(&every, &pun_fixers::all)?.not_ported;
+    let not_ported = Pipeline::new(&every, &pun_fixers::all)?.not_ported;
+    let unnamed = |name: &String| {
+        lint_fixers
+            .iter()
+            .any(|(r, _, named)| r.name == *name && !named)
+    };
+    let unported: Vec<String> = (not_ported.iter())
+        .filter(|n| !unnamed(n))
+        .cloned()
+        .chain(named_without_fixer)
+        .collect();
     if !unported.is_empty() {
         return config_error(&unported_error(&a, &cfg, &unported), 2);
     }
-    // `--fix`: the lint rules it doesn't apply (no `fix = "apply"`) still run on the result, reported as remaining.
+    let lint: Vec<(pun_config::Rule, bool)> = (lint_fixers.into_iter())
+        .filter(|(r, _, _)| !not_ported.contains(&r.name))
+        .map(|(r, fix, _)| (r, fix))
+        .collect();
+    // `--fix`: the lint rules it doesn't apply (`fix = "off"`) still run on the result, reported as remaining.
     let pending: Vec<_> = match stage {
-        Stage::Lint(true) | Stage::Check(true) => (cfg.lint.iter())
-            .filter(|(_, apply)| !apply)
+        Stage::Lint(true) | Stage::Check(true) => (lint.iter())
+            .filter(|(_, fix)| !fix)
             .map(|(r, _)| r.clone())
             .collect(),
         _ => vec![],
     };
     if let Stage::Lint(fix) | Stage::Check(fix) = stage {
-        let lint = (cfg.lint.iter())
+        let lint = (lint.iter())
             .filter(|(_, apply)| *apply || !fix)
             .map(|(r, _)| r.clone());
         if let Stage::Lint(_) = stage {

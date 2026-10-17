@@ -48,7 +48,7 @@ fn read(d: &Path, f: &str) -> String {
 }
 
 const PINT: &str = r#"{"preset":"empty","rules":{"array_syntax":true,"final_class":true}}"#;
-const TOML: &str = "# Written by `pun migrate` from pint.json.\n[format]\npreset = \"empty\"\n\n[format.rules]\n\"arrays/syntax\" = true\n\n[lint.rules]\n\"style/require-final-class\" = { fix = \"apply\" }\n";
+const TOML: &str = "# Written by `pun migrate` from pint.json.\n[format]\npreset = \"empty\"\n\n[format.rules]\n\"arrays/syntax\" = true\n\n[lint.rules]\n\"style/require-final-class\" = \"error\"\n";
 /// Without a terminal nothing is asked: everything detected is migrated, and said so.
 const PICKED: &str = "pun migrate: migrating everything detected (pick with --from): pint.json\n";
 const IGNORED: &str = "<?php\n\n// @php-cs-fixer-ignore array_syntax,final_class\n$a = array(1);\n$s = '// @php-cs-fixer-ignore array_syntax';\n";
@@ -205,7 +205,7 @@ fn config_and_preset_flags() {
     );
     assert_eq!(
         read(&d, "pun.toml"),
-        "# Written by `pun migrate`: no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found; starter config.\npreset = \"recommended\"\n\n[format]\npreset = \"laravel\"\n\n[lint.rules]\n\"refactor/rename-phpdoc-tag\" = { fix = \"apply\" }\n\"functions/no-unused-closure-use\" = { fix = \"apply\" }\n\"style/no-alias-function\" = { fix = \"apply\" }\n\"statements/no-empty\" = { fix = \"apply\" }\n\"phpdoc/no-superfluous-tags\" = { fix = \"apply\", allow-mixed = true, allow-unused-params = true }\n\"functions/no-unreachable-default-argument-value\" = { fix = \"apply\" }\n\"imports/no-unused\" = { fix = \"apply\" }\n\"control-flow/no-useless-return\" = { fix = \"apply\" }\n\"style/require-ordered-traits\" = { fix = \"apply\" }\n\"phpunit/require-method-casing\" = { fix = \"apply\", case = \"snake_case\" }\n\"phpunit/require-protected-setup\" = { fix = \"apply\" }\n\"phpdoc/no-access\" = { fix = \"apply\" }\n\"phpdoc/no-package\" = { fix = \"apply\" }\n\"phpdoc/no-useless-inheritdoc\" = { fix = \"apply\" }\n\"classes/prefer-self-in-final\" = { fix = \"apply\" }\n"
+        "# Written by `pun migrate`: no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found; starter config.\n[format]\npreset = \"laravel\"\n\n[lint.rules]\n\"refactor/rename-phpdoc-tag\" = \"error\"\n\"functions/no-unused-closure-use\" = \"error\"\n\"style/no-alias-function\" = \"error\"\n\"statements/no-empty\" = \"error\"\n\"phpdoc/no-superfluous-tags\" = { allow-mixed = true, allow-unused-params = true }\n\"functions/no-unreachable-default-argument-value\" = \"error\"\n\"imports/no-unused\" = \"error\"\n\"control-flow/no-useless-return\" = \"error\"\n\"style/require-ordered-traits\" = \"error\"\n\"phpunit/require-method-casing\" = { case = \"snake_case\" }\n\"phpunit/require-protected-setup\" = \"error\"\n\"phpdoc/no-access\" = \"error\"\n\"phpdoc/no-package\" = \"error\"\n\"phpdoc/no-useless-inheritdoc\" = \"error\"\n\"classes/prefer-self-in-final\" = \"error\"\n"
     );
 }
 
@@ -297,7 +297,7 @@ pun migrate: starter pun.toml written, ignore comments rewritten in 0 file(s).
         )
     );
     assert!(read(&d, "pun.toml").starts_with(
-        "# Written by `pun migrate`: no pint.json or .php-cs-fixer.php found; starter config.\npreset = \"recommended\"\n\n[format]\npreset = \"laravel\"\n"
+        "# Written by `pun migrate`: no pint.json or .php-cs-fixer.php found; starter config.\n[format]\npreset = \"laravel\"\n"
     ));
 }
 

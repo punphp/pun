@@ -3,12 +3,12 @@ title: Extra rules
 description: Opt-in lint rules ported from Mago for Laravel and Pest idioms and redundant code. None is in a preset.
 ---
 
-Pun adds opt-in lint rules ported from [Mago](https://github.com/carthage-software/mago) for things PHP-CS-Fixer and Pint don't cover. **None is in any preset**, so default output stays identical to Pint. Enable them under `[lint.rules]`, with `fix = "apply"` for `--fix` to apply them:
+Pun adds opt-in lint rules ported from [Mago](https://github.com/carthage-software/mago) for things PHP-CS-Fixer and Pint don't cover. **None is in a format preset**, so format output stays identical to Pint. Enable them under `[lint.rules]`; `--fix` applies them:
 
 ```toml pun.toml
 [lint.rules]
-"laravel/prefer-dedicated-status-assertion" = { fix = "apply" }
-"laravel/prefer-fake-helper" = { fix = "apply" }
+"laravel/prefer-dedicated-status-assertion" = "error"
+"laravel/prefer-fake-helper" = "error"
 ```
 
 Rules marked **risky** can change behaviour; review their diff.

@@ -3,59 +3,116 @@ title: pun.toml
 description: The one config file for every Pun command, with Pun's own rule IDs.
 ---
 
-Pun reads only `pun.toml`. Write it with [`pun migrate`](/docs/commands/migrate), or by hand:
+Pun reads only `pun.toml`. Write it with [`pun migrate`](/docs/commands/migrate), or by hand. Every section is optional:
 
 ```toml pun.toml
-preset = "recommended"        # lint + analyse tier: essential, recommended, strict, pedantic
-laravel = true                # add-ons: laravel, pest, phpunit
-
 [php]
-version = "8.4"
+version = "8.4"                       # override; the default comes from composer.json's "require.php"
+
+[files]                               # shared by every command
+paths = ["app", "tests"]              # what to check when no paths are given
+exclude = ["build", "storage"]
 
 [format]
-preset = "laravel"            # Pint's preset; its risky and code-deleting rules are lint rules
-exclude = ["build"]
+preset = "laravel"                    # laravel | psr12 | empty
+exclude = ["app/Generated"]           # added to [files] exclude, for format only
+not-name = ["*.blade.php"]
+not-path = ["app/Legacy.php"]
 
-[format.rules]
+[format.rules]                        # only what differs from the preset
 "operators/concat-spacing" = { spacing = "one" }
 "arrays/syntax" = false
 
-[lint.rules]
-"style/require-final-class" = { fix = "apply" }   # applied by pun lint --fix / pun check --fix
-"types/no-loose-comparison" = "warn"              # reported, never applied
+[lint]
+sets = ["dead-code", "modernize"]
+
+[lint.groups]                         # a level for a whole group
+style = "warn"
+laravel-11 = "error"                  # turn an upgrade on
+
+[lint.rules]                          # a rule's own line wins over its group
+"style/require-final-class" = "error"
+"style/require-ordered-traits" = { level = "warn", fix = "off" }
+"types/no-loose-comparison" = "off"
+
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "style/require-final-class" = "off" }
 
 [analyse]
-paths = ["app", "tests"]
+preset = "recommended"                # basic | essential | recommended | strict | max
+exclude = ["tests/**"]                # added to [files] exclude, for analyse only
 baseline = "pun-baseline.toml"
-rules."types/missing-iterable-value-type" = "off"
+
+[analyse.rules]
+"types/missing-iterable-value-type" = "off"
+"undefined/method" = { magic = true } # options in a table mean "on, with these options"
 ```
 
-## Top level
+## [php] and [files]
 
 | Key | Meaning |
 | --- | --- |
-| `preset` | The [tier](/docs/configuration/presets) for lint and analyse |
-| `laravel`, `pest`, `phpunit` | Add-ons: each turns on that ecosystem's rules within the tier |
-| `[php] version` | The PHP version rules target |
+| `[php] version` | The PHP version rules target, as `major.minor`. Without it, the lowest version composer.json's `require.php` allows (`^8.4` gives 8.4), else 8.4 |
+| `[files] paths` | What every command checks when no paths are given |
+| `[files] exclude` | What every command skips. Each command's own `exclude` adds to it |
+
+`vendor/` is never checked.
 
 ## [format]
 
 | Key | Meaning |
 | --- | --- |
-| `preset` | `laravel` (default), `per`, `psr12`, `symfony` or `empty` |
-| `paths` | Paths to format when none are given |
-| `exclude`, `not-name`, `not-path` | Folders, file names and paths to skip |
+| `preset` | `laravel` (default), `psr12` or `empty` |
+| `exclude`, `not-name`, `not-path` | Folders, file names and paths format skips, as in Pint's finder |
 | `rules` | `true`, `false`, or an options table, per rule |
 
-Format rules only change layout, casing and spelling. Risky ones, like `final_class` or `strict_comparison` in PHP-CS-Fixer terms, and the ones that delete or restructure code, like `no_unused_imports`, are [lint rules](/docs/commands/lint).
+Format rules only change layout, casing and spelling. Risky ones, like `final_class` or `strict_comparison` in PHP-CS-Fixer terms, and the ones that delete or restructure code, like `no_unused_imports`, are [lint rules](/docs/commands/lint). Pint's `per` and `symfony` presets are not format presets: `pun migrate` writes a `pint.json` that used one as `empty` plus its rules.
 
-## [lint] and [analyse]
+## [lint]
 
-`[lint.rules]` takes a severity (`"error"`, `"warn"`, `"info"`, `"off"`) or a table with `fix` (`"apply"`, `"safe-only"`, `"off"`) and the rule's options. `[analyse]` takes its own `preset`, `paths`, `baseline` and `rules`.
+| Key | Meaning |
+| --- | --- |
+| `sets` | The [lint sets](/docs/configuration/presets#lint-sets) to turn on: `dead-code`, `modernize`, `code-quality`, `types`, `early-return`, `privatization`, `naming`, `coding-style` |
+| `exclude` | Added to `[files] exclude`, for lint only |
+| `groups` | `"error"`, `"warn"` or `"off"` for every rule of a group |
+| `rules` | `"error"`, `"warn"` or `"off"` per rule, or a table with `level`, `fix = "off"` and the rule's options |
+| `[[lint.overrides]]` | `files` (globs) and `rules`: rule levels for the files they match |
+
+A rule a set turns on is an `error`. A group's level wins over the sets, and a rule's own line wins over its group. A table without `level` is `error`. Only `error` fails a run. `--fix` applies the fix of every enabled rule; `fix = "off"` keeps a rule report-only.
+
+The Laravel, Pest and PHPUnit rules of a set run when composer.lock locks `laravel/framework`, `pestphp/pest` or `phpunit/phpunit`. Switch one off with its group: `[lint.groups] laravel = "off"`. A set's PHP upgrade rules (`php-8.4/...`) run from that `[php] version` on; upgrade groups such as `laravel-11` run when you turn the group on.
+
+## [analyse]
+
+| Key | Meaning |
+| --- | --- |
+| `preset` | `basic`, `essential`, `recommended` (default), `strict` or `max`; each includes the ones before it |
+| `paths` | What analyse checks, instead of `[files] paths` |
+| `exclude` | Added to `[files] exclude`, for analyse only |
+| `baseline` | The baseline file |
+| `rules` | `"on"`, `"off"` or a table of options per rule; `"on"` or `"off"` per group |
+
+Analyse rules are on or off; every finding is an error. The Laravel rules run when composer.lock locks `laravel/framework`; `[analyse.rules] laravel = "off"` switches them off.
 
 ## Rule names
 
-Rules use Pun IDs of the form `<command>/<group>/<name>`: `format/imports/ordered`, `lint/style/require-final-class`, `analyse/undefined/method`. Inside a `[<command>.rules]` table the command is implied, so the key is `"imports/ordered"` (quoted, because of the `/`). Groups are one fixed list shared by all three commands: topics such as `arrays`, `imports`, `phpdoc` and `types`, the ecosystems `laravel`, `pest`, `phpunit` and `doctrine`, and one upgrade group per target such as `php-8.4`. There are no aliases: an earlier Pun name (`ordered-imports`), a PHP-CS-Fixer name (`ordered_imports`) or a rule of another command gets an error that names its Pun ID, so a copied rule is never silently ignored. `pun config` prints everything resolved.
+Rules use Pun IDs of the form `<command>/<group>/<name>`: `format/imports/ordered`, `lint/style/require-final-class`, `analyse/undefined/method`. Inside a `[<command>.rules]` table the command is implied, so the key is `"imports/ordered"` (quoted, because of the `/`). Groups are one fixed list shared by all three commands: topics such as `arrays`, `imports`, `phpdoc` and `types`, the ecosystems `laravel`, `pest`, `phpunit` and `doctrine`, and one upgrade group per target such as `php-8.4`. There are no aliases: an earlier Pun name (`ordered-imports`), a PHP-CS-Fixer name (`ordered_imports`), a PHPStan identifier (`method.notFound`) or a rule of another command gets an error that names its Pun ID, so a copied rule is never silently ignored. `pun config` prints everything resolved.
+
+## Removed keys
+
+Each of these is an error that names what to write instead:
+
+| Written | Write instead |
+| --- | --- |
+| top-level `preset = "recommended"` | `[lint] sets` and `[analyse] preset` |
+| `[format] paths` | `[files] paths` |
+| `[format] preset = "per"` or `"symfony"` | `preset = "empty"` with the rules under `[format.rules]` |
+| `fix = "apply"` | nothing: `--fix` applies every enabled rule |
+| `fix = "safe-only"` | nothing, or `fix = "off"` to keep the rule report-only |
+| `"info"`, or `severity` in a rule table | `"warn"`, and `level` |
+| `true` / `false` for a lint rule | `"error"` / `"off"` |
+| `[analyse] level = 5` | `[analyse] preset = "recommended"` |
 
 ## Without pun.toml
 

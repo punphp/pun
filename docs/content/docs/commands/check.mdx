@@ -11,7 +11,7 @@ pun check --fix    # format and apply lint fixes
 `pun check` runs format, lint and analyse in one process, sharing one parse. Format and lint fixers run in PHP-CS-Fixer's priority order, as Pint runs them, so on a migrated project `pun check --fix` writes exactly what `pint` wrote.
 
 - It reports everything and exits non-zero on any format diff, any lint `error` or any analyse `error`.
-- `--fix` applies format, plus the lint rules marked `fix = "apply"`. It never edits based on analysis. The other lint rules' findings are listed as remaining (`⨯`, or `[remaining]` under a coding agent) and the run exits 1.
+- `--fix` applies format, plus the fixes of every enabled lint rule. It never edits based on analysis. The findings of lint rules with `fix = "off"` are listed as remaining (`⨯`, or `[remaining]` under a coding agent) and the run exits 1.
 - It takes the same flags as `pun format`: paths, `--staged`, `--dirty`, `--format=agent`.
 
 The single commands stay for editors, for running one stage, and for exact PHPStan output.
