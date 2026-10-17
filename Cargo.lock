@@ -1392,6 +1392,7 @@ dependencies = [
  "punphp-config",
  "punphp-fixers",
  "punphp-format",
+ "punphp-problem",
  "punphp-tokens",
  "punphp-workspace",
  "rayon",

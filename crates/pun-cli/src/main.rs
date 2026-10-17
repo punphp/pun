@@ -10,6 +10,7 @@ mod lint;
 mod migrate;
 mod php_diff;
 mod pint_error;
+mod render;
 mod report;
 mod run;
 #[cfg(feature = "pprof")]

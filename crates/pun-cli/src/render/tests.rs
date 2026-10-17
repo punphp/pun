@@ -1,0 +1,742 @@
+//! The renderer against output.md §1's samples, copied from the plan by hand, with and without colour. Colour codes
+//! are written out from design/tokens.json by hand (`#FF9466` is `255;148;102`).
+
+use super::*;
+use pun_problem::{Edit, Fix, Span};
+use std::io::Write;
+use std::sync::{Arc, Mutex};
+
+/// `bad`, `ok`, `lilac-deep`, `ink-3` and `zap`, dark variants, at 24 bits; and the reset.
+const E: &str = "\x1b[38;2;255;148;102m";
+const OK: &str = "\x1b[38;2;143;184;255m";
+const R: &str = "\x1b[38;2;179;163;255m";
+const D: &str = "\x1b[38;2;156;146;174m";
+const W: &str = "\x1b[38;2;255;229;61m";
+const Z: &str = "\x1b[0m";
+
+fn colour() -> Look {
+    Look {
+        depth: Depth::TrueColor,
+        theme: Theme::Dark,
+        unicode: true,
+        links: false,
+    }
+}
+
+fn ascii() -> Look {
+    Look {
+        unicode: false,
+        ..Look::plain()
+    }
+}
+
+fn plain() -> Renderer {
+    Renderer::new(Look::plain(), "/project")
+}
+
+fn painted() -> Renderer {
+    Renderer::new(colour(), "/project")
+}
+
+fn problem(
+    rule: &str,
+    path: &str,
+    span: (usize, usize),
+    message: &str,
+    help: Option<&str>,
+    level: Level,
+) -> Problem {
+    Problem {
+        rule: rule.into(),
+        path: path.into(),
+        span: Span::new(span.0, span.1),
+        message: message.into(),
+        help: help.map(Into::into),
+        level,
+        fix: None,
+    }
+}
+
+fn safe_fix() -> Option<Fix> {
+    Some(Fix {
+        safety: Safety::Safe,
+        edits: vec![Edit::new(Span::new(0, 0), "")],
+    })
+}
+
+/// 40 filler lines, then lines 41 and 42 of PostController (indented 8 spaces), then a closing brace.
+fn post_controller() -> (String, Problem) {
+    let mut source = "<?php\n".repeat(40);
+    source.push_str("        $post = Post::find($id);\n        dd($post);\n}\n");
+    let start = source.find("dd(").unwrap();
+    let mut p = problem(
+        "lint/laravel/no-debug-calls",
+        "app/Http/Controllers/PostController.php",
+        (start, start + "dd($post)".len()),
+        "dd() left in the code",
+        Some("remove the dd() call, or use Log::debug()"),
+        Level::Error,
+    );
+    p.fix = safe_fix();
+    (source, p)
+}
+
+/// Line 22 is blank, line 23 is `\treturn $user->fullName();` (a tab is one byte, so `fullName` is column 16).
+fn profile_controller() -> (String, Problem) {
+    let mut source = "<?php\n".repeat(21);
+    source.push_str("\n\treturn $user->fullName();\n");
+    let start = source.find("fullName").unwrap();
+    let p = problem(
+        "analyse/undefined/method",
+        "app/Http/Controllers/ProfileController.php",
+        (start, start + "fullName".len()),
+        r"Call to undefined method App\Models\User::fullName()",
+        Some("did you mean `full_name` (a column on users)?"),
+        Level::Error,
+    );
+    (source, p)
+}
+
+fn render(r: &Renderer, (source, p): &(String, Problem)) -> String {
+    r.problem(p, source, &LineIndex::new(source))
+}
+
+#[test]
+fn file_line_sample() {
+    let files = [FileLine {
+        path: "app/Models/User.php".into(),
+        status: FileStatus::Fixed,
+        rules: vec![
+            "format/imports/ordered".into(),
+            "lint/dead-code/no-unused-private-method".into(),
+        ],
+    }];
+    assert_eq!(
+        plain().file_lines(&files),
+        " ✔ app/Models/User.php        format/imports/ordered, lint/dead-code/no-unused-private-method\n"
+    );
+    assert_eq!(
+        painted().file_lines(&files),
+        format!(
+            " {OK}✔{Z} app/Models/User.php        {R}format/imports/ordered{Z}, {R}lint/dead-code/no-unused-private-method{Z}\n"
+        )
+    );
+}
+
+#[test]
+fn file_lines_align_rules_after_the_longest_path() {
+    let files = [
+        FileLine {
+            path: "app/Http/Controllers/PostController.php".into(),
+            status: FileStatus::NeedsFix,
+            rules: vec!["format/imports/ordered".into()],
+        },
+        FileLine {
+            path: "app/Kernel.php".into(),
+            status: FileStatus::NeedsFix,
+            rules: vec!["format/whitespace/no-trailing".into()],
+        },
+        FileLine {
+            path: "app/Clean.php".into(),
+            status: FileStatus::Unchanged,
+            rules: vec![],
+        },
+    ];
+    assert_eq!(
+        plain().file_lines(&files),
+        concat!(
+            " ✖ app/Http/Controllers/PostController.php  format/imports/ordered\n",
+            " ✖ app/Kernel.php                           format/whitespace/no-trailing\n",
+            " ✔ app/Clean.php\n",
+        )
+    );
+    assert_eq!(
+        painted().file_lines(&files[2..]),
+        format!(" {D}✔{Z} {D}app/Clean.php{Z}\n")
+    );
+    assert_eq!(
+        Renderer::new(ascii(), "/p").file_lines(&files[1..]),
+        " x app/Kernel.php             format/whitespace/no-trailing\n ok app/Clean.php\n"
+    );
+}
+
+#[test]
+fn problem_block_sample_with_context_and_fixable() {
+    let input = post_controller();
+    assert_eq!(
+        render(&plain(), &input),
+        concat!(
+            " ✖ lint/laravel/no-debug-calls  dd() left in the code                        fixable\n",
+            "   ╭─ app/Http/Controllers/PostController.php:42:9\n",
+            " 41│     $post = Post::find($id);\n",
+            " 42│     dd($post);\n",
+            "   │     ━━━━━━━━━\n",
+            "   ╰─ help: remove the dd() call, or use Log::debug()\n",
+        )
+    );
+    assert_eq!(
+        render(&painted(), &input),
+        format!(
+            " {E}✖{Z} {R}lint/laravel/no-debug-calls{Z}  dd() left in the code                        {D}fixable{Z}\n\
+             \x20  {D}╭─{Z} app/Http/Controllers/PostController.php:42:9\n\
+             \x20{D}41{Z}{D}│{Z}     $post = Post::find($id);\n\
+             \x20{D}42{Z}{D}│{Z}     dd($post);\n\
+             \x20  {D}│{Z}     {E}━━━━━━━━━{Z}\n\
+             \x20  {D}╰─{Z} help: remove the dd() call, or use Log::debug()\n"
+        )
+    );
+}
+
+#[test]
+fn problem_block_sample_warning_header() {
+    let mut source = "<?php\n".repeat(16);
+    source.push_str("    if ($paid) {\n");
+    let start = source.find("if").unwrap();
+    let p = problem(
+        "lint/style/prefer-early-return",
+        "app/Services/Billing.php",
+        (start, start + 2),
+        "return early instead of nesting the if",
+        None,
+        Level::Warning,
+    );
+    let index = LineIndex::new(&source);
+    assert!(plain().problem(&p, &source, &index).starts_with(concat!(
+        " ⚠ lint/style/prefer-early-return  return early instead of nesting the if\n",
+        "   ╭─ app/Services/Billing.php:17:5\n",
+    )));
+    assert!(painted().problem(&p, &source, &index).starts_with(&format!(
+        " {W}⚠{Z} {R}lint/style/prefer-early-return{Z}  return early instead of nesting the if\n\
+         \x20  {D}╭─{Z} app/Services/Billing.php:17:5\n"
+    )));
+}
+
+#[test]
+fn problem_block_sample_tab_and_no_context_after_a_blank_line() {
+    let input = profile_controller();
+    assert_eq!(
+        render(&plain(), &input),
+        concat!(
+            " ✖ analyse/undefined/method  Call to undefined method App\\Models\\User::fullName()\n",
+            "   ╭─ app/Http/Controllers/ProfileController.php:23:16\n",
+            " 23│     return $user->fullName();\n",
+            "   │                   ━━━━━━━━\n",
+            "   ╰─ help: did you mean `full_name` (a column on users)?\n",
+        )
+    );
+    assert_eq!(
+        render(&painted(), &input),
+        format!(
+            " {E}✖{Z} {R}analyse/undefined/method{Z}  Call to undefined method App\\Models\\User::fullName()\n\
+             \x20  {D}╭─{Z} app/Http/Controllers/ProfileController.php:23:16\n\
+             \x20{D}23{Z}{D}│{Z}     return $user->fullName();\n\
+             \x20  {D}│{Z}                   {E}━━━━━━━━{Z}\n\
+             \x20  {D}╰─{Z} help: did you mean `full_name` (a column on users)?\n"
+        )
+    );
+}
+
+#[test]
+fn problems_are_separated_by_a_blank_line() {
+    let (a, b) = (post_controller(), profile_controller());
+    let (ia, ib) = (LineIndex::new(&a.0), LineIndex::new(&b.0));
+    let out = plain().problems([(&a.1, a.0.as_str(), &ia), (&b.1, b.0.as_str(), &ib)]);
+    assert!(
+        out.contains("Log::debug()\n\n ✖ analyse/undefined/method"),
+        "{out}"
+    );
+}
+
+#[test]
+fn concise_prints_one_line_per_problem() {
+    let (a, b) = (post_controller(), profile_controller());
+    let (ia, ib) = (LineIndex::new(&a.0), LineIndex::new(&b.0));
+    let mut r = plain();
+    r.concise = true;
+    assert_eq!(
+        r.problems([(&a.1, a.0.as_str(), &ia), (&b.1, b.0.as_str(), &ib)]),
+        concat!(
+            " ✖ app/Http/Controllers/PostController.php:42:9  lint/laravel/no-debug-calls  dd() left in the code  fixable\n",
+            " ✖ app/Http/Controllers/ProfileController.php:23:16  analyse/undefined/method  Call to undefined method App\\Models\\User::fullName()\n",
+        )
+    );
+    let mut r = painted();
+    r.concise = true;
+    assert_eq!(
+        render(&r, &a),
+        format!(
+            " {E}✖{Z} app/Http/Controllers/PostController.php:42:9  {R}lint/laravel/no-debug-calls{Z}  dd() left in the code  {D}fixable{Z}\n"
+        )
+    );
+}
+
+#[test]
+fn ascii_frame() {
+    let (source, mut p) = post_controller();
+    p.fix.as_mut().unwrap().safety = Safety::Unsafe;
+    p.help = None;
+    p.message = "a message longer than the label column leaves two spaces before the label".into();
+    assert_eq!(
+        Renderer::new(ascii(), "/p").problem(&p, &source, &LineIndex::new(&source)),
+        concat!(
+            " x lint/laravel/no-debug-calls  a message longer than the label column leaves two spaces before the label  fixable (unsafe)\n",
+            "   ,- app/Http/Controllers/PostController.php:42:9\n",
+            " 41|     $post = Post::find($id);\n",
+            " 42|     dd($post);\n",
+            "   |     ^^^^^^^^^\n",
+            "   `-\n",
+        )
+    );
+}
+
+#[test]
+fn multi_line_span_marks_each_line_from_its_code() {
+    // Lines 1-3; the span runs from `foo` on line 1 to `)` on line 3. Indentation is 2, under the 4-column cut.
+    let source = "  $a = foo(\n    1,\n  );\n";
+    let p = problem("lint/x/y", "a.php", (7, 22), "m", None, Level::Error);
+    assert_eq!(
+        plain().problem(&p, source, &LineIndex::new(source)),
+        concat!(
+            " ✖ lint/x/y  m\n",
+            "  ╭─ a.php:1:8\n",
+            " 1│   $a = foo(\n",
+            "  │        ━━━━\n",
+            " 2│     1,\n",
+            "  │     ━━\n",
+            " 3│   );\n",
+            "  │   ━\n",
+            "  ╰─\n",
+        )
+    );
+}
+
+#[test]
+fn long_span_shows_first_two_lines_and_the_last() {
+    let source = "<?php\nf(\n1,\n2,\n3,\n);\n";
+    let p = problem("lint/x/y", "a.php", (6, 20), "m", None, Level::Warning);
+    let index = LineIndex::new(source);
+    assert_eq!(
+        plain().problem(&p, source, &index),
+        concat!(
+            " ⚠ lint/x/y  m\n",
+            "  ╭─ a.php:2:1\n",
+            " 1│ <?php\n",
+            " 2│ f(\n",
+            "  │ ━━\n",
+            " 3│ 1,\n",
+            "  │ ━━\n",
+            " …\n",
+            " 6│ );\n",
+            "  │ ━━\n",
+            "  ╰─\n",
+        )
+    );
+    assert!(
+        Renderer::new(ascii(), "/p")
+            .problem(&p, source, &index)
+            .contains("\n ...\n")
+    );
+    assert!(
+        painted()
+            .problem(&p, source, &index)
+            .contains(&format!("\n {D}…{Z}\n"))
+    );
+}
+
+#[test]
+fn empty_span_and_span_past_the_line_end_mark_one_column() {
+    let source = "<?php\n$a = 1\n";
+    let index = LineIndex::new(source);
+    let at_end = problem("lint/x/y", "a.php", (12, 13), "m", None, Level::Error);
+    let empty = problem("lint/x/y", "a.php", (6, 6), "m", None, Level::Error);
+    assert!(
+        plain()
+            .problem(&at_end, source, &index)
+            .contains(" 2│ $a = 1\n  │       ━\n")
+    );
+    assert!(
+        plain()
+            .problem(&empty, source, &index)
+            .contains(" 2│ $a = 1\n  │ ━\n")
+    );
+}
+
+#[test]
+fn summary_samples() {
+    let failing = Summary {
+        errors: 3,
+        warnings: 1,
+        fixable: 2,
+        fix_command: "pun check --fix",
+        need_formatting: 2,
+        files: 412,
+        elapsed: Duration::from_millis(310),
+    };
+    let passing = Summary {
+        errors: 0,
+        warnings: 0,
+        fixable: 0,
+        need_formatting: 0,
+        elapsed: Duration::from_millis(80),
+        ..failing.clone()
+    };
+    assert_eq!(
+        plain().summary(&failing),
+        "✖ 3 errors · 1 warning · 2 fixable (run pun check --fix) · 2 files need formatting · 412 files in 0.31s\n"
+    );
+    assert_eq!(
+        plain().summary(&passing),
+        "✔ No problems · 412 files in 0.08s\n"
+    );
+    let dot = format!(" {D}·{Z} ");
+    assert_eq!(
+        painted().summary(&failing),
+        format!(
+            "{E}✖{Z} {E}3 errors{Z}{dot}{W}1 warning{Z}{dot}2 fixable (run pun check --fix){dot}2 files need formatting{dot}{D}412 files in 0.31s{Z}\n"
+        )
+    );
+    assert_eq!(
+        painted().summary(&passing),
+        format!("{OK}✔{Z} {OK}No problems{Z}{dot}{D}412 files in 0.08s{Z}\n")
+    );
+}
+
+#[test]
+fn summary_singulars_and_warnings_only() {
+    let warnings = Summary {
+        errors: 0,
+        warnings: 1,
+        fixable: 0,
+        fix_command: "pun lint --fix",
+        need_formatting: 0,
+        files: 1,
+        elapsed: Duration::from_millis(12),
+    };
+    assert_eq!(
+        plain().summary(&warnings),
+        "⚠ 1 warning · 1 file in 0.01s\n"
+    );
+    let formatting = Summary {
+        warnings: 0,
+        need_formatting: 1,
+        ..warnings.clone()
+    };
+    assert_eq!(
+        Renderer::new(ascii(), "/p").summary(&formatting),
+        "x 1 file needs formatting - 1 file in 0.01s\n"
+    );
+    let errors = Summary {
+        warnings: 0,
+        errors: 1,
+        ..warnings
+    };
+    assert_eq!(plain().summary(&errors), "✖ 1 error · 1 file in 0.01s\n");
+}
+
+#[test]
+fn run_error_sample() {
+    let e = RunError {
+        path: Some("pun.toml".into()),
+        line: Some(7),
+        message: "unknown rule `lint/style/no-short-ternry`".into(),
+        hint: Some("did you mean `lint/style/no-short-ternary`?".into()),
+    };
+    assert_eq!(
+        plain().run_error(&e),
+        "✖ pun.toml:7  unknown rule `lint/style/no-short-ternry`\n  did you mean `lint/style/no-short-ternary`?\n"
+    );
+    assert_eq!(
+        painted().run_error(&e),
+        format!(
+            "{E}✖ pun.toml:7  unknown rule `lint/style/no-short-ternry`{Z}\n  did you mean `lint/style/no-short-ternary`?\n"
+        )
+    );
+    let no_line = RunError {
+        line: None,
+        hint: None,
+        message: "cannot read the file".into(),
+        ..e.clone()
+    };
+    assert_eq!(
+        plain().run_error(&no_line),
+        "✖ pun.toml  cannot read the file\n"
+    );
+    let no_path = RunError {
+        path: None,
+        ..no_line
+    };
+    assert_eq!(
+        Renderer::new(ascii(), "/p").run_error(&no_path),
+        "x cannot read the file\n"
+    );
+}
+
+#[test]
+fn links_wrap_paths_and_rule_ids() {
+    let look = Look {
+        links: true,
+        ..Look::plain()
+    };
+    let r = Renderer::new(look, "/my project").with_rule_docs("https://docs.example/rules/");
+    let files = [FileLine {
+        path: "a.php".into(),
+        status: FileStatus::Fixed,
+        rules: vec!["format/x/y".into()],
+    }];
+    let path = "\x1b]8;;file:///my%20project/a.php\x1b\\a.php\x1b]8;;\x1b\\";
+    let rule = "\x1b]8;;https://docs.example/rules/format/x/y\x1b\\format/x/y\x1b]8;;\x1b\\";
+    assert_eq!(
+        r.file_lines(&files),
+        format!(" ✔ {path}{}{rule}\n", " ".repeat(22))
+    );
+    let e = RunError {
+        path: Some("a.php".into()),
+        line: Some(3),
+        message: "m".into(),
+        hint: None,
+    };
+    assert_eq!(
+        r.run_error(&e),
+        "✖ \x1b]8;;file:///my%20project/a.php\x1b\\a.php:3\x1b]8;;\x1b\\  m\n"
+    );
+    // Without links the docs base changes nothing.
+    let unlinked = Renderer::new(Look::plain(), "/p").with_rule_docs("https://docs.example/rules/");
+    assert_eq!(
+        unlinked.file_lines(&files),
+        " ✔ a.php                      format/x/y\n"
+    );
+}
+
+#[test]
+fn file_url_percent_encodes() {
+    assert_eq!(
+        file_url(Path::new("/a b/ü~_.-/x.php")),
+        "file:///a%20b/%C3%BC~_.-/x.php"
+    );
+}
+
+#[test]
+fn colour_depths_and_themes() {
+    let at = |depth, theme| Look {
+        depth,
+        theme,
+        ..Look::plain()
+    };
+    // 16 colours: the standard codes.
+    let basic = at(Depth::Ansi16, Theme::Dark);
+    let codes: Vec<String> = [Role::Error, Role::Warning, Role::Ok, Role::Rule, Role::Dim]
+        .iter()
+        .map(|&r| basic.paint(r, "x"))
+        .collect();
+    assert_eq!(
+        codes,
+        [
+            "\x1b[31mx\x1b[0m",
+            "\x1b[33mx\x1b[0m",
+            "\x1b[32mx\x1b[0m",
+            "\x1b[36mx\x1b[0m",
+            "\x1b[2mx\x1b[0m"
+        ]
+    );
+    // Light variants at 24 bits; warnings fall back to the terminal's yellow.
+    let light = at(Depth::TrueColor, Theme::Light);
+    assert_eq!(
+        light.paint(Role::Error, "x"),
+        "\x1b[38;2;185;58;10mx\x1b[0m"
+    );
+    assert_eq!(light.paint(Role::Ok, "x"), "\x1b[38;2;29;95;204mx\x1b[0m");
+    assert_eq!(light.paint(Role::Rule, "x"), "\x1b[38;2;91;63;217mx\x1b[0m");
+    assert_eq!(light.paint(Role::Dim, "x"), "\x1b[38;2;107;98;128mx\x1b[0m");
+    assert_eq!(light.paint(Role::Warning, "x"), "\x1b[33mx\x1b[0m");
+    // 256 colours: bad (255,148,102) -> cube (5,2,1) = 209; zap (255,229,61) -> (5,4,1) = 221; ink-3
+    // (156,146,174) -> grey 158 = 247, nearer than the cube's (175,135,175).
+    let xterm = at(Depth::Ansi256, Theme::Dark);
+    assert_eq!(xterm.paint(Role::Error, "x"), "\x1b[38;5;209mx\x1b[0m");
+    assert_eq!(xterm.paint(Role::Warning, "x"), "\x1b[38;5;221mx\x1b[0m");
+    assert_eq!(xterm.paint(Role::Dim, "x"), "\x1b[38;5;247mx\x1b[0m");
+    assert_eq!(nearest_256((0, 0, 0)), 16);
+    assert_eq!(nearest_256((255, 255, 255)), 231);
+    assert_eq!(nearest_256((128, 128, 128)), 244);
+}
+
+fn detect(choice: ColorChoice, tty: bool, vars: &[(&str, &str)]) -> Look {
+    let vars: Vec<(String, String)> = vars
+        .iter()
+        .map(|(k, v)| (k.to_string(), v.to_string()))
+        .collect();
+    Look::detect(choice, tty, &move |k| {
+        vars.iter()
+            .find(|(name, _)| name == k)
+            .map(|(_, v)| v.clone())
+    })
+}
+
+#[test]
+fn colour_is_on_for_a_terminal_and_off_for_a_pipe() {
+    let utf8 = [("LANG", "en_US.UTF-8")];
+    assert_eq!(detect(ColorChoice::Auto, true, &utf8).depth, Depth::Ansi16);
+    assert_eq!(detect(ColorChoice::Auto, false, &utf8).depth, Depth::None);
+    assert_eq!(
+        detect(ColorChoice::Always, false, &utf8).depth,
+        Depth::Ansi16
+    );
+    assert_eq!(detect(ColorChoice::Never, true, &utf8).depth, Depth::None);
+    assert_eq!(
+        detect(ColorChoice::Auto, true, &[("NO_COLOR", "1")]).depth,
+        Depth::None
+    );
+    assert_eq!(
+        detect(ColorChoice::Auto, true, &[("NO_COLOR", "")]).depth,
+        Depth::Ansi16
+    );
+    assert_eq!(
+        detect(ColorChoice::Always, true, &[("NO_COLOR", "1")]).depth,
+        Depth::Ansi16
+    );
+    assert_eq!(
+        detect(ColorChoice::Auto, true, &[("TERM", "dumb")]).depth,
+        Depth::None
+    );
+    assert_eq!(Look::stdout(ColorChoice::Never).depth, Depth::None);
+}
+
+#[test]
+fn colour_depth_from_colorterm_and_term() {
+    let depth = |vars: &[(&str, &str)]| detect(ColorChoice::Auto, true, vars).depth;
+    assert_eq!(depth(&[("COLORTERM", "truecolor")]), Depth::TrueColor);
+    assert_eq!(
+        depth(&[("COLORTERM", "24bit"), ("TERM", "xterm-256color")]),
+        Depth::TrueColor
+    );
+    assert_eq!(
+        depth(&[("COLORTERM", "yes"), ("TERM", "xterm-256color")]),
+        Depth::Ansi256
+    );
+    assert_eq!(depth(&[("TERM", "xterm")]), Depth::Ansi16);
+}
+
+#[test]
+fn theme_from_colorfgbg() {
+    let theme = |v: &str| detect(ColorChoice::Auto, true, &[("COLORFGBG", v)]).theme;
+    assert_eq!(theme("0;15"), Theme::Light);
+    assert_eq!(theme("0;default;7"), Theme::Light);
+    assert_eq!(theme("15;0"), Theme::Dark);
+    assert_eq!(theme("7;8"), Theme::Dark);
+    assert_eq!(theme("garbage"), Theme::Dark);
+    assert_eq!(detect(ColorChoice::Auto, true, &[]).theme, Theme::Dark);
+}
+
+#[test]
+fn unicode_needs_a_utf8_locale() {
+    let unicode = |vars: &[(&str, &str)]| detect(ColorChoice::Auto, false, vars).unicode;
+    assert!(unicode(&[("LANG", "en_US.UTF-8")]));
+    assert!(unicode(&[("LC_ALL", "C.utf8"), ("LANG", "C")]));
+    assert!(!unicode(&[("LC_ALL", "C"), ("LANG", "en_US.UTF-8")]));
+    assert!(unicode(&[("LC_CTYPE", "UTF-8")]));
+    assert!(!unicode(&[]));
+    assert!(!unicode(&[("TERM", "linux"), ("LANG", "en_US.UTF-8")]));
+    assert!(unicode(&[("WT_SESSION", "1")]));
+}
+
+#[test]
+fn links_on_terminals_that_support_them() {
+    let links = |choice, tty, vars: &[(&str, &str)]| detect(choice, tty, vars).links;
+    assert!(links(
+        ColorChoice::Auto,
+        true,
+        &[("TERM_PROGRAM", "iTerm.app")]
+    ));
+    assert!(!links(
+        ColorChoice::Auto,
+        false,
+        &[("TERM_PROGRAM", "iTerm.app")]
+    ));
+    assert!(!links(
+        ColorChoice::Never,
+        true,
+        &[("TERM_PROGRAM", "iTerm.app")]
+    ));
+    assert!(links(
+        ColorChoice::Always,
+        false,
+        &[("TERM_PROGRAM", "WezTerm")]
+    ));
+    assert!(!links(
+        ColorChoice::Auto,
+        true,
+        &[("TERM_PROGRAM", "Apple_Terminal")]
+    ));
+    assert!(links(ColorChoice::Auto, true, &[("WT_SESSION", "x")]));
+    assert!(links(
+        ColorChoice::Auto,
+        true,
+        &[("KONSOLE_VERSION", "230800")]
+    ));
+    assert!(links(ColorChoice::Auto, true, &[("VTE_VERSION", "7600")]));
+    assert!(!links(ColorChoice::Auto, true, &[("VTE_VERSION", "4600")]));
+    assert!(links(ColorChoice::Auto, true, &[("TERM", "xterm-kitty")]));
+    assert!(links(ColorChoice::Auto, true, &[("FORCE_HYPERLINK", "1")]));
+    assert!(!links(
+        ColorChoice::Auto,
+        true,
+        &[("FORCE_HYPERLINK", "0"), ("TERM_PROGRAM", "iTerm.app")]
+    ));
+}
+
+/// A `Write` the test can read back while the spinner thread holds the other end.
+#[derive(Clone, Default)]
+struct Shared(Arc<Mutex<Vec<u8>>>);
+
+impl Write for Shared {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.0.lock().unwrap().extend_from_slice(buf);
+        Ok(buf.len())
+    }
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
+impl Shared {
+    fn text(&self) -> String {
+        String::from_utf8(self.0.lock().unwrap().clone()).unwrap()
+    }
+}
+
+#[test]
+fn spinner_stays_hidden_for_a_short_run() {
+    let out = Shared::default();
+    let spinner = Spinner::start(Box::new(out.clone()), 10, true, Duration::from_secs(60));
+    spinner.tick();
+    drop(spinner);
+    assert_eq!(out.text(), "");
+    assert!(Spinner::stderr(10, &Look::plain(), false).is_none());
+    drop(Spinner::stderr(10, &Look::plain(), true).expect("a spinner on a terminal"));
+}
+
+#[test]
+fn spinner_counts_files_then_clears_its_line() {
+    for (unicode, first) in [(true, '⠋'), (false, '|')] {
+        let out = Shared::default();
+        let spinner = Spinner::start(Box::new(out.clone()), 10, unicode, Duration::ZERO);
+        for _ in 0..3 {
+            spinner.tick();
+        }
+        let deadline = std::time::Instant::now() + Duration::from_secs(10);
+        let wait_for = |count: &str| {
+            while !out.text().contains(count) && std::time::Instant::now() < deadline {
+                std::thread::yield_now();
+            }
+        };
+        wait_for("3/10 files");
+        // A later frame shows the new count.
+        spinner.tick();
+        wait_for("4/10 files");
+        drop(spinner);
+        let text = out.text();
+        assert!(text.starts_with(&format!("\r{first} ")), "{text:?}");
+        assert!(text.contains(" 3/10 files"), "{text:?}");
+        assert!(text.contains(" 4/10 files"), "{text:?}");
+        assert!(text.ends_with("\r\x1b[2K"), "{text:?}");
+    }
+}

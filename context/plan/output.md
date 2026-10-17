@@ -136,3 +136,33 @@ Answered 2026-10-17 (Pushpak):
   uses truecolor when `COLORTERM` is `truecolor` or `24bit`, the nearest 256-colour value otherwise, and the standard 16
   colours on basic terminals. It picks the light or dark token variant for readability on the terminal's background
   (dark by default when it can't tell). `NO_COLOR`, piping and `--color` work as in §1.
+
+Assistant's calls while building Build 1-2 (`crates/pun-cli/src/render/`, wf/renderer, 2026-10-17), where the plan is
+silent:
+
+- **Columns from the §1 samples:** file lines pad the path to 27 characters (or the longest path in the batch plus two
+  spaces), so the rules start in one column; a problem's `fixable` label starts at character 78 of its header (two
+  spaces after a longer message). An unsafe fix reads `fixable (unsafe)`.
+- **Code frames:** one line of context before the span unless that line is blank; no context after. A tab shows as 4
+  spaces, and indentation deeper than 4 columns is cut to 4 (the §1 samples: 8 spaces at `:42:9` show as 4; one tab at
+  `:23:16` shows as 4). A span over more than 3 lines shows its first two lines, `…`, and its last. An empty span, or
+  one at the line end, gets a one-column marker. No help closes the frame with a bare `╰─`. Columns count bytes, as
+  `pun_problem::LineIndex` does.
+- **`--concise`:** ` ✖ path:line:col  rule  message  fixable`.
+- **Summary glyph:** ✖ with any error or file needing formatting, ⚠ with only warnings, ✔ `No problems` otherwise.
+- **Token roles:** error `bad`, success `ok`, rule IDs `lilac-deep`, dim `ink-3`, warning `zap` on dark. The tokens
+  have no warning colour that reads on a light ground (zap is "never as text on paper"), so light terminals get their
+  own yellow (SGR 33) for warnings. At 16 colours: red, yellow, green, cyan and SGR 2 (dim), as §1 says. 256 colours
+  pick the nearest of xterm 16-255 (cube and grey ramp) by RGB distance.
+- **Detection:** `--color=always|never` win, then non-empty `NO_COLOR` or `TERM=dumb` turn colour off, then a terminal
+  gets colour and a pipe doesn't. 256 colours when `TERM` contains `256`. Light when `COLORFGBG`'s background is 7 or
+  9-15. Unicode with a UTF-8 locale (`LC_ALL`, `LC_CTYPE`, `LANG`, first set) and not `TERM=linux`, or in Windows
+  Terminal. ASCII fallbacks: `x` `!` `ok`, frame `,-` `|` `^` `` `- ``, `...`, and `-` for the summary's `·`.
+- **Links (OSC 8):** only on a terminal (or `--color=always`), never under `--color=never`, and only in terminals
+  known to support them (iTerm2, WezTerm, VS Code, Ghostty, Hyper, Windows Terminal, Konsole, VTE ≥ 0.50, kitty,
+  Alacritty, foot); `FORCE_HYPERLINK` overrides. Paths link to `file://<root>/<path>` (percent-encoded). Rule IDs link
+  to `<docs base><rule ID>` once a docs base is passed in; the site has no rule pages yet, so none is set.
+- **Spinner:** on stderr, braille frames (`|/-\` in ASCII), `⠋ 120/412 files` every 80 ms after one second; dropping
+  it clears the line.
+- **`--color` is not a flag yet:** `ColorChoice` is a clap `ValueEnum` ready for output 3, which wires it in when
+  `pun format` moves onto the renderer; Pint's `--ansi`/`--no-ansi` screen is untouched until then.
