@@ -267,6 +267,9 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | design/components/DocsPage/preview.html: remove the 'Needs PHP for those rules' / `--native-only` callout | todo |
 | wf tooling: link crates/pun-fixers/node_modules into worktrees (blade_like_pint needs it) | todo |
 | wf tooling: shared target dirs let a punphp-fixers build-script output from another worktree go stale; use per-worktree OUT paths or rerun-if-changed on the manifest dir | todo |
+| bench: analyse and lint benchmarks like format's (scripts/bench.py): Pun vs PHPStan + Larastan, Pun vs Rector, Mago as reference; results in reports/scoreboard.md | doing (workflow, wf/bench) |
+| perf: analyse speed and memory, round by round against the bench, errors unchanged | doing (workflow, wf/perf-analyse-N) |
+| perf: lint speed and memory, round by round against the bench, output unchanged | doing (workflow, wf/perf-lint-N) |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 
 ## 4. Open questions
