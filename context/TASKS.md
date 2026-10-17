@@ -10,22 +10,23 @@ History before the 2026-10-17 reset (every finished Phase 1 row, with its eviden
 
 | Component | Task | Owner | Status |
 | --- | --- | --- | --- |
-| C0 | Repo cleanup, context/ folder, component plan | plan-reset thread (claude/repo-cleanup-plan-reset-wu15p3) | doing |
-| C0 | Get CI on main green (run 56 failed; 54-55 cancelled) | - | todo |
+| C0 | Repo cleanup, context/ folder, component plan | plan-reset thread | done (landed on main) |
+| C2 | Walk through the formatter plan with Pushpak (components/format.md §8) | plan-reset thread | doing |
+| C8, C7 | Same walkthrough for lint, then analyse (components/lint.md, analyse.md) | plan-reset thread | todo |
+| C0 | Get CI on main green (coverage red; runs 70-72 cancelled by the next push) | - | todo |
 | C0 | Clippy gate in CI (`-D warnings`) | - | todo |
 | C0 | Coverage: pun-analyse to 100% (97.59% in CI); regenerate reports/COVERAGE.md | - | todo |
-| C1 | Token text as spans into the source buffer | - | todo |
+| C1 | Fewer allocations per token (inline Content type; first attempt stopped, nothing landed) | - | todo |
 | C2 | Swap `vendor/bin/pint` for Pun in Pinkary's CI | - | todo |
 | C2 | 8-core benchmark in CI (laravel-framework under 1 s cold) | - | todo |
 | C3 | `[analyse]` section in pun.toml | - | todo |
 | C3 | `pun explain <rule>` and the "Coming from" docs page | - | todo |
-| C3 | Rename the 17 `Pun/*` mapping keys; expose `[rules.lint]` metadata | - | todo |
-| C6 | `@pun-ignore-file` in delegate mode | - | todo |
-| C7 | M2.3 analyse rules, level 0 (52 identifiers so far, gaps.txt) | analyse agent (Amp, pushing to main) | doing |
+| C3 | Apply the top-level tier (accepted, applies nothing yet; see REQUESTS.md) | - | todo |
+| C7 | M2.3 analyse rules, level 0: 54 identifiers, ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | analyse agent | todo (stopped at 43d9857; trait-method and facade-alias WIP uncommitted) |
 | C7 | `pun analyse` subcommand, agent output, join `pun check` | - | todo |
-| C9 | Interactive `pun migrate` (detect tools, multi-select, `--from`, `--yes`) | - | todo (earlier "doing" row left no code) |
-| C9 | Migrate `.php-cs-fixer.php` Finder; `--fix` reports non-apply lint rules | - | todo |
-| C10 | Wire `pun lsp` to pun-lsp; extract the shared format engine | - | todo |
+| C9 | Migrate `.php-cs-fixer.php` Finder | - | todo |
+| C4 | CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) and the final gates | - | todo (stopped by user) |
+| C10 | LSP | - | deferred: ships last (user) |
 | C11 | pun-harness as dev-only tooling; fixtures into pun-fixers | - | todo (after release) |
 | C13 | Publish | user | deferred until format, analyse, lint and migrate exist |
 

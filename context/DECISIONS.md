@@ -50,7 +50,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 - **Own lexer** in pun-tokens instead of mapping mago-syntax tokens (reference/tokens.md).
 - **Built-in symbols for analyse** come from PHPStan's own reflection, exported once into
   crates/pun-phpstan/data/symbols.json, not from Mago's prelude.
-- **pun lsp:** embed PHPantom in-process, routed at the JSON-RPC level (reference/lsp.md).
+- **pun lsp ships last** (2026-10-17): no LSP work now. When it comes: embed PHPantom in-process, routed at the
+  JSON-RPC level (reference/lsp.md).
 - **FrankenPHP:** Pun links libphp itself first (Rust SAPI); FrankenPHP is linked in later. Assistant's call, delegated.
 - **Embedded PHP (pun-php):** deferred; system `php` stands in for delegate mode and the oracle.
 - **Tests:** 100% line coverage per crate, no tautological tests, expected values from the real tools (AGENTS.md).

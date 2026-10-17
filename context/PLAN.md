@@ -5,24 +5,25 @@ later phases, edge cases and risks). Goal and principles: the project descriptio
 already made: DECISIONS.md. Task board: TASKS.md.
 
 Each component below is a unit one thread can own end to end: its crates, its tests, its gate. The status line says
-what the code shows today, checked against the repo at `6e5cc89` / `226fc2e` (main, 2026-10-17), not what older notes
-claimed. We go through the components one at a time and rewrite each section as we agree on it.
+what the code shows today, last rechecked against main at `396c4af` (2026-10-17 09:30 UTC), not what older notes
+claimed. We go through the components one at a time; each one gets its own detailed file in `context/components/` (start:
+`components/format.md`), and its section here shrinks to a summary and a link once we agree on it.
 
 ## Status at a glance
 
 | # | Component | Crates / paths | State | Biggest gap |
 | --- | --- | --- | --- | --- |
-| C0 | Foundations: workspace, CI, gates, process | Cargo.toml, .github, scripts/coverage.sh, AGENTS.md | Mostly done | CI on main is red or cancelled on recent pushes; clippy not gating; parallel-thread workflow not set up |
-| C1 | Token layer | pun-tokens | Done | Token text as spans (perf) |
+| C0 | Foundations: workspace, CI, gates, process | Cargo.toml, .github, scripts/coverage.sh, AGENTS.md | Mostly done | No CI run on main has finished green today; coverage red (pun-analyse); parallel-thread workflow not set up |
+| C1 | Token layer | pun-tokens | Done | Fewer allocations per token (perf; first attempt stopped) |
 | C2 | Format engine and fixers | pun-format, pun-fixers | Done (Pint-identical) | Pinkary CI swap; native Blade; 8-core benchmark |
-| C3 | Config and rules model | pun-config, rules/mapping.toml | Done for format + lint | `[analyse]` section; `pun explain`; mapping key rename |
+| C3 | Config and rules model | pun-config, rules/mapping.toml | Done for format + lint | Tiers accepted but not applied; `[analyse]` section; `pun explain` |
 | C4 | CLI and output | pun-cli | Done for format, lint, check, migrate, config | `pun analyse` and `pun explain` subcommands |
 | C5 | Workspace: discovery, git, cache | pun-workspace | Done | None known |
-| C6 | Delegate mode and embedded PHP | pun-delegate, (pun-php) | Delegate done on system PHP; pun-php not started | Embedded libphp; pinned PHARs |
-| C7 | Analyse (PHPStan + Larastan) | pun-phpstan, pun-analyse, (pun-laravel) | In progress, actively worked on main | 52 level-0 identifiers ported; not wired into the CLI; Larastan, levels 1-10 not started |
+| C6 | Delegate mode and embedded PHP | pun-delegate, (pun-php) | Delegate done on system PHP (incl. `@pun-ignore-file`); pun-php not started | Embedded libphp; pinned PHARs |
+| C7 | Analyse (PHPStan + Larastan) | pun-phpstan, pun-analyse, (pun-laravel) | In progress, actively worked on main | 54 identifiers, about 100 level-0 rules left; not in the CLI; Larastan, levels 1-10 not started |
 | C8 | Lint (Rector) | pun-cli lint, (pun-refactor) | Started (CS-Fixer risky rules + 17 Pun rules) | Everything Rector: config, printer, rules (31 of 542 lint rules ported) |
-| C9 | Migrate | pun-cli migrate, pun-config migrate | Format part done | PHPStan, Rector, baseline, ignore comments, composer/CI rewrites, interactive mode |
-| C10 | Editor (pun lsp) | pun-lsp, pun-cli lsp | Formatting-only `pun lsp` shipped; PHPantom prototype not wired | Wiring, shared engine, diagnostics |
+| C9 | Migrate | pun-cli migrate, pun-config migrate | Format part and interactive picker done | PHPStan, Rector, baseline, ignore comments, composer/CI rewrites |
+| C10 | Editor (pun lsp) | pun-lsp, pun-cli lsp | Deferred: ships last (user, 2026-10-17) | Nothing now; prototype stays as is |
 | C11 | Parity harness, corpus, fuzz | pun-harness, scripts/, corpus/ | Done for format | Analyse and lint harness; move harness out of shipped crates |
 | C12 | Docs site and brand | docs/, design/ | Built | Keep in sync as commands land |
 | C13 | Release and distribution | dist-workspace.toml, packaging/, release.yml | Configured, not published | Gated on C7, C8, C9 (decision) |
@@ -39,8 +40,11 @@ claimed. We go through the components one at a time and rewrite each section as 
 - Oracle pinned in `.oracle/` via `scripts/oracle.sh` (reference/oracle.md); corpus of 7 projects (`corpus/manifest.toml`).
 
 **Pending.**
-- CI health: run 56 on main failed and 54-55 were cancelled (2026-10-17); find out why and get main green.
-- Clippy gate: drop `continue-on-error`, add `-D warnings` (REQUESTS.md).
+- CI health: the last finished runs on main failed (coverage) and the newest ones were cancelled by the next push
+  (runs 70-72): with agents pushing every few minutes, no run completes. Per-component PRs would fix both.
+- Clippy: the job fails on errors but warnings don't gate yet; add `-- -D warnings` (REQUESTS.md).
+- CLI polish item 7: a `script` check in CI and the skip message in tests/migrate.rs; then the full gates under
+  `CLAUDECODE=1` (TASKS.md).
 - Coverage gate is red: CI measures every crate at 100% except pun-analyse at 97.59% (2066/2117 lines, run 39015344878),
   the crate under active work. The committed reports/COVERAGE.md table is older and lists neither pun-analyse nor pun-lsp.
 - Parallel work: AGENTS.md is written for agents sharing one 2-core box and one git index. With several cloud threads,
@@ -53,10 +57,16 @@ claimed. We go through the components one at a time and rewrite each section as 
 **Done.** Own lexer (not mago-syntax), Transformers and custom `CT::T_*` kinds, token analyzers; syntax errors from PHP's
 own grammar (bison tables from php-src 8.5.11, 788 oracle snippets). 100% coverage. Details: reference/tokens.md.
 
-**Pending.** Token text as spans into the source buffer instead of one `Vec<u8>` per token (tokenize is about 17% of a
-cold run). Pure speed work; no behaviour change.
+**Pending.** Fewer allocations per token. A first attempt (2026-10-17) was stopped with nothing landed; its profile
+changed the approach: a cold laravel-framework run makes 45M allocations, tokenizing is 0.87 s of it (lexing only 0.18 s,
+transformers 0.5 s), and 98% of tokens are 22 bytes or less. So instead of spans: a small inline `Content` type
+(24 bytes, 22 inline, else boxed) as `Token.content`, plus three cheaper fixes (token clones in braces_position and
+array_indentation, `rhs.to_vec()` in php_parser.rs, per-token lowercasing in native_type_declaration_casing). The work
+in progress lived in a worktree on the agents' box, not in git. Land only if cold time improves by 5% or more.
 
 ## C2. Format engine and fixers (pun-format, pun-fixers)
+
+**Detailed plan and open questions: components/format.md** (covers C1, C2, C5 and the format side of C6).
 
 **Goal.** `pun format` byte-identical to Pint 1.29.3 / PHP-CS-Fixer 3.95.17, much faster.
 
@@ -81,13 +91,17 @@ cold run). Pure speed work; no behaviour change.
 
 **Done.**
 - pun.toml only, `[format]` and `[lint]` sections, presets, rule aliases (short names), mapping completeness test.
+- Rule metadata API `pun_config::rule()` (fix safety, tier, summary, aliases); the 17 `Pun/*` mapping keys now use the
+  fixer names (5f64709).
 - Rules design and naming pass (RULES.md): 1,005 Pun rules (208 format, 542 lint, 255 analyse) from 2,564 upstream
   entries; tiers `essential` / `recommended` / `strict` / `pedantic` in mapping.toml.
 
 **Pending.**
+- Tiers: the top-level `preset` is accepted and validated but applies nothing yet. Trap for whoever implements it: the
+  migrate starter writes `preset = "recommended"`, and the harness runs laravel-laravel and larastan (no pint.json) on
+  it, so applying the tier must not add fixes there, or the starter must change (REQUESTS.md).
 - `[analyse]` section (paths, baseline, rule overrides) for C7.
 - `pun explain <rule>` (upstream names and doc links), and the generated "Coming from Pint / PHPStan / Rector" docs page.
-- Mapping key rename for the 17 `Pun/*` entries; expose `[rules.lint]` metadata as an API (REQUESTS.md).
 
 ## C4. CLI and output (pun-cli)
 
@@ -97,6 +111,7 @@ cold run). Pure speed work; no behaviour change.
 - `pun format` (every Pint flag and reporter, `--dirty`, `--diff`, `--staged`, `--since`, `--stdin`, `--watch`,
   `--explain`, `--native-only`, cache), `pun lint`, `pun check [--fix]`, `pun migrate`, `pun config`, `pun lsp`
   (formatting only).
+- `pun lint --fix` / `pun check --fix` report the lint rules they don't apply as remaining, and exit 1 when any remain.
 - Agent-optimised output for every command (7fd15f4, 4d47eaa); see the spec below. `pun lint --mago` and
   `pun format --watch` still print their own output.
 
@@ -104,7 +119,8 @@ cold run). Pure speed work; no behaviour change.
 
 ### Agent-optimised output
 
-Under a coding agent (laravel/agent-detector v2 env list, `PUN_AGENT=1|0`, `--agent` / `--no-agent`, `PAO_FORCE` /
+Under a coding agent (laravel/agent-detector v2 env list and `/opt/.devin`, then the agent-detector crate; Cursor's
+`CURSOR_TRACE_ID` alone doesn't count; `PUN_AGENT=1|0`, `--agent` / `--no-agent`, `PAO_FORCE` /
 `PAO_DISABLE`) every command prints compiler-style lines, not JSON:
 
 ```
@@ -132,12 +148,12 @@ lockfiles). 100% coverage. **Pending:** nothing known; analyse and lint will nee
 **Goal.** Anything not ported runs through the real upstream code, so compatibility is complete from day one.
 
 **Done.** Unported or custom fixers send the run through PHP-CS-Fixer in long-lived system `php` workers; `--native-only`
-skips them and lists them; custom fixer classes in `.php-cs-fixer.php` work (reference/oracle.md "Delegate mode").
+skips them and lists them; custom fixer classes in `.php-cs-fixer.php` work (reference/oracle.md "Delegate mode");
+`@pun-ignore-file` is honoured there too (6383a00).
 
 **Pending.**
 - pun-php: static libphp (ZTS) behind a Rust SAPI, so delegation needs no system PHP. Not started; deferred by decision.
 - Pinned, checksum-verified PHARs instead of the project's `vendor/` Pint or `$PUN_PINT`.
-- Known gap: `@pun-ignore-file` is not honoured in delegate mode.
 - Delegation for analyse (whole run through real PHPStan) and lint (Rector after native rules).
 - Decide whether the release needs pun-php or can require system PHP for delegated rules (Q3).
 
@@ -150,13 +166,15 @@ baselines and `ignoreErrors`, so CI can swap with no baseline churn.
 - M2.1 config: NEON parser, includes, parameters, schema validation, baseline read/write, `@phpstan-ignore` handling
   (pun-phpstan, fixtures exported from the real PHAR).
 - M2.2 symbols: PHPStan's reflection of every built-in in `data/symbols.json`, PHPStan's type model and `describe()`.
-- M2.3 level 0, in progress: 52 identifiers in `pun_analyse::IDENTIFIERS` (calls, instantiation, class names, members,
-  params, scope) checked against PHPStan's own rule tests; differing cases listed in
-  `tests/fixtures/rules/gaps.txt`; corpus diff script `scripts/analyse-corpus.py`. Another agent is pushing this to
-  main right now (226fc2e, 07:42 UTC).
+- M2.3 level 0, in progress (the analyse agent stopped at 43d9857): 54 identifiers in `pun_analyse::IDENTIFIERS`
+  (calls, `new`, class names, constants, typehints, properties, `use`), trait contexts, rebound closures, ignores,
+  parallel scanning. Checked against 142 of PHPStan's own rule test classes, with 40 differing cases listed in
+  `tests/fixtures/rules/gaps.txt`, and on the corpus (`scripts/analyse-corpus.py`): pinkary 1 diff, larastan 6,
+  pest 5, laravel-framework 15, at 5-25x PHPStan's speed.
 
 **Pending.**
-- Finish level 0 and close gaps.txt; corpus parity at level 0.
+- Finish level 0: about 100 level-0 rules are still unported; empty gaps.txt; corpus diffs to 0. Larastan facade
+  aliases and the trait-method declaring class were uncommitted work in progress when the agent stopped.
 - Wire it up: `pun analyse` subcommand, `[analyse]` in pun.toml (C3), agent output, `pun check`.
 - M2.4 Larastan natively (pun-laravel: models, casts, relations, facades, container, macros). Not started.
 - M2.5 Pest plugin; M2.6 levels 1-10, strict-rules, deprecation-rules; M2.7 incremental and LSP diagnostics.
@@ -185,20 +203,27 @@ rules: 31 of 542 lint rules have `ported = true`; `pun lint --mago` runs 5 Mago 
 
 **Goal.** One command moves a project onto pun.toml and proves nothing changed.
 
-**Done.** Format part: reads pint.json or `.php-cs-fixer(.dist).php`, writes `[format]` as a delta to the preset plus
+**Done.**
+- Interactive picker (bc6d9a2): detects pint.json, .php-cs-fixer.php, phpstan.neon, rector.php and mago.toml, shows a
+  checklist on a terminal, `--from pint,phpstan` and `--yes` skip it (as do agent mode and no terminal), prints one line
+  per config; PHPStan, Rector and Mago are listed as "not supported yet". No config at all writes a starter pun.toml.
+- Harness: projects without pint.json migrate an explicit `{}` (Pint's defaults), not the starter (7722a6d).
+- Format part: reads pint.json or `.php-cs-fixer(.dist).php`, writes `[format]` as a delta to the preset plus
 risky fixers as `[lint.rules]` with `fix = "apply"`, rewrites `@php-cs-fixer-ignore` to `@pun-ignore-file`, stops on
 unsupported rules, is idempotent; the harness proves it (`pun migrate` + `pun check --fix` = Pint on all 7 projects).
 
 **Pending.**
 - phpstan.neon to `[analyse]` (levels expanded to explicit rules), baseline to pun-baseline.toml, `@phpstan-ignore*`
-  rewrites. Needs C7's config.
+  rewrites. Needs C7's config, plus per-rule level data that mapping.toml doesn't have yet, and pun-cli doesn't link
+  pun-phpstan today.
 - rector.php to `[lint]`. Needs C8's config.
-- Interactive mode (detect tools, multi-select, `--from`, `--yes`, starter pun.toml): the task row said "doing", but no
-  code landed; treat as not started.
-- `.php-cs-fixer.php` Finder not migrated; `--fix` doesn't report non-apply lint rules.
+- `.php-cs-fixer.php` Finder not migrated.
 - Workflow switch: composer scripts, CI steps, pre-commit hook, editor settings, Laravel Boost guideline, `--remove-tools`.
 
 ## C10. Editor (pun lsp)
+
+**Deferred (user decision, 2026-10-17): the LSP ships last.** No LSP work until the other components are done; the
+notes below are kept for when we get there.
 
 **Goal.** One language server: PHPantom for code intelligence, Pun for formatting, diagnostics and fixes.
 
@@ -215,6 +240,8 @@ diagnostics from `pun analyse`; quick fixes from `pun lint --fix`; editor setup 
 
 **Done.** `pun-harness format` on 7 corpus projects writes reports/scoreboard.md; `scripts/fuzz-parity.sh` mutation
 fuzzer; `scripts/cli-parity.sh`; exporters that pull fixtures from the real tools (reference/oracle.md).
+
+**Done since the reset.** Projects without pint.json migrate an explicit `{}` (7722a6d).
 
 **Pending.** Analyse and lint modes in the harness (today analyse uses `scripts/analyse-corpus.py`); make pun-harness
 dev-only tooling (`publish = false`, out of dist) and move its fixtures into pun-fixers; benchmark rig in CI.
@@ -250,7 +277,7 @@ These are the calls we need to make while walking through the components; each o
    native before the release, and which may be delegated?
 3. **Embedded PHP (C6).** May the release require a system `php` for delegated rules, or is pun-php a release blocker?
 4. **Unported format rules (C2).** Are the 64 delegated format rules acceptable at release, or which must be native?
-5. **LSP dependency (C10).** Ship with PHPantom as a git dependency (and the 47 MB binary), or wait for its release?
+5. ~~LSP dependency (C10)~~ Deferred: the LSP ships last.
 6. **1.0 scope (C14).** Memory says one 1.0 release where everything ships at once; the task board says the release needs
    format, analyse, lint and migrate. Are install, run and test part of 1.0 or after it?
 
@@ -262,5 +289,5 @@ These are the calls we need to make while walking through the components; each o
 - "Config compatibility" said Pun reads old configs directly and pun.toml is optional; it is now pun.toml only.
 - The crate list still had `pint` / `phpstan` / `rector` argv[0] aliases; the `pint` alias is gone.
 - Phase numbering (Phase 2 = lint, Phase 3 = refactor) was renamed twice; components replace phases.
-- TASKS.md had two "doing" rows: agent output (it landed in 7fd15f4) and interactive migrate (no code landed).
+- TASKS.md had stale "doing" rows; agent output and interactive migrate have both landed since (7fd15f4, bc6d9a2).
 - AGENTS.md said the current scope was Phase 0 + Phase 1 only.
