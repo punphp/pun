@@ -140,19 +140,54 @@ parallel workers included. A ratio is the other tool's number divided by Pun's, 
 
 | project | files | phpstan-cold | phpstan-warm | pun | mago | count (cold / warm / pun / mago) | pun vs cold | pun vs warm | pun vs mago |
 |---|---:|---:|---:|---:|---:|---|---:|---:|---:|
-| pinkary | 162 | 4.88 s, 1447 MB | 0.44 s, 150 MB | 1.06 s, 834 MB | 0.72 s, 931 MB | 8 / 8 / 9 / 421 | 4.6x, 1.7x mem | 0.42x, 0.18x mem | 0.68x, 1.1x mem |
-| larastan (v3.10.0) | 151 | 4.93 s, 1199 MB | 0.39 s, 129 MB | 0.58 s, 592 MB | 0.40 s, 610 MB | 24 / 24 / 24 / 3802 | 8.5x, 2.0x mem | 0.67x, 0.22x mem | 0.68x, 1.0x mem |
-| laravel-framework | 1664 | 40.20 s, 3271 MB | 0.79 s, 353 MB | 1.81 s, 1133 MB | 0.99 s, 907 MB | 380 / 380 / 358 / 20616 | 22.3x, 2.9x mem | 0.44x, 0.31x mem | 0.55x, 0.80x mem |
-| pest | 257 | 6.56 s, 1347 MB | 0.41 s, 122 MB | 0.68 s, 505 MB | 0.37 s, 500 MB | 69 / 69 / 74 / 597 | 9.7x, 2.7x mem | 0.60x, 0.24x mem | 0.54x, 0.99x mem |
-| laravel-pint | 58 | 3.97 s, 578 MB | 0.38 s, 117 MB | 0.52 s, 395 MB | 0.24 s, 361 MB | 0 / 0 / 1 / 232 | 7.6x, 1.5x mem | 0.72x, 0.30x mem | 0.46x, 0.91x mem |
+| pinkary | 162 | 4.88 s, 1447 MB | 0.44 s, 150 MB | 0.53 s, 882 MB | 0.72 s, 931 MB | 8 / 8 / 9 / 421 | 9.2x, 1.6x mem | 0.83x, 0.17x mem | 1.4x, 1.1x mem |
+| larastan (v3.10.0) | 151 | 4.93 s, 1199 MB | 0.39 s, 129 MB | 0.30 s, 542 MB | 0.40 s, 610 MB | 24 / 24 / 24 / 3802 | 16.4x, 2.2x mem | 1.3x, 0.24x mem | 1.3x, 1.1x mem |
+| laravel-framework | 1664 | 40.20 s, 3271 MB | 0.79 s, 353 MB | 0.63 s, 1112 MB | 0.99 s, 907 MB | 380 / 380 / 358 / 20616 | 63.8x, 2.9x mem | 1.3x, 0.32x mem | 1.6x, 0.82x mem |
+| pest | 257 | 6.56 s, 1347 MB | 0.41 s, 122 MB | 0.25 s, 446 MB | 0.37 s, 500 MB | 69 / 69 / 74 / 597 | 26.2x, 3.0x mem | 1.6x, 0.27x mem | 1.5x, 1.1x mem |
+| laravel-pint | 58 | 3.97 s, 578 MB | 0.38 s, 117 MB | 0.22 s, 346 MB | 0.24 s, 361 MB | 0 / 0 / 1 / 232 | 18.0x, 1.7x mem | 1.7x, 0.34x mem | 1.1x, 1.0x mem |
 
-- Cold, Pun is 4.6-22x faster than PHPStan and uses 1.5-2.9x less memory. A warm PHPStan result cache beats Pun on
-  every project (0.4-0.8 s against 0.5-1.8 s), and Mago's analyser is 1.5-2.2x faster than Pun at about the same
-  memory.
+- The pun column is perf round 1 (below); the phpstan and mago columns are round 0's runs, same day and method.
+- Cold, Pun is 9-64x faster than PHPStan and uses 1.6-3.0x less memory. Pun now beats a warm PHPStan result cache on
+  four of five projects (0.22-0.63 s against 0.38-0.79 s; Pinkary 0.53 s against 0.44 s), and Mago's analyser by
+  1.1-1.6x at about the same memory.
 - laravel-framework's cold PHPStan runs varied: 23 s in a non-exclusive smoke run, 35-41 s in the measured runs.
 - larastan is analysed at its v3.10.0 tag (the corpus commit needs PHPStan 2.3); laravel-pint keeps its own
   Larastan 3.12.0 next to PHPStan 2.2.7.
 - Files: the PHP files under the paths, without Blade templates (PHPStan also skips laravel-framework's excludePaths).
+
+### Perf rounds
+
+Each round's pun cells come from `BENCH=analyse TOOLS=pun scripts/bench.py <project>` (same settings: 3 runs after
+1 warmup, `HEAVY_EXCLUSIVE=1`), the old and new binaries run back to back per project. The reported errors (file,
+line, identifier, message, tip) are byte-identical before and after on all five projects.
+
+| project | round 0 | round 1 | wall | rss |
+|---|---:|---:|---:|---:|
+| pinkary | 1.09 s, 832 MB | 0.53 s, 882 MB | -51% | +6% |
+| larastan (v3.10.0) | 0.63 s, 585 MB | 0.30 s, 542 MB | -52% | -7% |
+| laravel-framework | 1.53 s, 1127 MB | 0.63 s, 1112 MB | -59% | -1% |
+| pest | 0.46 s, 502 MB | 0.25 s, 446 MB | -46% | -11% |
+| laravel-pint | 0.47 s, 399 MB | 0.22 s, 346 MB | -53% | -13% |
+
+(Round 0 re-measured here: the table's first pun column was 1.06/0.58/1.81/0.68/0.52 s on the earlier run.) Per
+change, A/B with `/usr/bin/time` on pinkary, laravel-framework and laravel-pint:
+
+- round 1: walk directories and Composer's autoload sources in parallel, using readdir's entry type instead of a stat
+  per entry; scan in 32-file rayon chunks (with one contiguous chunk per thread, threads sat idle for about half the scan)
+  merged in file order, beside the prelude build; build the prelude once instead of a static copy plus its clone;
+  Mago's parallel populator; check analysed files in parallel; drop the codebase off the critical path. Wall -36 to
+  -55%, rss -2 to -5%.
+- round 1: NEON tokens matched without PCRE2's UTF mode, which re-validated the whole input at every token
+  (quadratic on PHPStan's own config.neon; config load 45 ms to 9 ms). Wall -3 to -14%, rss 0%.
+- round 1: symbols.json read straight into typed structs instead of an order-preserving `serde_json::Value` first
+  (half the time, a third of the transient memory, for each of the 8.4 and 8.5 loads). Wall -2 to -25%, rss -5 to -9%.
+- round 1: analysed files kept from the scan for the rules (no second read), PHPStan's 8.4 reflection loaded beside
+  the scan instead of by the first rule that needs it while the other threads wait, one arena per rayon job. Wall
+  0 to -3% (within noise), rss 0%.
+- What is left: opening files (about 30 µs per `open()` on this Mac, a quarter of all CPU samples) for the 8-18k
+  vendor files scanned eagerly, Mago's parse and scan of them, and Mago's populate (about 15%). Memory is Mago's
+  metadata for every scanned vendor file (about 20 KB each live) plus about 30% allocator overhead; neither
+  mimalloc nor dropping file signatures moved it.
 
 ## Lint benchmark
 
