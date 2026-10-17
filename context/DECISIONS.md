@@ -40,6 +40,9 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 - **No levels** (confirmed 2026-10-17: named presets for new projects; migrate writes explicit rules and, when
   interactive, offers the closest preset with a count of the new problems it would report). Presets are tiers: `essential` < `recommended` (default) < `strict` < `pedantic`, cumulative, one tier
   for lint + analyse; add-ons `laravel` / `pest` / `phpunit`.
+- **`pun init`** asks the format preset (laravel / psr12), the analyse preset and the lint preset; lint and analyse
+  presets are chosen separately (2026-10-17, components/lint.md §9). Laravel, Pest and PHPUnit rules turn on
+  automatically from composer.lock.
 - **Laravel support is built in** (2026-10-17): nothing to install, unlike Larastan or rector-laravel. Every PHPStan
   core rule is supported natively.
 - **Agent output:** under a coding agent every command prints compact `path:line:col rule message` lines, not JSON.

@@ -178,6 +178,76 @@ Left, in order (pending the answers below):
     `pun check --fix` is the one command that does both?
     *Recommend: keep it.*
 
+## 9. `pun init` and lint presets (Pushpak's user journey, 2026-10-17)
+
+**A new, blank Laravel project:** `pun init` asks three things and writes pun.toml.
+1. **Format preset:** `laravel` or `psr12`.
+2. **Analyse preset:** `essential`, `recommended` (default), `strict` or `pedantic`, each including the one below.
+3. **Lint preset:** see the proposal below.
+
+Laravel, Pest and PHPUnit are not questions. Pun reads composer.lock and turns their rules on by itself, including the
+rules for the locked versions (decided).
+
+**A project coming from Pint, Rector or PHPStan:** `pun migrate` writes the exact rules the old config runs. In
+interactive mode it then offers the closest preset, with a count of the new problems the preset would report.
+
+### What Rector offers (research)
+
+Rector has no ladder. Its config is a set of independent toggles, `withPreparedSets(...)`, plus `withPhpSets()`
+(newest syntax for the composer.json PHP version), plus ecosystem sets. Mapped onto Pun's lint rules
+(rules/mapping.toml):
+
+| Rector set | Pun lint rules | What it does |
+| --- | ---: | --- |
+| `deadCode` | 45 | removes unused and unreachable code |
+| `codeQuality` | 55 | simplifies code (`if` to `return`, `array_map` to a loop and so on) |
+| `codingStyle` | 13 | style choices (`sprintf` to string interpolation, `$a = $a + 1` to `+=`) |
+| `typeDeclarations` (+ docblocks) | 8 (72 Rector rules merged into `add-return-type` and similar) | adds native types it can prove |
+| `earlyReturn`, `instanceOf`, `privatization`, `naming` | 8, 3, 4, 6 | each one style decision |
+| `withPhpSets()` | about 100 (`php53` to `php85`) | newest syntax your PHP allows |
+| rector-laravel `laravel-code-quality`, `laravel-collection`, `laravel-testing` | 24, 4, 4 | Laravel idioms |
+| rector-phpunit `phpunit-code-quality` | 40 | PHPUnit idioms |
+| pest-plugin-rector `coding-style` | 19 | Pest idioms |
+| version sets (`laravel110`, `phpunit100`, ...) | 1-7 each | upgrades; in Pun these are the upgrade groups (`lint/laravel-13/...`) |
+
+116 lint rules come from no Rector set: CS-Fixer's risky fixers and Mago's rules (mostly `pedantic` today).
+Rector also has gradual levels for adoption (`withDeadCodeLevel(n)`, `withTypeCoverageLevel(n)`), which turn on the
+first n rules of one set.
+
+### Proposal: lint presets are sets you tick, not a ladder
+
+`pun init` question 3 is a checklist, with a default ticked:
+
+```
+Which lint rules?            (space to toggle)
+ [x] dead-code               remove unused and unreachable code
+ [x] modernize               newest syntax your PHP and Laravel versions allow
+ [ ] code-quality            simplify code
+ [ ] types                   add native types Pun can prove
+ [ ] early-return            prefer early returns
+ [ ] privatization           make what can be private, private
+ [ ] naming                  rename variables after their type
+ [ ] coding-style            style choices
+```
+
+In pun.toml:
+
+```toml
+[lint]
+sets = ["dead-code", "modernize", "code-quality"]
+```
+
+- **Sets are tags on rules**, separate from the topic group in the name. A rule can be in several sets.
+- **The Laravel, Pest and PHPUnit parts of each set turn on by themselves** when composer.lock has the package. For
+  example, `code-quality` in a Laravel app includes rector-laravel's code-quality rules.
+- **Migrate maps 1:1:** `withPreparedSets(deadCode: true, codeQuality: true)` becomes
+  `sets = ["dead-code", "code-quality"]`, and single rules become `[lint.rules]`.
+- **CS-Fixer's risky rules and Mago's rules join the set they fit** (`no-loose-comparison` goes in `types`,
+  `no-debug-calls` in `dead-code`), or stay opt-in by name.
+
+The alternative is the same four-step ladder as analyse (`[lint] preset = "strict"`). It is simpler to pick, but it
+bundles unrelated choices: wanting typed code doesn't mean wanting variables renamed.
+
 ## Decisions
 
 Answered 2026-10-17 (Pushpak):
@@ -194,6 +264,10 @@ Answered 2026-10-17 (Pushpak):
   rules it maps to into pun.toml, and in interactive mode offers the closest preset ("You're on PHPStan level 8; the
   closest Pun preset is `strict`. Switch?"), showing how many new problems the switch would report before it writes.
   `essential` is the "loose" bottom preset; no fifth tier below it.
+- **Q5: Laravel, Pest and PHPUnit turn on automatically** from composer.lock, version rules included; a group can be
+  switched off in pun.toml.
+- **`pun init` asks three things:** the format preset (laravel / psr12), the analyse preset, and the lint preset (§9).
+  Lint gets its own preset choice, separate from analyse.
 - **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
 - **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
   support yet (commands.md decisions).
