@@ -35,6 +35,7 @@ fn pun(dir: &Path, args: &[&str]) -> (i32, String) {
         .env_clear()
         .env("PATH", std::env::var("PATH").unwrap_or_default())
         .env("HOME", std::env::var("HOME").unwrap_or_default())
+        .env("PUN_AGENT", "0")
         .output()
         .unwrap();
     (
