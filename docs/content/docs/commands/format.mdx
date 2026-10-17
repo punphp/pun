@@ -34,7 +34,7 @@ Pint's flags work the same way.
 | `--cache-file=<path>` | Cache location (default: a per-project file under `~/.cache/pun`). |
 | `-v`, `-q` | More or less output. |
 | `--parallel` | Accepted. Pun always runs in parallel, one thread per core. |
-| `--max-processes=N` | Caps the threads at `N`, and the PHP and Prettier workers with them. A value that isn't a positive number keeps the default. |
+| `--max-processes=N` | Caps the threads at `N`, and the Prettier workers with them. A value that isn't a positive number keeps the default. |
 
 ## Pun's own flags
 
@@ -45,17 +45,20 @@ Pint's flags work the same way.
 | `--watch` | Keep running and re-format files as they change. |
 | `--stdin` | Read code from stdin; `--stdin-filename` gives it a path for exclusion rules. |
 | `--no-cache` | Check every file, ignoring and not writing the cache. |
-| `--explain` | Print which rules run natively and which go to PHP-CS-Fixer. |
-| `--native-only` | Run only native fixers, skipping and listing delegated rules. |
-
-:::warning[--native-only is not Pint-identical]
-It skips rules Pun hasn't ported, so output can differ from Pint. See [delegate mode](/docs/configuration/delegate-mode).
-:::
+| `--explain` | Print the fixers the run applies, in priority order. |
 
 ## Output
 
 Pun prints what Pint prints: the summary, `-v` diffs, syntax-error snippets, colours, terminal width and the JSON, txt, checkstyle, JUnit, XML and GitLab reporters.
 
 Without a `pun.toml`, every command stops with `No pun.toml found. Run pun migrate.`, unless you pass `--preset` or `--no-config`.
+
+Pun never runs PHP for a rule it lacks. If `pun.toml` (or the `--preset`) enables a rule Pun hasn't ported, `pun format`, `pun lint` and `pun check` stop before touching any file and exit 2, naming the rule:
+
+```
+pun: /path/to/pun.toml: rule not supported by Pun yet: `format.assign-null-coalescing-to-coalesce-equal`
+```
+
+Remove the rule from `pun.toml`, or send a PR to [punphp/pun](https://github.com/punphp/pun).
 
 Under a coding agent, Pun switches to the compact `agent` format automatically. See [Coding agents](/docs/guides/coding-agents).

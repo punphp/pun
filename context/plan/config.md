@@ -185,3 +185,14 @@ Build 5 (wf/composer, 2026-10-17), assistant's calls where the plan is silent:
   its release. A constraint that admits nothing (`>=8.4 <8.3`) gives no PHP version. `>8.4` gives 8.4.1.
 - The PHP 8.4 gate in `load` now uses the same reader (`constraint::lowest`); `allows_below` is gone. Wiring the
   detected version into `[php] version` and the ecosystems into lint/analyse is left to the schema step (Build 3).
+
+Build 6 (remove delegate mode), assistant's calls (2026-10-17):
+- The unported-rule check runs in pun-cli, against the real fixer registry (`pun_fixers::all`), not mapping.toml's
+  `ported` flag, which is stale (`strict_param` says `ported = false`). It covers `[format.rules]`, the preset and
+  `[lint.rules]` on every `format` / `lint` / `check` run, so a lint rule stops `pun format` too. Message:
+  `<pun.toml path>: rule(s) not supported by Pun yet: `<Pun ID>`, ...` (the upstream name when the rule has no Pun ID,
+  such as `@PER-CS`; `preset <name>` instead of the path when no pun.toml was read). Exit 2; other config errors keep
+  exit 1 until the schema step (Build 3) decides their code.
+- `pun migrate` still reads a `.php-cs-fixer.php` through the project's own PHP-CS-Fixer (one `php -r` run,
+  crates/pun-cli/src/php_cs_fixer_rules.php), because the config is PHP code. This reads the old config only; no rule
+  ever runs in PHP. Replacing it with a static read is a follow-up for migrate Build 1.

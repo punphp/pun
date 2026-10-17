@@ -171,7 +171,7 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
     for r in &rules {
         let id = rule_of(&r.name);
         let lint = id.is_some_and(|id| id.starts_with("lint."));
-        // The preset brings it (rules Pun delegates, such as sets it can't expand, included).
+        // The preset brings it (rules Pun can't run, such as sets it can't expand, included).
         if !lint
             && base
                 .iter()

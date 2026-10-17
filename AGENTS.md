@@ -55,7 +55,7 @@ The four tools:
 - `pun`: `pun check --test --no-cache` in a scratch copy of the project (no `.git`, `node_modules` symlinked), after `pun migrate --yes` has written its `pun.toml`.
 - `mago`: `mago fmt --check .` in the same scratch copy, with Mago's default config. Mago's style is not Pint's, so its numbers are a speed and memory reference, not a parity check. Without the `.` and without a `mago.toml`, Mago checks no files.
 
-Memory is the peak summed RSS of the whole process tree, sampled every 20 ms and never below the command's own maxrss, so Pint's parallel PHP workers and Pun's Prettier and PHP workers count. The script sets `PUN_AGENT=0` and `PUN_IGNORE_PHP_CONSTRAINT=1`, and ignores exit codes.
+Memory is the peak summed RSS of the whole process tree, sampled every 20 ms and never below the command's own maxrss, so Pint's parallel PHP workers and Pun's Prettier workers count. The script sets `PUN_AGENT=0` and `PUN_IGNORE_PHP_CONSTRAINT=1`, and ignores exit codes.
 
 Pinkary is the slowest project for Pun because Blade formatting runs through Prettier workers. `pun --max-processes=N` caps Pun's threads, and its workers with them. Record published timings in `context/reports/scoreboard.md`.
 
@@ -66,7 +66,7 @@ Pinkary is the slowest project for Pun because Blade formatting runs through Pre
 - `pun-fixers` holds one file per fixer in `src/fixers/`, and `build.rs` registers them. Its `Pun/*` rules are opt-in ports from Mago (`context/reference/mago-extras.md`).
 - A fixer's tests come from three sources: upstream fixtures exported to JSON, oracle output in `tests/cases/<fixer>.json` (create it with `scripts/oracle-case.php`), and `tests/metadata.json` (the priority and risky flag from Pint).
 - `pun-config` reads `pun.toml` and nothing else. `rules/mapping.toml` maps Pun rule IDs to upstream names, and `scripts/check-rule-mapping.py` checks it. `migrate.rs` converts `pint.json` and `.php-cs-fixer.php`. `docs/presets/laravel.json` is compiled into the crate, so do not move it.
-- If a rule has no Pun port, `pun-delegate` sends every file of the run through the real PHP-CS-Fixer in `php` worker processes. See `context/reference/oracle.md#delegate-mode`.
+- Pun never runs PHP for a rule it lacks. A rule in `pun.toml` without a native port is a config error (exit 2) that names the rule. System PHP is only the test oracle, and `pun migrate` uses it to read a `.php-cs-fixer.php`.
 - `pun-cli` builds the `pun` binary. The crate holds Pint-identical reporters, the compact output for coding agents (`agent.rs`), the cache, `--watch`, and the interactive `migrate`.
 - `pun-phpstan` ports PHPStan's config, ignore, and type-string behavior. Its built-in symbols are in `data/symbols.json`. `pun-analyse` builds `pun analyse` on `pun-phpstan` and Mago's analyzer.
 - `pun-harness` is local tooling. It regenerates `context/reports/scoreboard.md`.

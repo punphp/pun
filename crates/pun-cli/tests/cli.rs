@@ -551,50 +551,70 @@ fn pun_only_behaviour() {
         );
     }
 
-    // -v alone explains only delegation; a native run prints nothing extra.
+    // -v alone prints nothing on stderr.
     let (_, err, _) = pun(&dir, &["format", "--test", "-v", "app/Clean.php"]);
     assert_eq!(err, "");
 
-    // A rule Pun hasn't ported is delegated to PHP-CS-Fixer, which needs one to delegate to.
+    // No PHP fallback: a rule Pun hasn't ported stops every command, named under its Pun ID (exit 2).
     std::fs::write(
         dir.join("pun.toml"),
         "[format]\npreset = \"empty\"\n[format.rules]\narray-syntax = true\nassign-null-coalescing-to-coalesce-equal = true\n",
     )
     .unwrap();
-    let (out, _, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
-    assert_eq!(code, Some(1));
-    assert!(
-        out.contains("no PHP-CS-Fixer to delegate to: run `composer require --dev laravel/pint`,"),
-        "{out}"
-    );
-    if let Some(o) = oracle() {
-        let (out, _, code) = pun_env(
-            &dir,
-            &["format", "--test", "app/Clean.php"],
-            &[("PUN_PINT", o.to_str().unwrap())],
+    let toml = dir.join("pun.toml");
+    for cmd in [&["format", "--test"][..], &["lint"], &["check", "--fix"]] {
+        let (out, err, code) = pun(&dir, cmd);
+        assert_eq!(
+            (out.as_str(), err, code),
+            (
+                "",
+                format!(
+                    "pun: {}: rule not supported by Pun yet: `format.assign-null-coalescing-to-coalesce-equal`\n",
+                    toml.display()
+                ),
+                Some(2)
+            ),
+            "{cmd:?}"
         );
-        assert_eq!(code, Some(0), "{out}");
     }
-    // --native-only: native rules only, the rest listed (and the run is not failed for it).
-    let (out, err, code) = pun(
-        &dir,
-        &[
-            "format",
-            "--test",
-            "--explain",
-            "--native-only",
-            "app/Clean.php",
-        ],
+    // Lint rules count too, even for `pun format`; several are listed together.
+    std::fs::write(
+        dir.join("pun.toml"),
+        "[format]\npreset = \"empty\"\n[format.rules]\nassign-null-coalescing-to-coalesce-equal = true\n[lint.rules]\nno-homoglyph-names = \"error\"\n",
+    )
+    .unwrap();
+    let (_, err, code) = pun(&dir, &["format", "--test"]);
+    assert_eq!(
+        (err, code),
+        (
+            format!(
+                "pun: {}: rules not supported by Pun yet: `format.assign-null-coalescing-to-coalesce-equal`, `lint.no-homoglyph-names`\n",
+                toml.display()
+            ),
+            Some(2)
+        )
     );
-    assert_eq!(code, Some(0));
-    assert!(out.contains("PASS"), "{out}");
-    assert!(
-        err.contains("  skipped           assign_null_coalescing_to_coalesce_equal\n"),
-        "{err}"
+    // Agent mode: the same message as its one-line error, same exit code.
+    let (out, _, code) = pun_env(&dir, &["lint"], &[("PUN_AGENT", "1")]);
+    assert_eq!(
+        (out, code),
+        (
+            format!(
+                "pun lint: error: {}: rules not supported by Pun yet: `format.assign-null-coalescing-to-coalesce-equal`, `lint.no-homoglyph-names`\n",
+                toml.display()
+            ),
+            Some(2)
+        )
     );
-    assert!(
-        err.ends_with("pun: --native-only skipped 1 rules that are not ported: assign_null_coalescing_to_coalesce_equal\n"),
-        "{err}"
+    // Without pun.toml, `--preset` names the preset: per's @PER-CS set has no expansion in Pun.
+    std::fs::remove_file(dir.join("pun.toml")).unwrap();
+    let (_, err, code) = pun(&dir, &["format", "--test", "--preset=per"]);
+    assert_eq!(
+        (err.as_str(), code),
+        (
+            "pun: preset per: rule not supported by Pun yet: `@PER-CS`\n",
+            Some(2)
+        )
     );
 
     // A broken pun.toml is a one-line error.
@@ -634,122 +654,12 @@ fn pun_only_behaviour() {
     assert_eq!((err.as_str(), code), ("pun: Preset not found.\n", Some(1)));
 }
 
-/// Delegate mode against the real Pint: rules Pun hasn't ported (combine_consecutive_unsets, align_multiline_comment,
-/// interleaved with native ones by priority) send every file through PHP-CS-Fixer, so stdout, exit code and files
-/// equal Pint's in every mode, including syntax errors, which stay native.
-#[test]
-fn delegated_rules_match_pint() {
-    let Some(oracle) = oracle() else { return };
-    let cx = Ctx {
-        oracle: oracle.clone(),
-    };
-    let dir = tmp("delegate");
-    let tree = [
-        ("composer.json", r#"{"require":{"php":"^8.4"}}"#),
-        (
-            "pint.json",
-            r#"{"preset":"laravel","rules":{"explicit_string_variable":true,"no_null_property_initialization":true}}"#,
-        ),
-        (
-            "app/Strings.php",
-            "<?php\n$s = \"a $b\";\n$c = array(\"x\");\n",
-        ),
-        ("app/Props.php", "<?php\n\nclass A { public $x = null; }\n"),
-        ("app/Clean.php", "<?php\n\n$a = [1];\n"),
-        ("app/Fix.php", "<?php\n$a = array(1,2);   \n"),
-        ("app/Bad.php", "<?php\n$a = ;\n"),
-    ];
-    let env = [("PUN_PINT", oracle.to_str().unwrap())];
-    for args in [
-        &[][..],
-        &["--test"],
-        &["-v", "--test"],
-        &["--format=json"],
-        &["--test", "app/Strings.php"],
-    ] {
-        cx.same(&dir, &tree, &[], args, &env, b"");
-    }
-    // stdin goes through the same workers.
-    reset(&dir, &tree);
-    migrate(&dir);
-    let (r, _) = run(
-        Path::new(env!("CARGO_BIN_EXE_pun")),
-        &["format", "--stdin"],
-        &dir,
-        &[],
-        &env,
-        b"<?php\n$s = \"a $b\";\n",
-    );
-    assert_eq!(r.stdout, "<?php\n\n$s = \"a {$b}\";\n");
-    // `@pun-ignore-file` skips its rules in PHP-CS-Fixer too (Pint's output for the same `@php-cs-fixer-ignore`
-    // comment): a delegated rule and a native one.
-    for (id, expected) in [
-        (
-            "format.explicit-string-variable",
-            "$s = \"a $b\";\n$c = ['x'];\n",
-        ),
-        ("single-quote", "$s = \"a {$b}\";\n$c = [\"x\"];\n"),
-    ] {
-        let head = format!("<?php\n\n// @pun-ignore-file {id}\n");
-        std::fs::write(
-            dir.join("app/Ignored.php"),
-            format!("{head}$s = \"a $b\";\n$c = array(\"x\");\n"),
-        )
-        .unwrap();
-        pun_env(&dir, &["format", "app/Ignored.php"], &env);
-        assert_eq!(
-            std::fs::read_to_string(dir.join("app/Ignored.php")).unwrap(),
-            format!("{head}{expected}")
-        );
-    }
-    // PHP startup warnings (here an ini loading a missing extension) must not reach the worker protocol on stdout.
-    let ini = tmp("delegate-ini");
-    std::fs::write(
-        ini.join("broken.ini"),
-        "extension=pun_missing\ndisplay_startup_errors=1\ndisplay_errors=1\n",
-    )
-    .unwrap();
-    let scan = format!(":{}", ini.display());
-    let args = ["format", "--test", "app/Strings.php"];
-    let clean = pun_env(&dir, &args, &env);
-    let warned = pun_env(&dir, &args, &[env[0], ("PHP_INI_SCAN_DIR", &scan)]);
-    assert_eq!((warned.0, warned.2), (clean.0, clean.2));
-    // -v and --explain say why and list what ran in PHP.
-    reset(&dir, &tree);
-    migrate(&dir);
-    let (_, err, _) = pun_env(&dir, &["format", "--test", "-v", "app/Clean.php"], &env);
-    let why = format!(
-        "delegate: 2 of {} rules are not ported (explicit_string_variable, no_null_property_initialization), so every file runs through PHP-CS-Fixer in `php` ({})\n",
-        pun_config_rules(&dir),
-        oracle.display()
-    );
-    assert_eq!(err, why);
-    let (_, err, _) = pun_env(
-        &dir,
-        &["format", "--test", "--explain", "app/Clean.php"],
-        &env,
-    );
-    assert!(
-        err.starts_with(&why)
-            && err.contains("\n  delegated      6  explicit_string_variable\n")
-            && err.contains("\n  delegated    -20  no_extra_blank_lines\n"),
-        "{err}"
-    );
-}
-
-/// The number of format rules `pun config` resolves for `dir` (the laravel preset's, minus its risky ones, plus two).
-fn pun_config_rules(dir: &Path) -> usize {
-    let (out, _, _) = pun(dir, &["config", "--show", "--format=json"]);
-    let v: serde_json::Value = serde_json::from_str(&out).unwrap();
-    v["format"]["rules"].as_object().unwrap().len()
-}
-
-/// `pun migrate` reads a .php-cs-fixer.php through PHP-CS-Fixer itself (pun-delegate's fixture: a project fixer
-/// class, which Pun can't run, so nothing is written), then one without custom fixers.
+/// `pun migrate` reads a .php-cs-fixer.php through PHP-CS-Fixer itself (a project fixer class, which Pun can't run,
+/// so nothing is written), then one without custom fixers.
 #[test]
 fn migrates_php_cs_fixer_config() {
     let Some(oracle) = oracle() else { return };
-    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../pun-delegate/tests/custom");
+    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/php-cs-fixer-custom");
     let dir = tmp("pcf");
     let read = |f: &str| std::fs::read_to_string(src.join(f)).unwrap();
     let real = oracle
@@ -765,10 +675,7 @@ fn migrates_php_cs_fixer_config() {
         ("composer.json", r#"{"require":{"php":"^8.4"}}"#.into()),
         (".php-cs-fixer.php", read(".php-cs-fixer.php")),
         ("UpperTodoFixer.php", read("UpperTodoFixer.php")),
-        (
-            "app/A.php",
-            "<?php\n$a = \"x\";\nin_array($a, []);\n".into(),
-        ),
+        ("app/A.php", "<?php\n$a = \"x\";\n$b = sizeof([]);\n".into()),
         ("vendor/autoload.php", autoload),
         ("vendor/friendsofphp/php-cs-fixer/.keep", String::new()),
     ];
@@ -784,6 +691,17 @@ fn migrates_php_cs_fixer_config() {
     assert_eq!(code, Some(1));
     assert!(err.contains("bad config"), "{err}");
     assert!(!dir.join("pun.toml").exists());
+    // Without PHP-CS-Fixer installed the config can't be read.
+    reset(&dir, &tree);
+    std::fs::remove_dir_all(dir.join("vendor/friendsofphp")).unwrap();
+    let (_, err, code) = pun(&dir, &["migrate"]);
+    assert_eq!(
+        (err.as_str(), code),
+        (
+            "pun: no vendor/friendsofphp/php-cs-fixer: run `composer install` so Pun can read the config\n",
+            Some(1)
+        )
+    );
     reset(&dir, &tree);
     let finder = "pun migrate: .php-cs-fixer.php configures its own Finder, which is not migrated: check [format] paths and exclude.\n";
     let (out, err, code) = pun(&dir, &["migrate"]);
@@ -811,7 +729,7 @@ fn migrates_php_cs_fixer_config() {
     );
     std::fs::write(
         dir.join(".php-cs-fixer.php"),
-        "<?php\nreturn (new PhpCsFixer\\Config())->setRiskyAllowed(true)->setRules(['single_quote' => true, 'strict_param' => true]);\n",
+        "<?php\nreturn (new PhpCsFixer\\Config())->setRiskyAllowed(true)->setRules(['single_quote' => true, 'no_alias_functions' => true]);\n",
     )
     .unwrap();
     let (out, err, code) = pun(&dir, &["migrate"]);
@@ -823,52 +741,12 @@ fn migrates_php_cs_fixer_config() {
     );
     assert_eq!(
         std::fs::read_to_string(dir.join("pun.toml")).unwrap(),
-        "# Written by `pun migrate` from .php-cs-fixer.php.\n[format]\npreset = \"empty\"\n\n[format.rules]\nsingle-quote = true\n\n[lint.rules]\nrequire-strict-param = { fix = \"apply\" }\n"
+        "# Written by `pun migrate` from .php-cs-fixer.php.\n[format]\npreset = \"empty\"\n\n[format.rules]\nsingle-quote = true\n\n[lint.rules]\nno-alias-function = { fix = \"apply\" }\n"
     );
-    // single_quote is format; strict_param (risky) only runs under lint / check.
+    // single_quote is format; no_alias_functions (risky) only runs under lint / check.
     pun(&dir, &["format"]);
     let a = || std::fs::read_to_string(dir.join("app/A.php")).unwrap();
-    assert_eq!(a(), "<?php\n$a = 'x';\nin_array($a, []);\n");
+    assert_eq!(a(), "<?php\n$a = 'x';\n$b = sizeof([]);\n");
     pun(&dir, &["check", "--fix"]);
-    assert_eq!(a(), "<?php\n$a = 'x';\nin_array($a, [], true);\n");
-
-    // A delegated fixer (explicit_string_variable isn't ported) that throws or breaks the code fails only its file,
-    // with PHP-CS-Fixer's messages. The project's autoloader shadows the real class with UpperTodoFixer's hooks.
-    let fake = read("UpperTodoFixer.php")
-        .replacen("<?php", "<?php\nnamespace PhpCsFixer\\Fixer\\StringNotation;\nuse PhpCsFixer;\nuse RuntimeException;\nuse SplFileInfo;", 1)
-        .replace("final class UpperTodoFixer", "final class ExplicitStringVariableFixer")
-        .replace("'Acme/upper_todo'", "'explicit_string_variable'");
-    std::fs::write(dir.join("Shadow.php"), fake).unwrap();
-    std::fs::write(
-        dir.join("vendor/autoload.php"),
-        format!(
-            "<?php\n$l = require '{}';\nrequire __DIR__.'/../Shadow.php';\nreturn $l;\n",
-            real.display()
-        ),
-    )
-    .unwrap();
-    std::fs::write(
-        dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\nexplicit-string-variable = true\n",
-    )
-    .unwrap();
-    std::fs::write(dir.join("app/T.php"), "<?php\n\n// THROW\n").unwrap();
-    std::fs::write(dir.join("app/B.php"), "<?php\n\n// BREAK\n$a = 1;\n").unwrap();
-    let (out, err, code) = pun(&dir, &["format", "--test", "--format=agent"]);
-    assert_eq!(code, Some(1), "{err}");
-    assert!(
-        out.contains(r#"{"path":"app\/T.php","message":"boom"}"#),
-        "{out}"
-    );
-    assert!(
-        out.contains(r#"{"path":"app\/B.php","message":"Parse error: Unmatched ')' on line 4."}"#),
-        "{out}"
-    );
-    // Agent mode: a fixer's exception or broken output is `fixer-error`, at the line when the message has one.
-    let (out, _, code) = pun_env(&dir, &["format", "--test"], &[("PUN_AGENT", "1")]);
-    assert_eq!(code, Some(1));
-    assert!(
-        out.ends_with("\napp/B.php:4 fixer-error Parse error: Unmatched ')' on line 4.\napp/T.php fixer-error boom\n"),
-        "{out}"
-    );
+    assert_eq!(a(), "<?php\n$a = 'x';\n$b = count([]);\n");
 }

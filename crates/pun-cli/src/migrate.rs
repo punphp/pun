@@ -4,7 +4,7 @@
 //! comments become `@pun-ignore-file` with Pun rule IDs (context/plan/rules.md §4). PHPStan, Rector and Mago are listed and
 //! left untouched. With no config at all it writes a starter pun.toml.
 use crate::{agent, report, root};
-use anyhow::{Result, bail};
+use anyhow::{Context, Result, bail};
 use pcre2::bytes::Regex;
 use pun_config::migrate;
 use std::fmt::Write as _;
@@ -259,18 +259,14 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
     }
     let (from, m) = match format_source {
         Some((Source::PhpCsFixer, f)) => {
-            let d = pun_delegate::Delegate::start(
-                &root,
-                pun_delegate::Source::Config(f.clone()),
-                None,
-            )?;
+            let rules = php_cs_fixer_rules(&root, &f)?;
             let note = "configures its own Finder, which is not migrated: check [format] paths and exclude.";
             if human {
                 eprintln!("pun migrate: {} {note}", rel(&root, &f));
             } else {
                 notes.push(format!("{} finder-not-migrated {note}", rel(&root, &f)));
             }
-            (Some(f), migrate::from_rules(d.rules()?)?)
+            (Some(f), migrate::from_rules(rules)?)
         }
         Some((_, f)) => {
             let m = migrate::from_pint(&f, a.preset.as_deref())?;
@@ -446,6 +442,37 @@ fn rewrite(code: &[u8], path: &str, unknown: &mut Vec<(String, String)>) -> Opti
 
 fn rel(root: &Path, p: &Path) -> String {
     p.strip_prefix(root).unwrap_or(p).display().to_string()
+}
+
+/// A `.php-cs-fixer.php`'s rules, read through the project's own PHP-CS-Fixer (the config is PHP code and may register
+/// custom fixers). Migrate is the only place Pun runs PHP, and only to read the old config.
+fn php_cs_fixer_rules(
+    root: &Path,
+    config: &Path,
+) -> Result<serde_json::Map<String, serde_json::Value>> {
+    if !root.join("vendor/friendsofphp/php-cs-fixer").is_dir() {
+        bail!(
+            "no vendor/friendsofphp/php-cs-fixer: run `composer install` so Pun can read the config"
+        );
+    }
+    let out = std::process::Command::new("php")
+        // Startup warnings (a broken php.ini) go to stderr, off the JSON.
+        .args([
+            "-d",
+            "display_errors=stderr",
+            "-r",
+            include_str!("php_cs_fixer_rules.php"),
+            "--",
+        ])
+        .arg(root.join("vendor/autoload.php"))
+        .arg(config)
+        .current_dir(root)
+        .output()
+        .context("reading .php-cs-fixer.php needs `php` on PATH")?;
+    if !out.status.success() {
+        bail!("{}", String::from_utf8_lossy(&out.stdout));
+    }
+    Ok(serde_json::from_slice(&out.stdout)?)
 }
 
 #[cfg(test)]

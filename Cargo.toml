@@ -32,7 +32,6 @@ mago-linter = "=1.57.0"
 mago-names = "=1.57.0"
 mago-reporting = "=1.57.0"
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
-pun-delegate = { path = "crates/pun-delegate", package = "punphp-delegate" }
 notify = "8"
 pun-phpstan = { path = "crates/pun-phpstan", package = "punphp-phpstan" }
 indexmap = "2"

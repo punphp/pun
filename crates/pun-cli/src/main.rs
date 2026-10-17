@@ -168,12 +168,9 @@ pub struct PunArgs {
     /// Read code from stdin (Pun); `--stdin-filename` gives it a path for exclusion rules.
     #[arg(long)]
     stdin: bool,
-    /// Print which rules run natively and which are delegated to PHP-CS-Fixer (to stderr).
+    /// Print the fixers the run applies, in priority order (to stderr).
     #[arg(long)]
     explain: bool,
-    /// Run only Pun's native fixers: skip (and list) rules that would be delegated to PHP.
-    #[arg(long)]
-    native_only: bool,
     /// Check every file, ignoring and not writing the cache (Pun).
     #[arg(long)]
     no_cache: bool,

@@ -19,52 +19,22 @@ pub(crate) enum Stage {
     Check(bool),
 }
 
-pub(crate) enum Engine {
-    Native(Pipeline),
-    /// Every file through real PHP-CS-Fixer (pun-delegate), with the enabled rules Pun hasn't ported.
-    Delegate(pun_delegate::Delegate, Vec<String>),
-}
-
 type Run = Result<Option<(Vec<u8>, Vec<&'static str>)>, LintError>;
 
-impl Engine {
-    /// The outer error aborts the run (a dead PHP worker, PHP-CS-Fixer's own run-level exceptions).
-    fn run(&self, file: &Path, code: &[u8]) -> Result<Run> {
-        Ok(match self {
-            Engine::Native(p) => {
-                let r = p.run(file, code);
-                // Runner::fixFile analyses annotations after linting the input, before any fixer runs.
-                if !matches!(
-                    r,
-                    Err(LintError {
-                        after_fix: false,
-                        ..
-                    })
-                ) {
-                    p.check_annotations(file, code)?;
-                }
-                r.map(|f| f.map(|f| (f.code, f.applied)))
-            }
-            // Linting stays native (TokenizerLinter's messages), as on the native path.
-            Engine::Delegate(d, _) => match pun_format::lint(code) {
-                Err(e) => Err(e),
-                Ok(()) => match d.fix(file, code, &pun_format::pun_ignored(code))? {
-                    pun_delegate::Outcome::Unchanged => Ok(None),
-                    pun_delegate::Outcome::Failed(message) => Err(LintError {
-                        message,
-                        after_fix: true,
-                    }),
-                    pun_delegate::Outcome::Fixed(new, applied) => match pun_format::lint(&new) {
-                        Ok(()) => Ok(Some((new, applied))),
-                        Err(e) => Err(LintError {
-                            after_fix: true,
-                            ..e
-                        }),
-                    },
-                },
-            },
+/// One file through the pipeline. The outer error aborts the run (a malformed `@php-cs-fixer-ignore` annotation).
+fn run_file(p: &Pipeline, file: &Path, code: &[u8]) -> Result<Run> {
+    let r = p.run(file, code);
+    // Runner::fixFile analyses annotations after linting the input, before any fixer runs.
+    if !matches!(
+        r,
+        Err(LintError {
+            after_fix: false,
+            ..
         })
+    ) {
+        p.check_annotations(file, code)?;
     }
+    Ok(r.map(|f| f.map(|f| (f.code, f.applied))))
 }
 
 pub(crate) fn load_config(a: &FormatArgs, root: &Path) -> Result<Config> {
@@ -80,17 +50,27 @@ pub(crate) fn load_config(a: &FormatArgs, root: &Path) -> Result<Config> {
 pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     let root = root()?;
     // Config errors are one line (on stderr), not a Pint box: Pint never reads pun.toml.
+    let config_error = |e: &str, code: u8| -> Result<u8> {
+        if crate::agent::enabled() {
+            print!("{}", crate::agent::error(e));
+        } else {
+            eprintln!("pun: {e}");
+        }
+        Ok(code)
+    };
     let mut cfg = match load_config(&a, &root) {
         Ok(cfg) => cfg,
-        Err(e) if crate::agent::enabled() => {
-            print!("{}", crate::agent::error(&format!("{e:#}")));
-            return Ok(1);
-        }
-        Err(e) => {
-            eprintln!("pun: {e:#}");
-            return Ok(1);
-        }
+        Err(e) => return config_error(&format!("{e:#}"), 1),
     };
+    // No PHP fallback: a rule without a native fixer, format or lint, stops every command (exit 2, Pun can't run).
+    let every: Vec<_> = (cfg.rules.iter().cloned())
+        .chain(cfg.lint.iter().map(|(r, _)| r.clone()))
+        .collect();
+    pun_fixers::analyzers::active_preset::set(&cfg.preset);
+    let unported = Pipeline::new(&every, &pun_fixers::all)?.not_ported;
+    if !unported.is_empty() {
+        return config_error(&unported_error(&a, &cfg, &unported), 2);
+    }
     // `--fix`: the lint rules it doesn't apply (no `fix = "apply"`) still run on the result, reported as remaining.
     let pending: Vec<_> = match stage {
         Stage::Lint(true) | Stage::Check(true) => (cfg.lint.iter())
@@ -121,19 +101,15 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     }
     let pending_engine = (!pending.is_empty())
         .then(|| {
-            engine(
-                &a,
-                &Config {
-                    rules: pending.clone(),
-                    ..cfg.clone()
-                },
-                &root,
-            )
+            pipeline(&Config {
+                rules: pending.clone(),
+                ..cfg.clone()
+            })
         })
         .transpose()?;
-    let engine = engine(&a, &cfg, &root)?;
-    if a.pun.explain || a.verbose > 0 {
-        explain(&cfg, &engine, a.pun.explain);
+    let engine = pipeline(&cfg)?;
+    if a.pun.explain {
+        explain(&cfg, &engine);
     }
 
     let stdin_path = a.paths.first().is_some_and(|p| p.as_os_str() == "-");
@@ -176,9 +152,6 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             .map(|p| {
                 let mut sig = cache::signature(&cfg);
                 sig["pending"] = pending.iter().map(|r| r.name.clone()).collect();
-                if let Engine::Delegate(d, _) = &engine {
-                    sig["delegate"] = d.signature();
-                }
                 cache::Cache::load(p, sig)
             })
     };
@@ -218,7 +191,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
             return Ok((r, hash, true, None));
         }
         let mut clean = None;
-        let outcome = match isolated(|| engine.run(path, &code)) {
+        let outcome = match isolated(|| run_file(&engine, path, &code)) {
             Ok(run) => run?,
             Err(message) => {
                 r.status = Status::Exception;
@@ -273,7 +246,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         };
         // A pending rule's failure (lint error, panic) is not reported: the file was already fixed and checked.
         let left = match (&pending_engine, &result) {
-            (Some(e), Some(now)) => isolated(|| e.run(path, now))
+            (Some(e), Some(now)) => isolated(|| run_file(e, path, now))
                 .ok()
                 .transpose()?
                 .and_then(Result::ok)
@@ -308,7 +281,7 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         }
         out
     } else {
-        // Pint's `--max-processes` (read with intval()) caps the threads, and with them the PHP and Prettier workers.
+        // Pint's `--max-processes` (read with intval()) caps the threads, and with them the Prettier workers.
         let threads = a
             .max_processes
             .as_deref()
@@ -365,93 +338,58 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         || results.iter().any(FileResult::is_error)
         || !remaining.is_empty();
 
-    if let Engine::Native(p) = &engine {
-        eprint!("{}", p.profile_report());
-        if !p.not_ported.is_empty() {
-            eprintln!(
-                "pun: --native-only skipped {} rules that are not ported: {}",
-                p.not_ported.len(),
-                p.not_ported.join(", ")
-            );
-        }
-    }
+    eprint!("{}", engine.profile_report());
     Ok(code.max(u8::from(failed)))
 }
 
-fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine> {
+fn pipeline(cfg: &Config) -> Result<Pipeline> {
     pun_fixers::analyzers::active_preset::set(&cfg.preset);
     let mut p = Pipeline::new(&cfg.rules, &pun_fixers::all)?;
     // PUN_PROFILE=1: per-stage timings on stderr after the run.
     if std::env::var_os("PUN_PROFILE").is_some() {
         p.enable_profile();
     }
-    Ok(if p.not_ported.is_empty() || a.pun.native_only {
-        Engine::Native(p)
-    } else {
-        // Pint's Config gets the rules as a map (`true` for no options).
-        let rules = cfg
-            .rules
-            .iter()
-            .map(|r| {
-                let v = if r.options.is_null() {
-                    true.into()
-                } else {
-                    r.options.clone()
-                };
-                (r.name.clone(), v)
-            })
-            .collect();
-        // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
-        let d = pun_delegate::Delegate::start(
-            root,
-            pun_delegate::Source::Rules(serde_json::Value::Object(rules)),
-            std::env::var_os("PUN_PINT").map(PathBuf::from),
-        )?;
-        Engine::Delegate(d, p.not_ported)
-    })
+    Ok(p)
 }
 
-/// `full` (--explain): the rule list too; `-v` prints only why a run is delegated.
-fn explain(cfg: &Config, engine: &Engine, full: bool) {
+/// The rules a run can't apply, under their Pun IDs (upstream names for sets the preset doesn't expand), and where
+/// they come from: pun.toml, or the `--preset` / `--no-config` run's preset.
+fn unported_error(a: &FormatArgs, cfg: &Config, names: &[String]) -> String {
+    let ids: Vec<String> = (names.iter())
+        .map(|n| format!("`{}`", pun_config::rule_of(n).unwrap_or(n)))
+        .collect();
+    let toml = cfg
+        .root
+        .join(a.config.as_deref().unwrap_or(Path::new("pun.toml")));
+    let from = if cfg.sources.contains(&toml) {
+        toml.display().to_string()
+    } else {
+        format!("preset {}", cfg.preset)
+    };
+    let rules = if ids.len() == 1 { "rule" } else { "rules" };
+    format!(
+        "{from}: {rules} not supported by Pun yet: {}",
+        ids.join(", ")
+    )
+}
+
+/// `--explain`: the run's fixers in priority order, on stderr.
+fn explain(cfg: &Config, p: &Pipeline) {
     let mut err = std::io::stderr().lock();
-    match engine {
-        Engine::Delegate(d, not_ported) => {
-            let why = format!(
-                "{} of {} rules are not ported ({})",
-                not_ported.len(),
-                cfg.rules.len(),
-                not_ported.join(", ")
-            );
-            let _ = writeln!(
-                err,
-                "delegate: {why}, so every file runs through PHP-CS-Fixer in `php` ({})",
-                d.runtime.display()
-            );
-            for (name, priority) in d.fixers.iter().filter(|_| full) {
-                let _ = writeln!(err, "  delegated   {priority:>4}  {name}");
-            }
-        }
-        _ if !full => {}
-        Engine::Native(p) => {
-            let _ = writeln!(
-                err,
-                "native (PHP {}), preset {}, {} rules",
-                cfg.php,
-                cfg.preset,
-                cfg.rules.len()
-            );
-            for f in p.fixers() {
-                let _ = writeln!(err, "  native      {:>4}  {}", f.priority(), f.name());
-            }
-            for n in &p.not_ported {
-                let _ = writeln!(err, "  skipped           {n}");
-            }
-        }
+    let _ = writeln!(
+        err,
+        "native (PHP {}), preset {}, {} rules",
+        cfg.php,
+        cfg.preset,
+        cfg.rules.len()
+    );
+    for f in p.fixers() {
+        let _ = writeln!(err, "  native      {:>4}  {}", f.priority(), f.name());
     }
 }
 
 /// DefaultCommand::fixStdinInput: excluded paths echo the input; otherwise print the fixed code.
-fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine) -> Result<u8> {
+fn stdin(a: &FormatArgs, cfg: &Config, engine: &Pipeline) -> Result<u8> {
     let mut code = Vec::new();
     std::io::stdin().read_to_end(&mut code)?;
     let mut out = std::io::stdout().lock();
@@ -473,7 +411,7 @@ fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine) -> Result<u8> {
 /// reports syntax errors through its unshown JSON report and echoes the input).
 fn fix_text(
     cfg: &Config,
-    engine: &Engine,
+    engine: &Pipeline,
     path: &Path,
     check_excluded: bool,
     code: &[u8],
@@ -482,7 +420,7 @@ fn fix_text(
         return Ok(None);
     }
     // A fixer's exception: Pint reports it in the unshown report too.
-    let Ok(run) = isolated(|| engine.run(path, code)) else {
+    let Ok(run) = isolated(|| run_file(engine, path, code)) else {
         return Ok(None);
     };
     Ok(run?.ok().flatten().map(|(new, _)| new))

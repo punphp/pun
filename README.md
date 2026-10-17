@@ -88,10 +88,9 @@ A clean run prints only the summary line (`pun format: pass (412 checked, 0.21s)
 (`--format=agent` is Pint's JSON). The override order is `--agent` / `--no-agent`, then `PUN_AGENT=1|0`, then PAO's
 `PAO_DISABLE` / `PAO_FORCE`, then detection. Without an agent the output is unchanged.
 
-**Rules Pun hasn't ported.** If an enabled rule has no native port, Pun runs every file through the real PHP-CS-Fixer in
-long-lived `php` workers, using the project's `vendor/laravel/pint` (or `vendor/friendsofphp/php-cs-fixer`, or a Pint
-PHAR in `$PUN_PINT`), so output stays identical to Pint while discovery, caching and reporting stay Pun's. `--explain`
-(or `-v`) says why; `--native-only` skips those rules and lists them. Details: [context/reference/oracle.md](context/reference/oracle.md#delegate-mode).
+**Rules Pun hasn't ported.** Pun never runs PHP for a rule it lacks. A `pun.toml` that enables one stops `pun format`,
+`pun lint` and `pun check` with exit code 2 and a line naming the rule (`rule not supported by Pun yet: ...`). Remove
+it, or send a PR.
 
 **Extra rules.** Opt-in `Pun/` rules ported from Mago (Laravel and Pest idioms, redundant code, ...) are
 listed in [context/reference/mago-extras.md](context/reference/mago-extras.md). They are lint rules (`no-only`, `prefer-fake-helper`, ...)

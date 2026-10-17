@@ -52,39 +52,14 @@ that rule, configured with the options from the project's own effective rule lis
 project doesn't enable it), and passes it as `--config <file>` to pint and to `pun migrate`. The scoreboard
 is not touched in this mode.
 
-## Delegate mode
+## No delegate mode
 
-Milestone M1.4 (crate `pun-delegate`): rules Pun hasn't ported run through the real PHP-CS-Fixer so output stays
-byte-identical. `pun migrate` also reads a `.php-cs-fixer(.dist).php`'s resolved rules through it.
-
-- **Whole file, whole run.** PHP-CS-Fixer runs each enabled fixer once, by priority, on one token list, and unported
-  rules sit between native ones (laravel/framework's pint.json: 8 unported between priorities 27 and -41, natives from
-  100 to -100). Mixing per fixer means printing and re-lexing mid-run, which isn't provably identical (adjacent
-  whitespace tokens merge, transformer kinds are recomputed), and the cheap exact split (every delegated fixer runs
-  after every native one) doesn't hold there. So one unported rule sends every file of the run through PHP.
-  Discovery, the cache, linting (TokenizerLinter messages), reporting and exit codes stay Pun's.
-- **Process model.** A pool of long-lived `php -r` workers (one per thread that needs one), fed `path + code` on stdin;
-  each reply is unchanged, new code + applied fixers, or an error. The worker resolves fixers with PHP-CS-Fixer's own
-  `ConfigurationResolver` (rule validation and its messages, sets, `false` entries, custom fixers, whitespace config,
-  risky check, rule customisation policy) and mirrors `Runner::fixFile` (`@php-cs-fixer-ignore`, `supports` /
-  `isCandidate` for custom non-`AbstractFixer` fixers, code-hash comparison). Stray `echo` from fixers is discarded.
-- **Runtime.** System `php` (as for the oracle) plus the first of: `$PUN_PINT` (a Pint PHAR), the project's
-  `vendor/laravel/pint/builds/pint`, its `vendor/autoload.php` when it has `friendsofphp/php-cs-fixer`. A
-  `.php-cs-fixer.php` always loads the project's autoloader (its fixer classes). Output is that installed version's.
-  Upgrade path (PLAN "Delegate path"): embedded libphp and a pinned, checksum-verified Pint PHAR downloaded on first
-  use; only the runtime lookup and the spawn change, not the protocol.
-- **Config.** The workers get the run's resolved rule map (pun.toml's format rules, plus the lint rules for
-  `pun lint` / `pun check`, under the fixer names), with risky allowed and default whitespace, like Pint's preset Config.
-- **Flags.** `--explain`: the reason and every fixer that ran in PHP (`delegated`). `-v`: the reason only.
-  `--native-only`: native fixers only, skipped rules listed on stderr; not Pint-identical, exit code unaffected.
-- **Errors.** A fixer exception fails that file (Runner::processException). A dead worker, or an
-  `@php-cs-fixer-ignore` naming a rule that isn't enabled, aborts the run (Runner throws). Startup errors are
-  PHP-CS-Fixer's (`The rules contain unknown fixers: "x".`).
-- **Cache.** The signature adds the runtime (path, size, mtime), the `.php-cs-fixer.php` content and
-  `vendor/composer/installed.json`. Edits to project-local fixer classes aren't seen, as with PHP-CS-Fixer's own
-  cache: use `--no-cache`.
-- **Harness / fuzz.** `PUN_PINT=$PWD/.oracle/pint/builds/pint` for corpus checkouts without `vendor/`
-  (`scripts/fuzz-parity.sh` passes it through). Results in [scoreboard.md](../reports/scoreboard.md#delegate-mode).
+Delegate mode (crate `pun-delegate`, `--native-only`, `PUN_PINT`) ran rules Pun hadn't ported through the real
+PHP-CS-Fixer in `php` workers. It is removed (PLAN.md §2 "No PHP fallback"; in git history). A rule in `pun.toml`
+without a native fixer now stops `pun format`, `pun lint` and `pun check` with exit 2 and
+the line `<pun.toml>: rule not supported by Pun yet: <ids>`. System `php` stays the test oracle, and `pun migrate` runs it
+once to read a `.php-cs-fixer(.dist).php`'s resolved rules through the project's own PHP-CS-Fixer
+(`crates/pun-cli/src/php_cs_fixer_rules.php`).
 
 ## Fixtures
 

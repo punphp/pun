@@ -308,7 +308,7 @@ fn show() {
             "finder": {"in": [], "exclude": [], "notName": [], "notPath": []},
         })
     );
-    // A rule Pun only delegates (a set it can't expand) shows under its upstream name.
+    // A rule Pun can't run (a set it can't expand) shows under its upstream name.
     let c = load(&dir(&[]), &preset("per")).unwrap();
     assert_eq!(c.show()["format"]["rules"]["@PER-CS"], true);
 }
@@ -490,7 +490,7 @@ require-final-class = { fix = "apply" }
                 "@PER-CS: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
             ]
         );
-        // The per preset carries @PER-CS itself (Pun delegates it), so a per project migrates.
+        // The per preset carries @PER-CS itself, so a per project migrates (and its runs stop on it).
         assert!(pint(r#"{"preset":"per"}"#).unsupported.is_empty());
     }
 
