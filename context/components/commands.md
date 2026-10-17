@@ -66,39 +66,62 @@ Each command answers one question and makes one promise.
 
    *Recommend: (b). Pint parity is already proven on `pun check --fix`, so nothing is lost, and format then means only
    "how it looks". If you agree, I'll count exactly which of the 208 format rules move.*
-2. **One-time changes inside lint.** Rector mixes rules you keep on forever (`prefer-early-return`) with rules you run
-   once: version upgrades (Laravel 11 to 12, PHPUnit 10 to 11), configurable codemods (`rename-method` with a mapping),
-   and upgrades that are wrong to run twice (`no-cache-minutes` multiplies by 60). Today these are lint rules that no
-   tier turns on (59 rules), and PHP upgrades are `pun lint --set php85` (decided).
-   - **(a) Keep them in lint** as opt-in rules and sets.
-   - **(b) A separate `pun upgrade` command** for one-time changes (`pun upgrade laravel 12`, `pun upgrade php 8.5`,
-     `pun upgrade --rename OldClass=NewClass`). Lint keeps only rules that are always on.
-
-   *Recommend: (b). Lint then means "rules you keep on". Upgrades are something you run once and commit, like
-   `npx @next/codemod` or `ng update`.*
-   **How version upgrades should behave (proposal, 2026-10-17).** Today they are ordinary lint rules with a
-   `gated_by` field: 76 rules gated by the PHP version (27 fix code that breaks on that PHP, in `essential`; 44 use
-   newer syntax, in `recommended`), 33 gated by the locked Laravel version, and PHPUnit's removed APIs in `essential`
-   with the `phpunit` add-on. Nothing of it runs yet. The proposal splits them by when they run:
-   - **The version is read from the project, not written in config.** PHP comes from composer.json `require.php`;
-     Laravel, PHPUnit and Pest come from composer.lock. `[php] version` stays only as an override.
-   - **Lint is version-aware, every run.** It fixes code that breaks on the versions you're on, and suggests the newer
-     syntax those versions allow. It never uses a feature above your version. Raising `php` in composer.json and
-     running `pun lint --fix` is how you adopt PHP 8.5 syntax; no set is needed.
-   - **`pun upgrade <package> <version>` for major-version jumps** (`pun upgrade laravel 13`, `pun upgrade phpunit 12`,
-     `pun upgrade php 8.5`). It runs, once and in order, the upgrade steps between the version in composer.lock and the
-     target, shows the diff, writes it, and then tells you which composer.json constraint to bump. These rules are in no
-     tier, so lint never runs them.
-   - This replaces `pun lint --set php85` (DECISIONS.md), which could write PHP 8.5 code into a project that still runs
-     8.4.
+2. **One-time changes (version upgrades, codemods).** Answered: they stay in lint, as rule groups (no `pun upgrade`
+   command). See "Decisions".
 3. **Modernisation rules** (Rector's PHP sets as `prefer-*` rules, such as `prefer-match` and `prefer-readonly-property`)
-   keep code on the newest syntax for the configured PHP version. Should these stay in lint even if (2b) happens?
-   *Recommend: yes. They are ongoing ("use the newest form"), not one-time.*
+   keep code on the newest syntax for the configured PHP version. They stay in lint (follows from 2).
 4. **Lint reports without a fix** (`no-eval`, `no-debug-calls`, 68 rules). Should these stay in lint, or move to
    analyse because they only report?
    *Recommend: lint. The test is what a rule needs (one file vs the whole project), not whether it fixes. ESLint,
    Biome and Ruff all keep report-only rules in lint.*
 
+## 4. How `pun check` works
+
+`pun check` is the one command for CI, pre-commit and agents: lint, format and analyse in one process, reading and
+parsing each file once.
+
+**`pun check` (report only):**
+1. **Find files** with the `[format]` / `[lint]` / `[analyse]` paths, and read the versions from composer.json and
+   composer.lock.
+2. **Index pass (parallel).** Parse every file once into Mago's syntax tree and collect its classes, functions and
+   constants into one project index. Analyse needs this before it can check any file. Cached, so a warm run only
+   re-parses changed files.
+3. **Check pass (parallel, per file).** On the same parse: run the lint rules, run the format rules on the tokens (no
+   writes), and run analyse against the index.
+4. **Report.** One block per file, problems sorted by line, each tagged with its full rule ID and `[fix:safe]` /
+   `[fix:unsafe]` when lint can fix it. When analyse and lint report the same thing (the 18 linked pairs), only the
+   lint line prints. A file that only needs formatting prints one line.
+5. **Summary and exit code.** For example `3 files need formatting · 12 lint problems (9 fixable) · 2 analyse errors ·
+   214 files in 0.4 s`. The exit code is 1 if anything is at `error`, or anything needs formatting.
+
+**`pun check --fix`:**
+1. **Lint fixes**: safe fixes, plus rules with `fix = "apply"`, plus unsafe fixes with `--unsafe`. They run in a loop
+   until no rule has more to fix, because one fix can expose the next.
+2. **Format** the result, so whatever lint inserted gets the project's layout.
+3. **Write** each changed file once.
+4. **Analyse** the final code, re-indexing only the files that changed, and report what is left. Analyse never edits.
+5. **Report** what was fixed per file, then what remains, as in the report-only run.
+
+The order is lint, then format, then analyse, because each step works on the previous step's output. Lint changes code,
+format tidies it, and analyse checks what you will actually commit.
+
+**Pint parity.** On a project migrated from pint.json, `pun check --fix` writes the same bytes as `pint`. CS-Fixer's
+risky fixers stay token fixers and run inside step 2 in PHP-CS-Fixer's priority order, as they do today.
+
+**The single commands** stay for editors and for running one step: `pun format` on save, `pun lint --fix`, and
+`pun analyse` for PHPStan-style runs.
+
 ## Decisions
 
-None yet.
+Answered 2026-10-17 (Pushpak):
+
+- **One job per command.** format = how it looks, lint = a better way to write it, analyse = is it wrong. The three
+  questions in §2 decide where every rule goes.
+- **`pun check` runs lint (with fixes), format and analyse together** (§4).
+- **No `pun upgrade` command.** Version upgrades (PHP, Laravel, PHPUnit, Pest) and codemods are lint rules in their
+  own groups, named the same way as format rules (`group/name`).
+- **`pun migrate` must carry an old config over completely**: pint.json, .php-cs-fixer.php, rector.php and
+  phpstan.neon. Anything Pun doesn't support yet is named explicitly to the user, never dropped silently.
+- **No levels.** PHPStan's levels don't come over; rules are turned on by name and by presets.
+- **Every PHPStan core rule is supported natively.**
+- **Laravel support is built in.** Nothing to install or import, unlike Larastan or rector-laravel.

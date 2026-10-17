@@ -25,7 +25,12 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 - **pun.toml only.** Commands never read pint.json, .php-cs-fixer.php, phpstan.neon or rector.php. Without pun.toml:
   "No pun.toml found. Run `pun migrate`." The old-config readers live only inside `pun migrate` (and the harness). The
   `pint` argv[0] alias is gone; `pun format` output stays Pint-identical.
-- **`pun migrate` means config migration**, not code upgrades. PHP upgrades live in `pun lint --set php85`.
+- **`pun migrate` means config migration**, not code upgrades. It must carry pint.json, .php-cs-fixer.php, rector.php and
+  phpstan.neon over completely, and name anything Pun doesn't support yet instead of dropping it (2026-10-17).
+- **One job per command** (components/commands.md): format = how it looks, lint = a better way to write it, analyse =
+  is it wrong. `pun check` runs lint with fixes, then format, then analyse (2026-10-17).
+- **No `pun upgrade` command.** Version upgrades (PHP, Laravel, PHPUnit, Pest) and codemods are lint rules in their own
+  groups (2026-10-17). This replaces the old `pun lint --set php85`.
   PHPDoc type tags (`@phpstan-param` ...) are kept by default; `pun migrate --phpdoc` rewrites them (opt-in, apps only).
 - **Pun's own rule names** are `group/name` in kebab-case, full ID `<command>/<group>/<name>` (`format/imports/ordered`),
   with one shared group list across format, lint and analyse (2026-10-17, components/format.md §9). No aliases: renames
@@ -33,6 +38,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
   crates/pun-config/rules/mapping.toml (used by migrate, `pun explain` and the docs).
 - **No levels.** Presets are tiers: `essential` < `recommended` (default) < `strict` < `pedantic`, cumulative, one tier
   for lint + analyse; add-ons `laravel` / `pest` / `phpunit`.
+- **Laravel support is built in** (2026-10-17): nothing to install, unlike Larastan or rector-laravel. Every PHPStan
+  core rule is supported natively.
 - **Agent output:** under a coding agent every command prints compact `path:line:col rule message` lines, not JSON.
 
 ## Format (components/format.md, 2026-10-17)
