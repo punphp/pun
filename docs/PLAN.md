@@ -42,26 +42,28 @@ So Phase 2 is `pun analyse` and Phase 3 is `pun lint`. `pun lint --fix` does not
 Long term a project has one file:
 
 ```toml
+preset = "recommended"        # lint + analyse tier: essential / recommended / strict / pedantic (docs/RULES.md §5)
+laravel = true                # add-ons: laravel (rector-laravel, Larastan), pest, phpunit
+
 [php]
 version = "8.4"
 
-[format]                      # from pint.json / .php-cs-fixer.php
+[format]                      # Pint preset; tiers don't apply to format
 preset = "laravel"
-rules.ordered_imports = { sort_algorithm = "alpha" }
+rules.ordered-imports = { sort-algorithm = "alpha" }
 
-[lint]                        # from rector.php
-sets = ["php84", "laravel-12", "dead-code"]
-rules = ["early-return"]
+[lint]
+rules.prefer-early-return = "error"
+rules.no-loose-comparison = "off"
 
-[analyse]                     # from phpstan.neon; explicit rules, no levels
+[analyse]
+preset = "strict"             # per-command override of the tier
 paths = ["app", "tests"]
 baseline = "pun-baseline.toml"
-laravel = true                # Larastan
-rules.undefined-method = "error"
-rules.mixed-argument = "off"
+rules.missing-iterable-value-type = "off"
 ```
 
-- **No levels.** `pun migrate` expands a PHPStan level (plus strict-rules, deprecation-rules and Larastan) into the explicit list of underlying rules and their options in pun.toml, not a level or preset name. After that, rules turn on and off one by one, the way mago.toml works.
+- **No levels.** Hand-written configs pick a tier (`preset`) plus per-rule overrides. `pun migrate` expands a PHPStan level (plus strict-rules, deprecation-rules and Larastan) into the explicit list of underlying rules and their options in pun.toml (`preset = "none"`), not a level or tier. `pun migrate --preset` writes the closest tier plus overrides instead, resolving to the same rules. After that, rules turn on and off one by one, the way mago.toml works.
 - **Exact parity is the migration safety net, not the end state.** Pun matches Pint, PHPStan and Rector exactly so a project can switch with zero diff. After migration Pun is free to use its own rule names, messages and rule combinations.
 - **Compat read stays.** Without pun.toml, Pun keeps reading pint.json, phpstan.neon and rector.php directly so trying Pun needs no changes, and prints a one-line hint to run `pun migrate`. *(Proposed; confirm.)*
 - **Rule names.** `format.*`, `lint.*`, `analyse.*` and `mago.*`, with Pun's own kebab-case names (`analyse.undefined-method` rather than `method.notFound`). `pun explain <rule>` shows the upstream tool's name and docs. *(Proposed; confirm.)*

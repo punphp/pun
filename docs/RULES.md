@@ -203,48 +203,154 @@ Groups are data used for docs, `pun explain`, and selecting rules in config. The
   and `reportMagicMethods` → `undefined-method = { magic = true }`. Levels 7–10 change how every type rule compares types,
   so they become four named `[analyse]` switches: `union-types` (L7), `nullables` (L8), `explicit-mixed` (L9) and
   `implicit-mixed` (L10). They are named settings, not a ladder.
-- **`pun migrate` writes the underlying rules, not a level or a preset.** For `level: 6` it lists every analyse rule PHPStan level 6 enables, each with its option values. Strict-rules, deprecation-rules and Larastan add their rules the same way, and the needed type switches are set. So pun.toml shows exactly what runs, and a project tunes it rule by rule afterwards. Presets (§5) are for new projects and for `pun.toml` written by hand.
+- **`pun migrate` writes the underlying rules, not a level or a preset.** For `level: 6` it lists every analyse rule PHPStan level 6 enables, each with its option values. Strict-rules, deprecation-rules and Larastan add their rules the same way, and the needed type switches are set. So pun.toml shows exactly what runs, and a project tunes it rule by rule afterwards. Tiers (§5) are for new projects and for `pun.toml` written by hand; `pun migrate --preset` writes the closest tier plus overrides instead, with the same resolved rules.
 
-## 5. Presets
+## 5. Presets: four tiers plus add-ons
 
-Presets are named, explicit lists that compose. `strict` includes `recommended`; `laravel` adds to whatever else is on.
-Each rule's `presets` field in the mapping is the source of truth.
+Pun has no numbered levels. A preset is one of four **tiers**, named by intent, from gentle to maximal. Each tier
+includes the one below it. One tier selects rules for `pun lint` and `pun analyse` together. Format is separate: it
+keeps Pint's presets (`laravel`, `psr12`, `per`, `symfony`, `empty`), and tiers never touch it.
 
-| Preset | format | lint | analyse |
+| Tier | Intent | Examples | lint (core / with all add-ons) | analyse (core / with all add-ons) |
+| --- | --- | --- | ---: | ---: |
+| `essential` | Definite bugs only: code that crashes or misbehaves at runtime. Near-zero false positives, so it can go on a legacy codebase on day one | `undefined-class`, `undefined-method`, `undefined-variable`, `argument-count`, `method-call-on-non-object`, `invalid-inheritance`, `readonly-property-write`, `php-version-too-low`; lint: removed PHP APIs (`no-each`, `no-create-function`, `require-implode-separator`, gated by `[php] version`), `no-missing-format-argument`, `no-unsafe-finally`, `no-tainted-data`; removed PHPUnit APIs (`no-at-matcher`, `prefer-create-mock`) | 35 / 53 | 91 / 96 |
+| `recommended` | **The default for new projects.** Adds likely bugs, dead and unused code, redundant checks, deprecated usage, safe modernisation (Rector's php sets as `prefer-*` rules, gated by `[php] version`) and, with `laravel = true`, Laravel correctness | `unused-private-method`, `condition-always-true`, `return-type`, `argument-type`, `deprecated-method`, `phpdoc-type-mismatch`; lint: the dead-code group, `no-redundant-nullsafe`, `prefer-match`, `prefer-readonly-property`, `no-eval`, `no-debug-calls`, `no-unused-ignore`; Larastan's `no-env-outside-config`, `redundant-collection-call` | 171 / 219 | 217 / 231 |
+| `strict` | Adds type and strictness policy: required native types, strict comparison and `strict_types`, the strict-rules bans, privatisation, simplifying code-quality rewrites and early-return style. Turns on the `union-types` and `nullables` switches | `missing-param-type`, `missing-return-type`, `missing-iterable-value-type`, `non-boolean-condition`; lint: `add-return-type`, `add-param-type`, `no-loose-comparison`, `require-strict-types`, `require-strict-param`, `no-empty`, `no-short-ternary`, `prefer-early-return`, `prefer-property-over-local-getter`, `no-nested-ternary`; most rector-laravel code-quality and PHPUnit code-quality rules | 257 / 376 | 232 / 250 |
+| `pedantic` | Everything Pun has that is not opt-in only and does not contradict another rule. Turns on `explicit-mixed` and `implicit-mixed` | `missing-throws`, `internal-symbol-access`; lint: `require-naming-convention`, `no-excessive-complexity` and the other metric limits, `require-final-class`, `prefer-arrow-function`, `prefer-static-closure`, `require-qualified-native-function`, `no-else-clause`, `require-phpdoc` | 328 / 483 | 234 / 254 |
+
+Counts are cumulative rules enabled. "Core" is with no add-on on; "with all add-ons" adds `laravel`, `pest` and
+`phpunit`. They are printed by `scripts/check-rule-mapping.py`, so this table can be checked against the data. Not in any
+tier (opt-in only, `tier = "none"`): 59 lint rules and 1 analyse rule. These are the configurable codemods in the
+`refactor` group (`rename-*`, `replace-*`, `remove-*`, `change-*`, `wrap-*`, `add-argument`, plus
+`no-restricted-functions`, which does nothing until configured), one-time upgrade codemods that are wrong to re-run
+(`no-cache-minutes` multiplies by 60; `prefer-class-factories`, `prefer-cashier-stripe`, Lumen routes), the
+architectural choices in rector-laravel's static-to-injection set (`prefer-constructor-injection`,
+`prefer-facade-over-app`, `prefer-request-validate`), `analyse.prefixed-class-reference` (scoped PHARs only), and the
+losing side of each conflict below.
+
+**Where a rule's tier comes from.** The default is set by its group: correctness and undefined → `essential`;
+suspicious, dead-code, deprecated, security and modernize → `recommended`; types and strict → `strict`; style,
+naming, complexity limits and performance → `pedantic`; refactor → `none`. Rules are then moved where the default is
+wrong. A rule moves down to `essential` when it reports code that fails on the configured PHP, PHPUnit or Laravel
+version (`no-each`, `no-at-matcher`, `prefer-geometry-column`), and up when its group is right but its check depends
+on PHPDoc, a deprecation, or a heuristic (`invalid-generics`, `required-after-optional` and `unhandled-match` are
+correctness rules in `recommended`). Lint `complexity` splits three ways: redundant-code rewrites go to `recommended`,
+Rector code-quality simplifications to `strict`, and metric limits to `pedantic`. Each rule's `tier` field in the
+mapping is the source of truth.
+
+**Conflicts.** No tier enables both sides of a `[meta] conflicts` pair; the checker enforces it. The side chosen for
+each pair:
+
+| Pair | In the tiers | Opt-in only | Why |
 | --- | --- | --- | --- |
-| `laravel` / `psr12` / `per` / `symfony` / `empty` | Pint's presets, minus their risky rules (laravel 126 of 130) | - | - |
-| `recommended` | - | 195 rules: Rector dead-code, code-quality, early-return and php-version sets (`modernize`, gated by `[php] version`); Mago correctness/safety/security reports; safe Pun rules; `no-unused-ignore` | 211 rules: everything PHPStan levels 0–5 report, plus `invalid-ignore-comment` |
-| `strict` | - | +69: type-declaration, privatization, coding-style, PHPUnit code-quality; `no-loose-comparison`, `require-strict-param`, `require-strict-types`; the strict-rules bans (`no-empty`, `no-short-ternary`, `no-dynamic-name`, …) | +19 rules (level 6 `missing-*-type`, strict-rules type checks, deprecation-rules) and all four type switches on, which equals PHPStan `max` + strict-rules + deprecation-rules |
-| `laravel` | - | 95: rector-laravel code-quality/collection/testing/type-declarations sets, plus version sets gated by the locked laravel/framework; Pest coding-style; Mago Laravel/Pest rules; Pun's Laravel/Pest rules; Pint-laravel's 4 risky rules | 20 Larastan rules |
+| `no-short-ternary` / `prefer-short-ternary` | `no-short-ternary` (strict) | `prefer-short-ternary` | strict-rules bans `?:`; Pint does not enable `ternary_to_elvis_operator` |
+| `prefer-chained-expect` / `no-and-expectation` | `prefer-chained-expect` (strict, pest) | `no-and-expectation` | pest-plugin-rector's coding-style set ships the chaining rule |
+| `prefer-named-data-provider-keys` / `no-named-data-provider-keys` | `prefer-named-data-provider-keys` (pedantic, phpunit) | `no-named-data-provider-keys` | PHPUnit 11+ passes string keys as named arguments |
+| `format.simplified-null-return` / `lint.require-consistent-return` | `require-consistent-return` (strict) | format rule is in no Pint preset | Tiers do not reach format |
+| `format.single-import-per-statement` / `format.group-import` | - | - | Format only; Pint presets pick `single-import-per-statement` |
+
+**PHPStan levels, for orientation.** A tier is not a level, and `pun migrate` never converts a level to a tier (§4). The
+closest tier for each level (analyse only; rule options such as level 1's `maybe` and `magic` stay rule options):
+
+| PHPStan | Closest Pun tier | Notes |
+| --- | --- | --- |
+| level 0–1 | `essential` | 88 of the 126 rules level 0 reports. The rest are PHPDoc and deprecation checks, which are in `recommended` |
+| level 2–5 | `recommended` | PHPDoc validity (2), return and property types (3), dead code and always-true conditions (4), argument types (5) |
+| level 6 | `strict` | `missing-*-type` |
+| level 7–8 | `strict` | `union-types`, `nullables` switches |
+| level 9–10 | `pedantic` | `explicit-mixed`, `implicit-mixed` switches |
+| + phpstan-strict-rules | `strict` | Syntax-only bans are lint rules (`no-loose-comparison`, `no-empty`, …) |
+| + phpstan-deprecation-rules | `recommended` | |
+| + Larastan | `laravel` add-on | Undefined relations, console arguments and model appends are `essential`; most of the rest `recommended`; Octane, auth-in-request-scope and config-type checks `strict` |
+
+For lint the nearest Rector analogy: the dead-code and php sets ≈ `recommended`; code-quality, type-declaration,
+early-return, privatization, strict-rules and most of coding-style ≈ `strict`; naming and Mago's metric and style
+rules ≈ `pedantic`.
+
+### Add-ons
+
+Three add-ons combine with any tier: `laravel` (rector-laravel, Larastan, Mago's Laravel rules, Pun's Laravel rules),
+`pest` (pest-plugin-rector, Mago/Pun Pest rules) and `phpunit` (rector-phpunit, CS-Fixer `php_unit_*`). An add-on rule
+lists its add-on in `presets` and still has a tier. It runs when its add-on is on **and** the selected tier includes its
+tier. So `recommended` + `laravel` gives Laravel correctness and dead-code rules (`undefined-relation`,
+`no-useless-with-call`, `no-request-all`), and `strict` + `laravel` adds the rector-laravel code-quality rewrites.
+Gated Laravel rules (`gated_by = "laravel-version"`) also need the locked laravel/framework version. Add-ons are
+switched on in pun.toml (`laravel = true`); `pun init` sets them from composer.json. The four risky rules Pint's
+laravel preset runs (`no-alias-function`, `no-unreachable-default-argument-value`, `require-ordered-traits`,
+`require-protected-setup`) are not in the `laravel` add-on (`require-protected-setup` is a `phpunit` rule). They are tiered like any other rule, and migrate writes them
+explicitly for projects that ran Pint (§1).
+
+### Composition
 
 ```toml
+preset = "recommended"                   # tier for lint and analyse; omitted = "recommended"
+laravel = true                           # add-ons: laravel, pest, phpunit
+pest = true
+
 [php]
 version = "8.4"
 
 [format]
-preset = "laravel"                       # one Pint preset; format rules are on/off + options
+preset = "laravel"                       # a Pint preset; tiers do not apply to format
 rules.ordered-imports = { sort-algorithm = "alpha" }
 
 [lint]
-presets = ["recommended", "laravel"]
-rules.prefer-early-return = "error"             # severity
+rules.prefer-early-return = "error"      # severity, on top of the tier
 rules.no-loose-comparison = { fix = "apply" }
 rules.dead-code = "off"                  # a group name works where a rule name does
 
 [analyse]
-presets = ["recommended", "laravel"]
-union-types = true
-nullables = true
-rules.undefined-method = { magic = true }
+preset = "strict"                        # per-command override of the tier
+union-types = false                      # switches override the tier's default
 rules.missing-iterable-value-type = "off"
+rules.undefined-method = { magic = true }
 ```
 
-Rector sets map onto groups. Migrate writes `rules.<group> = "on"` plus explicit `"off"` entries for the group members
-the set did not contain. When the set and the group differ too much, it writes the explicit rule list instead, so migration
-day is exact in both cases. Pinkary's rector.php (dead-code, code-quality, type-declarations, privatization, early-return,
-Pest coding-style, php sets, skip `AddOverrideAttributeToOverriddenMethodsRector`) becomes those groups (`dead-code`,
-`complexity`, `types`, `modernize`, …) with `off` entries for non-members, plus `rules.add-override-attribute = "off"`.
-Rules from those sets that are now format rules (e.g. `RemoveAlwaysElse` → `format.no-useless-else`) are added to `[format]`.
+Resolution, per command:
+
+1. **Tier.** `[lint] preset` / `[analyse] preset`, else the top-level `preset`, else `recommended`. `preset = "none"`
+   enables nothing, so only the rules listed in the file run (what `pun migrate` writes).
+2. **Add-ons.** Add the rules of each add-on that is on, up to the same tier. `[lint] laravel = false` overrides the
+   top-level value for one command.
+3. **Gates.** Drop rules whose `gated_by` does not hold for `[php] version` or the locked Laravel version.
+4. **Switches.** `[analyse]` type switches default to the tier's (`strict`: `union-types`, `nullables`; `pedantic`:
+   also `explicit-mixed`, `implicit-mixed`) and can be set either way.
+5. **Overrides,** Biome/ESLint style: group entries first, then rule entries, so `rules.dead-code = "off"` plus
+   `rules.no-unused-assignment = "warn"` keeps that one rule. A value is a severity (`"error"`, `"warn"`, `"info"`), `"on"`
+   (default severity), `"off"`, or a table of options plus `severity` / `fix`. Turning on an opt-in-only rule works
+   the same way.
+6. **Conflicts.** `pun config check` refuses a result that has both sides of a `[meta] conflicts` pair, including a
+   format rule from the Pint preset against a lint rule. A tier on its own never does.
+
+The data: `tier` on every lint and analyse rule, add-on names in `presets`, and `[meta] tiers`, `addons`,
+`tier_switches` in the mapping.
+
+### Migrate and tiers
+
+`pun migrate` writes `preset = "none"` and the explicit rule list (§4), so pun.toml shows exactly what runs. `pun migrate
+--preset` writes a short config instead: the tier and add-ons closest to the resolved rule set, plus overrides for the
+difference. The algorithm:
+
+1. Resolve the upstream configs to the exact rule set R per command (the same set plain `pun migrate` writes), with
+   options and switches.
+2. For each tier T and add-on combination A, compute the diff between R and `resolve(T, A)`. Pick the pair with the
+   fewest override lines. On a tie, pick the lower tier and fewer add-ons. Lint and analyse are chosen separately; when
+   they pick the same tier it is written once at the top level.
+3. Write `preset = T`, the add-ons, `rules.<x> = "off"` for each rule in the tier but not in R, `rules.<y> = "on"` (or its
+   options table) for each rule in R but not in the tier, and every switch whose value differs from the tier default.
+4. Resolve the written file again and compare it with R, rule by rule and option by option. Any difference is an
+   error: migrate writes nothing and prints the diff. The short form must be equivalent, never approximately equal.
+
+Rector sets map onto groups the same way in both modes. A set becomes `rules.<group> = "on"` plus `"off"` entries for
+the group members the set does not contain, or the explicit rule list when the set and the group differ too much.
+Pinkary's rector.php (dead-code, code-quality, type-declarations, privatization, early-return, Pest coding-style, php
+sets, skip `AddOverrideAttributeToOverriddenMethodsRector`) becomes those groups (`dead-code`, `complexity`, `types`,
+`modernize`, …) with `off` entries for non-members, plus `rules.add-override-attribute = "off"`. Rules from those
+sets that are now format rules (e.g. `RemoveAlwaysElse` → `format.no-useless-else`) are added to `[format]`.
+
+**Names.** `recommended` and `strict` come from ESLint and typescript-eslint (`recommended`, `strict`) and Biome
+(`recommended`). `pedantic` comes from Clippy, where it is the opt-in group that is noisy on purpose. `essential` is
+Pun's: "only what is certainly broken", for adopting Pun on old code.
 
 ## 6. `pun check`: recommended, yes
 
@@ -285,10 +391,10 @@ Rules from those sets that are now format rules (e.g. `RemoveAlwaysElse` → `fo
 
 ```toml
 [rules.lint]
-no-loose-comparison = { group = "suspicious", fix = "mixed", severity = "warn", presets = ["strict"], ported = true, status = "decided", note = "…" }
+no-loose-comparison = { group = "suspicious", fix = "mixed", severity = "warn", tier = "strict", ported = true, status = "decided", note = "…" }
 
 [rules.analyse]
-unused-private-method = { group = "dead-code", severity = "error", presets = ["recommended"], fixed_by = ["lint.no-unused-private-method"], status = "decided" }
+unused-private-method = { group = "dead-code", severity = "error", tier = "recommended", fixed_by = ["lint.no-unused-private-method"], status = "decided" }
 
 [upstream.php-cs-fixer]
 strict_comparison = { pun = "lint.no-loose-comparison", risky = true, options = "none", status = "decided" }
@@ -328,7 +434,9 @@ AccessTypeAnnotationToAttribute = { unsupported = "Symfony rules: out of scope (
   name that is not kebab-case or not unique across commands (aliases included), a lint name without its prefix (§3), a
   dangling `pun` / `fixed_by` / `conflicts` / `merged` reference, an upstream entry that is not exactly one of
   pun / drop / unsupported, a Rector entry without `class`, and a rule that no upstream entry maps to unless it is
-  `pun_only`. Still to add (config agent, once the loader exists): a test that fails when an oracle rule or identifier is
+  `pun_only`. It also checks the tiers (§5): every lint and analyse rule has a valid `tier`, add-on `presets` name a
+  `[meta] addons` entry, each tier's resolved set contains the one below it, and no tier enables both sides of a conflict;
+  it prints the rule count per tier. Still to add (config agent, once the loader exists): a test that fails when an oracle rule or identifier is
   missing from `[upstream.*]`, so bumping an upstream forces a decision for every new rule.
 
 ## 9. Summary
@@ -397,8 +505,8 @@ out-of-scope ones.
   fixes behind a flag; `modernize` gated by target version like `UP` + `target-version`; refusing lint rules that fight the
   formatter.
 - **Vite+ (`vp fmt` / `vp lint` / `vp check`):** one config file and one `check` command that runs all stages in one process.
-- **Oxc / oxlint:** Biome-style categories (`correctness` on by default, `pedantic` opt-in), which became `recommended` vs
-  `strict`.
+- **Oxc / oxlint, Clippy:** categories by intent (`correctness` on by default, `pedantic` opt-in), which became the four tiers.
+- **ESLint / typescript-eslint, Biome:** the `recommended` and `strict` names; per-rule overrides on top of a preset.
 - **Deno (`fmt` / `lint` / `check`):** `check` means "everything CI needs", and the formatter has no options beyond a preset.
 - **ESLint flat config:** presets are plain composable lists, not inheritance chains.
 - **Go (`gofmt` / `vet`):** the formatter never changes behaviour and is never configurable per line, so format rules are

@@ -5,7 +5,9 @@ Fails (exit 1) on: a `tentative` entry, a non-kebab-case or duplicate name (rule
 across all commands), a lint name without a verb prefix, a broken `pun` / `fixed_by` / `conflicts` / `merged`
 reference, an upstream entry that is not exactly one of pun / drop / unsupported, a Rector entry without its class,
 a rule that no upstream entry maps to (unless it is marked `pun_only = true`), and a PHPStan/Larastan entry
-without `variant` when its rule replaces several identifiers.
+without `variant` when its rule replaces several identifiers. Tiers (docs/RULES.md §5): every lint and analyse rule needs a
+valid `tier`, add-on `presets` must name a [meta] add-on, each tier's resolved set must contain the one below it, and no
+tier may enable both sides of a [meta] conflict (alone, or together with a Pint preset). Prints rule counts per tier.
 
 Usage: scripts/check-rule-mapping.py [path/to/mapping.toml]
 """
@@ -119,7 +121,66 @@ def check(data):
         for x in pair:
             if x not in ids:
                 err(f"meta.conflicts: {x!r} is not a rule")
+    check_tiers(data, err)
     return errors
+
+
+def tier_of(data):
+    """Rule ID -> tier index (None for tier = "none") for lint and analyse rules."""
+    tiers = data["meta"].get("tiers", [])
+    return {f"{c}.{n}": (tiers.index(r["tier"]) if r.get("tier") in tiers else None)
+            for c in ("lint", "analyse") for n, r in data["rules"].get(c, {}).items()}
+
+
+def resolve(data, cmd, tier, addons):
+    """The rules `preset = <tier>` enables in one command with the given add-ons on."""
+    k = data["meta"]["tiers"].index(tier)
+    out = set()
+    for n, r in data["rules"].get(cmd, {}).items():
+        t = r.get("tier")
+        if t not in data["meta"]["tiers"] or data["meta"]["tiers"].index(t) > k:
+            continue
+        if r.get("presets") and not set(r["presets"]) & set(addons):
+            continue
+        out.add(f"{cmd}.{n}")
+    return out
+
+
+def check_tiers(data, err):
+    meta = data["meta"]
+    tiers, addons = meta.get("tiers", []), meta.get("addons", [])
+    for c in ("lint", "analyse"):
+        for n, r in data["rules"].get(c, {}).items():
+            rid = f"{c}.{n}"
+            if r.get("tier") not in [*tiers, "none"]:
+                err(f"{rid}: tier is {r.get('tier')!r}, expected one of {[*tiers, 'none']}")
+            for a in r.get("presets", []):
+                if a not in addons:
+                    err(f"{rid}: presets entry {a!r} is not an add-on ({addons})")
+            if r.get("tier") == "none" and r.get("presets"):
+                err(f"{rid}: tier none rules are opt-in only and belong to no add-on")
+    for n, r in data["rules"].get("format", {}).items():
+        if "tier" in r:
+            err(f"format.{n}: format rules have no tier (format keeps Pint presets)")
+    for t in meta.get("tier_switches", {}):
+        if t not in tiers:
+            err(f"meta.tier_switches: {t!r} is not a tier")
+    combos = [()] + [(a,) for a in addons] + [tuple(addons)]
+    for c in ("lint", "analyse"):
+        for on in combos:
+            prev = set()
+            for t in tiers:
+                cur = resolve(data, c, t, on)
+                if not prev <= cur:
+                    err(f"{c} tier {t} (add-ons {list(on)}) drops {sorted(prev - cur)[:5]} from the tier below")
+                prev = cur
+    full = {t: resolve(data, "lint", t, addons) | resolve(data, "analyse", t, addons) for t in tiers}
+    pint = {f"format.{n}" for n, r in data["rules"].get("format", {}).items() if r.get("presets")}
+    for a, b in meta.get("conflicts", []):
+        for t in tiers:
+            on = full[t] | pint
+            if a in on and b in on:
+                err(f"tier {t} enables both sides of conflict {a} / {b}")
 
 
 def selftest():
@@ -130,6 +191,9 @@ def selftest():
         "upstream": {"mago-linter": {"x": {"pun": "lint.no-x", "status": "decided"}},
                      "phpstan": {"x.notFound": {"pun": "analyse.undefined-x", "status": "decided"}}},
     }
+    good["meta"].update(tiers=["essential", "recommended"], addons=["laravel"])
+    good["rules"]["lint"]["no-x"]["tier"] = "recommended"
+    good["rules"]["analyse"]["undefined-x"]["tier"] = "essential"
     assert check(good) == [], check(good)
     import copy
 
@@ -152,6 +216,23 @@ def selftest():
     bad(lambda d: d["upstream"]["phpstan"].update({"y.notFound": {"pun": "analyse.undefined-x", "status": "decided"}}),
         "needs variant")
     bad(lambda d: d["upstream"]["phpstan"]["x.notFound"].update(variant="other.id"), "variant must be")
+    bad(lambda d: d["rules"]["lint"]["no-x"].pop("tier"), "tier is None")
+    bad(lambda d: d["rules"]["lint"]["no-x"].update(tier="max"), "tier is 'max'")
+    bad(lambda d: d["rules"]["lint"]["no-x"].update(presets=["recommended"]), "not an add-on")
+    bad(lambda d: d["rules"]["lint"]["no-x"].update(tier="none", presets=["laravel"]), "opt-in only")
+    bad(lambda d: d["meta"].update(tier_switches={"max": ["nullables"]}), "tier_switches")
+
+    def conflict(d):
+        d["rules"]["lint"]["no-y"] = {"status": "decided", "pun_only": True, "tier": "recommended"}
+        d["meta"]["conflicts"] = [["lint.no-x", "lint.no-y"]]
+    bad(conflict, "both sides of conflict")
+
+    d = copy.deepcopy(good)
+    assert resolve(d, "lint", "essential", ()) == set()
+    assert resolve(d, "lint", "recommended", ()) == {"lint.no-x"}
+    d["rules"]["lint"]["no-x"]["presets"] = ["laravel"]
+    assert resolve(d, "lint", "recommended", ()) == set()
+    assert resolve(d, "lint", "recommended", ("laravel",)) == {"lint.no-x"}
 
 
 if __name__ == "__main__":
@@ -161,6 +242,15 @@ if __name__ == "__main__":
     errors = check(data)
     for e in errors:
         print(e)
+    tiers, addons = data["meta"]["tiers"], data["meta"]["addons"]
+    for c in ("lint", "analyse"):
+        own = defaultdict(int)
+        for r in data["rules"][c].values():
+            own[r.get("tier")] += 1
+        core = [len(resolve(data, c, t, ())) for t in tiers]
+        every = [len(resolve(data, c, t, addons)) for t in tiers]
+        cells = ", ".join(f"{t} {a}/{b} (+{own[t]})" for t, a, b in zip(tiers, core, every))
+        print(f"{c} tiers (no add-ons / all add-ons, +own): {cells}, none {own['none']}")
     counts = {c: len(rs) for c, rs in data["rules"].items()}
     print(f"{path.name}: {counts}, {sum(len(u) for u in data['upstream'].values())} upstream entries, "
           f"{len(errors)} error(s)")
