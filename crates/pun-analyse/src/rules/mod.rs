@@ -35,7 +35,10 @@ use pun_phpstan::ignore::{
 
 use crate::Project;
 use crate::codebase::read;
+use mago_codex::symbol::SymbolKind;
+use mago_database::file::FileId;
 use scope::{Guard, falsy, statements_terminate, terminates, truthy};
+use std::path::PathBuf;
 
 pub const IDENTIFIERS: &[&str] = &[
     "function.notFound",
@@ -139,28 +142,36 @@ pub struct Checker<'a, 'arena> {
     top_level: HashSet<(u32, u32)>,
     /// `f(...)` on the right of `|>`: analysed as the call `f($x)`, not as a first-class callable.
     piped: HashSet<Span>,
+    /// Closures whose `$this` is rebound (`->call()`, `->bind()`, `->bindTo()`, `Closure::bind()`).
+    rebound: HashSet<Span>,
+    /// `Error::file`: the path, or `T.php (in context of class C)` inside a trait analysed for class C.
+    label: String,
+    /// The analysed class's file and name when walking a trait in its context (`$scope->isInTrait()`); the trait
+    /// walked is `context_trait`.
+    context: Option<(String, String)>,
+    context_trait: Option<String>,
+    /// Inside the trait `context_trait` (in a context walk, nothing else reports).
+    in_target: bool,
+    /// (class, trait) for each `use T;` in a class body, to analyse T in the class's context.
+    trait_uses: Vec<(String, String)>,
+    /// Line ranges of the traits declared in this file (their ignores are never unmatched here).
+    trait_lines: Vec<(i64, i64)>,
     errors: Vec<Error>,
 }
 
-/// The file's errors after its `@phpstan-ignore*` comments (LocalIgnoresProcessor), with the unmatched ones.
-pub fn check_file(path: &Path, codebase: &CodebaseMetadata, project: &Project) -> Vec<Error> {
-    let Some(file) = read(path, FileType::Host) else {
-        return Vec::new();
-    };
-    let arena = LocalArena::new();
-    let program = parse_file(&arena, &file);
-    let names = NameResolver::new(&arena).resolve(program);
-    let mut checker = Checker {
-        file: &file,
-        types: infer(
-            &arena,
-            &file,
-            program,
-            &names,
-            codebase,
-            project.php_version,
-        ),
-        names: &names,
+/// A checker for one walk of `file`.
+fn checker<'a, 'arena>(
+    arena: &'arena LocalArena,
+    file: &'a File,
+    program: &'arena Program<'arena>,
+    names: &'a ResolvedNames<'arena>,
+    codebase: &'a CodebaseMetadata,
+    php_version: u32,
+) -> Checker<'a, 'arena> {
+    Checker {
+        file,
+        types: infer(arena, file, program, names, codebase, php_version),
+        names,
         codebase,
         classes: Vec::new(),
         guards: Vec::new(),
@@ -171,13 +182,50 @@ pub fn check_file(path: &Path, codebase: &CodebaseMetadata, project: &Project) -
         in_exists_call: 0,
         top_level: HashSet::new(),
         piped: HashSet::new(),
+        rebound: HashSet::new(),
+        label: String::from_utf8_lossy(&file.name).into_owned(),
+        context: None,
+        context_trait: None,
+        in_target: false,
+        trait_uses: Vec::new(),
+        trait_lines: Vec::new(),
         errors: Vec::new(),
+    }
+}
+
+/// The file's errors after its `@phpstan-ignore*` comments (LocalIgnoresProcessor), with the unmatched ones, and
+/// the errors of the traits its classes use, analysed in each class's context. `files` finds a symbol's file.
+pub fn check_file(
+    path: &Path,
+    codebase: &CodebaseMetadata,
+    project: &Project,
+    files: &HashMap<FileId, PathBuf>,
+) -> Vec<Error> {
+    let Some(file) = read(path, FileType::Host) else {
+        return Vec::new();
     };
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    let names = NameResolver::new(&arena).resolve(program);
+    let mut checker = checker(
+        &arena,
+        &file,
+        program,
+        &names,
+        codebase,
+        project.php_version,
+    );
     checker.walk_program(program, &mut ());
     let name = checker.file_name();
     let (mut lines, parse) = lines_to_ignore(&file.contents);
     let mut unmatched = lines.clone();
-    let mut errors = checker.errors;
+    unmatched.retain(|line, _| {
+        !checker
+            .trait_lines
+            .iter()
+            .any(|(a, b)| a <= line && line <= b)
+    });
+    let mut errors = std::mem::take(&mut checker.errors);
     errors.extend(parse_errors(&name, &parse));
     let mut out = Vec::new();
     if project.report_ignores_without_comments {
@@ -188,7 +236,77 @@ pub fn check_file(path: &Path, codebase: &CodebaseMetadata, project: &Project) -
     if project.report_unmatched_ignores {
         out.extend(unmatched_line_errors(&name, &unmatched));
     }
+    let mut pending = std::mem::take(&mut checker.trait_uses);
+    let mut seen = HashSet::new();
+    while let Some((class, trait_name)) = pending.pop() {
+        if !seen.insert((class.to_ascii_lowercase(), trait_name.to_ascii_lowercase())) {
+            continue;
+        }
+        let (errors, uses) = in_trait_context(&name, &class, &trait_name, codebase, project, files);
+        out.extend(errors);
+        pending.extend(uses);
+    }
     out
+}
+
+/// InTraitNode: trait `trait_name` walked in the context of `class` (declared in `class_file`), its errors labelled
+/// `T.php (in context of class C)` and matched against the trait's own `@phpstan-ignore` comments. Also returns the
+/// traits it uses.
+fn in_trait_context(
+    class_file: &str,
+    class: &str,
+    trait_name: &str,
+    codebase: &CodebaseMetadata,
+    project: &Project,
+    files: &HashMap<FileId, PathBuf>,
+) -> (Vec<Error>, Vec<(String, String)>) {
+    let Some(t) = codebase
+        .get_class_like(trait_name.as_bytes())
+        .filter(|t| t.kind == SymbolKind::Trait)
+    else {
+        return (Vec::new(), Vec::new());
+    };
+    let Some(file) = files
+        .get(&t.span.file_id)
+        .and_then(|p| read(p, FileType::Host))
+    else {
+        return (Vec::new(), Vec::new());
+    };
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    let names = NameResolver::new(&arena).resolve(program);
+    let mut checker = checker(
+        &arena,
+        &file,
+        program,
+        &names,
+        codebase,
+        project.php_version,
+    );
+    let display = codebase.get_class_like(class.as_bytes()).map_or_else(
+        || class.to_string(),
+        |k| String::from_utf8_lossy(k.original_name.as_bytes()).into_owned(),
+    );
+    checker.label = format!("{} (in context of class {display})", checker.file_name());
+    checker.context = Some((class_file.to_string(), class.to_string()));
+    checker.context_trait = Some(String::from_utf8_lossy(t.name.as_bytes()).into_owned());
+    checker.walk_program(program, &mut ());
+    let label = checker.label.clone();
+    let (mut lines, _) = lines_to_ignore(&file.contents);
+    lines.retain(|line, _| {
+        checker
+            .trait_lines
+            .iter()
+            .any(|(a, b)| a <= line && line <= b)
+    });
+    let mut unmatched = lines.clone();
+    let (kept, _) = local_ignores(
+        &label,
+        std::mem::take(&mut checker.errors),
+        &mut lines,
+        &mut unmatched,
+    );
+    (kept, checker.trait_uses)
 }
 
 /// The expressions whose type a rule reads: the class of `new $expr`.
@@ -253,11 +371,19 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     fn report(&mut self, at: impl HasSpan, identifier: &str, message: String, tip: Option<&str>) {
+        if self.context.is_some() && !self.in_target {
+            return;
+        }
         let line = i64::from(self.file.line_number(at.span().start.offset)) + 1;
         self.errors.push(Error {
             identifier: Some(identifier.to_string()),
             tip: tip.map(str::to_string),
-            ..Error::new(message, self.file_name(), Some(line))
+            file_path: self
+                .context
+                .as_ref()
+                .map_or_else(|| self.file_name(), |(f, _)| f.clone()),
+            trait_file_path: self.context.as_ref().map(|_| self.file_name()),
+            ..Error::new(message, self.label.clone(), Some(line))
         });
     }
 
@@ -281,6 +407,26 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             _ => self.names.get(&id.span()),
         };
         String::from_utf8_lossy(text).into_owned()
+    }
+
+    fn rebind(&mut self, mut e: &Expression) {
+        while let Expression::Parenthesized(p) = e {
+            e = p.expression;
+        }
+        if matches!(e, Expression::Closure(_) | Expression::ArrowFunction(_)) {
+            self.rebound.insert(e.span());
+        }
+    }
+
+    fn trait_uses_of(&mut self, class: &str, members: &[ClassLikeMember<'arena>]) {
+        for m in members {
+            if let ClassLikeMember::TraitUse(u) = m {
+                for id in u.trait_names.iter() {
+                    let t = self.resolved(id);
+                    self.trait_uses.push((class.to_string(), t));
+                }
+            }
+        }
     }
 
     fn resolved_span(&self, span: Span) -> String {
@@ -453,6 +599,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             class.implements.as_ref(),
             false,
         );
+        if self.context.is_none() {
+            let name = self.resolved_span(class.name.span);
+            self.trait_uses_of(&name, class.members.as_slice());
+        }
         self.enter_class(Some(class.name.span), class.members.as_slice());
     }
     fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
@@ -469,17 +619,42 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
         let current = format!("Enum {}", self.resolved_span(e.name.span));
         names::class_hierarchy(self, e.span(), &current, None, e.implements.as_ref(), false);
+        if self.context.is_none() {
+            let name = self.resolved_span(e.name.span);
+            self.trait_uses_of(&name, e.members.as_slice());
+        }
         self.enter_class(Some(e.name.span), e.members.as_slice());
     }
     fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
         self.classes.pop();
     }
     // ponytail: trait bodies have no class scope; PHPStan analyses them once per using class (add with traits).
-    fn walk_in_trait(&mut self, t: &'ast Trait<'arena>, _: &mut ()) {
+    /// A trait is analysed only in the context of each class using it (see [`in_trait_context()`]).
+    fn walk_trait(&mut self, t: &'ast Trait<'arena>, c: &mut ()) {
+        let start = i64::from(self.file.line_number(t.span().start.offset)) + 1;
+        let end = i64::from(self.file.line_number(t.span().end.offset)) + 1;
+        self.trait_lines.push((start, end));
+        let Some((_, class)) = self.context.clone() else {
+            return;
+        };
+        let name = self.resolved_span(t.name.span);
+        if !self
+            .context_trait
+            .as_deref()
+            .is_some_and(|n| n.eq_ignore_ascii_case(&name))
+        {
+            return;
+        }
+        self.trait_uses_of(&class, t.members.as_slice());
+        let saved = self.classes.len();
         self.enter_class(None, t.members.as_slice());
-    }
-    fn walk_out_trait(&mut self, _: &'ast Trait<'arena>, _: &mut ()) {
-        self.classes.pop();
+        self.classes[saved].name = Some(class);
+        self.in_target = true;
+        for member in t.members.iter() {
+            self.walk_class_like_member(member, c);
+        }
+        self.in_target = false;
+        self.classes.truncate(saved);
     }
     fn walk_in_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, _: &mut ()) {
         names::class_hierarchy(
@@ -694,6 +869,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        if let ClassLikeMemberSelector::Identifier(m) = &call.method
+            && [&b"call"[..], b"bind", b"bindto"].contains(&m.value.to_ascii_lowercase().as_slice())
+        {
+            self.rebind(call.object);
+        }
         calls::method_call(self, call);
     }
     fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
@@ -708,7 +888,26 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         calls::function_callable(self, f);
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        if let (Expression::Identifier(id), ClassLikeMemberSelector::Identifier(m)) =
+            (call.class, &call.method)
+            && self.resolved(id).eq_ignore_ascii_case("Closure")
+            && m.value.eq_ignore_ascii_case(b"bind")
+            && let Some(Argument::Positional(a)) = call.argument_list.arguments.first()
+        {
+            self.rebind(a.value);
+        }
         calls::static_method_call(self, call);
+    }
+    // ponytail: a rebound closure gets no class scope (PHPStan checks it against the bound object's class)
+    fn walk_out_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        if self.rebound.contains(&f.span()) {
+            self.classes.pop();
+        }
+    }
+    fn walk_out_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+        if self.rebound.contains(&f.span()) {
+            self.classes.pop();
+        }
     }
 
     fn walk_in_statement_expression(&mut self, s: &'ast ExpressionStatement<'arena>, _: &mut ()) {
@@ -727,6 +926,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         names::property_type(self, p.span(), p.hint(), &names);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
+        if self.rebound.contains(&f.span()) {
+            self.classes.push(ClassScope {
+                name: None,
+                constructor_guards: Vec::new(),
+            });
+        }
         names::typehints(
             self,
             names::FunctionKind::Anonymous,
@@ -741,6 +946,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         names::catch(self, clause);
     }
     fn walk_in_arrow_function(&mut self, f: &'ast ArrowFunction<'arena>, _: &mut ()) {
+        if self.rebound.contains(&f.span()) {
+            self.classes.push(ClassScope {
+                name: None,
+                constructor_guards: Vec::new(),
+            });
+        }
         names::typehints(
             self,
             names::FunctionKind::Anonymous,

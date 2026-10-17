@@ -146,6 +146,7 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
                     "self".to_string()
                 }
             }
+            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => "$this".to_string(),
             _ => constant_string(arg, resolve)?,
         };
         let method = match call.argument_list.arguments.get(1)? {

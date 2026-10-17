@@ -148,7 +148,10 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
     let method_name = String::from_utf8_lossy(name.value).into_owned();
     let Some(method) = members::method(c.codebase, class, name.value) else {
         // reportMagicMethods is off at level 0: a native __call() answers every name
-        if members::method(c.codebase, class, b"__call").is_some()
+        let guard =
+            super::scope::Guard::Method(format!("$this::{method_name}").to_ascii_lowercase());
+        if c.guards.contains(&guard)
+            || members::method(c.codebase, class, b"__call").is_some()
             || class
                 .pseudo_methods
                 .iter()

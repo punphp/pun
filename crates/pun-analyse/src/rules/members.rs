@@ -126,8 +126,14 @@ fn declared<'a>(
             .get(String::from_utf8_lossy(lower.as_bytes()).as_ref())?;
         return Some(Method::Builtin { declaring: c, f });
     }
-    if k.methods.contains(lower) {
-        let f = codebase.get_method(k.name.as_bytes(), lower.as_bytes())?;
+    // after population `methods` (and get_method()) also cover inherited and trait methods: `k`'s own are the
+    // ones written inside its declaration
+    if k.methods.contains(lower)
+        && let Some(f) = codebase.get_method(k.name.as_bytes(), lower.as_bytes())
+        && f.span.file_id == k.span.file_id
+        && k.span.start.offset <= f.span.start.offset
+        && f.span.end.offset <= k.span.end.offset
+    {
         return Some(Method::User { declaring: k, f });
     }
     let traits = || {

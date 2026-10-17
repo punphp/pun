@@ -59,24 +59,61 @@ fn scan(metadata: &mut CodebaseMetadata, file: &File, version: PHPVersion) {
 
 pub fn build(project: &Project) -> CodebaseMetadata {
     let mut metadata = PRELUDE.metadata.clone();
+    // PHPStan's reflection knows only its own built-ins (symbols.json): the prelude's others (newer PHP, other
+    // extensions) go, so a polyfill in vendor declares them as user code.
+    let builtins = pun_phpstan::symbols::symbols(pun_phpstan::symbols::PhpVersion::Php85);
+    metadata.class_likes.retain(|name, k| {
+        !k.flags.is_built_in()
+            || builtins
+                .classes
+                .contains_key(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
+    });
+    metadata.function_likes.retain(|(scope, name), f| {
+        !scope.is_empty()
+            || !f.flags.is_built_in()
+            || builtins
+                .functions
+                .contains_key(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
+    });
     let mut references = PRELUDE.symbol_references.clone();
     let version = php_version(project.php_version);
     let mut seen = HashSet::new();
-    let mut api = false;
-    let files = project
+    let files: Vec<_> = project
         .analysed
         .iter()
         .map(|p| (p, FileType::Host))
-        .chain(project.scanned.iter().map(|p| (p, FileType::Vendored)));
-    for (path, file_type) in files {
-        if !seen.insert(path) {
-            continue;
-        }
-        let Some(file) = read(path, file_type) else {
-            continue;
-        };
-        api |= file_type == FileType::Host && names_phpstan(&file.contents);
-        scan(&mut metadata, &file, version);
+        .chain(project.scanned.iter().map(|p| (p, FileType::Vendored)))
+        .filter(|(p, _)| seen.insert(*p))
+        .collect();
+    // Scanning is most of the time (every vendored file); in contiguous chunks, merged in order.
+    let threads = std::thread::available_parallelism().map_or(1, |n| n.get());
+    let chunks: Vec<(CodebaseMetadata, bool)> = std::thread::scope(|s| {
+        let handles: Vec<_> = files
+            .chunks(files.len().div_ceil(threads).max(1))
+            .map(|chunk| {
+                s.spawn(move || {
+                    let mut metadata = CodebaseMetadata::default();
+                    let mut api = false;
+                    for &(path, file_type) in chunk {
+                        let Some(file) = read(path, file_type) else {
+                            continue;
+                        };
+                        api |= file_type == FileType::Host && names_phpstan(&file.contents);
+                        scan(&mut metadata, &file, version);
+                    }
+                    (metadata, api)
+                })
+            })
+            .collect();
+        handles
+            .into_iter()
+            .map(|h| h.join().expect("scan thread"))
+            .collect()
+    });
+    let mut api = false;
+    for (chunk, uses_api) in chunks {
+        metadata.extend(chunk);
+        api |= uses_api;
     }
     if api {
         let stub = File::new(
