@@ -7,12 +7,13 @@ fn pun(dir: &Path, args: &[&str]) -> (String, String, Option<i32>) {
     run(Command::new(env!("CARGO_BIN_EXE_pun")).args(args), dir)
 }
 
-/// No agent variables (agent mode is off) and stdin is not a terminal, so nothing is asked.
+/// Agent mode off and stdin is not a terminal, so nothing is asked.
 fn run(cmd: &mut Command, dir: &Path) -> (String, String, Option<i32>) {
     let out = cmd
         .current_dir(dir)
         .env_clear()
         .envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE"))
+        .env("PUN_AGENT", "0")
         .output()
         .unwrap();
     let s = |b: Vec<u8>| String::from_utf8(b).unwrap();

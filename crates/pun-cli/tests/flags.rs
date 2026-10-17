@@ -126,6 +126,7 @@ fn run(
         let out = Command::new(env!("CARGO_BIN_EXE_pun"))
             .arg("migrate")
             .args(m)
+            .env("PUN_AGENT", "0")
             .current_dir(dir.join(sub))
             .output()
             .unwrap();
@@ -146,6 +147,7 @@ fn run(
         }
     }
     c.env("HOME", &home)
+        .env("PUN_AGENT", "0")
         .env("TMPDIR", &home)
         .env("COLUMNS", "200")
         .stdin(Stdio::piped())

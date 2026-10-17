@@ -24,6 +24,7 @@ fn fresh(name: &str) -> PathBuf {
 fn migrate(dir: &Path) {
     let out = Command::new(env!("CARGO_BIN_EXE_pun"))
         .arg("migrate")
+        .env("PUN_AGENT", "0")
         .current_dir(dir)
         .output()
         .unwrap();
@@ -83,6 +84,7 @@ fn watcher(dir: &Path, home: &Path) -> Command {
         .env_clear()
         .env("PATH", std::env::var("PATH").unwrap())
         .env("HOME", home)
+        .env("PUN_AGENT", "0")
         .env("COLUMNS", "80");
     if let Ok(v) = std::env::var("LLVM_PROFILE_FILE") {
         c.env("LLVM_PROFILE_FILE", v);

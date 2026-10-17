@@ -113,6 +113,7 @@ fn run(
     std::fs::create_dir_all(&tmp).unwrap();
     c.env("COLUMNS", "80")
         .env("TMPDIR", &tmp)
+        .env("PUN_AGENT", "0")
         .envs(env.iter().copied())
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -138,6 +139,7 @@ const PUN: &str = env!("CARGO_BIN_EXE_pun");
 fn migrate(dir: &Path) {
     let out = Command::new(PUN)
         .arg("migrate")
+        .env("PUN_AGENT", "0")
         .current_dir(dir)
         .output()
         .unwrap();
@@ -483,6 +485,7 @@ fn pun_env(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, String, 
         .env_clear()
         .envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE"))
         .env("COLUMNS", "80")
+        .env("PUN_AGENT", "0")
         .envs(env.iter().copied())
         .output()
         .unwrap();
