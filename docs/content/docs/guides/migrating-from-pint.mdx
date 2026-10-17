@@ -1,0 +1,55 @@
+---
+title: Migrating from Pint
+description: Switch a project from Pint to Pun without a single changed byte, then move scripts, CI and editors over.
+---
+
+Pun reads `pint.json` and produces Pint's exact output, so switching is a workflow change, not a reformat.
+
+<Steps>
+  <Step title="Prove nothing changes">
+
+```bash
+pun format --test
+```
+
+On a project Pint already formatted, this reports nothing and exits 0.
+
+  </Step>
+  <Step title="Switch your scripts">
+
+```json composer.json
+{
+  "scripts": {
+    "lint": "pun format",
+    "test:lint": "pun format --test"
+  }
+}
+```
+
+Or keep calling `pint` and point it at Pun with the [pint alias](/docs/installation#the-pint-alias).
+
+  </Step>
+  <Step title="Switch CI">
+
+Replace the PHP setup and `vendor/bin/pint --test` with the Pun binary and `pun format --test`. See [CI](/docs/guides/ci).
+
+  </Step>
+  <Step title="Switch your editor">
+
+Point format-on-save at `pun lsp`. See [Editors](/docs/guides/editors).
+
+  </Step>
+  <Step title="Optional: one config file">
+
+```bash
+pun config --init
+```
+
+Writes `pun.toml` from `pint.json`. Keep `pint.json` while anyone still runs Pint.
+
+  </Step>
+</Steps>
+
+:::tip[Rolling back]
+Nothing about your code or `pint.json` changes, so switching back is reverting the script and CI lines.
+:::

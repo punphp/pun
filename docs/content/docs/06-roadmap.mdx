@@ -1,0 +1,23 @@
+---
+title: Roadmap
+description: What ships in v0.1 and what comes after, in priority order.
+---
+
+Pun's first release ships once format, analyse, lint and migrate exist. Each phase must match the original tool exactly on a fixed corpus of Laravel projects before it ships.
+
+| Phase | Command | Matches | Status |
+| --- | --- | --- | --- |
+| 1 | `pun format` | Pint | Done |
+| 1 | `pun lsp` | Editor formatting | Formatting done; PHPantom code intelligence in progress |
+| 2 | `pun analyse` | PHPStan + Larastan | In progress |
+| 3 | `pun lint` | Rector | Designed (Mago's lint-only rules ship today) |
+| 3 | `pun check` | format + lint + analyse in one pass | Designed |
+| 4 | `pun migrate` | One-time move onto `pun.toml` | Designed |
+
+After v0.1: `pun install` (a Composer-compatible package manager), `pun run index.php` on FrankenPHP, and `pun test`.
+
+## pun migrate
+
+`pun migrate --dry-run` will read `pint.json`, `.php-cs-fixer.php`, `phpstan.neon` and its baseline and `rector.php`, print the `pun.toml` it would write, and list every rule it can't run natively before anything changes. Then it writes `pun.toml` with PHPStan levels expanded into explicit rules (no levels), converts the baseline, rewrites `@phpstan-ignore` and `@php-cs-fixer-ignore` comments to `@pun-ignore`, and switches composer scripts, CI and editor settings.
+
+Follow along in [`docs/PLAN.md`](https://github.com/punphp/pun/blob/main/docs/PLAN.md).

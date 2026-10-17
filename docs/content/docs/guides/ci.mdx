@@ -1,0 +1,34 @@
+---
+title: CI
+description: Check formatting in CI with pun format --test, no PHP setup needed.
+---
+
+`pun format --test` exits 1 when any file would change, which is all CI needs. Pun doesn't need PHP for this unless the project uses rules Pun hasn't ported ([delegate mode](/docs/configuration/delegate-mode)).
+
+```yaml .github/workflows/style.yml
+name: Code style
+
+on: [push, pull_request]
+
+jobs:
+  pun:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Pun
+        run: curl -LsSf https://github.com/punphp/pun/releases/latest/download/punphp-installer.sh | sh
+      - name: Check code style
+        run: pun format --test
+```
+
+For annotations on the pull request, write a report in a format your CI understands:
+
+```bash
+pun format --test --output-to-file=pun.xml --output-format=checkstyle
+```
+
+`junit`, `gitlab`, `json`, `xml` and `txt` work the same way.
+
+:::tip[Pre-commit hook]
+`pun format --staged` formats only staged files, so a hook stays instant.
+:::

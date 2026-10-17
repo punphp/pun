@@ -37,3 +37,13 @@ Plan: docs/PLAN.md. Home: github.com/punphp/pun (npm: @punphp/pun). Current scop
 - Each agent uses its own `CARGO_TARGET_DIR` (e.g. `target-perf`) and pulls with `--rebase` before every push.
 - Starting a new session: read TASKS.md, `git log -15`, `git status`, `ps aux | grep -E 'cargo|rustc|php'`. Rows marked doing with no live agent are abandoned work — verify and commit or revert their uncommitted files before continuing.
 - The git index is shared by all agents. Never `git add` and commit separately or use `git commit -a`; commit only your files in one step: `git commit -m "..." -- path1 path2`.
+
+## Docs site (docs/)
+
+- `docs/` is also the public docs site and homepage, built with [Blume](https://useblume.dev): `docs/blume.config.ts`, pages in
+  `docs/content/docs/*.mdx` (routes under `/docs`), the homepage in `docs/pages/index.astro`, assets in `docs/public/`, brand
+  tokens in `docs/theme.css` (mirrors `design/tokens.json`). Run `npm install && npm run dev` (or `npm run build`) inside `docs/`.
+- The Markdown files directly in `docs/` (PLAN.md, TASKS.md, RULES.md, ...) are internal notes and are not published.
+  `docs/presets/laravel.json` is compiled into pun-config; don't move it.
+- Agent skills for the site live in `.claude/skills/blume` and `.claude/skills/blume-update-docs`. When a change alters a
+  flag, rule or behaviour, update the matching page under `docs/content/docs/`.

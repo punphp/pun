@@ -1,0 +1,60 @@
+---
+title: Quickstart
+description: Run Pun on a project that already uses Pint and confirm nothing changes.
+---
+
+Pun reads your existing `pint.json` as is, so there is nothing to configure.
+
+<Steps>
+  <Step title="Check without changing anything">
+
+```bash
+pun format --test
+```
+
+On a project that Pint already formatted, this reports no changes and exits 0. It exits 1 if any file would change.
+
+  </Step>
+  <Step title="Format the project">
+
+```bash
+pun format
+```
+
+Pass paths to format part of it: `pun format app/Models`.
+
+  </Step>
+  <Step title="Only what you touched">
+
+```bash
+pun format --dirty        # uncommitted changes
+pun format --diff=main    # changed since branching off main
+pun format --staged       # staged changes, for a pre-commit hook
+```
+
+  </Step>
+  <Step title="Keep it running">
+
+```bash
+pun format --watch
+```
+
+Does a normal run, then re-formats files as they change. Pun's own writes don't trigger runs.
+
+  </Step>
+</Steps>
+
+:::tip[Why is the second run so fast?]
+Pun caches results per file by content hash under `~/.cache/pun`. On laravel/framework a cold run takes 3.7 s and a warm one 0.07 s. Use `--no-cache` to check every file.
+:::
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Migrating from Pint" href="/docs/guides/migrating-from-pint" icon="arrow-right-left">
+Composer scripts, CI and editors.
+  </Card>
+  <Card title="pun.toml" href="/docs/configuration/pun-toml" icon="file-cog">
+Make pun.toml your only config file.
+  </Card>
+</CardGroup>

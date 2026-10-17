@@ -1,0 +1,14 @@
+---
+title: Coding agents
+description: Pun detects coding agents and switches to compact output, so agents spend fewer tokens.
+---
+
+When Pun runs under a coding agent, it switches to the compact `agent` output format on its own, like Pint does: one `path:line:col rule message` line per problem instead of a human summary. It detects Claude Code, Cursor, Codex, Gemini CLI, Copilot CLI, Amp, OpenCode, Augment, Kiro, Devin and others from their environment, and any agent that sets `AI_AGENT`.
+
+Force it anywhere with:
+
+```bash
+pun format --test --format=agent
+```
+
+This site is agent-ready too: every page is available as Markdown by adding `.md` to its URL, and the whole site is summarised at [`/llms.txt`](/llms.txt).

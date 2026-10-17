@@ -1,0 +1,55 @@
+---
+title: pun.toml
+description: One config file for Pun. Everything pint.json holds, plus Pun's own settings.
+---
+
+`pun.toml` is optional. When present, its keys win over `pint.json`'s, key by key, and keys it doesn't set still come from `pint.json`. Generate one from your current setup with:
+
+```bash
+pun config --init
+```
+
+## [format]
+
+Everything `pint.json` holds, in kebab-case:
+
+```toml pun.toml
+[format]
+preset = "laravel"
+paths = ["app", "tests"]
+exclude = ["build"]
+not-name = ["*.blade.php"]
+not-path = ["app/Legacy"]
+
+[format.rules]
+final_class = true
+"Pun/prefer_fake_helper" = true
+```
+
+| Key | Meaning |
+| --- | --- |
+| `preset` | `laravel`, `per`, `psr12`, `symfony` or `empty` |
+| `paths` | Paths to format when none are given on the command line |
+| `exclude` | Folders to skip |
+| `not-name` | File name patterns to skip |
+| `not-path` | Paths to skip |
+| `rules` | Rule overrides: `true`, `false`, or an options table |
+
+Unknown keys are an error, so typos are caught early.
+
+## [compat]
+
+```toml pun.toml
+[compat]
+php = "8.4"
+```
+
+`php` is the target PHP version. It defaults to `8.4`.
+
+:::tip[Keep Pint working during a switch]
+Put Pun-only settings, like [extra rules](/docs/configuration/extra-rules), in `pun.toml` rather than `pint.json`. Real Pint fails on rules it doesn't know, and it never reads `pun.toml`.
+:::
+
+## Where it's going
+
+`pun.toml` will become the one file for format, lint and analyse, with rule names grouped as `format.*`, `lint.*` and `analyse.*`. [`pun migrate`](/docs/roadmap) will write it from `pint.json`, `phpstan.neon` and `rector.php`.
