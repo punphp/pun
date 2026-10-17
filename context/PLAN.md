@@ -159,7 +159,6 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | config 6: remove delegate mode (pun-delegate, `--native-only`); update AGENTS.md | doing (workflow, wf/no-delegate) |
 | config 7: `[files]` + per-command exclude, `pun list-files` | doing (workflow, wf/files) |
 | config 8: `pun config` on the new schema, `pun explain <rule>` | doing (workflow, wf/config-explain) |
-| config 9: the shared problem type (rule ID, path, span, message, help, level, optional fix), one small crate used by lint, analyse and the renderer | doing (workflow, wf/problem) |
 | migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | doing (workflow, wf/migrate-format) |
 
 **Gate:** the 7-project corpus still gives 0 differing files with `pun migrate` + `pun check --fix`, and
@@ -177,6 +176,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | Work | Status |
 | --- | --- |
 | output 1-2: renderer and the look (brand colours, fallbacks, NO_COLOR, links) | doing (workflow, wf/renderer) |
+| output: the renderer takes `pun_problem::{Problem, LineIndex}` for problem blocks and code frames | todo |
 | output 3: `pun format` on the renderer; Pint's human screen removed | todo |
 | output 4-6: GitHub annotations, `pun check` grouped view, exit code 2 | todo |
 
@@ -205,6 +205,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | Work | Status |
 | --- | --- |
 | lint 1-2: the engine from the spike; levels, sets, overrides at run time | blocked (lint spike) |
+| lint: the engine uses `pun_problem::{Problem, apply_fixes}` for diagnostics and the fix loop | todo |
 | lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
 | lint 7: all 542 rules native, in usage order | todo |
 | migrate 4: rector.php | todo |
@@ -248,6 +249,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | CI: pun-analyse coverage to 100% (97.59% in CI); regenerate reports/COVERAGE.md | todo |
 | CI: one branch and PR per thread; rewrite AGENTS.md "Work with other agents" (§4 Q1) | todo |
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
+| scripts/coverage.sh: runs on macOS (no `flock`, no cargo-llvm-cov): make the lock optional or document the install | todo |
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 
