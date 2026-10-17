@@ -214,6 +214,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint 1-2 follow-up: run files in parallel, a cache keyed like format's, and a `pun lint` command on `pun_lint::Linter` | todo |
 | lint 1-2 follow-up (from config 7): run `pun lint` and the lint half of `pun check` over `pun_workspace::files(cfg, Some(Command::Lint), ..)` so `[lint] exclude` takes effect; decide what happens to Blade and storage/framework/views files in that set | todo |
 | lint 1-2 follow-up (from bench): switch the `pun` row of `BENCH=lint` in scripts/bench.py from crates/pun-lint/examples/check.rs to `pun lint` once it exists | todo |
+| lint 1-2 follow-up (from perf lint 2): when `pun lint` is wired into pun-cli, check files while pun-workspace's finder is still walking (shared LIFO work stack, as in examples/check.rs) instead of discovering every file first, and take the entry type from `DirEntry::file_type` instead of a stat per entry | todo |
 | pun-lint: replace `syntax::same_code` with a structural node comparator (Rector's NodeComparator), shared by rules | todo |
 | pun-lint: name resolution for rules that need resolved names (mago-names or analyse's index) | todo |
 | pun-lint: rename the two sample rule IDs (`lint/style/prefer-compound-assignment`, `lint/php-8.0/no-unused-catch-variable`) once config 1 lands the groups | todo |
@@ -286,6 +287,8 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf: lint speed and memory, round by round against the bench, output unchanged | doing (workflow, wf/perf-lint-N) |
 | perf lint 1 follow-up: scripts/bench.py lint and analyse modes report time from a run without the 20 ms RSS polling (or poll RSS in a separate run), so runs under 100 ms show real differences | todo |
 | perf lint 1 follow-up: if the pun-lint tree walk grows with more rules, skip leaf node kinds no rule targets (about 28% of nodes: DirectVariable, Keyword, LocalIdentifier, Terminator, LiteralString); under 3% today | todo |
+| perf lint 2 follow-up: peak memory is Mago's parse arena (about 41x source size; a 462 KB file takes a 26 MB arena, 39k allocations of 376 bytes); cutting it needs an upstream change in Mago, not pun-lint | todo |
+| perf lint 2 follow-up: opening files is the largest system cost (about 25% of samples) and does not scale past 4 threads on macOS; openat through a held directory handle did not help | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 
 ## 4. Open questions
