@@ -69,14 +69,13 @@ impl Fixer for SpaceAfterSemicolonFixer {
                 continue;
             }
 
-            if let Some(until) = inside_for_parentheses_until {
-                if (tokens[index + 2].equals(";", true) || index + 2 == until)
-                    && !Preg::r#match("/\\R/", &tokens[index + 1].content)
-                {
-                    tokens.clear_at(index + 1);
-                    index += 1;
-                    continue;
-                }
+            if let Some(until) = inside_for_parentheses_until
+                && (tokens[index + 2].equals(";", true) || index + 2 == until)
+                && !Preg::r#match("/\\R/", &tokens[index + 1].content)
+            {
+                tokens.clear_at(index + 1);
+                index += 1;
+                continue;
             }
 
             if index + 2 < tokens.count()

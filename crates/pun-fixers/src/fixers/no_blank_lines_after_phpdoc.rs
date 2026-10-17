@@ -42,28 +42,27 @@ impl Fixer for NoBlankLinesAfterPhpdocFixer {
             // get the next non-whitespace token inc comments, provided
             // that there is whitespace between it and the current token
             let next = tokens.get_next_non_whitespace(index, None);
-            if let Some(next) = next {
-                if index + 2 == next
-                    && !tokens[next].is_given_kind(&[
-                        T_BREAK,
-                        T_COMMENT,
-                        T_CONTINUE,
-                        T_DECLARE,
-                        T_DOC_COMMENT,
-                        T_GOTO,
-                        T_INCLUDE,
-                        T_INCLUDE_ONCE,
-                        T_NAMESPACE,
-                        T_REQUIRE,
-                        T_REQUIRE_ONCE,
-                        T_RETURN,
-                        T_THROW,
-                        T_USE,
-                        T_WHITESPACE,
-                    ])
-                {
-                    fix_whitespace(tokens, index + 1);
-                }
+            if let Some(next) = next
+                && index + 2 == next
+                && !tokens[next].is_given_kind(&[
+                    T_BREAK,
+                    T_COMMENT,
+                    T_CONTINUE,
+                    T_DECLARE,
+                    T_DOC_COMMENT,
+                    T_GOTO,
+                    T_INCLUDE,
+                    T_INCLUDE_ONCE,
+                    T_NAMESPACE,
+                    T_REQUIRE,
+                    T_REQUIRE_ONCE,
+                    T_RETURN,
+                    T_THROW,
+                    T_USE,
+                    T_WHITESPACE,
+                ])
+            {
+                fix_whitespace(tokens, index + 1);
             }
         }
     }

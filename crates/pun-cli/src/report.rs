@@ -303,18 +303,18 @@ fn emit_inner(
     }
     print!("{}", fmt(&out, out_dec));
     std::io::Write::flush(&mut std::io::stdout())?;
-    if let (Some(path), Some(f)) = (to_file, file_format.or(format)) {
-        if let Err(e) = std::fs::write(path, reporter(ctx, results, f, out_dec)?) {
-            // PHP's warning, rendered as an uncaught ErrorException. Rust adds " (os error N)" after the same strerror.
-            let e = e.to_string();
-            let msg = format!(
-                "file_put_contents({}): Failed to open stream: {}",
-                path.display(),
-                e.split(" (os error").next().unwrap_or(&e)
-            );
-            print!("{}", pint_error::render(&msg));
-            return Ok(1);
-        }
+    if let (Some(path), Some(f)) = (to_file, file_format.or(format))
+        && let Err(e) = std::fs::write(path, reporter(ctx, results, f, out_dec)?)
+    {
+        // PHP's warning, rendered as an uncaught ErrorException. Rust adds " (os error N)" after the same strerror.
+        let e = e.to_string();
+        let msg = format!(
+            "file_put_contents({}): Failed to open stream: {}",
+            path.display(),
+            e.split(" (os error").next().unwrap_or(&e)
+        );
+        print!("{}", pint_error::render(&msg));
+        return Ok(1);
     }
     if format.is_some() {
         for r in errors(results) {

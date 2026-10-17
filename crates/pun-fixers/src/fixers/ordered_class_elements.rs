@@ -440,13 +440,12 @@ impl OrderedClassElementsFixer {
 
     fn get_type_position(&self, e: &Element) -> i64 {
         let mut ty = e.type_.to_string();
-        if ["method", "magic", "phpunit"].contains(&e.type_) {
-            if let Some(&p) = self
+        if ["method", "magic", "phpunit"].contains(&e.type_)
+            && let Some(&p) = self
                 .type_position
                 .get(&format!("method:{}", String::from_utf8_lossy(&e.name)))
-            {
-                return p;
-            }
+        {
+            return p;
         }
         if SPECIAL_TYPES.contains(&e.type_) {
             if let Some(&p) = self.type_position.get(e.type_) {

@@ -604,27 +604,25 @@ fn find_statement_end_index(tokens: &Tokens, index: usize, parent_scope_end_inde
         }
         let control_structure_continuation_index =
             tokens.get_next_meaningful_token(search_end_index);
-        if if_level > 0 {
-            if let Some(c) = control_structure_continuation_index
+        if if_level > 0
+            && let Some(c) = control_structure_continuation_index
                 .filter(|&c| tokens[c].is_given_kind(&[T_ELSE, T_ELSEIF]))
+        {
+            if tokens[c].is_kind(T_ELSE)
+                && !tokens[tokens.get_next_meaningful_token(c).unwrap()].is_kind(T_IF)
             {
-                if tokens[c].is_kind(T_ELSE)
-                    && !tokens[tokens.get_next_meaningful_token(c).unwrap()].is_kind(T_IF)
-                {
-                    if_level -= 1;
-                }
-                search_end_index = c + 1;
-                continue;
+                if_level -= 1;
             }
+            search_end_index = c + 1;
+            continue;
         }
-        if do_while_level > 0 {
-            if let Some(c) =
+        if do_while_level > 0
+            && let Some(c) =
                 control_structure_continuation_index.filter(|&c| tokens[c].is_kind(T_WHILE))
-            {
-                do_while_level -= 1;
-                search_end_index = c + 1;
-                continue;
-            }
+        {
+            do_while_level -= 1;
+            search_end_index = c + 1;
+            continue;
         }
         end_index = tokens.get_prev_non_whitespace(search_end_index, None);
         break;

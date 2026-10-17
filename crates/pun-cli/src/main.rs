@@ -38,7 +38,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Cmd {
     /// Fix (or check) the coding style of the given paths.
-    Format(FormatCmd),
+    Format(Box<FormatCmd>),
     /// Report Mago's lint-only rules (`--mago`); never edits files. Needs the `mago-lint` build feature.
     #[cfg(feature = "mago-lint")]
     Lint(lint::LintArgs),
@@ -195,7 +195,8 @@ fn main() -> ExitCode {
         }
     } else {
         match Cli::parse().cmd {
-            Cmd::Format(FormatCmd { args, pun }) => {
+            Cmd::Format(c) => {
+                let FormatCmd { args, pun } = *c;
                 let a = FormatArgs { pun, ..args };
                 if a.pun.watch {
                     watch::run(a)
@@ -370,10 +371,11 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         Some(pun_workspace::GitSelect::Diff(b.clone()))
     } else if a.pun.staged {
         Some(pun_workspace::GitSelect::Staged)
-    } else if let Some(r) = &a.pun.since {
-        Some(pun_workspace::GitSelect::Since(r.clone()))
     } else {
-        None
+        a.pun
+            .since
+            .as_ref()
+            .map(|r| pun_workspace::GitSelect::Since(r.clone()))
     };
     let files = match (&selection, &engine) {
         // `pint` mode only (`pun format` refuses it): Pint 1.29 finds no files for an unknown preset.
@@ -436,10 +438,10 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
             return Ok((r, None, false));
         }
         let hash = cache.as_ref().map(|_| cache::hash(&code));
-        if let (Some(c), Some(h)) = (&cache, &hash) {
-            if c.is_clean(&r.rel, h) {
-                return Ok((r, hash, true));
-            }
+        if let (Some(c), Some(h)) = (&cache, &hash)
+            && c.is_clean(&r.rel, h)
+        {
+            return Ok((r, hash, true));
         }
         let mut clean = None;
         let outcome = match isolated(|| engine.run(path, &code)) {

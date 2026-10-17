@@ -107,13 +107,12 @@ fn fix_description(doc: &DocBlock) {
         if line.borrow().contains_a_tag() {
             break;
         }
-        if line.borrow().contains_useful_content() {
-            if let Some(next) = doc.get_line(index + 1) {
-                if next.borrow().contains_a_tag() {
-                    line.borrow_mut().add_blank();
-                    break;
-                }
-            }
+        if line.borrow().contains_useful_content()
+            && let Some(next) = doc.get_line(index + 1)
+            && next.borrow().contains_a_tag()
+        {
+            line.borrow_mut().add_blank();
+            break;
         }
     }
 }

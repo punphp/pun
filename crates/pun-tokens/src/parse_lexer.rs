@@ -402,10 +402,10 @@ impl<'a> ParseLexer<'a> {
             if let Some((m, at)) = strip_error(body, indentation, spaces, at_start, closed) {
                 return self.err(m, self.lineno + at);
             }
-            if state == State::Heredoc {
-                if let Some((m, at)) = escape_error(body) {
-                    return self.err(m, self.lineno + at);
-                }
+            if state == State::Heredoc
+                && let Some((m, at)) = escape_error(body)
+            {
+                return self.err(m, self.lineno + at);
             }
         }
         self.lineno += newlines(body);

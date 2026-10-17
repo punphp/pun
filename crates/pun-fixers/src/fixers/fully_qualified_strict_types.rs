@@ -299,10 +299,10 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
 }
 
 fn refresh_uses_cache(st: &State, uses: &OMap) -> std::rc::Rc<UsesCache> {
-    if let Some((last, c)) = &*st.uses_cache.borrow() {
-        if last == uses {
-            return c.clone();
-        }
+    if let Some((last, c)) = &*st.uses_cache.borrow()
+        && last == uses
+    {
+        return c.clone();
     }
     let c = std::rc::Rc::new(build_uses_cache(uses));
     *st.uses_cache.borrow_mut() = Some((uses.clone(), c.clone()));
@@ -421,15 +421,14 @@ impl FullyQualifiedStrictTypesFixer {
         // try to shorten the name using namespace
         let mut i_min = 0;
         let ns_prefix = [namespace_name, b"\\"].concat();
-        if let Some(tmp_res) = fqcn.strip_prefix(&ns_prefix[..]) {
-            if !cache
+        if let Some(tmp_res) = fqcn.strip_prefix(&ns_prefix[..])
+            && !cache
                 .use_name_by_short_name_lower
                 .contains_key(&strtolower(first_part(tmp_res)))
-                && !self.is_reserved_identifier(st, tmp_res)
-            {
-                res = Some(tmp_res.to_vec());
-                i_min = namespace_name.iter().filter(|&&c| c == b'\\').count() + 1;
-            }
+            && !self.is_reserved_identifier(st, tmp_res)
+        {
+            res = Some(tmp_res.to_vec());
+            i_min = namespace_name.iter().filter(|&&c| c == b'\\').count() + 1;
         }
 
         // try to shorten the name using uses
@@ -449,15 +448,13 @@ impl FullyQualifiedStrictTypesFixer {
             i -= 1;
         }
 
-        if res.is_none() {
-            if let Some(tmp_res) = cache
+        if res.is_none()
+            && let Some(tmp_res) = cache
                 .use_short_name_by_normalized_name
                 .get(&normalize_fqcn(fqcn))
-            {
-                if !self.is_reserved_identifier(st, tmp_res) {
-                    res = Some(tmp_res.clone());
-                }
-            }
+            && !self.is_reserved_identifier(st, tmp_res)
+        {
+            res = Some(tmp_res.clone());
         }
 
         // shortening is not possible, add leading backslash if needed
@@ -667,7 +664,7 @@ impl FullyQualifiedStrictTypesFixer {
         let type_expression = TypeExpression::new(type_, ctx.clone()).map_types(&mut |type_| {
             let current_type_value = type_.to_string().to_vec();
             if type_.is_composite_type()
-                || !Preg::r#match(&regex, &current_type_value)
+                || !Preg::r#match(regex, &current_type_value)
                 || current_type_value == b"min"
                 || current_type_value == b"max"
             {

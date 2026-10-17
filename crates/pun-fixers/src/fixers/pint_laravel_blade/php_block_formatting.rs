@@ -259,10 +259,9 @@ impl PhpBlockFormatting {
             }
             if let Some(formatted) =
                 self.format_echo(expr, line_indent_at(content, start), unescaped)
+                && formatted != region
             {
-                if formatted != region {
-                    edits.push((start, region.len(), formatted));
-                }
+                edits.push((start, region.len(), formatted));
             }
         }
         edits
@@ -315,10 +314,10 @@ impl PhpBlockFormatting {
             } else {
                 (m.str(3), m.offset(3))
             };
-            if let Some(formatted) = self.format_attribute_expr(value) {
-                if formatted != value {
-                    edits.push((value_start as usize, value.len(), formatted));
-                }
+            if let Some(formatted) = self.format_attribute_expr(value)
+                && formatted != value
+            {
+                edits.push((value_start as usize, value.len(), formatted));
             }
         }
         edits

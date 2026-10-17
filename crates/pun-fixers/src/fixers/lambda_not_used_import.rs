@@ -177,10 +177,11 @@ fn count_imports_used_as_argument(
 ) -> Imports {
     for (&start, &end) in arguments {
         let info = ArgumentsAnalyzer.get_argument_info(tokens, start, end);
-        if let Some(name) = info.name {
-            if unset(&mut imports, &name) && imports.is_empty() {
-                return imports;
-            }
+        if let Some(name) = info.name
+            && unset(&mut imports, &name)
+            && imports.is_empty()
+        {
+            return imports;
         }
     }
     imports

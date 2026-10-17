@@ -84,6 +84,9 @@ impl Hasher for EndsHasher {
     }
 }
 
+/// Byte offsets of each group (`None`: did not participate).
+type Groups = Vec<Option<(usize, usize)>>;
+
 type PatternMap<V> = HashMap<Vec<u8>, V, BuildHasherDefault<EndsHasher>>;
 
 thread_local! {
@@ -265,7 +268,7 @@ impl Regex {
         subject: &[u8],
         offset: usize,
         options: u32,
-    ) -> Result<Option<Vec<Option<(usize, usize)>>>, i32> {
+    ) -> Result<Option<Groups>, i32> {
         let rc = unsafe {
             pcre2_match_8(
                 self.code,
@@ -322,7 +325,7 @@ impl Regex {
         subject: &[u8],
         start: usize,
         limit: Option<usize>,
-    ) -> Result<Vec<Vec<Option<(usize, usize)>>>, i32> {
+    ) -> Result<Vec<Groups>, i32> {
         let m = self.matcher();
         let mut out = Vec::new();
         let mut offset = start;
@@ -331,7 +334,7 @@ impl Regex {
             if limit.is_some_and(|l| out.len() >= l) {
                 break;
             }
-            match self.exec(&m, subject, offset, options)? {
+            match self.exec(m, subject, offset, options)? {
                 Some(g) => {
                     let (s, e) = g[0].unwrap();
                     out.push(g);
@@ -359,14 +362,14 @@ impl Regex {
 #[derive(Clone, Debug)]
 pub struct Captures<'s> {
     subject: &'s [u8],
-    groups: Vec<Option<(usize, usize)>>,
+    groups: Groups,
     /// Number of numeric entries PHP puts in `$matches` (`count` from pcre2_match: trailing unmatched groups omitted).
     len: usize,
     names: Rc<[(Vec<u8>, usize)]>,
 }
 
 impl<'s> Captures<'s> {
-    fn new(subject: &'s [u8], groups: Vec<Option<(usize, usize)>>, re: &Regex) -> Self {
+    fn new(subject: &'s [u8], groups: Groups, re: &Regex) -> Self {
         let len = groups
             .iter()
             .rposition(Option::is_some)
@@ -556,7 +559,7 @@ impl Preg {
         with_fallback(pattern, subject, offset, "PhpCsFixer\\Preg::match", |re| {
             let m = re.matcher();
             Ok(re
-                .exec(&m, subject, offset, 0)?
+                .exec(m, subject, offset, 0)?
                 .map(|g| Captures::new(subject, g, re)))
         })
     }
@@ -713,7 +716,7 @@ fn split_impl(re: &Regex, subject: &[u8], limit: isize, flags: u32) -> Result<Ve
     let mut options = 0;
     if limit_val == -1 || limit_val > 1 {
         loop {
-            match re.exec(&m, subject, offset, options)? {
+            match re.exec(m, subject, offset, options)? {
                 Some(g) => {
                     let (s, e) = g[0].unwrap();
                     if !no_empty || s != last_match_offset {
@@ -814,6 +817,94 @@ fn expand_replacement(replacement: &[u8], c: &Captures) -> Vec<u8> {
         i += 1;
     }
     out
+}
+
+/// Plain PHP `preg_*` calls (no `/u` added, no fallback), for ports of code that calls the PHP
+/// functions directly instead of `PhpCsFixer\Preg` (e.g. Pint's Blade formatters). A pattern PHP
+/// cannot compile, or a match error, behaves like PHP's `false`/`null` return: no match / `None`.
+pub struct RawPreg;
+
+impl RawPreg {
+    fn run<T>(pattern: &[u8], subject: &[u8], f: impl Fn(&Regex) -> Result<T, i32>) -> Option<T> {
+        let re = compile(pattern)?;
+        if re.utf && std::str::from_utf8(subject).is_err() {
+            return None;
+        }
+        f(&re).ok()
+    }
+
+    /// `preg_match($pattern, $subject, $matches) === 1`.
+    pub fn match_groups<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Option<Captures<'s>> {
+        Self::run(pattern.as_ref(), subject, |re| {
+            let m = re.matcher();
+            Ok(re
+                .exec(m, subject, 0, 0)?
+                .map(|g| Captures::new(subject, g, re)))
+        })
+        .flatten()
+    }
+
+    pub fn r#match(pattern: impl AsRef<[u8]>, subject: impl AsRef<[u8]>) -> bool {
+        Self::match_groups(pattern, subject.as_ref()).is_some()
+    }
+
+    /// `preg_match_all($pattern, $subject, $m, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)`: every match;
+    /// use `Captures::offset` for offsets.
+    pub fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Captures<'s>> {
+        Self::run(pattern.as_ref(), subject, |re| {
+            Ok(re
+                .exec_all(subject, 0, None)?
+                .into_iter()
+                .map(|g| Captures::new(subject, g, re))
+                .collect())
+        })
+        .unwrap_or_default()
+    }
+
+    /// `preg_replace_callback`; `None` = PHP's `null` (error).
+    pub fn replace_callback(
+        pattern: impl AsRef<[u8]>,
+        callback: impl Fn(&Captures) -> Vec<u8>,
+        subject: impl AsRef<[u8]>,
+    ) -> Option<Vec<u8>> {
+        let subject = subject.as_ref();
+        Self::run(pattern.as_ref(), subject, |re| {
+            let all = re.exec_all(subject, 0, None)?;
+            let mut out = Vec::with_capacity(subject.len());
+            let mut last = 0;
+            for g in all {
+                let (s, e) = g[0].unwrap();
+                out.extend_from_slice(&subject[last..s]);
+                out.extend(callback(&Captures::new(subject, g, re)));
+                last = e;
+            }
+            out.extend_from_slice(&subject[last..]);
+            Ok(out)
+        })
+    }
+
+    /// `preg_replace`; `None` = PHP's `null` (error).
+    pub fn replace(
+        pattern: impl AsRef<[u8]>,
+        replacement: impl AsRef<[u8]>,
+        subject: impl AsRef<[u8]>,
+    ) -> Option<Vec<u8>> {
+        let replacement = replacement.as_ref();
+        Self::replace_callback(pattern, |c| expand_replacement(replacement, c), subject)
+    }
+
+    /// `preg_split($pattern, $subject, $limit, $flags)`; `None` = PHP's `false`.
+    pub fn split(
+        pattern: impl AsRef<[u8]>,
+        subject: impl AsRef<[u8]>,
+        limit: isize,
+        flags: u32,
+    ) -> Option<Vec<Piece>> {
+        let subject = subject.as_ref();
+        Self::run(pattern.as_ref(), subject, |re| {
+            split_impl(re, subject, limit, flags)
+        })
+    }
 }
 
 #[cfg(test)]
@@ -1028,93 +1119,5 @@ mod tests {
             [b"a".to_vec(), b"b".to_vec()]
         );
         assert!(RawPreg::split("/(/", "a", -1, 0).is_none());
-    }
-}
-
-/// Plain PHP `preg_*` calls (no `/u` added, no fallback), for ports of code that calls the PHP
-/// functions directly instead of `PhpCsFixer\Preg` (e.g. Pint's Blade formatters). A pattern PHP
-/// cannot compile, or a match error, behaves like PHP's `false`/`null` return: no match / `None`.
-pub struct RawPreg;
-
-impl RawPreg {
-    fn run<T>(pattern: &[u8], subject: &[u8], f: impl Fn(&Regex) -> Result<T, i32>) -> Option<T> {
-        let re = compile(pattern)?;
-        if re.utf && std::str::from_utf8(subject).is_err() {
-            return None;
-        }
-        f(&re).ok()
-    }
-
-    /// `preg_match($pattern, $subject, $matches) === 1`.
-    pub fn match_groups<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Option<Captures<'s>> {
-        Self::run(pattern.as_ref(), subject, |re| {
-            let m = re.matcher();
-            Ok(re
-                .exec(&m, subject, 0, 0)?
-                .map(|g| Captures::new(subject, g, re)))
-        })
-        .flatten()
-    }
-
-    pub fn r#match(pattern: impl AsRef<[u8]>, subject: impl AsRef<[u8]>) -> bool {
-        Self::match_groups(pattern, subject.as_ref()).is_some()
-    }
-
-    /// `preg_match_all($pattern, $subject, $m, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)`: every match;
-    /// use `Captures::offset` for offsets.
-    pub fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Captures<'s>> {
-        Self::run(pattern.as_ref(), subject, |re| {
-            Ok(re
-                .exec_all(subject, 0, None)?
-                .into_iter()
-                .map(|g| Captures::new(subject, g, re))
-                .collect())
-        })
-        .unwrap_or_default()
-    }
-
-    /// `preg_replace_callback`; `None` = PHP's `null` (error).
-    pub fn replace_callback(
-        pattern: impl AsRef<[u8]>,
-        callback: impl Fn(&Captures) -> Vec<u8>,
-        subject: impl AsRef<[u8]>,
-    ) -> Option<Vec<u8>> {
-        let subject = subject.as_ref();
-        Self::run(pattern.as_ref(), subject, |re| {
-            let all = re.exec_all(subject, 0, None)?;
-            let mut out = Vec::with_capacity(subject.len());
-            let mut last = 0;
-            for g in all {
-                let (s, e) = g[0].unwrap();
-                out.extend_from_slice(&subject[last..s]);
-                out.extend(callback(&Captures::new(subject, g, re)));
-                last = e;
-            }
-            out.extend_from_slice(&subject[last..]);
-            Ok(out)
-        })
-    }
-
-    /// `preg_replace`; `None` = PHP's `null` (error).
-    pub fn replace(
-        pattern: impl AsRef<[u8]>,
-        replacement: impl AsRef<[u8]>,
-        subject: impl AsRef<[u8]>,
-    ) -> Option<Vec<u8>> {
-        let replacement = replacement.as_ref();
-        Self::replace_callback(pattern, |c| expand_replacement(replacement, c), subject)
-    }
-
-    /// `preg_split($pattern, $subject, $limit, $flags)`; `None` = PHP's `false`.
-    pub fn split(
-        pattern: impl AsRef<[u8]>,
-        subject: impl AsRef<[u8]>,
-        limit: isize,
-        flags: u32,
-    ) -> Option<Vec<Piece>> {
-        let subject = subject.as_ref();
-        Self::run(pattern.as_ref(), subject, |re| {
-            split_impl(re, subject, limit, flags)
-        })
     }
 }
