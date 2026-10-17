@@ -20,7 +20,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | Lint = PHP's own grammar (TOKEN_PARSE parity, PHP error text) | - | done |
 | Mutation fuzzer `scripts/fuzz-parity.sh` (23 seeds, 0 diffs); per-rule e2e suite (166 rules) | - | done |
 | Content-hash cache (`--cache-file`, `--no-cache`, default ~/.cache/pun) | - | done |
-| Speed: profiling build, hot spots, Blade/Prettier batching, Mago comparison, scoreboard | perf agent (target-perf/) | doing |
+| Speed: profiling build, hot spots, Prettier worker per thread, Mago comparison, scoreboard (laravel-framework 3.7 s cold / 0.07 s warm) | - | done |
 | M1.5 PSR-12: Pint psr12 preset + @PSR1/@PSR2/@PSR12, parity 0 on all 7 projects + 7 fuzz seeds | - | done |
 | M1.4 Delegate mode: unported/custom fixers via PHP workers, `--native-only` (crates/pun-delegate); laravel-framework own config 0 differing | - | done |
 | laravel-framework own pint.json fully native: port its 8 unported rules, native `// @php-cs-fixer-ignore`, cover php_diff.rs:163 (harness 0 differing, 5 fuzz seeds 0) | - | done |
@@ -32,8 +32,8 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | Cleanup: /code-review --fix, architecture pass, remove restating comments, cargo fmt, clippy (59); clap: `ValueEnum` for `--engine` and `config --format` instead of string lists + manual mapping (keep `--format`/`--output-format` as strings: Pint prints its own "Format [x] is not supported." box) | cleanup agent (target-cleanup/) | doing |
 | CRLF fuzz diff + native framework benchmark: seed-2 Process.php diff was a stale target/debug/pun (fuzz-parity.sh now refuses stale binaries); crlf + mixed-eol fuzz 16 runs 0 differing; scoreboard re-measured with own pint.json, no flags | - | done |
 | Pint-mode polish: Pun-only flags rejected in pint mode, -v exception boxes (class + throw site; PHP frames dropped), --bail abort progress, list pint.json, --preset=nope, LSP config reload, per-file fixer panics, watch exits with its parent, one Node probe (crates/pun-cli, pun-config) | - | done |
-| CI workflows (.github/ untracked: gh token lacks `workflow` scope) | user | blocked |
-| Publish v0.1 (tag, LICENSE, crates, npm @punphp, Homebrew, Packagist, public repo) | user | needs approval |
+| CI workflows pushed (tests, coverage gate, parity, fuzz, cargo-dist on tags only) | - | done |
+| Publish: only after format, analyse, lint and migrate all exist (user decision); repo stays private | user | deferred |
 | After v0.1 ships: make pun-harness local dev tooling, not a shipped crate. Move to `tools/harness` (or an `xtask`), `publish = false`, drop it from release/dist. Move `crates/pun-harness/fixtures/` to `crates/pun-fixers/tests/fixtures/` (pun-fixers tests read them). Keep the CI parity job calling it | - | todo (after release) |
 
 ### Phase 2 (pun lint)
