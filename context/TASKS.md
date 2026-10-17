@@ -13,7 +13,7 @@ History before the 2026-10-17 reset (every finished Phase 1 row, with its eviden
 | C0 | Repo cleanup, context/ folder, component plan | plan-reset thread (claude/repo-cleanup-plan-reset-wu15p3) | doing |
 | C0 | Get CI on main green (run 56 failed; 54-55 cancelled) | - | todo |
 | C0 | Clippy gate in CI (`-D warnings`) | - | todo |
-| C0 | Coverage: pun-phpstan to 100%; add pun-analyse and pun-lsp to the table | - | todo |
+| C0 | Coverage: pun-analyse to 100% (97.59% in CI); regenerate reports/COVERAGE.md | - | todo |
 | C1 | Token text as spans into the source buffer | - | todo |
 | C2 | Swap `vendor/bin/pint` for Pun in Pinkary's CI | - | todo |
 | C2 | 8-core benchmark in CI (laravel-framework under 1 s cold) | - | todo |

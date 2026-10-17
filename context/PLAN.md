@@ -41,7 +41,8 @@ claimed. We go through the components one at a time and rewrite each section as 
 **Pending.**
 - CI health: run 56 on main failed and 54-55 were cancelled (2026-10-17); find out why and get main green.
 - Clippy gate: drop `continue-on-error`, add `-D warnings` (REQUESTS.md).
-- Coverage table misses pun-analyse and pun-lsp, and pun-phpstan is at 99.60% (reports/COVERAGE.md): the gate is red.
+- Coverage gate is red: CI measures every crate at 100% except pun-analyse at 97.59% (2066/2117 lines, run 39015344878),
+  the crate under active work. The committed reports/COVERAGE.md table is older and lists neither pun-analyse nor pun-lsp.
 - Parallel work: AGENTS.md is written for agents sharing one 2-core box and one git index. With several cloud threads,
   each thread works on its own branch and PR per component; TASKS.md rows name the thread. Decide this together (Q1).
 
@@ -96,7 +97,8 @@ cold run). Pure speed work; no behaviour change.
 - `pun format` (every Pint flag and reporter, `--dirty`, `--diff`, `--staged`, `--since`, `--stdin`, `--watch`,
   `--explain`, `--native-only`, cache), `pun lint`, `pun check [--fix]`, `pun migrate`, `pun config`, `pun lsp`
   (formatting only).
-- Agent-optimised output for every command (7fd15f4); see the spec below.
+- Agent-optimised output for every command (7fd15f4, 4d47eaa); see the spec below. `pun lint --mago` and
+  `pun format --watch` still print their own output.
 
 **Pending.** `pun analyse` subcommand (C7) and joining it into `pun check`; `pun explain` (C3).
 
@@ -158,7 +160,7 @@ baselines and `ignoreErrors`, so CI can swap with no baseline churn.
 - Wire it up: `pun analyse` subcommand, `[analyse]` in pun.toml (C3), agent output, `pun check`.
 - M2.4 Larastan natively (pun-laravel: models, casts, relations, facades, container, macros). Not started.
 - M2.5 Pest plugin; M2.6 levels 1-10, strict-rules, deprecation-rules; M2.7 incremental and LSP diagnostics.
-- Coverage: pun-phpstan at 99.60%; pun-analyse not in the coverage table.
+- Coverage: pun-analyse at 97.59% in CI (pun-phpstan is at 100%).
 - Decide the release bar: which levels and extensions must be native (Q2).
 
 ## C8. Lint (Rector parity)
