@@ -53,6 +53,8 @@ mago-prelude = { version = "=1.57.0", features = ["build"] }
 mago-php-version = "=1.57.0"
 mago-word = "=1.57.0"
 pun-analyse = { path = "crates/pun-analyse", package = "punphp-analyse" }
+# Env-only: the default `process-tree` feature (sysinfo) adds ~12 ms per start and finds agents up the process tree.
+agent-detector = { version = "=0.2.1", default-features = false }
 
 [profile.release]
 lto = "thin"

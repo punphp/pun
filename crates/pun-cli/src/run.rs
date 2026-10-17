@@ -82,6 +82,10 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     // Config errors are one line (on stderr), not a Pint box: Pint never reads pun.toml.
     let mut cfg = match load_config(&a, &root) {
         Ok(cfg) => cfg,
+        Err(e) if crate::agent::enabled() => {
+            print!("{}", crate::agent::error(&format!("{e:#}")));
+            return Ok(1);
+        }
         Err(e) => {
             eprintln!("pun: {e:#}");
             return Ok(1);
@@ -215,7 +219,12 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
                     r.diff = report::diff(
                         &String::from_utf8_lossy(&code),
                         &String::from_utf8_lossy(&new),
-                        path,
+                        // Agent mode: paths relative to the project, as everywhere in its output.
+                        if crate::agent::enabled() {
+                            Path::new(&r.rel)
+                        } else {
+                            path
+                        },
                     );
                 }
                 r.applied = applied;

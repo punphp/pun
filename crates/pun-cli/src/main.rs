@@ -1,5 +1,6 @@
 //! `pun` binary. `pun format` takes Pint's flags and mimics its output and exit codes; every command reads pun.toml.
 
+mod agent;
 mod cache;
 mod console;
 mod fix_report;
@@ -32,6 +33,12 @@ use std::process::ExitCode;
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,
+    /// Agent output (a summary line, then one line per finding) even when no coding agent is detected.
+    #[arg(long, global = true)]
+    agent: bool,
+    /// Human output even under a coding agent.
+    #[arg(long, global = true, conflicts_with = "agent")]
+    no_agent: bool,
 }
 
 #[derive(Subcommand)]
@@ -58,9 +65,9 @@ enum Cmd {
         /// Accepted for compatibility; showing is all `pun config` does.
         #[arg(long)]
         show: bool,
-        /// Output format.
-        #[arg(long, value_enum, default_value_t = ConfigFormat::Toml)]
-        format: ConfigFormat,
+        /// Output format (default: toml).
+        #[arg(long, value_enum)]
+        format: Option<ConfigFormat>,
         #[arg(long)]
         config: Option<PathBuf>,
         #[arg(long)]
@@ -184,7 +191,18 @@ pub struct PunArgs {
 fn main() -> ExitCode {
     #[cfg(feature = "pprof")]
     let sampler = sampler::start();
-    let (result, pint_errors) = match Cli::parse().cmd {
+    let cli = Cli::parse();
+    let name = match &cli.cmd {
+        Cmd::Format(_) => "format",
+        Cmd::Lint { .. } => "lint",
+        Cmd::Check(_) => "check",
+        Cmd::Migrate(_) => "migrate",
+        Cmd::Lsp => "lsp",
+        Cmd::Config { .. } => "config",
+    };
+    let flag = (cli.agent || cli.no_agent).then_some(cli.agent);
+    agent::init(flag, name);
+    let (result, pint_errors) = match cli.cmd {
         Cmd::Format(a) if a.pun.watch => (watch::run(*a), true),
         Cmd::Format(a) => (format(*a, Stage::Format), true),
         #[cfg(feature = "mago-lint")]
@@ -211,6 +229,10 @@ fn main() -> ExitCode {
             print!("{}", pint_error::render(&e.to_string()));
             ExitCode::FAILURE
         }
+        Err(e) if agent::enabled() => {
+            print!("{}", agent::error(&format!("{e:#}")));
+            ExitCode::FAILURE
+        }
         Err(e) => {
             eprintln!("pun: {e:#}");
             ExitCode::FAILURE
@@ -229,9 +251,14 @@ fn root() -> Result<PathBuf> {
     Ok(std::env::current_dir()?.canonicalize()?)
 }
 
-fn show_config(fmt: ConfigFormat, config: Option<PathBuf>, preset: Option<String>) -> Result<u8> {
+fn show_config(
+    fmt: Option<ConfigFormat>,
+    config: Option<PathBuf>,
+    preset: Option<String>,
+) -> Result<u8> {
+    let root = root()?;
     let cfg = pun_config::load(
-        &root()?,
+        &root,
         &Options {
             config,
             preset,
@@ -239,7 +266,21 @@ fn show_config(fmt: ConfigFormat, config: Option<PathBuf>, preset: Option<String
         },
     )?;
     let v = cfg.show();
-    if fmt == ConfigFormat::Json {
+    if fmt.is_none() && agent::enabled() {
+        // Agent mode: what was loaded in one line, then the TOML as usual.
+        let sources: Vec<String> = (cfg.sources.iter())
+            .map(|s| s.strip_prefix(&root).unwrap_or(s).display().to_string())
+            .collect();
+        let detail = [
+            format!("preset {}", cfg.preset),
+            format!("PHP {}", cfg.php),
+            agent::count(cfg.rules.len(), "format rule"),
+            agent::count(cfg.lint.len(), "lint rule"),
+        ];
+        let from = format!("from {}", sources.join(", "));
+        print!("{}", agent::render("ok", &detail, &from, &[], false));
+        print!("{}", toml::to_string(&v)?);
+    } else if fmt == Some(ConfigFormat::Json) {
         println!("{}", serde_json::to_string_pretty(&v)?);
     } else {
         print!("{}", toml::to_string(&v)?);

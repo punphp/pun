@@ -172,6 +172,6 @@ fn config_and_preset_flags() {
     pun(&d, &["migrate"]);
     assert_eq!(
         read(&d, "pun.toml"),
-        "# Written by `pun migrate` from pint.json.\n[format]\npreset = \"laravel\"\n\n[lint.rules]\nno-alias-function = { fix = \"apply\" }\nno-unreachable-default-argument-value = { fix = \"apply\" }\nrequire-ordered-traits = { fix = \"apply\" }\nrequire-protected-setup = { fix = \"apply\" }\n"
+        "# Written by `pun migrate`: no pint.json or .php-cs-fixer.php found; wrote pun.toml with the laravel preset.\n[format]\npreset = \"laravel\"\n\n[lint.rules]\nno-alias-function = { fix = \"apply\" }\nno-unreachable-default-argument-value = { fix = \"apply\" }\nrequire-ordered-traits = { fix = \"apply\" }\nrequire-protected-setup = { fix = \"apply\" }\n"
     );
 }

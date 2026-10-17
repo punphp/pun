@@ -280,9 +280,8 @@ fn matches_pint() {
     ] {
         cx.same(&dir, &tree, &[], args, &[], b"");
     }
-    // A coding agent in the environment switches Pint to its agent reporter.
-    cx.same(&dir, &tree, &[], &["--test"], &[("AI_AGENT", "x")], b"");
-    cx.same(&dir, &tree, &[], &[], &[("CLAUDECODE", "1")], b"");
+    // A coding agent in the environment switches Pint to its JSON agent reporter; Pun prints its own agent format
+    // there (tests/agent.rs), and that reporter only with --format=agent (above).
     // Narrow terminals: progress wraps, descriptions are truncated (unless -v).
     cx.same(&dir, &tree, &[], &["--test"], &[("COLUMNS", "40")], b"");
     cx.same(
@@ -329,11 +328,9 @@ fn matches_pint() {
     );
     cx.same_error(&dir, &bad_in, &[]);
     // Unreadable / unwritable files: same box (see output.rs error_boxes_like_pint for the byte-exact cases).
-    for (mode, args, env) in [
-        (0o444, &[][..], &[][..]),
-        (0o000, &["--test"], &[]),
-        (0o000, &["--test"], &[("AI_AGENT", "x")]),
-    ] {
+    // Under an agent Pint drops the progress; Pun prints one error line instead (tests/agent.rs).
+    let env: &[(&str, &str)] = &[];
+    for (mode, args) in [(0o444, &[][..]), (0o000, &["--test"])] {
         let locked = || {
             reset(&dir, &tree);
             std::fs::set_permissions(
@@ -346,13 +343,8 @@ fn matches_pint() {
         let (want, _) = cx.pint(&dir, args, env, b"");
         locked();
         let (got, _) = pun_format(&dir, args, env, b"");
-        // Progress symbols of the files before the aborting one (none under an agent), then the box.
-        assert_eq!(
-            want.stdout.starts_with("\n  "),
-            env.is_empty(),
-            "{}",
-            want.stdout
-        );
+        // Progress symbols of the files before the aborting one, then the box.
+        assert!(want.stdout.starts_with("\n  "), "{}", want.stdout);
         assert_eq!((got.code, got.stdout), (want.code, want.stdout));
     }
     std::fs::set_permissions(
@@ -783,6 +775,17 @@ fn migrates_php_cs_fixer_config() {
         )
     );
     assert!(!dir.join("pun.toml").exists());
+    // Agent mode: the Finder note and the unsupported rule as findings under one line.
+    let (out, _, code) = pun_env(&dir, &["migrate"], &[("PUN_AGENT", "1")]);
+    let (first, rest) = out.split_once('\n').unwrap();
+    let out = format!("{}, Ts)\n{rest}", &first[..first.rfind(", ").unwrap()]);
+    assert_eq!(
+        (out.as_str(), code),
+        (
+            "pun migrate: fail, 1 unsupported rule, nothing written (from .php-cs-fixer.php, Ts)\n.php-cs-fixer.php finder-not-migrated configures its own Finder, which is not migrated: check [format] paths and exclude.\n.php-cs-fixer.php unsupported-rule Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n",
+            Some(1)
+        )
+    );
     std::fs::write(
         dir.join(".php-cs-fixer.php"),
         "<?php\nreturn (new PhpCsFixer\\Config())->setRiskyAllowed(true)->setRules(['single_quote' => true, 'strict_param' => true]);\n",
@@ -836,6 +839,13 @@ fn migrates_php_cs_fixer_config() {
     );
     assert!(
         out.contains(r#"{"path":"app\/B.php","message":"Parse error: Unmatched ')' on line 4."}"#),
+        "{out}"
+    );
+    // Agent mode: a fixer's exception or broken output is `fixer-error`, at the line when the message has one.
+    let (out, _, code) = pun_env(&dir, &["format", "--test"], &[("PUN_AGENT", "1")]);
+    assert_eq!(code, Some(1));
+    assert!(
+        out.ends_with("\napp/B.php:4 fixer-error Parse error: Unmatched ')' on line 4.\napp/T.php fixer-error boom\n"),
         "{out}"
     );
 }

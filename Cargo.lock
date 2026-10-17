@@ -28,6 +28,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
+name = "agent-detector"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9bfb5cc9405a158bc050668e34b3bbbd3ace4ff7c4e06036e7418417f90a9ab5"
+
+[[package]]
 name = "ahash"
 version = "0.8.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1917,6 +1923,7 @@ dependencies = [
 name = "punphp"
 version = "0.0.1"
 dependencies = [
+ "agent-detector",
  "anyhow",
  "clap",
  "lsp-server",
