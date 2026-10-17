@@ -1,10 +1,10 @@
 # Pun: Implementation Plan
 
-Oct 16, 2026 · @Pushpak
+Oct 16, 2026 · @Pushpak · updated Oct 17, 2026 (command layout, one config, editor; Phase 1 status)
 
 ## Summary
 
-Pun is a single Rust binary that replaces Pint, PHP-CS-Fixer, PHPStan + Larastan, Rector, Composer and Pest's runner for PHP 8.4+ projects, built on Mago's crates, with output identical to the tools it replaces. Priority order: `pun format`, `pun lint`, `pun refactor`, `pun migrate` (config migration), `pun install` (Composer-compatible package manager), `pun run index.php` on FrankenPHP, then `pun test`.
+Pun is a single Rust binary that replaces Pint, PHP-CS-Fixer, PHPStan + Larastan, Rector, Composer and Pest's runner for PHP 8.4+ projects, built on Mago's crates, with output identical to the tools it replaces. Priority order: `pun format` (Pint), `pun lsp` (editor), `pun analyse` (PHPStan), `pun lint` (Rector), `pun migrate` (one-time move to pun.toml), `pun install` (Composer-compatible package manager), `pun run index.php` on FrankenPHP, then `pun test`.
 
 The acceptance test for every phase: run Pun and the original tool on Pinkary (and a fixed corpus of Laravel projects) and get byte-identical output, identical diagnostics, or identical test results.
 
@@ -21,6 +21,63 @@ The acceptance test for every phase: run Pun and the original tool on Pinkary (a
 
 Each phase ends in a release that is useful on its own. With a second team, Phase 7 (`pun test`) can start alongside Phase 2, since the test runner depends only on the embedded runtime and Mago's parser.
 
+## Update, Oct 17: command layout, one config, editor
+
+These decisions replace earlier wording where they conflict.
+
+### Commands
+
+| Command | Does | Replaces | Parity target |
+| --- | --- | --- | --- |
+| `pun format` | Fixes layout (Pint / PHP-CS-Fixer rules) | `pint` | Bytes, output and exit codes of `pint` |
+| `pun lint`, `pun lint --fix` | Reports / applies code rules (Rector rules; Mago lint rules opt-in under `[lint.mago]`, reported as `mago.*`) | `rector process --dry-run`, `rector process` | Rector's diff and written files |
+| `pun analyse` (alias `analyze`) | Reports type errors, never edits | `phpstan analyse` + Larastan | PHPStan's error list, baselines, ignores |
+| `pun lsp` | Editor server: PHPantom for completion, hover, definitions and references; Pun for formatting, diagnostics and quick fixes | Intelephense / PHPStorm inspections for Pun users | Pint-identical formatting, same diagnostics as the CLI |
+| `pun migrate` | One-time move of a project onto pun.toml | Hand-editing configs | Zero behaviour change on migration day |
+
+So Phase 2 is `pun analyse` and Phase 3 is `pun lint`. `pun lint --fix` does not format afterwards, matching Rector; `--format` runs both in one pass.
+
+### One config: pun.toml
+
+Long term a project has one file:
+
+```toml
+[php]
+version = "8.4"
+
+[format]                      # from pint.json / .php-cs-fixer.php
+preset = "laravel"
+rules.ordered_imports = { sort_algorithm = "alpha" }
+
+[lint]                        # from rector.php
+sets = ["php84", "laravel-12", "dead-code"]
+rules = ["early-return"]
+
+[analyse]                     # from phpstan.neon; explicit rules, no levels
+paths = ["app", "tests"]
+baseline = "pun-baseline.toml"
+laravel = true                # Larastan
+rules.undefined-method = "error"
+rules.mixed-argument = "off"
+```
+
+- **No levels.** A PHPStan level becomes the explicit list of rules it enables, written out by `pun migrate`. After that, rules turn on and off one by one, the way mago.toml works.
+- **Exact parity is the migration safety net, not the end state.** Pun matches Pint, PHPStan and Rector exactly so a project can switch with zero diff. After migration Pun is free to use its own rule names, messages and rule combinations.
+- **Compat read stays.** Without pun.toml, Pun keeps reading pint.json, phpstan.neon and rector.php directly so trying Pun needs no changes, and prints a one-line hint to run `pun migrate`. *(Proposed; confirm.)*
+- **Rule names.** `format.*`, `lint.*`, `analyse.*` and `mago.*`, with Pun's own kebab-case names (`analyse.undefined-method` rather than `method.notFound`). `pun explain <rule>` shows the upstream tool's name and docs. *(Proposed; confirm.)*
+
+### pun migrate (replaces the Phase 4 design)
+
+1. `pun migrate --dry-run` reads pint.json, .php-cs-fixer.php, phpstan.neon, the baseline and rector.php. It prints the pun.toml it would write and **lists every rule, extension and Rector rule Pun can't run natively, before anything changes**.
+2. Writes pun.toml, with levels expanded into explicit rules.
+3. Converts phpstan-baseline.neon to pun-baseline.toml under Pun rule names.
+4. Rewrites tool comments in code: `@phpstan-ignore <id>` and `@phpstan-ignore-next-line` become `@pun-ignore <rule>` and `@pun-ignore-next-line`, and `// @php-cs-fixer-ignore <rule>` becomes `// @pun-ignore format.<rule>`.
+5. **PHPDoc type tags stay by default.** `@phpstan-param`, `@phpstan-return`, `@psalm-var` and the rest are type information that PhpStorm, Intelephense, Psalm and downstream users of a library rely on. `pun migrate --phpdoc` (opt-in, meant for applications, not libraries) rewrites them to `@pun-*`. Pun reads all three forms everywhere. Once `pun lsp` covers the editor side, `--phpdoc` can become the default for `"type": "project"`.
+6. Proves parity: runs the old tools and Pun and diffs. Any difference blocks the switch.
+7. Switches the workflow: composer scripts, CI steps, pre-commit hook, editor settings, Laravel Boost guidelines. `--remove-tools` deletes the old configs and composer dev dependencies.
+
+The format part (`pint.json` to `[format]`, `@php-cs-fixer-ignore` rewrites) can ship now; `pun config --init` already writes `[format]`. The lint and analyse parts land with Phases 2 and 3.
+
 ## Decisions for you to confirm
 
 I made every other call myself. These change the shape of the project. Row 2 is now settled (config migration); the other four still need your call.
@@ -28,7 +85,7 @@ I made every other call myself. These change the shape of the project. Row 2 is 
 | # | Decision | My default | Alternative |
 | --- | --- | --- | --- |
 | 1 | Home and license | MIT, under shipfastlabs until v0.1 proves the format engine | Pitch it inside Laravel from day one |
-| 2 | Meaning of `pun migrate` | Confirmed. Config migration: read pint.json, phpstan.neon, rector.php, composer scripts and CI, write pun.toml, verify parity. PHP version upgrades live in `pun refactor --set php85` | `pun migrate` upgrades the code itself to PHP 8.5 (Rector sets + Laravel Shift style) |
+| 2 | Meaning of `pun migrate` | Confirmed. Config migration: read pint.json, phpstan.neon, rector.php, composer scripts and CI, write pun.toml, verify parity. PHP version upgrades live in `pun lint --set php85` | `pun migrate` upgrades the code itself to PHP 8.5 (Rector sets + Laravel Shift style) |
 | 3 | Relationship with Mago | Depend on crates.io releases, upstream every fix, talk to Seifeddine Gmati (Mago's maintainer) early about Pun's needs | Hard fork of Mago into the Pun repo |
 | 4 | How FrankenPHP is "built in" | Phase A: Pun links libphp itself (Rust SAPI). Phase B: FrankenPHP compiled as a Go c-archive and linked into the same binary, sharing one libphp | Ship FrankenPHP as a version-pinned sidecar binary that Pun downloads and manages |
 | 5 | Default formatter output | Byte-identical to Pint (compat engine) whenever pint.json or .php-cs-fixer.php exists or no config exists | Default to Mago-style "Pun style" and treat Pint parity as an import mode |
@@ -45,8 +102,8 @@ The gap Pun fills: Mago is fast but not a drop-in; the incumbent tools are compa
 | [Mago](https://github.com/carthage-software/mago) | v1.48.1, Rust, MIT/Apache-2.0. Formatter, linter, analyzer in one binary, no PHP needed. Lints a 7M LOC project in 0.88s vs 25.3s for PHP-CS-Fixer ([benchmarks](https://mago.carthage.software/latest/en/)). Has a Laravel lint integration and a `laravel` formatter preset | The component base. But its Laravel preset is not byte-identical to Pint ([wick's note](https://packagist.org/packages/cresset/wick)), its config is mago.toml, and its analyzer does not emit PHPStan's identifiers or honour phpstan baselines |
 | [Pint](https://laravel-news.com/blade-formatting-in-laravel-pint) | 1.3x, a PHP-CS-Fixer wrapper with presets laravel, psr12, per, symfony, empty. 1.30 added opt-in Blade formatting through Node, Prettier and prettier-plugin-blade | Byte parity target for `pun format`. Blade needs its own plan |
 | [PHP-CS-Fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer) | 3.95.x, supports PHP 7.4 to 8.5 | The fixer source we port, and its per-fixer test fixtures are our parity suite |
-| [PHPStan](https://phpstan.org/blog/phpstan-2-0-released-level-10-elephpants) + [Larastan](https://laraplugins.io/plugins/nunomaduro/laravel-code-analyse) | PHPStan 2.x with levels 0 to 10; Larastan 3.10 supports Laravel 13 | Parity target for `pun lint` |
-| [Rector](https://sourceforge.net/projects/rector.mirror/files/2.6.1/) | 2.6.x; rules now bound to installed composer package versions | Parity target for `pun refactor` |
+| [PHPStan](https://phpstan.org/blog/phpstan-2-0-released-level-10-elephpants) + [Larastan](https://laraplugins.io/plugins/nunomaduro/laravel-code-analyse) | PHPStan 2.x with levels 0 to 10; Larastan 3.10 supports Laravel 13 | Parity target for `pun analyse` |
+| [Rector](https://sourceforge.net/projects/rector.mirror/files/2.6.1/) | 2.6.x; rules now bound to installed composer package versions | Parity target for `pun lint` |
 | [Pest 5](https://laravel-news.com/pest-5) | 5.3.2 (Oct 12, 2026). Requires PHP 8.4 + PHPUnit 13. TIA engine replays unaffected tests from cache; Taylor reported Laravel Cloud's 19,000+ tests going from 3 minutes to 5 seconds | Parity target for `pun test`; TIA must be matched natively, not just wrapped |
 | [FrankenPHP](https://www.phparch.com/2026/07/frankenphp-in-production-worker-mode-embedded-binaries-and-real-performance/) | Go + Caddy, embeds libphp via cgo, worker mode, static single-binary builds | The runtime half of Pun |
 | Rust libphp embedding | [ext-php-rs](https://docs.rs/crate/ext-php-rs/latest/source/guide/src/advanced/embedded_php.md) has an `embed` feature; [bext-php](https://docs.rs/bext-php/) shows a custom SAPI with a ZTS worker pool in Rust | Proof that the Rust SAPI approach works; we reuse the pattern |
@@ -74,7 +131,7 @@ Every command runs on Pun's compatibility layer, which is built on Mago's crates
 | mago-composer | all | composer.json and autoload maps; PHP version constraint check |
 | mago-php-version | all | Feature gating by target PHP version |
 | mago-codex, mago-prelude | lint, refactor | Symbol table for project + vendor code and built-in PHP stubs |
-| mago-analyzer, mago-algebra | lint, refactor | Type inference engine under `pun lint` and type-aware Rector rules |
+| mago-analyzer, mago-algebra | lint, refactor | Type inference engine under `pun analyse` and type-aware Rector rules |
 | mago-linter | lint | Its rules ship as opt-in extras (`[lint.mago]`); its Laravel integration seeds `pun-laravel` |
 | mago-collector | lint | Suppression pragmas; extended to read `@phpstan-ignore` and `@phpstan-ignore-next-line` |
 | mago-guard | test | Evaluates Pest `arch()` expectations statically, without booting PHP |
@@ -161,6 +218,28 @@ Goal: the harness, the corpus and a working embedded PHP exist before any fixer 
 
 Goal: `pun format` produces byte-identical output to the pinned Pint version on Pinkary and the corpus, with Pint's laravel and psr12 presets and every PHP-CS-Fixer rule available (native or delegated), at least 30x faster than Pint.
 
+### Status (Oct 17)
+
+| Milestone | State | Evidence |
+| --- | --- | --- |
+| M1.1 Token layer | Done | token_get_all parity; PHP's own grammar for syntax errors (bison tables from php-src 8.5.11, 788 oracle snippets) |
+| M1.2 laravel preset | Done | 147 Pinkary rules plus new_with_parentheses and Pint/phpdoc_type_annotations_only; upstream fixtures plus oracle cases per rule; 166-rule end-to-end suite through the real binary |
+| M1.3 CLI parity | Done | Every flag and reporter checked against Pint 1.29.3 (scripts/cli-parity.sh, tests/flags.rs, tests/output.rs), including error boxes, colours, -v diffs and the prettier check. Pun extras: `--since`, `--staged`, `--stdin`, `--explain`, `--native-only`, `--no-cache` |
+| M1.4 Delegate mode | Done, with system PHP | Unported or custom fixers send the whole run through PHP-CS-Fixer in long-lived `php` workers (laravel-framework's own pint.json matched before its 8 missing rules were ported) |
+| M1.5 PSR-12 | Done | psr12 preset and @PSR1/@PSR2/@PSR12 expanded like PHP-CS-Fixer's RuleSet; 0 differing on all 7 corpus projects |
+| M1.6 Cache, watch, editor | Done | Content-hash cache (xxh3, signature = version, PHP, rules, Blade lockfiles); `--watch`; formatting-only `pun lsp` |
+| Parity | Done | 0 differing on all 7 corpus projects (laravel and psr12); mutation fuzzer incl. CRLF/mixed line endings: 0 differing |
+| Coverage | Done | 100% lines on every crate, no tautological tests |
+| Cleanup (review, architecture, comments, fmt, clippy) | In progress | |
+
+Speed (profiling build, shared 2-core box; docs/scoreboard.md):
+
+| Run | Pint | Pun cold | Pun warm | Mago |
+| --- | --- | --- | --- | --- |
+| laravel-framework, own pint.json (3027 files) | 190 s | 3.7 s (~50x) | 0.07 s | 1.1 s, no cache |
+| Pinkary PHP only | | 0.33 s | 0.03 s | 0.13 s |
+| Pinkary with Blade | 13.4 s | 4.2 s (3.2x) | 0.2 s (67x) | |
+
 ### How the compat engine works
 
 PHP-CS-Fixer's model, reproduced exactly:
@@ -173,35 +252,51 @@ PHP-CS-Fixer's model, reproduced exactly:
 
 Porting rules: keep upstream's structure function by function, so a diff between the PHP and the Rust stays reviewable. Use the `pcre2` crate wherever upstream calls `preg_*`, never Rust's `regex`, because PHP regexes use lookbehind, backreferences and PCRE-specific flags. Reproduce PHP string semantics (`strlen` is bytes, `strtolower` is ASCII-only, `strcmp` / `strcasecmp` / `strnatcasecmp` ordering) in one small `php_compat` module.
 
-### Milestones
+### Remaining for v0.1
 
-1. **M1.1 Token layer.** pun-tokens with Transformers and the analyzers fixers depend on (TokensAnalyzer, NamespacesAnalyzer, NamespaceUsesAnalyzer, FunctionsAnalyzer, ArgumentsAnalyzer, AttributeAnalyzer, block-edge finding). Parity check: our token list after transformation equals PHP-CS-Fixer's, dumped from the oracle, on the full corpus.
-2. **M1.2 Pint laravel preset.** Extract the exact fixer list and options of the laravel preset from the pinned Pint source, including any fixers Pint registers itself. Port them in order of how many corpus files each one changes. Each fixer lands with its upstream fixtures passing.
-3. **M1.3 CLI parity.** `pun format` plus a `pint` alias that accepts every flag of the pinned Pint version (`--test`, `--dirty`, `--diff=<branch>`, `--repair`, `--preset`, `--config`, `--format`, `--output-to-file`, `--parallel`, `--bail`, `-v` and the rest) with the same exit codes and report formats. Pun's own flags: `--check`, `--staged`, `--since=<ref>`, `--stdin` with `--stdin-filename` for editors, `--engine=compat|pun`, `--explain`.
-4. **M1.4 Delegate mode.** Every other PHP-CS-Fixer rule and any custom fixer runs through embedded PHP. Pinkary and the corpus pass end to end at this point, natively or not.
-5. **M1.5 PSR-12.** Pint's psr12 preset and PHP-CS-Fixer's @PSR12 set. Pint's per, symfony and empty presets are not targets; anyone who still uses them gets them through delegate mode.
-6. **M1.6 Cache, watch and editor.** Content-hash cache keyed by (file hash, resolved rule set, Pun version, target PHP version); `pun format --watch`; a minimal LSP that only does formatting, so editors can switch from Pint on save.
+1. **Cleanup pass.** Code review with fixes, architecture tidy-up, comment removal, fmt and clippy, with every gate re-run. In progress.
+2. **Token text as spans** into the source buffer instead of one `Vec<u8>` per token. Tokenizing is about 17% of a cold run, so this is the next structural speed step. Re-measure against Mago.
+3. **8-core benchmark in CI** to prove laravel-framework is under 1 s cold and under 100 ms warm; it's about 1 s by extrapolation today.
+4. **Embedded PHP for delegate mode** (pun-php: static libphp, Rust SAPI) plus a pinned, checksum-verified Pint PHAR, so delegation needs no system PHP and no vendored Pint. Today it uses the system `php` and the project's `vendor/` Pint, or `$PUN_PINT`.
+5. **`pun migrate`, format part**: pint.json / .php-cs-fixer.php to `[format]`, and `@php-cs-fixer-ignore` rewrites (see the Oct 17 update).
+6. **Release gate.** CI workflows pushed (needs the gh `workflow` scope), `vendor/bin/pint` swapped for Pun in Pinkary's CI, then tag v0.1 and publish to crates.io, npm, Homebrew and Packagist. Publishing needs your approval.
+7. **After v0.1:** pun-harness becomes local dev tooling (`tools/harness`, `publish = false`), and its fixtures move to pun-fixers.
 
 ### Blade
 
-Pint 1.30 formats `.blade.php` only when `Pint/laravel_blade` is on, and does it through Node, Prettier and prettier-plugin-blade. v1 matches that by calling the same Node toolchain when the rule is on (and failing the same way when Node is missing). Native Blade formatting is a later project: it needs a Blade parser plus Prettier-compatible HTML printing, and Bun's Prettier-compatible formatter (built on Oxc and Biome) is the component to evaluate first.
+Pint formats `.blade.php` only when `Pint/laravel_blade` is on, through Node, Prettier and prettier-plugin-blade. Pun does the same with one long-lived Prettier worker per thread and the same pre-flight checks and messages. Blade is now the cold-run bottleneck on Pinkary (about 2.9 s of the 4.2 s), and 30x on cold Pinkary is out of reach while it goes through Node. The fix is a native Blade formatter (a Blade parser plus Prettier-compatible HTML printing). Evaluate Bun's Prettier-compatible formatter (Oxc/Biome based) as the base, with Pint's Prettier output as the oracle. Planned after v0.1.
 
 ### Pun style engine
 
-`--engine=pun` uses mago-formatter with its laravel preset: whole-file pretty-printing, faster again, deterministic, but not Pint-identical. Shipped as opt-in for teams that want to move past Pint's output, with `pun format --engine=pun --check` as a one-time migration diff.
+`--engine=pun` uses mago-formatter with its laravel preset: whole-file pretty-printing, faster again, deterministic, but not Pint-identical. Opt-in for teams that want to move past Pint's output.
 
-### Targets (to confirm with the benchmark rig)
+### Targets
 
-- `pun format --check` on laravel/framework, cold cache, 8 cores: under 1 second
-- Same run, warm cache: under 100 ms
-- Peak memory: under 300 MB
-- Pinkary: at least 30x faster than `pint --test`
+- `pun format --check` on laravel/framework, cold cache, 8 cores: under 1 second (about 1 s by extrapolation; confirm in CI)
+- Same run, warm cache: under 100 ms (0.07 s on 2 cores, met)
+- Peak memory: under 300 MB (about 50 MB, met)
+- Pinkary: at least 30x faster than `pint --test` (67x warm, met; 3.2x cold, blocked by Blade via Node)
 
-**Exit gate (v0.1 release):** 100% byte parity on Pinkary and the corpus, 100% of the laravel preset's upstream fixtures passing natively, every other rule available (native or delegated), CLI drop-in verified by replacing `vendor/bin/pint` in Pinkary's CI.
+**Exit gate (v0.1 release):** 100% byte parity on Pinkary and the corpus (met), 100% of the laravel preset's upstream fixtures passing natively (met), every other rule available natively or delegated (met), CLI drop-in verified by replacing `vendor/bin/pint` in Pinkary's CI (to do).
 
-## Phase 2: pun lint
+## Editor: pun lsp
 
-Goal: `pun lint` reports the same errors as PHPStan + Larastan, meaning the same (file, line, identifier, message) set at the configured level, honouring the same baseline and ignoreErrors, so a project can swap `phpstan analyse` for `pun lint` in CI with no baseline churn. This is the hardest phase; v1 targets levels 0 to 6 with Larastan at full parity, then 7 to 10.
+Goal: one editor server for Pun users that is fast, low on memory, and shows the same results as the CLI.
+
+- **PHPantom** (MIT, Rust, built on mago =1.57.0 like Pun) provides completion, hover, go-to-definition, references and symbols, including generics, `@phpstan-*` annotations, array shapes and Laravel (Eloquent, Blade, Artisan). It starts in about 1 s and uses about 59 MB on a 21k-file project.
+- **Pun** provides formatting (Pint-identical, already shipped), diagnostics (syntax errors, `[lint.mago]` rules, later `pun analyse` and `pun lint`), and quick fixes from `pun lint --fix` rules.
+- **Integration:** embed PHPantom as a library in `crates/pun-lsp`, merge capabilities, and route each request to its owner. If PHPantom has no usable library API, send the small upstream patch it needs (for you to approve before anything leaves the repo). A child-process proxy is the fallback.
+- **Long term,** hover types and diagnostics should come from one type engine. Work with PHPantom upstream on sharing Mago's codex, and move in step with it on Mago version bumps.
+- **Milestones:**
+  - L1, evaluation plus prototype in crates/pun-lsp (in progress).
+  - L2, `pun lsp` switches to it, with editor setup docs for VS Code, Neovim, PhpStorm (LSP4IJ) and Zed.
+  - L3, diagnostics from `pun analyse` as Phase 2 lands.
+  - L4, quick fixes from `pun lint --fix` as Phase 3 lands.
+  - L5, once the editor side covers it, `pun migrate --phpdoc` becomes the default for applications.
+
+## Phase 2: pun analyse
+
+Goal: `pun analyse` reports the same errors as PHPStan + Larastan, meaning the same (file, line, identifier, message) set at the configured level, honouring the same baseline and ignoreErrors, so a project can swap `phpstan analyse` for `pun analyse` in CI with no baseline churn. This is the hardest phase; v1 targets levels 0 to 6 with Larastan at full parity, then 7 to 10.
 
 ### Why exact messages matter
 
@@ -215,11 +310,11 @@ PHPStan baselines and `ignoreErrors` match on message text (regex) and identifie
 4. **M2.4 Laravel (pun-laravel).** Native Larastan behaviour: model attributes from migrations and schema dumps, casts, `Attribute` accessors, relationships, scopes, Eloquent builder and collection generics, facades resolved to their roots, container resolution (`app(Foo::class)`), config and env helpers, macros, plus Larastan's own rules. Like Larastan, some facts need the booted app; Pun boots it once in embedded PHP, dumps a runtime manifest (bindings, facade roots, macro signatures, config keys) and caches it by composer.lock and config hash. `--no-boot` skips this for untrusted code.
 5. **M2.5 Pest.** Native equivalent of Pest 5's PHPStan plugin: `it()`, `test()`, `expect()` and `$this` inside test closures, plus its Pest-specific rules.
 6. **M2.6 Levels 7 to 10, strict-rules, deprecation-rules.** Same method.
-7. **M2.7 Incremental.** Per-file dependency graph so a change re-analyzes only dependents; reuse Mago's incremental analysis engine where it fits. `pun lint --watch` and LSP diagnostics.
+7. **M2.7 Incremental.** Per-file dependency graph so a change re-analyzes only dependents; reuse Mago's incremental analysis engine where it fits. `pun analyse --watch` and LSP diagnostics.
 
 ### Delegation in lint
 
-PHPStan rules run inside PHPStan's own scope and type system, so delegating a single rule while the rest runs natively is not possible. The rule: if the config loads an extension or custom rule Pun has not ported, `pun lint` runs real PHPStan in embedded PHP for the whole run (still with Pun's discovery, caching and reporting) and says why. `--native-only` runs Pun's analysis and lists what was skipped. Common extensions (Larastan, strict-rules, deprecation-rules, phpstan-phpunit, Pest's plugin) are ported so most Laravel projects never delegate.
+PHPStan rules run inside PHPStan's own scope and type system, so delegating a single rule while the rest runs natively is not possible. The rule: if the config loads an extension or custom rule Pun has not ported, `pun analyse` runs real PHPStan in embedded PHP for the whole run (still with Pun's discovery, caching and reporting) and says why. `--native-only` runs Pun's analysis and lists what was skipped. Common extensions (Larastan, strict-rules, deprecation-rules, phpstan-phpunit, Pest's plugin) are ported so most Laravel projects never delegate.
 
 ### Extras beyond PHPStan
 
@@ -227,9 +322,9 @@ Mago's linter rules (including its Laravel rules) are available under `[lint.mag
 
 **Exit gate (v0.2):** Pinkary produces the identical error list at its configured level with its baseline; 20+ corpus apps identical at levels 0 to 6; ported rules pass PHPStan's own fixtures; at least 10x faster than PHPStan on a cold run.
 
-## Phase 3: pun refactor
+## Phase 3: pun lint
 
-Goal: `pun refactor --dry-run` prints the same diff as `rector process --dry-run` for the project's rector.php, and `pun refactor` writes the same files, then formats them in the same pass.
+Goal: `pun lint --dry-run` prints the same diff as `rector process --dry-run` for the project's rector.php, and `pun lint` writes the same files, then formats them in the same pass.
 
 ### What has to match
 
@@ -247,22 +342,24 @@ After rules run, Pun runs `pun format` on changed files in memory, so the common
 2. **M3.2 Printer.** Format-preserving printer passes a round-trip test (parse, no change, print equals input) on the whole corpus, then php-parser's own printer fixtures.
 3. **M3.3 Rules, in usage order.** First, the rules active in Pinkary's rector.php. Then the prepared sets (dead code, code quality, coding style, type declarations, privatization, early return, instanceof), the PHP sets that matter for 8.4+ code, driftingly/rector-laravel, Pest 5's Rector plugin (60 rules) and the PHPUnit sets. Each rule lands with Rector's own fixture files passing (before/after pairs).
 4. **M3.4 Delegate.** Unported or custom rules run through real Rector in embedded PHP on the file after native rules, then the result is re-parsed; the harness confirms the order matches Rector's.
-5. **M3.5 PHP upgrades.** `pun refactor --set php85` (and php86 once released) applies the PHP-version sets; this is where code upgrades live, keeping `pun migrate` about tooling.
+5. **M3.5 PHP upgrades.** `pun lint --set php85` (and php86 once released) applies the PHP-version sets; this is where code upgrades live, keeping `pun migrate` about tooling.
 
 **Exit gate (v0.3):** Pinkary dry-run diff identical to Rector; corpus round-trip printing byte-identical; ported rules pass Rector fixtures; at least 10x faster than Rector on a cold run.
 
 ## Phase 4: pun migrate
 
+> Superseded in part by "pun migrate" in the Oct 17 update: migrate now writes pun.toml, converts the baseline and rewrites ignore comments. The workflow steps below (eligibility, inventory, parity proof, CI and composer script switch, Boost guidelines) still apply.
+
 Goal: one command moves an existing Laravel project onto Pun, proves nothing changed, and leaves a clear report. Pun already reads the old configs directly, so migrate is about switching the workflow, not translating rules.
 
 `pun migrate` runs these steps and stops before writing anything unless `--write` is passed:
 
-1. **Check eligibility.** composer.json must require PHP 8.4 or newer. Below that, Pun stops and prints the upgrade path (the PHP sets in `pun refactor` can run on that project as the one exception).
+1. **Check eligibility.** composer.json must require PHP 8.4 or newer. Below that, Pun stops and prints the upgrade path (the PHP sets in `pun lint` can run on that project as the one exception).
 2. **Inventory.** Read composer.lock for Pint, PHP-CS-Fixer, PHPStan, Larastan, extensions, Rector and Pest versions; find pint.json, .php-cs-fixer(.dist).php, phpstan.neon(.dist), phpstan-baseline.neon, rector.php, phpunit.xml, tests/Pest.php.
 3. **Coverage report.** For every configured rule, fixer, extension and Rector rule: native, delegated, or unsupported. Shows how much of the project will run natively.
 4. **Parity proof.** Run each old tool and its Pun replacement on the project and diff: formatting bytes, lint errors, refactor diff, test results. Any difference blocks the switch and is printed.
 5. **Write pun.toml** with only what differs from the imported configs (usually just pinned compat versions).
-6. **Switch the workflow.** Rewrite composer scripts (`lint`, `test:lint`, `refactor`, `test:types`, `test:unit`, `test`), GitHub Actions and GitLab CI steps (setup-php plus vendor/bin calls become a setup-pun step plus pun calls), add a pre-commit hook (`pun format --staged && pun lint --staged`), and update editor settings that point at vendor/bin/pint.
+6. **Switch the workflow.** Rewrite composer scripts (`lint`, `test:lint`, `refactor`, `test:types`, `test:unit`, `test`), GitHub Actions and GitLab CI steps (setup-php plus vendor/bin calls become a setup-pun step plus pun calls), add a pre-commit hook (`pun format --staged && pun analyse --staged`), and update editor settings that point at vendor/bin/pint.
 7. **Agent guidelines.** If Laravel Boost is installed, add a Pun guideline so coding agents call `pun` instead of the old binaries.
 8. **Optional cleanup.** `--remove-tools` drops the replaced dev dependencies. Default keeps them, so teams can run both during a transition and roll back by reverting one commit.
 
@@ -404,7 +501,6 @@ These are deliberately not shipped in the first versions; each is either low dem
 - Browser tests and Dusk inside Pun's runtime (system PHP in v1)
 - Test runtime and `pun run` on Windows
 - Single-binary app builds (`pun build`)
-- A full language server beyond formatting and diagnostics (completion, go to definition)
 
 ## Risks
 
@@ -412,7 +508,7 @@ The biggest risk is PHPStan parity: it is a type system with years of behaviour,
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| PHPStan parity takes far longer than planned | `pun lint` slips | Level-by-level parity with published numbers; delegate mode keeps lint usable; ship format and test independently |
+| PHPStan parity takes far longer than planned | `pun analyse` slips | Level-by-level parity with published numbers; delegate mode keeps lint usable; ship format and test independently |
 | Mago's analyzer models types differently from PHPStan in ways a mapping layer can't fix | Some rules need deeper changes | Upstream changes behind options first; a scoped fork of mago-analyzer only as a last resort |
 | Mago API churn (it moves fast: 1.0 in late 2025, 1.48 now) | Breakage on upgrades | Pin versions, upgrade on a schedule with the harness as the gate, contribute tests upstream |
 | Mago's lexer can't be mapped onto `token_get_all` cleanly | Compat formatter needs its own lexer | Decided in the Phase 0 spike; a PHP lexer is a few weeks of work |
@@ -448,7 +544,7 @@ Run in a clean container at a pinned Pinkary commit:
 vendor/bin/pint --test; vendor/bin/rector --dry-run; vendor/bin/phpstan analyse; vendor/bin/pest --type-coverage --min=100; vendor/bin/pest --parallel
 
 # Pun
-pun format --check; pun refactor --dry-run; pun lint; pun test --type-coverage --min=100; pun test
+pun format --check; pun lint --dry-run; pun analyse; pun test --type-coverage --min=100; pun test
 ```
 
 Pass means: identical exit codes, identical formatted bytes after `pint` vs `pun format`, identical Rector diff, identical PHPStan error list, identical type coverage percentage, identical test outcome counts and failure list.
