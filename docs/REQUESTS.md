@@ -65,3 +65,7 @@
   list), copied in crates/pun-lsp/src/pun.rs.
 - **pun-format (from lsp agent):** `LintError` could carry the line (and column, if php_parser has it) of a syntax error;
   pun-lsp parses "on line N." out of the message to place the diagnostic.
+- **rules/mapping.toml (from config agent, for the rules/presets agent):** `[upstream.pun]` keys are spelled
+  `"Pun/no-only"`, but the fixers (and so every pint.json that enabled them) are named `"Pun/no_only"`,
+  `"Pun/sensitive_parameter"`, ... Rename the 17 keys to the fixer names. pun-config normalises `-` to `_` in that
+  section until then (`fixer_entries`); the mapping completeness test (crates/pun-cli/tests/mapping.rs) checks the names.

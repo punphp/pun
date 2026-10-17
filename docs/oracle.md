@@ -30,7 +30,7 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | `scripts/corpus.sh [name...]` | shallow checkouts per `corpus/manifest.toml`; builds derived `pinkary-dirty` |
 | `scripts/effective-rules.php [pint.json]` | effective fixer list (run order, options, priority, risky, class, file) |
 | `scripts/export-fixtures.php <effective.json> <outdir>` | upstream data-provider test cases to JSON |
-| `scripts/cli-parity.sh [--project DIR] [--tty [--cols N]] [--env K=V] "ARGS"...` | byte-compare Pint and Pun's `pint` alias (stdout, stderr, exit code, files) per argument set, same directory |
+| `scripts/cli-parity.sh [--project DIR] [--tty [--cols N]] [--env K=V] "ARGS"...` | byte-compare Pint and `pun migrate` + `pun format` (stdout, stderr, exit code, files) per argument set, same directory |
 | `scripts/perturb.php <dir>` | make a deliberately unformatted copy (anti-laravel config + token noise, `php -l` checked) |
 
 ## Harness
@@ -43,19 +43,19 @@ target/debug/pun-harness format --fixer single_quote --corpus pinkary-dirty --di
 ```
 
 Per project: copies `corpus/<name>` twice into a temp dir (no `.git`; `node_modules` symlinked),
-runs `php .oracle/pint/builds/pint` in one and `target/debug/pun format` in the other (missing
-binary = identity), byte-compares every file, prints counts and the first `--diffs` unified diffs
+runs `php .oracle/pint/builds/pint` in one and `target/debug/pun migrate` then `pun check --fix` in the other
+(missing binary = identity; so every run also proves the migration), byte-compares every file (pun.toml aside), prints counts and the first `--diffs` unified diffs
 (`--- oracle` / `+++ pun`). Exit 1 on any differing file.
 
 `--fixer <name>` writes a pint.json with the project's finder keys, `"preset": "empty"` and only
 that rule, configured with the options from the project's own effective rule list (`true` if the
-project doesn't enable it), and passes it as `--config <file>` to both pint and pun. The scoreboard
+project doesn't enable it), and passes it as `--config <file>` to pint and to `pun migrate`. The scoreboard
 is not touched in this mode.
 
 ## Delegate mode
 
-Milestone M1.4 (crate `pun-delegate`): rules Pun hasn't ported, and `.php-cs-fixer(.dist).php` configs with custom
-fixers, run through the real PHP-CS-Fixer so output stays byte-identical.
+Milestone M1.4 (crate `pun-delegate`): rules Pun hasn't ported run through the real PHP-CS-Fixer so output stays
+byte-identical. `pun migrate` also reads a `.php-cs-fixer(.dist).php`'s resolved rules through it.
 
 - **Whole file, whole run.** PHP-CS-Fixer runs each enabled fixer once, by priority, on one token list, and unported
   rules sit between native ones (laravel/framework's pint.json: 8 unported between priorities 27 and -41, natives from
@@ -73,13 +73,10 @@ fixers, run through the real PHP-CS-Fixer so output stays byte-identical.
   `.php-cs-fixer.php` always loads the project's autoloader (its fixer classes). Output is that installed version's.
   Upgrade path (PLAN "Delegate path"): embedded libphp and a pinned, checksum-verified Pint PHAR downloaded on first
   use; only the runtime lookup and the spawn change, not the protocol.
-- **Config.** pint.json: the workers get the rule map Pint builds (preset + pint.json + pun.toml; sets unexpanded,
-  `false` kept), with risky allowed and default whitespace, like Pint's preset Config. `.php-cs-fixer(.dist).php` is
-  used by `pun format` when there is no pint.json, pun.toml or `--config` (the `pint` alias ignores it, like Pint);
-  its Finder picks the files unless paths are given.
-- **Flags.** `--explain`: the reason and every fixer that ran in PHP (`delegated`). `-v` on `pun format`: the reason
-  only (the `pint` alias prints nothing extra). `--native-only`: native fixers only, skipped rules listed on stderr;
-  not Pint-identical, exit code unaffected.
+- **Config.** The workers get the run's resolved rule map (pun.toml's format rules, plus the lint rules for
+  `pun lint` / `pun check`, under the fixer names), with risky allowed and default whitespace, like Pint's preset Config.
+- **Flags.** `--explain`: the reason and every fixer that ran in PHP (`delegated`). `-v`: the reason only.
+  `--native-only`: native fixers only, skipped rules listed on stderr; not Pint-identical, exit code unaffected.
 - **Errors.** A fixer exception fails that file (Runner::processException). A dead worker, or an
   `@php-cs-fixer-ignore` naming a rule that isn't enabled, aborts the run (Runner throws). Startup errors are
   PHP-CS-Fixer's (`The rules contain unknown fixers: "x".`).

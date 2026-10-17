@@ -65,8 +65,8 @@ rules.missing-iterable-value-type = "off"
 
 - **No levels.** Hand-written configs pick a tier (`preset`) plus per-rule overrides. `pun migrate` expands a PHPStan level (plus strict-rules, deprecation-rules and Larastan) into the explicit list of underlying rules and their options in pun.toml (`preset = "none"`), not a level or tier. `pun migrate --preset` writes the closest tier plus overrides instead, resolving to the same rules. After that, rules turn on and off one by one, the way mago.toml works.
 - **Exact parity is the migration safety net, not the end state.** Pun matches Pint, PHPStan and Rector exactly so a project can switch with zero diff. After migration Pun is free to use its own rule names, messages and rule combinations.
-- **Compat read stays.** Without pun.toml, Pun keeps reading pint.json, phpstan.neon and rector.php directly so trying Pun needs no changes, and prints a one-line hint to run `pun migrate`. *(Proposed; confirm.)*
-- **Rule names.** `format.*`, `lint.*`, `analyse.*` and `mago.*`, with Pun's own kebab-case names (`analyse.undefined-method` rather than `method.notFound`). `pun explain <rule>` shows the upstream tool's name and docs. *(Proposed; confirm.)*
+- **pun.toml only** (user decision). Commands never read pint.json, .php-cs-fixer.php, phpstan.neon or rector.php; without pun.toml they stop with "No pun.toml found. Run `pun migrate`." (unless `--preset` / `--no-config`). The old-config readers live only in `pun migrate`. The `pint` argv[0] alias is gone. **Status: done for format and lint** (pun-config, pun-cli).
+- **Rule names.** `format.*`, `lint.*`, `analyse.*`, with Pun's own kebab-case names (`analyse.undefined-method` rather than `method.notFound`), decided in docs/RULES.md and stored in `crates/pun-config/rules/mapping.toml`. pun.toml uses them today for format and lint rules. `pun explain <rule>` (upstream name and docs) is still to come.
 
 ### pun migrate (replaces the Phase 4 design)
 
@@ -78,7 +78,7 @@ rules.missing-iterable-value-type = "off"
 6. Proves parity: runs the old tools and Pun and diffs. Any difference blocks the switch.
 7. Switches the workflow: composer scripts, CI steps, pre-commit hook, editor settings, Laravel Boost guidelines. `--remove-tools` deletes the old configs and composer dev dependencies.
 
-The format part (`pint.json` to `[format]`, `@php-cs-fixer-ignore` rewrites) can ship now; `pun config --init` already writes `[format]`. The lint and analyse parts land with Phases 2 and 3.
+**Status (Oct 17): the format part is done.** `pun migrate [--dry-run] [--config] [--preset]` reads pint.json (or a `.php-cs-fixer(.dist).php` through PHP-CS-Fixer), writes `[format]` as a delta to the preset plus the risky fixers as `[lint.rules]` with `fix = "apply"`, rewrites `@php-cs-fixer-ignore` to `@pun-ignore-file`, stops on unsupported rules, and is idempotent. `pun check [--fix]` runs format and lint in one pipeline; the harness runs `pun migrate` + `pun check --fix` against Pint (0 differing on all 7 projects). Steps 3 and 5 to 7 (baseline, PHPStan / Rector configs, composer and CI rewrites) land with Phases 2 and 3; `pun analyse` joins `pun check` once it has a library entry point.
 
 ### Agent-optimised output (every command)
 

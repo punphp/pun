@@ -129,32 +129,32 @@ Mago auto-fixes still not ported: constant-condition (see the table), plus the "
 
 ### Enabling
 
-None of these rules is in a preset, so default output is unchanged. Enable them in `pun.toml` (risky ones are
-marked):
+None of these rules is in a preset, so default output is unchanged. They are lint rules: enable them under
+`[lint.rules]` in `pun.toml`, with `fix = "apply"` for `pun lint --fix` / `pun check --fix` to apply them (risky ones
+are marked):
 
 ```toml
-[format.rules]
-"Pun/prefer_dedicated_status_assertion" = true
-"Pun/prefer_fake_helper" = true
-"Pun/prefer_array_validation_rules" = true
-"Pun/no_implicit_model_query" = true         # risky
-"Pun/use_specific_expectations" = true
-"Pun/use_dedicated_expectation" = true       # risky
-"Pun/use_simpler_expectation" = true
-"Pun/no_only" = true
-"Pun/final_controller" = true                # risky
-"Pun/prefer_array_spread" = true             # risky (PHP >= 8.1)
-"Pun/prefer_explode_over_preg_split" = true
-"Pun/prefer_first_class_callable" = true     # risky
-"Pun/no_redundant_isset" = true
-"Pun/no_redundant_literal_return" = true
-"Pun/no_self_assignment" = true
-"Pun/sensitive_parameter" = true
-"Pun/no_redundant_nullsafe" = true
+[lint.rules]
+prefer-dedicated-status-assertion = { fix = "apply" }
+prefer-fake-helper = { fix = "apply" }
+prefer-array-validation-rules = { fix = "apply" }
+no-implicit-model-query = { fix = "apply" }          # risky
+prefer-specific-expectations = { fix = "apply" }
+prefer-dedicated-expectation = { fix = "apply" }     # risky
+prefer-simpler-expectation = { fix = "apply" }
+no-only = { fix = "apply" }
+require-final-controller = { fix = "apply" }         # risky
+prefer-array-spread = { fix = "apply" }              # risky (PHP >= 8.1)
+prefer-explode-over-preg-split = { fix = "apply" }
+prefer-first-class-callable = { fix = "apply" }      # risky
+no-redundant-isset = { fix = "apply" }
+no-redundant-literal-return = { fix = "apply" }
+no-self-assignment = { fix = "apply" }
+add-sensitive-parameter = { fix = "apply" }
+no-redundant-nullsafe = { fix = "apply" }
 ```
 
-`pint.json` `"rules": {"Pun/prefer_fake_helper": true}` works too, but real Pint then fails with an unknown-rule
-error. Use `pun.toml` if the project also runs Pint. `pun.toml` is ignored when Pun is invoked as `pint`.
+`pun migrate` turns a pint.json `"Pun/prefer_fake_helper": true` into `prefer-fake-helper = { fix = "apply" }`.
 
 ## Lint path
 
