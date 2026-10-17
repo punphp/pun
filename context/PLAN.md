@@ -152,13 +152,14 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | Work | Status |
 | --- | --- |
 | config 4: TOML-native option names for format rules | doing (workflow, wf/options) |
-| config 8: `pun config` on the new schema, `pun explain <rule>` | doing (workflow, wf/config-explain) |
 | migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | doing (workflow, wf/migrate-format) |
 | migrate 1 follow-up: read `.php-cs-fixer.php` statically (no system PHP), replacing crates/pun-cli/src/php_cs_fixer_rules.php | todo |
 | config 1 follow-up: bring rules.md §1-§2 and §5 examples up to the new IDs (they still use names like `lint.no-loose-comparison`) | todo |
 | config 1 follow-up: decide whether `@pun-ignore-file` keeps accepting the short `group/name` form (§4 Q2); accepted today | todo |
 | config 3 follow-up: decide whether every config error exits 2 like the unported-rule error (config 6 keeps the others at 1) | todo |
 | config 3 follow-up: switch the no-config message to "No pun.toml found. Run `pun migrate`, or `pun init` for a new project." once `pun init` lands | todo |
+| config 8 follow-up: mapping.toml maps PHPStan parameters (`checkUnionTypes`, nullables, explicit/implicit mixed) to `[analyse] union-types = true` and similar keys that pun.toml's `[analyse]` lacks; add the switches to the schema or point them at the analyse preset that turns them on | todo |
+| config 8 follow-up: `pun explain --format json` for agents and the docs generator (not in the plan yet) | todo |
 
 **Gate:** the 7-project corpus still gives 0 differing files with `pun migrate` + `pun check --fix`, and
 `scripts/check-rule-mapping.py` passes on the new names.
@@ -176,7 +177,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | output 3: `pun format` on the renderer; Pint's human screen removed | todo |
 | output 3 follow-up: wire `--color` (`render::ColorChoice`), `Renderer` and `Spinner` into `pun format`; remove the `dead_code`/`unused_imports` allow in crates/pun-cli/src/render/mod.rs | todo |
 | output follow-up: add a warning text token to design/tokens.json that reads on a light ground (light terminals fall back to SGR 33) | todo |
-| output follow-up: decide the rule docs base URL so `Renderer::with_rule_docs` links rule IDs (config 8's docs link from mapping.toml) | todo |
+| output follow-up: decide the rule docs base URL so `Renderer::with_rule_docs` links rule IDs, and switch `pun explain`'s docs row from the mapping.toml#L<line> link (`pun_config::MAPPING_URL`) to the rule page | todo |
 | output 4-6: GitHub annotations, `pun check` grouped view, exit code 2 | todo |
 
 **Gate:** every human output sample in the plan files is pinned by a test; machine formats and exit codes still pass
