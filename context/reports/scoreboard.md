@@ -169,6 +169,19 @@ line, identifier, message, tip) are byte-identical before and after on all five 
 | pest | 0.46 s, 502 MB | 0.25 s, 446 MB | -46% | -11% |
 | laravel-pint | 0.47 s, 399 MB | 0.22 s, 346 MB | -53% | -13% |
 
+Round 2 (2026-10-18, `RUNS=5`, the round 1 binary re-measured beside the round 2 one; precise: 11 alternating
+`/usr/bin/time` runs each, median):
+
+| project | before (bench.py) | after (bench.py) | before (precise) | after (precise) | wall (precise) | rss |
+|---|---:|---:|---:|---:|---:|---:|
+| pinkary | 0.50 s, 854 MB | 0.51 s, 857 MB | 0.48 s, 848 MB | 0.49 s, 856 MB | +2% (noise) | 0% |
+| larastan (v3.10.0) | 0.31 s, 544 MB | 0.31 s, 541 MB | 0.27 s, 542 MB | 0.26 s, 544 MB | -4% | 0% |
+| laravel-framework | 0.68 s, 1135 MB | 0.63 s, 1124 MB | 0.61 s, 1099 MB | 0.57 s, 1123 MB | -7% | -1% (bench.py) |
+| pest | 0.24 s, 451 MB | 0.24 s, 452 MB | 0.21 s, 449 MB | 0.20 s, 447 MB | -5% | 0% |
+| laravel-pint | 0.21 s, 348 MB | 0.22 s, 346 MB | 0.18 s, 346 MB | 0.18 s, 344 MB | 0% | 0% |
+
+The main table keeps round 1's pun cells: round 2 moves only laravel-framework beyond bench.py's noise.
+
 (Round 0 re-measured here: the table's first pun column was 1.06/0.58/1.81/0.68/0.52 s on the earlier run.) Per
 change, A/B with `/usr/bin/time` on pinkary, laravel-framework and laravel-pint:
 
@@ -184,7 +197,21 @@ change, A/B with `/usr/bin/time` on pinkary, laravel-framework and laravel-pint:
 - round 1: analysed files kept from the scan for the rules (no second read), PHPStan's 8.4 reflection loaded beside
   the scan instead of by the first rule that needs it while the other threads wait, one arena per rayon job. Wall
   0 to -3% (within noise), rss 0%.
-- What is left: opening files (about 30 µs per `open()` on this Mac, a quarter of all CPU samples) for the 8-18k
+- round 2: Mago's analyzer (for the type of `new $expr`) runs only on the functions, class-likes and methods that
+  hold such an expression, not the whole file: a method's types come from its own body and the codebase. It was most
+  of the rules phase on laravel-framework (about 50 files, large classes like the container); that phase went from
+  about 75 ms to 30 ms. Wall -7% laravel-framework, -4 to -5% larastan and pest, 0% elsewhere; rss 0%.
+- round 2: `@phpstan-ignore` lines found without lexing a file that has no `@phpstan-ignore` (most files; the lexer was
+  a quarter of the rules phase on laravel-framework). Wall 0 to -3% (within noise), rss 0%.
+- round 2, tried and dropped: scanning each file as soon as the walk finds it (no gain: per-file metadata cost the
+  overlap, +20% rss); 3 reader threads opening files ahead of the scan threads (wall -2 to -4%, rss +13 to +18%);
+  mimalloc in the example (wall -4 to -5%, rss -6% on pinkary and laravel-framework, +7% on laravel-pint; the
+  allocator belongs to the `pun` binary, a pun-cli follow-up); more or fewer rayon threads (4/6 slower, 12/16 equal).
+- What is left (round 2 profile): the machine is CPU-bound. `open()` is about 30% of all CPU samples (kernel time:
+  15 µs per file alone, 50-60 µs while the other cores parse, and it stops scaling past 4 threads), Mago's parse and
+  scan about 35%, Mago's populate 15-20% of wall, malloc 7-10%. None of it is pun-analyse code; the next step is the
+  on-demand vendor scan follow-up.
+- What was left after round 1: opening files (about 30 µs per `open()` on this Mac, a quarter of all CPU samples) for the 8-18k
   vendor files scanned eagerly, Mago's parse and scan of them, and Mago's populate (about 15%). Memory is Mago's
   metadata for every scanned vendor file (about 20 KB each live) plus about 30% allocator overhead; neither
   mimalloc nor dropping file signatures moved it.
