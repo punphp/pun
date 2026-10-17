@@ -187,6 +187,35 @@ fn compare_left(a: &[u8], ap: &mut usize, b: &[u8], bp: &mut usize) -> i32 {
     }
 }
 
+/// PHP's `(string) $float` (`precision` = 14, `%.14G` with PHP's `.0` and `E+` exponent spelling) for finite
+/// floats (the ones JSON can hold).
+pub fn float_to_string(f: f64) -> String {
+    if f == 0.0 {
+        return if f.is_sign_negative() { "-0" } else { "0" }.into();
+    }
+    let s = format!("{:.13e}", f.abs());
+    let (mantissa, exp) = s.split_once('e').unwrap();
+    let exp: i32 = exp.parse().unwrap();
+    let digits: String = mantissa.chars().filter(char::is_ascii_digit).collect();
+    let digits = digits.trim_end_matches('0');
+    let sign = if f < 0.0 { "-" } else { "" };
+    if !(-4..14).contains(&exp) {
+        let (head, tail) = digits.split_at(1);
+        let tail = if tail.is_empty() { "0" } else { tail };
+        let esign = if exp < 0 { '-' } else { '+' };
+        return format!("{sign}{head}.{tail}E{esign}{}", exp.abs());
+    }
+    if exp < 0 {
+        return format!("{sign}0.{}{digits}", "0".repeat((-exp - 1) as usize));
+    }
+    let int_len = exp as usize + 1;
+    if digits.len() <= int_len {
+        format!("{sign}{digits}{}", "0".repeat(int_len - digits.len()))
+    } else {
+        format!("{sign}{}.{}", &digits[..int_len], &digits[int_len..])
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -311,5 +340,46 @@ mod tests {
         assert_eq!(strtoupper(b"a\xff"), b"A\xff");
         assert_eq!(strlen("é".as_bytes()), 2);
         assert_eq!(rtrim(b"x \n\0"), b"x");
+    }
+
+    #[test]
+    fn float_to_string_matches_php() {
+        let floats = [
+            0.0,
+            -0.0,
+            1.0,
+            2.0,
+            -2.5,
+            0.1,
+            1.5,
+            1e20,
+            1e-5,
+            0.0001,
+            123456789012345.0,
+            12345678901234.0,
+            2f64.powi(63),
+            -(2f64.powi(63)),
+            1.0 / 3.0,
+            2.0 / 3.0,
+            1e14,
+            99999999999999.5,
+            1e100,
+            5e-324,
+            f64::MAX,
+            0.30000000000000004,
+            1234.5678,
+        ];
+        let json = serde_json::to_string(&floats.map(|f| format!("{f:e}"))).unwrap();
+        let out = std::process::Command::new("php")
+            .args([
+                "-r",
+                "foreach (json_decode($argv[1]) as $f) echo (string) (float) $f, \"\\n\";",
+                &json,
+            ])
+            .output()
+            .expect("php (the oracle) must be on PATH");
+        let want = String::from_utf8(out.stdout).unwrap();
+        let got: String = floats.iter().map(|&f| float_to_string(f) + "\n").collect();
+        assert_eq!(got, want);
     }
 }

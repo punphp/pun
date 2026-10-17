@@ -129,7 +129,8 @@ impl Delegate {
 
     fn spawn(&self) -> Result<(Worker, Vec<u8>)> {
         let mut child = Command::new("php")
-            .args(["-r", WORKER, "--"])
+            // From the start, so startup warnings (a broken php.ini) stay off the protocol on stdout.
+            .args(["-d", "display_errors=stderr", "-r", WORKER, "--"])
             .arg(&self.runtime)
             .args([self.mode, &self.arg])
             .current_dir(&self.root)

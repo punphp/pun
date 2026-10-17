@@ -6,7 +6,11 @@
 // For EmbeddedBladeMasker, post-input (what prettier made of the masked input) is restored by the same instance's
 // postFormat into `expected_post`.
 $root = __DIR__.'/..';
-$preset = json_decode(file_get_contents("$root/docs/presets/laravel.json"), true)['rules_as_configured'];
+// PRESET=<name> (default laravel): the preset whose getRules() PhpBlockFormatting runs (pun-config's exports).
+$presetName = getenv('PRESET') ?: 'laravel';
+$preset = 'laravel' === $presetName
+    ? json_decode(file_get_contents("$root/docs/presets/laravel.json"), true)['rules_as_configured']
+    : json_decode(file_get_contents("$root/crates/pun-config/presets/$presetName.json"), true);
 // PhpFragmentFormatter takes the run's rules from a parallel worker's `--rules` argument when present.
 $_SERVER['argv'] = ['pint', '--rules='.json_encode($preset)];
 require "$root/.oracle/pint/vendor/autoload.php";
@@ -17,7 +21,7 @@ $fqcn = "App\\PrettierFormatters\\$class";
 $formatter = 'PhpBlockFormatting' === $class ? new $fqcn(new App\Support\PhpFragmentFormatter()) : new $fqcn();
 $expected = 'EmbeddedBladeMasker' === $class ? $formatter->preFormat($input) : $formatter->postFormat($input);
 echo $expected;
-$case = ['formatter' => $class, 'input' => $input, 'expected' => $expected];
+$case = ['formatter' => $class, 'input' => $input, 'expected' => $expected] + ('laravel' === $presetName ? [] : ['preset' => $presetName]);
 if (isset($argv[3])) {
     $case['post_input'] = file_get_contents($argv[3]);
     $case['expected_post'] = $formatter->postFormat($case['post_input']);

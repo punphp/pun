@@ -257,6 +257,13 @@ fn finder_matches_pint() {
         check(&root, None, &[]);
     }
 
+    // Non-ASCII globs and names (UTF-8 bytes on both sides).
+    let root = tree(
+        &["app/Café.php", "app/Cafe.php", "app/né/X.php", "app/ü.php"],
+        &json(r#","notName":["*é.php","?.php"],"notPath":["né"]"#),
+    );
+    check(&root, None, &[]);
+
     // --config=<other file>.
     let root = tree(COMMON, &json(r#","notName":["*.php"]"#));
     std::fs::write(root.join("other.json"), json(r#","exclude":["app"]"#)).unwrap();
@@ -406,6 +413,10 @@ fn git_selection_matches_pint() {
     git(&root, &["commit", "-qm", "init"]);
     // Clean tree: Pint aborts "No dirty files found." with exit 0 and no listing.
     assert_eq!(ours(&GitSelect::Dirty).unwrap(), (BTreeSet::new(), 0));
+    // Only an excluded file is dirty: nothing is selected (not a full discovery).
+    std::fs::write(root.join("vendor/V.php"), "<?PHP\necho 0;\n").unwrap();
+    assert_eq!(ours(&GitSelect::Dirty), pint(&root, &["--dirty"]));
+    git(&root, &["checkout", "-q", "vendor/V.php"]);
 
     git(&root, &["checkout", "-qb", "feature"]);
     std::fs::write(root.join("app/Mod.php"), "<?PHP\necho 2;\n").unwrap();

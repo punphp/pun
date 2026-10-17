@@ -215,5 +215,56 @@
         "formatter": "JoinDanglingOpenBracket",
         "input": "x\n<div",
         "expected": "x\n<div"
+    },
+    {
+        "formatter": "DirectiveTrailingCommas",
+        "input": "@foo(<<<EOT\nx\nEOT",
+        "expected": "@foo(<<<EOT\nx\nEOT"
+    },
+    {
+        "formatter": "DirectiveTrailingCommas",
+        "input": "@foo(<<<EOT\nx\n  EOT",
+        "expected": "@foo(<<<EOT\nx\n  EOT"
+    },
+    {
+        "formatter": "NotOperatorSpacing",
+        "input": "<script>",
+        "expected": "<script>"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "@foo(1 +)",
+        "expected": "@foo(1 +)"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "@foo(\")\")",
+        "expected": "@foo(')')"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "{!!\n$a+1\n!!}",
+        "expected": "{!!\n    $a + 1\n!!}"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "<x-a :b='1+1' />",
+        "expected": "<x-a :b='1 + 1' />"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "<x-a :b=\"function () { return 1; }\" />",
+        "expected": "<x-a :b=\"function () { return 1; }\" />"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "@php\nif($a){\n$b=1;}\n@endphp",
+        "expected": "@php\n    if ($a) {\n        $b = 1;\n    }\n@endphp",
+        "preset": "psr12"
+    },
+    {
+        "formatter": "PhpBlockFormatting",
+        "input": "@foo(1 /* ( */)",
+        "expected": "@foo(1 /* ( */)"
     }
 ]

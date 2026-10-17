@@ -127,13 +127,25 @@ thread_local! {
     static WORKER_PROCESS: RefCell<Option<Worker>> = const { RefCell::new(None) };
 }
 
+/// The worker script and prettier config, in a temp dir named by their content so every run shares it
+/// (a per-process dir would be left behind by each run). Written via rename, so a concurrent run never sees a
+/// partial file.
 fn resources() -> Result<(PathBuf, PathBuf)> {
-    let dir = std::env::temp_dir().join(format!("pun-blade-{}", std::process::id()));
-    std::fs::create_dir_all(&dir)?;
+    let mut hasher = std::hash::DefaultHasher::new();
+    std::hash::Hash::hash(&(WORKER, PRETTIERRC), &mut hasher);
+    let hash = std::hash::Hasher::finish(&hasher);
+    resources_in(&std::env::temp_dir().join(format!("pun-blade-{hash:016x}")))
+}
+
+fn resources_in(dir: &Path) -> Result<(PathBuf, PathBuf)> {
     let (worker, config) = (dir.join("worker.cjs"), dir.join("prettierrc.json"));
     if !worker.exists() {
-        std::fs::write(&worker, WORKER)?;
-        std::fs::write(&config, PRETTIERRC)?;
+        std::fs::create_dir_all(dir)?;
+        for (path, body) in [(&config, PRETTIERRC), (&worker, WORKER)] {
+            let tmp = path.with_extension(std::process::id().to_string());
+            std::fs::write(&tmp, body)?;
+            std::fs::rename(&tmp, path)?;
+        }
     }
     Ok((worker, config))
 }
@@ -141,11 +153,16 @@ fn resources() -> Result<(PathBuf, PathBuf)> {
 fn start() -> Result<Worker> {
     let project_root = std::env::current_dir()?; // Project::path() is getcwd()
     let (worker, config) = resources()?;
-    let mut child = Command::new("node")
-        .arg(&worker)
+    let mut node = Command::new("node");
+    node.arg(&worker)
         .arg(&project_root)
         .arg(&config)
-        .current_dir(&project_root)
+        .current_dir(&project_root);
+    spawn(node)
+}
+
+fn spawn(mut command: Command) -> Result<Worker> {
+    let mut child = command
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -191,13 +208,22 @@ const START: &[u8] = b"[PINT_PRETTIER_WORKER_START]";
 const END: &[u8] = b"[PINT_PRETTIER_WORKER_END]";
 
 fn prettier_format(path: &str, content: &[u8]) -> Result<Vec<u8>> {
-    WORKER_PROCESS.with(|w| prettier_format_with(&mut w.borrow_mut(), path, content))
+    WORKER_PROCESS.with(|w| {
+        let mut guard = w.borrow_mut();
+        if guard.is_none() {
+            *guard = Some(start()?);
+        }
+        prettier_format_with(&mut guard, path, content, WORKER_IDLE_TIMEOUT)
+    })
 }
 
-fn prettier_format_with(guard: &mut Option<Worker>, path: &str, content: &[u8]) -> Result<Vec<u8>> {
-    if guard.is_none() {
-        *guard = Some(start()?);
-    }
+/// One request to the started worker in `guard`; a failure tears it down (the next file starts a fresh one).
+fn prettier_format_with(
+    guard: &mut Option<Worker>,
+    path: &str,
+    content: &[u8],
+    idle_timeout: Duration,
+) -> Result<Vec<u8>> {
     let worker = guard.as_mut().unwrap();
     // json_encode(..., JSON_INVALID_UTF8_SUBSTITUTE)
     let request = serde_json::json!({ "path": path, "content": String::from_utf8_lossy(content) });
@@ -210,13 +236,13 @@ fn prettier_format_with(guard: &mut Option<Worker>, path: &str, content: &[u8]) 
             let body = &formatted[php::strpos(&formatted, START, 0).unwrap() + START.len()..];
             return Ok(body[..php::strpos(body, END, 0).unwrap()].to_vec());
         }
-        match worker.events.recv_timeout(WORKER_IDLE_TIMEOUT) {
+        match worker.events.recv_timeout(idle_timeout) {
             Ok(Chunk::Out(c)) => formatted.extend(c),
             event => break event,
         }
     };
     // Error output, the worker exiting, or silence: collect the rest of stderr (getErrorOutput()), tear the
-    // worker down (the next file starts a fresh one) and report the file.
+    // worker down and report the file.
     std::thread::sleep(Duration::from_millis(100));
     let timed_out = matches!(failure, Err(RecvTimeoutError::Timeout));
     let error: Vec<u8> = std::iter::once(failure.ok())
@@ -265,7 +291,9 @@ mod tests {
                 "DedentHuggedTerminator" => dedent_hugged_terminator::post_format(input),
                 "EmbeddedBladeMasker" => masker.pre_format(input),
                 _ => php_block_formatting::PhpBlockFormatting::new(
-                    php_block_formatting::PhpFragmentFormatter::new("laravel".into()),
+                    php_block_formatting::PhpFragmentFormatter::new(
+                        case.get("preset").map_or("laravel", |p| p.as_str().unwrap()).into(),
+                    ),
                 )
                 .post_format(input),
             };
@@ -283,5 +311,48 @@ mod tests {
                 );
             }
         }
+    }
+
+    /// Pint's Prettier::format() failures, with stand-in workers: silence, exiting, and error output.
+    #[test]
+    fn worker_failures() {
+        for (script, idle, message) in [
+            (
+                "cat >/dev/null",
+                Duration::from_millis(50),
+                "Laravel Pint's Prettier worker timed out while formatting [a.blade.php].",
+            ),
+            (
+                "exit 0",
+                WORKER_IDLE_TIMEOUT,
+                "Laravel Pint's Prettier worker terminated unexpectedly.",
+            ),
+            ("echo boom >&2; sleep 5", WORKER_IDLE_TIMEOUT, "boom\n"),
+        ] {
+            let mut sh = Command::new("sh");
+            sh.args(["-c", script]);
+            let mut guard = Some(spawn(sh).unwrap());
+            let err = prettier_format_with(&mut guard, "a.blade.php", b"x", idle).unwrap_err();
+            assert_eq!(err.to_string(), message);
+            assert!(guard.is_none());
+        }
+    }
+
+    /// Every run shares one copy of the worker files instead of leaving a temp dir per process.
+    #[test]
+    fn resources_are_shared() {
+        let (worker, _) = resources().unwrap();
+        let dir = worker.parent().unwrap().file_name().unwrap();
+        assert_ne!(dir.to_string_lossy(), format!("pun-blade-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("pun-blade-test-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let (worker, config) = resources_in(&dir).unwrap();
+        assert_eq!(std::fs::read_to_string(&worker).unwrap(), WORKER);
+        assert_eq!(std::fs::read_to_string(config).unwrap(), PRETTIERRC);
+        // An existing copy is used as is.
+        std::fs::write(&worker, "kept").unwrap();
+        resources_in(&dir).unwrap();
+        assert_eq!(std::fs::read_to_string(&worker).unwrap(), "kept");
+        std::fs::remove_dir_all(&dir).unwrap();
     }
 }

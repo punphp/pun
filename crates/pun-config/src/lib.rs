@@ -152,15 +152,11 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
         .or_else(|| pint.get("preset").and_then(Value::as_str).map(String::from))
         .unwrap_or_else(|| "laravel".into());
     // Pint 1.29 runs an unknown preset on no files and then fails rendering its name (the CLI does that part).
-    let preset_json = match PRESETS.iter().find(|(n, _)| *n == preset) {
-        Some((_, json)) => *json,
-        None if opts.pint_mode => "{}",
+    let mut rules = match preset_rules(&preset) {
+        Some(rules) => rules,
+        None if opts.pint_mode => Map::new(),
         None => bail!("Preset not found."),
     };
-    let mut rules: Map<String, Value> = serde_json::from_str(preset_json)?;
-    if let Some(Value::Object(r)) = rules.remove("rules_as_configured") {
-        rules = r;
-    }
 
     // Pint: array_merge($preset, $pintJson['rules']) — overrides keep the preset's position.
     if let Some(r) = pint.get("rules").and_then(Value::as_object) {
@@ -195,22 +191,8 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
     }
 
     let configured_rules = rules.clone();
-    let rules = resolve_set(rules);
-    let blade = rules
-        .get("Pint/laravel_blade")
-        .is_some_and(|v| *v != Value::Bool(false));
-    let rules = rules
-        .into_iter()
-        .filter(|(_, v)| *v != Value::Bool(false))
-        .map(|(name, v)| Rule {
-            name,
-            options: if v == Value::Bool(true) {
-                Value::Null
-            } else {
-                v
-            },
-        })
-        .collect();
+    let rules = rule_set(rules)?;
+    let blade = rules.iter().any(|r| r.name == "Pint/laravel_blade");
 
     let list = |k: &str| match pint.get(k) {
         Some(Value::Array(a)) => a
@@ -266,10 +248,25 @@ fn read_pint_json(
     let mut v: Value = serde_json::from_slice(&std::fs::read(path)?).with_context(invalid)?;
     if let Some(ext) = v.get("extend").and_then(Value::as_str) {
         let ext_path = path.parent().unwrap_or(Path::new(".")).join(ext);
-        let base: Value = serde_json::from_slice(
-            &std::fs::read(&ext_path)
-                .with_context(|| format!("cannot read {}", ext_path.display()))?,
-        )?;
+        // file_get_contents(realpath(...)): a missing file is realpath's `false`.
+        let raw =
+            std::fs::read(&ext_path).map_err(|_| anyhow::anyhow!("Path must not be empty"))?;
+        // json_decode then array_replace_recursive($base, ...): anything but an array is a TypeError.
+        let base: Value = serde_json::from_slice(&raw).unwrap_or(Value::Null);
+        let given = match &base {
+            Value::Object(_) | Value::Array(_) => None,
+            Value::Null => Some("null"),
+            Value::Bool(true) => Some("true"),
+            Value::Bool(false) => Some("false"),
+            Value::Number(n) if n.is_i64() => Some("int"),
+            Value::Number(_) => Some("float"),
+            Value::String(_) => Some("string"),
+        };
+        if let Some(t) = given {
+            bail!(
+                "array_replace_recursive(): Argument #1 ($array) must be of type array, {t} given"
+            );
+        }
         if base.get("extend").is_some() {
             bail!("Pint configuration cannot extend from more than 1 file.");
         }
@@ -287,32 +284,71 @@ fn read_pint_json(
     }
 }
 
+/// A preset's `getRules()` (sets unresolved), or `None` for an unknown preset.
+pub fn preset_rules(preset: &str) -> Option<Map<String, Value>> {
+    let (_, json) = PRESETS.iter().find(|(n, _)| *n == preset)?;
+    let mut rules: Map<String, Value> = serde_json::from_str(json).unwrap();
+    if let Some(Value::Object(r)) = rules.remove("rules_as_configured") {
+        rules = r;
+    }
+    Some(rules)
+}
+
+/// `new RuleSet($rules)`: sets resolved, disabled rules dropped, `true` as no options.
+pub fn rule_set(rules: Map<String, Value>) -> Result<Vec<Rule>> {
+    Ok(resolve_set(rules)?
+        .into_iter()
+        .filter(|(_, v)| *v != Value::Bool(false))
+        .map(|(name, v)| Rule {
+            name,
+            options: if v == Value::Bool(true) {
+                Value::Null
+            } else {
+                v
+            },
+        })
+        .collect())
+}
+
 /// RuleSet::resolveSet: sets expand in place (array_merge: a rule already present keeps its position, takes the
 /// set's value); a later rule or set overrides an earlier one.
-fn resolve_set(rules: Map<String, Value>) -> Map<String, Value> {
+fn resolve_set(rules: Map<String, Value>) -> Result<Map<String, Value>> {
+    let sets: std::collections::BTreeMap<String, Map<String, Value>> =
+        serde_json::from_str(SETS).unwrap();
     let mut out = Map::new();
     for (name, value) in rules {
-        // Set values are already checked to be bools.
-        match resolve_subset(&name, value == Value::Bool(true)) {
+        if name.starts_with('@') && !value.is_boolean() {
+            bail!("Nested rule set \"{name}\" configuration must be a boolean.");
+        }
+        match resolve_subset(&sets, &name, value == Value::Bool(true)) {
             Some(set) => out.extend(set),
             None => drop(out.insert(name, value)),
         }
     }
-    out
+    Ok(out)
 }
 
 /// RuleSet::resolveSubset: a set's rules with nested sets merged in; `false` disables every rule of the set.
-fn resolve_subset(name: &str, enabled: bool) -> Option<Map<String, Value>> {
-    let mut sets: std::collections::BTreeMap<String, Map<String, Value>> =
-        serde_json::from_str(SETS).unwrap();
-    let def = sets.remove(name)?;
+fn resolve_subset(
+    sets: &std::collections::BTreeMap<String, Map<String, Value>>,
+    name: &str,
+    enabled: bool,
+) -> Option<Map<String, Value>> {
+    let def = sets.get(name)?;
     let mut rules = def.clone();
     for (k, v) in def {
         if k.starts_with('@') {
-            rules.shift_remove(&k);
-            rules.extend(resolve_subset(&k, enabled).unwrap());
+            rules.shift_remove(k);
+            rules.extend(resolve_subset(sets, k, enabled).unwrap());
         } else {
-            rules.insert(k, if enabled { v } else { Value::Bool(false) });
+            rules.insert(
+                k.clone(),
+                if enabled {
+                    v.clone()
+                } else {
+                    Value::Bool(false)
+                },
+            );
         }
     }
     Some(rules)
@@ -727,8 +763,40 @@ mod tests {
             err(&d, Options::default()),
             "[@PSR12] Set must be enabled (true) or disabled (false). Other values are not allowed."
         );
+        // A broken or missing extended file (messages from Pint 1.29.3).
+        for (base, given) in [
+            ("{bad", "null"),
+            ("null", "null"),
+            ("\"x\"", "string"),
+            ("1", "int"),
+            ("1.5", "float"),
+            ("true", "true"),
+            ("false", "false"),
+        ] {
+            let d = dir(&[
+                ("pint.json", r#"{"extend":"base.json"}"#),
+                ("base.json", base),
+            ]);
+            assert_eq!(
+                err(&d, Options::default()),
+                format!(
+                    "array_replace_recursive(): Argument #1 ($array) must be of type array, {given} given"
+                )
+            );
+        }
+        let d = dir(&[("pint.json", r#"{"extend":"base.json"}"#)]);
+        assert_eq!(err(&d, Options::default()), "Path must not be empty");
         let d = dir(&[("pun.toml", "[format.rules]\nfinal_class = \"yes\"\n")]);
         assert!(err(&d, Options::default()).starts_with("[final_class] Rule must be enabled"));
+        // A set configured with options gets past RuleSet::__construct, then resolveSet rejects it.
+        for v in ["{}", "[]", "[1]", r#"{"a":1}"#] {
+            let d = dir(&[("pint.json", &format!(r#"{{"rules":{{"@PSR12":{v}}}}}"#))]);
+            assert_eq!(
+                err(&d, Options::default()),
+                "Nested rule set \"@PSR12\" configuration must be a boolean.",
+                "{v}"
+            );
+        }
     }
 
     /// Rule sets resolve like PHP-CS-Fixer's RuleSet (tests/rule_sets.json: `(new RuleSet($rules))->getRules()` of the
