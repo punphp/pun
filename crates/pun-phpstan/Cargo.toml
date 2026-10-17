@@ -17,6 +17,4 @@ indexmap.workspace = true
 pcre2.workspace = true
 libc.workspace = true
 pun-tokens.workspace = true
-
-[dev-dependencies]
 serde_json.workspace = true
