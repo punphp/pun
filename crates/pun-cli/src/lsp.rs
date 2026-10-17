@@ -119,25 +119,19 @@ pub fn run() -> Result<u8> {
 fn setup() -> Result<(Config, Engine)> {
     let a = FormatArgs::default();
     let root = root()?;
-    let cfg = load_config(&a, false, &root)?;
+    let cfg = load_config(&a, &root)?;
     let engine = engine(&a, &cfg, &root)?;
     Ok((cfg, engine))
 }
 
-/// A hash of each config file (`None`: absent): the ones a project can add, plus what the loaded config read (an
-/// `extend`ed file). Content, not mtime + size: a same-size rewrite within one mtime tick is still a change.
+/// A hash of each config file (`None`: absent): the ones a project can add, plus what the loaded config read.
+/// Content, not mtime + size: a same-size rewrite within one mtime tick is still a change.
 fn stamp(setup: &Result<(Config, Engine)>) -> Vec<Option<u64>> {
     let root = root().unwrap_or_default();
-    let mut files: Vec<PathBuf> = [
-        "composer.json",
-        "pint.json",
-        "pun.toml",
-        ".php-cs-fixer.php",
-        ".php-cs-fixer.dist.php",
-    ]
-    .iter()
-    .map(|f| root.join(f))
-    .collect();
+    let mut files: Vec<PathBuf> = ["composer.json", "pun.toml"]
+        .iter()
+        .map(|f| root.join(f))
+        .collect();
     if let Ok((cfg, _)) = setup {
         files.extend(cfg.sources.iter().cloned());
     }

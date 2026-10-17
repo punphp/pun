@@ -12,12 +12,25 @@ fn oracle() -> Option<PathBuf> {
     p.exists().then(|| p.canonicalize().unwrap())
 }
 
+/// A project with `pint_json` for Pint and the pun.toml `pun migrate` writes from it.
 fn project(name: &str, pint_json: &str) -> PathBuf {
     let d = std::env::temp_dir().join(format!("pun-lsp-{name}-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&d);
     std::fs::create_dir_all(d.join("app")).unwrap();
     std::fs::write(d.join("pint.json"), pint_json).unwrap();
+    migrate(&d);
     d.canonicalize().unwrap()
+}
+
+/// pun.toml from the current pint.json.
+fn migrate(dir: &Path) {
+    let _ = std::fs::remove_file(dir.join("pun.toml"));
+    let out = Command::new(env!("CARGO_BIN_EXE_pun"))
+        .arg("migrate")
+        .current_dir(dir)
+        .output()
+        .unwrap();
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
 }
 
 /// Pint's stdin output for `code` named `name` in `dir`. Each run gets its own TMPDIR: Pint names its stdin temp
@@ -155,7 +168,7 @@ fn formats_like_pint_stdin() {
         r#"{"preset":"empty","rules":{"array_syntax":true,"blank_line_after_opening_tag":true},"notName":["Skip.php"]}"#,
     );
     let file = |name: &str| format!("file://{}/{}", dir.display(), name.replace(' ', "%20"));
-    // Started elsewhere: the workspace folder decides the project (its pint.json).
+    // Started elsewhere: the workspace folder decides the project (its pun.toml).
     let mut s = Server::start(Path::new("/"));
     let init = s.request("initialize", json!({"capabilities": {}, "workspaceFolders": [{"uri": format!("file://{}", dir.display()), "name": "p"}]}));
     assert_eq!(
@@ -191,7 +204,7 @@ fn formats_like_pint_stdin() {
     assert_eq!(pint(&dir, "app/A b.php", &want), want);
     assert_eq!(s.format(&file("app/A b.php"))["result"], json!([]));
 
-    // Excluded by pint.json (notName) or Pint's own list (storage), code that doesn't parse (Pint echoes those), and
+    // Excluded by the config (notName) or Pint's own list (storage), code that doesn't parse (Pint echoes those), and
     // vendor (Pint's stdin path formats it).
     for name in [
         "app/Skip.php",
@@ -254,10 +267,14 @@ fn formats_like_pint_stdin() {
     s.stop();
 }
 
-/// Without a workspace the server's cwd is the project; a broken pint.json fails each request with Pint's message.
+/// Without a workspace the server's cwd is the project; a broken pun.toml fails each request with its error.
 #[test]
 fn broken_config_fails_requests() {
-    let dir = project("broken", "{bad");
+    if oracle().is_none() {
+        return;
+    }
+    let dir = project("broken", r#"{"preset":"empty"}"#);
+    std::fs::write(dir.join("pun.toml"), "[format\n").unwrap();
     let mut s = Server::start(&dir);
     s.request("initialize", json!({"capabilities": {}}));
     s.notify("initialized", json!({}));
@@ -265,44 +282,29 @@ fn broken_config_fails_requests() {
     let r = s.format(&format!("file://{}/app/A.php", dir.display()));
     assert_eq!(
         r["error"],
-        json!({"code": -32803, "message": format!("The configuration file [{}/pint.json] is not valid JSON.", dir.display())})
+        json!({"code": -32803, "message": format!("invalid {}/pun.toml", dir.display())})
     );
-    // Fixing pint.json, then changing its rules or the file it extends, applies to the next request.
+    // Fixing pun.toml, then changing its rules, applies to the next request.
     let code = "<?php\n$a = array(1);\n";
     s.open(&format!("file://{}/app/A.php", dir.display()), code);
-    for (file, cfg) in [
-        (
-            "pint.json",
-            r#"{"preset":"empty","rules":{"array_syntax":true}}"#,
-        ),
-        (
-            "base.json",
-            r#"{"rules":{"blank_line_after_opening_tag":true}}"#,
-        ),
-        ("pint.json", r#"{"preset":"empty","extend":"base.json"}"#),
-        ("base.json", r#"{"rules":{"array_syntax":true}}"#),
-        ("pint.json", r#"{"preset":"empty"}"#),
-        (
-            "pint.json",
-            r#"{"preset":"empty","rules":{"array_syntax":true}}"#,
-        ),
-        (
-            "pint.json",
-            r#"{"preset":"empty","rules":{"single_quote":true}}"#,
-        ),
+    for cfg in [
+        r#"{"preset":"empty","rules":{"array_syntax":true}}"#,
+        r#"{"preset":"empty","rules":{"blank_line_after_opening_tag":true}}"#,
+        r#"{"preset":"empty"}"#,
+        r#"{"preset":"empty","rules":{"array_syntax":true}}"#,
+        r#"{"preset":"empty","rules":{"single_quote":true}}"#,
     ] {
-        // Same size and mtime as before (a fast filesystem, one mtime tick): only the content tells.
-        let path = dir.join(file);
-        let before = std::fs::metadata(&path).and_then(|m| m.modified()).ok();
-        std::fs::write(&path, cfg).unwrap();
-        if let Some(t) = before {
-            std::fs::File::options()
-                .write(true)
-                .open(&path)
-                .unwrap()
-                .set_modified(t)
-                .unwrap();
-        }
+        // Same mtime as before (a fast filesystem, one mtime tick): only the content tells.
+        let path = dir.join("pun.toml");
+        let before = std::fs::metadata(&path).and_then(|m| m.modified()).unwrap();
+        std::fs::write(dir.join("pint.json"), cfg).unwrap();
+        migrate(&dir);
+        std::fs::File::options()
+            .write(true)
+            .open(&path)
+            .unwrap()
+            .set_modified(before)
+            .unwrap();
         let want = pint(&dir, "app/A.php", code);
         let edits = if want == code {
             json!([])
@@ -312,22 +314,8 @@ fn broken_config_fails_requests() {
         assert_eq!(
             s.format(&format!("file://{}/app/A.php", dir.display()))["result"],
             edits,
-            "{file}: {cfg}"
+            "{cfg}"
         );
     }
-    // A broken extended file: the failed load never listed it, yet fixing it applies to the next request.
-    let uri = format!("file://{}/app/A.php", dir.display());
-    std::fs::write(
-        dir.join("pint.json"),
-        r#"{"preset":"empty","extend":"base.json"}"#,
-    )
-    .unwrap();
-    std::fs::write(dir.join("base.json"), "{bad").unwrap();
-    assert!(s.format(&uri)["error"].is_object());
-    std::fs::write(dir.join("base.json"), r#"{"rules":{"array_syntax":true}}"#).unwrap();
-    assert_eq!(
-        s.format(&uri)["result"][0]["newText"],
-        pint(&dir, "app/A.php", code)
-    );
     s.stop();
 }

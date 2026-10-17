@@ -20,6 +20,16 @@ fn fresh(name: &str) -> PathBuf {
     d.canonicalize().unwrap()
 }
 
+/// pun.toml from `dir`'s pint.json.
+fn migrate(dir: &Path) {
+    let out = Command::new(env!("CARGO_BIN_EXE_pun"))
+        .arg("migrate")
+        .current_dir(dir)
+        .output()
+        .unwrap();
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+}
+
 fn write(dir: &Path, files: &[(&str, &str)]) {
     for (f, c) in files {
         let p = dir.join(f);
@@ -101,6 +111,7 @@ fn watch_reformats_like_pint() {
     ];
     let dir = fresh("live");
     write(&dir, &start);
+    migrate(&dir);
     let home = fresh("home");
     let mut child = Reap(
         watcher(&dir, &home)
@@ -166,12 +177,13 @@ fn watch_reformats_like_pint() {
     std::thread::sleep(Duration::from_millis(1500));
     assert_eq!(out.lock().unwrap().len(), first.len() + second.len());
 
-    // A broken pint.json, then an unreadable file: reported on stderr, and the watch goes on.
-    write(&dir, &[("pint.json", "{bad")]);
+    // A broken pun.toml, then an unreadable file: reported on stderr, and the watch goes on.
+    let toml = std::fs::read_to_string(dir.join("pun.toml")).unwrap();
+    write(&dir, &[("pun.toml", "[format")]);
     wait_for("the config error", &err, |e| {
-        e.contains("is not valid JSON.")
+        e.contains(&format!("invalid {}/pun.toml", dir.display()))
     });
-    write(&dir, &[("pint.json", CFG), ("app/U.php", "<?php\n")]);
+    write(&dir, &[("pun.toml", &toml), ("app/U.php", "<?php\n")]);
     std::fs::set_permissions(
         dir.join("app/U.php"),
         std::os::unix::fs::PermissionsExt::from_mode(0o000),
@@ -195,6 +207,7 @@ fn watch_reformats_like_pint() {
 fn watch_ends_with_its_parent() {
     let dir = fresh("orphan");
     write(&dir, &[("pint.json", "{}"), ("a.php", "<?php\n")]);
+    migrate(&dir);
     let home = fresh("orphan-home");
     let w = watcher(&dir, &home);
     let program = w.get_program().to_str().unwrap().to_string();

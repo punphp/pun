@@ -2,7 +2,7 @@
 //! pick (same discovery, config and exclusions, re-read every time), with the usual Pint output.
 //! Stops when the project directory goes away or the parent process exits.
 
-use crate::run::{format, load_config};
+use crate::run::{Stage, format, load_config};
 use crate::{FormatArgs, root};
 use anyhow::Result;
 use notify::{EventKind, RecursiveMode, Watcher};
@@ -19,7 +19,7 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
     a.pun.watch = false;
     let started_by = parent();
     let root = root()?;
-    report(format(a.clone(), false));
+    report(format(a.clone(), Stage::Format));
     let (tx, rx) = mpsc::channel();
     let mut watcher = notify::recommended_watcher(tx)?;
     watcher.watch(&root, RecursiveMode::Recursive)?;
@@ -58,7 +58,7 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
         if !root.exists() {
             return Ok(0);
         }
-        let files = match load_config(&a, false, &root)
+        let files = match load_config(&a, &root)
             .and_then(|cfg| pun_workspace::discover(&cfg, &a.paths))
         {
             Ok(f) => f,
@@ -79,7 +79,7 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
                 paths: targets.clone(),
                 ..rerun.clone()
             },
-            false,
+            Stage::Format,
         ));
         for t in targets {
             if let Some(h) = hash(&t) {

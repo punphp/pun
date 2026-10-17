@@ -101,12 +101,16 @@ fn listing(root: &Path, files: anyhow::Result<Vec<PathBuf>>) -> Listing {
     Ok((regular, total))
 }
 
+/// What Pun runs for `root`'s pint.json (or `config`): the pun.toml `pun migrate` writes from it.
+fn load(root: &Path, config: Option<&str>) -> Result<pun_config::Config, String> {
+    let pint = root.join(config.unwrap_or("pint.json"));
+    pun_config::migrate::from_pint(&pint, None)
+        .and_then(|m| pun_config::from_toml(root, &m.toml))
+        .map_err(|e| e.to_string())
+}
+
 fn ours(root: &Path, config: Option<&str>, paths: &[&str]) -> Listing {
-    let opts = pun_config::Options {
-        config: config.map(PathBuf::from),
-        ..Default::default()
-    };
-    let cfg = pun_config::load(root, &opts).map_err(|e| e.to_string())?;
+    let cfg = load(root, config)?;
     let paths: Vec<PathBuf> = paths.iter().map(PathBuf::from).collect();
     listing(root, discover(&cfg, &paths))
 }
@@ -282,7 +286,7 @@ fn stdin_exclusion_matches_pint() {
             r#","exclude":["legacy","app/Old"],"notName":["*Stub.php","{x,y}.php"],"notPath":["gen/*","s/?.php","t/[!x]*.php","u/[a-c].php","v/\\*.php","w/[\\].php"]"#,
         ),
     );
-    let cfg = pun_config::load(&root, &Default::default()).unwrap();
+    let cfg = load(&root, None).unwrap();
     let mut blade_cfg = cfg.clone();
     blade_cfg.blade = true;
     for name in [
@@ -393,7 +397,7 @@ fn git_selection_matches_pint() {
     let ours = |sel: &GitSelect| {
         listing(
             &root,
-            git_paths(&pun_config::load(&root, &Default::default()).unwrap(), sel),
+            git_paths(&load(&root, None).unwrap(), sel),
         )
     };
     // Not a repository.

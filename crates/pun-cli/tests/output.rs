@@ -1,7 +1,7 @@
 //! Byte-for-byte output parity with the real Pint (`php .oracle/pint/builds/pint`): stdout, stderr, exit code and
 //! resulting files for syntax errors (PHP's message, `-v` snippets), colours (`--ansi`, TTY via `script`, NO_COLOR),
 //! every `--format` reporter, Termwind truncation, abort boxes and the prettier pre-flight check. Each case runs
-//! Pint, resets the tree, runs Pun's `pint` alias in the same directory. Skipped without the oracle.
+//! Pint, resets the tree, runs `pun migrate` and `pun format` in the same directory. Skipped without the oracle.
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -37,7 +37,8 @@ fn reset(dir: &Path, files: &[(&str, &str)]) {
 fn snapshot(dir: &Path, rel: &str, out: &mut BTreeMap<String, Vec<u8>>) {
     for e in std::fs::read_dir(dir.join(rel)).unwrap().flatten() {
         let r = format!("{rel}{}", e.file_name().to_string_lossy());
-        if e.path().is_symlink() {
+        // Written by `pun migrate` for Pun's run.
+        if e.path().is_symlink() || r == "pun.toml" {
             continue;
         }
         if e.path().is_dir() {
@@ -125,21 +126,27 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
     }
 }
 
+const PUN: [&str; 2] = [env!("CARGO_BIN_EXE_pun"), "format"];
+
+/// `pun migrate` in `dir`, which must succeed.
+fn migrate(dir: &Path) {
+    let out = Command::new(PUN[0])
+        .arg("migrate")
+        .current_dir(dir)
+        .output()
+        .unwrap();
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+}
+
 struct Cx {
     oracle: PathBuf,
-    alias: PathBuf,
     dir: PathBuf,
 }
 
 impl Cx {
     fn new(name: &str) -> Option<Cx> {
-        let oracle = oracle()?;
-        let bin = tmp("bin");
-        let alias = bin.join("pint");
-        std::os::unix::fs::symlink(env!("CARGO_BIN_EXE_pun"), &alias).unwrap();
         Some(Cx {
-            oracle,
-            alias,
+            oracle: oracle()?,
             dir: tmp(name),
         })
     }
@@ -153,11 +160,8 @@ impl Cx {
             o,
         );
         reset(&self.dir, tree);
-        let got = run(
-            &[&[self.alias.to_str().unwrap()][..], args].concat(),
-            &self.dir,
-            o,
-        );
+        migrate(&self.dir);
+        let got = run(&[&PUN[..], args].concat(), &self.dir, o);
         (want, got)
     }
 
@@ -360,12 +364,22 @@ fn ignore_annotations_like_pint() {
     let Some(cx) = Cx::new("ignore") else { return };
     let mut t = tree();
     t.retain(|(f, _)| !f.starts_with("app/Bad"));
+    let base = t.clone();
     t.push((
         "app/Ignored.php",
         "<?php\n\n// @php-cs-fixer-ignore single_quote,array_syntax\n$a = array(\"x\");\n",
     ));
+    // `pun migrate` rewrote the annotation (hand-derived from the mapping); the rest is Pint's.
     for args in [&[][..], &["--test"], &["-v"]] {
-        cx.same(&t, args, PLAIN);
+        let (mut want, got) = cx.pair(&t, args, PLAIN);
+        let ignored = want.files.get_mut("app/Ignored.php").unwrap();
+        *ignored = String::from_utf8_lossy(ignored)
+            .replace(
+                "// @php-cs-fixer-ignore single_quote,array_syntax",
+                "// @pun-ignore-file format.single-quote,format.array-syntax",
+            )
+            .into_bytes();
+        assert_eq!(got, want, "{args:?}");
     }
     // A tab right after the name: FixerAnnotationAnalyzer's "Undefined array key 1".
     for bad in [
@@ -374,7 +388,7 @@ fn ignore_annotations_like_pint() {
         " \tsingle_quote",
         "\tsingle_quote",
     ] {
-        let mut t = t.clone();
+        let mut t = base.clone();
         t.push((
             "app/Zbad.php",
             Box::leak(
@@ -416,101 +430,38 @@ fn abort_box_like_pint() {
     cx.same(&t, &["--format=a-format-name-long-enough-to-wrap-in-an-eighty-column-terminal-if-it-were-wrapped-at-all"], Opts { env: &[("COLUMNS", "0")], ..PLAIN });
 }
 
-/// Option errors (ArgvInput: unknown, value on a flag, missing value) and run errors (with the PHP exception's
-/// "In X.php line N:" header) as Pint's box on stdout, exit 1, coloured by a raw `--ansi`/`--no-ansi`.
+/// Run errors (with the PHP exception's "In X.php line N:" header) as Pint's box on stdout, exit 1, coloured by a raw
+/// `--ansi`. pint.json's own errors are `pun migrate`'s (pun-config's tests have Pint's messages).
 #[test]
 fn error_boxes_like_pint() {
     let Some(cx) = Cx::new("errors") else { return };
     let t = tree();
-    for args in [
-        &["--nope"][..],
-        &["--nope=1", "--test"],
-        &["-z"],
-        &["--te"],
-        &["--test=1"],
-        &["--config"],
-        &["--nope", "--ansi"],
-        &["--no-ansi", "--ansi", "--nope"],
-        &["-q", "--nope"],
-        &["app/Missing.php"],
-        &["--ansi", "app/Missing.php"],
-        &["--config=http://example.com/pint.json"],
-        // `pun format`'s own flags are unknown options to Pint.
-        &["--watch"],
-        &["--explain"],
-        &["--native-only"],
-        &["--stdin"],
-        &["--staged"],
-        &["--since=HEAD"],
-        &["--no-cache"],
-        &["--list-files"],
-    ] {
+    for args in [&["app/Missing.php"][..], &["--ansi", "app/Missing.php"]] {
         let r = cx.same(&t, args, PLAIN);
         assert_eq!(r.code, Some(1), "{args:?}");
     }
-    // A top-level list is an empty config (not invalid JSON); an unknown preset (Pint 1.29) finds no files, then
-    // its summary fails on the preset's name.
-    for cfg in [
-        r#"{"in":["nope"]}"#,
-        r#"{"extend":"b.json"}"#,
-        r#"{"rules":{"array_syntax":1}}"#,
-        r#"{"rules":{"@PSR12":null}}"#,
-        "{bad",
-        "[1]",
-        r#"[{"preset":"empty"}]"#,
-        r#"{"preset":"nope"}"#,
-    ] {
+    // A top-level list is an empty config (not invalid JSON).
+    for cfg in [r#"{"in":["nope"]}"#, "[1]", r#"[{"preset":"empty"}]"#] {
         let mut t = tree();
         t[1] = ("pint.json", cfg);
-        t.push(("b.json", r#"{"extend":"c.json"}"#));
         let r = cx.same(&t, &["--test"], PLAIN);
         assert_eq!(r.code, Some(1), "{cfg}");
         if !cfg.starts_with('[') {
             cx.same_trace(&t, &["--test", "-v"]);
         }
     }
+    // -v: the exception class in the box and the throw site under it; -q wins over -v.
     for args in [
-        &["--preset=nope"][..],
-        &["--preset=nope", "--test", "--format=json"],
-        &["--preset=nope", "--format=txt"],
-        &["--preset=nope", "-q"],
-        &["--preset=nope", "--ansi"],
-    ] {
-        cx.same(&t, args, PLAIN);
-    }
-    // -v: the exception class in the box and the throw site under it, for option errors too; -q wins over -v.
-    for args in [
-        &["--nope", "-v"][..],
-        // (not -vv: the PHAR's stub then prints Box's requirements check on stderr)
-        &["-z", "-v"],
-        &["-vz"],
-        &["--test=1", "--verbose"],
-        &["--config", "-v"],
-        &["--watch", "-v", "--ansi"],
-        &["--format=nope", "-v"],
-        &["--config=http://example.com/pint.json", "-v"],
+        &["--format=nope", "-v"][..],
         &["app/Missing.php", "-v"],
         &["--test", "-v", "--format=json", "--output-to-file=app"],
-        &["-vq", "--nope"],
     ] {
         cx.same_trace(&t, args);
     }
-    cx.same(&t, &["-qv", "--nope"], PLAIN);
-    // ArgvInput lets a flag repeat.
-    cx.same(&t, &["--test", "--test"], PLAIN);
-    // Help stays clap's (Pint's help differs): exit 0, not a box.
-    let ours = |args: &[&str]| {
-        run(
-            &[&[cx.alias.to_str().unwrap()][..], args].concat(),
-            &cx.dir,
-            PLAIN,
-        )
-    };
-    let h = ours(&["--help"]);
+    cx.same(&t, &["-qv", "app/Missing.php"], PLAIN);
+    let h = run(&[&PUN[..], &["--help"]].concat(), &cx.dir, PLAIN);
     assert!(
-        h.code == Some(0)
-            && h.stdout
-                .starts_with("Fix the coding style of the given path\n"),
+        h.code == Some(0) && h.stdout.starts_with("Fix (or check) the layout of the given paths"),
         "{h:?}"
     );
     // Unreadable / unwritable files abort the run (kept outside the snapshotted tree).
@@ -524,6 +475,9 @@ fn error_boxes_like_pint() {
     ] {
         let pair = |cmd: &[&str]| {
             reset(&cx.dir, &t);
+            if cmd == PUN {
+                migrate(&cx.dir);
+            }
             std::fs::write(&outside, "<?php\n$a = array( 1,2 );\n").unwrap();
             std::fs::set_permissions(&outside, std::os::unix::fs::PermissionsExt::from_mode(mode))
                 .unwrap();
@@ -545,12 +499,12 @@ fn error_boxes_like_pint() {
             want.stdout.contains("\nIn ") && want.code == Some(1),
             "{want:?}"
         );
-        assert_eq!(pair(&[cx.alias.to_str().unwrap()]), want, "mode {mode:o}");
+        assert_eq!(pair(&PUN), want, "mode {mode:o}");
     }
 }
 
-/// Gitlab entries for rules GitlabReporter's FixerFactory doesn't know (Pun's own, enabled via pun.toml) use its
-/// "custom rule" wording. Hand-derived from GitlabReporter::generate (Pint has no such rules to run).
+/// Gitlab entries for rules GitlabReporter's FixerFactory doesn't know (Pun's own lint rules) use its "custom rule"
+/// wording. Hand-derived from GitlabReporter::generate (Pint has no such rules to run).
 #[test]
 fn gitlab_custom_rule() {
     let dir = tmp("gitlab");
@@ -559,18 +513,13 @@ fn gitlab_custom_rule() {
         &[
             (
                 "pun.toml",
-                "[format]\npreset = \"empty\"\n[format.rules]\n\"Pun/no_only\" = true\n",
+                "[format]\npreset = \"empty\"\n[lint.rules]\nno-only = true\n",
             ),
             ("t.php", "<?php\ntest('a', fn () => 1)->only();\n"),
         ],
     );
     let r = run(
-        &[
-            env!("CARGO_BIN_EXE_pun"),
-            "format",
-            "--test",
-            "--format=gitlab",
-        ],
+        &[env!("CARGO_BIN_EXE_pun"), "lint", "--format=gitlab"],
         &dir,
         PLAIN,
     );
@@ -671,16 +620,14 @@ fn syntax_error_without_php() {
         &dir,
         &[
             (
-                "pint.json",
-                r#"{"preset":"empty","rules":{"array_syntax":true}}"#,
+                "pun.toml",
+                "[format]\npreset = \"empty\"\n[format.rules]\narray-syntax = true\n",
             ),
             ("a.php", "<?php\nfunction (\n"),
         ],
     );
-    let alias = tmp("bin2").join("pint");
-    std::os::unix::fs::symlink(env!("CARGO_BIN_EXE_pun"), &alias).unwrap();
     let r = run(
-        &[alias.to_str().unwrap(), "--test", "-v"],
+        &[&PUN[..], &["--test", "-v"]].concat(),
         &dir,
         Opts {
             path: Some("/nonexistent"),

@@ -75,17 +75,15 @@ fn custom_fixer_config() {
     assert_eq!(d.runtime, dir.join("vendor/autoload.php"));
     assert!(d.fixers.contains(&("Acme/upper_todo", 5)), "{:?}", d.fixers);
 
-    let mut files = d.files().unwrap();
-    files.sort();
-    let app = dir.join("app").canonicalize().unwrap();
+    // The rules as ConfigurationResolver resolves them (`pun migrate` reads them): sets expanded, custom ones kept.
+    let rules = d.rules().unwrap();
     assert_eq!(
-        files,
-        [
-            app.join("A.php"),
-            app.join("Clean.php"),
-            app.join("b.skip.php")
-        ]
+        (&rules["single_quote"], &rules["Acme/upper_todo"]),
+        (&json!(true), &json!(true))
     );
+    assert!(rules["braces_position"].is_object());
+    assert!(!rules.contains_key("@PSR12"));
+    let app = dir.join("app").canonicalize().unwrap();
 
     let read = |f: &str| std::fs::read(app.join(f)).unwrap();
     let (code, applied) = fixed(d.fix(&app.join("A.php"), &read("A.php")).unwrap());
@@ -155,8 +153,6 @@ fn pint_rules_via_project_phar() {
     let rules = json!({"combine_consecutive_unsets": true, "single_quote": true, "@PSR12": true, "no_unused_imports": false, "braces_position": false});
     let d = Delegate::start(&dir, Source::Rules(rules), None).unwrap();
     assert_eq!(d.runtime, dir.join("vendor/laravel/pint/builds/pint"));
-    // Rules travel in the request, so no config file is part of the cache signature.
-    assert_eq!(d.signature()["config"], serde_json::Value::Null);
     assert!(d.fixers.contains(&("combine_consecutive_unsets", 24)));
     assert!(
         d.fixers.contains(&("class_definition", 36)),
@@ -260,33 +256,15 @@ fn runtimes_and_startup_errors() {
         e.to_string(),
         "The rules contain risky fixers (\"strict_comparison\"), but they are not allowed to run. Perhaps you forget to use --allow-risky=yes option?"
     );
-    // A Finder without in() fails when listed, like php-cs-fixer does.
-    std::fs::write(
-        dir.join("nodirs.php"),
-        "<?php return (new PhpCsFixer\\Config())->setFinder(PhpCsFixer\\Finder::create());",
-    )
-    .unwrap();
-    let e = Delegate::start(&dir, Source::Config(dir.join("nodirs.php")), None)
-        .unwrap()
-        .files()
-        .unwrap_err();
-    assert!(e.to_string().contains("in()"), "{e}");
 }
 
-/// The cache signature changes with the config file and the installed packages.
+/// The cache signature changes with the installed packages.
 #[test]
-fn signature_tracks_config_and_packages() {
+fn signature_tracks_packages() {
     let Some(oracle) = oracle() else { return };
     let dir = custom_project(&oracle, "signature");
     let d = Delegate::start(&dir, Source::Config(dir.join(".php-cs-fixer.php")), None).unwrap();
-    let a = d.signature();
-    std::fs::write(
-        dir.join(".php-cs-fixer.php"),
-        std::fs::read_to_string(dir.join(".php-cs-fixer.php")).unwrap() + "\n",
-    )
-    .unwrap();
     let b = d.signature();
-    assert_ne!(a, b);
     std::fs::create_dir_all(dir.join("vendor/composer")).unwrap();
     std::fs::write(dir.join("vendor/composer/installed.json"), "{}").unwrap();
     assert_ne!(b, d.signature());

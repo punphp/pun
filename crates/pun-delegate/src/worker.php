@@ -1,7 +1,7 @@
 // Pun delegate worker (run with `php -r`): fixes files with the real PHP-CS-Fixer, one request at a time on stdin.
 // argv: runtime (a Pint PHAR or a vendor/autoload.php), mode ("rules" | "config"), JSON rules or the config path.
 // Replies are `<kind> <head> <len>\n<payload>`: H (handshake, JSON [name, priority] list), S (unchanged),
-// C (changed; head = applied fixer indexes), L (file list), E (error: startup or this file), A (error: abort the run).
+// C (changed; head = applied fixer indexes), R (the config's resolved rules), E (error: startup or this file), A (error: abort the run).
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', 'stderr');
 ini_set('memory_limit', '-1');
@@ -47,16 +47,8 @@ $names = array_map(static fn ($f) => $f->getName(), $fixers);
 $send('H', '', json_encode(array_map(static fn ($f) => [$f->getName(), $f->getPriority()], $fixers)));
 
 while (($line = fgets($in)) !== false) {
-    if ($line === "L\n") {
-        try {
-            $paths = [];
-            foreach ($resolver->getFinder() as $f) {
-                $paths[] = $f->getRealPath() ?: $f->getPathname();
-            }
-            $send('L', '', implode("\n", $paths));
-        } catch (Throwable $e) {
-            $send('A', '', $e->getMessage());
-        }
+    if ($line === "R\n") {
+        $send('R', '', json_encode($resolver->getRules()));
         continue;
     }
     [, $plen, $clen] = explode(' ', rtrim($line));

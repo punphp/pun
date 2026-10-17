@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Mutation fuzzing: copy (part of) a project, apply style mutations (scripts/mutate.py, deterministic per seed),
-# format one copy with real Pint and one with `pun format`, and compare every file. Each difference is
+# format one copy with real Pint and one with `pun migrate` + `pun check --fix`, and compare every file. Each difference is
 # minimised (scripts/mutate.py minimise) and printed. Exit 1 when any file differs.
 #
 #   scripts/fuzz-parity.sh <project-dir> <seed> [path...]      # paths relative to the project (default: all)
@@ -33,7 +33,8 @@ echo "seed $seed: $(python3 "$ROOT/scripts/mutate.py" mutate "$w/src" "$seed")"
 cp -a "$w/src" "$w/pint"; cp -a "$w/src" "$w/pun"
 run() { (cd "$1" && env -i PATH="$PATH" HOME="$HOME" ${PUN_PINT:+PUN_PINT="$PUN_PINT"} timeout 1800 nice "${@:2}" >/dev/null 2>&1 || true); }
 run "$w/pint" php "$ROOT/.oracle/pint/builds/pint"
-run "$w/pun" "$PUN_BIN" format
+run "$w/pun" sh -c '"$0" migrate && "$0" check --fix' "$PUN_BIN"
+rm -f "$w/pun/pun.toml"
 files=$(find "$w/src" -name '*.php' -not -path '*/node_modules/*' | wc -l)
 changed=$(diff -rq --exclude=node_modules "$w/src" "$w/pint" | wc -l || true)
 mapfile -t differ < <(diff -rq --exclude=node_modules "$w/pint" "$w/pun" | sed -n 's/^Files .*\/pint\/\(.*\) and .* differ$/\1/p')

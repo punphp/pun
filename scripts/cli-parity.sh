@@ -1,5 +1,5 @@
 #!/bin/bash
-# Byte-compare `pint` (the pinned PHAR) with Pun's `pint` alias: stdout, stderr, exit code and resulting files,
+# Byte-compare `pint` (the pinned PHAR) with `pun migrate` + `pun format`: stdout, stderr, exit code and resulting files,
 # for each argument set, run in the same directory (so absolute paths in diffs / ERROR lines agree).
 #
 #   scripts/cli-parity.sh [--project DIR] [--tty] [--env K=V]... "ARGS" ["ARGS"...]
@@ -36,7 +36,8 @@ else
   rsync -a --exclude=.git --exclude=node_modules "$project/" "$src/"
   [ -d "$project/node_modules" ] && ln -s "$project/node_modules" "$src/node_modules"
 fi
-mkdir -p "$W/bin" && ln -s "$R/target/debug/pun" "$W/bin/pint"
+# Pun's side: `pun migrate` on the same pint.json, then `pun format` with the same arguments.
+mkdir -p "$W/bin" && printf '#!/bin/sh\n"%s" migrate >/dev/null 2>&1; exec "%s" format "$@"\n' "$R/target/debug/pun" "$R/target/debug/pun" > "$W/bin/pint" && chmod +x "$W/bin/pint"
 P=$W/proj
 status=0
 run() { # name cmd...
@@ -50,7 +51,7 @@ run() { # name cmd...
   fi
   # Box's requirements checker (PHAR wrapper, -vvv only) is not Pint output.
   perl -0pi -e 's/\A\r?\nBox Requirements Checker\r?\n.*?\[OK\] Your system is ready[^\n]*\n *\r?\n\r?\n//s' "$out.out" "$out.err"
-  (cd "$P" && find . -path ./node_modules -prune -o -type f -print0 | sort -z | xargs -0 md5sum) > "$out.files"
+  (cd "$P" && find . -path ./node_modules -prune -o -type f ! -name pun.toml -print0 | sort -z | xargs -0 md5sum) > "$out.files"
 }
 for args in "$@"; do
   read -ra a <<< "$args"

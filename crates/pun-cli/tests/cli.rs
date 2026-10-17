@@ -1,7 +1,7 @@
-//! `pint`-mode (argv[0] = pint) and `pun format` against the real Pint (`php .oracle/pint/builds/pint`): same stdout,
-//! exit code and resulting files for every flag combination below, run in the same directory (so diff headers and
-//! absolute paths agree). Rules: only fully ported ones, so the output must be byte-identical. Skipped without the
-//! oracle. Pun-only behaviour (`--explain`, `config --show`, unported rules) is checked by hand-derived
+//! `pun migrate` + `pun format` against the real Pint (`php .oracle/pint/builds/pint`) on the same pint.json: same
+//! stdout, exit code and resulting files for every flag combination below, run in the same directory (so diff headers
+//! and absolute paths agree). Rules: only fully ported ones, so the output must be byte-identical. Skipped without the
+//! oracle. Pun-only behaviour (`--explain`, `config`, unported rules, no pun.toml) is checked by hand-derived
 //! expectations at the end.
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -70,7 +70,8 @@ fn snapshot(dir: &Path, rel: &str, out: &mut BTreeMap<String, Vec<u8>>) {
         } else {
             format!("{rel}/{}", e.file_name().to_string_lossy())
         };
-        if r == ".git" || e.path().is_symlink() {
+        // pun.toml: what `pun migrate` wrote for Pun's run.
+        if r == ".git" || r == "pun.toml" || e.path().is_symlink() {
             continue;
         }
         if e.path().is_dir() {
@@ -131,17 +132,26 @@ fn run(
     )
 }
 
-/// The pun binary under the name `pint` (argv[0] decides the mode).
-fn pint_alias() -> PathBuf {
-    let d = tmp("bin");
-    let p = d.join("pint");
-    std::os::unix::fs::symlink(env!("CARGO_BIN_EXE_pun"), &p).unwrap();
-    p
+const PUN: &str = env!("CARGO_BIN_EXE_pun");
+
+/// `pun migrate` in `dir`, which must succeed: Pun's runs read the pun.toml it writes from Pint's pint.json.
+fn migrate(dir: &Path) {
+    let out = Command::new(PUN)
+        .arg("migrate")
+        .current_dir(dir)
+        .output()
+        .unwrap();
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+}
+
+/// `pun format` on `dir` after `pun migrate`.
+fn pun_format(dir: &Path, args: &[&str], env: &[(&str, &str)], stdin: &[u8]) -> (Run, String) {
+    migrate(dir);
+    run(Path::new(PUN), &["format"], dir, args, env, stdin)
 }
 
 struct Ctx {
     oracle: PathBuf,
-    alias: PathBuf,
 }
 
 impl Ctx {
@@ -155,7 +165,8 @@ impl Ctx {
             stdin,
         )
     }
-    /// Runs Pint, resets the tree, runs `ours` (pint alias + `pre`), compares stdout, exit code and files.
+    /// Runs Pint, resets the tree, runs `pun migrate` and `pun <pre>` (default `format`), compares stdout, exit code
+    /// and files.
     fn same(
         &self,
         dir: &Path,
@@ -182,18 +193,9 @@ impl Ctx {
         reset(dir, tree);
         let (mut want, _) = self.pint(dir, pint_args, env, stdin);
         reset(dir, tree);
-        let (mut got, err) = if pre.is_empty() {
-            run(&self.alias, &[], dir, args, env, stdin)
-        } else {
-            run(
-                Path::new(env!("CARGO_BIN_EXE_pun")),
-                pre,
-                dir,
-                args,
-                env,
-                stdin,
-            )
-        };
+        migrate(dir);
+        let pre = if pre.is_empty() { &["format"][..] } else { pre };
+        let (mut got, err) = run(Path::new(PUN), pre, dir, args, env, stdin);
         if args.contains(&"--parallel") {
             // Pint prints progress in worker completion order; only the multiset is stable.
             for r in [&mut want, &mut got] {
@@ -223,7 +225,7 @@ impl Ctx {
         reset(dir, tree);
         let (want, werr) = self.pint(dir, args, &[], b"");
         reset(dir, tree);
-        let (got, err) = run(&self.alias, &[], dir, args, &[], b"");
+        let (got, err) = pun_format(dir, args, &[], b"");
         assert_eq!(want.code, Some(1), "{args:?}: {werr}");
         assert_eq!(got, want, "{args:?}: our stderr {err}");
     }
@@ -232,10 +234,7 @@ impl Ctx {
 #[test]
 fn matches_pint() {
     let Some(oracle) = oracle() else { return };
-    let cx = Ctx {
-        oracle,
-        alias: pint_alias(),
-    };
+    let cx = Ctx { oracle };
     let dir = tmp("p");
     let tree = files();
     for args in [
@@ -290,8 +289,8 @@ fn matches_pint() {
         &[("COLUMNS", "40")],
         b"",
     );
-    // `pun format` behaves like pint when there is no pun.toml.
-    cx.same(&dir, &tree, &["format"], &["--test"], &[], b"");
+    // `pun check` is `pun format --test` here (no lint rules); `--check` is `--test`.
+    cx.same_as(&dir, &tree, &["check"], &[], &["--test"], &[], b"");
     cx.same_as(
         &dir,
         &tree,
@@ -325,10 +324,6 @@ fn matches_pint() {
         r#"{"preset":"empty","rules":{"array_syntax":true},"in":["nodir"]}"#,
     );
     cx.same_error(&dir, &bad_in, &[]);
-    let mut bad_preset = tree.clone();
-    bad_preset[1] = ("pint.json", r#"{"preset":"psr13"}"#);
-    // Pint 1.29 runs no files, then its summary crashes on the preset's name ("Undefined array key").
-    cx.same_error(&dir, &bad_preset, &[]);
     // Unreadable / unwritable files: same box (see output.rs error_boxes_like_pint for the byte-exact cases).
     for (mode, args, env) in [
         (0o444, &[][..], &[][..]),
@@ -346,7 +341,7 @@ fn matches_pint() {
         locked();
         let (want, _) = cx.pint(&dir, args, env, b"");
         locked();
-        let (got, _) = run(&cx.alias, &[], &dir, args, env, b"");
+        let (got, _) = pun_format(&dir, args, env, b"");
         // Progress symbols of the files before the aborting one (none under an agent), then the box.
         assert_eq!(
             want.stdout.starts_with("\n  "),
@@ -423,11 +418,11 @@ fn blade_like_pint() {
             ("resources/v.blade.php", blade),
         ];
         let mut runs = vec![];
-        for program in [None, Some(pint_alias())] {
+        for pint in [true, false] {
             reset(&dir, &tree);
             std::os::unix::fs::symlink(&modules, dir.join("node_modules")).unwrap();
-            runs.push(match &program {
-                None => {
+            runs.push(match pint {
+                true => {
                     run(
                         Path::new("php"),
                         &[oracle.to_str().unwrap()],
@@ -438,7 +433,7 @@ fn blade_like_pint() {
                     )
                     .0
                 }
-                Some(alias) => run(alias, &[], &dir, &["--format=json"], &[], b"").0,
+                false => pun_format(&dir, &["--format=json"], &[], b"").0,
             });
         }
         assert_eq!(runs[1], runs[0], "preset {preset}");
@@ -460,10 +455,7 @@ fn blade_like_pint() {
 #[test]
 fn diffs_like_pint() {
     let Some(oracle) = oracle() else { return };
-    let cx = Ctx {
-        oracle,
-        alias: pint_alias(),
-    };
+    let cx = Ctx { oracle };
     let dir = tmp("diff");
     let big: String = std::iter::once("<?php\n".to_string())
         .chain((0..1000).map(|i| format!("$a{i} = array({i});\n$b = {};\n", i % 7)))
@@ -510,6 +502,20 @@ fn pun_env(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, String, 
 fn pun_only_behaviour() {
     let dir = tmp("own");
     reset(&dir, &files());
+    // Every command needs pun.toml; `--preset` or `--no-config` runs without one.
+    for cmd in [&["format"][..], &["lint"], &["check", "--fix"], &["config"]] {
+        let (out, err, code) = pun(&dir, cmd);
+        assert_eq!(
+            (out.as_str(), err.as_str(), code),
+            ("", "pun: No pun.toml found. Run `pun migrate`.\n", Some(1)),
+            "{cmd:?}"
+        );
+    }
+    let (_, _, code) = pun(&dir, &["format", "--test", "--preset=empty"]);
+    assert_eq!(code, Some(0));
+    let (_, _, code) = pun(&dir, &["format", "--test", "--no-config"]);
+    assert_eq!(code, Some(1));
+    migrate(&dir);
     let (out, _, code) = pun(&dir, &["format", "--list-files"]);
     let mut listed: Vec<&str> = out.lines().collect();
     listed.sort();
@@ -553,30 +559,23 @@ fn pun_only_behaviour() {
 
     // A rule Pun hasn't ported is delegated to PHP-CS-Fixer, which needs one to delegate to.
     std::fs::write(
-        dir.join("pint.json"),
-        r#"{"preset":"empty","rules":{"array_syntax":true,"not_a_real_rule":true}}"#,
+        dir.join("pun.toml"),
+        "[format]\npreset = \"empty\"\n[format.rules]\narray-syntax = true\nassign-null-coalescing-to-coalesce-equal = true\n",
     )
     .unwrap();
-    let (out, err, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
-    assert_eq!((out.as_str(), code), ("", Some(1)));
-    assert_eq!(
-        err,
-        "\n  no PHP-CS-Fixer to delegate to: run `composer require --dev laravel/pint`, set PUN_PINT to a Pint PHAR, or pass --native-only\n\n"
+    let (out, _, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
+    assert_eq!(code, Some(1));
+    assert!(
+        out.contains("no PHP-CS-Fixer to delegate to: run `composer require --dev laravel/pint`,"),
+        "{out}"
     );
-    // ...whose own validation then rejects it (Pint's message for this pint.json).
     if let Some(o) = oracle() {
-        let (_, err, code) = pun_env(
+        let (out, _, code) = pun_env(
             &dir,
             &["format", "--test", "app/Clean.php"],
             &[("PUN_PINT", o.to_str().unwrap())],
         );
-        assert_eq!(
-            (err.as_str(), code),
-            (
-                "\n  The rules contain unknown fixers: \"not_a_real_rule\".\n\n",
-                Some(1)
-            )
-        );
+        assert_eq!(code, Some(0), "{out}");
     }
     // --native-only: native rules only, the rest listed (and the run is not failed for it).
     let (out, err, code) = pun(
@@ -592,58 +591,46 @@ fn pun_only_behaviour() {
     assert_eq!(code, Some(0));
     assert!(out.contains("PASS"), "{out}");
     assert!(
-        err.contains("  skipped           not_a_real_rule\n"),
+        err.contains("  skipped           assign_null_coalescing_to_coalesce_equal\n"),
         "{err}"
     );
     assert!(
-        err.ends_with("pun: --native-only skipped 1 rules that are not ported: not_a_real_rule\n"),
+        err.ends_with("pun: --native-only skipped 1 rules that are not ported: assign_null_coalescing_to_coalesce_equal\n"),
         "{err}"
     );
 
-    // `pint` ignores pun.toml: an invalid one only breaks `pun format`.
-    reset(&dir, &files());
+    // A broken pun.toml is a one-line error.
     std::fs::write(dir.join("pun.toml"), "[format]\nnope = 1\n").unwrap();
-    let (_, err, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
-    assert_eq!(code, Some(1));
+    let (out, err, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
+    assert_eq!((out.as_str(), code), ("", Some(1)));
     assert!(
-        err.contains("invalid ") && err.contains("pun.toml"),
+        err.starts_with(&format!("pun: invalid {}: ", dir.join("pun.toml").display())),
         "{err}"
     );
-    let (_, err) = run(
-        &pint_alias(),
-        &[],
-        &dir,
-        &["--test", "app/Clean.php"],
-        &[],
-        b"",
-    );
-    assert!(!err.contains("pun.toml"), "{err}");
 
     reset(&dir, &files());
+    migrate(&dir);
 
     // --staged: only files with staged changes (none outside git).
     let (out, _, code) = pun(&dir, &["format", "--staged", "--test", "--format=json"]);
     assert_eq!(code, Some(0));
     assert!(out.contains(r#""files":[]"#), "{out}");
 
-    // config --show: the merged config, TOML by default, JSON on request.
+    // config: the resolved config under Pun rule IDs, TOML by default, JSON on request.
     let (out, _, code) = pun(&dir, &["config", "--show", "--format=json"]);
     assert_eq!(code, Some(0));
     let v: serde_json::Value = serde_json::from_str(&out).unwrap();
     assert_eq!(v["format"]["preset"], "empty");
-    assert_eq!(v["format"]["rules"]["array_syntax"], true);
+    assert_eq!(v["format"]["rules"]["format.array-syntax"], true);
     assert_eq!(
         v["sources"][1],
-        dir.join("pint.json").to_string_lossy().as_ref()
+        dir.join("pun.toml").to_string_lossy().as_ref()
     );
-    let (out, _, _) = pun(
-        &dir,
-        &["config", "--show", "--preset=psr12", "--config=pint.json"],
-    );
+    let (out, _, _) = pun(&dir, &["config", "--preset=psr12", "--config=pun.toml"]);
     let t: toml::Value = toml::from_str(&out).unwrap();
     assert_eq!(t["format"]["preset"].as_str(), Some("psr12"));
-    let (_, err, code) = pun(&dir, &["config", "--show", "--preset=nope"]);
-    assert_eq!((err.as_str(), code), ("\n  Preset not found.\n\n", Some(1)));
+    let (_, err, code) = pun(&dir, &["config", "--preset=nope"]);
+    assert_eq!((err.as_str(), code), ("pun: Preset not found.\n", Some(1)));
 }
 
 /// Delegate mode against the real Pint: rules Pun hasn't ported (combine_consecutive_unsets, align_multiline_comment,
@@ -654,7 +641,6 @@ fn delegated_rules_match_pint() {
     let Some(oracle) = oracle() else { return };
     let cx = Ctx {
         oracle: oracle.clone(),
-        alias: pint_alias(),
     };
     let dir = tmp("delegate");
     let tree = [
@@ -682,9 +668,9 @@ fn delegated_rules_match_pint() {
     ] {
         cx.same(&dir, &tree, &[], args, &env, b"");
     }
-    cx.same(&dir, &tree, &["format"], &["--test"], &env, b"");
     // stdin goes through the same workers.
     reset(&dir, &tree);
+    migrate(&dir);
     let (r, _) = run(
         Path::new(env!("CARGO_BIN_EXE_pun")),
         &["format", "--stdin"],
@@ -706,8 +692,9 @@ fn delegated_rules_match_pint() {
     let clean = pun_env(&dir, &args, &env);
     let warned = pun_env(&dir, &args, &[env[0], ("PHP_INI_SCAN_DIR", &scan)]);
     assert_eq!((warned.0, warned.2), (clean.0, clean.2));
-    // -v and --explain say why and list what ran in PHP; the `pint` alias stays silent like Pint.
+    // -v and --explain say why and list what ran in PHP.
     reset(&dir, &tree);
+    migrate(&dir);
     let (_, err, _) = pun_env(&dir, &["format", "--test", "-v", "app/Clean.php"], &env);
     let why = format!(
         "delegate: 2 of {} rules are not ported (explicit_string_variable, no_null_property_initialization), so every file runs through PHP-CS-Fixer in `php` ({})\n",
@@ -726,28 +713,19 @@ fn delegated_rules_match_pint() {
             && err.contains("\n  delegated    -20  no_extra_blank_lines\n"),
         "{err}"
     );
-    let (_, err) = run(
-        &cx.alias,
-        &[],
-        &dir,
-        &["--test", "-v", "app/Clean.php"],
-        &env,
-        b"",
-    );
-    assert_eq!(err, "");
 }
 
-/// The number of rules `pun config --show` resolves for `dir` (the laravel preset plus two).
+/// The number of format rules `pun config` resolves for `dir` (the laravel preset's, minus its risky ones, plus two).
 fn pun_config_rules(dir: &Path) -> usize {
     let (out, _, _) = pun(dir, &["config", "--show", "--format=json"]);
     let v: serde_json::Value = serde_json::from_str(&out).unwrap();
     v["format"]["rules"].as_object().unwrap().len()
 }
 
-/// A .php-cs-fixer.php with a project fixer class (pun-delegate's fixture, expectations from php-cs-fixer): its Finder
-/// picks the files, its rules and fixer fix them; --native-only can't read it.
+/// `pun migrate` reads a .php-cs-fixer.php through PHP-CS-Fixer itself (pun-delegate's fixture: a project fixer
+/// class, which Pun can't run, so nothing is written), then one without custom fixers.
 #[test]
-fn php_cs_fixer_config() {
+fn migrates_php_cs_fixer_config() {
     let Some(oracle) = oracle() else { return };
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../pun-delegate/tests/custom");
     let dir = tmp("pcf");
@@ -768,64 +746,43 @@ fn php_cs_fixer_config() {
         ("composer.json", r#"{"require":{"php":"^8.4"}}"#.into()),
         (".php-cs-fixer.php", read(".php-cs-fixer.php")),
         ("UpperTodoFixer.php", read("UpperTodoFixer.php")),
-        ("app/A.php", read("app/A.php")),
-        ("app/b.skip.php", read("app/b.skip.php")),
-        ("app/Clean.php", read("app/Clean.php")),
-        ("outside/C.php", "<?php\n$a = \"x\";\n".into()),
+        ("app/A.php", "<?php\n$a = \"x\";\nin_array($a, []);\n".into()),
         ("vendor/autoload.php", autoload),
         ("vendor/friendsofphp/php-cs-fixer/.keep", String::new()),
     ];
     let tree: Vec<(&str, &str)> = tree.iter().map(|(a, b)| (*a, b.as_str())).collect();
     reset(&dir, &tree);
-    let (out, _, code) = pun(&dir, &["format", "--list-files"]);
-    let mut listed: Vec<&str> = out.lines().collect();
-    listed.sort();
+    let finder = "pun migrate: .php-cs-fixer.php configures its own Finder, which is not migrated: check [format] paths and exclude.\n";
+    let (out, err, code) = pun(&dir, &["migrate"]);
     assert_eq!(
-        (listed, code),
+        (out.as_str(), err, code),
         (
-            vec!["app/A.php", "app/Clean.php", "app/b.skip.php"],
-            Some(0)
-        )
-    );
-    let (_, _, code) = pun(&dir, &["format"]);
-    assert_eq!(code, Some(0));
-    for f in ["A.php", "b.skip.php"] {
-        assert_eq!(
-            std::fs::read_to_string(dir.join("app").join(f)).unwrap(),
-            read(&format!("expected/{f}"))
-        );
-    }
-    assert_eq!(
-        std::fs::read_to_string(dir.join("outside/C.php")).unwrap(),
-        "<?php\n$a = \"x\";\n"
-    );
-    let (_, err, _) = pun(&dir, &["format", "--test", "-v"]);
-    assert!(
-        err.starts_with(&format!(
-            "delegate: {} configures the run, ",
-            dir.join(".php-cs-fixer.php").display()
-        )),
-        "{err}"
-    );
-    // A fixer exception and a fixer that breaks the code fail only their file, with php-cs-fixer's messages.
-    std::fs::write(dir.join("app/T.php"), "<?php\n\n// THROW\n").unwrap();
-    std::fs::write(dir.join("app/B.php"), "<?php\n\n// BREAK\n$a = 1;\n").unwrap();
-    let (out, _, code) = pun(&dir, &["format", "--test", "--format=agent"]);
-    assert_eq!(code, Some(1));
-    assert!(
-        out.contains(r#"{"path":"app\/T.php","message":"boom"}"#),
-        "{out}"
-    );
-    assert!(
-        out.contains(r#"{"path":"app\/B.php","message":"Parse error: Unmatched ')' on line 4."}"#),
-        "{out}"
-    );
-    let (_, err, code) = pun(&dir, &["format", "--native-only"]);
-    assert_eq!(
-        (err.as_str(), code),
-        (
-            "\n  --native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead.\n\n",
+            "",
+            format!("{finder}pun migrate: .php-cs-fixer.php uses rules Pun can't run, so nothing was written:\n  Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n"),
             Some(1)
         )
     );
+    assert!(!dir.join("pun.toml").exists());
+    std::fs::write(
+        dir.join(".php-cs-fixer.php"),
+        "<?php\nreturn (new PhpCsFixer\\Config())->setRiskyAllowed(true)->setRules(['single_quote' => true, 'strict_param' => true]);\n",
+    )
+    .unwrap();
+    let (out, err, code) = pun(&dir, &["migrate"]);
+    assert_eq!(code, Some(0), "{err}");
+    assert_eq!(err, finder);
+    assert_eq!(
+        out,
+        "pun migrate: pun.toml written from .php-cs-fixer.php, ignore comments rewritten in 0 file(s).\n"
+    );
+    assert_eq!(
+        std::fs::read_to_string(dir.join("pun.toml")).unwrap(),
+        "# Written by `pun migrate` from .php-cs-fixer.php.\n[format]\npreset = \"empty\"\n\n[format.rules]\nsingle-quote = true\n\n[lint.rules]\nrequire-strict-param = { fix = \"apply\" }\n"
+    );
+    // single_quote is format; strict_param (risky) only runs under lint / check.
+    pun(&dir, &["format"]);
+    let a = || std::fs::read_to_string(dir.join("app/A.php")).unwrap();
+    assert_eq!(a(), "<?php\n$a = 'x';\nin_array($a, []);\n");
+    pun(&dir, &["check", "--fix"]);
+    assert_eq!(a(), "<?php\n$a = 'x';\nin_array($a, [], true);\n");
 }

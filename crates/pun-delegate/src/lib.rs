@@ -1,5 +1,5 @@
 //! Delegate mode: run the real PHP-CS-Fixer in long-lived `php` workers (one per thread that asks), fed files over
-//! stdin/stdout, for configs Pun can't run natively (unported rules, `.php-cs-fixer.php` with custom fixers).
+//! stdin/stdout, for rules Pun can't run natively. `pun migrate` also reads a `.php-cs-fixer.php`'s rules through it.
 //!
 //! Whole file, not per fixer: PHP-CS-Fixer runs every fixer once, in priority order, on one token list, and unported
 //! rules sit between native ones (laravel/framework's pint.json interleaves 8 of them from priority 27 to -41).
@@ -192,32 +192,22 @@ impl Delegate {
         })
     }
 
-    /// The config's Finder, as PHP-CS-Fixer resolves it (`.php-cs-fixer.php` only).
-    pub fn files(&self) -> Result<Vec<PathBuf>> {
-        let (_, _, list) = self.call(&[b"L\n"])?;
-        Ok(String::from_utf8_lossy(&list)
-            .lines()
-            .map(PathBuf::from)
-            .collect())
+    /// The rules PHP-CS-Fixer resolved from the source (`pun migrate` reads a `.php-cs-fixer.php` this way).
+    pub fn rules(&self) -> Result<serde_json::Map<String, Value>> {
+        let (_, _, rules) = self.call(&[b"R\n"])?;
+        Ok(serde_json::from_slice(&rules)?)
     }
 
-    /// What delegated results depend on besides Pun's own signature: the runtime, the config file and the installed
-    /// packages. ponytail: like PHP-CS-Fixer's own cache, edits to project-local custom fixer classes aren't seen.
+    /// What delegated results depend on besides Pun's own signature: the runtime and the installed packages.
     pub fn signature(&self) -> Value {
         let stamp = |p: &Path| {
             std::fs::metadata(p)
                 .ok()
                 .map(|m| format!("{} {:?}", m.len(), m.modified().ok()))
         };
-        let config = if self.mode == "config" {
-            std::fs::read(&self.arg).ok()
-        } else {
-            None
-        };
         json!({
             "runtime": [self.runtime, stamp(&self.runtime)],
             "installed": stamp(&self.root.join("vendor/composer/installed.json")),
-            "config": config.map(|c| String::from_utf8_lossy(&c).into_owned()),
         })
     }
 }
