@@ -103,5 +103,15 @@ are always errors.
 Answered 2026-10-17 (Pushpak):
 
 - **Q1: problem blocks with code by default**; `--concise` prints one line per problem.
-- **Q2: `pun check` groups by command**: a Format section, then Lint, then Analyse, each with its own files, then one
-  summary line.
+- **Q2: `pun check` groups by command**, the way Vite+'s `vp check` does. Each step prints one status line with its
+  count and time, and its problems follow under it. The final summary line comes last:
+  ```
+  ✔ format   All 412 files formatted                         (0.08s)
+  ✖ lint     2 errors, 1 warning in 2 files · 2 fixable      (0.12s)
+     …problem blocks…
+  ✖ analyse  1 error in 1 file                               (0.21s)
+     …problem blocks…
+  ✖ 3 errors · 1 warning · 2 fixable (run pun check --fix) · 412 files in 0.31s
+  ```
+  A passing step is one line. Pushpak reconsidered by file vs by command and kept by command after comparing with
+  Vite+, whose output is one `pass:` line per step.
