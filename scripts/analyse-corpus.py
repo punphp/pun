@@ -5,7 +5,7 @@
                                                     pin PHPStan 2.2.7 (symlink to .oracle/phpstan)
     scripts/analyse-corpus.py oracle [project...]   phpstan analyse --level 0 --error-format=json (cold, no result
                                                     cache) -> target-analyse/oracle/<p>.json (+ seconds)
-    scripts/analyse-corpus.py diff   [project...]   run Pun's analyser (target-analyse/debug/examples/analyse) and diff
+    scripts/analyse-corpus.py diff   [project...]   run Pun's analyser (target-analyse/$PUN_PROFILE/examples/analyse, default debug) and diff
                                                     (file, line, identifier, message) per identifier
     scripts/analyse-corpus.py rank                  error count per identifier over the oracle runs
     scripts/analyse-corpus.py fixture               PHPStan's errors on crates/pun-analyse/tests/fixtures/project for
@@ -162,7 +162,7 @@ def key(e):
 
 def diff(p):
     want = load(p)
-    exe = os.path.join(WORK, 'debug/examples/analyse')
+    exe = os.path.join(WORK, os.environ.get('PUN_PROFILE', 'debug'), 'examples/analyse')
     d = copy_dir(p)
     t = time.monotonic()
     r = run([exe, d, os.path.join(d, 'pun-level0.neon')], d)
