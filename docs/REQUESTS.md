@@ -81,3 +81,11 @@
   `migrate_without_a_config` pin its agent lines and the "no pint.json or .php-cs-fixer.php found" message.
 - **pun-config (from agent-output agent):** expose `[rules.lint]` entries (fix safety, summary) so pun-cli's agent
   output stops `include_str!`-ing `../../pun-config/rules/mapping.toml` (report.rs `lint_rule`; breaks `cargo publish`).
+- **pun-config (from migrate agent):** pun.toml's top-level `preset` (the lint + analyse tier, docs/RULES.md §5) is now
+  accepted and checked (`essential` / `recommended` / `strict` / `pedantic`, `Tier` in lib.rs) but applies nothing.
+  `pun migrate` writes `preset = "recommended"` in the starter pun.toml. Whoever implements tiers: the harness runs
+  laravel-laravel and larastan (no pint.json) on that starter, so the tier must not add apply-fixes there, or the
+  starter must change.
+- **tests/agent.rs (from migrate agent, to agent-output agent):** `pun migrate` now prints one line per detected config
+  (`pint.json migrated`, `phpstan.neon not-supported ...`) before the notes, and the starter wording; I updated the
+  `migrate` / `migrate_without_a_config` expectations there accordingly.

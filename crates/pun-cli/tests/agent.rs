@@ -398,7 +398,7 @@ fn migrate() {
     assert_eq!(code, Some(0));
     assert!(
         out.starts_with(&format!(
-            "pun migrate: dry-run, {} to rewrite in 1 file (from pint.json, Ts)\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n--- pun.toml\n+++ pun.toml\n",
+            "pun migrate: dry-run, {} to rewrite in 1 file (from pint.json, Ts)\npint.json migrate\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n--- pun.toml\n+++ pun.toml\n",
             summary.replacen("pun.toml", "pun.toml to write", 1)
         )),
         "{out}"
@@ -408,7 +408,7 @@ fn migrate() {
         agent(&d, &["migrate"]),
         (
             format!(
-                "pun migrate: ok, {} rewritten in 1 file (from pint.json, Ts)\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n",
+                "pun migrate: ok, {} rewritten in 1 file (from pint.json, Ts)\npint.json migrated\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n",
                 summary.replacen("pun.toml", "pun.toml written", 1)
             ),
             Some(0)
@@ -417,7 +417,7 @@ fn migrate() {
     assert_eq!(
         agent(&d, &["migrate"]).0,
         format!(
-            "pun migrate: ok, {} rewritten in 0 files (from pint.json, Ts)\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n",
+            "pun migrate: ok, {} rewritten in 0 files (from pint.json, Ts)\npint.json migrated\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n",
             summary.replacen("pun.toml", "pun.toml up to date", 1)
         )
     );
@@ -447,48 +447,42 @@ fn migrate() {
     assert!(!d.join("pun.toml").exists());
 }
 
-/// No pint.json or .php-cs-fixer.php: pun.toml's comment, the human line and the agent summary say so.
+/// No config at all: pun.toml's comment, the human lines and the agent summary say so (a starter, not "from pint.json").
 #[test]
 fn migrate_without_a_config() {
     let d = project(&[("app/A.php", CLEAN)]);
-    let why = "no pint.json or .php-cs-fixer.php found; wrote pun.toml with the laravel preset";
+    let nothing = "no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found";
     assert_eq!(
         agent(&d, &["migrate"]),
         (
             format!(
-                "pun migrate: ok, {why} (preset laravel, 126 format rules, 4 lint rules), ignore comments rewritten in 0 files (Ts)\n"
+                "pun migrate: ok, starter pun.toml written (preset laravel, 126 format rules, 4 lint rules), ignore comments rewritten in 0 files ({nothing}, Ts)\n"
             ),
             Some(0)
         )
     );
     let toml = std::fs::read_to_string(d.join("pun.toml")).unwrap();
     assert!(
-        toml.starts_with(&format!("# Written by `pun migrate`: {why}.\n[format]\n")),
+        toml.starts_with(&format!(
+            "# Written by `pun migrate`: {nothing}; starter config.\npreset = \"recommended\"\n\n[format]\n"
+        )),
         "{toml}"
     );
     assert_eq!(
         run(&d, &["migrate"], &[]),
         (
-            "pun migrate: no pint.json or .php-cs-fixer.php found; pun.toml already up to date, ignore comments rewritten in 0 file(s).\n".into(),
+            format!(
+                "pun migrate: {nothing}.\npun migrate: starter pun.toml already up to date, ignore comments rewritten in 0 file(s).\n"
+            ),
             Some(0)
         )
     );
     std::fs::remove_file(d.join("pun.toml")).unwrap();
     assert_eq!(
         run(&d, &["migrate"], &[]).0,
-        format!("pun migrate: {why}, ignore comments rewritten in 0 file(s).\n")
-    );
-    // --config names the file that is missing, and --preset the preset written.
-    std::fs::remove_file(d.join("pun.toml")).unwrap();
-    run(
-        &d,
-        &["migrate", "--config=ci/pint.json", "--preset=psr12"],
-        &[],
-    );
-    let toml = std::fs::read_to_string(d.join("pun.toml")).unwrap();
-    assert!(
-        toml.starts_with("# Written by `pun migrate`: no ci/pint.json found; wrote pun.toml with the psr12 preset.\n"),
-        "{toml}"
+        format!(
+            "pun migrate: {nothing}.\npun migrate: starter pun.toml written, ignore comments rewritten in 0 file(s).\n"
+        )
     );
 }
 

@@ -26,7 +26,7 @@ Prebuilt binaries: Linux x64/arm64 (glibc and musl), macOS x64/arm64.
 ## Usage
 
 ```sh
-pun migrate             # once: pint.json (or .php-cs-fixer.php) -> pun.toml; --dry-run shows the diff
+pun migrate             # once: pick the detected configs to migrate -> pun.toml; --dry-run shows the diff
 pun check --fix         # what `pint` did: format + the risky rules pint.json enabled
 pun format              # layout only (behaviour-safe; what format-on-save runs)
 pun format --test       # check only; exits 1 if anything would change
@@ -42,7 +42,12 @@ its Pun ID. `pun migrate` reads pint.json the way Pint does (`extend`, `--config
 Pun rule IDs ([docs/RULES.md](docs/RULES.md)): the preset plus what differs from it under `[format.rules]`, and the
 risky fixers under `[lint.rules]` with `fix = "apply"`, since they changed behaviour unattended. It rewrites
 `// @php-cs-fixer-ignore rule` comments to `// @pun-ignore-file format.rule`, lists any rule Pun can't run before
-writing anything (and then writes nothing), and is idempotent. `pun config` prints the resolved configuration.
+writing anything (and then writes nothing), and is idempotent. On a terminal it first lists the configs it found
+(pint.json, .php-cs-fixer.php, phpstan.neon, rector.php, mago.toml) as a checklist, all checked, and migrates only
+what you keep checked; `--from pint,phpstan` picks without asking, and `--yes`, agent mode or no terminal migrate
+everything found. PHPStan, Rector and Mago are listed as "not supported yet" and left untouched. With no config at all
+it writes a starter pun.toml (`preset = "recommended"`, `[format] preset = "laravel"`). `pun config` prints the
+resolved configuration.
 
 ```toml
 [format]

@@ -4,31 +4,75 @@ description: Move a project onto one pun.toml from pint.json, .php-cs-fixer.php,
 ---
 
 ```bash
-pun migrate --dry-run   # show the pun.toml it would write, change nothing
-pun migrate             # write it
+pun migrate                    # on a terminal: a checklist of the configs it found
+pun migrate --from pint        # only these (comma-separated: pint, php-cs-fixer, phpstan, rector, mago), no prompt
+pun migrate --yes              # everything it found, no prompt
+pun migrate --dry-run          # show what it would write, change nothing
 ```
+
+## Choosing what to migrate
+
+`pun migrate` looks for these in the project root and lists only the ones it finds, each with its file:
+
+| Tool | Files | Migrated today |
+| --- | --- | --- |
+| Pint | `pint.json` (or `--config`) | yes |
+| PHP-CS-Fixer | `.php-cs-fixer.php`, `.php-cs-fixer.dist.php` | yes |
+| PHPStan | `phpstan.neon`, `phpstan.neon.dist`, `phpstan.dist.neon` | not yet |
+| Rector | `rector.php` | not yet |
+| Mago | `mago.toml` | not yet |
+
+On a terminal it shows a checklist with every found config checked; space toggles, enter confirms, Esc cancels. Only
+the checked ones are migrated. Without a terminal, under a [coding agent](/docs/guides/coding-agents), with `--yes`
+or with `--from`, it never asks: `--from` picks, otherwise everything found is migrated and the output says so.
+
+```text
+$ pun migrate --yes
+pun migrate: migrating everything detected (pick with --from): pint.json, phpstan.neon, rector.php
+pun migrate: pun.toml written from pint.json, ignore comments rewritten in 0 file(s).
+  pint.json     migrated
+  phpstan.neon  skipped: PHPStan migration is not supported yet; phpstan.neon left untouched
+  rector.php    skipped: Rector migration is not supported yet; rector.php left untouched
+```
+
+PHPStan, Rector and Mago are listed as "(not supported yet)". If you pick them, the summary says they were skipped and
+their config is left as it was. With pint.json and a `.php-cs-fixer.php` both picked, pint.json gives `[format]`, as in
+Pint. With neither found, `[format]` gets Pint's default (laravel, or `--preset`).
+
+With no config at all it says "no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found" and offers
+a starter pun.toml (written without asking when there is no terminal):
+
+```toml
+preset = "recommended"
+
+[format]
+preset = "laravel"
+```
+
+The starter's `[lint.rules]` also lists the four risky rules Pint's laravel preset applies, so `pun check --fix` still
+matches `pint`.
 
 Pun reads only `pun.toml`, so `pun migrate` is the one place the old configs are read. Migration day changes no behaviour: `pun check --fix` writes the same bytes Pint did, and `pun analyse` reports the same errors PHPStan did.
 
 <Steps>
   <Step title="Read and report">
 
-Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or without one a `.php-cs-fixer.php` through PHP-CS-Fixer itself, plus `phpstan.neon` with its baseline and `rector.php`. Every rule Pun can't run is listed before anything is written, and then nothing is written.
+Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.php-cs-fixer.php` through PHP-CS-Fixer itself. Every rule Pun can't run is listed before anything is written, and then nothing is written. Planned: `phpstan.neon` with its baseline, and `rector.php`.
 
   </Step>
   <Step title="Write pun.toml">
 
-`[format]` gets the preset plus only what differs from it. The risky fixers your config enabled go under `[lint.rules]` with `fix = "apply"`, since Pint applied them unattended. PHPStan levels are expanded into the exact rules they ran; `--preset` writes the closest [tier](/docs/configuration/presets) plus overrides instead. Every rule gets its Pun ID.
+`[format]` gets the preset plus only what differs from it. The risky fixers your config enabled go under `[lint.rules]` with `fix = "apply"`, since Pint applied them unattended. Every rule gets its Pun ID. Planned: PHPStan levels expanded into the exact rules they ran.
 
   </Step>
-  <Step title="Convert the baseline">
+  <Step title="Convert the baseline (planned)">
 
 `phpstan-baseline.neon` becomes `pun-baseline.toml`, under Pun rule IDs.
 
   </Step>
   <Step title="Rewrite ignore comments">
 
-`// @php-cs-fixer-ignore rule` becomes `// @pun-ignore-file format.rule`, and `@phpstan-ignore` comments become `@pun-ignore` with Pun rule IDs. See [Ignore comments](/docs/configuration/ignore-comments).
+`// @php-cs-fixer-ignore rule` becomes `// @pun-ignore-file format.rule` (planned: `@phpstan-ignore` comments become `@pun-ignore` with Pun rule IDs). See [Ignore comments](/docs/configuration/ignore-comments).
 
   </Step>
   <Step title="Switch the workflow">
