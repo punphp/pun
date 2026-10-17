@@ -83,6 +83,7 @@ Command layout (user-approved direction, 2026-10-17):
 - FrankenPHP (plan row 4): my call. Pun links libphp itself first; FrankenPHP is linked in later.
 - **Rule placement:** decide hard which rule lives in format, lint or analyse, remove overlaps, take inspiration from other ecosystems (Vite+, Biome, Ruff, Oxc, Deno). Design in docs/RULES.md.
 
+- **Preset tiers accepted:** `essential` < `recommended` (default) < `strict` < `pedantic`, cumulative, one tier for lint+analyse; add-ons `laravel`/`pest`/`phpunit`; no PHPStan-style levels (docs/RULES.md §5).
 - **Rules design accepted (docs/RULES.md, all yes):**
   1. Risky fixers move from format to lint. `pun migrate` turns them on with auto-fix, and Pint parity is proven with `pun check --fix`.
   2. Short rule names are accepted in config and ignore comments; output always prints the full ID.
