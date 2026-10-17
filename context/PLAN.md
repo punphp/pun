@@ -151,16 +151,16 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| config 1: new `<command>/<group>/<name>` IDs, group list and sets in mapping.toml; no aliases | todo |
-| config 2: move the 40 code-deleting format rules to lint | todo |
-| config 3: new pun.toml schema (`[files]`, presets, sets, levels, groups, overrides, `[analyse]`) | todo |
-| config 4: TOML-native option names for format rules | todo |
-| config 5: PHP version and ecosystems from composer.json / composer.lock | todo |
-| config 6: remove delegate mode (pun-delegate, `--native-only`); update AGENTS.md | todo |
-| config 7: `[files]` + per-command exclude, `pun list-files` | todo |
-| config 8: `pun config` on the new schema, `pun explain <rule>` | todo |
-| config 9: the shared problem type (rule ID, path, span, message, help, level, optional fix), one small crate used by lint, analyse and the renderer | todo |
-| migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | todo |
+| config 1: new `<command>/<group>/<name>` IDs, group list and sets in mapping.toml; no aliases | doing (workflow, wf/names) |
+| config 2: move the 40 code-deleting format rules to lint | doing (workflow, wf/names) |
+| config 3: new pun.toml schema (`[files]`, presets, sets, levels, groups, overrides, `[analyse]`) | doing (workflow, wf/schema) |
+| config 4: TOML-native option names for format rules | doing (workflow, wf/options) |
+| config 5: PHP version and ecosystems from composer.json / composer.lock | doing (workflow, wf/composer) |
+| config 6: remove delegate mode (pun-delegate, `--native-only`); update AGENTS.md | doing (workflow, wf/no-delegate) |
+| config 7: `[files]` + per-command exclude, `pun list-files` | doing (workflow, wf/files) |
+| config 8: `pun config` on the new schema, `pun explain <rule>` | doing (workflow, wf/config-explain) |
+| config 9: the shared problem type (rule ID, path, span, message, help, level, optional fix), one small crate used by lint, analyse and the renderer | doing (workflow, wf/problem) |
+| migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | doing (workflow, wf/migrate-format) |
 
 **Gate:** the 7-project corpus still gives 0 differing files with `pun migrate` + `pun check --fix`, and
 `scripts/check-rule-mapping.py` passes on the new names.
@@ -169,14 +169,14 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| lint spike (lint.md Build 1): one safe and one unsafe Rector rule as text edits on Mago's tree, fix loop, then format; both pass Rector's fixtures through `format(pun lint --fix)` | todo |
-| analyse spike (analyse.md Build 0): mago-analyzer on Pinkary compared with PHPStan, and one Larastan provider through Mago's plugin API without forking Mago; says which remaining level-0 rules Mago already covers | todo |
+| lint spike (lint.md Build 1): one safe and one unsafe Rector rule as text edits on Mago's tree, fix loop, then format; both pass Rector's fixtures through `format(pun lint --fix)` | doing (workflow, wf/lint-spike) |
+| analyse spike (analyse.md Build 0): mago-analyzer on Pinkary compared with PHPStan, and one Larastan provider through Mago's plugin API without forking Mago; says which remaining level-0 rules Mago already covers | doing (workflow, wf/analyse-spike) |
 
 ### Step 2. The shared output (plan/output.md Build 1-6)
 
 | Work | Status |
 | --- | --- |
-| output 1-2: renderer and the look (brand colours, fallbacks, NO_COLOR, links) | todo |
+| output 1-2: renderer and the look (brand colours, fallbacks, NO_COLOR, links) | doing (workflow, wf/renderer) |
 | output 3: `pun format` on the renderer; Pint's human screen removed | todo |
 | output 4-6: GitHub annotations, `pun check` grouped view, exit code 2 | todo |
 
