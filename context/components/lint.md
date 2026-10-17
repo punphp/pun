@@ -188,6 +188,12 @@ Answered 2026-10-17 (Pushpak):
 - **Q3: topic groups**, the same group list as format and analyse (`lint/imports/no-unused`,
   `lint/laravel/no-request-all`); intent (correctness, suspicious, style) stays as data. Each upgrade target gets its
   own group (`lint/laravel-13/...`, `lint/php-8.5/...`), so one line turns a whole upgrade on.
+- **Q4: named presets for new projects, explicit rules for migrated ones.** New projects pick a preset: `essential`
+  (definite bugs only, about PHPStan level 0-1), `recommended` (the default), `strict` or `pedantic`, each including
+  the one below. `pun migrate` reads the old setup (PHPStan level, strict-rules, rector.php sets), writes the exact
+  rules it maps to into pun.toml, and in interactive mode offers the closest preset ("You're on PHPStan level 8; the
+  closest Pun preset is `strict`. Switch?"), showing how many new problems the switch would report before it writes.
+  `essential` is the "loose" bottom preset; no fifth tier below it.
 - **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
 - **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
   support yet (commands.md decisions).

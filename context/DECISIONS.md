@@ -37,7 +37,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
   are breaking and that's fine until the release. Lint uses topic groups too, not intent groups; each upgrade target is its
   own lint group (`lint/laravel-13/...`). The upstream mapping is kept as data in
   crates/pun-config/rules/mapping.toml (used by migrate, `pun explain` and the docs).
-- **No levels.** Presets are tiers: `essential` < `recommended` (default) < `strict` < `pedantic`, cumulative, one tier
+- **No levels** (confirmed 2026-10-17: named presets for new projects; migrate writes explicit rules and, when
+  interactive, offers the closest preset with a count of the new problems it would report). Presets are tiers: `essential` < `recommended` (default) < `strict` < `pedantic`, cumulative, one tier
   for lint + analyse; add-ons `laravel` / `pest` / `phpunit`.
 - **Laravel support is built in** (2026-10-17): nothing to install, unlike Larastan or rector-laravel. Every PHPStan
   core rule is supported natively.
