@@ -184,7 +184,7 @@ fn whitespacy_comment(tokens: &mut Tokens, index: usize) {
     }
 }
 
-// --- BraceTransformer ---
+// Port of BraceTransformer.
 
 fn brace(tokens: &mut Tokens, index: usize) {
     transform_into_curly_close_brace(tokens, index);
@@ -380,7 +380,7 @@ fn constructor_promotion(tokens: &mut Tokens, index: usize) {
     }
 }
 
-// --- SquareBraceTransformer ---
+// Port of SquareBraceTransformer.
 
 fn square_brace(tokens: &mut Tokens, index: usize) {
     if is_array_destructing(tokens, index) {
@@ -588,7 +588,7 @@ fn type_colon(tokens: &mut Tokens, index: usize) {
     }
 }
 
-// --- AbstractTypeTransformer ---
+// Port of AbstractTypeTransformer.
 
 const TYPE_END_TOKENS: &[Proto<'static>] = &[
     c(")"),
