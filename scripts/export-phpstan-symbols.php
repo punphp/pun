@@ -475,6 +475,14 @@ if (($argv[1] ?? '') === 'probes') {
     }
     // sortTypes() leaves more than 1024 types unsorted
     $probes[] = [null, implode('|', array_map(fn ($i) => "'s$i'", range(1030, 1)))];
+    // more than 63 constant-array keys overflow processArrayTypes()' bit set
+    $keys = fn (string $v) => 'array{'.implode(', ', array_map(fn ($i) => "k$i: $v", range(0, 63))).'}';
+    $probes[] = [null, $keys('1').'|'.$keys('2')];
+    // parser corners
+    foreach (['($x int ? 1 : 2)', 'callable(): ?int', 'callable(): $this', 'callable(): DateTime::ATOM', 'callable(): (int)[', 'callable(): DateTime::',
+        'callable(): DateTime::A* |int', '"\\e"', '"\\$"', '"\\u{}"', '"\\q"', 'EmptyIterator<int, string, bool>'] as $s) {
+        $probes[] = [null, $s];
+    }
     $probes[] = ['Nope', 'static'];
     $probes[] = ['Nope', '$this'];
     $probes[] = ['DatePeriod', '$this'];
@@ -491,7 +499,9 @@ if (($argv[1] ?? '') === 'probes') {
             'callable(int, string=): int', 'callable(int=, string...): void', 'Closure(int): void', 'Closure(int...): void', 'Closure', 'callable(mixed): mixed',
             'callable(string): void', "'strlen'", 'callable-string', 'array', 'Foo', 'Bar', 'ArrayIterator', 'ArrayIterator<int, string>', 'ArrayIterator<string, int>',
             'Iterator<int, string>', 'Traversable<int, string>', 'SplObjectStorage<*, *>', 'SplObjectStorage<Countable, int>', 'Generator<int, string>', 'Iterator',
-            'IteratorAggregate<int, string>', 'ArrayObject<int, string>', 'WeakMap<Countable, int>', '1|2|3', 'int<1, 3>', '(1|2)', 'int<1, 2>'], null]] as [$set, $ctx]) {
+            'IteratorAggregate<int, string>', 'ArrayObject<int, string>', 'WeakMap<Countable, int>', '1|2|3', 'int<1, 3>', '(1|2)', 'int<1, 2>'], null],
+        [['(int is int ? 1 : 2)', '(int is not int ? 1 : 2)', '1', '2', 'SplObjectStorage<Countable>', 'SplObjectStorage<Countable, int>',
+            'ArrayIterator<array-key, int>', 'ArrayIterator<int, int>'], null]] as [$set, $ctx]) {
         $scope = $ctx === 'templates' ? new NameScope(null, [], null, null, $templates) : new NameScope(null, [], $ctx);
         foreach ($set as $a) {
             foreach ($set as $b) {

@@ -1865,7 +1865,8 @@ impl ShapeBuilder {
 pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
     use Type as T;
     match a {
-        T::Mixed { .. } | T::Error => Tri::Yes,
+        // `*` is a bivariant `mixed`
+        T::Mixed { .. } | T::Error | T::Wildcard => Tri::Yes,
         T::Never(_) => match b {
             T::Never(_) => Tri::Yes,
             T::Template(_) => Tri::Maybe,
@@ -2077,7 +2078,6 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             T::ObjectWithoutClass => Tri::Maybe,
             _ => Tri::No,
         },
-        T::Wildcard => Tri::Yes,
         T::ObjectShape(props) => match b {
             // a final class without a required property; ponytail: otherwise maybe, the property types are not
             // compared

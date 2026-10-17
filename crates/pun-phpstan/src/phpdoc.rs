@@ -652,7 +652,6 @@ fn unescape(quoted: &str) -> String {
                 b'f' => Some(0x0c),
                 b'v' => Some(0x0b),
                 b'e' => Some(0x1b),
-                b'$' => Some(b'$'),
                 _ => None,
             };
             if let Some(byte) = simple {

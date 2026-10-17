@@ -623,11 +623,22 @@ fn constant(c: &ConstExpr, class: Option<&str>) -> Type {
                 .iter()
                 .filter(|c| matches(c))
                 .map(|c| Type::EnumCase(reflection.name.clone(), c.clone()));
-            let constants = reflection
-                .constants
-                .iter()
-                .filter(|(n, _)| matches(n))
-                .map(|(_, t)| resolve_str(t, Some(&reflection.name)));
+            // declared, then inherited (as PHP's reflection lists them)
+            let mut seen = Vec::new();
+            let constants = std::iter::once(reflection)
+                .chain(
+                    reflection
+                        .ancestors
+                        .iter()
+                        .filter_map(|a| symbols::class(a)),
+                )
+                .flat_map(|c| c.constants.iter().map(move |(n, t)| (c, n, t)))
+                .filter(|(_, n, _)| {
+                    let new = !seen.contains(n);
+                    seen.push(*n);
+                    new && matches(n)
+                })
+                .map(|(c, _, t)| resolve_str(t, Some(&c.name)));
             let types: Vec<Type> = cases.chain(constants).collect();
             if types.is_empty() {
                 return Type::Error;
@@ -639,22 +650,16 @@ fn constant(c: &ConstExpr, class: Option<&str>) -> Type {
 
 /// `{^PREFIX.*?REST$}` with `*` the only metacharacter.
 fn wildcard(pattern: &str, s: &str) -> bool {
-    let parts: Vec<&str> = pattern.split('*').collect();
-    let mut rest = s;
-    for (i, part) in parts.iter().enumerate() {
-        if i == 0 {
-            let Some(r) = rest.strip_prefix(part) else {
-                return false;
-            };
-            rest = r;
-        } else if i == parts.len() - 1 {
-            return rest.ends_with(part);
-        } else {
-            let Some(pos) = rest.find(part) else {
-                return false;
-            };
-            rest = &rest[pos + part.len()..];
-        }
+    let mut parts = pattern.split('*');
+    let Some(mut rest) = s.strip_prefix(parts.next().expect("a part")) else {
+        return false;
+    };
+    let last = parts.next_back().expect("a `*`");
+    for part in parts {
+        let Some(pos) = rest.find(part) else {
+            return false;
+        };
+        rest = &rest[pos + part.len()..];
     }
-    rest.is_empty()
+    rest.ends_with(last)
 }
