@@ -55,8 +55,8 @@ the `warn` / `error` difference are not applied at run time yet (lint 1-2).
 ## 4. Rules: what exists
 
 There are 703 lint rules in crates/pun-config/rules/mapping.toml. Each has its group, fix safety, sets and upstream
-sources. Each maps to exactly one in-scope upstream rule (a Rector rule in one of the planned sets, a risky
-PHP-CS-Fixer fixer, or a strict-rules class), or is Mago-derived (`origin = "mago"`); rules.md §7 has the reasons and
+sources. Each maps to exactly one in-scope upstream rule (a Rector rule in one of the planned sets, a
+PHP-CS-Fixer fixer that is risky or moved from format, or a strict-rules class), or is Mago-derived (`origin = "mago"`); rules.md §7 has the reasons and
 the lists of what was removed and added on 2026-10-18.
 
 | | Count |
@@ -64,7 +64,7 @@ the lists of what was removed and added on 2026-10-18.
 | Lint rules | 703 |
 | Ported (run natively today) | 50 (risky CS-Fixer fixers plus Pun's ports of Mago rules) |
 | Its one upstream rule: Rector core / rector-laravel / rector-phpunit / pest-plugin-rector | 264 / 80 / 79 / 59 |
-| Its one upstream rule: PHP-CS-Fixer risky fixer / Pint / strict-rules class | 115 / 1 / 17 |
+| Its one upstream rule: PHP-CS-Fixer fixer (76 risky, 39 code rules moved from format) / Pint / strict-rules class | 115 / 1 / 17 |
 | Mago-derived (no other source) / Pun-only | 87 / 1 |
 | Also carrying a Mago mapping | 43 |
 | Fix safety: safe / unsafe / mixed / report only | 310 / 307 / 7 / 79 |
@@ -164,7 +164,7 @@ Rector has no ladder. Its config is a set of independent toggles, `withPreparedS
 | pest-plugin-rector `coding-style` | 19 | Pest idioms |
 | version sets (`laravel110`, `phpunit100`, ...) | 1-7 each | upgrades; in Pun these are the upgrade groups (`lint/laravel-13/...`) |
 
-221 lint rules have no Rector source: CS-Fixer's risky fixers, strict-rules' syntax-only classes and Mago's rules.
+221 lint rules have no Rector source: CS-Fixer's risky and code fixers, strict-rules' syntax-only classes and Mago's rules.
 Rector also has gradual levels for adoption (`withDeadCodeLevel(n)`, `withTypeCoverageLevel(n)`), which turn on the
 first n rules of one set.
 
