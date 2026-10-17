@@ -48,7 +48,7 @@ impl Engine {
             // Linting stays native (TokenizerLinter's messages), as on the native path.
             Engine::Delegate(d, _) => match pun_format::lint(code) {
                 Err(e) => Err(e),
-                Ok(()) => match d.fix(file, code)? {
+                Ok(()) => match d.fix(file, code, &pun_format::pun_ignored(code))? {
                     pun_delegate::Outcome::Unchanged => Ok(None),
                     pun_delegate::Outcome::Failed(message) => Err(LintError {
                         message,

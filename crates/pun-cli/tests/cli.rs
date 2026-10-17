@@ -682,6 +682,27 @@ fn delegated_rules_match_pint() {
         b"<?php\n$s = \"a $b\";\n",
     );
     assert_eq!(r.stdout, "<?php\n\n$s = \"a {$b}\";\n");
+    // `@pun-ignore-file` skips its rules in PHP-CS-Fixer too (Pint's output for the same `@php-cs-fixer-ignore`
+    // comment): a delegated rule and a native one.
+    for (id, expected) in [
+        (
+            "format.explicit-string-variable",
+            "$s = \"a $b\";\n$c = ['x'];\n",
+        ),
+        ("single-quote", "$s = \"a {$b}\";\n$c = [\"x\"];\n"),
+    ] {
+        let head = format!("<?php\n\n// @pun-ignore-file {id}\n");
+        std::fs::write(
+            dir.join("app/Ignored.php"),
+            format!("{head}$s = \"a $b\";\n$c = array(\"x\");\n"),
+        )
+        .unwrap();
+        pun_env(&dir, &["format", "app/Ignored.php"], &env);
+        assert_eq!(
+            std::fs::read_to_string(dir.join("app/Ignored.php")).unwrap(),
+            format!("{head}{expected}")
+        );
+    }
     // PHP startup warnings (here an ini loading a missing extension) must not reach the worker protocol on stdout.
     let ini = tmp("delegate-ini");
     std::fs::write(
