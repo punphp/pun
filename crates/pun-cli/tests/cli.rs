@@ -767,7 +767,7 @@ fn migrates_php_cs_fixer_config() {
     assert_eq!(
         (out.as_str(), err, code),
         (
-            "",
+            "pun migrate: migrating everything detected (pick with --from): .php-cs-fixer.php\n",
             format!(
                 "{finder}pun migrate: .php-cs-fixer.php uses rules Pun can't run, so nothing was written:\n  Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n"
             ),
@@ -796,7 +796,7 @@ fn migrates_php_cs_fixer_config() {
     assert_eq!(err, finder);
     assert_eq!(
         out,
-        "pun migrate: pun.toml written from .php-cs-fixer.php, ignore comments rewritten in 0 file(s).\n"
+        "pun migrate: migrating everything detected (pick with --from): .php-cs-fixer.php\npun migrate: pun.toml written from .php-cs-fixer.php, ignore comments rewritten in 0 file(s).\n  .php-cs-fixer.php  migrated\n"
     );
     assert_eq!(
         std::fs::read_to_string(dir.join("pun.toml")).unwrap(),

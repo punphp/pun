@@ -93,6 +93,18 @@ struct PunToml {
     /// `[analyse]` is `pun analyse`'s.
     #[serde(default, rename = "analyse")]
     _analyse: Option<toml::Table>,
+    /// The lint + analyse tier (docs/RULES.md §5). Checked here; nothing applies tiers yet.
+    #[serde(default, rename = "preset")]
+    _tier: Option<Tier>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+enum Tier {
+    Essential,
+    Recommended,
+    Strict,
+    Pedantic,
 }
 
 #[derive(Deserialize, Default)]

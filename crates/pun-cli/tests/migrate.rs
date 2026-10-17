@@ -4,8 +4,12 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 fn pun(dir: &Path, args: &[&str]) -> (String, String, Option<i32>) {
-    let out = Command::new(env!("CARGO_BIN_EXE_pun"))
-        .args(args)
+    run(Command::new(env!("CARGO_BIN_EXE_pun")).args(args), dir)
+}
+
+/// No agent variables (agent mode is off) and stdin is not a terminal, so nothing is asked.
+fn run(cmd: &mut Command, dir: &Path) -> (String, String, Option<i32>) {
+    let out = cmd
         .current_dir(dir)
         .env_clear()
         .envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE"))
@@ -15,9 +19,22 @@ fn pun(dir: &Path, args: &[&str]) -> (String, String, Option<i32>) {
     (s(out.stdout), s(out.stderr), out.status.code())
 }
 
+/// `pun migrate` on a pseudo-terminal (util-linux `script`), typing `keys` (printf escapes) once it is up. The
+/// output with `\r` removed.
+fn pty(dir: &Path, keys: &str) -> String {
+    let sh = format!(
+        "(sleep 1; printf '{keys}'; sleep 2) | script -qec '{} migrate' /dev/null",
+        env!("CARGO_BIN_EXE_pun")
+    );
+    let (out, _, code) = run(Command::new("sh").args(["-c", &sh]), dir);
+    assert_eq!(code, Some(0), "{out}");
+    out.replace('\r', "")
+}
+
 fn project(name: &str, files: &[(&str, &str)]) -> PathBuf {
     let d = std::env::temp_dir().join(format!("pun-migrate-{name}-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&d);
+    std::fs::create_dir_all(&d).unwrap();
     for (f, c) in files {
         std::fs::create_dir_all(d.join(f).parent().unwrap()).unwrap();
         std::fs::write(d.join(f), c).unwrap();
@@ -31,6 +48,8 @@ fn read(d: &Path, f: &str) -> String {
 
 const PINT: &str = r#"{"preset":"empty","rules":{"array_syntax":true,"final_class":true}}"#;
 const TOML: &str = "# Written by `pun migrate` from pint.json.\n[format]\npreset = \"empty\"\n\n[format.rules]\narray-syntax = true\n\n[lint.rules]\nrequire-final-class = { fix = \"apply\" }\n";
+/// Without a terminal nothing is asked: everything detected is migrated, and said so.
+const PICKED: &str = "pun migrate: migrating everything detected (pick with --from): pint.json\n";
 const IGNORED: &str = "<?php\n\n// @php-cs-fixer-ignore array_syntax,final_class\n$a = array(1);\n$s = '// @php-cs-fixer-ignore array_syntax';\n";
 const REWRITTEN: &str = "<?php\n\n// @pun-ignore-file format.array-syntax,lint.require-final-class\n$a = array(1);\n$s = '// @php-cs-fixer-ignore array_syntax';\n";
 
@@ -48,13 +67,13 @@ fn writes_pun_toml_and_rewrites_ignores() {
             ("app/Plain.php", "<?php\n$a = array(1);\n"),
         ],
     );
-    // --dry-run: diffs only (pun.toml first), nothing written.
+    // --dry-run: the diffs (pun.toml first) and the summary, nothing written.
     let (out, err, code) = pun(&d, &["migrate", "--dry-run"]);
     assert_eq!(code, Some(0));
     assert_eq!(
         out,
         format!(
-            "--- pun.toml\n+++ pun.toml\n@@ -1,0 +1,9 @@\n{}--- app/Ignored.php\n+++ app/Ignored.php\n@@ -1,5 +1,5 @@\n <?php\n \n-// @php-cs-fixer-ignore array_syntax,final_class\n+// @pun-ignore-file format.array-syntax,lint.require-final-class\n $a = array(1);\n $s = '// @php-cs-fixer-ignore array_syntax';\n",
+            "{PICKED}--- pun.toml\n+++ pun.toml\n@@ -1,0 +1,9 @@\n{}--- app/Ignored.php\n+++ app/Ignored.php\n@@ -1,5 +1,5 @@\n <?php\n \n-// @php-cs-fixer-ignore array_syntax,final_class\n+// @pun-ignore-file format.array-syntax,lint.require-final-class\n $a = array(1);\n $s = '// @php-cs-fixer-ignore array_syntax';\npun migrate: pun.toml to write from pint.json, ignore comments to rewrite in 1 file(s).\n  pint.json  to migrate\n",
             TOML.lines().map(|l| format!("+{l}\n")).collect::<String>()
         )
     );
@@ -67,7 +86,9 @@ fn writes_pun_toml_and_rewrites_ignores() {
     assert_eq!(
         (out.as_str(), err.as_str(), code),
         (
-            "pun migrate: pun.toml written from pint.json, ignore comments rewritten in 1 file(s).\n",
+            &*format!(
+                "{PICKED}pun migrate: pun.toml written from pint.json, ignore comments rewritten in 1 file(s).\n  pint.json  migrated\n"
+            ),
             unknown,
             Some(0)
         )
@@ -84,12 +105,19 @@ fn writes_pun_toml_and_rewrites_ignores() {
     assert_eq!(
         (out.as_str(), code),
         (
-            "pun migrate: pun.toml already up to date from pint.json, ignore comments rewritten in 0 file(s).\n",
+            &*format!(
+                "{PICKED}pun migrate: pun.toml already up to date from pint.json, ignore comments rewritten in 0 file(s).\n  pint.json  migrated\n"
+            ),
             Some(0)
         )
     );
     let (out, _, _) = pun(&d, &["migrate", "--dry-run"]);
-    assert_eq!(out, "");
+    assert_eq!(
+        out,
+        format!(
+            "{PICKED}pun migrate: pun.toml already up to date from pint.json, ignore comments to rewrite in 0 file(s).\n  pint.json  to migrate\n"
+        )
+    );
     // A pun.toml that says something else is never overwritten.
     std::fs::write(d.join("pun.toml"), "# mine\n").unwrap();
     let (_, err, code) = pun(&d, &["migrate"]);
@@ -113,7 +141,7 @@ fn stops_on_unsupported_rules() {
         )],
     );
     let (out, err, code) = pun(&d, &["migrate"]);
-    assert_eq!((out.as_str(), code), ("", Some(1)));
+    assert_eq!((out.as_str(), code), (PICKED, Some(1)));
     assert!(
         err.starts_with("pun migrate: pint.json uses rules Pun can't run, so nothing was written:\n  braces: deprecated upstream;"),
         "{err}"
@@ -169,9 +197,194 @@ fn config_and_preset_flags() {
         "{out}"
     );
     assert!(out.contains("+single-quote = true\n"), "{out}");
-    pun(&d, &["migrate"]);
+    let (out, _, _) = pun(&d, &["migrate"]);
+    assert_eq!(
+        out,
+        "pun migrate: no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found.\npun migrate: starter pun.toml written, ignore comments rewritten in 0 file(s).\n"
+    );
     assert_eq!(
         read(&d, "pun.toml"),
-        "# Written by `pun migrate`: no pint.json or .php-cs-fixer.php found; wrote pun.toml with the laravel preset.\n[format]\npreset = \"laravel\"\n\n[lint.rules]\nno-alias-function = { fix = \"apply\" }\nno-unreachable-default-argument-value = { fix = \"apply\" }\nrequire-ordered-traits = { fix = \"apply\" }\nrequire-protected-setup = { fix = \"apply\" }\n"
+        "# Written by `pun migrate`: no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found; starter config.\npreset = \"recommended\"\n\n[format]\npreset = \"laravel\"\n\n[lint.rules]\nno-alias-function = { fix = \"apply\" }\nno-unreachable-default-argument-value = { fix = \"apply\" }\nrequire-ordered-traits = { fix = \"apply\" }\nrequire-protected-setup = { fix = \"apply\" }\n"
     );
+}
+
+const CHECKLIST: &[(&str, &str)] = &[
+    ("pint.json", PINT),
+    ("phpstan.neon", "parameters:\n    level: 5\n"),
+    ("rector.php", "<?php\n"),
+];
+
+/// Without a terminal every detected config is listed; only Pint and PHP-CS-Fixer are migrated, the rest is
+/// reported and left as it was. `--from` picks; one that isn't there is an error.
+#[test]
+fn lists_every_detected_config() {
+    let files = [
+        ("pint.json", PINT),
+        (".php-cs-fixer.dist.php", "<?php\nreturn 1;\n"),
+        ("phpstan.dist.neon", "parameters:\n    level: 5\n"),
+        ("rector.php", "<?php\n"),
+        ("mago.toml", "[linter]\n"),
+    ];
+    let d = project("all", &files);
+    let (out, err, code) = pun(&d, &["migrate"]);
+    assert_eq!(
+        (out.as_str(), err.as_str(), code),
+        (
+            "pun migrate: migrating everything detected (pick with --from): pint.json, .php-cs-fixer.dist.php, phpstan.dist.neon, rector.php, mago.toml
+pun migrate: pun.toml written from pint.json, ignore comments rewritten in 0 file(s).
+  pint.json               migrated
+  .php-cs-fixer.dist.php  skipped: pint.json gives [format]; .php-cs-fixer.dist.php left untouched
+  phpstan.dist.neon       skipped: PHPStan migration is not supported yet; phpstan.dist.neon left untouched
+  rector.php              skipped: Rector migration is not supported yet; rector.php left untouched
+  mago.toml               skipped: Mago migration is not supported yet; mago.toml left untouched
+",
+            "",
+            Some(0)
+        )
+    );
+    assert_eq!(read(&d, "pun.toml"), TOML);
+    for (f, c) in files {
+        assert_eq!(read(&d, f), c);
+    }
+    // --from: only those, never a prompt; without Pint or PHP-CS-Fixer there is no pun.toml to write.
+    std::fs::remove_file(d.join("pun.toml")).unwrap();
+    let (out, _, code) = pun(&d, &["migrate", "--from", "phpstan,mago"]);
+    assert_eq!(
+        (out.as_str(), code),
+        (
+            "pun migrate: no Pint or PHP-CS-Fixer config selected, pun.toml not written.
+  pint.json               not selected
+  .php-cs-fixer.dist.php  not selected
+  phpstan.dist.neon       skipped: PHPStan migration is not supported yet; phpstan.dist.neon left untouched
+  rector.php              not selected
+  mago.toml               skipped: Mago migration is not supported yet; mago.toml left untouched
+",
+            Some(0)
+        )
+    );
+    assert!(!d.join("pun.toml").exists());
+    let d = project("from-missing", &[("pint.json", PINT)]);
+    let (out, err, code) = pun(&d, &["migrate", "--from=pint,php-cs-fixer"]);
+    assert_eq!(
+        (out.as_str(), err.as_str(), code),
+        (
+            "",
+            "pun: --from php-cs-fixer: no .php-cs-fixer.php or .php-cs-fixer.dist.php found\n",
+            Some(1)
+        )
+    );
+    let (_, err, _) = pun(&d, &["migrate", "--from=pint", "--config=nope.json"]);
+    assert_eq!(err, "pun: --from pint: no nope.json found\n");
+}
+
+/// PHPStan alone: nothing gives [format], so pun.toml is the starter, and it says why.
+#[test]
+fn starter_beside_unsupported_configs() {
+    let d = project(
+        "phpstan-only",
+        &[("phpstan.neon.dist", "parameters:\n    level: 5\n")],
+    );
+    let (out, _, code) = pun(&d, &["migrate", "--yes"]);
+    assert_eq!(
+        (out.as_str(), code),
+        (
+            "pun migrate: migrating everything detected (pick with --from): phpstan.neon.dist
+pun migrate: starter pun.toml written, ignore comments rewritten in 0 file(s).
+  phpstan.neon.dist  skipped: PHPStan migration is not supported yet; phpstan.neon.dist left untouched
+",
+            Some(0)
+        )
+    );
+    assert!(read(&d, "pun.toml").starts_with(
+        "# Written by `pun migrate`: no pint.json or .php-cs-fixer.php found; starter config.\npreset = \"recommended\"\n\n[format]\npreset = \"laravel\"\n"
+    ));
+}
+
+/// Agent mode never asks: one summary line, then a line per config.
+#[test]
+fn agent_mode() {
+    let unknown = (
+        "app/Unknown.php",
+        "<?php\n// @php-cs-fixer-ignore Acme/rule\n",
+    );
+    let d = project("agent", &[CHECKLIST, &[unknown]].concat());
+    let agent = |args: &[&str]| {
+        let (out, _, code) = pun(&d, &[args, &["--agent"]].concat());
+        assert_eq!(code, Some(0));
+        out
+    };
+    let out = agent(&["migrate", "--dry-run"]);
+    let (head, rest) = out.split_once('\n').unwrap();
+    assert!(
+        head.starts_with("pun migrate: dry-run, pun.toml to write (preset empty, 1 format rule, 1 lint rule), ignore comments to rewrite in 0 files (from pint.json, "),
+        "{head}"
+    );
+    assert!(rest.starts_with("pint.json migrate\nphpstan.neon not-supported skipped: PHPStan migration is not supported yet; phpstan.neon left untouched\nrector.php not-supported skipped: Rector migration is not supported yet; rector.php left untouched\napp/Unknown.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n--- pun.toml\n"), "{rest}");
+    let out = agent(&["migrate", "--from=rector"]);
+    assert!(
+        out.starts_with(
+            "pun migrate: ok, no Pint or PHP-CS-Fixer config selected, pun.toml not written ("
+        ),
+        "{out}"
+    );
+    assert!(out.ends_with("s)\npint.json not-selected\nphpstan.neon not-selected\nrector.php not-supported skipped: Rector migration is not supported yet; rector.php left untouched\n"), "{out}");
+    let d = project("agent-empty", &[]);
+    let (out, _, _) = pun(&d, &["migrate", "--agent"]);
+    assert!(out.starts_with("pun migrate: ok, starter pun.toml written (preset laravel, 126 format rules, 4 lint rules), ignore comments rewritten in 0 files (no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found, "), "{out}");
+}
+
+/// On a terminal: a checklist of the detected configs, all checked. Down + space unchecks PHPStan.
+#[test]
+fn checklist_on_a_terminal() {
+    let d = project("tty", CHECKLIST);
+    let out = pty(&d, "\\033[B \\r");
+    assert!(
+        out.contains("Migrate which configs? (space toggles, enter confirms)"),
+        "{out}"
+    );
+    assert!(out.contains("> [x] Pint          pint.json\n  [x] PHPStan       phpstan.neon  (not supported yet)\n  [x] Rector        rector.php    (not supported yet)\n"), "{out}");
+    assert!(
+        out.ends_with(
+            "pun migrate: pun.toml written from pint.json, ignore comments rewritten in 0 file(s).
+  pint.json     migrated
+  phpstan.neon  not selected
+  rector.php    skipped: Rector migration is not supported yet; rector.php left untouched
+"
+        ),
+        "{out}"
+    );
+    assert_eq!(read(&d, "pun.toml"), TOML);
+    // Esc: nothing selected, nothing written.
+    std::fs::remove_file(d.join("pun.toml")).unwrap();
+    let out = pty(&d, "\\033");
+    assert!(
+        out.ends_with(
+            "pun migrate: nothing selected, pun.toml not written.
+  pint.json     not selected
+  phpstan.neon  not selected
+  rector.php    not selected
+"
+        ),
+        "{out}"
+    );
+    assert!(!d.join("pun.toml").exists());
+}
+
+/// No config at all: the terminal is asked before the starter pun.toml is written.
+#[test]
+fn starter_on_a_terminal() {
+    let d = project("tty-empty", &[]);
+    let out = pty(&d, "n");
+    assert!(out.starts_with("pun migrate: no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found.\n"), "{out}");
+    assert!(out.contains("Write a starter pun.toml?"), "{out}");
+    assert!(out.ends_with("pun migrate: nothing written.\n"), "{out}");
+    assert!(!d.join("pun.toml").exists());
+    let out = pty(&d, "\\r");
+    assert!(
+        out.ends_with(
+            "pun migrate: starter pun.toml written, ignore comments rewritten in 0 file(s).\n"
+        ),
+        "{out}"
+    );
+    assert!(read(&d, "pun.toml").starts_with("# Written by `pun migrate`: no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found; starter config.\n"));
 }

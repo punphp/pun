@@ -175,6 +175,14 @@ paths = ["app"]
 #[test]
 fn pun_toml_errors() {
     let e = |toml: &str| err(&dir(&[("pun.toml", toml)]), Options::default());
+    // The four tiers of docs/RULES.md §5, nothing else.
+    for tier in ["essential", "recommended", "strict", "pedantic"] {
+        let toml = format!("preset = \"{tier}\"\n");
+        assert!(load(&dir(&[("pun.toml", &toml)]), &Options::default()).is_ok());
+    }
+    assert!(e("preset = \"laravel\"\n").contains(
+        "unknown variant `laravel`, expected one of `essential`, `recommended`, `strict`, `pedantic`"
+    ));
     assert!(e("[format]\nexlude = [\"typo\"]\n").contains("unknown field `exlude`"));
     assert!(e("[format.rules]\nnope = true\n").ends_with(
         "`nope` is not a format rule Pun can run (see crates/pun-config/rules/mapping.toml)"
