@@ -1,6 +1,6 @@
 # Component: format (`pun format`)
 
-Status: **under review with Pushpak** (2026-10-17). This file is the plan for the formatter: how it works today, what
+Status: **under review with Pushpak** (2026-10-17; first answers in "Decisions"). This file is the plan for the formatter: how it works today, what
 is left, and the questions we still have to settle. Answers go into "Decisions" below and into DECISIONS.md. PLAN.md C1,
 C2, C5 and C6 point here.
 
@@ -123,15 +123,16 @@ agent it prints compact `path rule, rule` lines instead (PLAN.md C4).
 Done, nothing to do: lexer, transformers, all laravel and psr12 fixers, CLI parity, cache, watch, delegate mode
 (including `@pun-ignore-file`), migrate from pint.json, harness and fuzzer.
 
-Left, in the order I'd do them (pending your answers below):
+Left, reordered after the first answers:
 
+0. **Speed and memory first** (Q10): items 2 and 3 below come before everything else.
 1. **Prove it on Pinkary's CI.** Swap `vendor/bin/pint` for Pun in Pinkary's CI. This was the old v0.1 exit gate and
    is still open.
 2. **Speed: fewer allocations per token.** A cold laravel-framework run makes 45M allocations. The plan is an inline
    token content type (98% of tokens are 22 bytes or less) plus three small clone/copy fixes. Land only if cold time
    improves by 5% or more. A first attempt was stopped and lost (it lived outside git).
 3. **8-core benchmark in CI** to show laravel-framework under 1 s cold (about 1 s by extrapolation today).
-4. **Port the per preset's 3 rules** if per should be native (Q4).
+4. ~~Port the per preset's 3 rules~~ Not needed: only laravel, psr12 and empty stay as presets (Q4).
 5. **Native Blade formatter** (Blade parser plus Prettier-identical HTML printing), so Blade needs no Node. Large;
    after the first release unless you say otherwise (Q6).
 6. **Embedded PHP** so delegate mode needs no system PHP (PLAN.md C6). Only matters for unported rules (Q7).
@@ -161,4 +162,25 @@ My recommendation is marked. Answer by number; one word is enough.
 
 ## Decisions
 
-(Filled in as we answer the questions.)
+Answered 2026-10-17 (Pushpak):
+
+1. **Risky rules stay in lint.** `pun format` is behaviour-safe; `pun check --fix` is what equals `pint`.
+2. **Rule names stay kebab-case**, but must be made consistent, with an origin-style convention like `laravel/*`,
+   `symfony/<kebab-case>`. Exact scheme being clarified (see Q2 follow-up below).
+3. **Options are redesigned for Rust/TOML**, not copied from PHP-CS-Fixer. `pun migrate` translates upstream options.
+4. **Three presets only: `laravel`, `psr12`, `empty`.** `per` and `symfony` are dropped as presets (their rules stay
+   available one by one).
+5. **No pun.toml: stop**, with "Run `pun migrate`, or `pun init` for a new project". So `pun init` is new work.
+6. **Blade stays on Node + Prettier** for now; native Blade later.
+7. **System PHP for unported rules: open**, to discuss separately.
+8. **Pun style: open**, explained again in the thread.
+9. **Human output: open**, explained again in the thread.
+10. **Speed and memory are a priority now**, not parked.
+
+### Follow-ups these create
+
+- Q2: decide the naming scheme, then rename in mapping.toml (keeping old names as aliases).
+- Q3: design each rule's options as TOML (names, types, enums); the old PHP-CS-Fixer options become migrate input only.
+- Q4: remove `per` and `symfony` from `--preset` and pun.toml; migrate expands a pint.json using them into explicit rules.
+- Q5: add `pun init` (writes a starter pun.toml for a new project) and the new error text.
+- Q10: the allocation work (§7 item 2) and the 8-core benchmark move up, with a memory target next to the speed one.

@@ -33,6 +33,15 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
   for lint + analyse; add-ons `laravel` / `pest` / `phpunit`.
 - **Agent output:** under a coding agent every command prints compact `path:line:col rule message` lines, not JSON.
 
+## Format (components/format.md, 2026-10-17)
+
+- Risky rules stay in lint; `pun check --fix` equals `pint`.
+- Format presets: `laravel`, `psr12`, `empty` only.
+- Rule options are designed for TOML, not copied from PHP-CS-Fixer; migrate translates upstream options.
+- No pun.toml: stop with "Run `pun migrate`, or `pun init` for a new project" (`pun init` to be built).
+- Blade stays on Node + Prettier until a native formatter exists.
+- Speed and memory are a priority now.
+
 ## Rules design (RULES.md, all accepted)
 
 1. Risky fixers move from format to lint; `pun migrate` turns them on with auto-fix; Pint parity is proven with
