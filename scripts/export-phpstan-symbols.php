@@ -372,6 +372,7 @@ const PROBES = [
     "array{a: int, ...<'b', int>}", 'array{a: int, ...<5, int>}', "array<__benevolent<'1'|1>, int>", 'array<true, int>', 'class-string<Countable&callable>',
     'int-mask<1>', 'int-mask-of<1|string>', 'string<int>', 'SimpleXMLElement<int, string>', 'SimpleXMLElement<string>', 'SimpleXMLElement<int, string, bool>',
     '__template<int>', 'non-empty-list<int>&list<int>',
+    "array{a?: int}&array{}", "array{}&array{a?: int}", 'callable-array|null', 'callable-array|array{a: 1}', 'iterable<int>|callable-array',
     // stars and bad input
     'SplObjectStorage<*, *>', 'int|', '<', '(int', 'array{', 'callable(',
 ];
@@ -405,10 +406,18 @@ if (($argv[1] ?? '') === 'probes') {
         'null', 'resource', 'object', 'stdClass', 'Countable', 'Traversable<int>', 'Closure', 'Closure(int): void', 'callable',
         'callable(int): void', 'array', 'array{}', 'array{a: int}', 'list<int>', 'non-empty-array<int>', 'iterable<int>', 'static',
         '$this', 'Random\\IntervalBoundary::ClosedOpen', 'object{a: int}', 'mixed', 'never', 'void'];
-    foreach ($atoms as $a) {
-        foreach ($atoms as $b) {
-            if ($a !== $b) {
-                array_push($probes, ['ArrayIterator', "$a|$b"], ['ArrayIterator', "$a&$b"]);
+    $strings = ['string', 'non-empty-string', 'non-falsy-string', 'numeric-string', 'lowercase-string', 'uppercase-string', 'literal-string',
+        "''", "'0'", "'a'", "'A'", "'1'", 'class-string', 'callable-string', 'non-empty-lowercase-string', '(non-falsy-string&numeric-string)',
+        '(uppercase-string&non-empty-string)', '(lowercase-string&non-falsy-string)'];
+    $arrays = ['array', 'list<int>', 'non-empty-list<int>', 'array<string, int>', 'non-empty-array<int>', 'array{}', 'array{a: int}', 'array{a?: int}',
+        'array{int, string}', 'list{int}', 'array{0?: int}', 'callable-array', 'iterable<int>', 'array<int, string>', 'array{a: 1, b: 2}', 'array{b: 2, a: 1}'];
+    $ints = ['int', '0', '1', '-1', 'int<1, 5>', 'int<min, 0>', 'int<0, max>', 'positive-int', 'negative-int', '(1|2)', 'float', '1.0', 'int<2, 3>'];
+    foreach ([[$atoms, 'ArrayIterator'], [$strings, null], [$arrays, null], [$ints, null]] as [$set, $ctx]) {
+        foreach ($set as $a) {
+            foreach ($set as $b) {
+                if ($a !== $b) {
+                    array_push($probes, [$ctx, "$a|$b"], [$ctx, "$a&$b"]);
+                }
             }
         }
     }
