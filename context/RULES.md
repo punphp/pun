@@ -15,6 +15,24 @@ PHPStan identifier, Mago rule code) and how options carry over. That one file dr
 
 `scripts/check-rule-mapping.py` checks it (names, prefixes, references, upstream sources; §8).
 
+> **Revised 2026-10-17 (walkthrough with Pushpak).** Where this page and the decisions below disagree, the decisions win;
+> the sections are kept for their reasoning and data. Summary: PLAN.md "The decided design"; detail in components/.
+> - **IDs (§3):** `<command>/<group>/<name>` (`format/imports/ordered`, `lint/laravel/no-request-all`), with one topic
+>   and ecosystem group list shared by all commands. There are **no aliases**; renames are breaking until 1.0. Format
+>   names are in format.md §9. The verb prefixes for lint (`no-`, `prefer-`, `add-`, `require-`) and the vocabulary stay.
+> - **Placement (§1):** format may change only layout, casing and spelling. 40 safe fixers that delete or restructure
+>   code (`no_unused_imports`, `no_useless_else`, ...) move to lint (commands.md §5).
+> - **Groups (§4):** lint's intent groups (`suspicious`, `style`, ...) become data; the name uses topic groups.
+>   Upgrades get one lint group per target (`lint/laravel-13/...`).
+> - **Fix safety (§4):** `pun lint --fix` applies every fix of every enabled rule; `--unsafe`, `fix = "apply"` and
+>   `"safe-only"` are gone. `fix = "off"` keeps a rule report-only, and safe/unsafe stays a label in the output.
+> - **Severity (§4):** lint follows oxlint (`"off" | "warn" | "error"`, only `error` fails, `--deny-warnings`,
+>   `--max-warnings`). Analyse rules are on or off; every finding is an error.
+> - **Presets (§5):** lint and analyse no longer share a tier. Lint uses a checklist of sets (Rector's prepared sets);
+>   analyse has five presets, `basic` < `essential` < `recommended` < `strict` < `max`. Add-ons are built in and turn
+>   on from composer.lock.
+> - **Baselines (§7, §8):** migrate does not copy PHPStan baselines; `pun analyse --generate-baseline` writes Pun's own.
+
 Status: design. Supersedes the "Rule names" bullet in context/PLAN.md ("Update, Oct 17"). Mago rules are no longer reported as
 `mago.*`; they get Pun names like everything else. Nothing here changes runtime code yet.
 

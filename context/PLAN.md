@@ -9,6 +9,52 @@ what the code shows today, last rechecked against main at `396c4af` (2026-10-17 
 claimed. We go through the components one at a time; each one gets its own detailed file in `context/components/` (start:
 `components/format.md`), and its section here shrinks to a summary and a link once we agree on it.
 
+## The decided design (walked through with Pushpak, 2026-10-17)
+
+The one-screen summary of what Pun is going to be. Detail and reasons: `components/commands.md` (who does what),
+`components/format.md`, `components/lint.md`, `components/analyse.md`; every decision with its date is in DECISIONS.md.
+
+**Commands: one job each.**
+- `pun format`: how the code looks. Layout, casing and spelling only; never changes behaviour and never deletes code.
+- `pun lint [--fix]`: is there a better way to write this? Rector, PHP-CS-Fixer's risky fixers, Mago's lint rules, and
+  version upgrades (as lint groups; there is no `pun upgrade`).
+- `pun analyse`: is this wrong? PHPStan, Larastan and the Pest plugin; it never edits.
+- `pun check [--fix]`: all three in one pass (lint fixes, then format, then analyse); the command for CI and agents.
+- `pun migrate`: moves pint.json, .php-cs-fixer.php, rector.php and phpstan.neon onto pun.toml completely, and names
+  anything not supported yet. It never copies a baseline.
+- `pun init`: a new project's pun.toml. It asks three questions: format preset, lint sets, analyse preset.
+- `pun lsp` ships last.
+
+**Config: pun.toml only.** No pun.toml means stop, with "run `pun migrate`, or `pun init` for a new project".
+
+| | Format | Lint | Analyse |
+| --- | --- | --- | --- |
+| Preset | `laravel` (default), `psr12`, `empty` | a checklist of sets (`[lint] sets = ["dead-code", "modernize", ...]`), like Rector's prepared sets | `basic` < `essential` < `recommended` (default) < `strict` < `max`, by PHPStan level band |
+| Rule names | `format/<group>/<name>` | `lint/<group>/<name>`; one group per upgrade target (`lint/laravel-13/...`) | `analyse/<group>/<name>` |
+| Levels | none: a diff is a diff | oxlint: `"off"`, `"warn"`, `"error"` per rule or group; only `error` fails | on or off; every finding is an error |
+| Fixes | always applied | `--fix` applies every fix of every enabled rule; `fix = "off"` keeps a rule report-only | never |
+| Rule options | TOML-native, not copied from PHP-CS-Fixer | the same | the same |
+
+- One group list is shared by all three commands (topic and ecosystem groups). There are no aliases: renames are
+  breaking until 1.0.
+- Laravel, Pest and PHPUnit support is built in and turns on by itself from composer.lock, including version-specific
+  rules. There is no extension system before 1.0.
+- `[php] version` comes from composer.json; the config value is only an override.
+
+**Engines.**
+- Format: the PHP-CS-Fixer token-fixer port. `pun check --fix` equals `pint`. 40 code-deleting fixers move to lint.
+- Lint: text edits on Mago's syntax tree, then format tidies them. There is no php-parser printer port.
+- Analyse: Mago's analyser for inference, with Pun rules mapped one to one from PHPStan's identifiers, and Laravel and
+  Pest as built-in Mago plugins. Baselines are Pun's own (`pun analyse --generate-baseline`).
+
+**Output.** Pun's own modern, coloured output (format.md §10). Machine formats stay Pint and PHPStan compatible, and
+agent mode prints compact lines. The output for every command is designed in components/output.md.
+
+**Release bar for 1.0.** Everything ships at once. Every lint rule (542) is native. Every PHPStan core rule is native.
+Larastan is built in, plus seven improvements on it (typed config, routes, views, translations, env keys, Inertia
+pages, fresh model data). There is a result cache, and speed and memory come first. Unported format rules (Q7 of
+format.md) are still open.
+
 ## Status at a glance
 
 | # | Component | Crates / paths | State | Biggest gap |
@@ -87,7 +133,11 @@ in progress lived in a worktree on the agents' box, not in git. Land only if col
 
 ## C3. Config and rules model (pun-config, rules/mapping.toml)
 
-**Goal.** One `pun.toml`; every upstream rule mapped to exactly one Pun rule; tiers instead of levels.
+**Goal.** One `pun.toml`; every upstream rule mapped to exactly one Pun rule; presets instead of levels.
+
+**Decided 2026-10-17 (to build):** rule IDs become `<command>/<group>/<name>` with one shared group list and no
+aliases (format.md §9 has the format table); lint sets; five analyse presets; oxlint-style lint levels; analyse on/off;
+`[php] version` read from composer.json; `pun init` (components/init.md).
 
 **Done.**
 - pun.toml only, `[format]` and `[lint]` sections, presets, rule aliases (short names), mapping completeness test.
@@ -106,6 +156,9 @@ in progress lived in a worktree on the agents' box, not in git. Land only if col
 ## C4. CLI and output (pun-cli)
 
 **Goal.** One `pun` binary whose commands match the tools they replace, with agent-optimised output.
+
+**Decided 2026-10-17 (to build):** Pun's own human output for every command (components/output.md); `pun init`;
+`pun analyse`; `--deny-warnings`, `--max-warnings`, `-A/-W/-D`; `pun lint --mago` goes away.
 
 **Done.**
 - `pun format` (every Pint flag and reporter, `--dirty`, `--diff`, `--staged`, `--since`, `--stdin`, `--watch`,
@@ -159,7 +212,8 @@ skips them and lists them; custom fixer classes in `.php-cs-fixer.php` work (ref
 
 ## C7. Analyse (pun-phpstan, pun-analyse, pun-laravel)
 
-Plan under review with Pushpak: components/analyse.md (how it works, config, rules, questions).
+Plan walked through with Pushpak: components/analyse.md (decisions at the end). Engine: Mago's analyser (§8);
+Larastan built in plus seven improvements (§9); Pest built in (§10).
 
 **Goal.** `pun analyse` reports PHPStan + Larastan's exact error set (file, line, identifier, message), honouring
 baselines and `ignoreErrors`, so CI can swap with no baseline churn.
@@ -185,7 +239,7 @@ baselines and `ignoreErrors`, so CI can swap with no baseline churn.
 
 ## C8. Lint (Rector parity)
 
-Plan under review with Pushpak: components/lint.md (how it works, config, rules, questions).
+Plan walked through with Pushpak: components/lint.md (decisions at the end).
 
 **Goal.** `pun lint` reports and `pun lint --fix` writes exactly what `rector process --dry-run` / `rector process` do
 for the project's rules, plus CS-Fixer's risky rules and opt-in Mago rules.
@@ -195,13 +249,14 @@ rules: 31 of 542 lint rules have `ported = true`; `pun lint --mago` runs 5 Mago 
 
 **Pending (all of Rector).**
 - Rector config through `pun migrate` (rector.php: paths, skip, rules, sets, prepared sets, PHP sets).
-- A format-preserving printer that matches nikic/php-parser (round-trip identical on the corpus, then php-parser's
-  fixtures). This is the hard core of the component.
+- ~~A format-preserving printer that matches nikic/php-parser~~ Decided: text edits on Mago's syntax tree instead,
+  parity checked after formatting (lint.md decisions).
 - Type queries through C7, so type-aware rules see what Rector sees from PHPStan.
 - Rules in usage order: Pinkary's rector.php first, then prepared sets, PHP 8.4+ sets, rector-laravel, Pest's Rector
   plugin, PHPUnit sets, each with Rector's own fixtures passing.
-- Delegation of unported rules to real Rector; `pun lint --set php85`.
-- Decide the release bar: which rule sets must be native (Q2).
+- ~~Delegation of unported rules to real Rector; `pun lint --set php85`~~ Decided: unported rules are named, never
+  delegated; upgrades are lint groups.
+- Release bar decided: all 542 lint rules native before 1.0.
 
 ## C9. Migrate (pun migrate)
 
@@ -217,8 +272,8 @@ risky fixers as `[lint.rules]` with `fix = "apply"`, rewrites `@php-cs-fixer-ign
 unsupported rules, is idempotent; the harness proves it (`pun migrate` + `pun check --fix` = Pint on all 7 projects).
 
 **Pending.**
-- phpstan.neon to `[analyse]` (levels expanded to explicit rules), baseline to pun-baseline.toml, `@phpstan-ignore*`
-  rewrites. Needs C7's config, plus per-rule level data that mapping.toml doesn't have yet, and pun-cli doesn't link
+- phpstan.neon to `[analyse]` (levels expanded to explicit rules), `@phpstan-ignore*` rewrites. The baseline is not
+  migrated (decided 2026-10-17): migrate tells the user to run `pun analyse --generate-baseline`. Needs C7's config, plus per-rule level data that mapping.toml doesn't have yet, and pun-cli doesn't link
   pun-phpstan today.
 - rector.php to `[lint]`. Needs C8's config.
 - `.php-cs-fixer.php` Finder not migrated.
@@ -277,10 +332,11 @@ These are the calls we need to make while walking through the components; each o
 
 1. **Parallel threads (C0).** One thread per component, each on its own branch with a PR into main, instead of agents
    sharing one box and index. Which components run in parallel first?
-2. **Release bar for analyse and lint (C7, C8).** Which PHPStan levels and extensions, and which Rector sets, must be
-   native before the release, and which may be delegated?
+2. ~~Release bar for analyse and lint (C7, C8)~~ Decided: every lint rule and every PHPStan core rule native, Larastan
+   and Pest built in, nothing delegated.
 3. **Embedded PHP (C6).** May the release require a system `php` for delegated rules, or is pun-php a release blocker?
 4. **Unported format rules (C2).** Are the 64 delegated format rules acceptable at release, or which must be native?
+   Still open (format.md Q7). With presets cut to laravel, psr12 and empty, none of the preset rules is unported.
 5. ~~LSP dependency (C10)~~ Deferred: the LSP ships last.
 6. **1.0 scope (C14).** Memory says one 1.0 release where everything ships at once; the task board says the release needs
    format, analyse, lint and migrate. Are install, run and test part of 1.0 or after it?
