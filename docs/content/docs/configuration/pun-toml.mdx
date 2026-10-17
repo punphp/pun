@@ -81,6 +81,8 @@ Format rules only change layout, casing and spelling. Risky ones, like `final_cl
 
 A rule a set turns on is an `error`. A group's level wins over the sets, and a rule's own line wins over its group. A table without `level` is `error`. Only `error` fails a run. `--fix` applies the fix of every enabled rule; `fix = "off"` keeps a rule report-only.
 
+Not yet at run time: a `warn` rule still fails a run like an `error` one, and `[[lint.overrides]]` are checked but not yet applied per file.
+
 The Laravel, Pest and PHPUnit rules of a set run when composer.lock locks `laravel/framework`, `pestphp/pest` or `phpunit/phpunit`. Switch one off with its group: `[lint.groups] laravel = "off"`. A set's PHP upgrade rules (`php-8.4/...`) run from that `[php] version` on; upgrade groups such as `laravel-11` run when you turn the group on.
 
 ## [analyse]
