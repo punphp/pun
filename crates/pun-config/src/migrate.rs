@@ -198,7 +198,11 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
             ));
             continue;
         };
-        writeln!(if lint { &mut lints } else { &mut format }, "\"{name}\" = {v}").unwrap();
+        writeln!(
+            if lint { &mut lints } else { &mut format },
+            "\"{name}\" = {v}"
+        )
+        .unwrap();
     }
     for b in &base {
         if let Some(name) = rule_of(&b.name).and_then(|id| id.strip_prefix("format/"))

@@ -198,14 +198,34 @@ fn pun_toml_errors() {
         // The 40 code-deleting fixers are lint rules now (context/plan/commands.md §4).
         ("format", "no-unused-imports", "lint/imports/no-unused"),
         ("format", "imports/no-unused", "lint/imports/no-unused"),
-        ("format", "self-static-accessor", "lint/classes/prefer-self-in-final"),
+        (
+            "format",
+            "self-static-accessor",
+            "lint/classes/prefer-self-in-final",
+        ),
         // Old lint and analyse names, and the auto-derived ones before the naming pass.
-        ("lint", "lint.no-alias-function", "lint/style/no-alias-function"),
+        (
+            "lint",
+            "lint.no-alias-function",
+            "lint/style/no-alias-function",
+        ),
         ("lint", "final-class", "lint/style/require-final-class"),
         ("format", "final-class", "lint/style/require-final-class"),
-        ("lint", "simplify-mirror-assign", "lint/dead-code/no-self-assignment"),
-        ("lint", "no-redundant-pest-uses", "lint/pest/no-redundant-uses"),
-        ("lint", "analyse.undefined-method", "analyse/undefined/method"),
+        (
+            "lint",
+            "simplify-mirror-assign",
+            "lint/dead-code/no-self-assignment",
+        ),
+        (
+            "lint",
+            "no-redundant-pest-uses",
+            "lint/pest/no-redundant-uses",
+        ),
+        (
+            "lint",
+            "analyse.undefined-method",
+            "analyse/undefined/method",
+        ),
         // Upstream names: PHP-CS-Fixer, Pint, Rector, PHPStan.
         ("format", "array_syntax", "format/arrays/syntax"),
         ("format", "Pint/laravel_blade", "format/laravel/blade"),
@@ -213,7 +233,11 @@ fn pun_toml_errors() {
         ("lint", "method.notFound", "analyse/undefined/method"),
         // A rule of the other command, full or short.
         ("lint", "imports/ordered", "format/imports/ordered"),
-        ("format", "style/require-final-class", "lint/style/require-final-class"),
+        (
+            "format",
+            "style/require-final-class",
+            "lint/style/require-final-class",
+        ),
         ("lint", "format/imports/ordered", "format/imports/ordered"),
     ] {
         let got = e(&format!("[{table}.rules]\n\"{name}\" = true\n"));
@@ -224,7 +248,10 @@ fn pun_toml_errors() {
     }
     // A name several rules share is not guessed; a rule Pun can't run yet is named as such.
     // `ordered` is imports/ordered, attributes/ordered and types/ordered.
-    assert!(e("[format.rules]\nordered = true\n").contains("`ordered` is not a format rule Pun can run"));
+    assert!(
+        e("[format.rules]\nordered = true\n")
+            .contains("`ordered` is not a format rule Pun can run")
+    );
     assert!(
         e("[lint.rules]\n\"dead-code/no-unused-private-method\" = true\n")
             .contains("`dead-code/no-unused-private-method` is not a lint rule Pun can run")
@@ -243,8 +270,9 @@ fn pun_toml_errors() {
         )
     );
     assert!(
-        e("[lint.rules]\n\"style/require-final-class\" = { fix = \"yes\" }\n")
-            .ends_with("`style/require-final-class`: fix must be \"apply\", \"safe-only\" or \"off\"")
+        e("[lint.rules]\n\"style/require-final-class\" = { fix = \"yes\" }\n").ends_with(
+            "`style/require-final-class`: fix must be \"apply\", \"safe-only\" or \"off\""
+        )
     );
 }
 
@@ -279,7 +307,10 @@ fn mapping_lookups() {
         fixer_of("format", "format/imports/ordered"),
         Some("ordered_imports")
     );
-    assert_eq!(fixer_of("format", "imports/ordered"), Some("ordered_imports"));
+    assert_eq!(
+        fixer_of("format", "imports/ordered"),
+        Some("ordered_imports")
+    );
     assert_eq!(fixer_of("lint", "imports/ordered"), None);
     assert_eq!(fixer_of("lint", "format/imports/ordered"), None);
     // The old names are gone.
@@ -292,7 +323,10 @@ fn rule_metadata() {
     // Hand-read from rules/mapping.toml.
     let m = rule("lint/dead-code/no-self-assignment").unwrap();
     assert_eq!((m.fix, m.summary), ("safe", None));
-    assert_eq!(rule("lint/types/require-strict-param").unwrap().fix, "mixed");
+    assert_eq!(
+        rule("lint/types/require-strict-param").unwrap().fix,
+        "mixed"
+    );
     let m = rule("format/arrays/syntax").unwrap();
     assert_eq!(
         (m.fix, m.summary),
@@ -307,7 +341,10 @@ fn rule_metadata() {
         Some("Unused `use` statements must be removed.")
     );
     // Analyse rules have no fix.
-    assert_eq!(rule("analyse/functions/argument-count").unwrap().fix, "none");
+    assert_eq!(
+        rule("analyse/functions/argument-count").unwrap().fix,
+        "none"
+    );
     assert!(rule("dead-code/no-self-assignment").is_none());
     assert!(rule("lint.no-self-assignment").is_none());
     assert!(rule("format/imports/no-unused").is_none());

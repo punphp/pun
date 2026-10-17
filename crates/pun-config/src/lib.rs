@@ -298,7 +298,11 @@ fn fixer(path: &Path, command: &str, name: &str) -> Result<&'static str> {
     if let Some(f) = fixer_of(command, name) {
         return Ok(f);
     }
-    let other = if command == "format" { "lint" } else { "format" };
+    let other = if command == "format" {
+        "lint"
+    } else {
+        "format"
+    };
     let id = (fixer_of(other, name).and_then(rule_of)).or_else(|| renamed(name));
     match id {
         Some(id) => bail!("{}: `{name}` is `{id}` in pun.toml", path.display()),
@@ -352,7 +356,10 @@ fn upstream() -> &'static Vec<(String, &'static str)> {
             let body = part.split_once("]\n").unwrap().1;
             for (k, e) in toml::from_str::<toml::Table>(body).unwrap() {
                 if let Some(id) = e.get("pun").and_then(toml::Value::as_str) {
-                    let id = rules().iter().find(|(r, _)| r == id).map(|(r, _)| r.as_str());
+                    let id = rules()
+                        .iter()
+                        .find(|(r, _)| r == id)
+                        .map(|(r, _)| r.as_str());
                     out.extend(id.map(|id| (k, id)));
                 }
             }

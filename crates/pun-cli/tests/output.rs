@@ -163,13 +163,7 @@ impl Cx {
     }
 
     /// `pint <args>` against `<pun> <args>`, where `pun` is the binary and its command.
-    fn pair_cmd(
-        &self,
-        pun: &[&str],
-        tree: &[(&str, &str)],
-        args: &[&str],
-        o: Opts,
-    ) -> (Run, Run) {
+    fn pair_cmd(&self, pun: &[&str], tree: &[(&str, &str)], args: &[&str], o: Opts) -> (Run, Run) {
         let php = which("php");
         reset(&self.dir, tree);
         let want = run(
