@@ -84,7 +84,7 @@ rules.missing-iterable-value-type = "off"
 
 Like [Laravel PAO](https://laravel.com/blog/introducing-laravel-pao-cleaner-output-for-ai-agents), every `pun` command detects when an AI agent runs it. Humans see unchanged output; agents get compact, structured results.
 
-- **Detection.** One shared function ports laravel/agent-detector v2's env list (`CLAUDECODE`, `CLAUDE_CODE`, `CURSOR_AGENT`, `CODEX_SANDBOX`/`CODEX_THREAD_ID`, `GEMINI_CLI`, `AMP_CURRENT_THREAD_ID`, `OPENCODE`, `COPILOT_CLI`, `AUGMENT_AGENT`, `CLINE_ACTIVE`, `AI_AGENT`, and the rest), kept in sync with upstream. `pun format` already does this for Pint's agent reporter. Overrides: `PUN_AGENT=1|0` and `--agent` / `--no-agent`. PAO's `PAO_FORCE` and `PAO_DISABLE` are honoured too.
+- **Detection.** One shared function (`crates/pun-cli/src/agent.rs`, `agent::enabled()`): `--agent` / `--no-agent`, then `PUN_AGENT=1|0`, then PAO's `PAO_DISABLE` / `PAO_FORCE`, then the [agent-detector](https://crates.io/crates/agent-detector) crate (0.2.1, env variables only: its `process-tree` feature adds ~185 KB and ~12 ms per start, and finds agents up the process tree, so a human shell inside an agent would count). A missing TTY alone is not an agent.
 - **Output under an agent is a token-saving plain-text format, not JSON.** JSON spends tokens on quotes, braces and repeated keys. Pun prints compiler-style lines, which models already read well and which can be grepped:
 
   ```
