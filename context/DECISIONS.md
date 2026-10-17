@@ -70,6 +70,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 ## Engineering
 
 - **Mago:** depend on crates.io releases (pinned `=1.57.0`); no maintainer outreach needed.
+- **Lint edits code with text edits** on Mago's syntax tree, not a port of php-parser's printer; format tidies the
+  layout afterwards (2026-10-17, components/lint.md).
 - **The Mago-based formatter is removed** (`--engine=pun`, `format_pun`): one formatter engine, the PHP-CS-Fixer port.
 - **Own lexer** in pun-tokens instead of mapping mago-syntax tokens (reference/tokens.md).
 - **Built-in symbols for analyse** come from PHPStan's own reflection, exported once into

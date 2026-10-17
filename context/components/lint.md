@@ -180,4 +180,13 @@ Left, in order (pending the answers below):
 
 ## Decisions
 
-None yet.
+Answered 2026-10-17 (Pushpak):
+
+- **Q1: text edits.** Rules return text edits on byte ranges found through Mago's syntax tree, and format tidies the
+  layout afterwards. There is no php-parser printer port. Parity is `format(pun lint --fix)` equal to
+  `format(rector process)`, on Rector's fixtures and the corpus.
+- **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
+- **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
+  support yet (commands.md decisions).
+- **Upgrades are lint rules in their own groups**, not a separate command (commands.md decisions).
+- **Laravel is built in**, so the `laravel` add-on is not something to install (Q5 still asks how it turns on).
