@@ -75,9 +75,7 @@ impl Fixer for NoOnly {
 fn chain_root_is_pest_function(tokens: &Tokens, arrow: usize) -> bool {
     let is_arrow =
         |k: usize| tokens[k].is_given_kind(&[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR]);
-    let Some(mut p) = tokens.get_prev_meaningful_token(arrow) else {
-        return false;
-    };
+    let mut p = tokens.get_prev_meaningful_token(arrow).expect("open tag");
     loop {
         let name = if tokens[p].equals(")", true) {
             let open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, p);
@@ -179,6 +177,8 @@ mod tests {
             "<?php test('x', fn () => 1)->ONLY();",
             "<?php $f()->only();",
             "<?php test->only();",
+            "<?php only(); $a->b;",
+            "<?php test('x')->only;",
         ] {
             assert_eq!(fix(same), same);
         }

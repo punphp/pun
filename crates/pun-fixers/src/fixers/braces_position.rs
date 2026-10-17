@@ -214,7 +214,7 @@ impl Fixer for BracesPositionFixer {
                         }
                     }
                 }
-                let Some(obi) = tokens.get_next_token_of_kind(
+                open_brace_index = match tokens.get_next_token_of_kind(
                     index,
                     &[
                         "{".into(),
@@ -226,13 +226,10 @@ impl Fixer for BracesPositionFixer {
                         T_CLOSE_TAG.into(),
                     ],
                     true,
-                ) else {
-                    continue;
-                }; // unreachable for code that parses (a statement ends in one of these)
-                open_brace_index = obi;
-                if !tokens[open_brace_index].is_kind(CT_PROPERTY_HOOK_BRACE_OPEN) {
-                    continue;
-                }
+                ) {
+                    Some(o) if tokens[o].is_kind(CT_PROPERTY_HOOK_BRACE_OPEN) => o,
+                    _ => continue,
+                };
                 let close_brace_index =
                     tokens.find_block_end(Tokens::BLOCK_TYPE_PROPERTY_HOOK, open_brace_index);
                 if !tokens.is_partial_code_multiline(open_brace_index, close_brace_index) {

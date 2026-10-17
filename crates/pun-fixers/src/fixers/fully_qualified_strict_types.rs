@@ -478,9 +478,7 @@ impl FullyQualifiedStrictTypesFixer {
         uses: &mut OMap,
         namespace_name: &[u8],
     ) {
-        let Some(mut discovered_symbols) = st.discovered_symbols.borrow_mut().take() else {
-            return;
-        };
+        let mut discovered_symbols = st.discovered_symbols.borrow_mut().take().unwrap_or_default();
         // upstream iterates `$this->discoveredSymbols` per kind; no kind = nothing discovered
         if discovered_symbols.is_empty() {
             return;
@@ -678,11 +676,8 @@ impl FullyQualifiedStrictTypesFixer {
                 .iter()
                 .flat_map(|t| t.content.iter().copied())
                 .collect();
-            if current_type_value == new_type_value {
-                type_
-            } else {
-                TypeExpression::new(&new_type_value, ctx.clone())
-            }
+            // upstream keeps `$type` when the value is unchanged, but determineShortType returns null then
+            TypeExpression::new(&new_type_value, ctx.clone())
         });
         type_expression.to_string().to_vec()
     }

@@ -128,9 +128,7 @@ fn single_comparison(tokens: &Tokens, open: usize, close: usize) -> Option<(usiz
             k = tokens.find_block_end(bt, k) + 1;
             continue;
         }
-        let matcher = if t.is_kind(T_IS_IDENTICAL) {
-            Some("toBe")
-        } else if t.is_kind(T_IS_NOT_IDENTICAL) {
+        let matcher = if t.is_given_kind(&[T_IS_IDENTICAL, T_IS_NOT_IDENTICAL]) {
             Some("toBe")
         } else if t.is_kind(T_IS_GREATER_OR_EQUAL) {
             Some("toBeGreaterThanOrEqual")

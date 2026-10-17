@@ -55,10 +55,6 @@ impl Annotation {
         }
     }
 
-    pub fn get_tags_with_types() -> &'static [&'static str] {
-        TAGS_WITH_TYPES
-    }
-
     pub fn get_start(&self) -> usize {
         self.start
     }
@@ -143,15 +139,6 @@ impl Annotation {
             self.lines[index].borrow_mut().set_content(new);
         }
         self.clear_cache();
-    }
-
-    pub fn get_normalized_types(&self) -> Vec<Vec<u8>> {
-        let Some(e) = self.get_type_expression() else {
-            return vec![];
-        };
-        e.map_types(&mut |v| v.lowercased())
-            .sort_types(&mut |a, b| a.to_string().cmp(b.to_string()))
-            .get_types()
     }
 
     pub fn remove(&self) {

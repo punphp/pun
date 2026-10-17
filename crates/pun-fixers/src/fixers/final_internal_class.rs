@@ -176,12 +176,10 @@ impl FinalInternalClassFixer {
         let mut decisions: Vec<Option<bool>> = Vec::new();
         let mut current_index = Some(index);
         while let Some(ci) = current_index {
-            let Some(mut ci) = tokens.get_prev_non_whitespace(ci, None) else {
-                break;
+            let mut ci = match tokens.get_prev_non_whitespace(ci, None) {
+                Some(c) if tokens[c].is_given_kind(CLASS_CANDIDATE_ACCEPT_TYPES) => c,
+                _ => break,
             };
-            if !tokens[ci].is_given_kind(CLASS_CANDIDATE_ACCEPT_TYPES) {
-                break;
-            }
             if self.check_attributes && tokens[ci].is_kind(CT_ATTRIBUTE_CLOSE) {
                 let attribute_start_index =
                     tokens.find_block_start(Tokens::BLOCK_TYPE_ATTRIBUTE, ci);
@@ -232,10 +230,9 @@ impl FinalInternalClassFixer {
         let mut attribute_candidates = BTreeMap::new();
         let mut attribute_string: Vec<u8> = Vec::new();
         let mut current_index = start_index;
-        while current_index < end_index {
-            let Some(ci) = tokens.get_next_meaningful_token(current_index) else {
-                break;
-            };
+        while current_index < end_index
+            && let Some(ci) = tokens.get_next_meaningful_token(current_index)
+        {
             current_index = ci;
             if !tokens[ci].is_given_kind(&[T_STRING, T_NS_SEPARATOR]) {
                 if !attribute_string.is_empty() {

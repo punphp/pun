@@ -38,16 +38,13 @@ impl Fixer for ModernizeTypesCastingFixer {
             ("boolval", Token::new(T_BOOL_CAST, "(bool)")),
         ] {
             let mut curr_index = 0;
-            loop {
-                // try getting function reference and translate boundaries for humans
-                let Some((function_name, open_parenthesis, close_parenthesis)) = finder.find(
-                    function_identity,
-                    tokens,
-                    curr_index,
-                    Some(tokens.count() - 1),
-                ) else {
-                    break; // next function search, as current one not found
-                };
+            // try getting function reference and translate boundaries for humans
+            while let Some((function_name, open_parenthesis, close_parenthesis)) = finder.find(
+                function_identity,
+                tokens,
+                curr_index,
+                Some(tokens.count() - 1),
+            ) {
                 // analysing cursor shift
                 curr_index = open_parenthesis;
                 // indicator that the function is overridden

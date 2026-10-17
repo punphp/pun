@@ -1,0 +1,9 @@
+[
+    {
+        "fixer": "function_declaration",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[function_declaration] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"closure_fn_spacing\", \"closure_function_spacing\", \"trailing_comma_single_line\"."
+    }
+]

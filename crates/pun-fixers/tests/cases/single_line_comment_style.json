@@ -1,0 +1,11 @@
+[
+    {
+        "fixer": "single_line_comment_style",
+        "config": {
+            "comment_types": [
+                "nope"
+            ]
+        },
+        "error": "[single_line_comment_style] Invalid configuration: The option \"comment_types\" with value array is invalid."
+    }
+]

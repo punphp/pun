@@ -35,15 +35,12 @@ impl Fixer for NoRedundantNullsafe {
             else {
                 continue;
             };
-            let Some(after) = tokens.get_next_meaningful_token(name) else {
-                continue;
-            };
+            // Parsed code never ends right after a property name, and a chain always follows the open tag.
+            let after = tokens.get_next_meaningful_token(name).unwrap();
             let Some(start) = chain_start(tokens, i) else {
                 continue;
             };
-            let Some(before) = tokens.get_prev_meaningful_token(start) else {
-                continue;
-            };
+            let before = tokens.get_prev_meaningful_token(start).expect("open tag");
             let redundant = if tokens[after].is_kind(T_COALESCE) {
                 is_coalesce_boundary(&tokens[before])
             } else if tokens[after].equals_any(&[",".into(), ")".into()], true)
@@ -78,9 +75,9 @@ fn chain_start(tokens: &Tokens, op: usize) -> Option<usize> {
             }
             open
         } else if t.equals("]", true) {
-            p = tokens.get_prev_meaningful_token(
-                tokens.find_block_start(Tokens::BLOCK_TYPE_INDEX_BRACKET, p),
-            )?;
+            p = tokens
+                .get_prev_meaningful_token(tokens.find_block_start(Tokens::BLOCK_TYPE_INDEX_BRACKET, p))
+                .expect("open tag");
             continue;
         } else if t.is_given_kind(&[T_STRING, T_VARIABLE]) {
             p
@@ -241,6 +238,7 @@ mod tests {
             "<?php $x = $a == $u?->id ?? 0;",
             // Dynamic property names end the chain walk: skipped.
             "<?php $x = $a->{'b'}?->c ?? 0;",
+            "<?php $x = $u?->$p ?? 0;",
         ] {
             assert_eq!(fix(same), same);
         }

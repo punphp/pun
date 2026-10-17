@@ -125,17 +125,14 @@ fn ensure_single_space_at_property_typehint(tokens: &mut Tokens, mut index: usiz
 
 fn ensure_single_space_at_constant_typehint(tokens: &mut Tokens, index: usize) {
     let const_index = index;
-    let Some(equals_index) = tokens.get_next_token_of_kind(const_index, &["=".into()], true) else {
-        return;
-    };
+    // upstream's null check: a class constant always has `=` in parsed code
+    let equals_index = tokens.get_next_token_of_kind(const_index, &["=".into()], true).unwrap();
     // upstream returns unless this is T_STRING; the tokenizer turns keyword-named constants into T_STRING too
     let name_index = tokens.get_prev_meaningful_token(equals_index).unwrap();
-    let Some(type_end_index) = tokens.get_prev_meaningful_token(name_index) else {
-        return;
+    let type_end_index = match tokens.get_prev_meaningful_token(name_index) {
+        Some(i) if !tokens[i].is_kind(T_CONST) => i,
+        _ => return,
     };
-    if tokens[type_end_index].is_kind(T_CONST) {
-        return;
-    }
     tokens.ensure_whitespace_at_index(type_end_index + 1, 0, b" ");
 }
 

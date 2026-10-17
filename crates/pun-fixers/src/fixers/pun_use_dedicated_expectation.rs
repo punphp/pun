@@ -64,9 +64,7 @@ impl Fixer for UseDedicatedExpectation {
                 continue;
             };
             // The expect argument must be exactly one global call `f(...)`.
-            let Some(mut fname) = tokens.get_next_meaningful_token(m.expect_open) else {
-                continue;
-            };
+            let mut fname = tokens.get_next_meaningful_token(m.expect_open).unwrap();
             let fstart = fname;
             if tokens[fname].is_kind(T_NS_SEPARATOR) {
                 fname = tokens.get_next_meaningful_token(fname).unwrap();

@@ -22,7 +22,6 @@ pub use short_description::ShortDescription;
 pub use tag::{PSR_STANDARD_TAGS, Tag};
 pub use type_expression::{Context, Namespace, NamespaceUse, TypeExpression};
 
-use pun_tokens::php_compat::trim;
 use std::cell::OnceCell;
 use std::rc::Rc;
 
@@ -90,41 +89,6 @@ impl DocBlock {
         self.lines.len() != 1
     }
 
-    pub fn make_multi_line(&mut self, indent: &[u8], line_end: &[u8]) {
-        if self.is_multi_line() {
-            return;
-        }
-        let line_content = Self::get_single_line_doc_block_entry(&self.lines[0].borrow());
-        let mid = if line_content.is_empty() {
-            [indent, b" *", line_end].concat()
-        } else {
-            [indent, b" * ", &line_content, line_end].concat()
-        };
-        self.lines = vec![
-            Line::shared([b"/**", line_end].concat()),
-            Line::shared(mid),
-            Line::shared([indent, b" */"].concat()),
-        ];
-    }
-
-    pub fn make_single_line(&mut self) {
-        if !self.is_multi_line() {
-            return;
-        }
-        let useful: Vec<&LineRef> = self
-            .lines
-            .iter()
-            .filter(|l| l.borrow().contains_useful_content())
-            .collect();
-        if useful.len() > 1 {
-            return;
-        }
-        let line_content = useful.first().map_or_else(Vec::new, |l| {
-            Self::get_single_line_doc_block_entry(&l.borrow())
-        });
-        self.lines = vec![Line::shared([b"/** ", &line_content[..], b" */"].concat())];
-    }
-
     pub fn get_annotation(&self, pos: usize) -> Option<&Annotation> {
         self.get_annotations().get(pos)
     }
@@ -167,18 +131,6 @@ impl DocBlock {
             }
         }
         index - start
-    }
-
-    fn get_single_line_doc_block_entry(line: &Line) -> Vec<u8> {
-        // Upstream returns early for an empty line, but a DocBlock never holds one (and useful lines aren't empty).
-        let replaced = replace_all(line.get_content(), b"*/", b"");
-        let mut s = trim(&replaced);
-        if s.starts_with(b"/**") {
-            s = &s[3..];
-        } else if s.starts_with(b"*") {
-            s = &s[1..];
-        }
-        trim(s).to_vec()
     }
 }
 

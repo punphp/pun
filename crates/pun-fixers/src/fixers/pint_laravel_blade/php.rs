@@ -74,8 +74,6 @@ pub fn ctype_space(c: u8) -> bool {
     matches!(c, b' ' | b'\t' | b'\n' | b'\r' | 0x0b | 0x0c)
 }
 
-/// `str_repeat(' ', n)`.
-
 pub fn ltrim_chars<'a>(s: &'a [u8], chars: &[u8]) -> &'a [u8] {
     pun_tokens::php_compat::ltrim_chars(s, chars)
 }

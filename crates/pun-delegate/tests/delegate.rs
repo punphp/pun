@@ -155,6 +155,8 @@ fn pint_rules_via_project_phar() {
     let rules = json!({"combine_consecutive_unsets": true, "single_quote": true, "@PSR12": true, "no_unused_imports": false, "braces_position": false});
     let d = Delegate::start(&dir, Source::Rules(rules), None).unwrap();
     assert_eq!(d.runtime, dir.join("vendor/laravel/pint/builds/pint"));
+    // Rules travel in the request, so no config file is part of the cache signature.
+    assert_eq!(d.signature()["config"], serde_json::Value::Null);
     assert!(d.fixers.contains(&("combine_consecutive_unsets", 24)));
     assert!(
         d.fixers.contains(&("class_definition", 36)),

@@ -3,5 +3,12 @@
         "fixer": "multiline_whitespace_before_semicolons",
         "input": "<?php\n/* c */\n;\n",
         "expected": "<?php\n;/* c */\n"
+    },
+    {
+        "fixer": "multiline_whitespace_before_semicolons",
+        "config": {
+            "strategy": "nope"
+        },
+        "error": "[multiline_whitespace_before_semicolons] Invalid configuration: The option \"strategy\" with value \"nope\" is invalid. Accepted values are: \"no_multi_line\", \"new_line_for_chained_calls\"."
     }
 ]

@@ -24,5 +24,12 @@
         "fixer": "align_multiline_comment",
         "input": "<?php\r\n/**\r\n * @see A\r  \n * @see B\r */\r\nclass P {}\r\n",
         "expected": "<?php\r\n/**\n * @see A\n *\n * @see B\n */\r\nclass P {}\r\n"
+    },
+    {
+        "fixer": "align_multiline_comment",
+        "config": {
+            "comment_type": "nope"
+        },
+        "error": "[align_multiline_comment] Invalid configuration: The option \"comment_type\" with value \"nope\" is invalid. Accepted values are: \"phpdocs_only\", \"phpdocs_like\", \"all_multiline\"."
     }
 ]

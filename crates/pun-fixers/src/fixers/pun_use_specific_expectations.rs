@@ -49,14 +49,9 @@ impl Fixer for UseSpecificExpectations {
             else {
                 continue;
             };
-            let Some(mut close) = tokens.get_next_meaningful_token(arg) else {
-                continue;
-            };
+            let mut close = tokens.get_next_meaningful_token(arg).unwrap();
             if tokens[close].equals(",", true) {
-                let Some(c) = tokens.get_next_meaningful_token(close) else {
-                    continue;
-                };
-                close = c;
+                close = tokens.get_next_meaningful_token(close).unwrap();
             }
             if !tokens[close].equals(")", true) || (i..close).any(|k| tokens[k].is_comment()) {
                 continue;
@@ -87,15 +82,11 @@ impl Fixer for UseSpecificExpectations {
 fn chain_starts_with_expect(tokens: &Tokens, arrow: usize) -> bool {
     let is_arrow =
         |k: usize| tokens[k].is_given_kind(&[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR]);
-    let Some(mut p) = tokens.get_prev_meaningful_token(arrow) else {
-        return false;
-    };
+    let mut p = tokens.get_prev_meaningful_token(arrow).expect("open tag");
     loop {
         if tokens[p].equals(")", true) {
             let open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, p);
-            let Some(name) = tokens.get_prev_meaningful_token(open) else {
-                return false;
-            };
+            let name = tokens.get_prev_meaningful_token(open).expect("open tag");
             if !tokens[name].is_given_kind(&[T_STRING, T_NAME_FULLY_QUALIFIED]) {
                 return false;
             }
@@ -207,6 +198,8 @@ mod tests {
             "<?php expect($x)->toBe(FOO);",
             "<?php $f($x)->toBe(true);",
             "<?php foo->toBe(true);",
+            "<?php toBe(true); $a->b;",
+            "<?php $a->toBe; $b->c;",
         ] {
             assert_eq!(fix(same), same);
         }

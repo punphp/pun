@@ -32,13 +32,11 @@ impl Fixer for ElseifFixer {
 }
 
 fn fix_else(tokens: &mut Tokens, index: usize) {
-    let Some(if_token_index) = tokens.get_next_meaningful_token(index) else {
-        return;
-    };
     // if next meaningful token is not T_IF - continue searching, this is not the case for fixing
-    if !tokens[if_token_index].is_kind(T_IF) {
-        return;
-    }
+    let if_token_index = match tokens.get_next_meaningful_token(index) {
+        Some(i) if tokens[i].is_kind(T_IF) => i,
+        _ => return,
+    };
     // if next meaningful token is T_IF, but uses an alternative syntax - this is not the case for fixing neither
     let open = tokens.get_next_meaningful_token(if_token_index).unwrap();
     let condition_end_brace_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);

@@ -7,5 +7,12 @@
         },
         "input": "<?php\n\nnamespace Foo;\n",
         "expected": "<?php\nnamespace Foo;\n"
+    },
+    {
+        "fixer": "blank_lines_before_namespace",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[blank_lines_before_namespace] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"max_line_breaks\", \"min_line_breaks\"."
     }
 ]

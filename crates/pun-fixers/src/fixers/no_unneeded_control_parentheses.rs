@@ -412,10 +412,7 @@ impl NoUnneededControlParenthesesFixer {
         close: usize,
         config_type: Option<&str>,
     ) {
-        let Some(config_type) = config_type else {
-            return;
-        };
-        if !self.statements.iter().any(|s| s == config_type) {
+        if !config_type.is_some_and(|c| self.statements.iter().any(|s| s == c)) {
             return;
         }
         let needs_space_after = !is_access(tokens, after)

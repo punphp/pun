@@ -33,5 +33,12 @@
         "fixer": "global_namespace_import",
         "input": "<?php\nnamespace Foo;\n/** Just text. */\nfunction f(\\DateTime $d) {}\n",
         "expected": "<?php\nnamespace Foo;\nuse DateTime;\n/** Just text. */\nfunction f(DateTime $d) {}\n"
+    },
+    {
+        "fixer": "global_namespace_import",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[global_namespace_import] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"import_classes\", \"import_constants\", \"import_functions\"."
     }
 ]

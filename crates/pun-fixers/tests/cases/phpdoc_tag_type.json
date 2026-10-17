@@ -65,5 +65,12 @@
             ]
         },
         "error": "[phpdoc_tag_type] Invalid configuration: Unknown tag type \"foo\"."
+    },
+    {
+        "fixer": "phpdoc_tag_type",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[phpdoc_tag_type] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"tags\"."
     }
 ]

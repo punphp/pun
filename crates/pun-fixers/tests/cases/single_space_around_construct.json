@@ -10,5 +10,32 @@
             "foo": 1
         },
         "error": "[single_space_around_construct] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"constructs_contain_a_single_space\", \"constructs_followed_by_a_single_space\", \"constructs_preceded_by_a_single_space\"."
+    },
+    {
+        "fixer": "single_space_around_construct",
+        "config": {
+            "constructs_contain_a_single_space": [
+                "nope"
+            ]
+        },
+        "error": "[single_space_around_construct] Invalid configuration: The option \"constructs_contain_a_single_space\" with value array is invalid."
+    },
+    {
+        "fixer": "single_space_around_construct",
+        "config": {
+            "constructs_preceded_by_a_single_space": [
+                "nope"
+            ]
+        },
+        "error": "[single_space_around_construct] Invalid configuration: The option \"constructs_preceded_by_a_single_space\" with value array is invalid."
+    },
+    {
+        "fixer": "single_space_around_construct",
+        "config": {
+            "constructs_followed_by_a_single_space": [
+                "nope"
+            ]
+        },
+        "error": "[single_space_around_construct] Invalid configuration: The option \"constructs_followed_by_a_single_space\" with value array is invalid."
     }
 ]

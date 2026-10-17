@@ -14,5 +14,12 @@
         },
         "input": "<?php\nnamespace A;\n$a = 1;\n",
         "expected": "<?php\nnamespace A;\n$a = 1;\n"
+    },
+    {
+        "fixer": "fully_qualified_strict_types",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[fully_qualified_strict_types] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"import_symbols\", \"leading_backslash_in_global_namespace\", \"phpdoc_tags\"."
     }
 ]

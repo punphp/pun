@@ -69,5 +69,12 @@
         },
         "input": "<?php\n/**\n * @param int $a\n * @return int\n */\n",
         "expected": "<?php\n/**\n * @param int $a\n * @return int\n */\n"
+    },
+    {
+        "fixer": "phpdoc_separation",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[phpdoc_separation] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"groups\", \"skip_unlisted_annotations\"."
     }
 ]

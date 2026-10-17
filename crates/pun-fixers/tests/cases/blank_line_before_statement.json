@@ -9,5 +9,14 @@
         },
         "input": "<?php\nfoo();\nreturn 1;\n",
         "expected": "<?php\nfoo();\n\nreturn 1;\n"
+    },
+    {
+        "fixer": "blank_line_before_statement",
+        "config": {
+            "statements": [
+                "nope"
+            ]
+        },
+        "error": "[blank_line_before_statement] Invalid configuration: The option \"statements\" with value array is invalid."
     }
 ]

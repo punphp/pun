@@ -1,5 +1,6 @@
 //! Port of `App\PrettierFormatters\CollapseSingleAttribute`: collapses a tag prettier wrapped solely
 //! because of one attribute.
+#![allow(clippy::needless_range_loop, reason = "ports Pint's index loops over `$lines` as written")]
 use super::php::{ctype_space, join_lines, lines, ltrim, rtrim, trim};
 use crate::analyzers::preg::RawPreg;
 

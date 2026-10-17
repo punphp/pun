@@ -48,14 +48,9 @@ impl Fixer for PreferDedicatedStatusAssertion {
             else {
                 continue;
             };
-            let Some(mut close) = tokens.get_next_meaningful_token(num) else {
-                continue;
-            };
+            let mut close = tokens.get_next_meaningful_token(num).unwrap();
             if tokens[close].equals(",", true) {
-                let Some(c) = tokens.get_next_meaningful_token(close) else {
-                    continue;
-                };
-                close = c;
+                close = tokens.get_next_meaningful_token(close).unwrap();
             }
             if !tokens[close].equals(")", true) || (i..close).any(|k| tokens[k].is_comment()) {
                 continue;
@@ -213,6 +208,8 @@ mod tests {
             "<?php Foo::assertStatus(200);",
             "<?php $a->b; Foo::assertStatus(200);",
             "<?php $r?->assertStatus(200);",
+            "<?php $r->assertStatus; $x = 1;",
+            "<?php $r->assertStatus($c); $x = 1;",
         ] {
             assert_eq!(fix(same), same);
         }

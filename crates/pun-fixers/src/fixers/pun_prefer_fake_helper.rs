@@ -213,6 +213,7 @@ mod tests {
             "<?php trait UserFactory { function f() { return $this->faker->name(); } }".into(),
             factory("return <<<EOT\n    {$this->faker->name}\n    EOT;"),
             factory("return $this-> /* keep */ faker->name();"),
+            factory("return [$this, $this->other];"),
         ] {
             assert_eq!(fix(&same), same);
         }

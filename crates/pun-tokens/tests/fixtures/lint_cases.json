@@ -88,6 +88,26 @@
         "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 3."
     },
     {
+        "code": "<?php\n$x = <<<A\nfoo\n",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 4."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  foo\n  ",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 4."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  {$a}\n\t",
+        "error": "Parse error: syntax error, unexpected end of file on line 4."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n\tfoo\r\n",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 4."
+    },
+    {
+        "code": "<?php\n$x = <<<A\n  x\\q\n ",
+        "error": "Parse error: syntax error, unexpected end of file, expecting variable or heredoc end or \"${\" or \"{$\" on line 4."
+    },
+    {
         "code": "<?php\n$x = <<<A\n  ${a}\n A;\n",
         "error": null
     },

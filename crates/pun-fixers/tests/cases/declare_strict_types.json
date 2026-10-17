@@ -38,5 +38,27 @@
             "preserve_existing_declaration": true
         },
         "error": "[declare_strict_types] Cannot configure \"strategy\" in parallel to configuring \"preserve_existing_declaration\"."
+    },
+    {
+        "fixer": "declare_strict_types",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[declare_strict_types] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"preserve_existing_declaration\", \"strategy\"."
+    },
+    {
+        "fixer": "declare_strict_types",
+        "config": {
+            "strategy": "nope"
+        },
+        "error": "[declare_strict_types] Invalid configuration: The option \"strategy\" with value \"nope\" is invalid. Accepted values are: \"remove\", \"add_when_missing\", \"enforce\"."
+    },
+    {
+        "fixer": "declare_strict_types",
+        "config": {
+            "preserve_existing_declaration": true
+        },
+        "input": "<?php declare(strict_types=0);\nfoo();\n",
+        "expected": "<?php declare(strict_types=0);\nfoo();\n"
     }
 ]

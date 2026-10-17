@@ -108,9 +108,10 @@ fn clear_and_clean_whitespace(tokens: &mut Tokens, index: usize) {
     let (Some(prev), Some(next)) = (prev, next) else {
         return;
     };
-    let Some(i) = (prev + 1..next).find(|&i| tokens[i].is_whitespace(None)) else {
-        return;
-    };
+    // Pint's loop always finds one: at worst the cleared token itself, which is empty and so whitespace.
+    let i = (prev + 1..next)
+        .find(|&i| tokens[i].is_whitespace(None))
+        .unwrap();
     let ws = tokens[i].get_content();
     if count(ws, b'\n') > 1 {
         let last_newline = ws.iter().rposition(|&c| c == b'\n').unwrap();

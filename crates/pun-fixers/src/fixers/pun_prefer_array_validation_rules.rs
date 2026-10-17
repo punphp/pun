@@ -37,13 +37,10 @@ impl Fixer for PreferArrayValidationRules {
             .map(|(i, _)| i)
             .collect();
         for &method in methods.iter().rev() {
-            let Some(open) = tokens.get_next_token_of_kind(method, &["{".into(), ";".into()], true)
-            else {
-                continue;
+            let open = match tokens.get_next_token_of_kind(method, &["{".into(), ";".into()], true) {
+                Some(open) if tokens[open].equals("{", true) => open,
+                _ => continue,
             };
-            if !tokens[open].equals("{", true) {
-                continue;
-            }
             let end = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open);
             let mut found = Vec::new();
             let mut i = open + 1;

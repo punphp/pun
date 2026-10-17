@@ -3,5 +3,20 @@
         "fixer": "no_unused_imports",
         "input": "<?php\nuse /* c */\n    Foo;\n$a = 1;\n",
         "expected": "<?php\n/* c */\n    $a = 1;\n"
+    },
+    {
+        "fixer": "no_unused_imports",
+        "input": "<?php\nuse A;\nuse B;",
+        "expected": "<?php\n"
+    },
+    {
+        "fixer": "no_unused_imports",
+        "input": "<?php\nuse A;\nuse B;\n",
+        "expected": "<?php\n"
+    },
+    {
+        "fixer": "no_unused_imports",
+        "input": "<?php\nnamespace X;\nuse A;\nuse B;",
+        "expected": "<?php\nnamespace X;\n"
     }
 ]

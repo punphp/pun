@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_types",
+        "input": "<?php\n/**\n * @param $a\n * @return INT\n */\nfunction f($a) {}\n",
+        "expected": "<?php\n/**\n * @param $a\n * @return int\n */\nfunction f($a) {}\n"
+    }
+]

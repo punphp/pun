@@ -191,6 +191,18 @@ fn missing_pieces() {
     assert!(err.starts_with("Error: spawning pun\n"), "{err}");
     assert_eq!(code, Some(1));
 
+    // No php to run the oracle with.
+    let out = Command::new(env!("CARGO_BIN_EXE_pun-harness"))
+        .args(["format", "--corpus", "b"])
+        .env("PUN_HARNESS_ROOT", &r)
+        .env("PUN_BIN", r.join("no-such-pun"))
+        .env("PATH", "")
+        .output()
+        .unwrap();
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(err.contains("Error: spawning pint\n"), "{err}");
+    assert_eq!(out.status.code(), Some(1));
+
     // A corpus project that was never fetched.
     fs::remove_dir_all(r.join("corpus/b/.git")).unwrap();
     let (_, err, code) = harness(&r, &r.join("no-such-pun"), &["--corpus", "b"]);

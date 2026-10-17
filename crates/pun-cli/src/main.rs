@@ -522,7 +522,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         a.quiet,
         a.output_to_file.as_deref(),
         a.output_format.as_deref(),
-    )?;
+    );
     let failed = ((dry_run || a.repair) && results.iter().any(|r| r.status == Status::Fixed))
         || results.iter().any(FileResult::is_error);
 

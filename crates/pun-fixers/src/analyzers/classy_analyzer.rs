@@ -116,4 +116,11 @@ mod tests {
             .collect();
         assert_eq!(got, [(3, false), (8, true), (13, false), (18, false)]);
     }
+
+    /// Upstream throws `LogicException('No T_STRING at given index 0, got "T_OPEN_TAG".')`.
+    #[test]
+    #[should_panic(expected = "No T_STRING at given index 0, got \"Some(\"T_OPEN_TAG\")\".")]
+    fn rejects_non_string() {
+        ClassyAnalyzer.is_classy_invocation(&Tokens::from_code(b"<?php new Foo;"), 0);
+    }
 }

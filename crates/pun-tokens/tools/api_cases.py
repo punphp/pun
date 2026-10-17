@@ -164,6 +164,9 @@ case("<?php", [["fromArray", [O, ["T_STRING", "A"], ["T_DOUBLE_COLON", "::"], "{
 case("<?php", [["fromArray", [O, ["T_STRING", "f"], "(", ")", "{", "}", ";"]], ["transform"]], each("tok"))
 case("<?php", [["fromArray", [O, ["T_VARIABLE", "$a"], ["T_OBJECT_OPERATOR", "->"], "{", ["T_STRING", "b"]]], ["transform"]])
 case("<?php", [["fromArray", [O, ["T_VARIABLE", "$a"], ["T_OBJECT_OPERATOR", "->"], "{", ["CT::T_CURLY_CLOSE", "}"], ";"]], ["transform"]])
+# Clearing and merging whitespace: around whitespace, at the end, and with only cleared tokens after it.
+case("<?php $a ; $b;", [["clearMerge", 3], ["code"], ["contents"]])
+case("<?php $a;", [["clearAt", 2], ["clearMerge", 1], ["code"], ["contents"]])
 # FoundKey from &str / Kind; Proto from &Token.
 case("<?php $a = [1]; f(...);", [["found", "["], ["found", ["CT::T_ARRAY_BRACKET_OPEN"]], ["found", ["CT::T_FIRST_CLASS_CALLABLE"]], ["countKind", "="]],
      each("equalsProto", args=(3,)))
