@@ -37,7 +37,7 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 
 ```
 cargo build -p punphp-harness
-target/debug/pun-harness format                         # every corpus project, regenerates docs/scoreboard.md
+target/debug/pun-harness format                         # every corpus project, regenerates context/reports/scoreboard.md
 target/debug/pun-harness format --corpus pinkary        # one project (repeatable)
 target/debug/pun-harness format --fixer single_quote --corpus pinkary-dirty --diffs 5
 ```
@@ -84,7 +84,7 @@ byte-identical. `pun migrate` also reads a `.php-cs-fixer(.dist).php`'s resolved
   `vendor/composer/installed.json`. Edits to project-local fixer classes aren't seen, as with PHP-CS-Fixer's own
   cache: use `--no-cache`.
 - **Harness / fuzz.** `PUN_PINT=$PWD/.oracle/pint/builds/pint` for corpus checkouts without `vendor/`
-  (`scripts/fuzz-parity.sh` passes it through). Results in [scoreboard.md](scoreboard.md#delegate-mode).
+  (`scripts/fuzz-parity.sh` passes it through). Results in [scoreboard.md](../reports/scoreboard.md#delegate-mode).
 
 ## Fixtures
 

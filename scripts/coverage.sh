@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Line coverage per crate (cargo-llvm-cov). Gate: 100% per crate, see AGENTS.md "Tests".
 #
-#   scripts/coverage.sh                    # every crate; rewrites the generated part of docs/COVERAGE.md
+#   scripts/coverage.sh                    # every crate; rewrites the generated part of context/reports/COVERAGE.md
 #   scripts/coverage.sh punphp-tokens pun-config   # some crates (package or dir name); updates only their rows
 #   PUN_FIXERS_ONLY=pun_no_only scripts/coverage.sh # one fixer: its file(s) + the analyzers it touches;
-#                                                   # gate is the fixer's own files; docs/COVERAGE.md untouched
+#                                                   # gate is the fixer's own files; context/reports/COVERAGE.md untouched
 #   COVERAGE_VERBOSE=1 ...                 # print every file, not only the ones below 100%
 #
 # Instrumented builds live in target/coverage (reused between runs, never the shared target/llvm-cov-target),
 # serialised with flock so concurrent agents don't mix profraw files. Exclusions: lines `- path:FROM-TO reason`
-# under "## Exclusions" in docs/COVERAGE.md are not counted.
+# under "## Exclusions" in context/reports/COVERAGE.md are not counted.
 # Needs: rustup component add llvm-tools-preview; cargo install cargo-llvm-cov --locked
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -58,7 +58,7 @@ for arg in "$@"; do
 import json, os, re, sys
 root, cdir, pkg, lcov, tests_ok, only = sys.argv[1:]
 verbose = bool(os.environ.get("COVERAGE_VERBOSE"))
-doc = os.path.join(root, "docs/COVERAGE.md")
+doc = os.path.join(root, "context/reports/COVERAGE.md")
 text = open(doc).read() if os.path.exists(doc) else ""
 
 excl = {}

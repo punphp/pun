@@ -15,7 +15,7 @@ PHPStan identifier, Mago rule code) and how options carry over. That one file dr
 
 `scripts/check-rule-mapping.py` checks it (names, prefixes, references, upstream sources; §8).
 
-Status: design. Supersedes the "Rule names" bullet in docs/PLAN.md ("Update, Oct 17"). Mago rules are no longer reported as
+Status: design. Supersedes the "Rule names" bullet in context/PLAN.md ("Update, Oct 17"). Mago rules are no longer reported as
 `mago.*`; they get Pun names like everything else. Nothing here changes runtime code yet.
 
 ## 1. Placement principle

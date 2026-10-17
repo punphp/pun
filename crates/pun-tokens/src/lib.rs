@@ -1,4 +1,4 @@
-//! PHP-CS-Fixer's token model in Rust. See docs/tokens.md.
+//! PHP-CS-Fixer's token model in Rust. See context/reference/tokens.md.
 
 pub mod kind;
 pub mod lexer;

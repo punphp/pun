@@ -1,4 +1,4 @@
-//! Agent mode (docs/PLAN.md "Agent-optimised output"): under a coding agent every command prints a summary line,
+//! Agent mode (context/PLAN.md "Agent-optimised output"): under a coding agent every command prints a summary line,
 //! then one compiler-style line per finding (`path:line:col rule [fix:safe] message`), capped unless `-v`. No
 //! colours, boxes or progress. Exit codes don't change. Humans (no agent detected) get the Pint output as before.
 use std::fmt::Write as _;

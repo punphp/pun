@@ -52,7 +52,7 @@ fn root(name: &str) -> PathBuf {
     fs::create_dir_all(b.join(".git")).unwrap();
     write(&b.join("b.php"), "<?php\n\n$x = array();\n");
     write(
-        &r.join("docs/scoreboard.md"),
+        &r.join("context/reports/scoreboard.md"),
         "| project | x |\n|---|---|\n| a | stale |\n| zz | 1 | 1 | 1 | 0 | 0 | 0 |\n\n## Benchmarks\n\n| zz | kept |\n",
     );
     r
@@ -93,7 +93,7 @@ fn full_run_with_failing_pun() {
         2,
         "{err}"
     );
-    let board = fs::read_to_string(r.join("docs/scoreboard.md")).unwrap();
+    let board = fs::read_to_string(r.join("context/reports/scoreboard.md")).unwrap();
     assert!(board.ends_with(
         "| project | files | identical | differing | pint changed | pun changed |\n|---|---|---|---|---|---|\n\
          | a | 6 | 4 | 2 | 1 | 1 |\n| b | 2 | 0 | 2 | 1 | 1 |\n| zz | 1 | 1 | 1 | 0 | 0 | 0 |\n\n## Benchmarks\n\n| zz | kept |\n"
@@ -110,7 +110,7 @@ fn single_fixer_identical() {
         &pun,
         "[ -f app.php ] && printf '<?php\\n\\n$a = [1];   \\n' > app.php; [ -f b.php ] && printf '<?php\\n\\n$x = [];\\n' > b.php; true",
     );
-    let before = fs::read_to_string(r.join("docs/scoreboard.md")).unwrap();
+    let before = fs::read_to_string(r.join("context/reports/scoreboard.md")).unwrap();
     let (out, err, code) = harness(&r, &pun, &["--fixer", "array_syntax"]);
     // Only array_syntax runs, so the trailing spaces survive and skip/ stays excluded (pint.json's `exclude` is kept).
     // The extra single-fixer.json lives outside the copied tree.
@@ -122,12 +122,12 @@ fn single_fixer_identical() {
     assert_eq!(code, Some(0));
     // --fixer runs leave the scoreboard alone.
     assert_eq!(
-        fs::read_to_string(r.join("docs/scoreboard.md")).unwrap(),
+        fs::read_to_string(r.join("context/reports/scoreboard.md")).unwrap(),
         before
     );
 
     // --corpus filter, a fixer the project doesn't configure (falls back to `true`), and no scoreboard yet.
-    fs::remove_file(r.join("docs/scoreboard.md")).unwrap();
+    fs::remove_file(r.join("context/reports/scoreboard.md")).unwrap();
     let (out, err, code) = harness(
         &r,
         &pun,
@@ -139,7 +139,7 @@ fn single_fixer_identical() {
         "stderr: {err}"
     );
     assert_eq!(code, Some(1));
-    assert!(!r.join("docs/scoreboard.md").exists());
+    assert!(!r.join("context/reports/scoreboard.md").exists());
     fs::remove_dir_all(&r).unwrap();
 }
 
@@ -153,7 +153,7 @@ fn preset_override() {
         &pun,
         "[ \"$1 $2 $3\" = 'migrate --preset psr12' ] && printf '<?php\\n\\n$a = array(1);\\n' > app.php; true",
     );
-    let before = fs::read_to_string(r.join("docs/scoreboard.md")).unwrap();
+    let before = fs::read_to_string(r.join("context/reports/scoreboard.md")).unwrap();
     let (out, err, code) = harness(&r, &pun, &["--corpus", "a", "--preset", "psr12"]);
     assert_eq!(
         out, "a: 5 files, 5 identical, 0 differing (pint changed 1, pun changed 1)\n",
@@ -161,7 +161,7 @@ fn preset_override() {
     );
     assert_eq!(code, Some(0));
     assert_eq!(
-        fs::read_to_string(r.join("docs/scoreboard.md")).unwrap(),
+        fs::read_to_string(r.join("context/reports/scoreboard.md")).unwrap(),
         before
     );
     fs::remove_dir_all(&r).unwrap();

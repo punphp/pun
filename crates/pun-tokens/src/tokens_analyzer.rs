@@ -1,4 +1,4 @@
-//! Port of `PhpCsFixer\Tokenizer\TokensAnalyzer` (subset; see docs/tokens.md).
+//! Port of `PhpCsFixer\Tokenizer\TokensAnalyzer` (subset; see context/reference/tokens.md).
 
 use std::collections::BTreeMap;
 

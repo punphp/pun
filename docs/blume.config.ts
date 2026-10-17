@@ -2,7 +2,7 @@ import { defineConfig } from "blume";
 
 // The Pun docs site and homepage. Run from this folder: `npm install`, then `npm run dev` / `npm run build`.
 // Content lives in content/ (routes under /docs); the homepage is pages/index.astro.
-// The other Markdown files in this folder (PLAN.md, TASKS.md, RULES.md, ...) are internal notes and are not published.
+// Internal notes (plan, tasks, rules design) live in ../context/, not here.
 export default defineConfig({
   title: "Pun",
   description:

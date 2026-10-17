@@ -1,5 +1,5 @@
 //! PHP's `get_defined_functions()['internal']` as seen by the oracle (system PHP 8.5.11 with its
-//! extension set, see docs/oracle.md), for fixers that call `get_defined_functions` / `function_exists`.
+//! extension set, see context/reference/oracle.md), for fixers that call `get_defined_functions` / `function_exists`.
 //! Regenerate: `php -r '$f=get_defined_functions()["internal"]; sort($f); echo implode("\n", $f), "\n";'`.
 const LIST: &str = include_str!("php_internal_functions.txt");
 

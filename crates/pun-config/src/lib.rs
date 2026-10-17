@@ -29,7 +29,7 @@ pub const PRESETS: [(&str, &str); 5] = [
 /// Other sets stay unexpanded and are reported as not ported.
 const SETS: &str = include_str!("../presets/sets.json");
 
-/// Upstream rule -> Pun rule mapping (docs/RULES.md).
+/// Upstream rule -> Pun rule mapping (context/RULES.md).
 const MAPPING: &str = include_str!("../rules/mapping.toml");
 
 /// What every command prints when the project has no pun.toml.
@@ -130,7 +130,7 @@ pub fn fixer_entries() -> &'static toml::Table {
             let body = MAPPING.split_once(&head).expect("mapping section").1;
             let body = body.split("\n[").next().unwrap();
             let entries = toml::from_str::<toml::Table>(body).expect("mapping.toml");
-            // The fixers are `Pun/no_only`; the mapping spells them `Pun/no-only` (docs/REQUESTS.md).
+            // The fixers are `Pun/no_only`; the mapping spells them `Pun/no-only` (context/REQUESTS.md).
             out.extend(entries.into_iter().map(|(k, v)| (k.replace('-', "_"), v)));
         }
         out

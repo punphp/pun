@@ -1,4 +1,4 @@
-//! `pun migrate` end to end. Expectations are hand-derived from pint.json and docs/RULES.md §7, or come from the real
+//! `pun migrate` end to end. Expectations are hand-derived from pint.json and context/RULES.md §7, or come from the real
 //! Pint (`php .oracle/pint/builds/pint`) on the unmigrated project.
 use std::path::{Path, PathBuf};
 use std::process::Command;

@@ -1,5 +1,5 @@
 //! `pun migrate`, format part: pint.json (or, without one, `.php-cs-fixer(.dist).php`) becomes pun.toml, and
-//! `@php-cs-fixer-ignore` comments become `@pun-ignore-file` with Pun rule IDs (docs/RULES.md §7).
+//! `@php-cs-fixer-ignore` comments become `@pun-ignore-file` with Pun rule IDs (context/RULES.md §7).
 use crate::{agent, report, root};
 use anyhow::{Result, bail};
 use pcre2::bytes::Regex;

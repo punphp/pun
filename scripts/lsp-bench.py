@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Drive a PHP language server over stdio and time it (docs/LSP.md).
+"""Drive a PHP language server over stdio and time it (context/reference/lsp.md).
 
 usage: lsp-bench.py ROOT FQCN -- SERVER [ARGS...]
 
