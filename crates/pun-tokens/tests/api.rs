@@ -222,6 +222,7 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
                         .collect(),
                 ),
                 "clearAt" => t.clear_at(u(0)),
+                "clearMerge" => t.clear_token_and_merge_surrounding_whitespace(u(0)),
                 "set" => t.set(u(0), tok(&x[1])),
                 "overrideRange" => t.override_range(u(0), u(1), toks(&x[2])),
                 "removeLeadingWs" => t.remove_leading_whitespace(u(0), opt_ws(x.get(1))),
@@ -230,7 +231,6 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
                 "transform" => pun_tokens::transformers::transform(t),
                 "fromArray" => *t = Tokens::from_array(toks(&x[0])),
                 "clearRange" => t.clear_range(u(0), u(1)),
-                "clearMerge" => t.clear_token_and_merge_surrounding_whitespace(u(0)),
                 "ensureWs" => {
                     return json!(t.ensure_whitespace_at_index(
                         u(0),

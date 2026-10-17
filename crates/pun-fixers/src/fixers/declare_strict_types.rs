@@ -187,9 +187,8 @@ fn has_other_declare_options(
 }
 
 fn remove_declare_statement(tokens: &mut Tokens, declare_index: usize, close_parenthesis: usize) {
-    let Some(semicolon_index) = tokens.get_next_meaningful_token(close_parenthesis) else {
-        return;
-    };
+    // upstream returns when there is none, which parsed code rules out (`;` or `?>` ends the statement)
+    let semicolon_index = tokens.get_next_meaningful_token(close_parenthesis).unwrap();
     for index in (declare_index..=semicolon_index).rev() {
         tokens.clear_token_and_merge_surrounding_whitespace(index);
     }

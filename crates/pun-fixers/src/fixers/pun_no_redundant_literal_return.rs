@@ -316,6 +316,7 @@ mod tests {
                 "    if ($x === null) {\n        return null;\n    } else if ($x === '') {\n        return '';\n    }\n    return $x;",
             ),
             func("    if ($x === null) {\n        return null;\n    }\n    return $x + 1;"),
+            func("    if ($x->y === null) {\n        return null;\n    }\n    return $x;"),
             // Escaped strings are compared by their source text only, so equal values spelled differently are kept.
             func("    if ($x === 'a\\'b') {\n        return \"a'b\";\n    }\n    return $x;"),
         ] {

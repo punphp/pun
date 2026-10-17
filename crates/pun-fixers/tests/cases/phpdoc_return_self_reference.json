@@ -89,5 +89,10 @@
         "fixer": "phpdoc_return_self_reference",
         "input": "<?php\nclass A {\n    /**\n     * @return\n     */\n    public function a() { return $this; }\n    /** @return this */\n    public function b() { return $this; }\n}\n",
         "expected": "<?php\nclass A {\n    /**\n     * @return\n     */\n    public function a() { return $this; }\n    /** @return $this */\n    public function b() { return $this; }\n}\n"
+    },
+    {
+        "fixer": "phpdoc_return_self_reference",
+        "input": "<?php\nclass A\n{\n    /**\n     * @param int $a\n     */\n    public function f($a) {}\n}\n",
+        "expected": "<?php\nclass A\n{\n    /**\n     * @param int $a\n     */\n    public function f($a) {}\n}\n"
     }
 ]

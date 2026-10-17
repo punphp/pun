@@ -257,14 +257,14 @@ pub fn emit(
     quiet: bool,
     to_file: Option<&Path>,
     file_format: Option<&str>,
-) -> Result<u8> {
+) -> u8 {
     let out_dec = console::decorated(1, ctx.ansi, ctx.no_ansi);
     match emit_inner(ctx, results, format, quiet, to_file, file_format, out_dec) {
+        Ok(code) => code,
         Err(e) => {
             print!("{}", pint_error::render(&e.to_string()));
-            Ok(1)
+            1
         }
-        ok => ok,
     }
 }
 

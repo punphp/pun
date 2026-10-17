@@ -329,6 +329,7 @@ mod tests {
                 "<INFO>y</INFO> \x1b[31mw\x1b[39m",
             ),
             ("trail\0\0", "trail\\\\"),
+            ("a<options=,>b</>c", "abc"),
         ] {
             assert_eq!(format(input, true), want, "{input:?}");
         }

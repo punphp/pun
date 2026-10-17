@@ -24,11 +24,7 @@ fn explode<'a>(delimiter: &[u8], s: &'a [u8]) -> Vec<&'a [u8]> {
 
 /// `substr($s, $start, $len)` for non-negative arguments.
 fn substr(s: &[u8], start: usize, len: usize) -> &[u8] {
-    if start >= s.len() {
-        b""
-    } else {
-        &s[start..(start + len).min(s.len())]
-    }
+    &s[start.min(s.len())..(start + len).min(s.len())]
 }
 
 impl Fixer for FullOpeningTagFixer {

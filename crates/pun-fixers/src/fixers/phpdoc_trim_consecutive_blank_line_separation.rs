@@ -50,12 +50,10 @@ fn fix_summary(doc: &DocBlock, summary_end: usize) {
 fn fix_description(doc: &DocBlock, summary_end: usize) {
     let annotation_start = find_first_annotation_or_end(doc);
     // assuming the end of the Description appears before the first Annotation
-    let Some(description_end) = reverse_find_last_useful_content(doc, annotation_start) else {
-        return;
+    let description_end = match reverse_find_last_useful_content(doc, annotation_start) {
+        Some(end) if end != summary_end && annotation_start != doc.get_lines().len() - 1 => end,
+        _ => return, // no Description, or no content after it
     };
-    if summary_end == description_end || annotation_start == doc.get_lines().len() - 1 {
-        return; // no Description, or no content after it
-    }
     remove_extra_blank_lines_between(doc, description_end, annotation_start);
 }
 

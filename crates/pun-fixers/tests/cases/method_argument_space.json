@@ -18,5 +18,12 @@
         },
         "input": "<?php\nfunction foo(#[Foo] $a,\n    #[Bar, Baz] int $b) {}\nfoo(<<<EOT\nx\nEOT\n, $b);\n$x = bar($a,\n    $b);\n",
         "expected": "<?php\nfunction foo(\n    #[Foo] $a,\n    #[Bar, Baz] int $b\n) {}\nfoo(<<<EOT\nx\nEOT\n, $b);\n$x = bar(\n    $a,\n    $b\n);\n"
+    },
+    {
+        "fixer": "method_argument_space",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[method_argument_space] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"after_heredoc\", \"attribute_placement\", \"keep_multiple_spaces_after_comma\", \"on_multiline\"."
     }
 ]

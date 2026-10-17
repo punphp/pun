@@ -12,5 +12,12 @@
         },
         "input": "<?php\n$a = function () { return 1; };\n$b = function ($x) use ($y) { foo(); bar(); };\n$c = new class {};\n$d = new class { public $x; };\n$e = new class() {\n};\n",
         "expected": "<?php\n$a = function () {\nreturn 1;\n};\n$b = function ($x) use ($y) {\nfoo(); bar();\n};\n$c = new class {};\n$d = new class {\npublic $x;\n};\n$e = new class() {\n};\n"
+    },
+    {
+        "fixer": "braces_position",
+        "config": {
+            "functions_opening_brace": "nope"
+        },
+        "error": "[braces_position] Invalid configuration: The option \"functions_opening_brace\" with value \"nope\" is invalid. Accepted values are: \"next_line_unless_newline_at_signature_end\", \"same_line\"."
     }
 ]

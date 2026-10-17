@@ -117,12 +117,10 @@ impl FunctionsAnalyzer {
         if !tokens[index].is_kind(T_STRING) {
             return false;
         }
-        let Some(open_parenthesis_index) = tokens.get_next_meaningful_token(index) else {
-            return false;
+        let open_parenthesis_index = match tokens.get_next_meaningful_token(index) {
+            Some(i) if tokens[i].equals("(", true) => i,
+            _ => return false,
         };
-        if !tokens[open_parenthesis_index].equals("(", true) {
-            return false;
-        }
         let mut previous_is_namespace_separator = false;
         let mut prev_index = tokens.get_prev_meaningful_token(index).unwrap();
         if tokens[prev_index].is_kind(T_NS_SEPARATOR) {

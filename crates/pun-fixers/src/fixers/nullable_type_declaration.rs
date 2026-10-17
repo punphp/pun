@@ -131,13 +131,11 @@ impl NullableTypeDeclarationFixer {
                 break;
             }
         }
-        let Some(property_type) = collect_type_analysis(tokens, index, property_end_index) else {
-            return;
-        };
-        if !is_type_normalizable(&property_type) {
-            return;
+        if let Some(property_type) = collect_type_analysis(tokens, index, property_end_index)
+            .filter(is_type_normalizable)
+        {
+            self.normalize_nullable_type(tokens, &property_type);
         }
-        self.normalize_nullable_type(tokens, &property_type);
     }
 
     fn normalize_method_argument_type(
@@ -146,13 +144,11 @@ impl NullableTypeDeclarationFixer {
         tokens: &mut Tokens,
         index: usize,
     ) {
-        for (_, argument_info) in fa.get_function_arguments(tokens, index).into_iter().rev() {
-            let Some(argument_type) = argument_info.type_analysis else {
-                continue;
-            };
-            if !is_type_normalizable(&argument_type) {
-                continue;
-            }
+        let arguments = fa.get_function_arguments(tokens, index).into_iter().rev();
+        for argument_type in arguments
+            .filter_map(|(_, a)| a.type_analysis)
+            .filter(is_type_normalizable)
+        {
             self.normalize_nullable_type(tokens, &argument_type);
         }
     }

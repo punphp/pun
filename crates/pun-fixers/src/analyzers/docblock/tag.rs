@@ -61,23 +61,6 @@ impl Tag {
         self.name.borrow().clone().unwrap()
     }
 
-    /// Panics like upstream's RuntimeException on an unknown (`other`) tag.
-    pub fn set_name(&self, name: &[u8]) {
-        let current = self.get_name();
-        if current == b"other" {
-            panic!("Cannot set name on unknown tag.");
-        }
-        let pattern = [&b"/@"[..], &current, b"/"].concat();
-        let new = preg::replace(
-            &pattern,
-            &[b"@", name].concat(),
-            self.line.borrow().get_content(),
-            1,
-        );
-        self.line.borrow_mut().set_content(new);
-        *self.name.borrow_mut() = Some(name.to_vec());
-    }
-
     pub fn valid(&self) -> bool {
         PSR_STANDARD_TAGS
             .iter()

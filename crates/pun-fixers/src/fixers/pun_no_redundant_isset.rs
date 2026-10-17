@@ -28,12 +28,7 @@ impl Fixer for NoRedundantIsset {
             if !tokens[i].is_kind(T_ISSET) {
                 continue;
             }
-            let Some(open) = tokens
-                .get_next_meaningful_token(i)
-                .filter(|&o| tokens[o].equals("(", true))
-            else {
-                continue;
-            };
+            let open = tokens.get_next_meaningful_token(i).unwrap();
             let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
             let args = split_list(tokens, open, close);
             if args.len() < 2 || (open..=close).any(|k| tokens[k].is_comment()) {

@@ -1,7 +1,7 @@
 //! `PhpCsFixer\DocBlock\TypeExpression`.
 
 use super::preg;
-use pun_tokens::php_compat::{strnatcasecmp, strtolower};
+use pun_tokens::php_compat::strnatcasecmp;
 use std::cmp::Ordering;
 use std::rc::Rc;
 use std::sync::LazyLock;
@@ -122,10 +122,6 @@ impl TypeExpression {
         self.is_composite_type && self.types_glue == Some(b'|')
     }
 
-    pub fn is_intersection_type(&self) -> bool {
-        self.is_composite_type && self.types_glue == Some(b'&')
-    }
-
     pub fn get_types_glue(&self) -> Option<u8> {
         self.types_glue
     }
@@ -151,13 +147,6 @@ impl TypeExpression {
             self.inner(&value)
         };
         callback(t)
-    }
-
-    pub fn walk_types(&self, callback: &mut dyn FnMut(&TypeExpression)) {
-        self.map_types(&mut |t| {
-            callback(&t);
-            t
-        });
     }
 
     pub fn sort_types(
@@ -301,20 +290,15 @@ impl TypeExpression {
             self.push(0, &typ[..typ.len() - s("array").len()])?;
         } else if at0("generic") {
             self.push(0, s("generic_name"))?;
-            self.parse_comma_separated_inner_types(
-                s("generic_name").len() + s("generic_start").len(),
-                s("generic_types"),
-            )?;
+            let start = s("generic_name").len() + s("generic_start").len();
+            self.parse_comma_separated_inner_types(start, s("generic_types"))?;
         } else if at0("callable") {
             self.push(0, s("callable_name"))?;
-            self.parse_callable_template_inner_types(
-                s("callable_name").len() + s("callable_template_start").len(),
-                s("callable_template_inners"),
-            )?;
-            self.parse_callable_argument_types(
-                s("callable_name").len() + s("callable_template").len() + s("callable_start").len(),
-                s("callable_arguments"),
-            )?;
+            let start = s("callable_name").len() + s("callable_template_start").len();
+            self.parse_callable_template_inner_types(start, s("callable_template_inners"))?;
+            let start =
+                s("callable_name").len() + s("callable_template").len() + s("callable_start").len();
+            self.parse_callable_argument_types(start, s("callable_arguments"))?;
             let ret = s("callable_return");
             if !ret.is_empty() {
                 self.push(self.value.len() - ret.len(), ret)?;
@@ -543,11 +527,6 @@ impl TypeExpression {
             Some(ns) if !ns.is_global_namespace() => [&ns.full_name[..], b"\\", t].concat(),
             _ => t.to_vec(),
         }
-    }
-
-    /// For `Annotation::getNormalizedTypes`.
-    pub(crate) fn lowercased(&self) -> TypeExpression {
-        TypeExpression::new(&strtolower(&self.value), Rc::default())
     }
 
     #[cfg(test)]

@@ -29,9 +29,7 @@ impl Fixer for NoSelfAssignment {
             if !tokens[i].is_kind(T_VARIABLE) || tokens[i].get_content() == b"$this" {
                 continue;
             }
-            let Some(prev) = tokens.get_prev_meaningful_token(i) else {
-                continue;
-            };
+            let prev = tokens.get_prev_meaningful_token(i).expect("open tag");
             if !(tokens[prev].equals_any(&[";".into(), "{".into(), "}".into()], true)
                 || tokens[prev].is_kind(T_OPEN_TAG))
             {

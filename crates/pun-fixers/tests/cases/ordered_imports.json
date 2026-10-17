@@ -42,5 +42,12 @@
             ]
         },
         "error": "[ordered_imports] Invalid configuration: Unknown sort types \"foo\" and \"bar\"."
+    },
+    {
+        "fixer": "ordered_imports",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[ordered_imports] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"case_sensitive\", \"imports_order\", \"sort_algorithm\"."
     }
 ]

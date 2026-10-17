@@ -238,12 +238,10 @@ fn transform_into_dynamic_var_braces(tokens: &mut Tokens, index: usize) {
     if !tokens[index].equals("$", true) {
         return;
     }
-    let Some(open) = tokens.get_next_meaningful_token(index) else {
-        return;
+    let open = match tokens.get_next_meaningful_token(index) {
+        Some(open) if tokens[open].equals("{", true) => open,
+        _ => return,
     };
-    if !tokens[open].equals("{", true) {
-        return;
-    }
     let close = naively_find_curly_block_end(tokens, open);
     set(tokens, open, CT_DYNAMIC_VAR_BRACE_OPEN, b"{");
     set(tokens, close, CT_DYNAMIC_VAR_BRACE_CLOSE, b"}");

@@ -205,6 +205,7 @@ fn tree() -> Vec<(&'static str, &'static str)> {
             "<?php\n$a = array( 1,2 );\nif($a){echo \"x\";}\n",
         ),
         ("app/Clean.php", "<?php\n\necho 1;\n"),
+        ("app/Crlf.php", "<?php\r\n$a = array(1);\r\n"),
         (
             "app/Bad.php",
             "<?php\n\n// <info>tags</info> and \\<escapes>\n$a = [\n    1,\nfunction (\n\n$b = 1;\n$c = 2;\n$d = 3;\n$e = 4;\n$f = 5;\n",

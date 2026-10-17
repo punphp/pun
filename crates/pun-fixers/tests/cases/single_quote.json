@@ -12,5 +12,12 @@
             "strings_containing_single_quote_chars": null
         },
         "error": "[single_quote] Invalid configuration: The option \"strings_containing_single_quote_chars\" with value null is expected to be of type \"bool\", but is of type \"null\"."
+    },
+    {
+        "fixer": "single_quote",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[single_quote] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"strings_containing_single_quote_chars\"."
     }
 ]

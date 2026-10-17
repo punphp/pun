@@ -8,24 +8,21 @@ impl GotoLabelAnalyzer {
         if !tokens[index].equals(":", true) {
             return false;
         }
-        let Some(prev) = tokens.get_prev_meaningful_token(index) else {
-            return false;
+        let prev = match tokens.get_prev_meaningful_token(index) {
+            Some(prev) if tokens[prev].is_kind(T_STRING) => prev,
+            _ => return false,
         };
-        if !tokens[prev].is_kind(T_STRING) {
-            return false;
-        }
-        let Some(prev) = tokens.get_prev_meaningful_token(prev) else {
-            return false;
-        };
-        tokens[prev].equals_any(
-            &[
-                ":".into(),
-                ";".into(),
-                "{".into(),
-                "}".into(),
-                T_OPEN_TAG.into(),
-            ],
-            true,
-        )
+        tokens.get_prev_meaningful_token(prev).is_some_and(|prev| {
+            tokens[prev].equals_any(
+                &[
+                    ":".into(),
+                    ";".into(),
+                    "{".into(),
+                    "}".into(),
+                    T_OPEN_TAG.into(),
+                ],
+                true,
+            )
+        })
     }
 }

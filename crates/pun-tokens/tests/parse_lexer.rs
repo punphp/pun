@@ -50,10 +50,10 @@ fn scanner_errors_match_php() {
                 );
                 checked += 1;
             }
-            None => {
+            // Accepted, or a grammar error: the scanner itself never throws.
+            _ => {
                 assert!(drain(code).is_ok(), "{code:?}: {:?}", drain(code));
             }
-            _ => {}
         }
     }
     assert!(checked > 60, "{checked}");

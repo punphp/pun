@@ -18,5 +18,12 @@
         "fixer": "statement_indentation",
         "input": "<?php\nif ($a)\ndo echo 1, 2; while ($b);\nswitch ($a) {\ncase 1:\nswitch ($b):\ncase 2:\nbreak;\nendswitch;\nbreak;\n}\n",
         "expected": "<?php\nif ($a)\n    do echo 1, 2; while ($b);\nswitch ($a) {\n    case 1:\n        switch ($b):\n            case 2:\n                break;\n        endswitch;\n        break;\n}\n"
+    },
+    {
+        "fixer": "statement_indentation",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[statement_indentation] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"stick_comment_to_next_continuous_control_statement\"."
     }
 ]

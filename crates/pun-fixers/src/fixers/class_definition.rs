@@ -140,10 +140,8 @@ impl ClassDefinitionFixer {
         let end_index = tokens
             .get_prev_non_whitespace(class_open_index, None)
             .unwrap();
-        if self.single_line || !info.multi_line {
-            self.make_classy_definition_single_line(tokens, info.start, end_index);
-            info.multi_line = false;
-        } else if self.single_item_single_line && info.count == 1 {
+        if self.single_line || !info.multi_line || (self.single_item_single_line && info.count == 1)
+        {
             self.make_classy_definition_single_line(tokens, info.start, end_index);
             info.multi_line = false;
         } else if self.multi_line_extends_each_single_line && info.multi_line {
@@ -162,10 +160,8 @@ impl ClassDefinitionFixer {
         let end_index = tokens
             .get_prev_non_whitespace(class_open_index, None)
             .unwrap();
-        if self.single_line || !info.multi_line {
-            self.make_classy_definition_single_line(tokens, info.start, end_index);
-            info.multi_line = false;
-        } else if self.single_item_single_line && info.count == 1 {
+        if self.single_line || !info.multi_line || (self.single_item_single_line && info.count == 1)
+        {
             self.make_classy_definition_single_line(tokens, info.start, end_index);
             info.multi_line = false;
         } else {

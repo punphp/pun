@@ -8,5 +8,12 @@
         "fixer": "ordered_interfaces",
         "input": "<?php\nclass C implements Z /* c */, A {}\n",
         "expected": "<?php\nclass C implements A, Z /* c */ {}\n"
+    },
+    {
+        "fixer": "ordered_interfaces",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[ordered_interfaces] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"case_sensitive\", \"direction\", \"order\"."
     }
 ]

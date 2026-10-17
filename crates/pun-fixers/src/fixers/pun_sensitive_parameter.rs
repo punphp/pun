@@ -34,9 +34,8 @@ impl Fixer for SensitiveParameter {
             }) {
                 k = tokens.get_next_meaningful_token(n);
             }
-            let Some(open) = k.filter(|&o| tokens[o].equals("(", true)) else {
-                continue;
-            };
+            // `function`/`fn` (not `use function`, a CT_FUNCTION_IMPORT) always reaches its parameter list.
+            let open = k.unwrap();
             let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
             for (s, _) in split_list(tokens, open, close).into_iter().rev() {
                 if needs_attribute(tokens, s) {

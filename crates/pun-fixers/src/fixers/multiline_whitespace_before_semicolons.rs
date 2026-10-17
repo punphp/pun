@@ -137,8 +137,9 @@ impl Fixer for MultilineWhitespaceBeforeSemicolonsFixer {
             let previous_index = index - 1;
             let previous = tokens[previous_index].clone();
             let indent = Self::find_whitespace_before_first_call(index, tokens);
-            if self.strategy == STRATEGY_NEW_LINE_FOR_CHAINED_CALLS && indent.is_some() {
-                let indent = indent.unwrap();
+            if self.strategy == STRATEGY_NEW_LINE_FOR_CHAINED_CALLS
+                && let Some(indent) = indent
+            {
                 let wanted = [line_ending, &indent].concat();
                 if previous.is_whitespace(None) && previous.get_content() == wanted.as_slice() {
                     index += 1;

@@ -12,7 +12,7 @@ H = [  # heredoc / nowdoc
  "$x = <<<A\n  foo\n\n  A;\n", "$x = <<<'A'\n foo\n  A;\n", "$x = <<<'A'\n\t foo\n\t A;\n", "$x = <<<A\n  {$a}\n  A;\n",
  "$x = <<<A\n  a{$a}\n b\n  A;\n", "$x = <<<A\n  a\n {$b}\n  A;\n", "$x = <<<A\n\t\tfoo\n\t\tA;\n", "$x = <<<A\n    foo\n\t\tA;\n",
  "$x = <<<A\n\t foo\n \tA;\n", "$x = <<<A\n  \t\n  A;\n", "$x = <<<A\n \n  A;\n", "$x = <<<A\n  foo\n  bar\n A;\n",
- "$x = <<<A\n  foo $a\n  A;\n", "$x = <<<A\nfoo\nA\n;\n", "$x = <<<A\n  A . 'x';\n", "$x = <<<A\n  foo\n  A\n", "$x = <<<A\nfoo", "$x = <<<'A'\nfoo",
+ "$x = <<<A\n  foo $a\n  A;\n", "$x = <<<A\nfoo\nA\n;\n", "$x = <<<A\n  A . 'x';\n", "$x = <<<A\n  foo\n  A\n", "$x = <<<A\nfoo", "$x = <<<'A'\nfoo", "$x = <<<A\nfoo\n", "$x = <<<A\n  foo\n  ", "$x = <<<A\n  {$a}\n\t", "$x = <<<A\n\tfoo\r\n", "$x = <<<A\n  x\\q\n ",
  "$x = <<<A\n  ${a}\n A;\n", "$x = <<<A\n  x\n\t\n  A;\n", "$x = <<<A\n\t\tx\n\t \n\t\tA;\n", "$x = <<<A\n  $a[1]\n A;\n",
  "$x = <<<A\n  x {$a} y\n   z\n  A;\n", "$x = <<<A\nA;\n", "$x = <<<  A\nfoo\nA;\n", '$x = <<<"A"\nfoo\nA;\n',
  "$x = <<<A\n   x\n  \tA;\n", "$x = <<<A\n\tx\n \tA;\n", "$x = <<<A\n\t \tx\n\t A;\n",

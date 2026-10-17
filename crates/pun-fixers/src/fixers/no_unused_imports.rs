@@ -266,10 +266,13 @@ fn clean_up_surrounding_new_lines(tokens: &mut Tokens, u: &NamespaceUseAnalysis)
         let content = rtrim_chars(&tokens[prev_index].content, b" \t").to_vec();
         tokens.ensure_whitespace_at_index(prev_index, 0, &content);
     }
-    if u.end_index + 1 >= tokens.count() {
-        return;
-    }
-    let Some(next_index) = tokens.get_non_empty_sibling(u.end_index, 1) else {
+    // upstream returns separately for no token after the statement and for only empty ones
+    let next = if u.end_index + 1 < tokens.count() {
+        tokens.get_non_empty_sibling(u.end_index, 1)
+    } else {
+        None
+    };
+    let Some(next_index) = next else {
         return;
     };
     if tokens[next_index].is_whitespace(None) {

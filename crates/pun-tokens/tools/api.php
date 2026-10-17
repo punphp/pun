@@ -61,6 +61,7 @@ function op(Tokens &$t, array $o) {
         case 'insertSlices': $s = []; foreach ($x[0] as $i => $l) { $s[(int) $i] = toks($l); } $t->insertSlices($s); return null;
         case 'emptyAt': return $t->isEmptyAt($x[0]);
         case 'clearAt': $t->clearAt($x[0]); return null;
+        case 'clearMerge': $t->clearTokenAndMergeSurroundingWhitespace($x[0]); return null;
         case 'set': $t[$x[0]] = tok($x[1]); return null;
         case 'overrideRange': $t->overrideRange($x[0], $x[1], toks($x[2])); return null;
         case 'removeLeadingWs': $t->removeLeadingWhitespace($x[0], $x[1] ?? null); return null;

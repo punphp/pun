@@ -98,7 +98,7 @@ fn find_includies(tokens: &Tokens) -> Vec<Includy> {
         }
     }
     // krsort
-    includies.sort_by(|a, b| b.begin.cmp(&a.begin));
+    includies.sort_by_key(|a| std::cmp::Reverse(a.begin));
     includies
 }
 

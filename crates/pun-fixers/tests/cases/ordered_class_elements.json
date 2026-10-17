@@ -19,5 +19,12 @@
         },
         "input": "<?php\nclass C {\n    public function a() {}\n    use T;\n}\n",
         "expected": "<?php\nclass C {\n    public function a() {}\n    use T;\n}\n"
+    },
+    {
+        "fixer": "ordered_class_elements",
+        "config": {
+            "pun_nope": 1
+        },
+        "error": "[ordered_class_elements] Invalid configuration: The option \"pun_nope\" does not exist. Defined options are: \"case_sensitive\", \"order\", \"sort_algorithm\"."
     }
 ]

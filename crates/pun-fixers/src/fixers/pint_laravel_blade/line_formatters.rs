@@ -1,5 +1,6 @@
 //! Ports of Pint's line-based Prettier post-formatters: `StripSensitiveLeadingBlankLines`,
 //! `JoinDanglingCloseBracket`, `JoinDanglingOpenBracket`, `DedentHuggedTerminator`, `CollapseShortSlots`.
+#![allow(clippy::needless_range_loop, reason = "ports Pint's index loops over `$lines` as written")]
 use super::php::{join_lines, lines, ltrim, rtrim, strpos, trim};
 use crate::analyzers::preg::RawPreg;
 
