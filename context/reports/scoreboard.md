@@ -172,9 +172,9 @@ is check-only, in a scratch copy with the project's `vendor/`.
 | project | files | rector-ported | rector-full | pun | mago | count (ported / full / pun / mago) | pun vs ported | pun vs full | pun vs mago |
 |---|---:|---:|---:|---:|---:|---|---:|---:|---:|
 | pinkary | 342 | 2.27 s, 951 MB | 12.38 s, 2538 MB | 0.04 s, 14 MB | 0.04 s, 44 MB | 0 / 0 / 0 / 446 | 54x, 70x mem | 293x, 186x mem | 0.89x, 3.2x mem |
-| laravel-framework | 3027 | 37.68 s, 2528 MB | 85.40 s, 4440 MB | 0.12 s, 85 MB | 0.23 s, 227 MB | 9 / 7 / 9 / 24431 | 312x, 30x mem | 707x, 52x mem | 1.9x, 2.7x mem |
+| laravel-framework | 3027 | 37.68 s, 2528 MB | 85.40 s, 4440 MB | 0.09 s, 82 MB | 0.23 s, 227 MB | 9 / 7 / 9 / 24431 | 412x, 31x mem | 933x, 54x mem | 2.5x, 2.8x mem |
 
-- With the same two rules, Pun is 54-312x faster than Rector and uses 30-70x less memory, and both find the same 9
+- With the same two rules, Pun is 54-412x faster than Rector and uses 31-70x less memory, and both find the same 9
   files on laravel-framework. These rules are cheap, so the ratio shrinks as heavier rules are ported.
 - laravel-framework's rector-full is 3 single-run calls (90.2, 83.8 and 85.4 s): one call of 4 runs would not fit
   in a 10-minute slot.
@@ -187,10 +187,12 @@ output of all 3,376 corpus files (`examples/dump`), and `fix_dir` against `recto
 (`diff -r` empty on both projects). bench.py polls every 20 ms, which hides most of a 70 ms run, so each change is
 also timed with 30 plain spawn-and-wait runs (median; "precise" below).
 
-| project | before (bench.py) | after (bench.py) | before (precise) | after (precise) |
-|---|---:|---:|---:|---:|
-| pinkary | 45.2 ms, 14.4 MB | 44.3 ms, 13.2 MB | 10.2 ms, 14.2 MB | 9.6 ms, 13.7 MB |
-| laravel-framework | 108.4 ms, 83.5 MB | 102.0 ms, 81.8 MB | 80.9 ms, 84.0 MB | 67.0 ms, 82.8 MB |
+| round | project | before (bench.py) | after (bench.py) | before (precise) | after (precise) |
+|---|---|---:|---:|---:|---:|
+| 1 | pinkary | 45.2 ms, 14.4 MB | 44.3 ms, 13.2 MB | 10.2 ms, 14.2 MB | 9.6 ms, 13.7 MB |
+| 1 | laravel-framework | 108.4 ms, 83.5 MB | 102.0 ms, 81.8 MB | 80.9 ms, 84.0 MB | 67.0 ms, 82.8 MB |
+| 2 | pinkary | 44.0 ms, 13.8 MB | 44.4 ms, 13.8 MB | 9.5 ms, 13.7 MB | 7.5 ms, 13.3 MB |
+| 2 | laravel-framework | 100.5 ms, 82.4 MB | 91.5 ms, 81.6 MB | 66.2 ms, 82.5 MB | 53.2 ms, 85.7 MB |
 
 - round 1: the walk writes every report into one list and tags it with its rule ID, instead of a list per node
   drained into the results per rule, which cost an allocation check and a drain on each of ~2.4M nodes. wall -8%
@@ -204,3 +206,18 @@ also timed with 30 plain spawn-and-wait runs (median; "precise" below).
   parser (about 70% of user time), the tree walk (Mago's `visit_children` on every node, about 25%), and file opens
   (most of the system time). Peak memory is the Mago arenas of the files parsed at the same time; a reused
   per-thread arena did not change wall time and raised peak memory by 9 MB, so it was dropped.
+- round 2: `examples/check` (the bench's driver) walks the directories on its worker threads: one stack holds the
+  directories still to list and the files still to check, so checking starts with the first directory instead of
+  after a single-threaded walk of the whole tree, and an entry's type comes from the directory listing instead of a
+  `stat` per entry. The walk alone took 15.7 ms of laravel-framework's 66 ms (9.6 ms without the `stat`s). wall -20%
+  precise on both projects (-9% bench.py on laravel-framework; pinkary's 9.5 ms run sits under bench.py's 44 ms
+  floor), rss +4% on laravel-framework (the threads start parsing at once; a FIFO stack was +14%) and -3% on
+  pinkary (bench.py: -1% and 0%). The engine is unchanged: `check` problems and `fix` output are byte-identical.
+- round 2, no change: the engine itself has nothing over 3% left. Single-thread over laravel-framework's sources in
+  memory, Mago's parse is 89 ms, parse plus the walk 127 ms, and the full `check` with both rules 127 ms, so the
+  rules cost under 1%. The walk (29%) is Mago's `visit_children` on 5.2M nodes; skipping the 1.1M nodes of kinds
+  that never have children made it slower (93 vs 78 ms over pre-parsed trees). Opening files is the largest system
+  cost (25% of samples, `open` itself): `openat` on a held directory handle and more threads (12, 16, 24) did not
+  change wall time. Peak memory is Mago's arenas: the 462 KB `ValidationValidatorTest.php` takes a 26 MB arena
+  (39k 376-byte allocations make 14.7 MB), so one thread alone peaks at 36 MB; only a change in Mago's parser
+  would cut it.
