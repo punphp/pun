@@ -149,21 +149,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 ### Step 1. The new names and config (plan/config.md Build 1-8)
 
-| Work | Status |
-| --- | --- |
-| migrate 1 follow-up: a migrated `.php-cs-fixer.php` project still gets Pint's built-in format skips (storage, build, node_modules, bootstrap/cache), which PHP-CS-Fixer's Finder doesn't apply; decide whether format drops them for a PHP-CS-Fixer project | todo |
-| config follow-up (pun-config): lib.rs `options()` lines 398-406 (true/false and non-table branches for lint/analyse rule values) look unreachable since config 3; delete or cover them | todo |
-| scripts follow-up: `scripts/coverage.sh <crate>` rewrites the whole generated table in context/reports/COVERAGE.md and drops other crates' rows; update only the named rows | todo |
-| migrate 1 follow-up: read `.php-cs-fixer.php` statically (no system PHP), replacing crates/pun-cli/src/php_cs_fixer_rules.php | todo |
-| config 1 follow-up: bring rules.md §1-§2 and §5 examples up to the new IDs (they still use names like `lint.no-loose-comparison`) | todo |
-| config 1 follow-up: decide whether `@pun-ignore-file` keeps accepting the short `group/name` form (§4 Q2); accepted today | todo |
-| config 3 follow-up: decide whether every config error exits 2 like the unported-rule error (config 6 keeps the others at 1) | todo |
-| config 3 follow-up: switch the no-config message to "No pun.toml found. Run `pun migrate`, or `pun init` for a new project." once `pun init` lands | todo |
-| config 8 follow-up: mapping.toml maps PHPStan parameters (`checkUnionTypes`, nullables, explicit/implicit mixed) to `[analyse] union-types = true` and similar keys that pun.toml's `[analyse]` lacks; add the switches to the schema or point them at the analyse preset that turns them on | todo |
-| config 8 follow-up: `pun explain --format json` for agents and the docs generator (not in the plan yet) | todo |
-| config 4 follow-up: `pun explain <rule>` lists a format rule's options from `pun_config::options::rule_options` (Pun name, type, values, null spelling) | todo |
-| config 4 follow-up: scripts/check-rule-mapping.py checks the `[options]` tables too (rule IDs exist, kebab-case names, known types) | todo |
-| config 4 follow-up: docs: generate a per-rule option reference page from mapping.toml's `[options]` tables | todo |
+Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 **Gate:** the 7-project corpus still gives 0 differing files with `pun migrate` + `pun check --fix`, and
 `scripts/check-rule-mapping.py` passes on the new names.
