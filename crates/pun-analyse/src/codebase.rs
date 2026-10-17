@@ -18,7 +18,7 @@ use mago_prelude::Prelude;
 use mago_syntax::parser::parse_file;
 use rayon::prelude::*;
 
-use crate::Project;
+use crate::{Project, autoload};
 
 /// PHPStan's unprefixed classes and functions (scripts/export-phpstan-api-stub.php): PHPStan always has them loaded.
 const PHPSTAN_API: &[u8] = include_bytes!("../data/phpstan-api.php");
@@ -44,22 +44,21 @@ pub fn read(path: &Path, file_type: FileType) -> Option<File> {
     ))
 }
 
-/// Scans `file` into `metadata`, then resets `arena`, so one arena serves many files.
-fn scan(arena: &mut LocalArena, metadata: &mut CodebaseMetadata, file: &File, version: PHPVersion) {
-    {
+/// Scans `file`, then resets `arena`, so one arena serves many files.
+fn scan(arena: &mut LocalArena, file: &File, version: PHPVersion) -> CodebaseMetadata {
+    let scanned = {
         let arena = &*arena;
         let program = parse_file(arena, file);
         let names = NameResolver::new(arena).resolve(program);
         // ponytail: Mago's scanner trips a debug assertion on some hints (an empty TUnion::from_vec, debug builds
         // only); the file's symbols are then unknown
-        let scanned = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             scan_program(arena, file, program, &names, version)
-        }));
-        if let Ok(scanned) = scanned {
-            metadata.extend(scanned);
-        }
-    }
+        }))
+        .unwrap_or_default()
+    };
     arena.reset();
+    scanned
 }
 
 /// The prelude for one build: the first build of the process owns a fresh one (a single run keeps one copy, not a
@@ -99,8 +98,7 @@ fn build_prelude() -> (CodebaseMetadata, SymbolReferences) {
     (metadata, symbol_references)
 }
 
-/// Files scanned by one task: small enough that the threads finish together, large enough that merging the
-/// chunks stays cheap.
+/// Files scanned by one task: small enough that the threads finish together.
 const CHUNK: usize = 32;
 
 /// The analysed files as the scan read them, by path, for the rules to walk without reading them again.
@@ -114,47 +112,86 @@ pub fn build(project: &Project) -> CodebaseMetadata {
 pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
     let version = php_version(project.php_version);
     let mut seen = HashSet::new();
-    let files: Vec<_> = project
+    let mut files: Vec<_> = project
         .analysed
         .iter()
         .map(|p| (p, FileType::Host))
         .chain(project.scanned.iter().map(|p| (p, FileType::Vendored)))
         .filter(|(p, _)| seen.insert(*p))
         .collect();
-    // Scanning is most of the time (every vendored file): in chunks across the threads, merged in file order, while
-    // the prelude is built and PHPStan's 8.4 reflection of built-in classes (symbols::class(), which the rules read)
-    // is loaded, rather than by the first file that asks while the others wait.
+    // psr-4 and psr-0 files after them, scanned once a scanned file names their class (a file below two directories
+    // is one file with two classes)
+    let eager = files.len();
+    let mut at: HashMap<&PathBuf, usize> = HashMap::new();
+    let mut classes = Vec::new();
+    for a in &project.autoloaded {
+        if seen.contains(&a.path) && !at.contains_key(&a.path) {
+            continue;
+        }
+        let i = *at.entry(&a.path).or_insert_with(|| {
+            files.push((&a.path, FileType::Vendored));
+            files.len() - 1
+        });
+        classes.push((i, a));
+    }
+    let index = autoload::Index::new(classes.into_iter());
+    // Scanning is most of the time (the vendored files): in rounds, each the psr-4 and psr-0 files the previous one
+    // named, in chunks across the threads, merged in file order, while the prelude is built and PHPStan's 8.4
+    // reflection of built-in classes (symbols::class(), which the rules read) is loaded, rather than by the first file
+    // that asks while the others wait.
     let php84 = || pun_phpstan::symbols::symbols(pun_phpstan::symbols::PhpVersion::Php84);
-    let (((mut metadata, mut references), _), chunks) = rayon::join(
+    let (((mut metadata, mut references), _), (scanned, sources, api)) = rayon::join(
         || rayon::join(prelude, php84),
         || {
-            files
-                .par_chunks(CHUNK)
-                .map_init(LocalArena::new, |arena, chunk| {
-                    let mut metadata = CodebaseMetadata::default();
-                    let mut sources = Vec::new();
-                    let mut api = false;
-                    for &(path, file_type) in chunk {
-                        let Some(file) = read(path, file_type) else {
-                            continue;
-                        };
-                        scan(arena, &mut metadata, &file, version);
-                        if file_type == FileType::Host {
-                            api |= names_phpstan(&file.contents);
-                            sources.push((path.clone(), Arc::new(file)));
+            let mut loaded = vec![false; files.len()];
+            loaded[..eager].fill(true);
+            let mut round: Vec<usize> = (0..eager).collect();
+            let mut scanned = Vec::new();
+            let mut sources = Sources::new();
+            let mut api = false;
+            while !round.is_empty() {
+                let size = (round.len() / (rayon::current_num_threads() * 4)).clamp(1, CHUNK);
+                let chunks: Vec<_> = round
+                    .par_chunks(size)
+                    .map_init(LocalArena::new, |arena, chunk| {
+                        let mut metadata = CodebaseMetadata::default();
+                        let mut sources = Vec::new();
+                        let mut wanted = Vec::new();
+                        for &i in chunk {
+                            let (path, file_type) = files[i];
+                            let Some(file) = read(path, file_type) else {
+                                continue;
+                            };
+                            metadata.extend(scan(arena, &file, version));
+                            index.wanted(&file.contents, &mut wanted);
+                            wanted.retain(|&w| !loaded[w]);
+                            if file_type == FileType::Host {
+                                sources.push((path.clone(), Arc::new(file)));
+                            }
                         }
+                        (metadata, sources, wanted)
+                    })
+                    .collect();
+                round.clear();
+                for (chunk, files, wanted) in chunks {
+                    scanned.push(chunk);
+                    for (path, file) in files {
+                        api |= names_phpstan(&file.contents);
+                        sources.insert(path, file);
                     }
-                    (metadata, sources, api)
-                })
-                .collect::<Vec<_>>()
+                    round.extend(wanted);
+                }
+                round.sort_unstable();
+                round.dedup();
+                for &i in &round {
+                    loaded[i] = true;
+                }
+            }
+            (scanned, sources, api)
         },
     );
-    let mut sources = Sources::new();
-    let mut api = false;
-    for (chunk, files, uses_api) in chunks {
+    for chunk in scanned {
         metadata.extend(chunk);
-        sources.extend(files);
-        api |= uses_api;
     }
     if api {
         let stub = File::new(
@@ -163,7 +200,7 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
             None,
             Cow::Borrowed(PHPSTAN_API),
         );
-        scan(&mut LocalArena::new(), &mut metadata, &stub, version);
+        metadata.extend(scan(&mut LocalArena::new(), &stub, version));
     }
     populate_codebase_parallel(
         &mut metadata,

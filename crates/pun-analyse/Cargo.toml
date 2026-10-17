@@ -26,3 +26,4 @@ mago-span.workspace = true
 mago-syntax.workspace = true
 serde_json.workspace = true
 rayon.workspace = true
+foldhash.workspace = true

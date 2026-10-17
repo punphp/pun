@@ -1,6 +1,7 @@
 //! `pun analyse` (Phase 2, M2.3): PHPStan 2.2.7's rules, level by level, on Mago's parser, name resolution and
 //! codex. Errors carry PHPStan's identifier and message so baselines and `ignoreErrors` keep matching.
 
+mod autoload;
 mod codebase;
 mod laravel;
 mod mago;
@@ -42,6 +43,7 @@ pub fn run(project: &Project) -> Vec<Error> {
         .analysed
         .iter()
         .chain(&project.scanned)
+        .chain(project.autoloaded.iter().map(|a| &a.path))
         .map(|p| {
             (
                 mago_database::file::FileId::new(display(p).as_bytes()),

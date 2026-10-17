@@ -2,6 +2,8 @@
     "packages": [
         {"name": "acme/pkg", "version": "1.0.0", "version_normalized": "1.0.0.0", "type": "library", "install-path": "../acme/pkg", "autoload": {"psr-4": {"Acme\\Pkg\\": "src/"}}},
         {"name": "acme/str", "version": "1.0.0", "version_normalized": "1.0.0.0", "type": "library", "install-path": "../acme/str", "autoload": {"psr-0": {"Acme_": ""}, "classmap": ["Mapped_In_Package.php"]}},
+        {"name": "acme/deep", "version": "1.0.0", "version_normalized": "1.0.0.0", "type": "library", "install-path": "../acme/deep", "autoload": {"psr-4": {"Acme\\Deep\\": "src/"}}},
+        {"name": "acme/two", "version": "1.0.0", "version_normalized": "1.0.0.0", "type": "library", "install-path": "../acme/two", "autoload": {"psr-4": {"Acme\\Two\\": "src/", "Acme\\Two\\Extra\\": "src/Other/", "Acme\\Two\\Gone\\": "missing/"}}},
         {"name": "acme/files", "version": "1.0.0", "version_normalized": "1.0.0.0", "type": "library", "install-path": "../acme/files", "autoload": {"files": ["functions.php"]}}
     ]
 }

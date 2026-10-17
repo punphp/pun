@@ -63,6 +63,15 @@ fn php_version_range_and_ignore_flags() {
     check("phpstan-min");
 }
 
+/// Classes of Composer's psr-4 directories, which Pun scans once an analysed or scanned file names them: through
+/// another psr-4 file only, a namespace alias in another case, a group use, a name relative to an imported namespace or
+/// to the file's own namespace, a class string with `\\`, the second of two directories, and a file excludePaths
+/// names (PHPStan's PSR locators ignore it). A psr-4 directory that does not exist holds nothing.
+#[test]
+fn autoloaded_classes_found_on_demand() {
+    check("phpstan-autoload");
+}
+
 /// A symlinked directory and a symlinked file under `paths` are walked and analysed, as PHPStan's finder follows
 /// links (expected: its run on tests/fixtures/symlinks).
 #[test]

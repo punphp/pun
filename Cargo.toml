@@ -50,6 +50,8 @@ agent-detector = { version = "=0.2.1", default-features = false }
 pun-problem = { path = "crates/pun-problem", package = "punphp-problem" }
 mago-syntax-core = "=1.57.0"
 pun-lint = { path = "crates/pun-lint", package = "punphp-lint" }
+# pun-analyse: the on-demand autoload index
+foldhash = "0.2"
 
 [profile.release]
 lto = "thin"

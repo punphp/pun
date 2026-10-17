@@ -18,6 +18,9 @@ pub struct Project {
     pub analysed: Vec<PathBuf>,
     /// Symbols only.
     pub scanned: Vec<PathBuf>,
+    /// Composer's psr-4 and psr-0 files: symbols only, scanned when an analysed or scanned file names the class their
+    /// path holds, as PHPStan's PSR locators find classes on demand.
+    pub autoloaded: Vec<Autoloaded>,
     /// `PHP_VERSION_ID`.
     pub php_version: u32,
     /// `reportUnmatchedIgnoredErrors`.
@@ -80,7 +83,9 @@ impl Project {
         for dir in strings(params, "scanDirectories") {
             scanned.extend(php_files(Path::new(dir), &extensions));
         }
-        scanned.extend(composer_files(root, &extensions));
+        // PHPStan's PSR locators look classes up whatever excludePaths says
+        let (composer, autoloaded) = composer_files(root, &extensions);
+        scanned.extend(composer);
         scanned.retain(|f| !both.is_excluded(&display(f)));
         let php_version = params
             .get_str("phpVersion")
@@ -103,6 +108,7 @@ impl Project {
         Project {
             analysed,
             scanned,
+            autoloaded,
             php_version,
             report_unmatched_ignores,
             report_ignores_without_comments: flag("reportIgnoresWithoutComments"),
@@ -115,6 +121,7 @@ impl Project {
         Project {
             analysed,
             scanned,
+            autoloaded: Vec::new(),
             php_version: RUNTIME_PHP_VERSION,
             report_unmatched_ignores: true,
             report_ignores_without_comments: false,
@@ -123,35 +130,48 @@ impl Project {
     }
 }
 
+/// A psr-4 or psr-0 file and the class its path holds.
+pub struct Autoloaded {
+    pub path: PathBuf,
+    /// The class name, ASCII-lowercased: the psr-4 prefix and the path below the directory, or for psr-0 the path
+    /// alone, with `\` for `/` and without the extension.
+    pub class: Vec<u8>,
+    /// psr-0, where `_` in the class's own name is a directory too.
+    pub psr0: bool,
+}
+
 /// Where Composer's autoloader finds files, in its order.
 enum Source {
-    /// A psr-4 or psr-0 directory.
-    Dir(PathBuf),
+    /// A psr-4 directory and its namespace prefix.
+    Psr4(String, PathBuf),
+    /// A psr-0 directory.
+    Psr0(PathBuf),
     /// A classmap entry: a directory or a file.
     Classmap(PathBuf),
     /// A `files` entry.
     File(PathBuf),
 }
 
-/// Files Composer can autoload: psr-4 and psr-0 directories, classmap entries and `files`, of the root package
-/// (with autoload-dev) and every installed package.
-fn composer_files(root: &Path, extensions: &[String]) -> Vec<PathBuf> {
+/// Files Composer can autoload, of the root package (with autoload-dev) and every installed package: classmap entries
+/// and `files`, then the psr-4 and psr-0 directories' files, by class.
+fn composer_files(root: &Path, extensions: &[String]) -> (Vec<PathBuf>, Vec<Autoloaded>) {
     let read =
         |p: PathBuf| -> Option<Json> { serde_json::from_slice(&std::fs::read(p).ok()?).ok() };
     let mut sources = Vec::new();
     let mut add = |base: &Path, autoload: &Json| {
         for kind in ["psr-4", "psr-0"] {
-            for dirs in autoload[kind]
-                .as_object()
-                .into_iter()
-                .flat_map(|m| m.values())
-            {
+            for (prefix, dirs) in autoload[kind].as_object().into_iter().flatten() {
                 let dirs = match dirs {
                     Json::Array(a) => a.iter().filter_map(Json::as_str).collect(),
                     d => d.as_str().into_iter().collect::<Vec<_>>(),
                 };
                 for d in dirs {
-                    sources.push(Source::Dir(base.join(d)));
+                    let dir = base.join(d);
+                    sources.push(if kind == "psr-4" {
+                        Source::Psr4(prefix.clone(), dir)
+                    } else {
+                        Source::Psr0(dir)
+                    });
                 }
             }
         }
@@ -186,14 +206,24 @@ fn composer_files(root: &Path, extensions: &[String]) -> Vec<PathBuf> {
         }
     }
     // every package's directories are walked at once
-    let mut out: Vec<PathBuf> = sources
+    let found: Vec<(Vec<PathBuf>, Vec<Autoloaded>)> = sources
         .into_par_iter()
-        .flat_map_iter(|source| match source {
-            Source::Dir(d) => php_files(&d, extensions),
-            Source::Classmap(p) if p.is_dir() => php_files(&p, extensions),
-            Source::Classmap(p) | Source::File(p) => vec![p],
+        .map(|source| match source {
+            Source::Psr4(prefix, d) => (
+                Vec::new(),
+                by_class(&d, prefix.as_bytes(), false, extensions),
+            ),
+            Source::Psr0(d) => (Vec::new(), by_class(&d, b"", true, extensions)),
+            Source::Classmap(p) if p.is_dir() => (php_files(&p, extensions), Vec::new()),
+            Source::Classmap(p) | Source::File(p) => (vec![p], Vec::new()),
         })
         .collect();
+    let mut out = Vec::new();
+    let mut autoloaded = Vec::new();
+    for (files, classes) in found {
+        out.extend(files);
+        autoloaded.extend(classes);
+    }
     // Composer's own classes, in every generated classmap (PHPStan finds it through the project's autoloader)
     // ponytail: other classes only the runtime autoloader knows (autoload_classmap.php) aren't scanned
     for class in ["InstalledVersions.php", "ClassLoader.php"] {
@@ -202,5 +232,23 @@ fn composer_files(root: &Path, extensions: &[String]) -> Vec<PathBuf> {
             out.push(path);
         }
     }
-    out
+    (out, autoloaded)
+}
+
+/// The files below a psr-4 or psr-0 directory, each with the class its path holds.
+fn by_class(dir: &Path, prefix: &[u8], psr0: bool, extensions: &[String]) -> Vec<Autoloaded> {
+    php_files(dir, extensions)
+        .into_iter()
+        .map(|path| {
+            let mut class = prefix.to_ascii_lowercase();
+            let rel = path.strip_prefix(dir).unwrap_or(&path).with_extension("");
+            for (i, part) in rel.iter().enumerate() {
+                if i > 0 {
+                    class.push(b'\\');
+                }
+                class.extend(part.as_encoded_bytes().iter().map(u8::to_ascii_lowercase));
+            }
+            Autoloaded { path, class, psr0 }
+        })
+        .collect()
 }

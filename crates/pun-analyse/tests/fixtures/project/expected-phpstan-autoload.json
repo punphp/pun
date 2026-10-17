@@ -1,0 +1,26 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "autoload/Main.php",
+   "line": 14,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method Acme\\Deep\\Child::notDeclared().",
+   "tip": null
+  },
+  {
+   "file": "autoload/Main.php",
+   "line": 27,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Autoload\\Missing not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "autoload/Same.php",
+   "line": 8,
+   "identifier": "class.notFound",
+   "message": "Instantiated class Acme\\Deep\\NoSuchSibling not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

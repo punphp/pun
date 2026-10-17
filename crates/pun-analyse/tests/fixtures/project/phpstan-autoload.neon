@@ -1,0 +1,5 @@
+parameters:
+    level: 0
+    paths: [autoload]
+    excludePaths:
+        analyseAndScan: [vendor/acme/deep/src/Excluded.php]

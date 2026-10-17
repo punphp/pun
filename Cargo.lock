@@ -1405,6 +1405,7 @@ dependencies = [
 name = "punphp-analyse"
 version = "0.0.1"
 dependencies = [
+ "foldhash",
  "mago-allocator",
  "mago-analyzer",
  "mago-codex",
