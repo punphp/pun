@@ -50,7 +50,7 @@ type switches and the enabled rules); `pun analyse` doesn't use it yet.
 ```toml
 [analyse]
 preset = "recommended"          # basic | essential | recommended | strict | max
-exclude = ["tests/**"]          # added to [files] exclude, for analyse only
+exclude = ["tests/**"]          # added to [files] exclude; not analysed and not scanned for symbols
 baseline = "pun-baseline.toml"
 
 [analyse.rules]
@@ -126,7 +126,8 @@ descriptions; 54 level-0 identifiers; parallel scanning. The steps, after config
    *Done when* each preset reports the same errors as its PHPStan level band on the corpus.
 6. **Larastan built in** (§8): the Laravel knowledge (models, casts, relations, builder, collections, facades,
    container, helpers, macros), its 20 rules, then the seven improvements.
-7. **Pest built in** (§9), with the PHPUnit typing it needs.
+7. **Pest built in** (§9), with the PHPUnit typing it needs. **After 1.0** (Pushpak, 2026-10-18): until then test
+   files are analysed as plain PHP; `[analyse] exclude` globs leave them out entirely.
 8. **Result cache:** a warm run re-checks only changed files and the files that depend on them.
 9. **`pun migrate` for phpstan.neon** (migrate.md Build 5). Coverage back to 100% throughout.
 
@@ -224,7 +225,7 @@ plugins) is planned for later, not now (Pushpak).
 **In the core for 1.0** (assistant's call within Pushpak's brief: "super Laravel support and Pest support", no
 bloat):
 - **Laravel**, all of §8.
-- **Pest**, as the official `pestphp/pest-plugin-phpstan` does: `$this` inside test closures is the test case,
+- **Pest** (after 1.0, Pushpak 2026-10-18), as the official `pestphp/pest-plugin-phpstan` does: `$this` inside test closures is the test case,
   `expect()` chains are typed, and `uses()` / `pest()->extend()` classes are known. Pest runs on PHPUnit, so the small
   part of phpstan-phpunit that Pest needs comes with it: `createMock()` returning `MockObject&Foo`, and assertions
   narrowing types. This also covers plain PHPUnit tests.

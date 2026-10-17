@@ -37,8 +37,7 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 - **1.0 ships everything at once.** Nothing is published or tagged until `pun format`, `pun analyse`, `pun lint` and
   `pun migrate` all exist and meet the 1.0 bar below. The site presents that release as 1.0. Publishing needs Pushpak's go.
 - **The 1.0 bar:** every lint rule for 1.0 (428 of 703) native; every PHPStan core rule (327 Rule classes) native; Larastan built in with seven
-  improvements (typed config, routes, views, translations, env keys, Inertia pages, fresh model data); Pest built in
-  with the PHPUnit typing it needs; deprecation-rules and strict-rules as plain rules; a result cache. Speed and memory
+  improvements (typed config, routes, views, translations, env keys, Inertia pages, fresh model data); deprecation-rules and strict-rules as plain rules; a result cache. Speed and memory
   come first in every command.
 - **Brand:** "Sticker Pop", the sprinting elephant in sneakers; Fredoka for text, Martian Mono for code (design/).
 
@@ -46,7 +45,7 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 
 - **One job each.** `pun format`: how the code looks (layout, casing, spelling; never changes behaviour, never deletes
   code). `pun lint [--fix]`: a better way to write it (Rector, PHP-CS-Fixer's risky fixers, Mago's lint rules, version
-  upgrades). `pun analyse` / `analyze`: is it wrong (PHPStan, Larastan, Pest's plugin; never edits). `pun check [--fix]`:
+  upgrades). `pun analyse` / `analyze`: is it wrong (PHPStan, Larastan; never edits). `pun check [--fix]`:
   lint fixes, then format, then analyse, in one pass; the command for CI and agents.
 - **Placement:** a rule that only changes layout is format; any other edit, or a report one file can decide, is lint;
   anything that needs types or other files is analyse (plan/rules.md §1). PHPStan core and Larastan identifiers stay in
@@ -114,6 +113,10 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 - **After 1.0** (2026-10-18): the PHPUnit and Pest lint rules (rector-phpunit, Pest's Rector plugin and the
   `phpunit`/`pest` groups) and the lint rules in no set wait until after 1.0, except those Pint's presets need or that
   are already ported. 275 of the 703 lint rules carry `later = true` in mapping.toml; 428 are the 1.0 bar.
+- **Analyse without Pest or PHPUnit support for 1.0** (2026-10-18): test files are analysed like any other PHP code,
+  with no Pest plugin or PHPUnit typing (analyse 7 moves after 1.0). A project that doesn't want them analysed
+  excludes them by glob: `[analyse] exclude = ["tests/**"]` removes matching files from both the analysis and the
+  symbol scan (PHPStan's `excludePaths.analyseAndScan`); vendor/ is still read for symbols.
 - **No upgrades below the floor** (2026-10-17): Rector's php-5.3 to php-8.3 upgrade sets and Laravel upgrade sets
   before 12 are not supported; php-8.4/8.5 and laravel-12/13 are. Pun targets PHP 8.4+ projects.
 
@@ -126,7 +129,7 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
   No php-parser printer port. Parity is `format(pun lint --fix)` = `format(rector process)`. Mago's rules become normal
   lint rules and `--mago` goes away.
 - **Analyse** (assistant's call, delegated): Mago's analyser for inference, one Pun rule per PHPStan rule in the
-  mapping, messages may be reworded, Laravel and Pest as built-in Mago plugins. Built-in symbols come from PHPStan's
+  mapping, messages may be reworded, Laravel as a built-in Mago plugin (Pest after 1.0). Built-in symbols come from PHPStan's
   reflection (crates/pun-phpstan/data/symbols.json). Baselines are Pun's own (`pun analyse --generate-baseline`,
   pun-baseline.toml); migrate never copies a PHPStan baseline. A result cache re-checks only changed files and their
   dependents.
@@ -237,7 +240,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
-| analyse 1-2: `pun analyse` command, `[analyse]`, presets, output; Pun baseline | todo |
+| analyse 1-2: `pun analyse` command, `[analyse]` (its `exclude` globs skip both analysis and symbol scan), presets, output; Pun baseline | todo |
 | analyse 1-2 follow-up (from config 3): read `Config.analyse` (preset, switches, rules, baseline, paths) in `pun analyse` | todo |
 | analyse 1-2 follow-up (from config 7): `pun analyse` discovers files with `pun_workspace::files(cfg, Some(Command::Analyse), ..)` | todo |
 | analyse (needs Pushpak): decide how Mago issues map to Pun rules; forwarding mapped codes gives 226 false errors on Pinkary at level 0, reports/analyse-spike.md proposes Pun checks that read Mago's types, using a Mago issue directly only where its table says yes | todo |
@@ -251,9 +254,9 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse (from mapping): re-link `fixed_by` from analyse/types/missing-param-type, missing-property-type and missing-return-type to the split lint type rules where one fits | todo |
 | analyse (from mapping): consider dedicated home rules for identifiers that many classes emit (class.notFound, missingType.iterableValue), so migrated ignores read naturally | todo |
 | analyse (from mapping): revisit the Symfony and phpstanApi exclusions if the scope widens | todo |
-| analyse 6-7: Larastan with the seven improvements; Pest | todo |
+| analyse 6: Larastan with the seven improvements | todo |
 | analyse 6 follow-up: Larastan knowledge Pinkary needs first: auth() return types (53 Mago issues), Http/facade responses (7), container/Storage (6), plus model accessors and relations | todo |
-| analyse: enable Larastan/Pest from `pun_config::composer::Composer` and gate on `Locked.semver` | todo |
+| analyse: enable Larastan from `pun_config::composer::Composer` and gate on `Locked.semver` | todo |
 | analyse 8: result cache | todo |
 | migrate 5-6: phpstan.neon; offer the closest preset | todo |
 
@@ -318,6 +321,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf analyse 2 follow-up: Mago's populate (15-20% of analyse wall) and its parser memory are upstream Mago costs; raise them upstream rather than in pun-analyse | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
+| later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
 
 ## 4. Open questions
 

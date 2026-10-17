@@ -61,7 +61,7 @@ rules = { "laravel/no-debug-calls" = "off" }
 
 [analyse]
 preset = "recommended"                # basic | essential | recommended | strict | max
-exclude = ["tests/**"]                # added to [files] exclude, for analyse only
+exclude = ["tests/**"]                # added to [files] exclude; not analysed and not scanned for symbols
 baseline = "pun-baseline.toml"
 
 [analyse.rules]
