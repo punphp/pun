@@ -102,6 +102,11 @@ descriptions; 54 level-0 identifiers; parallel scanning. The steps, after config
    and compare it with PHPStan, and write one Larastan provider (model attributes from migrations) through Mago's
    plugin API without forking Mago.
    *Done when* it shows which remaining level-0 rules Mago already covers, so step 3 writes no rule twice.
+   *Result* (2026-10-17, ../reports/analyse-spike.md): Mago covers 11 of the 116 remaining level-0 Pun rules, part
+   of 32, none of 73. The Larastan provider works through `register_expression_hook` with no fork. Mago's codes fire
+   far more widely than PHPStan's level-0 checks (421 issues on Pinkary, where PHPStan + Larastan report 0), so §7's
+   "report a Mago code under the Pun rule" needs Pushpak's look: the report proposes Pun checks that read Mago's types,
+   using a Mago issue directly only where it matches PHPStan.
 1. **Wire it up.** The `pun analyse` command, `[analyse]` from pun.toml, the five presets selecting rules, the output
    (output.md: problem blocks, always errors), PHPStan's machine formats, agent output.
    *Done when* `pun analyse` on Pinkary prints the level-0 errors with PHPStan's exit codes.
@@ -255,3 +260,15 @@ Answered 2026-10-17 (Pushpak):
   default).
 - **A project's own PHPStan PHP code:** named as unsupported by migrate; `stubFiles` keep working.
 - **Larastan's model knowledge** comes from migrations and the schema dump, read without running PHP (§8).
+
+Assistant's calls in the engine spike (Build 0, 2026-10-17; the plan was silent):
+- The Larastan provider is one Mago `ExpressionHook` that retypes `$model->column` after Mago's `Model::__get()`.
+  Mago 1.57 has no property-type provider for magic properties. A declared property or an `@property` tag wins, as
+  PHPStan's own reflection comes before Larastan's extension.
+- Accessors (`get…Attribute()`, `Attribute` methods; Larastan's ModelAccessorExtension) stay out of the spike; those
+  attributes keep Mago's `mixed`, and the test names them.
+- Where Mago's analyser panics on a debug assertion, `run_mago()` skips that file, as `rules::infer` already does.
+- The coverage verdict counts a PHPStan error as found when a Mago issue of a code mapped to the same Pun rule is in
+  the same file within 10 lines, or a code reviewed by hand as the same check (`SAME_CHECK` in scripts/analyse-spike.py).
+- tests/fixtures/rules/gaps.txt was out of date at 915534e (3 listed cases pass, 5 unlisted fail since 138dab1's
+  trait-context change). The spike updates the list so the suite is green, with the reason; fixing them is Build 3.

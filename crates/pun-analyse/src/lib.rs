@@ -2,6 +2,8 @@
 //! codex. Errors carry PHPStan's identifier and message so baselines and `ignoreErrors` keep matching.
 
 mod codebase;
+mod laravel;
+mod mago;
 mod project;
 mod rules;
 
@@ -9,6 +11,8 @@ use std::path::{Path, PathBuf};
 
 use pun_phpstan::config::Resolved;
 
+pub use laravel::Laravel;
+pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
 pub use project::Project;
 
 /// One reported error, as `phpstan analyse --error-format=json` prints it.

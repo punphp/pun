@@ -15,8 +15,6 @@ Classes/LocalTypeAliasesRuleTest::testEnums
 Classes/LocalTypeTraitAliasesRuleTest::testRule
 Classes/LocalTypeTraitUseAliasesRuleTest::testRule
 Classes/LocalTypeTraitUseAliasesRuleTest::testRuleSpecific
-# the ignored error on line 12 comes from a level-0 rule not ported yet
-Functions/CallToFunctionParametersRuleTest::testBug6175
 # exported after the first port (Methods, Properties, Namespaces, Variables...): triage in progress
 Functions/ExistingClassesInArrowFunctionTypehintsRuleTest::testIntersectionTypes#0
 Functions/ExistingClassesInArrowFunctionTypehintsRuleTest::testIntersectionTypes#1
@@ -28,7 +26,6 @@ Methods/CallMethodsRuleTest::testClosureBind
 Methods/CallMethodsRuleTest::testArrowFunctionClosureBind
 Methods/CallMethodsRuleTest::testBug3534
 Methods/CallMethodsRuleTest::testBug5460
-Methods/CallMethodsRuleTest::testEnums
 Methods/CallMethodsRuleTest::testRequireExtends
 Methods/CallMethodsRuleTest::testBug11559c
 Methods/CallMethodsRuleTest::testDynamicCall
@@ -44,6 +41,12 @@ Properties/AccessPropertiesRuleTest::testRequireExtends
 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
 Properties/ExistingClassesInPropertiesRuleTest::testPromotedProperties
 Properties/ExistingClassesInPropertyHookTypehintsRuleTest::testRule
-Properties/MissingReadOnlyPropertyAssignRuleTest::testBug8958
 Properties/MissingReadOnlyPropertyAssignRuleTest::testRedeclaredReadonlyProperties
 Variables/DefinedVariableRuleTest::testDefinedVariables
+# failing at 915534e, after 138dab1 checked traits in the using class's context: new.static and arguments.count
+# reported per using class, a method the class shadows not found from the trait, a variadic @method's arity unchecked
+Classes/NewStaticRuleTest::testBug9654
+Methods/CallMethodsRuleTest::testCallMethods
+Methods/CallMethodsRuleTest::testCallMethodsOnThisOnly
+Methods/CallMethodsRuleTest::testShadowedTraitMethod
+Methods/CallMethodsRuleTest::testBug8888

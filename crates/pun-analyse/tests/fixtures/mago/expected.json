@@ -1,0 +1,32 @@
+[
+ {
+  "line": 16,
+  "code": "invalid-return-statement",
+  "message": "Invalid return type for function `MagoIssues\\size`: expected `string`, but found `int`."
+ },
+ {
+  "line": 21,
+  "code": "non-existent-function",
+  "message": "Could not find definition for function `MagoIssues\\undefined_function` (also tried as `undefined_function` in a broader scope)."
+ },
+ {
+  "line": 22,
+  "code": "non-existent-class",
+  "message": "Class `MagoIssues\\Missing` not found."
+ },
+ {
+  "line": 23,
+  "code": "mixed-argument",
+  "message": "The first value for `echo` is too general."
+ },
+ {
+  "line": 23,
+  "code": "undefined-variable",
+  "message": "Undefined variable: `$undefined`."
+ },
+ {
+  "line": 24,
+  "code": "non-existent-method",
+  "message": "Method `nope` does not exist on type `MagoIssues\\Box`."
+ }
+]
