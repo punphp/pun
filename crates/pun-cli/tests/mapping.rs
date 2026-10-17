@@ -7,7 +7,10 @@ use std::collections::BTreeSet;
 fn mapping_covers_every_fixer_and_nothing_else() {
     let pint: serde_json::Map<String, serde_json::Value> =
         serde_json::from_str(include_str!("../src/gitlab_fixers.json")).unwrap();
-    let native: BTreeSet<String> = pun_fixers::all().iter().map(|f| f.name().to_string()).collect();
+    let native: BTreeSet<String> = pun_fixers::all()
+        .iter()
+        .map(|f| f.name().to_string())
+        .collect();
     let known: BTreeSet<String> = pint.keys().cloned().chain(native.iter().cloned()).collect();
     let mapped: BTreeSet<String> = pun_config::fixer_entries().keys().cloned().collect();
     assert_eq!(

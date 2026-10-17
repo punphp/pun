@@ -135,7 +135,11 @@ fn migrate(dir: &Path) {
         .current_dir(dir)
         .output()
         .unwrap();
-    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
 }
 
 struct Cx {
@@ -461,7 +465,9 @@ fn error_boxes_like_pint() {
     cx.same(&t, &["-qv", "app/Missing.php"], PLAIN);
     let h = run(&[&PUN[..], &["--help"]].concat(), &cx.dir, PLAIN);
     assert!(
-        h.code == Some(0) && h.stdout.starts_with("Fix (or check) the layout of the given paths"),
+        h.code == Some(0)
+            && h.stdout
+                .starts_with("Fix (or check) the layout of the given paths"),
         "{h:?}"
     );
     // Unreadable / unwritable files abort the run (kept outside the snapshotted tree).

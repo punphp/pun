@@ -58,15 +58,14 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
         if !root.exists() {
             return Ok(0);
         }
-        let files = match load_config(&a, &root)
-            .and_then(|cfg| pun_workspace::discover(&cfg, &a.paths))
-        {
-            Ok(f) => f,
-            Err(e) => {
-                report(Err(e));
-                continue;
-            }
-        };
+        let files =
+            match load_config(&a, &root).and_then(|cfg| pun_workspace::discover(&cfg, &a.paths)) {
+                Ok(f) => f,
+                Err(e) => {
+                    report(Err(e));
+                    continue;
+                }
+            };
         let targets: Vec<PathBuf> = files
             .into_iter()
             .filter(|f| changed.contains(f) && done.get(f).is_none_or(|&h| hash(f) != Some(h)))

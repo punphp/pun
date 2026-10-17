@@ -35,7 +35,9 @@ pun lint [--fix]        # the [lint] rules (today: PHP-CS-Fixer's risky fixers)
 ```
 
 **Config.** Pun reads only `pun.toml`. Without one every command stops with "No pun.toml found. Run `pun migrate`."
-(unless `--preset` or `--no-config` is given). `pun migrate` reads pint.json the way Pint does (`extend`, `--config`,
+(unless `--preset` or `--no-config` is given: both explicitly ask for a built-in preset, `--no-config` for laravel, as in
+Pint). Rule names in `pun.toml` are Pun IDs; earlier Pun names still work, and a PHP-CS-Fixer name gets an error naming
+its Pun ID. `pun migrate` reads pint.json the way Pint does (`extend`, `--config`,
 `--preset`) or, without one, a `.php-cs-fixer(.dist).php` through PHP-CS-Fixer itself, and writes a `pun.toml` with
 Pun rule IDs ([docs/RULES.md](docs/RULES.md)): the preset plus what differs from it under `[format.rules]`, and the
 risky fixers under `[lint.rules]` with `fix = "apply"`, since they changed behaviour unattended. It rewrites

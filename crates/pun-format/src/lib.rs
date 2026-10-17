@@ -693,7 +693,10 @@ mod tests {
             fixer_annotation::skipped(&a),
             strs(&["x", "single_quote", "no_alias_functions"])
         );
-        assert_eq!(found(b"<?php\n// @pun-ignore-file\tformat.x\n").unwrap(), vec![]);
+        assert_eq!(
+            found(b"<?php\n// @pun-ignore-file\tformat.x\n").unwrap(),
+            vec![]
+        );
 
         // Runner::fixFile skips the annotated rules; the others still run.
         let p =

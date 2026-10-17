@@ -129,7 +129,11 @@ fn run(
             .current_dir(dir.join(sub))
             .output()
             .unwrap();
-        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        assert!(
+            out.status.success(),
+            "{}",
+            String::from_utf8_lossy(&out.stderr)
+        );
     }
     let mut c = Command::new(program[0]);
     c.args(&program[1..])
@@ -398,11 +402,24 @@ printf '{"preset":"empty","rules":{"array_syntax":true},"notName":["Keep.php"]}'
     let bad = &format!("{cfg}\nprintf 'not json' > bad.json");
     let r = cx.pint(bad, "", &["--config=bad.json"], b"");
     assert_eq!(r.code, Some(1));
-    assert!(r.stdout.contains("The configuration file [bad.json] is not valid JSON."), "{}", r.stdout);
-    let r = run(&[env!("CARGO_BIN_EXE_pun"), "migrate", "--config=bad.json"], bad, "", &[], b"", None);
+    assert!(
+        r.stdout
+            .contains("The configuration file [bad.json] is not valid JSON."),
+        "{}",
+        r.stdout
+    );
+    let r = run(
+        &[env!("CARGO_BIN_EXE_pun"), "migrate", "--config=bad.json"],
+        bad,
+        "",
+        &[],
+        b"",
+        None,
+    );
     assert_eq!(r.code, Some(1));
     assert!(
-        r.stderr.starts_with("pun: The configuration file [ROOT/bad.json] is not valid JSON."),
+        r.stderr
+            .starts_with("pun: The configuration file [ROOT/bad.json] is not valid JSON."),
         "{}",
         r.stderr
     );
