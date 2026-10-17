@@ -1,6 +1,6 @@
 # Component: analyse (`pun analyse`)
 
-Status: **under review with Pushpak** (opened 2026-10-17). This file is the plan for the analyser: what it is, how it
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". This file is the plan for the analyser: what it is, how it
 works today, what is left, and the questions we still have to settle. Answers go into "Decisions" below and into
 DECISIONS.md. PLAN.md C7 points here. Same shape as format.md and lint.md.
 
@@ -54,8 +54,8 @@ paths = ["app", "tests"]
 baseline = "pun-baseline.toml"
 
 [analyse.rules]
-"types/missing-iterable-value-type" = "off"      # oxlint-style levels, as in lint
-"undefined/method" = { level = "error", magic = true }   # PHPStan's checkMagicMethods as a rule option
+"types/missing-iterable-value-type" = "off"      # on or off only; no warn (decided)
+"undefined/method" = { magic = true }   # PHPStan's checkMagicMethods as a rule option
 ```
 
 - **No levels.** `pun migrate` expands a PHPStan level into the exact rules it ran, each with its options. In
@@ -263,4 +263,11 @@ Answered 2026-10-17 (Pushpak):
   Each includes the one below. The rules' `tier` field in mapping.toml moves to these five names with the rename.
 - **Q4 extensions:** no extension system now (later). Built in: Laravel (full, §9), Pest (with the PHPUnit part it
   needs), deprecation rules and strict-rules as plain rules (§10). Everything else is named as unsupported.
+- **All seven Larastan improvements (§9.3) ship in 1.0.**
+- **Analyse has no `warn`.** A problem analyse reports is an error; it never edits, so there is nothing softer to say.
+  A rule is either on or off: `[analyse.rules] "types/missing-iterable-value-type" = "off"`, or `true` with options
+  in a table. `off` stays because PHPStan users already turn rules off (by level or `ignoreErrors`), and migrate needs
+  it to keep a project's current rule set.
+- **Result cache before 1.0**, so a warm run re-checks only changed files and their dependents (Q8, assistant's
+  default).
 - **Q5 a project's own PHPStan PHP code:** named as unsupported by migrate; `stubFiles` keep working (follows from Q4).
