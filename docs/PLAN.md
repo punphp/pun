@@ -78,6 +78,26 @@ rules.mixed-argument = "off"
 
 The format part (`pint.json` to `[format]`, `@php-cs-fixer-ignore` rewrites) can ship now; `pun config --init` already writes `[format]`. The lint and analyse parts land with Phases 2 and 3.
 
+### Agent-optimised output (every command)
+
+Like [Laravel PAO](https://laravel.com/blog/introducing-laravel-pao-cleaner-output-for-ai-agents), every `pun` command detects when an AI agent runs it. Humans see unchanged output; agents get compact, structured results.
+
+- **Detection.** One shared function ports laravel/agent-detector v2's env list (`CLAUDECODE`, `CLAUDE_CODE`, `CURSOR_AGENT`, `CODEX_SANDBOX`/`CODEX_THREAD_ID`, `GEMINI_CLI`, `AMP_CURRENT_THREAD_ID`, `OPENCODE`, `COPILOT_CLI`, `AUGMENT_AGENT`, `CLINE_ACTIVE`, `AI_AGENT`, and the rest), kept in sync with upstream. `pun format` already does this for Pint's agent reporter. Overrides: `PUN_AGENT=1|0` and `--agent` / `--no-agent`. PAO's `PAO_FORCE` and `PAO_DISABLE` are honoured too.
+- **Output under an agent.**
+  - One JSON object on stdout: `{"tool":"pun","command":"analyse","result":"fail","summary":{...},"items":[...]}`.
+  - Each item has `file`, `line`, `rule` (Pun rule ID), `message`, plus `fix` / `fixable` and `diff` where they apply.
+  - No ANSI, progress bars, dot leaders or boxes.
+  - Long lists are capped, with a `"truncated": N` count and a hint to pass `-v` for the rest.
+  - Errors are JSON too: `{"result":"error","message":...}`.
+- **Per command.**
+  - `format`: changed files, plus the rules applied per file.
+  - `lint`: rule, location, safe or unsafe fix, and the diff.
+  - `analyse`: error count plus per-file errors, the shape PAO normalises PHPStan into.
+  - `migrate`: the plan, unsupported rules, and files rewritten.
+  - `test` (later): counts, durations, failures with assertion, file and line.
+- **Exit codes don't change** under an agent, so agents can still rely on them.
+- Implemented once in pun-cli and shared by every subcommand, with a test per command that runs the binary with `CLAUDECODE=1` and asserts the JSON shape.
+
 ## Decisions for you to confirm
 
 I made every other call myself. These change the shape of the project. Row 2 is now settled (config migration); the other four still need your call.
