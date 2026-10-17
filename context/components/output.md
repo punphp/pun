@@ -99,3 +99,7 @@ shapes), and agent mode (compact `path:line:col rule message` lines, PLAN.md C4)
 
 From earlier rounds (Pushpak, 2026-10-17): format.md §10 approved; only lint `error` fails (oxlint); analyse findings
 are always errors.
+
+Answered 2026-10-17 (Pushpak):
+
+- **Q1: problem blocks with code by default**; `--concise` prints one line per problem.
