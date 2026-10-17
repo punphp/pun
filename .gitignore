@@ -4,3 +4,4 @@
 /.oracle
 !/corpus/manifest.toml
 *.profraw
+target-*/

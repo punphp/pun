@@ -4,18 +4,9 @@ Pun is one fast Rust binary for the PHP toolchain. It replaces Pint, PHP-CS-Fixe
 
 **Why.** A Laravel project runs four or five PHP tools on every commit. Each one is slow (Pint takes 190 s on laravel/framework), has its own config format, rule names and ignore comments, overlaps with the others, and prints for humans while coding agents pay for every token. Rust tools like Mago are fast but not drop-in, so switching costs a reformat diff and a new baseline, and teams stay on the slow tools.
 
-**How.**
-- **Exact parity first, so migration day changes nothing.** Every command is checked against pinned versions of the real tools, their own test suites, real projects and a fuzzer.
-- **Then a better model.** `pun migrate` moves a project onto one `pun.toml`, with every rule in exactly one place, short Pun rule names mapped to their upstream originals, and no levels.
-- **Built on Mago's crates, Laravel first, PHP 8.4+.**
+**How.** Exact parity first, so migration day changes nothing. Every command is checked against pinned versions of the real tools, their own test suites, real projects and a fuzzer. Then a better model. `pun migrate` moves a project onto one `pun.toml`, with every rule in exactly one place, short Pun rule names mapped to their upstream originals, and no levels. Built on Mago's crates, Laravel first, PHP 8.4+.
 
-**Commands.**
-- `pun format`: layout only, never changes behaviour.
-- `pun lint [--fix]`: code rules, from Rector and Mago.
-- `pun analyse`: type errors, from PHPStan and Larastan.
-- `pun check [--fix]`: all three in one pass.
-- `pun migrate`: move a project onto `pun.toml`.
-- `pun lsp`: editor server, with PHPantom plus Pun's rules.
+**Commands.** `pun format`: layout only, never changes behaviour; `pun lint [--fix]`: code rules, from Rector and Mago; `pun analyse`: type errors, from PHPStan and Larastan; `pun check [--fix]`: all three in one pass; `pun migrate`: move a project onto `pun.toml`; `pun lsp`: editor server, with PHPantom plus Pun's rules.
 
 Under a coding agent, every command switches to compact `path:line:col rule message` output.
 
