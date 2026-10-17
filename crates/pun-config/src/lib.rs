@@ -1,6 +1,7 @@
 //! Resolved configuration from pun.toml: a Pint preset plus `[format]` / `[lint]` rules under Pun rule IDs
 //! (rules/mapping.toml), gated on composer.json. pint.json and `.php-cs-fixer.php` are only read by `pun migrate`.
 
+pub mod composer;
 mod constraint;
 pub mod migrate;
 
@@ -9,8 +10,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
-
-pub use constraint::allows_below;
 
 /// Presets from the pinned Pint (`resources/presets/*.php`), in declaration order. laravel comes from the
 /// harness export (`rules_as_configured`); the others are plain rule maps exported the same way.
@@ -458,22 +457,18 @@ fn resolve_subset(
 
 /// Refuse projects whose `require.php` admits any PHP below 8.4.
 fn check_composer(root: &Path, sources: &mut Vec<PathBuf>) -> Result<()> {
-    let path = root.join("composer.json");
-    let Ok(bytes) = std::fs::read(&path) else {
-        return Ok(());
-    };
-    let v: Value =
-        serde_json::from_slice(&bytes).with_context(|| format!("invalid {}", path.display()))?;
-    sources.push(path);
-    let Some(c) = v.pointer("/require/php").and_then(Value::as_str) else {
+    let Some(php) = composer::php_require(root, sources)? else {
         return Ok(());
     };
     // PUN_IGNORE_PHP_CONSTRAINT=1: harness-only escape hatch so pre-8.4 corpora (laravel/framework...) can be diffed.
-    if allows_below(c, (8, 4, 0)).map_err(anyhow::Error::msg)?
+    if php
+        .lowest
+        .is_some_and(|l| l < composer::Version::from((8, 4, 0)))
         && std::env::var_os("PUN_IGNORE_PHP_CONSTRAINT").is_none()
     {
         bail!(
-            "composer.json requires PHP \"{c}\", which allows PHP < 8.4. Pun only supports projects on PHP 8.4+; raise the constraint (for example \"^8.4\") or keep using Pint."
+            "composer.json requires PHP \"{}\", which allows PHP < 8.4. Pun only supports projects on PHP 8.4+; raise the constraint (for example \"^8.4\") or keep using Pint.",
+            php.constraint
         );
     }
     Ok(())

@@ -1,6 +1,6 @@
-//! Composer version constraints, just enough to answer "can this project run on PHP < 8.4?".
+//! Composer version constraints, just enough to find the lowest version a constraint admits.
 
-type V = (u64, u64, u64);
+pub type V = (u64, u64, u64);
 
 #[derive(Clone, Copy)]
 struct Range {
@@ -8,9 +8,10 @@ struct Range {
     hi: Option<(V, bool)>, // (version, inclusive)
 }
 
-/// True if any version below `bound` satisfies the composer constraint.
-pub fn allows_below(constraint: &str, bound: V) -> Result<bool, String> {
-    let mut any = false;
+/// The lowest version the composer constraint admits, or `None` when it admits none (`>=8.4 <8.3`).
+/// `|` and `||` are OR, spaces and commas are AND, as in composer/semver's `VersionParser::parseConstraints`.
+pub fn lowest(constraint: &str) -> Result<Option<V>, String> {
+    let mut low: Option<V> = None;
     for alt in constraint
         .split('|')
         .map(str::trim)
@@ -21,9 +22,11 @@ pub fn allows_below(constraint: &str, bound: V) -> Result<bool, String> {
             None => true,
             Some((hi, inc)) => r.lo < hi || (inc && r.lo == hi),
         };
-        any |= nonempty && r.lo < bound;
+        if nonempty {
+            low = Some(low.map_or(r.lo, |l| l.min(r.lo)));
+        }
     }
-    Ok(any)
+    Ok(low)
 }
 
 fn conjunction(s: &str) -> Result<Range, String> {
@@ -176,7 +179,11 @@ fn parse(s: &str) -> Result<(u64, Option<u64>, Option<u64>), String> {
 
 #[cfg(test)]
 mod tests {
-    use super::allows_below;
+    use super::{V, lowest};
+
+    fn allows_below(c: &str, b: V) -> Result<bool, String> {
+        Ok(lowest(c)?.is_some_and(|l| l < b))
+    }
 
     /// Expected values from composer/semver (Pint's vendor): `parseConstraints($c)->matches(parseConstraints('<8.4.0.0-dev'))`.
     #[test]

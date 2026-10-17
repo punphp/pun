@@ -174,3 +174,14 @@ Build 9, the shared problem type (crates/pun-problem, assistant's calls, 2026-10
   edits are out of range, split a UTF-8 character or overlap each other is reported as invalid and never applies.
 - **Levels serialize as `error` / `warning`**, safety as `safe` / `unsafe`; the rule ID is the full
   `<command>/<group>/<name>` string and the path is relative to the project root.
+
+Build 5 (wf/composer, 2026-10-17), assistant's calls where the plan is silent:
+- `pun_config::composer::detect(root)` returns the `require.php` constraint with its lowest admitted version
+  (`php_version()` gives it as `major.minor` for `[php] version`) and the locked Laravel (`laravel/framework`), Pest
+  (`pestphp/pest`) and PHPUnit (`phpunit/phpunit`) versions, each marked `dev` when it comes from `packages-dev`.
+- Only composer.lock turns an ecosystem on: without a lock none is detected (no fallback to composer.json's
+  `require`). `laravel/laravel` and `illuminate/*` are not the framework.
+- A locked branch (`dev-main`, `3.x-dev`) keeps its raw version with no numbers; a pre-release (`5.0.0-RC1`) counts as
+  its release. A constraint that admits nothing (`>=8.4 <8.3`) gives no PHP version. `>8.4` gives 8.4.1.
+- The PHP 8.4 gate in `load` now uses the same reader (`constraint::lowest`); `allows_below` is gone. Wiring the
+  detected version into `[php] version` and the ecosystems into lint/analyse is left to the schema step (Build 3).
