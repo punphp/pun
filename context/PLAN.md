@@ -169,7 +169,6 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| lint spike (lint.md Build 1): one safe and one unsafe Rector rule as text edits on Mago's tree, fix loop, then format; both pass Rector's fixtures through `format(pun lint --fix)` | doing (workflow, wf/lint-spike) |
 | analyse spike (analyse.md Build 0): mago-analyzer on Pinkary compared with PHPStan, and one Larastan provider through Mago's plugin API without forking Mago; says which remaining level-0 rules Mago already covers | doing (workflow, wf/analyse-spike) |
 
 ### Step 2. The shared output (plan/output.md Build 1-6)
@@ -208,7 +207,11 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| lint 1-2: the engine from the spike; levels, sets, overrides at run time | blocked (lint spike) |
+| lint 1-2: the engine from the spike; levels, sets, overrides at run time | todo |
+| lint 1-2 follow-up: run files in parallel, a cache keyed like format's, and a `pun lint` command on `pun_lint::Linter` | todo |
+| pun-lint: replace `syntax::same_code` with a structural node comparator (Rector's NodeComparator), shared by rules | todo |
+| pun-lint: name resolution for rules that need resolved names (mago-names or analyse's index) | todo |
+| pun-lint: rename the two sample rule IDs (`lint/style/prefer-compound-assignment`, `lint/php-8.0/no-unused-catch-variable`) once config 1 lands the groups | todo |
 | lint: the engine uses `pun_problem::{Problem, apply_fixes}` for diagnostics and the fix loop | todo |
 | lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
 | lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | todo |
@@ -262,6 +265,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
 | design/components/DocsPage/preview.html: remove the 'Needs PHP for those rules' / `--native-only` callout | todo |
 | wf tooling: link crates/pun-fixers/node_modules into worktrees (blade_like_pint needs it) | todo |
+| wf tooling: shared target dirs let a punphp-fixers build-script output from another worktree go stale; use per-worktree OUT paths or rerun-if-changed on the manifest dir | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 
 ## 4. Open questions
