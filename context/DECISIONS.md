@@ -92,5 +92,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 - **pun lsp ships last** (2026-10-17): no LSP work now. When it comes: embed PHPantom in-process, routed at the
   JSON-RPC level (reference/lsp.md).
 - **FrankenPHP:** Pun links libphp itself first (Rust SAPI); FrankenPHP is linked in later. Assistant's call, delegated.
+- **Analyse builds on Mago's analyser** (2026-10-17, components/analyse.md §8; assistant's call, delegated): one Pun rule per
+  PHPStan rule in the mapping, messages may be reworded, Laravel is a built-in Mago plugin. The baseline is its own
+  feature (`pun analyse --generate-baseline`, pun-baseline.toml); `pun migrate` never copies a PHPStan baseline.
 - **Embedded PHP (pun-php):** deferred; system `php` stands in for delegate mode and the oracle.
 - **Tests:** 100% line coverage per crate, no tautological tests, expected values from the real tools (AGENTS.md).

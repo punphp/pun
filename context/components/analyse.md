@@ -140,6 +140,49 @@ Left, in order (pending the answers below):
 8. **Result cache.** Should a warm `pun analyse` re-check only changed files and their dependents before 1.0?
    *Recommend: yes. Speed and memory are a priority, and this is where analysers spend most of their time.*
 
+## 8. How PHPStan and Mago analyse, and what Pun builds on (2026-10-17)
+
+**PHPStan.**
+- `NodeScopeResolver` walks each file's syntax tree (nikic/php-parser) and carries a `Scope`, which holds the type of
+  every variable at that point.
+- `TypeSpecifier` narrows types after `if`, `instanceof`, `is_*` and assertions.
+- Rules are small classes that get a node plus the scope and return errors with an identifier. Levels just choose
+  which rules run and how strictly types are compared.
+- Extensions (dynamic return types, property and method reflection) are how Larastan teaches it Laravel's magic.
+- Baselines are a NEON list of (message, identifier, path, count).
+
+**Mago's analyser** (mago-analyzer 1.57, about 106k lines of Rust, modelled on Psalm/Hakana):
+- It walks the same kind of tree with a block context holding variable types.
+- A reconciler with formula algebra does narrowing, as Psalm does. Generics and templates come from PHPDoc.
+- It reports issues by code.
+- A plugin system has providers (function, method and property return types, assertions, throws) and hooks (calls,
+  expressions, statements, declarations). It already ships library plugins for the stdlib, PSL and PSR container.
+- mago-reporting has a baseline: strict (exact lines) or loose (counts per file, code and message, the default), with
+  pruning of outdated entries.
+
+**Pun's choice (assistant's call, delegated by Pushpak).** Build analyse on Mago's analyser, not a port of PHPStan's
+inference.
+- Pushpak relaxed the two things that needed a PHPStan port: messages can be reworded, and migrate doesn't carry
+  baselines over. What must hold is one Pun rule for every PHPStan rule, and that already holds in rules/mapping.toml
+  (every one of the 559 identifiers maps to a Pun rule, or is listed as dropped or unsupported with a reason).
+- Mago's inference, narrowing and generics exist today. A port of PHPStan's would be the largest single piece of
+  work in Pun.
+- **Rules:** where a Mago issue code is the same check as a PHPStan rule (190 codes), Pun reports it under the Pun
+  rule. The other PHPStan rules are written as Pun checks that read Mago's inferred types, the same way the 54
+  level-0 rules already read Mago's codex.
+- **Laravel** (Larastan's knowledge) is a built-in Mago plugin in Pun. Providers give return and property types for
+  models, relations, facades, the container and config; hooks add the Laravel-specific checks.
+- **Parity test:** PHPStan's own rule fixtures and the corpus, compared on file, line and Pun rule, not message text.
+  Differences go in gaps.txt, as today.
+- **Baseline:** `pun analyse --generate-baseline` writes pun-baseline.toml on mago-reporting's baseline, loose by
+  default. `pun migrate` does not copy phpstan-baseline.neon; it tells the user to generate a new one.
+  `ignoreErrors` in phpstan.neon is config, not a baseline, so migrate still converts it to Pun rule IDs.
+- **Kept from pun-phpstan:** the NEON reader, includes and `ignoreErrors` handling (for migrate), and
+  `@phpstan-ignore` comment parsing (migrate rewrites those comments). Its PHPStan type model and `describe()` are no
+  longer needed for messages.
+- **Risk:** Mago infers differently from PHPStan in edge cases, so some PHPStan errors will be missing or extra. The
+  parity test measures this, and each gap gets fixed in a Pun check or a Mago plugin.
+
 ## Decisions
 
 From earlier rounds (2026-10-17, Pushpak):
@@ -147,3 +190,10 @@ From earlier rounds (2026-10-17, Pushpak):
 - No levels. Named presets for new projects; migrate writes exact rules and offers the closest preset.
 - Laravel, Pest and PHPUnit turn on automatically from composer.lock.
 - Analyse never edits files; `pun check` runs it after lint and format.
+
+Answered 2026-10-17 (Pushpak):
+- **Q1 engine: assistant's call.** The requirement is one-to-one rule compatibility, so that every PHPStan rule has a Pun
+  rule in the mapping. The choice: Mago's analyser (§8).
+- **Q2 messages:** Pun may reword them.
+- **Q6 baseline:** its own feature (`pun analyse --generate-baseline`). Migrate never copies a PHPStan baseline.
+- **Presets:** named presets instead of levels; how many (four or more) is still open.
