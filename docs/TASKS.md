@@ -45,6 +45,10 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 Phases 2–7 (lint/PHPStan, refactor/Rector, migrate, install/Composer, run/FrankenPHP, test/Pest): todo.
 Embedded static libphp (pun-php): deferred, system `php` stands in.
 
+### Decisions
+
+- PHPStan-compatible analysis is `pun analyse` (alias `analyze`), matching `phpstan analyse`. `pun lint` is Mago's lint rules plus syntax checking. The plan's "pun lint" Phase 2 means `pun analyse`.
+
 ### Open questions for the user
 
 - Drop the `--engine=pun` (Mago formatter) path? ("remove unnecessary things about formatter")
