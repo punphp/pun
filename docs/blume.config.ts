@@ -1,6 +1,6 @@
 import { defineConfig } from "blume";
 
-// The Pun docs site and homepage. Run from this folder: `npm install`, then `npm run dev` / `npm run build`.
+// The Pun docs site and homepage. Run from this folder: `bun install`, then `bun run dev` / `bun run build`.
 // Content lives in content/ (routes under /docs); the homepage is pages/index.astro.
 // Internal notes (plan, tasks, rules design) live in ../context/, not here.
 export default defineConfig({

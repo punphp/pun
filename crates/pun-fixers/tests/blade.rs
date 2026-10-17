@@ -1,6 +1,6 @@
 //! Pint's own Blade golden files (tests/blade, copied from Pint's tests/Fixtures/blade-formatting): every input
 //! formats to its `.expected`, and every `.expected` stays as is (Pint's Blade tests: `pint --blade`, preset laravel).
-//! The ignorables are left untouched by the fixer itself. Needs `npm install` in crates/pun-fixers (prettier and
+//! The ignorables are left untouched by the fixer itself. Needs `bun install` in crates/pun-fixers (prettier and
 //! its plugins at the versions in package.json): the worker resolves them from the working directory, like Pint.
 //! The preset's other fixers run too, so a PUN_FIXERS_ONLY build must include them.
 extern crate punphp_fixers as pun_fixers;
