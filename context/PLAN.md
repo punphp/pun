@@ -151,7 +151,9 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | doing (workflow, wf/migrate-format) |
+| migrate 1 follow-up: a migrated `.php-cs-fixer.php` project still gets Pint's built-in format skips (storage, build, node_modules, bootstrap/cache), which PHP-CS-Fixer's Finder doesn't apply; decide whether format drops them for a PHP-CS-Fixer project | todo |
+| config follow-up (pun-config): lib.rs `options()` lines 398-406 (true/false and non-table branches for lint/analyse rule values) look unreachable since config 3; delete or cover them | todo |
+| scripts follow-up: `scripts/coverage.sh <crate>` rewrites the whole generated table in context/reports/COVERAGE.md and drops other crates' rows; update only the named rows | todo |
 | migrate 1 follow-up: read `.php-cs-fixer.php` statically (no system PHP), replacing crates/pun-cli/src/php_cs_fixer_rules.php | todo |
 | config 1 follow-up: bring rules.md §1-§2 and §5 examples up to the new IDs (they still use names like `lint.no-loose-comparison`) | todo |
 | config 1 follow-up: decide whether `@pun-ignore-file` keeps accepting the short `group/name` form (§4 Q2); accepted today | todo |
@@ -199,6 +201,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | format: delete or re-justify `pun_ignored` and the delegate-mode comments in crates/pun-format/src/lib.rs (unused since config 6) | todo |
 | format: pun-fixers build.rs adds rerun-if-changed on the source dir (generated fixers.rs in a shared target dir can point at another worktree) | todo |
 | migrate 2-3: unsupported list with the PR request, the new output | todo |
+| migrate 2-3 follow-up: docs/content/docs/commands/migrate.mdx still promises baseline conversion and workflow switching, which plan/migrate.md §3 rules out; fix with migrate 2-3 | todo |
 | init 1-3, 5: detect, the three questions, write pun.toml, non-interactive | todo |
 | init 4: one `pun check`, then offer fix and baseline | blocked (analyse 1-2) |
 
