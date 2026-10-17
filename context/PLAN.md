@@ -176,9 +176,10 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| output 1-2: renderer and the look (brand colours, fallbacks, NO_COLOR, links) | doing (workflow, wf/renderer) |
-| output: the renderer takes `pun_problem::{Problem, LineIndex}` for problem blocks and code frames | todo |
 | output 3: `pun format` on the renderer; Pint's human screen removed | todo |
+| output 3 follow-up: wire `--color` (`render::ColorChoice`), `Renderer` and `Spinner` into `pun format`; remove the `dead_code`/`unused_imports` allow in crates/pun-cli/src/render/mod.rs | todo |
+| output follow-up: add a warning text token to design/tokens.json that reads on a light ground (light terminals fall back to SGR 33) | todo |
+| output follow-up: decide the rule docs base URL so `Renderer::with_rule_docs` links rule IDs (config 8's docs link from mapping.toml) | todo |
 | output 4-6: GitHub annotations, `pun check` grouped view, exit code 2 | todo |
 
 **Gate:** every human output sample in the plan files is pinned by a test; machine formats and exit codes still pass
@@ -255,6 +256,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | CI: one branch and PR per thread; rewrite AGENTS.md "Work with other agents" (§4 Q1) | todo |
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
 | scripts/coverage.sh: runs on macOS (no `flock`, no cargo-llvm-cov): make the lock optional or document the install | todo |
+| tests: crates/pun-cli/tests/agent.rs `git_selection` passes `-c commit.gpgsign=false` so it does not fail with global gpg signing | todo |
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
 | scripts/fuzz-parity.sh: drop the `PUN_PINT` passthrough and its comment (delegate mode removed) | todo |
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
