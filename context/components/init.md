@@ -69,3 +69,4 @@ Answered 2026-10-17 (Pushpak):
 
 - **Q1: old configs present → offer migrate** ("Found phpstan.neon. Migrate it instead? › yes"); yes runs `pun migrate`.
 - **Q2: pun.toml holds only the three choices**; presets carry the rules, `pun config` prints the resolved list.
+- **Q3: init runs one `pun check`** after writing pun.toml, then offers `--fix` and a baseline (interactive only).
