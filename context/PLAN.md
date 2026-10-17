@@ -169,7 +169,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| analyse spike (analyse.md Build 0): mago-analyzer on Pinkary compared with PHPStan, and one Larastan provider through Mago's plugin API without forking Mago; says which remaining level-0 rules Mago already covers | doing (workflow, wf/analyse-spike) |
+| analyse spike follow-up (pun-config): add as variants in rules/mapping.toml the Mago codes that make the same check but are mapped elsewhere (invalid-method-access, non-existent-property, invalid-property-write, incompatible-static-modifier, unimplemented-abstract-method, array-append-in-read-context, invalid-unset, extend-final-class, invalid-extend, non-existent-class-like, invalid-assignment, incompatible-property-hook-parameter-type); see reports/analyse-spike.md | request |
 
 ### Step 2. The shared output (plan/output.md Build 1-6)
 
@@ -225,9 +225,12 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | Work | Status |
 | --- | --- |
 | analyse 1-2: `pun analyse` command, `[analyse]`, presets, output; Pun baseline | todo |
-| analyse 3: finish level 0: ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | blocked (analyse spike); analyse agent stopped at 43d9857, trait-method and facade-alias WIP uncommitted |
+| analyse (needs Pushpak): decide how Mago issues map to Pun rules; forwarding mapped codes gives 226 false errors on Pinkary at level 0, reports/analyse-spike.md proposes Pun checks that read Mago's types, using a Mago issue directly only where its table says yes | todo |
+| analyse 3: finish level 0: ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | todo; analyse agent stopped at 43d9857, trait-method and facade-alias WIP uncommitted |
+| analyse 3 follow-up: fix the 5 gaps.txt cases that regressed with 138dab1's trait-context change (new.static and arguments.count reported per using class, shadowed trait method, variadic @method arity) | todo |
 | analyse 4-5: type inference; levels 1-10 as the five presets; strict-rules, deprecation rules | todo |
 | analyse 6-7: Larastan with the seven improvements; Pest | todo |
+| analyse 6 follow-up: Larastan knowledge Pinkary needs first: auth() return types (53 Mago issues), Http/facade responses (7), container/Storage (6), plus model accessors and relations | todo |
 | analyse: enable Larastan/Pest from `pun_config::composer::Composer` and gate on `Locked.semver` | todo |
 | analyse 8: result cache | todo |
 | migrate 5-6: phpstan.neon; offer the closest preset | todo |
