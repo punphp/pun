@@ -67,6 +67,8 @@ pub struct Class {
     pub constants: Vec<(String, String)>,
     /// by lowercase name
     pub methods: HashMap<String, Function>,
+    /// a `Traversable`'s iterable key and value types, over its own templates
+    pub iterable: Option<(String, String)>,
 }
 
 pub struct Symbols {
@@ -157,6 +159,7 @@ fn read_class(v: &Value) -> Class {
             .into_iter()
             .map(|(k, m)| (k.clone(), read_function(m)))
             .collect(),
+        iterable: v.get("iterable").map(|i| (string(&i[0]), string(&i[1]))),
     }
 }
 
@@ -179,16 +182,18 @@ fn load(version: PhpVersion) -> Symbols {
     };
     if version == PhpVersion::Php85 {
         for (name, f) in entries(&data["php85"]["functions"]) {
-            match f {
-                Value::Null => symbols.functions.remove(name),
-                f => symbols.functions.insert(name.clone(), read_function(f)),
-            };
+            // null: gone in 8.5
+            symbols.functions.remove(name);
+            if !f.is_null() {
+                symbols.functions.insert(name.clone(), read_function(f));
+            }
         }
         for (name, c) in entries(&data["php85"]["classes"]) {
-            match c {
-                Value::Null => symbols.classes.remove(name),
-                c => symbols.classes.insert(name.clone(), read_class(c)),
-            };
+            // null: gone in 8.5
+            symbols.classes.remove(name);
+            if !c.is_null() {
+                symbols.classes.insert(name.clone(), read_class(c));
+            }
         }
     }
     symbols
