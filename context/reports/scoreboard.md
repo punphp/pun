@@ -345,3 +345,18 @@ also timed with 30 plain spawn-and-wait runs (median; "precise" below).
   `open` costs 10.5 us per file on one thread and 15 us on three, whatever the flags. The corpus files'
   `com.apple.provenance` xattr cannot be removed (`xattr -d` leaves it), so the round 4 follow-up about it is
   still open.
+- round 6, no change: nothing over 3% is left in pun-lint. Before (and after): bench.py RUNS=10 pinkary 45.0 ms,
+  12.5 MB and laravel-framework 44.0 ms, 78.4 MB; precise laravel-framework 41.0-43.6 ms, 80-81.5 MB, pinkary
+  6.8 ms, 12.9 MB. Both bench.py times sit at its polling floor (20 ms sleeps), so only its memory column can move.
+  A 20-run profile of laravel-framework has the same split as round 5: `open` 17% of samples, Mago's parser 18%,
+  the walk 6%, and idle checkers waiting for sources 42%. Single-thread, `check` is 79% Mago's parser (lexer 15%,
+  moves of Mago's node values in `memmove` 5%) and 21% the walk. 5,800 page reclaims per run cover the 80 MB peak,
+  so the arenas reuse freed memory rather than fault in new pages. Tried, not kept:
+  - Sizing each file's arena up front (`LocalArena::with_chunk_size`, 16, 32, 64 or 128 times the source length)
+    instead of growing it from 256 bytes: wall time unchanged, rss +16 to +40 MB.
+
+  The largest fixed cost is outside pun-lint: Mago's `mago-database` depends on `notify`, whose FSEvents backend
+  links CoreFoundation and CoreServices into every binary. Loading them costs 1.0 ms and 4.1 MB (a hello-world
+  with the two frameworks: 1.9 to 2.9 ms, 1.7 to 5.8 MB), which is 15% of pinkary's 6.8 ms run and a third of its
+  12.5 MB. `-dead_strip_dylibs` does not drop them without LTO, and `pun` itself needs `notify` for `--watch`, so
+  removing them only from the bench's driver would flatter the bench and is not done.
