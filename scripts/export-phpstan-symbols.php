@@ -204,6 +204,8 @@ function dump(int $phpVersion, array &$typeStrings): array
             // name => [bound, default or null]
             'templates' => array_map(fn ($t) => $t instanceof PHPStan\Type\Generic\TemplateType ? [t($t->getBound()), $t->getDefault() !== null ? t($t->getDefault()) : null] : [t($t), null], $class->getTemplateTypeMap()->getTypes()),
             'cases' => $class->isEnum() ? array_keys($class->getEnumCases()) : [],
+            'interface' => $class->isInterface(),
+            'final' => $class->isFinalByKeyword(),
             'constants' => [],
             'methods' => [],
         ];
@@ -224,6 +226,166 @@ function dump(int $phpVersion, array &$typeStrings): array
     $GLOBALS['ctx'] = null;
 
     return ['functions' => $functions, 'constants' => $constants, 'classes' => $classes];
+}
+
+
+/*
+ * type-probes.json: hand-written type strings (not Pun's own extensions, which PHPStan doesn't read) for the resolver and type-system paths built-in signatures don't
+ * reach (written as PHPDoc in user code), resolved the same way. `php scripts/export-phpstan-symbols.php probes`
+ * rewrites only this file.
+ */
+const PROBES = [
+    // identifiers
+    'non-zero-int', 'enum-string', 'numeric', 'number', 'scalar', 'non-empty-lowercase-string', 'non-empty-uppercase-string',
+    'non-empty-literal-string', 'callable-object', 'callable-array', 'non-empty-list', 'truthy-string', 'double', 'boolean',
+    'integer', 'associative-array', 'never-return', 'noreturn', 'open-resource', 'interface-string', 'trait-string',
+    'callable-string', 'negative-int', 'non-positive-int', 'non-negative-int', 'literal-string', 'uppercase-string',
+    'iterable', 'object', 'void', 'never', 'self', 'static', '$this', 'Foo-bar', 'OCI-Lob', 'NOT_A_CONSTANT', 'Foo', '\\Countable',
+    'TRUE', 'PHP_SAPI', 'PHP_INT_MIN', 'INF', 'NAN', 'M_PI', 'PHP_FLOAT_EPSILON', 'PHP_EOL', 'E_ALL',
+    // generics
+    "array<'a', int>", 'array<1, int>', 'array<int, int, int>', 'array<float, int>', 'array<bool, int>', 'array<null, int>',
+    "array<'1', int>", 'array<array-key, int>', 'array<mixed, int>', 'array<int|string, int>', 'non-empty-array<int>',
+    'non-empty-array<string, int>', 'list<int, int>', 'non-empty-list<string>', 'iterable<int>', 'iterable<int, string>',
+    'iterable<int, string, bool>', 'class-string<Countable>', 'class-string<int>', 'class-string<mixed>',
+    'interface-string<Countable>', 'class-string<Countable|Traversable>', 'int<1, 3>', 'int<min, 5>', 'int<5, max>',
+    'int<foo, 5>', 'int<1, bar>', 'int<1>', 'int<3, 1>', 'int<2, 2>', 'int-mask<1, 2, 4>', 'int-mask<1, 4>', 'int-mask<0, 8>',
+    "int-mask<'a'>", 'int-mask-of<1|2>', 'int-mask-of<string>', 'int-mask-of<1, 2>', '__benevolent<int|string>', '__benevolent<int>',
+    '__benevolent<int, string>', 'Traversable<int>', 'Iterator<int, string>', 'IteratorAggregate<string>', 'Generator<int>',
+    'Generator<int, string>', 'Generator<int, string, bool, void>', 'ArrayIterator<int>', 'ArrayIterator<int, string>',
+    'ArrayObject<string>', 'SplObjectStorage<Countable, int>', 'Countable<int>', 'Foo<int>', 'WeakReference<stdClass>',
+    'int<1, 3>[]', 'ArrayAccess<int, string>', 'SplFixedArray<int>', 'DatePeriod', 'Closure<int>', 'int<1, 2, 3>',
+    // callables
+    'callable(int): void', 'callable(int=, string...): mixed', 'callable(int &$x): bool', 'Closure(int): string',
+    'Closure(int $a, string ...$b): (int|string)', 'Foo(int): void',
+    'callable(): callable(): int', 'callable(int|string): (int|false)', 'Closure', 'callable(): void|int', 'callable(Countable): int',
+    'callable(int): void|callable(string): void', 'callable(): int|callable(): string', 'callable(): mixed|Closure(): int',
+    'callable(int, int): int|callable(int): int', 'callable(int...): int|callable(int): int', 'callable&string', 'callable&object',
+    'callable&Countable', 'callable-string|Closure', 'callable|string', 'callable(): int|string',
+    // shapes
+    'array{a: int, b?: string}', 'array{int, string}', 'list{int, string}', 'non-empty-array{a?: int}', 'non-empty-list{0?: int}',
+    'non-empty-list{int}', 'array{a: int, ...}', 'array{a: int, ...<string, int>}', 'array{a: int, ...<int>}', 'list{int, ...<string>}',
+    'list{int, ...}', 'array{...<int>}', 'array{...<string, int>}', 'array{...}', 'list{...}', "array{'a b': int, \"c\": int, 'd\\'e': int, 'f\"g': int}",
+    'array{1: int, 3: int}', 'array{-1: int}', 'array{0: int, 2: int}', 'array{0?: int, 1?: int}', 'array{0: int, 1?: int, 2?: int}',
+    'array{a: int, a: string}', 'array{a: int, a?: string}', 'array{a?: int, a?: string}', 'array{int, a: string, int}',
+    'object{a: int, b?: string}', "object{'a': int}", 'array{}', 'list{}', 'array{0?: int}', 'array{a?: int}',
+    'array{a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9}', 'array{1, 2, 3, 4, 5, 6, 7, 8, 9}',
+    'array{a: int, ...<1|2, string>}', 'array{a: int, ...<\'a\'|\'b\', string>}', 'array{"x": int}', 'array{1.5: int}', 'array{_a1: int, a-b: int, \\a: int, 1a: int}',
+    // unions
+    'int|string[]', 'Traversable|string[]', 'array|int[]', 'iterable|int[]', 'list<int>|string[]', 'array{a: int}|int[]',
+    'ArrayIterator<int>|int[]', 'Countable|int[]', '(int|string)[]', 'int[]|string[]', '?int', 'int|null|false', '1|2|3', '1.5|2.0|1',
+    "'a'|'b'|string", 'true|false', 'true|bool', 'int<1, 3>|int<2, 5>', 'int<1, 3>|int<5, 7>', 'int<1, 3>|int<4, 7>', 'int<1, 3>|4',
+    'int<1, 3>|0', 'int<1, 3>|9', 'int|int<1, 3>', 'int<1, 3>|int', '0|1|positive-int', "non-empty-string|''", "non-falsy-string|''",
+    "''|non-empty-lowercase-string", "''|non-falsy-string", 'iterable<int>|iterable<string>', 'array{a: int}|array{a: string}',
+    'array{a: int}|array{b: int}', 'array{}|array{a: int}', 'array{}|array{a?: int}', 'list<int>|array{a: int}', 'callable|Closure',
+    'Countable|ArrayAccess', 'Exception|Throwable', 'Throwable|Exception', 'mixed|int', 'never|int', 'int|float|string|bool|null|array|object|resource', 'non-empty-array<int>|array{a: int}', 'non-empty-list<int>|array{a: int}',
+    'array{a: int, b: int}|array{a: string}', 'array{a: int}|array{a: string, b?: int}', 'array{a: int, b: int}|array{a: string, c: int}',
+    'array{a: int, b: string}|array{a: int, b: int}', 'list{int}|list{int, int}', 'array{0: int}|list{string, string}',
+    'list<int>|list<string>', 'non-empty-list<int>|non-empty-list<string>', 'non-empty-array<int>|array<string>',
+    'array<int>|array{}', 'array{}|list<int>', 'array{}|non-empty-list<int>', 'array{a: 1}|array{a: 1}', 'array{1, 2}|array{3}|array{a: 4}',
+    'array<string, int>|array<int, string>', 'string|class-string', 'class-string|literal-string',
+    "class-string|'Countable'", "'Countable'|class-string<Countable>", "class-string<Countable>|'Countable'", "'Countable'|literal-string",
+    'numeric-string|int', "numeric-string|'1'", "'abc'|numeric-string", 'lowercase-string|uppercase-string', 'Countable|object',
+    'object|Countable', 'Countable|static', 'stdClass|object{a: int}', 'object{a: int}|object{b: int}', 'object{a: int}|object',
+    'Iterator|IteratorAggregate|Traversable', 'Traversable|Iterator', 'Iterator<int>|Traversable<string>', '1|1.0', "'1'|1",
+    '-1|-2|0|-1.5|1.5', '1.0E+25|0.1|-0.0', 'Countable::class|Traversable::class', "'aaaaaaaaaaaaaaaaaaaaaaaaaaaa'|'b c d e f g h i j k l m n o p'",
+    "'a\\tb'", '"a\nb\\\\c\"d\x07"', "'it\\'s'", "'\\\\'", '"\\101\\x41"', '"\\u{41}"', "'abcdefghijklmnopqrstuvwxyz'", "'abc defgh ijklmnopqrs tuvwxyz'",
+    "'Countable'", "'countable'", "'0'", "''", '0.5', '1e3', '-1.5e-7', '0x1A', '0b101', '0o17', '017', '1_000', '-0', '9223372036854775807',
+    'float|1.5', 'int|1', 'bool|true', 'string|\'a\'', 'array-key|int', 'int|array-key', '__benevolent<int|string>|int', '__benevolent<int|string>|float',
+    'resource|null', 'void|null', 'Closure(): int|Closure(): string', 'Closure(int): void|callable(int): void',
+    // intersections
+    'Countable&Traversable', 'non-empty-string&numeric-string', 'string&non-empty-string', 'array<int>&non-empty-array',
+    'list<int>&non-empty-array', 'array{a?: int}&non-empty-array', 'array{0?: int}&list', 'array{a: int}&list', 'int&string',
+    'int<1, 5>&int<3, 9>', 'int&int<1, 3>', 'int<1, 3>&1', 'int<1, 3>&int<5, 7>', 'iterable<int>&array', 'array&iterable<int>',
+    'Foo&Bar', 'callable&array', 'Traversable&iterable<int>', 'non-empty-array&list', 'non-empty-array&array{0?: int, 1?: int}',
+    'array<int>&array<string>', 'array<int, int>&list', 'array<string, int>&list', 'array<int>&list<int>', 'iterable<int>&iterable<string>',
+    'class-string<Countable>&class-string<Traversable>', 'non-empty-string&non-falsy-string', 'non-falsy-string&non-empty-string',
+    'lowercase-string&uppercase-string&non-empty-string', 'literal-string&numeric-string', 'non-empty-string&string', 'string&int', 'Countable&object',
+    'object&Countable', 'array{a: int}&array<string, int>', 'array{a: int}&array{a: int}', 'array{a: int}&array{b: int}', 'array{}&non-empty-array',
+    'non-empty-array&array{}', 'mixed&int', 'int&mixed', '(int|string)&int', 'int&(1|2|"a")', '(1|2)&(2|3)', '__benevolent<int|string>&int',
+    'Countable&(Traversable|ArrayAccess)', 'stdClass&object{a: int}', 'object{a: int}&stdClass', 'DateInterval&object{days: int}',
+    'callable-string&non-empty-string', 'non-empty-array&callable', 'list<int>&array<int>', 'non-empty-list&array{a?: int}',
+    'array<string>&non-empty-array<string>', 'array<int, string>&non-empty-array<int, string>&list',
+    // conditionals
+    '(T is int ? string : bool)', '($x is int ? 1 : 2)', '($x is not int ? 1 : 2)', '(int is int ? true : false)',
+    // more paths
+    'int<min, max>', 'int<min, -9223372036854775808>', 'int<9223372036854775807, max>', 'never|1', 'never|int', 'never|Countable',
+    'non-empty-string&class-string', 'class-string&non-falsy-string', 'class-string&numeric-string', 'non-falsy-string&numeric-string',
+    "uppercase-string&'ABC'", "'ABC'&uppercase-string", "'abc'&uppercase-string", "lowercase-string&'abc'", "'strlen'&callable",
+    "'nope'&callable", 'callable&Closure', 'callable&stdClass', 'callable&Generator', 'callable&ArrayIterator', 'Closure&callable(int): void',
+    '(Countable&Traversable)|(Countable&ArrayAccess)', 'Generator&Countable', 'Countable&Generator', 'Exception&Countable', 'Exception&Error',
+    'callable(int<1, 3>, \'a\', 1.5, class-string<Countable>, ArrayIterator<int, string>, iterable<int>, iterable<int, string>, iterable, list<int>, array<string, int>, array, never): void',
+    'callable(callable(int): void, Closure(int $x): void, callable): void', 'callable(Countable&Traversable): void', 'callable(array<int>, array{a: int}): void',
+    'callable(int...): void', 'callable(int=): void', 'callable(): (callable(): int)', 'callable(): (Countable&Traversable)', 'callable(): Closure(): int',
+    'callable(int|string, int|string[]): void', 'callable(class-string, -5, 1.0E+25, \'it\\\'s\'): void', 'callable(callable(int &$x, int ...$y): void, callable(int=): void): void',
+    'callable(callable(): (int|string)): void', 'callable(non-empty-string, list<int>|false, (int|string)[]): void', 'callable(object, resource, mixed, void, null): void',
+    'callable(static, $this): void', 'callable(Traversable<int>, Generator<int, string>): void', 'callable(non-empty-array<int>, int<min, 5>): void',
+    'callable(): iterable<int, string>', 'callable(): iterable<string>', 'callable(): iterable', '"\x08\x01"', "'a\\\\b'",
+    '1.0|1', '2.0|1|1.5', '1|2.0|1.0', '1.5|1', 'int<1, 3>|int<min, 0>', 'int<5, max>|int<1, 3>', 'int<1, 3>|int<min, max>', 'int<1, 3>|1|2|3',
+    '1|2|3|int<1, 3>', 'int<1, 2>|int<2, 3>|int<9, 10>', 'array{a: int}|array{a: int, b?: int}', 'array{a?: int}|array{}', 'array{a: int, b?: int}|array{a: int}',
+    'array{a: int, b: int}|array{a: int}', 'array{a: int}|array{a: int, b: int}', 'array{a: int, b: int, c: int}|array{a: int}',
+    'array{a: int, b: int}|array{b: string, a: string}', 'array{0: int}|array{0: string}', 'list{int}|list{string}', 'array{a: 1, b: 2}|array{a: 1, b: 3}|array{a: 2, b: 2}',
+    'array<int, int>|array{a: int}', 'array{a: int}|array<string, int>|false', 'non-empty-array{a: int}|non-empty-array{b: int}', 'list{0?: int}|list{int, int}',
+    'array{0?: int, 1?: int}&non-empty-array', 'list{0?: int, 1?: int}&non-empty-array', 'array{a?: int, b?: int}&non-empty-array', 'array{a?: int, ...}&non-empty-array',
+    'array{0: int}&list', 'array{1: int}&list', 'array{a: int, ...}&list', 'array<int>&list', 'array<int<0, max>, int>&list', 'array<1|2, int>&list', "array<'a', int>&list",
+    'array{a: int}&array<int, int>', 'array{a: int, b?: string}&array<string, int>', 'array{a: int, ...}&array<string, int>',
+    'iterable<int>&iterable<int>', 'iterable<int>&Traversable', 'iterable<int>&Countable', 'iterable&array<int>', 'iterable<int, string>&array', 'list<int>&iterable<string>',
+    'mixed|int', 'mixed', 'non-empty-mixed', 'array<int, mixed>', 'array<mixed>', 'iterable<mixed, mixed>', 'iterable<mixed>', 'list<mixed>',
+    'class-string<Countable>|class-string<Traversable>', "class-string<Countable>&'Countable'", "'Countable'&class-string<Countable>", "'ArrayIterator'&class-string<Countable>",
+    "'Nope'&class-string", "'Countable'&class-string", 'class-string&string', 'class-string<mixed>&class-string', "'Countable'|class-string<mixed>", "class-string<mixed>|'Countable'",
+    "'Countable'&class-string<object>", 'class-string<object>|class-string', "class-string|class-string<Countable>",
+    'array{}|array{}', 'array{}&array{}', 'array{}&list', 'array{}&array<int>', 'array<int>&array{}', 'array{a: int}&array{}', 'list{int, string}&list', 'list{int, string}&array{int, string}',
+    'array{a: int}&array{a: 1}', 'array{a: int, b: int}&array{a: int}', 'array{a: int}&array{a?: int}', 'array{a: int}&array{a: string}',
+    'Closure(int): void|Closure(string): void', 'Closure|Closure(): void', 'Closure(): void|Closure', 'Closure(): void&Closure', 'callable&Closure(): void',
+    'Iterator&Traversable<int>', 'Traversable<int>&Iterator', 'ArrayIterator<int, string>&Countable', 'ArrayIterator<int, string>|ArrayIterator<int, string>',
+    'ArrayIterator<int, string>|ArrayIterator<int, int>', 'ArrayIterator<int, string>|ArrayIterator', 'ArrayIterator|ArrayIterator<int, string>',
+    'ArrayIterator<int, string>|SeekableIterator<int, string>', 'SeekableIterator<int, string>|ArrayIterator<int, string>', 'Iterator<int, string>|ArrayIterator<int, string>',
+    'ArrayIterator<int, string>|Iterator<int, string>', 'ArrayIterator<int, string>|Countable', 'Countable|ArrayIterator<int, string>', 'ArrayIterator<Foo, string>|ArrayIterator<Bar, string>',
+    'Countable|Traversable|Countable', 'stdClass|object{a: int}|object', 'object{a: int}|stdClass', 'object{a: int}&object{b: int}', 'object{a: int}&object{a: int}', 'object{a: int}&object',
+    'object&object{a: int}', 'object{a: int}|object{a: int}', 'Countable&object{a: int}', 'object{a: int}&Countable', 'DateInterval|object{days: int}',
+    'iterable<int>|array<int>', 'array<int>|iterable<int>', 'iterable<int>|Traversable<int>', 'Traversable<int>|iterable<int>', 'iterable<int>|list<int>', 'iterable<int>|int',
+    'Countable|iterable<int>', 'iterable<int>|Countable', 'iterable<int>|ArrayIterator<int, int>', 'iterable<int, string>|iterable<string, int>', 'iterable|iterable<int>',
+    '(T is int ? string : bool)|int', 'int|(T is int ? string : bool)', 'mixed|(T is int ? string : bool)', '(T is int ? string : bool)&int',
+    "''|non-empty-string", "''|non-falsy-string|'a'", "''|lowercase-string&non-empty-string", "''|uppercase-string&non-falsy-string", "''|numeric-string",
+    "non-empty-string|'0'", "'0'|non-falsy-string", "non-falsy-string|'0'|''", 'positive-int|0', 'negative-int|0|positive-int',
+    'callable-string|non-empty-string', 'non-empty-string|callable-string', 'callable|int', 'callable|callable', 'callable(): int|callable(): int',
+    'array-key|float', '__benevolent<int|string>|null', '__benevolent<int|string|null>', '__benevolent<int|string>|bool', 'scalar|null', 'null|scalar',
+    'Countable|null|Traversable', 'null|Countable', 'Countable|null', 'null', '?null', '?mixed', '?Countable', '?callable', '?(int|string)', '?int[]', '?array{a: int}',
+    'resource|resource', 'void|void', 'object|object', 'object|stdClass', 'stdClass|object', 'Countable|object|Traversable', 'stdClass&object', 'object&stdClass',
+    '\\stdClass', 'STDCLASS', 'stdclass|stdClass', 'stdClass&stdclass', 'Exception|RuntimeException', 'RuntimeException|Exception', 'RuntimeException&Exception',
+    'Exception&RuntimeException', 'RuntimeException&LogicException', 'Throwable&RuntimeException', 'Countable&RuntimeException', 'RuntimeException&Countable',
+    'Closure&Countable', 'Generator&Iterator', 'WeakMap&Countable', 'Countable&WeakMap', 'Closure&Exception',
+    // stars and bad input
+    'SplObjectStorage<*, *>', 'int|', '<', '(int', 'array{', 'callable(',
+];
+
+/** @return list<array{?string, string, string, string, string}> */
+function describe_all(TypeStringResolver $resolver, array $strings): array
+{
+    $described = [];
+    foreach ($strings as [$ctx, $s]) {
+        try {
+            $type = $resolver->resolve($s, new NameScope(null, [], $ctx));
+        } catch (Throwable $e) {
+            $type = new PHPStan\Type\ErrorType(); // phpdoc-parser rejects it; PHPDoc tags with a parse error resolve to *ERROR*
+        }
+        $described[] = [$ctx, $s, $type->describe(VerbosityLevel::precise()), $type->describe(VerbosityLevel::value()), $type->describe(VerbosityLevel::typeOnly())];
+    }
+
+    return $described;
+}
+
+$flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
+if (($argv[1] ?? '') === 'probes') {
+    $probes = array_map(fn ($s) => [null, $s], PROBES);
+    foreach (['static|Countable', '$this|ArrayIterator', 'ArrayIterator|static', 'static|ArrayIterator', 'ArrayIterator|$this', '$this|static', 'static|$this', 'static&Countable', 'callable(static, $this): void', 'callable(): static', 'class-string<static>', 'static|SeekableIterator', 'SeekableIterator|static', 'Iterator&static', 'static&Iterator', 'stdClass|static', 'static|stdClass', 'static', '$this', 'self', 'static::class', 'self::class', 'ArrayIterator::class', 'self::STD_PROP_LIST', 'ArrayIterator::*', 'list<static>', 'Countable::FOO', 'Nope::FOO'] as $s) {
+        $probes[] = ['ArrayIterator', $s];
+    }
+    $probes[] = ['Nope', 'static'];
+    $probes[] = ['Nope', '$this'];
+    $probes[] = ['DatePeriod', '$this'];
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-probes.json', json_encode(describe_all(container(80400)->getByType(TypeStringResolver::class), $probes), $flags | JSON_PRETTY_PRINT)."\n");
+    echo count($probes), " probes\n";
+    exit;
 }
 
 if (($argv[1] ?? '') === 'dump') {
@@ -268,7 +430,6 @@ foreach ($reflected as $ctx => $types) {
 }
 usort($reflectedList, fn ($a, $b) => [$a[0], $a[1]] <=> [$b[0], $b[1]]);
 
-$flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
 @mkdir($root.'/crates/pun-phpstan/data');
 file_put_contents($root.'/crates/pun-phpstan/data/symbols.json', json_encode($symbols, $flags)."\n");
 file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-strings.json', json_encode($described, $flags | JSON_PRETTY_PRINT)."\n");

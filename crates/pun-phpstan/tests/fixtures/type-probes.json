@@ -1,0 +1,4272 @@
+[
+    [
+        null,
+        "non-zero-int",
+        "int<min, -1>|int<1, max>",
+        "int<min, -1>|int<1, max>",
+        "int<min, -1>|int<1, max>"
+    ],
+    [
+        null,
+        "enum-string",
+        "class-string<UnitEnum>",
+        "class-string<UnitEnum>",
+        "class-string<UnitEnum>"
+    ],
+    [
+        null,
+        "numeric",
+        "float|int|numeric-string",
+        "float|int|numeric-string",
+        "float|int|string"
+    ],
+    [
+        null,
+        "number",
+        "float|int",
+        "float|int",
+        "float|int"
+    ],
+    [
+        null,
+        "scalar",
+        "bool|float|int|string",
+        "bool|float|int|string",
+        "bool|float|int|string"
+    ],
+    [
+        null,
+        "non-empty-lowercase-string",
+        "lowercase-string&non-empty-string",
+        "non-empty-string",
+        "string"
+    ],
+    [
+        null,
+        "non-empty-uppercase-string",
+        "non-empty-string&uppercase-string",
+        "non-empty-string",
+        "string"
+    ],
+    [
+        null,
+        "non-empty-literal-string",
+        "literal-string&non-empty-string",
+        "literal-string&non-empty-string",
+        "string"
+    ],
+    [
+        null,
+        "callable-object",
+        "callable-object",
+        "callable-object",
+        "callable&object"
+    ],
+    [
+        null,
+        "callable-array",
+        "non-empty-list&callable(): mixed",
+        "non-empty-list&callable(): mixed",
+        "callable&list"
+    ],
+    [
+        null,
+        "non-empty-list",
+        "non-empty-list",
+        "non-empty-list",
+        "list"
+    ],
+    [
+        null,
+        "truthy-string",
+        "non-falsy-string",
+        "non-falsy-string",
+        "string"
+    ],
+    [
+        null,
+        "double",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        null,
+        "boolean",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        null,
+        "integer",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "associative-array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        null,
+        "never-return",
+        "never",
+        "never",
+        "never"
+    ],
+    [
+        null,
+        "noreturn",
+        "never",
+        "never",
+        "never"
+    ],
+    [
+        null,
+        "open-resource",
+        "resource",
+        "resource",
+        "resource"
+    ],
+    [
+        null,
+        "interface-string",
+        "class-string",
+        "class-string",
+        "class-string"
+    ],
+    [
+        null,
+        "trait-string",
+        "class-string",
+        "class-string",
+        "class-string"
+    ],
+    [
+        null,
+        "callable-string",
+        "callable-string",
+        "callable-string",
+        "callable&string"
+    ],
+    [
+        null,
+        "negative-int",
+        "int<min, -1>",
+        "int<min, -1>",
+        "int<min, -1>"
+    ],
+    [
+        null,
+        "non-positive-int",
+        "int<min, 0>",
+        "int<min, 0>",
+        "int<min, 0>"
+    ],
+    [
+        null,
+        "non-negative-int",
+        "int<0, max>",
+        "int<0, max>",
+        "int<0, max>"
+    ],
+    [
+        null,
+        "literal-string",
+        "literal-string",
+        "literal-string",
+        "string"
+    ],
+    [
+        null,
+        "uppercase-string",
+        "uppercase-string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "iterable",
+        "iterable",
+        "iterable",
+        "iterable"
+    ],
+    [
+        null,
+        "object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        null,
+        "void",
+        "void",
+        "void",
+        "void"
+    ],
+    [
+        null,
+        "never",
+        "never",
+        "never",
+        "never"
+    ],
+    [
+        null,
+        "self",
+        "self",
+        "self",
+        "self"
+    ],
+    [
+        null,
+        "static",
+        "static",
+        "static",
+        "static"
+    ],
+    [
+        null,
+        "$this",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "Foo-bar",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "OCI-Lob",
+        "OCI-Lob",
+        "OCI-Lob",
+        "OCI-Lob"
+    ],
+    [
+        null,
+        "NOT_A_CONSTANT",
+        "NOT_A_CONSTANT",
+        "NOT_A_CONSTANT",
+        "NOT_A_CONSTANT"
+    ],
+    [
+        null,
+        "Foo",
+        "Foo",
+        "Foo",
+        "Foo"
+    ],
+    [
+        null,
+        "\\Countable",
+        "Countable",
+        "Countable",
+        "Countable"
+    ],
+    [
+        null,
+        "TRUE",
+        "true",
+        "true",
+        "true"
+    ],
+    [
+        null,
+        "PHP_SAPI",
+        "'apache'|'apache2handler'|'cgi'|'cli'|'cli-server'|'embed'|'fpm-fcgi'|'litespeed'|'phpdbg'|non-falsy-string",
+        "'apache'|'apache2handler'|'cgi'|'cli'|'cli-server'|'embed'|'fpm-fcgi'|'litespeed'|'phpdbg'|non-falsy-string",
+        "string"
+    ],
+    [
+        null,
+        "PHP_INT_MIN",
+        "-9223372036854775808|-2147483648",
+        "-9223372036854775808|-2147483648",
+        "int"
+    ],
+    [
+        null,
+        "INF",
+        "INF",
+        "INF",
+        "float"
+    ],
+    [
+        null,
+        "NAN",
+        "NAN",
+        "NAN",
+        "float"
+    ],
+    [
+        null,
+        "M_PI",
+        "3.141592653589793",
+        "3.141592653589793",
+        "float"
+    ],
+    [
+        null,
+        "PHP_FLOAT_EPSILON",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        null,
+        "PHP_EOL",
+        "\"\\n\"|\"\\r\\n\"",
+        "\"\\n\"|\"\\r\\n\"",
+        "string"
+    ],
+    [
+        null,
+        "E_ALL",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "array<'a', int>",
+        "array{a?: int}",
+        "array{a?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array<1, int>",
+        "array{1?: int}",
+        "array{1?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array<int, int, int>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "array<float, int>",
+        "array<int, int>",
+        "array<int, int>",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array<bool, int>",
+        "array<0|1, int>",
+        "array<0|1, int>",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array<null, int>",
+        "array{''?: int}",
+        "array{''?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array<'1', int>",
+        "array{1?: int}",
+        "array{1?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array<array-key, int>",
+        "array<int>",
+        "array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "array<mixed, int>",
+        "array<int>",
+        "array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "array<int|string, int>",
+        "array<int|string, int>",
+        "array<int|string, int>",
+        "array<int|string, int>"
+    ],
+    [
+        null,
+        "non-empty-array<int>",
+        "non-empty-array<int>",
+        "non-empty-array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "non-empty-array<string, int>",
+        "non-empty-array<string, int>",
+        "non-empty-array<string, int>",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "list<int, int>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "non-empty-list<string>",
+        "non-empty-list<string>",
+        "non-empty-list<string>",
+        "list<string>"
+    ],
+    [
+        null,
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>"
+    ],
+    [
+        null,
+        "iterable<int, string>",
+        "iterable<int, string>",
+        "iterable<int, string>",
+        "iterable<int, string>"
+    ],
+    [
+        null,
+        "iterable<int, string, bool>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "class-string<Countable>",
+        "class-string<Countable>",
+        "class-string<Countable>",
+        "class-string<Countable>"
+    ],
+    [
+        null,
+        "class-string<int>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "class-string<mixed>",
+        "class-string<mixed>",
+        "class-string<mixed>",
+        "class-string<mixed>"
+    ],
+    [
+        null,
+        "interface-string<Countable>",
+        "class-string<Countable>",
+        "class-string<Countable>",
+        "class-string<Countable>"
+    ],
+    [
+        null,
+        "class-string<Countable|Traversable>",
+        "class-string<Countable|Traversable>",
+        "class-string<Countable|Traversable>",
+        "class-string<Countable|Traversable>"
+    ],
+    [
+        null,
+        "int<1, 3>",
+        "int<1, 3>",
+        "int<1, 3>",
+        "int<1, 3>"
+    ],
+    [
+        null,
+        "int<min, 5>",
+        "int<min, 5>",
+        "int<min, 5>",
+        "int<min, 5>"
+    ],
+    [
+        null,
+        "int<5, max>",
+        "int<5, max>",
+        "int<5, max>",
+        "int<5, max>"
+    ],
+    [
+        null,
+        "int<foo, 5>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "int<1, bar>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "int<1>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "int<3, 1>",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "int<2, 2>",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        null,
+        "int-mask<1, 2, 4>",
+        "int<0, 7>",
+        "int<0, 7>",
+        "int<0, 7>"
+    ],
+    [
+        null,
+        "int-mask<1, 4>",
+        "0|1|4|5",
+        "0|1|4|5",
+        "int"
+    ],
+    [
+        null,
+        "int-mask<0, 8>",
+        "0|8",
+        "0|8",
+        "int"
+    ],
+    [
+        null,
+        "int-mask<'a'>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "int-mask-of<1|2>",
+        "int<0, 3>",
+        "int<0, 3>",
+        "int<0, 3>"
+    ],
+    [
+        null,
+        "int-mask-of<string>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "int-mask-of<1, 2>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "__benevolent<int|string>",
+        "(int|string)",
+        "(int|string)",
+        "(int|string)"
+    ],
+    [
+        null,
+        "__benevolent<int>",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "__benevolent<int, string>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "Traversable<int>",
+        "Traversable<mixed, int>",
+        "Traversable<mixed, int>",
+        "Traversable<mixed, int>"
+    ],
+    [
+        null,
+        "Iterator<int, string>",
+        "Iterator<int, string>",
+        "Iterator<int, string>",
+        "Iterator<int, string>"
+    ],
+    [
+        null,
+        "IteratorAggregate<string>",
+        "IteratorAggregate<mixed, string>",
+        "IteratorAggregate<mixed, string>",
+        "IteratorAggregate<mixed, string>"
+    ],
+    [
+        null,
+        "Generator<int>",
+        "Generator<mixed, int, mixed, mixed>",
+        "Generator<mixed, int, mixed, mixed>",
+        "Generator<mixed, int, mixed, mixed>"
+    ],
+    [
+        null,
+        "Generator<int, string>",
+        "Generator<int, string, mixed, mixed>",
+        "Generator<int, string, mixed, mixed>",
+        "Generator<int, string, mixed, mixed>"
+    ],
+    [
+        null,
+        "Generator<int, string, bool, void>",
+        "Generator<int, string, bool, void>",
+        "Generator<int, string, bool, void>",
+        "Generator<int, string, bool, void>"
+    ],
+    [
+        null,
+        "ArrayIterator<int>",
+        "ArrayIterator&iterable<int>",
+        "ArrayIterator&iterable<int>",
+        "ArrayIterator&iterable<int>"
+    ],
+    [
+        null,
+        "ArrayIterator<int, string>",
+        "ArrayIterator<int, string>",
+        "ArrayIterator<int, string>",
+        "ArrayIterator<int, string>"
+    ],
+    [
+        null,
+        "ArrayObject<string>",
+        "ArrayObject&iterable<string>",
+        "ArrayObject&iterable<string>",
+        "ArrayObject&iterable<string>"
+    ],
+    [
+        null,
+        "SplObjectStorage<Countable, int>",
+        "SplObjectStorage<Countable, int>",
+        "SplObjectStorage<Countable, int>",
+        "SplObjectStorage<Countable, int>"
+    ],
+    [
+        null,
+        "Countable<int>",
+        "Countable<int>",
+        "Countable<int>",
+        "Countable<int>"
+    ],
+    [
+        null,
+        "Foo<int>",
+        "Foo<int>",
+        "Foo<int>",
+        "Foo<int>"
+    ],
+    [
+        null,
+        "WeakReference<stdClass>",
+        "WeakReference<stdClass>",
+        "WeakReference<stdClass>",
+        "WeakReference<stdClass>"
+    ],
+    [
+        null,
+        "int<1, 3>[]",
+        "array<int<1, 3>>",
+        "array<int<1, 3>>",
+        "array<int<1, 3>>"
+    ],
+    [
+        null,
+        "ArrayAccess<int, string>",
+        "ArrayAccess<int, string>",
+        "ArrayAccess<int, string>",
+        "ArrayAccess<int, string>"
+    ],
+    [
+        null,
+        "SplFixedArray<int>",
+        "SplFixedArray<int>",
+        "SplFixedArray<int>",
+        "SplFixedArray<int>"
+    ],
+    [
+        null,
+        "DatePeriod",
+        "DatePeriod",
+        "DatePeriod",
+        "DatePeriod"
+    ],
+    [
+        null,
+        "Closure<int>",
+        "Closure<int>",
+        "Closure<int>",
+        "Closure<int>"
+    ],
+    [
+        null,
+        "int<1, 2, 3>",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "callable(int): void",
+        "callable(int): void",
+        "callable(int): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(int=, string...): mixed",
+        "callable(int=, string ...): mixed",
+        "callable(int=, string ...): mixed",
+        "callable"
+    ],
+    [
+        null,
+        "callable(int &$x): bool",
+        "callable(int): bool",
+        "callable(int): bool",
+        "callable"
+    ],
+    [
+        null,
+        "Closure(int): string",
+        "Closure(int): string",
+        "Closure(int): string",
+        "Closure"
+    ],
+    [
+        null,
+        "Closure(int $a, string ...$b): (int|string)",
+        "Closure(int, string ...): (int|string)",
+        "Closure(int, string ...): (int|string)",
+        "Closure"
+    ],
+    [
+        null,
+        "Foo(int): void",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "callable(): callable(): int",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "callable(int|string): (int|false)",
+        "callable(int|string): (int|false)",
+        "callable(int|string): (int|false)",
+        "callable"
+    ],
+    [
+        null,
+        "Closure",
+        "Closure",
+        "Closure",
+        "Closure"
+    ],
+    [
+        null,
+        "callable(): void|int",
+        "(callable(): void)|int",
+        "(callable(): void)|int",
+        "(callable)|int"
+    ],
+    [
+        null,
+        "callable(Countable): int",
+        "callable(Countable): int",
+        "callable(Countable): int",
+        "callable"
+    ],
+    [
+        null,
+        "callable(int): void|callable(string): void",
+        "(callable(int): void)|(callable(string): void)",
+        "(callable(int): void)|(callable(string): void)",
+        "(callable)"
+    ],
+    [
+        null,
+        "callable(): int|callable(): string",
+        "(callable(): int)|(callable(): string)",
+        "(callable(): int)|(callable(): string)",
+        "(callable)"
+    ],
+    [
+        null,
+        "callable(): mixed|Closure(): int",
+        "callable(): mixed",
+        "callable(): mixed",
+        "callable"
+    ],
+    [
+        null,
+        "callable(int, int): int|callable(int): int",
+        "(callable(int): int)|(callable(int, int): int)",
+        "(callable(int): int)|(callable(int, int): int)",
+        "(callable)"
+    ],
+    [
+        null,
+        "callable(int...): int|callable(int): int",
+        "callable(int): int",
+        "callable(int): int",
+        "callable"
+    ],
+    [
+        null,
+        "callable&string",
+        "callable-string",
+        "callable-string",
+        "callable&string"
+    ],
+    [
+        null,
+        "callable&object",
+        "callable-object",
+        "callable-object",
+        "callable&object"
+    ],
+    [
+        null,
+        "callable&Countable",
+        "callable(): mixed&Countable",
+        "callable(): mixed&Countable",
+        "callable&Countable"
+    ],
+    [
+        null,
+        "callable-string|Closure",
+        "callable-string|Closure",
+        "callable-string|Closure",
+        "(callable&string)|Closure"
+    ],
+    [
+        null,
+        "callable|string",
+        "(callable(): mixed)|string",
+        "(callable(): mixed)|string",
+        "(callable)|string"
+    ],
+    [
+        null,
+        "callable(): int|string",
+        "(callable(): int)|string",
+        "(callable(): int)|string",
+        "(callable)|string"
+    ],
+    [
+        null,
+        "array{a: int, b?: string}",
+        "array{a: int, b?: string}",
+        "array{a: int, b?: string}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "array{int, string}",
+        "array{int, string}",
+        "array{int, string}",
+        "array<int, int|string>"
+    ],
+    [
+        null,
+        "list{int, string}",
+        "array{int, string}",
+        "array{int, string}",
+        "array<int, int|string>"
+    ],
+    [
+        null,
+        "non-empty-array{a?: int}",
+        "array{a: int}",
+        "array{a: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "non-empty-list{0?: int}",
+        "array{int}",
+        "array{int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "non-empty-list{int}",
+        "array{int}",
+        "array{int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{a: int, ...}",
+        "array{a: int, ...}",
+        "array{a: int, ...}",
+        "array<mixed>"
+    ],
+    [
+        null,
+        "array{a: int, ...<string, int>}",
+        "array{a: int, ...<string, int>}",
+        "array{a: int, ...<string, int>}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int, ...<int>}",
+        "array{a: int, ...<int>}",
+        "array{a: int, ...<int>}",
+        "array<int>"
+    ],
+    [
+        null,
+        "list{int, ...<string>}",
+        "array{int, ...<string>}",
+        "array{int, ...<string>}",
+        "array<int<0, max>, int|string>"
+    ],
+    [
+        null,
+        "list{int, ...}",
+        "array{int, ...}",
+        "array{int, ...}",
+        "array<int<0, max>, mixed>"
+    ],
+    [
+        null,
+        "array{...<int>}",
+        "array<int>",
+        "array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "array{...<string, int>}",
+        "array<string, int>",
+        "array<string, int>",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{...}",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        null,
+        "list{...}",
+        "list",
+        "list",
+        "list"
+    ],
+    [
+        null,
+        "array{'a b': int, \"c\": int, 'd\\'e': int, 'f\"g': int}",
+        "array{'a b': int, c: int, \"d'e\": int, 'f\"g': int}",
+        "array{'a b': int, c: int, \"d'e\": int, 'f\"g': int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{1: int, 3: int}",
+        "array{1: int, 3: int}",
+        "array{1: int, 3: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{-1: int}",
+        "array{-1: int}",
+        "array{-1: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{0: int, 2: int}",
+        "array{0: int, 2: int}",
+        "array{0: int, 2: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{0?: int, 1?: int}",
+        "array{0?: int, 1?: int}",
+        "array{0?: int, 1?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{0: int, 1?: int, 2?: int}",
+        "array{0: int, 1?: int, 2?: int}",
+        "array{0: int, 1?: int, 2?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{a: int, a: string}",
+        "array{a: string}",
+        "array{a: string}",
+        "array<string, string>"
+    ],
+    [
+        null,
+        "array{a: int, a?: string}",
+        "array{a: int|string}",
+        "array{a: int|string}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "array{a?: int, a?: string}",
+        "array{a?: int|string}",
+        "array{a?: int|string}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "array{int, a: string, int}",
+        "array{0: int, a: string, 1: int}",
+        "array{0: int, a: string, 1: int}",
+        "array<int|string, int|string>"
+    ],
+    [
+        null,
+        "object{a: int, b?: string}",
+        "object{a: int, b?: string}",
+        "object{a: int, b?: string}",
+        "object{a: int, b?: string}"
+    ],
+    [
+        null,
+        "object{'a': int}",
+        "object{a: int}",
+        "object{a: int}",
+        "object{a: int}"
+    ],
+    [
+        null,
+        "array{}",
+        "array{}",
+        "array{}",
+        "array"
+    ],
+    [
+        null,
+        "list{}",
+        "array{}",
+        "array{}",
+        "array"
+    ],
+    [
+        null,
+        "array{0?: int}",
+        "array{0?: int}",
+        "array{0?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{a?: int}",
+        "array{a?: int}",
+        "array{a?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9}",
+        "array{a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9}",
+        "array{a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, ...}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{1, 2, 3, 4, 5, 6, 7, 8, 9}",
+        "array{1, 2, 3, 4, 5, 6, 7, 8, 9}",
+        "array{1, 2, 3, 4, 5, 6, 7, 8, ...}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{a: int, ...<1|2, string>}",
+        "array{a: int, 1?: string, 2?: string}",
+        "array{a: int, 1?: string, 2?: string}",
+        "array<int|string, int|string>"
+    ],
+    [
+        null,
+        "array{a: int, ...<'a'|'b', string>}",
+        "array{a: int, b?: string}",
+        "array{a: int, b?: string}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "array{\"x\": int}",
+        "array{x: int}",
+        "array{x: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{1.5: int}",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "array{_a1: int, a-b: int, \\a: int, 1a: int}",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "int|string[]",
+        "array<string>|int",
+        "array<string>|int",
+        "array<string>|int"
+    ],
+    [
+        null,
+        "Traversable|string[]",
+        "iterable<string>&Traversable",
+        "iterable<string>&Traversable",
+        "iterable<string>&Traversable"
+    ],
+    [
+        null,
+        "array|int[]",
+        "array<int>",
+        "array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "iterable|int[]",
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>"
+    ],
+    [
+        null,
+        "list<int>|string[]",
+        "array<int|string>",
+        "array<int|string>",
+        "array<int|string>"
+    ],
+    [
+        null,
+        "array{a: int}|int[]",
+        "array<int>",
+        "array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "ArrayIterator<int>|int[]",
+        "array<int>|(ArrayIterator&iterable<int>)",
+        "array<int>|(ArrayIterator&iterable<int>)",
+        "array<int>|(ArrayIterator&iterable<int>)"
+    ],
+    [
+        null,
+        "Countable|int[]",
+        "array<int>|Countable",
+        "array<int>|Countable",
+        "array<int>|Countable"
+    ],
+    [
+        null,
+        "(int|string)[]",
+        "array<int|string>",
+        "array<int|string>",
+        "array<int|string>"
+    ],
+    [
+        null,
+        "int[]|string[]",
+        "array<int|string>",
+        "array<int|string>",
+        "array<int|string>"
+    ],
+    [
+        null,
+        "?int",
+        "int|null",
+        "int|null",
+        "int|null"
+    ],
+    [
+        null,
+        "int|null|false",
+        "int|false|null",
+        "int|false|null",
+        "int|false|null"
+    ],
+    [
+        null,
+        "1|2|3",
+        "1|2|3",
+        "1|2|3",
+        "int"
+    ],
+    [
+        null,
+        "1.5|2.0|1",
+        "1|1.5|2.0",
+        "1|1.5|2.0",
+        "float|int"
+    ],
+    [
+        null,
+        "'a'|'b'|string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "true|false",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        null,
+        "true|bool",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        null,
+        "int<1, 3>|int<2, 5>",
+        "int<1, 5>",
+        "int<1, 5>",
+        "int<1, 5>"
+    ],
+    [
+        null,
+        "int<1, 3>|int<5, 7>",
+        "int<1, 3>|int<5, 7>",
+        "int<1, 3>|int<5, 7>",
+        "int<1, 3>|int<5, 7>"
+    ],
+    [
+        null,
+        "int<1, 3>|int<4, 7>",
+        "int<1, 7>",
+        "int<1, 7>",
+        "int<1, 7>"
+    ],
+    [
+        null,
+        "int<1, 3>|4",
+        "int<1, 4>",
+        "int<1, 4>",
+        "int<1, 4>"
+    ],
+    [
+        null,
+        "int<1, 3>|0",
+        "int<0, 3>",
+        "int<0, 3>",
+        "int<0, 3>"
+    ],
+    [
+        null,
+        "int<1, 3>|9",
+        "9|int<1, 3>",
+        "9|int<1, 3>",
+        "int"
+    ],
+    [
+        null,
+        "int|int<1, 3>",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "int<1, 3>|int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "0|1|positive-int",
+        "int<0, max>",
+        "int<0, max>",
+        "int<0, max>"
+    ],
+    [
+        null,
+        "non-empty-string|''",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "non-falsy-string|''",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "''|non-empty-lowercase-string",
+        "lowercase-string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "''|non-falsy-string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "iterable<int>|iterable<string>",
+        "iterable<int|string>",
+        "iterable<int|string>",
+        "iterable<int|string>"
+    ],
+    [
+        null,
+        "array{a: int}|array{a: string}",
+        "array{a: int}|array{a: string}",
+        "array{a: int}|array{a: string}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "array{a: int}|array{b: int}",
+        "array{a: int}|array{b: int}",
+        "array{a: int}|array{b: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{}|array{a: int}",
+        "array{}|array{a: int}",
+        "array{}|array{a: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{}|array{a?: int}",
+        "array{}|array{a?: int}",
+        "array{}|array{a?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "list<int>|array{a: int}",
+        "array<'a'|int<0, max>, int>",
+        "array<'a'|int<0, max>, int>",
+        "array<int<0, max>|string, int>"
+    ],
+    [
+        null,
+        "callable|Closure",
+        "callable(): mixed",
+        "callable(): mixed",
+        "callable"
+    ],
+    [
+        null,
+        "Countable|ArrayAccess",
+        "ArrayAccess|Countable",
+        "ArrayAccess|Countable",
+        "ArrayAccess|Countable"
+    ],
+    [
+        null,
+        "Exception|Throwable",
+        "Throwable",
+        "Throwable",
+        "Throwable"
+    ],
+    [
+        null,
+        "Throwable|Exception",
+        "Throwable",
+        "Throwable",
+        "Throwable"
+    ],
+    [
+        null,
+        "mixed|int",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "never|int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "int|float|string|bool|null|array|object|resource",
+        "array|bool|float|int|object|resource|string|null",
+        "array|bool|float|int|object|resource|string|null",
+        "array|bool|float|int|object|resource|string|null"
+    ],
+    [
+        null,
+        "non-empty-array<int>|array{a: int}",
+        "non-empty-array<int>",
+        "non-empty-array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "non-empty-list<int>|array{a: int}",
+        "non-empty-array<'a'|int<0, max>, int>",
+        "non-empty-array<'a'|int<0, max>, int>",
+        "array<int|string, int>"
+    ],
+    [
+        null,
+        "array{a: int, b: int}|array{a: string}",
+        "array{a: int, b: int}|array{a: string}",
+        "array{a: int, b: int}|array{a: string}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "array{a: int}|array{a: string, b?: int}",
+        "array{a: int}|array{a: string, b?: int}",
+        "array{a: int}|array{a: string, b?: int}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "array{a: int, b: int}|array{a: string, c: int}",
+        "array{a: int, b: int}|array{a: string, c: int}",
+        "array{a: int, b: int}|array{a: string, c: int}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "array{a: int, b: string}|array{a: int, b: int}",
+        "array{a: int, b: int|string}",
+        "array{a: int, b: int|string}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "list{int}|list{int, int}",
+        "array{0: int, 1?: int}",
+        "array{0: int, 1?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{0: int}|list{string, string}",
+        "array{int}|array{string, string}",
+        "array{int}|array{string, string}",
+        "list<int|string>"
+    ],
+    [
+        null,
+        "list<int>|list<string>",
+        "list<int|string>",
+        "list<int|string>",
+        "list<int|string>"
+    ],
+    [
+        null,
+        "non-empty-list<int>|non-empty-list<string>",
+        "non-empty-list<int|string>",
+        "non-empty-list<int|string>",
+        "list<int|string>"
+    ],
+    [
+        null,
+        "non-empty-array<int>|array<string>",
+        "array<int|string>",
+        "array<int|string>",
+        "array<int|string>"
+    ],
+    [
+        null,
+        "array<int>|array{}",
+        "array<int>",
+        "array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "array{}|list<int>",
+        "list<int>",
+        "list<int>",
+        "list<int>"
+    ],
+    [
+        null,
+        "array{}|non-empty-list<int>",
+        "list<int>",
+        "list<int>",
+        "list<int>"
+    ],
+    [
+        null,
+        "array{a: 1}|array{a: 1}",
+        "array{a: 1}",
+        "array{a: 1}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{1, 2}|array{3}|array{a: 4}",
+        "array{1, 2}|array{3}|array{a: 4}",
+        "array{1, 2}|array{3}|array{a: 4}",
+        "array<int|string, int>"
+    ],
+    [
+        null,
+        "array<string, int>|array<int, string>",
+        "array<int|string, int|string>",
+        "array<int|string, int|string>",
+        "array<int|string, int|string>"
+    ],
+    [
+        null,
+        "string|class-string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "class-string|literal-string",
+        "class-string|literal-string",
+        "class-string|literal-string",
+        "class-string|string"
+    ],
+    [
+        null,
+        "class-string|'Countable'",
+        "class-string",
+        "class-string",
+        "class-string"
+    ],
+    [
+        null,
+        "'Countable'|class-string<Countable>",
+        "class-string<Countable>",
+        "class-string<Countable>",
+        "class-string<Countable>"
+    ],
+    [
+        null,
+        "class-string<Countable>|'Countable'",
+        "class-string<Countable>",
+        "class-string<Countable>",
+        "class-string<Countable>"
+    ],
+    [
+        null,
+        "'Countable'|literal-string",
+        "literal-string",
+        "literal-string",
+        "string"
+    ],
+    [
+        null,
+        "numeric-string|int",
+        "int|numeric-string",
+        "int|numeric-string",
+        "int|string"
+    ],
+    [
+        null,
+        "numeric-string|'1'",
+        "numeric-string",
+        "numeric-string",
+        "string"
+    ],
+    [
+        null,
+        "'abc'|numeric-string",
+        "'abc'|numeric-string",
+        "'abc'|numeric-string",
+        "string"
+    ],
+    [
+        null,
+        "lowercase-string|uppercase-string",
+        "lowercase-string|uppercase-string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "Countable|object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        null,
+        "object|Countable",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        null,
+        "Countable|static",
+        "Countable|static",
+        "Countable|static",
+        "Countable|static"
+    ],
+    [
+        null,
+        "stdClass|object{a: int}",
+        "object{a: int}|stdClass",
+        "object{a: int}|stdClass",
+        "object{a: int}|stdClass"
+    ],
+    [
+        null,
+        "object{a: int}|object{b: int}",
+        "object{a: int}|object{b: int}",
+        "object{a: int}|object{b: int}",
+        "object{a: int}|object{b: int}"
+    ],
+    [
+        null,
+        "object{a: int}|object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        null,
+        "Iterator|IteratorAggregate|Traversable",
+        "Traversable",
+        "Traversable",
+        "Traversable"
+    ],
+    [
+        null,
+        "Traversable|Iterator",
+        "Traversable",
+        "Traversable",
+        "Traversable"
+    ],
+    [
+        null,
+        "Iterator<int>|Traversable<string>",
+        "Iterator<mixed, int>|Traversable<mixed, string>",
+        "Iterator<mixed, int>|Traversable<mixed, string>",
+        "Iterator<mixed, int>|Traversable<mixed, string>"
+    ],
+    [
+        null,
+        "1|1.0",
+        "1|1.0",
+        "1|1.0",
+        "float|int"
+    ],
+    [
+        null,
+        "'1'|1",
+        "1|'1'",
+        "1|'1'",
+        "int|string"
+    ],
+    [
+        null,
+        "-1|-2|0|-1.5|1.5",
+        "-2|-1.5|-1|0|1.5",
+        "-2|-1.5|-1|0|1.5",
+        "float|int"
+    ],
+    [
+        null,
+        "1.0E+25|0.1|-0.0",
+        "-0.0|0.1|1.0E+25",
+        "-0.0|0.1|1.0E+25",
+        "float"
+    ],
+    [
+        null,
+        "Countable::class|Traversable::class",
+        "'Countable'|'Traversable'",
+        "'Countable'|'Traversable'",
+        "string"
+    ],
+    [
+        null,
+        "'aaaaaaaaaaaaaaaaaaaaaaaaaaaa'|'b c d e f g h i j k l m n o p'",
+        "'aaaaaaaaaaaaaaaaaaaaaaaaaaaa'|'b c d e f g h i j k l m n o p'",
+        "'aaaaaaaaaaaaaaaaaaa…'|'b c d e f g h i j k…'",
+        "string"
+    ],
+    [
+        null,
+        "'a\\tb'",
+        "'a\\\\tb'",
+        "'a\\\\tb'",
+        "string"
+    ],
+    [
+        null,
+        "\"a\\nb\\\\c\\\"d\\x07\"",
+        "\"a\\nb\\\\c\\\"d\\a\"",
+        "\"a\\nb\\\\c\\\"d\\a\"",
+        "string"
+    ],
+    [
+        null,
+        "'it\\'s'",
+        "'it\\'s'",
+        "'it\\'s'",
+        "string"
+    ],
+    [
+        null,
+        "'\\\\'",
+        "'\\\\'",
+        "'\\\\'",
+        "string"
+    ],
+    [
+        null,
+        "\"\\101\\x41\"",
+        "'AA'",
+        "'AA'",
+        "string"
+    ],
+    [
+        null,
+        "\"\\u{41}\"",
+        "'A'",
+        "'A'",
+        "string"
+    ],
+    [
+        null,
+        "'abcdefghijklmnopqrstuvwxyz'",
+        "'abcdefghijklmnopqrstuvwxyz'",
+        "'abcdefghijklmnopqrs…'",
+        "string"
+    ],
+    [
+        null,
+        "'abc defgh ijklmnopqrs tuvwxyz'",
+        "'abc defgh ijklmnopqrs tuvwxyz'",
+        "'abc defgh…'",
+        "string"
+    ],
+    [
+        null,
+        "'Countable'",
+        "'Countable'",
+        "'Countable'",
+        "string"
+    ],
+    [
+        null,
+        "'countable'",
+        "'countable'",
+        "'countable'",
+        "string"
+    ],
+    [
+        null,
+        "'0'",
+        "'0'",
+        "'0'",
+        "string"
+    ],
+    [
+        null,
+        "''",
+        "''",
+        "''",
+        "string"
+    ],
+    [
+        null,
+        "0.5",
+        "0.5",
+        "0.5",
+        "float"
+    ],
+    [
+        null,
+        "1e3",
+        "1000.0",
+        "1000.0",
+        "float"
+    ],
+    [
+        null,
+        "-1.5e-7",
+        "-1.5E-7",
+        "-1.5E-7",
+        "float"
+    ],
+    [
+        null,
+        "0x1A",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        null,
+        "0b101",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        null,
+        "0o17",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        null,
+        "017",
+        "17",
+        "17",
+        "int"
+    ],
+    [
+        null,
+        "1_000",
+        "1000",
+        "1000",
+        "int"
+    ],
+    [
+        null,
+        "-0",
+        "0",
+        "0",
+        "int"
+    ],
+    [
+        null,
+        "9223372036854775807",
+        "9223372036854775807",
+        "9223372036854775807",
+        "int"
+    ],
+    [
+        null,
+        "float|1.5",
+        "float",
+        "float",
+        "float"
+    ],
+    [
+        null,
+        "int|1",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "bool|true",
+        "bool",
+        "bool",
+        "bool"
+    ],
+    [
+        null,
+        "string|'a'",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "array-key|int",
+        "(int|string)",
+        "(int|string)",
+        "(int|string)"
+    ],
+    [
+        null,
+        "int|array-key",
+        "(int|string)",
+        "(int|string)",
+        "(int|string)"
+    ],
+    [
+        null,
+        "__benevolent<int|string>|int",
+        "(int|string)",
+        "(int|string)",
+        "(int|string)"
+    ],
+    [
+        null,
+        "__benevolent<int|string>|float",
+        "float|int|string",
+        "float|int|string",
+        "float|int|string"
+    ],
+    [
+        null,
+        "resource|null",
+        "resource|null",
+        "resource|null",
+        "resource|null"
+    ],
+    [
+        null,
+        "void|null",
+        "void|null",
+        "void|null",
+        "void|null"
+    ],
+    [
+        null,
+        "Closure(): int|Closure(): string",
+        "(Closure(): int)|(Closure(): string)",
+        "(Closure(): int)|(Closure(): string)",
+        "(Closure)"
+    ],
+    [
+        null,
+        "Closure(int): void|callable(int): void",
+        "callable(int): void",
+        "callable(int): void",
+        "callable"
+    ],
+    [
+        null,
+        "Countable&Traversable",
+        "Countable&Traversable",
+        "Countable&Traversable",
+        "Countable&Traversable"
+    ],
+    [
+        null,
+        "non-empty-string&numeric-string",
+        "non-empty-string&numeric-string",
+        "non-empty-string&numeric-string",
+        "string"
+    ],
+    [
+        null,
+        "string&non-empty-string",
+        "non-empty-string",
+        "non-empty-string",
+        "string"
+    ],
+    [
+        null,
+        "array<int>&non-empty-array",
+        "non-empty-array<int>",
+        "non-empty-array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "list<int>&non-empty-array",
+        "non-empty-list<int>",
+        "non-empty-list<int>",
+        "list<int>"
+    ],
+    [
+        null,
+        "array{a?: int}&non-empty-array",
+        "array{a: int}",
+        "array{a: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{0?: int}&list",
+        "array{0?: int}",
+        "array{0?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{a: int}&list",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "int&string",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "int<1, 5>&int<3, 9>",
+        "int<3, 5>",
+        "int<3, 5>",
+        "int<3, 5>"
+    ],
+    [
+        null,
+        "int&int<1, 3>",
+        "int<1, 3>",
+        "int<1, 3>",
+        "int<1, 3>"
+    ],
+    [
+        null,
+        "int<1, 3>&1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        null,
+        "int<1, 3>&int<5, 7>",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "iterable<int>&array",
+        "array<mixed, int>",
+        "array<mixed, int>",
+        "array<mixed, int>"
+    ],
+    [
+        null,
+        "array&iterable<int>",
+        "array<int>",
+        "array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "Foo&Bar",
+        "Bar&Foo",
+        "Bar&Foo",
+        "Bar&Foo"
+    ],
+    [
+        null,
+        "callable&array",
+        "non-empty-list&callable(): mixed",
+        "non-empty-list&callable(): mixed",
+        "callable&list"
+    ],
+    [
+        null,
+        "Traversable&iterable<int>",
+        "iterable<int>&Traversable",
+        "iterable<int>&Traversable",
+        "iterable<int>&Traversable"
+    ],
+    [
+        null,
+        "non-empty-array&list",
+        "non-empty-list",
+        "non-empty-list",
+        "list"
+    ],
+    [
+        null,
+        "non-empty-array&array{0?: int, 1?: int}",
+        "non-empty-array{0?: int, 1?: int}",
+        "non-empty-array{0?: int, 1?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array<int>&array<string>",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "array<int, int>&list",
+        "list<int>",
+        "list<int>",
+        "list<int>"
+    ],
+    [
+        null,
+        "array<string, int>&list",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "array<int>&list<int>",
+        "list<int>",
+        "list<int>",
+        "list<int>"
+    ],
+    [
+        null,
+        "iterable<int>&iterable<string>",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "class-string<Countable>&class-string<Traversable>",
+        "class-string<Countable&Traversable>",
+        "class-string<Countable&Traversable>",
+        "class-string<Countable&Traversable>"
+    ],
+    [
+        null,
+        "non-empty-string&non-falsy-string",
+        "non-falsy-string",
+        "non-falsy-string",
+        "string"
+    ],
+    [
+        null,
+        "non-falsy-string&non-empty-string",
+        "non-falsy-string",
+        "non-falsy-string",
+        "string"
+    ],
+    [
+        null,
+        "lowercase-string&uppercase-string&non-empty-string",
+        "lowercase-string&non-empty-string&uppercase-string",
+        "non-empty-string",
+        "string"
+    ],
+    [
+        null,
+        "literal-string&numeric-string",
+        "literal-string&numeric-string",
+        "literal-string&numeric-string",
+        "string"
+    ],
+    [
+        null,
+        "non-empty-string&string",
+        "non-empty-string",
+        "non-empty-string",
+        "string"
+    ],
+    [
+        null,
+        "string&int",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "Countable&object",
+        "Countable",
+        "Countable",
+        "Countable"
+    ],
+    [
+        null,
+        "object&Countable",
+        "Countable",
+        "Countable",
+        "Countable"
+    ],
+    [
+        null,
+        "array{a: int}&array<string, int>",
+        "array{a: int}",
+        "array{a: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int}&array{a: int}",
+        "array{a: int}",
+        "array{a: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int}&array{b: int}",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "array{}&non-empty-array",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "non-empty-array&array{}",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "mixed&int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "int&mixed",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "(int|string)&int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "int&(1|2|\"a\")",
+        "1|2",
+        "1|2",
+        "int"
+    ],
+    [
+        null,
+        "(1|2)&(2|3)",
+        "2",
+        "2",
+        "int"
+    ],
+    [
+        null,
+        "__benevolent<int|string>&int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "Countable&(Traversable|ArrayAccess)",
+        "(ArrayAccess&Countable)|(Countable&Traversable)",
+        "(ArrayAccess&Countable)|(Countable&Traversable)",
+        "(ArrayAccess&Countable)|(Countable&Traversable)"
+    ],
+    [
+        null,
+        "stdClass&object{a: int}",
+        "object{a: int}&stdClass",
+        "object{a: int}&stdClass",
+        "object{a: int}&stdClass"
+    ],
+    [
+        null,
+        "object{a: int}&stdClass",
+        "object{a: int}&stdClass",
+        "object{a: int}&stdClass",
+        "object{a: int}&stdClass"
+    ],
+    [
+        null,
+        "DateInterval&object{days: int}",
+        "DateInterval&object{days: int}",
+        "DateInterval&object{days: int}",
+        "DateInterval&object{days: int}"
+    ],
+    [
+        null,
+        "callable-string&non-empty-string",
+        "callable-string&non-empty-string",
+        "callable-string&non-empty-string",
+        "callable&string"
+    ],
+    [
+        null,
+        "non-empty-array&callable",
+        "non-empty-list&callable(): mixed",
+        "non-empty-list&callable(): mixed",
+        "callable&list"
+    ],
+    [
+        null,
+        "list<int>&array<int>",
+        "list<int>",
+        "list<int>",
+        "list<int>"
+    ],
+    [
+        null,
+        "non-empty-list&array{a?: int}",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "array<string>&non-empty-array<string>",
+        "non-empty-array<string>",
+        "non-empty-array<string>",
+        "array<string>"
+    ],
+    [
+        null,
+        "array<int, string>&non-empty-array<int, string>&list",
+        "non-empty-list<string>",
+        "non-empty-list<string>",
+        "list<string>"
+    ],
+    [
+        null,
+        "(T is int ? string : bool)",
+        "(T is int ? string : bool)",
+        "(T is int ? string : bool)",
+        "(T is int ? string : bool)"
+    ],
+    [
+        null,
+        "($x is int ? 1 : 2)",
+        "($x is int ? 1 : 2)",
+        "($x is int ? 1 : 2)",
+        "($x is int ? int : int)"
+    ],
+    [
+        null,
+        "($x is not int ? 1 : 2)",
+        "($x is not int ? 1 : 2)",
+        "($x is not int ? 1 : 2)",
+        "($x is not int ? int : int)"
+    ],
+    [
+        null,
+        "(int is int ? true : false)",
+        "(int is int ? true : false)",
+        "(int is int ? true : false)",
+        "(int is int ? true : false)"
+    ],
+    [
+        null,
+        "int<min, max>",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "int<min, -9223372036854775808>",
+        "-9223372036854775808",
+        "-9223372036854775808",
+        "int"
+    ],
+    [
+        null,
+        "int<9223372036854775807, max>",
+        "9223372036854775807",
+        "9223372036854775807",
+        "int"
+    ],
+    [
+        null,
+        "never|1",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        null,
+        "never|int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "never|Countable",
+        "Countable",
+        "Countable",
+        "Countable"
+    ],
+    [
+        null,
+        "non-empty-string&class-string",
+        "class-string",
+        "class-string",
+        "class-string"
+    ],
+    [
+        null,
+        "class-string&non-falsy-string",
+        "class-string",
+        "class-string",
+        "class-string"
+    ],
+    [
+        null,
+        "class-string&numeric-string",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "non-falsy-string&numeric-string",
+        "non-falsy-string&numeric-string",
+        "non-falsy-string&numeric-string",
+        "string"
+    ],
+    [
+        null,
+        "uppercase-string&'ABC'",
+        "'ABC'",
+        "'ABC'",
+        "string"
+    ],
+    [
+        null,
+        "'ABC'&uppercase-string",
+        "'ABC'",
+        "'ABC'",
+        "string"
+    ],
+    [
+        null,
+        "'abc'&uppercase-string",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "lowercase-string&'abc'",
+        "'abc'",
+        "'abc'",
+        "string"
+    ],
+    [
+        null,
+        "'strlen'&callable",
+        "'strlen'",
+        "'strlen'",
+        "string"
+    ],
+    [
+        null,
+        "'nope'&callable",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "callable&Closure",
+        "Closure",
+        "Closure",
+        "Closure"
+    ],
+    [
+        null,
+        "callable&stdClass",
+        "callable(): mixed&stdClass",
+        "callable(): mixed&stdClass",
+        "callable&stdClass"
+    ],
+    [
+        null,
+        "callable&Generator",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "callable&ArrayIterator",
+        "ArrayIterator&callable(): mixed",
+        "ArrayIterator&callable(): mixed",
+        "ArrayIterator&callable"
+    ],
+    [
+        null,
+        "Closure&callable(int): void",
+        "callable(int): void&Closure",
+        "callable(int): void&Closure",
+        "callable&Closure"
+    ],
+    [
+        null,
+        "(Countable&Traversable)|(Countable&ArrayAccess)",
+        "(ArrayAccess&Countable)|(Countable&Traversable)",
+        "(ArrayAccess&Countable)|(Countable&Traversable)",
+        "(ArrayAccess&Countable)|(Countable&Traversable)"
+    ],
+    [
+        null,
+        "Generator&Countable",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "Countable&Generator",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "Exception&Countable",
+        "Countable&Exception",
+        "Countable&Exception",
+        "Countable&Exception"
+    ],
+    [
+        null,
+        "Exception&Error",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "callable(int<1, 3>, 'a', 1.5, class-string<Countable>, ArrayIterator<int, string>, iterable<int>, iterable<int, string>, iterable, list<int>, array<string, int>, array, never): void",
+        "callable(int<1, 3>, 'a', 1.5, class-string<Countable>, ArrayIterator<int, string>, iterable<int>, iterable<int, string>, iterable, list<int>, array<string, int>, array, never): void",
+        "callable(int<1, 3>, 'a', 1.5, class-string<Countable>, ArrayIterator<int, string>, iterable<int>, iterable<int, string>, iterable, list<int>, array<string, int>, array, never): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(callable(int): void, Closure(int $x): void, callable): void",
+        "callable(callable(int): void, Closure(int $x): void, callable): void",
+        "callable(callable(int): void, Closure(int $x): void, callable): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(Countable&Traversable): void",
+        "callable(Countable&Traversable): void",
+        "callable(Countable&Traversable): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(array<int>, array{a: int}): void",
+        "callable(array<int>, array{a: int}): void",
+        "callable(array<int>, array{a: int}): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(int...): void",
+        "callable(int ...): void",
+        "callable(int ...): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(int=): void",
+        "callable(int=): void",
+        "callable(int=): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(): (callable(): int)",
+        "callable(): (callable(): int)",
+        "callable(): (callable(): int)",
+        "callable"
+    ],
+    [
+        null,
+        "callable(): (Countable&Traversable)",
+        "callable(): (Countable&Traversable)",
+        "callable(): (Countable&Traversable)",
+        "callable"
+    ],
+    [
+        null,
+        "callable(): Closure(): int",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "callable(int|string, int|string[]): void",
+        "callable(int|string, array<string>|int): void",
+        "callable(int|string, array<string>|int): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(class-string, -5, 1.0E+25, 'it\\'s'): void",
+        "callable(class-string, -5, 1.0E+25, 'it\\'s'): void",
+        "callable(class-string, -5, 1.0E+25, 'it\\'s'): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(callable(int &$x, int ...$y): void, callable(int=): void): void",
+        "callable(callable(int &$x, int ...$y=): void, callable(int=): void): void",
+        "callable(callable(int &$x, int ...$y=): void, callable(int=): void): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(callable(): (int|string)): void",
+        "callable(callable(): (int|string)): void",
+        "callable(callable(): (int|string)): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(non-empty-string, list<int>|false, (int|string)[]): void",
+        "callable(non-empty-string, list<int>|false, array<int|string>): void",
+        "callable(non-empty-string, list<int>|false, array<int|string>): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(object, resource, mixed, void, null): void",
+        "callable(object, resource, mixed, void, null): void",
+        "callable(object, resource, mixed, void, null): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(static, $this): void",
+        "callable(static, mixed): void",
+        "callable(static, mixed): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(Traversable<int>, Generator<int, string>): void",
+        "callable(Traversable<mixed, int>, Generator<int, string, mixed, mixed>): void",
+        "callable(Traversable<mixed, int>, Generator<int, string, mixed, mixed>): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(non-empty-array<int>, int<min, 5>): void",
+        "callable(non-empty-array<int>, int<min, 5>): void",
+        "callable(non-empty-array<int>, int<min, 5>): void",
+        "callable"
+    ],
+    [
+        null,
+        "callable(): iterable<int, string>",
+        "callable(): iterable<int, string>",
+        "callable(): iterable<int, string>",
+        "callable"
+    ],
+    [
+        null,
+        "callable(): iterable<string>",
+        "callable(): iterable<string>",
+        "callable(): iterable<string>",
+        "callable"
+    ],
+    [
+        null,
+        "callable(): iterable",
+        "callable(): iterable",
+        "callable(): iterable",
+        "callable"
+    ],
+    [
+        null,
+        "\"\\x08\\x01\"",
+        "\"\\b\\001\"",
+        "\"\\b\\001\"",
+        "string"
+    ],
+    [
+        null,
+        "'a\\\\b'",
+        "'a\\\\b'",
+        "'a\\\\b'",
+        "string"
+    ],
+    [
+        null,
+        "1.0|1",
+        "1|1.0",
+        "1|1.0",
+        "float|int"
+    ],
+    [
+        null,
+        "2.0|1|1.5",
+        "1|1.5|2.0",
+        "1|1.5|2.0",
+        "float|int"
+    ],
+    [
+        null,
+        "1|2.0|1.0",
+        "1|1.0|2.0",
+        "1|1.0|2.0",
+        "float|int"
+    ],
+    [
+        null,
+        "1.5|1",
+        "1|1.5",
+        "1|1.5",
+        "float|int"
+    ],
+    [
+        null,
+        "int<1, 3>|int<min, 0>",
+        "int<min, 3>",
+        "int<min, 3>",
+        "int<min, 3>"
+    ],
+    [
+        null,
+        "int<5, max>|int<1, 3>",
+        "int<1, 3>|int<5, max>",
+        "int<1, 3>|int<5, max>",
+        "int<1, 3>|int<5, max>"
+    ],
+    [
+        null,
+        "int<1, 3>|int<min, max>",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "int<1, 3>|1|2|3",
+        "int<1, 3>",
+        "int<1, 3>",
+        "int<1, 3>"
+    ],
+    [
+        null,
+        "1|2|3|int<1, 3>",
+        "int<1, 3>",
+        "int<1, 3>",
+        "int<1, 3>"
+    ],
+    [
+        null,
+        "int<1, 2>|int<2, 3>|int<9, 10>",
+        "int<1, 3>|int<9, 10>",
+        "int<1, 3>|int<9, 10>",
+        "int<1, 3>|int<9, 10>"
+    ],
+    [
+        null,
+        "array{a: int}|array{a: int, b?: int}",
+        "array{a: int, b?: int}",
+        "array{a: int, b?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a?: int}|array{}",
+        "array{}|array{a?: int}",
+        "array{}|array{a?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int, b?: int}|array{a: int}",
+        "array{a: int, b?: int}",
+        "array{a: int, b?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int, b: int}|array{a: int}",
+        "array{a: int, b?: int}",
+        "array{a: int, b?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int}|array{a: int, b: int}",
+        "array{a: int, b?: int}",
+        "array{a: int, b?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int, b: int, c: int}|array{a: int}",
+        "array{a: int, b: int, c: int}|array{a: int}",
+        "array{a: int, b: int, c: int}|array{a: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int, b: int}|array{b: string, a: string}",
+        "array{a: int, b: int}|array{b: string, a: string}",
+        "array{a: int, b: int}|array{b: string, a: string}",
+        "array<string, int|string>"
+    ],
+    [
+        null,
+        "array{0: int}|array{0: string}",
+        "array{int}|array{string}",
+        "array{int}|array{string}",
+        "list<int|string>"
+    ],
+    [
+        null,
+        "list{int}|list{string}",
+        "array{int}|array{string}",
+        "array{int}|array{string}",
+        "list<int|string>"
+    ],
+    [
+        null,
+        "array{a: 1, b: 2}|array{a: 1, b: 3}|array{a: 2, b: 2}",
+        "array{a: 1|2, b: 2|3}",
+        "array{a: 1|2, b: 2|3}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array<int, int>|array{a: int}",
+        "array<'a'|int, int>",
+        "array<'a'|int, int>",
+        "array<int|string, int>"
+    ],
+    [
+        null,
+        "array{a: int}|array<string, int>|false",
+        "array<string, int>|false",
+        "array<string, int>|false",
+        "array<string, int>|false"
+    ],
+    [
+        null,
+        "non-empty-array{a: int}|non-empty-array{b: int}",
+        "array{a: int}|array{b: int}",
+        "array{a: int}|array{b: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "list{0?: int}|list{int, int}",
+        "list{0?: int, 1?: int}",
+        "list{0?: int, 1?: int}",
+        "list<int, int>"
+    ],
+    [
+        null,
+        "array{0?: int, 1?: int}&non-empty-array",
+        "non-empty-array{0?: int, 1?: int}",
+        "non-empty-array{0?: int, 1?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "list{0?: int, 1?: int}&non-empty-array",
+        "array{0: int, 1?: int}",
+        "array{0: int, 1?: int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{a?: int, b?: int}&non-empty-array",
+        "non-empty-array{a?: int, b?: int}",
+        "non-empty-array{a?: int, b?: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a?: int, ...}&non-empty-array",
+        "non-empty-array{a?: int, ...}",
+        "non-empty-array{a?: int, ...}",
+        "array"
+    ],
+    [
+        null,
+        "array{0: int}&list",
+        "array{int}",
+        "array{int}",
+        "array<int, int>"
+    ],
+    [
+        null,
+        "array{1: int}&list",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "array{a: int, ...}&list",
+        "list",
+        "list",
+        "list"
+    ],
+    [
+        null,
+        "array<int>&list",
+        "list<int>",
+        "list<int>",
+        "list<int>"
+    ],
+    [
+        null,
+        "array<int<0, max>, int>&list",
+        "list<int>",
+        "list<int>",
+        "list<int>"
+    ],
+    [
+        null,
+        "array<1|2, int>&list",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "array<'a', int>&list",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "array{a: int}&array<int, int>",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "array{a: int, b?: string}&array<string, int>",
+        "array{a: int, b?: *NEVER*}",
+        "array{a: int, b?: *NEVER*}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int, ...}&array<string, int>",
+        "array{a: int, ...<string, int>}",
+        "array{a: int, ...<string, int>}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "iterable<int>&iterable<int>",
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>"
+    ],
+    [
+        null,
+        "iterable<int>&Traversable",
+        "iterable<int>&Traversable",
+        "iterable<int>&Traversable",
+        "iterable<int>&Traversable"
+    ],
+    [
+        null,
+        "iterable<int>&Countable",
+        "Countable&iterable<int>",
+        "Countable&iterable<int>",
+        "Countable&iterable<int>"
+    ],
+    [
+        null,
+        "iterable&array<int>",
+        "array<int>",
+        "array<int>",
+        "array<int>"
+    ],
+    [
+        null,
+        "iterable<int, string>&array",
+        "array<int, string>",
+        "array<int, string>",
+        "array<int, string>"
+    ],
+    [
+        null,
+        "list<int>&iterable<string>",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "mixed|int",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "non-empty-mixed",
+        "mixed~(0|0.0|''|'0'|array{}|false|null)",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "array<int, mixed>",
+        "array<int, mixed>",
+        "array<int, mixed>",
+        "array<int, mixed>"
+    ],
+    [
+        null,
+        "array<mixed>",
+        "array<mixed>",
+        "array<mixed>",
+        "array<mixed>"
+    ],
+    [
+        null,
+        "iterable<mixed, mixed>",
+        "iterable",
+        "iterable",
+        "iterable"
+    ],
+    [
+        null,
+        "iterable<mixed>",
+        "iterable",
+        "iterable",
+        "iterable"
+    ],
+    [
+        null,
+        "list<mixed>",
+        "list<mixed>",
+        "list<mixed>",
+        "list<mixed>"
+    ],
+    [
+        null,
+        "class-string<Countable>|class-string<Traversable>",
+        "class-string<Countable>|class-string<Traversable>",
+        "class-string<Countable>|class-string<Traversable>",
+        "class-string<Countable>|class-string<Traversable>"
+    ],
+    [
+        null,
+        "class-string<Countable>&'Countable'",
+        "'Countable'",
+        "'Countable'",
+        "string"
+    ],
+    [
+        null,
+        "'Countable'&class-string<Countable>",
+        "'Countable'",
+        "'Countable'",
+        "string"
+    ],
+    [
+        null,
+        "'ArrayIterator'&class-string<Countable>",
+        "'ArrayIterator'",
+        "'ArrayIterator'",
+        "string"
+    ],
+    [
+        null,
+        "'Nope'&class-string",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "'Countable'&class-string",
+        "'Countable'",
+        "'Countable'",
+        "string"
+    ],
+    [
+        null,
+        "class-string&string",
+        "class-string",
+        "class-string",
+        "class-string"
+    ],
+    [
+        null,
+        "class-string<mixed>&class-string",
+        "class-string<mixed>",
+        "class-string<mixed>",
+        "class-string<mixed>"
+    ],
+    [
+        null,
+        "'Countable'|class-string<mixed>",
+        "class-string<mixed>",
+        "class-string<mixed>",
+        "class-string<mixed>"
+    ],
+    [
+        null,
+        "class-string<mixed>|'Countable'",
+        "class-string<mixed>",
+        "class-string<mixed>",
+        "class-string<mixed>"
+    ],
+    [
+        null,
+        "'Countable'&class-string<object>",
+        "'Countable'",
+        "'Countable'",
+        "string"
+    ],
+    [
+        null,
+        "class-string<object>|class-string",
+        "class-string",
+        "class-string",
+        "class-string"
+    ],
+    [
+        null,
+        "class-string|class-string<Countable>",
+        "class-string",
+        "class-string",
+        "class-string"
+    ],
+    [
+        null,
+        "array{}|array{}",
+        "array{}",
+        "array{}",
+        "array"
+    ],
+    [
+        null,
+        "array{}&array{}",
+        "array{}",
+        "array{}",
+        "array"
+    ],
+    [
+        null,
+        "array{}&list",
+        "array{}",
+        "array{}",
+        "array"
+    ],
+    [
+        null,
+        "array{}&array<int>",
+        "array{}",
+        "array{}",
+        "array"
+    ],
+    [
+        null,
+        "array<int>&array{}",
+        "array{}",
+        "array{}",
+        "array"
+    ],
+    [
+        null,
+        "array{a: int}&array{}",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "list{int, string}&list",
+        "array{int, string}",
+        "array{int, string}",
+        "array<int, int|string>"
+    ],
+    [
+        null,
+        "list{int, string}&array{int, string}",
+        "array{int, string}",
+        "array{int, string}",
+        "array<int, int|string>"
+    ],
+    [
+        null,
+        "array{a: int}&array{a: 1}",
+        "array{a: 1}",
+        "array{a: 1}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int, b: int}&array{a: int}",
+        "array{a: int, b: int}",
+        "array{a: int, b: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int}&array{a?: int}",
+        "array{a: int}",
+        "array{a: int}",
+        "array<string, int>"
+    ],
+    [
+        null,
+        "array{a: int}&array{a: string}",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "Closure(int): void|Closure(string): void",
+        "(Closure(int): void)|(Closure(string): void)",
+        "(Closure(int): void)|(Closure(string): void)",
+        "(Closure)"
+    ],
+    [
+        null,
+        "Closure|Closure(): void",
+        "Closure",
+        "Closure",
+        "Closure"
+    ],
+    [
+        null,
+        "Closure(): void|Closure",
+        "Closure",
+        "Closure",
+        "Closure"
+    ],
+    [
+        null,
+        "Closure(): void&Closure",
+        "Closure(): void",
+        "Closure(): void",
+        "Closure"
+    ],
+    [
+        null,
+        "callable&Closure(): void",
+        "Closure(): void",
+        "Closure(): void",
+        "Closure"
+    ],
+    [
+        null,
+        "Iterator&Traversable<int>",
+        "Iterator",
+        "Iterator",
+        "Iterator"
+    ],
+    [
+        null,
+        "Traversable<int>&Iterator",
+        "Iterator",
+        "Iterator",
+        "Iterator"
+    ],
+    [
+        null,
+        "ArrayIterator<int, string>&Countable",
+        "ArrayIterator<int, string>",
+        "ArrayIterator<int, string>",
+        "ArrayIterator<int, string>"
+    ],
+    [
+        null,
+        "ArrayIterator<int, string>|ArrayIterator<int, string>",
+        "ArrayIterator<int, string>",
+        "ArrayIterator<int, string>",
+        "ArrayIterator<int, string>"
+    ],
+    [
+        null,
+        "ArrayIterator<int, string>|ArrayIterator<int, int>",
+        "ArrayIterator<int, int>|ArrayIterator<int, string>",
+        "ArrayIterator<int, int>|ArrayIterator<int, string>",
+        "ArrayIterator<int, int>|ArrayIterator<int, string>"
+    ],
+    [
+        null,
+        "ArrayIterator<int, string>|ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator"
+    ],
+    [
+        null,
+        "ArrayIterator|ArrayIterator<int, string>",
+        "ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator"
+    ],
+    [
+        null,
+        "ArrayIterator<int, string>|SeekableIterator<int, string>",
+        "SeekableIterator<int, string>",
+        "SeekableIterator<int, string>",
+        "SeekableIterator<int, string>"
+    ],
+    [
+        null,
+        "SeekableIterator<int, string>|ArrayIterator<int, string>",
+        "SeekableIterator<int, string>",
+        "SeekableIterator<int, string>",
+        "SeekableIterator<int, string>"
+    ],
+    [
+        null,
+        "Iterator<int, string>|ArrayIterator<int, string>",
+        "Iterator<int, string>",
+        "Iterator<int, string>",
+        "Iterator<int, string>"
+    ],
+    [
+        null,
+        "ArrayIterator<int, string>|Iterator<int, string>",
+        "Iterator<int, string>",
+        "Iterator<int, string>",
+        "Iterator<int, string>"
+    ],
+    [
+        null,
+        "ArrayIterator<int, string>|Countable",
+        "Countable",
+        "Countable",
+        "Countable"
+    ],
+    [
+        null,
+        "Countable|ArrayIterator<int, string>",
+        "Countable",
+        "Countable",
+        "Countable"
+    ],
+    [
+        null,
+        "ArrayIterator<Foo, string>|ArrayIterator<Bar, string>",
+        "ArrayIterator<Bar, string>|ArrayIterator<Foo, string>",
+        "ArrayIterator<Bar, string>|ArrayIterator<Foo, string>",
+        "ArrayIterator<Bar, string>|ArrayIterator<Foo, string>"
+    ],
+    [
+        null,
+        "Countable|Traversable|Countable",
+        "Countable|Traversable",
+        "Countable|Traversable",
+        "Countable|Traversable"
+    ],
+    [
+        null,
+        "stdClass|object{a: int}|object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        null,
+        "object{a: int}|stdClass",
+        "object{a: int}|stdClass",
+        "object{a: int}|stdClass",
+        "object{a: int}|stdClass"
+    ],
+    [
+        null,
+        "object{a: int}&object{b: int}",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "object{a: int}&object{a: int}",
+        "object{a: int}",
+        "object{a: int}",
+        "object{a: int}"
+    ],
+    [
+        null,
+        "object{a: int}&object",
+        "object{a: int}",
+        "object{a: int}",
+        "object{a: int}"
+    ],
+    [
+        null,
+        "object&object{a: int}",
+        "object{a: int}",
+        "object{a: int}",
+        "object{a: int}"
+    ],
+    [
+        null,
+        "object{a: int}|object{a: int}",
+        "object{a: int}",
+        "object{a: int}",
+        "object{a: int}"
+    ],
+    [
+        null,
+        "Countable&object{a: int}",
+        "Countable&object{a: int}",
+        "Countable&object{a: int}",
+        "Countable&object{a: int}"
+    ],
+    [
+        null,
+        "object{a: int}&Countable",
+        "Countable&object{a: int}",
+        "Countable&object{a: int}",
+        "Countable&object{a: int}"
+    ],
+    [
+        null,
+        "DateInterval|object{days: int}",
+        "DateInterval|object{days: int}",
+        "DateInterval|object{days: int}",
+        "DateInterval|object{days: int}"
+    ],
+    [
+        null,
+        "iterable<int>|array<int>",
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>"
+    ],
+    [
+        null,
+        "array<int>|iterable<int>",
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>"
+    ],
+    [
+        null,
+        "iterable<int>|Traversable<int>",
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>"
+    ],
+    [
+        null,
+        "Traversable<int>|iterable<int>",
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>"
+    ],
+    [
+        null,
+        "iterable<int>|list<int>",
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>"
+    ],
+    [
+        null,
+        "iterable<int>|int",
+        "int|iterable<int>",
+        "int|iterable<int>",
+        "int|iterable<int>"
+    ],
+    [
+        null,
+        "Countable|iterable<int>",
+        "Countable|iterable<int>",
+        "Countable|iterable<int>",
+        "Countable|iterable<int>"
+    ],
+    [
+        null,
+        "iterable<int>|Countable",
+        "Countable|iterable<int>",
+        "Countable|iterable<int>",
+        "Countable|iterable<int>"
+    ],
+    [
+        null,
+        "iterable<int>|ArrayIterator<int, int>",
+        "iterable<int>",
+        "iterable<int>",
+        "iterable<int>"
+    ],
+    [
+        null,
+        "iterable<int, string>|iterable<string, int>",
+        "iterable<int|string, int|string>",
+        "iterable<int|string, int|string>",
+        "iterable<int|string, int|string>"
+    ],
+    [
+        null,
+        "iterable|iterable<int>",
+        "iterable",
+        "iterable",
+        "iterable"
+    ],
+    [
+        null,
+        "(T is int ? string : bool)|int",
+        "(T is int ? string : bool)|int",
+        "(T is int ? string : bool)|int",
+        "(T is int ? string : bool)|int"
+    ],
+    [
+        null,
+        "int|(T is int ? string : bool)",
+        "(T is int ? string : bool)|int",
+        "(T is int ? string : bool)|int",
+        "(T is int ? string : bool)|int"
+    ],
+    [
+        null,
+        "mixed|(T is int ? string : bool)",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "(T is int ? string : bool)&int",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "''|non-empty-string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "''|non-falsy-string|'a'",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "''|lowercase-string&non-empty-string",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "''|uppercase-string&non-falsy-string",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "''|numeric-string",
+        "''|numeric-string",
+        "''|numeric-string",
+        "string"
+    ],
+    [
+        null,
+        "non-empty-string|'0'",
+        "non-empty-string",
+        "non-empty-string",
+        "string"
+    ],
+    [
+        null,
+        "'0'|non-falsy-string",
+        "non-empty-string",
+        "non-empty-string",
+        "string"
+    ],
+    [
+        null,
+        "non-falsy-string|'0'|''",
+        "string",
+        "string",
+        "string"
+    ],
+    [
+        null,
+        "positive-int|0",
+        "int<0, max>",
+        "int<0, max>",
+        "int<0, max>"
+    ],
+    [
+        null,
+        "negative-int|0|positive-int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        null,
+        "callable-string|non-empty-string",
+        "callable-string|non-empty-string",
+        "callable-string|non-empty-string",
+        "(callable&string)|string"
+    ],
+    [
+        null,
+        "non-empty-string|callable-string",
+        "callable-string|non-empty-string",
+        "callable-string|non-empty-string",
+        "(callable&string)|string"
+    ],
+    [
+        null,
+        "callable|int",
+        "(callable(): mixed)|int",
+        "(callable(): mixed)|int",
+        "(callable)|int"
+    ],
+    [
+        null,
+        "callable|callable",
+        "callable(): mixed",
+        "callable(): mixed",
+        "callable"
+    ],
+    [
+        null,
+        "callable(): int|callable(): int",
+        "callable(): int",
+        "callable(): int",
+        "callable"
+    ],
+    [
+        null,
+        "array-key|float",
+        "float|int|string",
+        "float|int|string",
+        "float|int|string"
+    ],
+    [
+        null,
+        "__benevolent<int|string>|null",
+        "int|string|null",
+        "int|string|null",
+        "int|string|null"
+    ],
+    [
+        null,
+        "__benevolent<int|string|null>",
+        "(int|string|null)",
+        "(int|string|null)",
+        "(int|string|null)"
+    ],
+    [
+        null,
+        "__benevolent<int|string>|bool",
+        "bool|int|string",
+        "bool|int|string",
+        "bool|int|string"
+    ],
+    [
+        null,
+        "scalar|null",
+        "bool|float|int|string|null",
+        "bool|float|int|string|null",
+        "bool|float|int|string|null"
+    ],
+    [
+        null,
+        "null|scalar",
+        "bool|float|int|string|null",
+        "bool|float|int|string|null",
+        "bool|float|int|string|null"
+    ],
+    [
+        null,
+        "Countable|null|Traversable",
+        "Countable|Traversable|null",
+        "Countable|Traversable|null",
+        "Countable|Traversable|null"
+    ],
+    [
+        null,
+        "null|Countable",
+        "Countable|null",
+        "Countable|null",
+        "Countable|null"
+    ],
+    [
+        null,
+        "Countable|null",
+        "Countable|null",
+        "Countable|null",
+        "Countable|null"
+    ],
+    [
+        null,
+        "null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        null,
+        "?null",
+        "null",
+        "null",
+        "null"
+    ],
+    [
+        null,
+        "?mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "?Countable",
+        "Countable|null",
+        "Countable|null",
+        "Countable|null"
+    ],
+    [
+        null,
+        "?callable",
+        "(callable(): mixed)|null",
+        "(callable(): mixed)|null",
+        "(callable)|null"
+    ],
+    [
+        null,
+        "?(int|string)",
+        "int|string|null",
+        "int|string|null",
+        "int|string|null"
+    ],
+    [
+        null,
+        "?int[]",
+        "array<int>|null",
+        "array<int>|null",
+        "array<int>|null"
+    ],
+    [
+        null,
+        "?array{a: int}",
+        "array{a: int}|null",
+        "array{a: int}|null",
+        "array<string, int>|null"
+    ],
+    [
+        null,
+        "resource|resource",
+        "resource",
+        "resource",
+        "resource"
+    ],
+    [
+        null,
+        "void|void",
+        "void",
+        "void",
+        "void"
+    ],
+    [
+        null,
+        "object|object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        null,
+        "object|stdClass",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        null,
+        "stdClass|object",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        null,
+        "Countable|object|Traversable",
+        "object",
+        "object",
+        "object"
+    ],
+    [
+        null,
+        "stdClass&object",
+        "stdClass",
+        "stdClass",
+        "stdClass"
+    ],
+    [
+        null,
+        "object&stdClass",
+        "stdClass",
+        "stdClass",
+        "stdClass"
+    ],
+    [
+        null,
+        "\\stdClass",
+        "stdClass",
+        "stdClass",
+        "stdClass"
+    ],
+    [
+        null,
+        "STDCLASS",
+        "STDCLASS",
+        "stdClass",
+        "stdClass"
+    ],
+    [
+        null,
+        "stdclass|stdClass",
+        "stdclass",
+        "stdClass",
+        "stdClass"
+    ],
+    [
+        null,
+        "stdClass&stdclass",
+        "stdClass",
+        "stdClass",
+        "stdClass"
+    ],
+    [
+        null,
+        "Exception|RuntimeException",
+        "Exception",
+        "Exception",
+        "Exception"
+    ],
+    [
+        null,
+        "RuntimeException|Exception",
+        "Exception",
+        "Exception",
+        "Exception"
+    ],
+    [
+        null,
+        "RuntimeException&Exception",
+        "RuntimeException",
+        "RuntimeException",
+        "RuntimeException"
+    ],
+    [
+        null,
+        "Exception&RuntimeException",
+        "RuntimeException",
+        "RuntimeException",
+        "RuntimeException"
+    ],
+    [
+        null,
+        "RuntimeException&LogicException",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "Throwable&RuntimeException",
+        "RuntimeException",
+        "RuntimeException",
+        "RuntimeException"
+    ],
+    [
+        null,
+        "Countable&RuntimeException",
+        "Countable&RuntimeException",
+        "Countable&RuntimeException",
+        "Countable&RuntimeException"
+    ],
+    [
+        null,
+        "RuntimeException&Countable",
+        "Countable&RuntimeException",
+        "Countable&RuntimeException",
+        "Countable&RuntimeException"
+    ],
+    [
+        null,
+        "Closure&Countable",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "Generator&Iterator",
+        "Generator",
+        "Generator",
+        "Generator"
+    ],
+    [
+        null,
+        "WeakMap&Countable",
+        "WeakMap",
+        "WeakMap",
+        "WeakMap"
+    ],
+    [
+        null,
+        "Countable&WeakMap",
+        "WeakMap",
+        "WeakMap",
+        "WeakMap"
+    ],
+    [
+        null,
+        "Closure&Exception",
+        "*NEVER*",
+        "*NEVER*",
+        "*NEVER*"
+    ],
+    [
+        null,
+        "SplObjectStorage<*, *>",
+        "SplObjectStorage<*, *>",
+        "SplObjectStorage<*, *>",
+        "SplObjectStorage<*, *>"
+    ],
+    [
+        null,
+        "int|",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "<",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "(int",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "array{",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        null,
+        "callable(",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "ArrayIterator",
+        "static|Countable",
+        "Countable",
+        "Countable",
+        "Countable"
+    ],
+    [
+        "ArrayIterator",
+        "$this|ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator"
+    ],
+    [
+        "ArrayIterator",
+        "ArrayIterator|static",
+        "ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator"
+    ],
+    [
+        "ArrayIterator",
+        "static|ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator"
+    ],
+    [
+        "ArrayIterator",
+        "ArrayIterator|$this",
+        "ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator"
+    ],
+    [
+        "ArrayIterator",
+        "$this|static",
+        "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)"
+    ],
+    [
+        "ArrayIterator",
+        "static|$this",
+        "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)"
+    ],
+    [
+        "ArrayIterator",
+        "static&Countable",
+        "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)"
+    ],
+    [
+        "ArrayIterator",
+        "callable(static, $this): void",
+        "callable(static, $this): void",
+        "callable(static, $this): void",
+        "callable"
+    ],
+    [
+        "ArrayIterator",
+        "callable(): static",
+        "callable(): static",
+        "callable(): static",
+        "callable"
+    ],
+    [
+        "ArrayIterator",
+        "class-string<static>",
+        "class-string<static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)>",
+        "class-string<static(ArrayIterator<TKey of (int|string), TValue>)>",
+        "class-string<static(ArrayIterator<TKey of (int|string), TValue>)>"
+    ],
+    [
+        "ArrayIterator",
+        "static|SeekableIterator",
+        "SeekableIterator",
+        "SeekableIterator",
+        "SeekableIterator"
+    ],
+    [
+        "ArrayIterator",
+        "SeekableIterator|static",
+        "SeekableIterator",
+        "SeekableIterator",
+        "SeekableIterator"
+    ],
+    [
+        "ArrayIterator",
+        "Iterator&static",
+        "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)"
+    ],
+    [
+        "ArrayIterator",
+        "static&Iterator",
+        "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)"
+    ],
+    [
+        "ArrayIterator",
+        "stdClass|static",
+        "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)|stdClass",
+        "static(ArrayIterator<TKey of (int|string), TValue>)|stdClass",
+        "static(ArrayIterator<TKey of (int|string), TValue>)|stdClass"
+    ],
+    [
+        "ArrayIterator",
+        "static|stdClass",
+        "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)|stdClass",
+        "static(ArrayIterator<TKey of (int|string), TValue>)|stdClass",
+        "static(ArrayIterator<TKey of (int|string), TValue>)|stdClass"
+    ],
+    [
+        "ArrayIterator",
+        "static",
+        "static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)",
+        "static(ArrayIterator<TKey of (int|string), TValue>)"
+    ],
+    [
+        "ArrayIterator",
+        "$this",
+        "$this(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)",
+        "$this(ArrayIterator<TKey of (int|string), TValue>)",
+        "$this(ArrayIterator<TKey of (int|string), TValue>)"
+    ],
+    [
+        "ArrayIterator",
+        "self",
+        "ArrayIterator",
+        "ArrayIterator",
+        "ArrayIterator"
+    ],
+    [
+        "ArrayIterator",
+        "static::class",
+        "class-string<static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)>",
+        "class-string<static(ArrayIterator<TKey of (int|string), TValue>)>",
+        "class-string<static(ArrayIterator<TKey of (int|string), TValue>)>"
+    ],
+    [
+        "ArrayIterator",
+        "self::class",
+        "'ArrayIterator'",
+        "'ArrayIterator'",
+        "string"
+    ],
+    [
+        "ArrayIterator",
+        "ArrayIterator::class",
+        "'ArrayIterator'",
+        "'ArrayIterator'",
+        "string"
+    ],
+    [
+        "ArrayIterator",
+        "self::STD_PROP_LIST",
+        "1",
+        "1",
+        "int"
+    ],
+    [
+        "ArrayIterator",
+        "ArrayIterator::*",
+        "1|2",
+        "1|2",
+        "int"
+    ],
+    [
+        "ArrayIterator",
+        "list<static>",
+        "list<static(ArrayIterator<TKey of (int|string) (class ArrayIterator, argument), TValue (class ArrayIterator, argument)>)>",
+        "list<static(ArrayIterator<TKey of (int|string), TValue>)>",
+        "list<static(ArrayIterator<TKey of (int|string), TValue>)>"
+    ],
+    [
+        "ArrayIterator",
+        "Countable::FOO",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "ArrayIterator",
+        "Nope::FOO",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "Nope",
+        "static",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "Nope",
+        "$this",
+        "*ERROR*",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "DatePeriod",
+        "$this",
+        "$this(DatePeriod<TDate of DateTimeInterface (class DatePeriod, argument), TEnd of DateTimeInterface|null (class DatePeriod, argument), TRecurrences of int|null (class DatePeriod, argument)>)",
+        "$this(DatePeriod<TDate of DateTimeInterface, TEnd of DateTimeInterface|null, TRecurrences of int|null>)",
+        "$this(DatePeriod<TDate of DateTimeInterface, TEnd of DateTimeInterface|null, TRecurrences of int|null>)"
+    ]
+]

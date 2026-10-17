@@ -139,7 +139,6 @@ pub enum Node {
         negated: bool,
     },
     Array(Box<Node>),
-    OffsetAccess(Box<Node>, Box<Node>),
     Generic {
         base: String,
         args: Vec<Node>,
@@ -498,22 +497,17 @@ fn parse_callable_return(t: &mut Tokens) -> R<Node> {
     Ok(Node::Ident(name))
 }
 
+/// `T[]` suffixes. ponytail: offset access (`T[K]`) is not parsed, so it is a parse error (`*ERROR*`) rather than
+/// PHPStan's `OffsetAccessType`; no built-in signature uses it.
 fn array_or_offset(t: &mut Tokens, mut ty: Node) -> Node {
     while t.is(Tok::OpenSquare) {
         let save = t.index;
         t.next();
-        if t.try_consume(Tok::CloseSquare) {
-            ty = Node::Array(Box::new(ty));
-            continue;
+        if !t.try_consume(Tok::CloseSquare) {
+            t.index = save;
+            break;
         }
-        let offset = parse_type(t).and_then(|offset| t.consume(Tok::CloseSquare).map(|()| offset));
-        match offset {
-            Ok(offset) => ty = Node::OffsetAccess(Box::new(ty), Box::new(offset)),
-            Err(ParseError) => {
-                t.index = save;
-                break;
-            }
-        }
+        ty = Node::Array(Box::new(ty));
     }
     ty
 }
@@ -658,6 +652,7 @@ fn unescape(quoted: &str) -> String {
                 b'f' => Some(0x0c),
                 b'v' => Some(0x0b),
                 b'e' => Some(0x1b),
+                b'$' => Some(b'$'),
                 _ => None,
             };
             if let Some(byte) = simple {
@@ -665,14 +660,43 @@ fn unescape(quoted: &str) -> String {
                 i += 2;
                 continue;
             }
+            let hex = |from: usize, max: usize| {
+                b[from..]
+                    .iter()
+                    .take(max)
+                    .take_while(|d| d.is_ascii_hexdigit())
+                    .count()
+            };
+            let digits =
+                |from: usize, len: usize| std::str::from_utf8(&b[from..from + len]).expect("ascii");
+            if matches!(c, b'x' | b'X') && hex(i + 2, 2) > 0 {
+                let len = hex(i + 2, 2);
+                out.push(u8::from_str_radix(digits(i + 2, len), 16).expect("hex"));
+                i += 2 + len;
+                continue;
+            }
+            if c == b'u' && b.get(i + 2) == Some(&b'{') {
+                let len = hex(i + 3, usize::MAX);
+                if len > 0 && b.get(i + 3 + len) == Some(&b'}') {
+                    let code = u32::from_str_radix(digits(i + 3, len), 16).unwrap_or(u32::MAX);
+                    let mut buf = [0; 4];
+                    out.extend_from_slice(
+                        char::from_u32(code)
+                            .unwrap_or('\u{fffd}')
+                            .encode_utf8(&mut buf)
+                            .as_bytes(),
+                    );
+                    i += 4 + len;
+                    continue;
+                }
+            }
             let octal = b[i + 1..]
                 .iter()
                 .take(3)
                 .take_while(|d| (b'0'..=b'7').contains(d))
                 .count();
             if octal > 0 {
-                let digits = std::str::from_utf8(&b[i + 1..i + 1 + octal]).expect("ascii");
-                out.push(u32::from_str_radix(digits, 8).expect("octal") as u8);
+                out.push(u32::from_str_radix(digits(i + 1, octal), 8).expect("octal") as u8);
                 i += 1 + octal;
                 continue;
             }

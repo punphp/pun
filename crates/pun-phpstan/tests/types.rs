@@ -150,3 +150,20 @@ fn constants() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+/// Probes Pun does not model yet (open for M2.3): unsealed shapes and key-narrowing in intersections with
+/// arrays/lists, subtracted mixed, object-shape and conditional intersections.
+const PROBE_GAPS: &[&str] = &[
+    "array{a: int, ...}&list",
+    "array<1|2, int>&list",
+    "array{a: int, b?: string}&array<string, int>",
+    "array{a: int, ...}&array<string, int>",
+    "non-empty-mixed",
+    "object{a: int}&object{b: int}",
+    "(T is int ? string : bool)&int",
+];
+
+#[test]
+fn probes() {
+    check("type-probes.json", PROBE_GAPS);
+}
