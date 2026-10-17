@@ -180,11 +180,15 @@ fn newlines(s: &[u8]) -> i64 {
 }
 
 fn find(haystack: &[u8], needle: &[u8], from: usize) -> Option<usize> {
-    haystack
-        .get(from..)?
-        .windows(needle.len())
-        .position(|w| w == needle)
-        .map(|p| p + from)
+    // the needle's first byte, then the rest: lines_to_ignore searches every file
+    let mut at = from;
+    loop {
+        at += haystack.get(at..)?.iter().position(|&c| c == needle[0])?;
+        if haystack[at..].starts_with(needle) {
+            return Some(at);
+        }
+        at += 1;
+    }
 }
 
 /// `$lines += [$line => null]`
@@ -217,6 +221,10 @@ fn by_ignore_comment(
 
 /// The ignore comments of a PHP file that parsed (PHPStan only reads them from a successful parse).
 pub fn lines_to_ignore(code: &[u8]) -> (LinesToIgnore, ParseErrors) {
+    // every line and error below comes from an `@phpstan-ignore` in a comment; most files have none and skip the lexer
+    if find(code, b"@phpstan-ignore", 0).is_none() {
+        return (LinesToIgnore::new(), ParseErrors::new());
+    }
     let mut tokens: Vec<(Option<Kind>, &[u8], i64)> = pun_tokens::tokenize(code)
         .into_iter()
         .map(|t| (t.kind, t.text, i64::from(t.line)))
