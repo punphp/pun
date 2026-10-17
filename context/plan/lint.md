@@ -237,3 +237,18 @@ Answered 2026-10-17 (Pushpak):
 - **Unported rules are never delegated.** `pun migrate` names and skips them; a hand-written pun.toml that names one
   is a config error (exit 2).
 - **Upgrades are lint rules in their own groups**, not a separate command.
+
+Lint spike (Build 1, 2026-10-17; report: ../reports/lint-spike.md):
+
+- **Assistant's call: the rule shape.** A rule is called for every node with its ancestor stack and returns reports
+  (span, message, help, optional `pun_problem::Fix`); it declares a lowest PHP version like Rector's
+  `MinPhpVersionInterface`. The fix loop stops after 100 rounds (Ruff's limit); a round whose fixes break the syntax
+  leaves the file unchanged and is an error naming the rules.
+- **Assistant's call: the sample rules** are `CombinedAssignRector` (unsafe) and `RemoveUnusedVariableInCatchRector`
+  (safe), both in Pinkary's rector.php sets, with provisional IDs `lint/style/prefer-compound-assignment` and
+  `lint/php-8.0/no-unused-catch-variable` until config 1 fixes the groups.
+- **Assistant's call: keep meaning over Rector's bytes.** Where Rector's printer drops parentheses that change what
+  the code does (`$a = $a + ($b or $c)` becomes `$a += $b or $c`), Pun keeps them.
+- **Assistant's call: the Rector oracle** is rector-src at the tag Pinkary's lock pins (fixtures, `.oracle/rector`)
+  plus the released rector/rector locked by `scripts/oracle-rector/composer.lock` (runnable, `.oracle/rector-bin`).
+

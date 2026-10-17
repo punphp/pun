@@ -11,6 +11,8 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | Composer | 2.10.3 | |
 | laravel/pint | 1.29.3, `dev-feat/blade-support` (what Pinkary's composer.lock pins) | `cef1b260c611f92e66902d678092e26932c9ea00` |
 | friendsofphp/php-cs-fixer | v3.95.17 (bundled in Pint's PHAR and its composer.lock) | `0ee88422118f3cc59c8c3def222ba7f1493b6d5b` |
+| rector/rector | 2.6.1 (what Pinkary's composer.lock pins; the released build in `.oracle/rector-bin`, locked by `scripts/oracle-rector/composer.lock`) | |
+| rectorphp/rector-src | 2.6.1 (source and `rules-tests/` fixtures in `.oracle/rector`) | `16be33c1c2364d51038752a299fce01043d42576` |
 | prettier / prettier-plugin-blade / prettier-plugin-tailwindcss | 3.9.10 / 3.3.3 / 0.8.1 (only for `Pint/laravel_blade`, installed into `corpus/pinkary/node_modules`) | |
 | Node | v22.23.3 (system) | |
 
@@ -18,6 +20,8 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 - Pint source with dev deps: `.oracle/pint` (used by `scripts/pint-boot.php` to resolve configs).
 - PHP-CS-Fixer directly: `php .oracle/php-cs-fixer/php-cs-fixer` (source checkout with `tests/`
   and PHPUnit, at the bundled ref). The copy inside Pint is `.oracle/pint/vendor/friendsofphp/php-cs-fixer`.
+- Rector: `php .oracle/rector-bin/vendor/bin/rector process --config <rector.php>` (see "Rector" below). Rule
+  sources and fixtures: `.oracle/rector/rules/` and `.oracle/rector/rules-tests/`.
 - Pint overrides `PhpCsFixer\FixerFactory` (`.oracle/pint/overrides/FixerFactory.php`) to register
   two custom fixers: `Pint/laravel_blade` (Prettier via Node) and `Pint/phpdoc_type_annotations_only`
   (priority 56, not enabled by any preset).
@@ -32,6 +36,28 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | `scripts/export-fixtures.php <effective.json> <outdir>` | upstream data-provider test cases to JSON |
 | `scripts/cli-parity.sh [--project DIR] [--tty [--cols N]] [--env K=V] "ARGS"...` | byte-compare Pint and `pun migrate` + `pun format` (stdout, stderr, exit code, files) per argument set, same directory |
 | `scripts/perturb.php <dir>` | make a deliberately unformatted copy (anti-laravel config + token noise, `php -l` checked) |
+
+## Rector
+
+The lint oracle (lint.md §6). A Pun lint rule ports one Rector rule; its tests are the rule's own fixtures from
+`.oracle/rector/rules-tests/<Set>/Rector/<Node>/<Rule>/Fixture*/`, copied verbatim into
+`crates/pun-lint/tests/rector/<Rule>/`. A fixture is the input, a `-----` line and the expected output, or only the
+input when the rule must leave it alone; the rule's `config/configured_rule.php` gives the PHP version. Parity is
+`format(pun lint --fix) == format(expected)`.
+
+For an input the fixtures miss, run Rector on it and paste its output as the expectation
+(`crates/pun-lint/tests/oracle/`):
+
+```php
+<?php // rector.php next to a src/ holding the inputs
+use Rector\Config\RectorConfig;
+return RectorConfig::configure()
+    ->withPaths([__DIR__.'/src'])
+    ->withRules([\Rector\CodeQuality\Rector\Assign\CombinedAssignRector::class])
+    ->withPhpVersion(80400);
+```
+
+`php .oracle/rector-bin/vendor/bin/rector process --no-progress-bar --no-diffs --clear-cache --config rector.php`
 
 ## Harness
 

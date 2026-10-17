@@ -1,0 +1,25 @@
+[package]
+name = "punphp-lint"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Pun's lint engine: rules on Mago's syntax tree that report problems and fix them with text edits"
+repository.workspace = true
+homepage = "https://github.com/punphp/pun"
+
+[lib]
+name = "pun_lint"
+
+[dependencies]
+pun-problem.workspace = true
+mago-allocator.workspace = true
+mago-database.workspace = true
+mago-span.workspace = true
+mago-syntax.workspace = true
+mago-syntax-core.workspace = true
+
+[dev-dependencies]
+pun-config.workspace = true
+pun-format.workspace = true
+pun-fixers.workspace = true
+serde_json.workspace = true

@@ -1467,6 +1467,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "punphp-lint"
+version = "0.0.1"
+dependencies = [
+ "mago-allocator",
+ "mago-database",
+ "mago-span",
+ "mago-syntax",
+ "mago-syntax-core",
+ "punphp-config",
+ "punphp-fixers",
+ "punphp-format",
+ "punphp-problem",
+ "serde_json",
+]
+
+[[package]]
 name = "punphp-phpstan"
 version = "0.0.1"
 dependencies = [
