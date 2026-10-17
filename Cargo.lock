@@ -1486,6 +1486,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "punphp-problem"
+version = "0.0.1"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "punphp-tokens"
 version = "0.0.1"
 dependencies = [

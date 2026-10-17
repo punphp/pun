@@ -1,0 +1,17 @@
+[package]
+name = "punphp-problem"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "The problem type shared by pun lint, pun analyse and the renderer"
+repository.workspace = true
+homepage = "https://github.com/punphp/pun"
+
+[lib]
+name = "pun_problem"
+
+[dependencies]
+serde.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true

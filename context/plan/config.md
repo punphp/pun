@@ -163,3 +163,14 @@ aliases; three format presets; lint sets; oxlint levels; `--fix` applies all, `f
 with `max` on top; analyse on or off; ecosystems from composer.lock; PHP version from composer.json; no PHP
 fallback; `pun list-files` like Mago's. The `[files]` section with per-command `exclude` (Mago's model) and the
 `[analyse] preset` key (instead of a top-level `preset`) are the assistant's defaults for the schema above.
+
+Build 9, the shared problem type (crates/pun-problem, assistant's calls, 2026-10-17):
+
+- **Columns count bytes**, 1-based, as PHP's `strlen` and Mago's spans do: `é` advances the column by 2. Lines are
+  1-based and end at `\n`, `\r\n` or a lone `\r`, as in PHP's scanner. An offset past the end is clamped to the end.
+- **Fixes apply in the order given**, so the caller's order is the priority. A fix applies whole or not at all. It
+  is deferred to the next round when one of its edits overlaps an edit already applied, or is an insertion at or
+  inside one (the order of the inserted text would be ambiguous); adjacent replacements both apply. A fix whose
+  edits are out of range, split a UTF-8 character or overlap each other is reported as invalid and never applies.
+- **Levels serialize as `error` / `warning`**, safety as `safe` / `unsafe`; the rule ID is the full
+  `<command>/<group>/<name>` string and the path is relative to the project root.

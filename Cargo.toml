@@ -48,6 +48,7 @@ pun-analyse = { path = "crates/pun-analyse", package = "punphp-analyse" }
 dialoguer = { version = "0.12", default-features = false }
 # Env-only: the default `process-tree` feature (sysinfo) adds ~12 ms per start and finds agents up the process tree.
 agent-detector = { version = "=0.2.1", default-features = false }
+pun-problem = { path = "crates/pun-problem", package = "punphp-problem" }
 
 [profile.release]
 lto = "thin"
