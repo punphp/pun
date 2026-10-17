@@ -40,6 +40,26 @@ scripts/coverage.sh punphp-tokens
 - `scripts/fuzz-parity.sh` is a mutation fuzzer that compares Pun with Pint. It needs a freshly built `target/debug/pun`.
 - `scripts/coverage.sh` reports line coverage for the crates you name. Without arguments, it covers every crate.
 
+## Benchmark Pun against Pint and Mago
+
+`scripts/bench.py [project...]` measures wall-clock time and peak memory for every run of four tools on each corpus project. It prints a per-run table, then a table of medians with Pun's speedup over each tool. Every tool is check-only, nothing writes to the corpus, and Pun never reads its cache.
+
+1. `scripts/oracle.sh` installs Pint into `.oracle/pint`. `scripts/corpus.sh` checks out the projects in `corpus/`.
+2. `cargo build --profile profiling -p punphp` builds `target/profiling/pun`. `PUN_BIN=path` selects another binary.
+3. Put the Mago 1.57.0 release binary (the version the Mago crates pin) under `.oracle/mago/`, or pass `MAGO_BIN=path`.
+4. Run `scripts/bench.py`. `RUNS` (default 3) sets the measured runs per tool, `WARMUP` (default 1) the untimed runs before them, and `TOOLS` a subset of `pint-parallel,pint,pun,mago`.
+
+The four tools:
+
+- `pint-parallel`: `pint --test --parallel` inside `corpus/<name>`, with the project's own `pint.json`.
+- `pint`: `pint --test`, one process, in the same place.
+- `pun`: `pun check --test --no-cache` in a scratch copy of the project (no `.git`, `node_modules` symlinked), after `pun migrate --yes` has written its `pun.toml`.
+- `mago`: `mago fmt --check .` in the same scratch copy, with Mago's default config. Mago's style is not Pint's, so its numbers are a speed and memory reference, not a parity check. Without the `.` and without a `mago.toml`, Mago checks no files.
+
+Memory is the peak summed RSS of the whole process tree, sampled every 20 ms and never below the command's own maxrss, so Pint's parallel PHP workers and Pun's Prettier and PHP workers count. The script sets `PUN_AGENT=0` and `PUN_IGNORE_PHP_CONSTRAINT=1`, and ignores exit codes.
+
+Pinkary is the slowest project for Pun because Blade formatting runs through Prettier workers. `pun --max-processes=N` caps Pun's threads, and its workers with them. Record published timings in `context/reports/scoreboard.md`.
+
 ## Architecture
 
 - `pun-tokens` is the base crate. It holds a lexer that matches `token_get_all`, PHP-CS-Fixer's transformers, and `TokensAnalyzer`.
