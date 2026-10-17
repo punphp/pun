@@ -4,7 +4,8 @@
 Fails (exit 1) on: a `tentative` entry, a non-kebab-case or duplicate name (rule names and aliases share one namespace
 across all commands), a lint name without a verb prefix, a broken `pun` / `fixed_by` / `conflicts` / `merged`
 reference, an upstream entry that is not exactly one of pun / drop / unsupported, a Rector entry without its class,
-and a rule that no upstream entry maps to (unless it is marked `pun_only = true`).
+a rule that no upstream entry maps to (unless it is marked `pun_only = true`), and a PHPStan/Larastan entry
+without `variant` when its rule replaces several identifiers.
 
 Usage: scripts/check-rule-mapping.py [path/to/mapping.toml]
 """
@@ -18,19 +19,9 @@ DEFAULT = Path(__file__).resolve().parent.parent / "crates/pun-config/rules/mapp
 KEBAB = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*")
 REF = re.compile(r"(format|lint|analyse)\.[a-z0-9-]+")
 LINT_PREFIXES = ("no-", "prefer-", "require-", "add-")
-# Configurable codemods (Rector RenameMethod & co.) do nothing until configured; they are named after their edit.
+# The refactor group (configurable codemods such as Rector RenameMethod) is named after the edit it makes.
 REFACTOR_PREFIXES = ("rename-", "replace-", "remove-", "change-", "wrap-")
-# Lint names decided before the naming pass (risky CS-Fixer fixers keep the fixer name; Mago/Pun names). RULES.md §3
-# lists them as an open question; shrink this list when they are renamed.
-LEGACY_LINT = {
-    "assertion-style", "class-name-matches-file", "comment-to-phpdoc", "date-time-immutable", "declare-strict-types",
-    "early-continue", "early-return", "error-suppression", "final-class", "final-controller", "final-internal-class",
-    "final-public-method-for-abstract-class", "logical-operators", "mb-str-functions", "native-constant-invocation",
-    "native-function-invocation", "non-printable-character", "ordered-traits", "param-type-from-phpdoc",
-    "property-type-from-phpdoc", "return-type-from-phpdoc", "self-accessor", "sensitive-parameter",
-    "strict-assertions", "strict-param", "string-line-ending", "unused-ignore", "use-compound-assignment",
-    "use-dedicated-expectation", "use-simpler-expectation", "use-specific-assertions", "use-specific-expectations",
-}
+PHPSTAN_FAMILY = ("phpstan", "phpstan-strict-rules", "phpstan-deprecation-rules", "larastan")
 # [analyse] switches (PHPStan levels 7-10) are settings, not rules.
 SWITCH = re.compile(r"\[analyse\] [a-z-]+ = true")
 
@@ -66,7 +57,7 @@ def check(data):
                 err(f"{c}.{n}: status is {r.get('status')!r}")
 
     for n, r in rules.get("lint", {}).items():
-        ok = n.startswith(LINT_PREFIXES) or n in LEGACY_LINT
+        ok = n.startswith(LINT_PREFIXES)
         ok = ok or (r.get("group") == "refactor" and n.startswith(REFACTOR_PREFIXES))
         if not ok:
             err(f"lint.{n}: lint names start with {'/'.join(LINT_PREFIXES)}")
@@ -90,6 +81,19 @@ def check(data):
             if tool.startswith("rector") or tool == "pest-plugin-rector":
                 if "\\" not in key and "\\" not in u.get("class", ""):
                     err(f"{where}: Rector entry without its fully qualified `class`")
+
+    family = defaultdict(int)
+    for tool in PHPSTAN_FAMILY:
+        for u in data["upstream"].get(tool, {}).values():
+            if "pun" in u:
+                family[u["pun"]] += 1
+    for tool, entries in data["upstream"].items():
+        for key, u in entries.items():
+            where = f"upstream.{tool}.{key}"
+            if "variant" in u and (tool not in PHPSTAN_FAMILY or u["variant"] != key):
+                err(f"{where}: variant must be the PHPStan identifier itself, on phpstan/larastan entries only")
+            if tool in PHPSTAN_FAMILY and family.get(u.get("pun"), 0) > 1 and "variant" not in u:
+                err(f"{where}: {u['pun']} replaces several identifiers, so this entry needs variant = {key!r}")
 
     for c, rs in rules.items():
         for n, r in rs.items():
@@ -145,6 +149,9 @@ def selftest():
     bad(lambda d: d["upstream"].update(rector={"Foo": {"pun": "lint.no-x", "status": "decided"}}), "class")
     bad(lambda d: d["rules"]["lint"]["no-x"].update(merged=["mago-linter:x", "rector:Nope"]), "merged source")
     bad(lambda d: d["meta"].update(conflicts=[["lint.no-x", "lint.nope"]]), "meta.conflicts")
+    bad(lambda d: d["upstream"]["phpstan"].update({"y.notFound": {"pun": "analyse.undefined-x", "status": "decided"}}),
+        "needs variant")
+    bad(lambda d: d["upstream"]["phpstan"]["x.notFound"].update(variant="other.id"), "variant must be")
 
 
 if __name__ == "__main__":
