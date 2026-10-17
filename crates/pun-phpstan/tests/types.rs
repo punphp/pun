@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use common::fixture;
 use pun_phpstan::resolve::resolve_str;
 use pun_phpstan::symbols::{self, Function, PhpVersion};
-use pun_phpstan::types::Level;
+use pun_phpstan::types::{Level, is_super_type_of};
 
 /// `ConstantResolver` builds PHP_SAPI's union with `new UnionType()`, unnormalized; read back from its string it
 /// normalizes to `non-falsy-string` (the `PHP_SAPI` identifier itself resolves unnormalized, see `constants`).
@@ -190,4 +190,31 @@ const PROBE_GAPS: &[&str] = &[
 #[test]
 fn probes() {
     check("type-probes.json", PROBE_GAPS);
+}
+
+/// `$a->isSuperTypeOf($b)` for every ordered pair of the probe atoms.
+#[test]
+fn super_types() {
+    let f = fixture("type-super.json");
+    let rows = f.as_array().unwrap();
+    let mut failures = Vec::new();
+    for row in rows {
+        let [ctx, a, b, want] = [0, 1, 2, 3].map(|i| row[i].as_str());
+        let (a, b) = (resolve_str(a.unwrap(), ctx), resolve_str(b.unwrap(), ctx));
+        let got = format!("{:?}", is_super_type_of(&a, &b));
+        if got != want.unwrap() {
+            failures.push(format!(
+                "{ctx:?} {} isSuperTypeOf {}: want {}, got {got}",
+                row[1],
+                row[2],
+                want.unwrap()
+            ));
+        }
+    }
+    eprintln!(
+        "type-super.json: {}/{} match",
+        rows.len() - failures.len(),
+        rows.len()
+    );
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

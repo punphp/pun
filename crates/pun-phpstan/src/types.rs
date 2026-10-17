@@ -1909,6 +1909,12 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                 }
                 result = result.or(r);
             }
+            // a TemplateUnionType or a conditional also answers as a whole
+            let whole = matches!(b, T::Conditional(_))
+                || matches!(b, T::Template(tpl) if matches!(tpl.bound, T::Union(_)));
+            if whole {
+                result = result.or(is_sub_type_of(b, a));
+            }
             result
         }
         T::Intersection(types) => {
@@ -1985,7 +1991,17 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             ))
         }
         T::ConstString(x) => match b {
-            T::ClassString(Some(_)) => Tri::Maybe,
+            // the class named by the string against the generic type, its uncertainty dropped
+            T::ClassString(Some(g)) if matches!(**g, T::Mixed { .. }) => Tri::Maybe,
+            T::ClassString(Some(g)) => {
+                let named = T::Object(x.clone(), vec![]);
+                let r = match &**g {
+                    T::Template(tpl) => is_super_type_of(&tpl.bound, &named),
+                    T::Static(c) => is_super_type_of(&static_object(c), &named),
+                    g => is_super_type_of(g, &named),
+                };
+                if r.yes() { Tri::Maybe } else { Tri::No }
+            }
             T::ClassString(None) => Tri::from(symbols::class(x).is_some())
                 .and(Tri::Maybe)
                 .or(Tri::No),
@@ -2023,10 +2039,10 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             is_super_type_of(&T::Static(class.clone()), b).and(Tri::Maybe)
         }
         T::Static(class) | T::This(class) => match b {
-            T::Static(_) | T::This(_) => object_super(class, &[], b),
+            T::Static(_) | T::This(_) => is_super_type_of(&static_object(class), b),
             T::ObjectWithoutClass => Tri::Maybe,
             T::Object(c, _) => {
-                let r = object_super(class, &[], b);
+                let r = is_super_type_of(&static_object(class), b);
                 if r.yes() && symbols::class(c).is_some_and(|c| c.is_final) {
                     r
                 } else {
@@ -2071,7 +2087,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
         T::Closure(ours) => match b {
             T::Closure(_) => signature_super(ours, b),
             T::Object(c, _) if canonical_class(c) == "Closure" => Tri::Maybe,
-            _ => Tri::No,
+            _ => object_super("Closure", &[], b),
         },
         T::EnumCase(class, _) => match b {
             T::EnumCase(..) => Tri::from(a == b),
@@ -2080,12 +2096,17 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             _ => Tri::No,
         },
         T::Wildcard => Tri::Yes,
-        T::ObjectShape(_) => match b {
-            // ponytail: Closure is final without properties; other classes answer maybe until property reflection lands
-            _ if b
-                .object_class_names()
-                .iter()
-                .any(|c| canonical_class(c) == "Closure") =>
+        T::ObjectShape(props) => match b {
+            // a final class without a required property; ponytail: otherwise maybe, the property types are not
+            // compared
+            _ if b.object_class_names().iter().any(|c| {
+                symbols::class(c).is_some_and(|c| {
+                    c.is_final
+                        && props
+                            .iter()
+                            .any(|(name, _, optional)| !optional && !c.properties.contains(name))
+                })
+            }) =>
             {
                 Tri::No
             }
@@ -2346,6 +2367,9 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                         T::Object("Traversable".into(), vec![]),
                     ]),
                 );
+            }
+            if b.is_constant_array().yes() && b.is_iterable_at_least_once().no() {
+                return Tri::Maybe;
             }
             let limit = if matches!(b, T::Iterable(..)) {
                 Tri::Yes

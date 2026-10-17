@@ -206,6 +206,8 @@ function dump(int $phpVersion, array &$typeStrings): array
             'cases' => $class->isEnum() ? array_keys($class->getEnumCases()) : [],
             'interface' => $class->isInterface(),
             'final' => $class->isFinalByKeyword(),
+            // public instance properties, declared or inherited
+            'properties' => array_values(array_map(fn ($p) => $p->getName(), array_filter($class->getNativeReflection()->getProperties(ReflectionProperty::IS_PUBLIC), fn ($p) => !$p->isStatic()))),
             'constants' => [],
             'methods' => [],
         ];
@@ -463,8 +465,24 @@ if (($argv[1] ?? '') === 'probes') {
     $probes[] = ['Nope', 'static'];
     $probes[] = ['Nope', '$this'];
     $probes[] = ['DatePeriod', '$this'];
+    // isSuperTypeOf() of every ordered pair within each atom set, one row per line: [context, a, b, result]
+    $resolver = container(80400)->getByType(TypeStringResolver::class);
+    $templates = probe_templates($resolver);
+    $pun = fn (string $s) => preg_replace_callback('~\\b[TUV]\\b~', fn ($m) => sprintf("__template<%s, 'function probe()', %s>", $m[0], PROBE_TEMPLATES[$m[0]] ?? 'mixed'), $s);
+    $rows = [];
+    foreach ([[$atoms, 'ArrayIterator'], [$strings, null], [$arrays, null], [$ints, null], [['T', 'U', 'V', '(U&int)', 'int', 'string', "'a'", '1', 'Countable', 'Traversable<int>', 'array', 'mixed', 'never', 'object', 'null', 'int|string', 'Countable|int'], 'templates'], [['true', 'false', 'bool', '1.5', '2.5', 'float', 'null', 'void', 'WeakMap', 'static', '$this', 'Closure', 'Closure(int): void', 'callable', 'object', 'stdClass', 'resource',
+        'object{a: int}', 'array{}', 'iterable<int>', 'Countable', "'Countable'", "'a'", 'class-string<Countable>', 'class-string<static>', 'class-string'], 'WeakMap']] as [$set, $ctx]) {
+        $scope = $ctx === 'templates' ? new NameScope(null, [], null, null, $templates) : new NameScope(null, [], $ctx);
+        foreach ($set as $a) {
+            foreach ($set as $b) {
+                $result = $resolver->resolve($a, $scope)->isSuperTypeOf($resolver->resolve($b, $scope))->result->describe();
+                $rows[] = json_encode($ctx === 'templates' ? [null, $pun($a), $pun($b), $result] : [$ctx, $a, $b, $result], $flags);
+            }
+        }
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-super.json', "[\n".implode(",\n", $rows)."\n]\n");
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-probes.json', json_encode(describe_all(container(80400)->getByType(TypeStringResolver::class), $probes), $flags | JSON_PRETTY_PRINT)."\n");
-    echo count($probes), " probes\n";
+    echo count($probes), " probes, ", count($rows), " isSuperTypeOf pairs\n";
     exit;
 }
 
