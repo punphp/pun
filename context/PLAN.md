@@ -182,6 +182,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | format 1: presets cut to laravel, psr12, empty | todo |
 | format 3: fewer allocations per token (inline Content type; first attempt stopped, nothing landed) | todo |
 | format 4-5: memory target; 8-core benchmark in CI (laravel-framework under 1 s cold) | todo |
+| format 4-5 follow-up (from bench, needs Pushpak): BENCH=format runs Pint with Xdebug loaded on this Mac; set XDEBUG_MODE=off as the analyse and lint modes do (changes format-mode behaviour of scripts/bench.py) | todo |
 | format 6: swap `vendor/bin/pint` for Pun in Pinkary's CI | todo |
 | format 7: port the remaining format rules (144 of 208 native) | todo |
 | format: delete or re-justify `pun_ignored` and the delegate-mode comments in crates/pun-format/src/lib.rs (unused since config 6) | todo |
@@ -201,6 +202,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint 1-2 follow-up (from config 3): apply `[[lint.overrides]]` (`Config.lint.overrides`) per file in pun-cli's token-fixer pass; warn-level rules do not fail lint/check (only error fails; `--deny-warnings`, `--max-warnings`) | todo |
 | lint 1-2 follow-up: run files in parallel, a cache keyed like format's, and a `pun lint` command on `pun_lint::Linter` | todo |
 | lint 1-2 follow-up (from config 7): run `pun lint` and the lint half of `pun check` over `pun_workspace::files(cfg, Some(Command::Lint), ..)` so `[lint] exclude` takes effect; decide what happens to Blade and storage/framework/views files in that set | todo |
+| lint 1-2 follow-up (from bench): switch the `pun` row of `BENCH=lint` in scripts/bench.py from crates/pun-lint/examples/check.rs to `pun lint` once it exists | todo |
 | pun-lint: replace `syntax::same_code` with a structural node comparator (Rector's NodeComparator), shared by rules | todo |
 | pun-lint: name resolution for rules that need resolved names (mago-names or analyse's index) | todo |
 | pun-lint: rename the two sample rule IDs (`lint/style/prefer-compound-assignment`, `lint/php-8.0/no-unused-catch-variable`) once config 1 lands the groups | todo |
@@ -221,6 +223,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 1-2 follow-up (from config 3): read `Config.analyse` (preset, switches, rules, baseline, paths) in `pun analyse` | todo |
 | analyse 1-2 follow-up (from config 7): `pun analyse` discovers files with `pun_workspace::files(cfg, Some(Command::Analyse), ..)` | todo |
 | analyse (needs Pushpak): decide how Mago issues map to Pun rules; forwarding mapped codes gives 226 false errors on Pinkary at level 0, reports/analyse-spike.md proposes Pun checks that read Mago's types, using a Mago issue directly only where its table says yes | todo |
+| analyse 1-2 follow-up (from bench): switch the `pun` row of `BENCH=analyse` in scripts/bench.py from crates/pun-analyse/examples/analyse.rs to `pun analyse` once it exists | todo |
 | analyse 3: finish level 0: ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | todo; analyse agent stopped at 43d9857, trait-method and facade-alias WIP uncommitted |
 | analyse 3 follow-up: fix the 5 gaps.txt cases that regressed with 138dab1's trait-context change (new.static and arguments.count reported per using class, shadowed trait method, variadic @method arity) | todo |
 | analyse 4-5: type inference; levels 1-10 as the five presets; strict-rules, deprecation rules | todo |
@@ -267,7 +270,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | design/components/DocsPage/preview.html: remove the 'Needs PHP for those rules' / `--native-only` callout | todo |
 | wf tooling: link crates/pun-fixers/node_modules into worktrees (blade_like_pint needs it) | todo |
 | wf tooling: shared target dirs let a punphp-fixers build-script output from another worktree go stale; use per-worktree OUT paths or rerun-if-changed on the manifest dir | todo |
-| bench: analyse and lint benchmarks like format's (scripts/bench.py): Pun vs PHPStan + Larastan, Pun vs Rector, Mago as reference; results in reports/scoreboard.md | doing (workflow, wf/bench) |
+| perf (from bench): analyse is slower than a warm PHPStan result cache (pun 0.5-1.8 s vs 0.4-0.8 s) and 1.5-2.2x slower than Mago's analyser; targets for the perf rounds (reports/scoreboard.md "Analyse benchmark") | todo |
 | perf: analyse speed and memory, round by round against the bench, errors unchanged | doing (workflow, wf/perf-analyse-N) |
 | perf: lint speed and memory, round by round against the bench, output unchanged | doing (workflow, wf/perf-lint-N) |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
