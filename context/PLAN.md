@@ -155,7 +155,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | config 2: move the 40 code-deleting format rules to lint | doing (workflow, wf/names) |
 | config 3: new pun.toml schema (`[files]`, presets, sets, levels, groups, overrides, `[analyse]`) | doing (workflow, wf/schema) |
 | config 4: TOML-native option names for format rules | doing (workflow, wf/options) |
-| config 5: PHP version and ecosystems from composer.json / composer.lock | doing (workflow, wf/composer) |
+| config 3 follow-up: default `[php] version` to `pun_config::composer::detect(root).php_version()` when pun.toml sets none; update pun-cli/tests/agent.rs (expects PHP 8.4 for a ^8.5 project) | todo |
 | config 6: remove delegate mode (pun-delegate, `--native-only`); update AGENTS.md | doing (workflow, wf/no-delegate) |
 | config 7: `[files]` + per-command exclude, `pun list-files` | doing (workflow, wf/files) |
 | config 8: `pun config` on the new schema, `pun explain <rule>` | doing (workflow, wf/config-explain) |
@@ -207,6 +207,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | lint 1-2: the engine from the spike; levels, sets, overrides at run time | blocked (lint spike) |
 | lint: the engine uses `pun_problem::{Problem, apply_fixes}` for diagnostics and the fix loop | todo |
 | lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
+| lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | todo |
 | lint 7: all 542 rules native, in usage order | todo |
 | migrate 4: rector.php | todo |
 
@@ -220,6 +221,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | analyse 3: finish level 0: ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | blocked (analyse spike); analyse agent stopped at 43d9857, trait-method and facade-alias WIP uncommitted |
 | analyse 4-5: type inference; levels 1-10 as the five presets; strict-rules, deprecation rules | todo |
 | analyse 6-7: Larastan with the seven improvements; Pest | todo |
+| analyse: enable Larastan/Pest from `pun_config::composer::Composer` and gate on `Locked.semver` | todo |
 | analyse 8: result cache | todo |
 | migrate 5-6: phpstan.neon; offer the closest preset | todo |
 
