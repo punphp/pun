@@ -66,6 +66,22 @@ pub fn ltrim_chars<'a>(s: &'a [u8], chars: &[u8]) -> &'a [u8] {
     &s[start..]
 }
 
+/// `str_replace($search, $replace, $subject)` for one non-empty needle.
+pub fn str_replace(search: &[u8], replace: &[u8], subject: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(subject.len());
+    let mut i = 0;
+    while i < subject.len() {
+        if subject[i..].starts_with(search) {
+            out.extend_from_slice(replace);
+            i += search.len();
+        } else {
+            out.push(subject[i]);
+            i += 1;
+        }
+    }
+    out
+}
+
 pub fn trim(s: &[u8]) -> &[u8] {
     ltrim_chars(rtrim(s), TRIM_CHARS)
 }
@@ -280,7 +296,7 @@ mod tests {
             $in = json_decode(stream_get_contents(STDIN));
             foreach ($in as $a) foreach ($in as $b)
                 echo strcmp($a,$b) <=> 0, ' ', strcasecmp($a,$b), ' ', strnatcmp($a,$b), ' ', strnatcasecmp($a,$b), "\n";
-            foreach ($in as $a) echo json_encode([ltrim($a, " \t0a"), rtrim($a, " \t7"), rtrim($a), trim($a)]), "\n";
+            foreach ($in as $a) echo json_encode([ltrim($a, " \t0a"), rtrim($a, " \t7"), rtrim($a), trim($a), str_replace("a", "XY", $a), str_replace("00", "0", $a)]), "\n";
         "#;
         let json = format!(
             "[{}]",
@@ -328,6 +344,8 @@ mod tests {
                 rtrim_chars(a, b" \t7"),
                 rtrim(a),
                 trim(a),
+                &str_replace(b"a", b"XY", a),
+                &str_replace(b"00", b"0", a),
             ]
             .map(|x| String::from_utf8(x.to_vec()).unwrap());
             assert_eq!(got.to_vec(), want, "{a:?}");

@@ -25,7 +25,7 @@ fn main() {
     let mut out = String::new();
     for n in &names {
         out += &format!(
-            "#[path = \"{}/src/fixers/{n}.rs\"] pub mod {n};\n",
+            "#[path = \"{}/src/fixers/{n}.rs\"] mod {n};\n",
             env::var("CARGO_MANIFEST_DIR").unwrap()
         );
     }

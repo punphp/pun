@@ -1,4 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\FunctionNotation\MethodArgumentSpaceFixer`.
+use crate::analyzers::helpers::has_newline;
 use crate::analyzers::arguments_analyzer::ArgumentsAnalyzer;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
@@ -26,10 +27,6 @@ pub fn fixer() -> Box<dyn Fixer> {
     };
     f.configure(&Value::Null).unwrap();
     Box::new(f)
-}
-
-fn has_newline(s: &[u8]) -> bool {
-    Preg::r#match("/\\R/", s)
 }
 
 /// Checks if token is new line.

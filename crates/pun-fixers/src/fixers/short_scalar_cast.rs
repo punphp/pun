@@ -1,4 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\CastNotation\ShortScalarCastFixer`.
+use pun_tokens::php_compat::str_replace;
 use pun_format::Fixer;
 use pun_tokens::php_compat::{strtolower, trim};
 use pun_tokens::token::CAST_KINDS;
@@ -9,22 +10,6 @@ struct ShortScalarCastFixer;
 
 pub fn fixer() -> Box<dyn Fixer> {
     Box::new(ShortScalarCastFixer)
-}
-
-/// PHP `str_replace($search, $replace, $subject)` for one non-empty needle.
-fn str_replace(search: &[u8], replace: &[u8], subject: &[u8]) -> Vec<u8> {
-    let mut out = Vec::with_capacity(subject.len());
-    let mut i = 0;
-    while i < subject.len() {
-        if subject[i..].starts_with(search) {
-            out.extend_from_slice(replace);
-            i += search.len();
-        } else {
-            out.push(subject[i]);
-            i += 1;
-        }
-    }
-    out
 }
 
 impl Fixer for ShortScalarCastFixer {

@@ -19,12 +19,9 @@ use std::collections::HashMap;
 use std::hash::{BuildHasherDefault, Hasher};
 use std::rc::Rc;
 
-pub const PREG_PATTERN_ORDER: u32 = 1;
-pub const PREG_SET_ORDER: u32 = 2;
 pub const PREG_OFFSET_CAPTURE: u32 = 256;
 pub const PREG_SPLIT_NO_EMPTY: u32 = 1;
 pub const PREG_SPLIT_DELIM_CAPTURE: u32 = 2;
-pub const PREG_SPLIT_OFFSET_CAPTURE: u32 = 4;
 
 /// PHP's pcre.backtrack_limit / pcre.recursion_limit defaults.
 const BACKTRACK_LIMIT: u32 = 1_000_000;
@@ -403,11 +400,6 @@ impl<'s> Captures<'s> {
             .copied()
             .flatten()
             .map_or(-1, |(s, _)| s as isize)
-    }
-
-    /// `array_key_exists($i, $matches)`.
-    pub fn exists(&self, i: usize) -> bool {
-        i < self.len
     }
 
     /// Number of numeric entries in `$matches` (never 0: group 0 always matched).
@@ -892,19 +884,6 @@ impl RawPreg {
         let replacement = replacement.as_ref();
         Self::replace_callback(pattern, |c| expand_replacement(replacement, c), subject)
     }
-
-    /// `preg_split($pattern, $subject, $limit, $flags)`; `None` = PHP's `false`.
-    pub fn split(
-        pattern: impl AsRef<[u8]>,
-        subject: impl AsRef<[u8]>,
-        limit: isize,
-        flags: u32,
-    ) -> Option<Vec<Piece>> {
-        let subject = subject.as_ref();
-        Self::run(pattern.as_ref(), subject, |re| {
-            split_impl(re, subject, limit, flags)
-        })
-    }
 }
 
 #[cfg(test)]
@@ -967,7 +946,7 @@ mod tests {
             (b"bba".to_vec(), 2)
         );
         let m = Preg::match_groups("/(a)(b)?(c)?/", b"a", 0).unwrap();
-        assert_eq!((m.len(), m.exists(1), m.exists(2)), (2, true, false));
+        assert_eq!(m.len(), 2);
         let m = Preg::match_groups("/(a)(x)?(c)/", b"ac", 0).unwrap();
         assert_eq!((m.len(), m.str(2), m.offset(2)), (4, &b""[..], -1));
         let m = Preg::match_groups("/(?<n>b)/", b"ab", 0).unwrap();
@@ -1060,12 +1039,7 @@ mod tests {
         assert_eq!(Preg::replace("/x*/", "-", b"\xff\xfe"), b"-\xff-\xfe-"); // invalid UTF-8: non-u, byte steps
         assert_eq!(s(Preg::split("/x*/", "abc", 2, 0)), ["", "abc"]);
         assert_eq!(s(Preg::split("/x*/", "abc", 1, 0)), ["abc"]);
-        let pieces = Preg::split(
-            "/(,)/",
-            "a,b",
-            -1,
-            PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_OFFSET_CAPTURE,
-        );
+        let pieces = Preg::split("/(,)/", "a,b", -1, PREG_SPLIT_DELIM_CAPTURE);
         assert_eq!(
             pieces
                 .iter()
@@ -1113,11 +1087,5 @@ mod tests {
             RawPreg::replace_callback("/b/", |c| c.str(0).to_ascii_uppercase(), "abcb"),
             Some(b"aBcB".to_vec())
         );
-        let pieces = RawPreg::split("/,/", "a,,b", -1, PREG_SPLIT_NO_EMPTY).unwrap();
-        assert_eq!(
-            pieces.into_iter().map(|p| p.text).collect::<Vec<_>>(),
-            [b"a".to_vec(), b"b".to_vec()]
-        );
-        assert!(RawPreg::split("/(/", "a", -1, 0).is_none());
     }
 }

@@ -58,14 +58,14 @@ impl PhpdocTypesFixer {
             })
     }
     fn normalize(&self, t: &[u8]) -> Vec<u8> {
-        let e = TypeExpression::plain(t);
+        let e = TypeExpression::new(t);
         e.map_types(&mut |t| {
             if t.is_union_type() {
                 return t;
             }
             let lower = strtolower(t.to_string());
             if self.types_set_to_fix.iter().any(|x| x.as_bytes() == lower) {
-                return TypeExpression::plain(&lower);
+                return TypeExpression::new(&lower);
             }
             t
         })

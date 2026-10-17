@@ -1,9 +1,6 @@
 //! `PhpCsFixer\DocBlock\TypeExpression`.
 
 use super::preg;
-use pun_tokens::php_compat::strnatcasecmp;
-use std::cmp::Ordering;
-use std::rc::Rc;
 use std::sync::LazyLock;
 
 pub const REGEX_IDENTIFIER: &str = crate::__regex_identifier!();
@@ -14,46 +11,6 @@ static PARSE_PATTERN: LazyLock<String> =
     LazyLock::new(|| format!(r"{{\G{REGEX_TYPE}(?<glue_raw>\h*(?<glue>[|&])\h*(?!$)|$)}}"));
 static COMMA_SEPARATED_PATTERN: LazyLock<String> =
     LazyLock::new(|| format!(r"{{\G{REGEX_TYPES}(?:\h*,[\h\v*]*|$)}}"));
-
-const ALIASES: &[(&[u8], &[u8])] = &[
-    (b"boolean", b"bool"),
-    (b"callback", b"callable"),
-    (b"double", b"float"),
-    (b"false", b"bool"),
-    (b"integer", b"int"),
-    (b"list", b"array"),
-    (b"real", b"float"),
-    (b"true", b"bool"),
-];
-
-fn alias(t: &[u8]) -> Option<&'static [u8]> {
-    ALIASES.iter().find(|(k, _)| *k == t).map(|(_, v)| *v)
-}
-
-/// What TypeExpression needs from `NamespaceAnalysis`.
-#[derive(Clone, Debug, Default)]
-pub struct Namespace {
-    pub full_name: Vec<u8>,
-}
-
-impl Namespace {
-    pub fn is_global_namespace(&self) -> bool {
-        self.full_name.is_empty()
-    }
-}
-
-/// What TypeExpression needs from `NamespaceUseAnalysis`.
-#[derive(Clone, Debug)]
-pub struct NamespaceUse {
-    pub full_name: Vec<u8>,
-    pub short_name: Vec<u8>,
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct Context {
-    pub namespace: Option<Namespace>,
-    pub namespace_uses: Vec<NamespaceUse>,
-}
 
 #[derive(Debug)]
 pub struct ParseError(pub Vec<u8>);
@@ -74,29 +31,23 @@ pub struct TypeExpression {
     is_composite_type: bool,
     types_glue: Option<u8>,
     inner_type_expressions: Vec<(usize, TypeExpression)>,
-    ctx: Rc<Context>,
 }
 
 impl TypeExpression {
     /// Panics like upstream throws on an unparsable type; see `try_new`.
-    pub fn new(value: &[u8], ctx: Rc<Context>) -> Self {
-        Self::try_new(value, ctx).unwrap_or_else(|e| panic!("{e}"))
+    pub fn new(value: &[u8]) -> Self {
+        Self::try_new(value).unwrap_or_else(|e| panic!("{e}"))
     }
 
-    pub fn try_new(value: &[u8], ctx: Rc<Context>) -> Result<Self, ParseError> {
+    pub fn try_new(value: &[u8]) -> Result<Self, ParseError> {
         let mut t = TypeExpression {
             value: value.to_vec(),
             is_composite_type: false,
             types_glue: None,
             inner_type_expressions: vec![],
-            ctx,
         };
         t.parse()?;
         Ok(t)
-    }
-
-    pub fn plain(value: &[u8]) -> Self {
-        Self::new(value, Rc::default())
     }
 
     pub fn to_string(&self) -> &[u8] {
@@ -147,67 +98,6 @@ impl TypeExpression {
             self.inner(&value)
         };
         callback(t)
-    }
-
-    pub fn sort_types(
-        &self,
-        compare: &mut dyn FnMut(&TypeExpression, &TypeExpression) -> Ordering,
-    ) -> TypeExpression {
-        let ctx = self.ctx.clone();
-        self.map_types(&mut |t: TypeExpression| {
-            if !t.is_composite_type {
-                return t;
-            }
-            let mut order: Vec<usize> = (0..t.inner_type_expressions.len()).collect();
-            order.sort_by(|&a, &b| {
-                compare(
-                    &t.inner_type_expressions[a].1,
-                    &t.inner_type_expressions[b].1,
-                )
-            });
-            if order.iter().enumerate().any(|(i, &j)| i != j) {
-                let value = order
-                    .iter()
-                    .map(|&i| t.inner_type_expressions[i].1.value.clone())
-                    .collect::<Vec<_>>()
-                    .join(&[t.types_glue.unwrap()][..]);
-                return TypeExpression::new(&value, ctx.clone());
-            }
-            t
-        })
-    }
-
-    pub fn get_common_type(&self) -> Option<Vec<u8>> {
-        let mut main_type: Option<Vec<u8>> = None;
-        for mut t in self.get_types() {
-            if t == b"null" {
-                continue;
-            }
-            if t.starts_with(b"?") {
-                t.remove(0);
-            }
-            if preg::is_match(r"/\[\h*\]$/", &t) {
-                t = b"array".to_vec();
-            } else if let Some(m) = preg::captures(r"/^(.+?)\h*[<{(]/", &t) {
-                t = m.str(1).to_vec();
-            }
-            if let Some(a) = alias(&t) {
-                t = a.to_vec();
-            }
-            if main_type.is_none() || main_type.as_deref() == Some(&t[..]) {
-                main_type = Some(t);
-                continue;
-            }
-            main_type = self.get_parent_type(&t, main_type.as_ref().unwrap());
-            main_type.as_ref()?;
-        }
-        main_type
-    }
-
-    pub fn allows_null(&self) -> bool {
-        self.get_types()
-            .iter()
-            .any(|t| t == b"null" || t == b"mixed" || t.starts_with(b"?"))
     }
 
     fn parse(&mut self) -> Result<(), ParseError> {
@@ -466,67 +356,11 @@ impl TypeExpression {
     }
 
     fn inner_checked(&self, value: &[u8]) -> Result<TypeExpression, ParseError> {
-        TypeExpression::try_new(value, self.ctx.clone())
+        TypeExpression::try_new(value)
     }
 
     fn inner(&self, value: &[u8]) -> TypeExpression {
-        TypeExpression::new(value, self.ctx.clone())
-    }
-
-    fn get_parent_type(&self, type1: &[u8], type2: &[u8]) -> Option<Vec<u8>> {
-        let mut types = [self.normalize(type1), self.normalize(type2)];
-        // natcasesort on two elements
-        if strnatcasecmp(&types[0], &types[1]) > 0 {
-            types.swap(0, 1);
-        }
-        let joined = [&types[0][..], b"|", &types[1][..]].concat();
-        let parents: &[(&[u8], &[u8])] = &[
-            (b"array|Traversable", b"iterable"),
-            (b"array|iterable", b"iterable"),
-            (b"iterable|Traversable", b"iterable"),
-            (b"self|static", b"self"),
-        ];
-        parents
-            .iter()
-            .find(|(k, _)| *k == joined)
-            .map(|(_, v)| v.to_vec())
-    }
-
-    /// Upstream also maps aliases, `X[]` and `X<...>` first, but its only caller (`getCommonType`, via
-    /// `getParentType`) has already done that to both types, so those branches are unreachable and not ported.
-    fn normalize(&self, t: &[u8]) -> Vec<u8> {
-        const BUILTIN: &[&[u8]] = &[
-            b"array",
-            b"bool",
-            b"callable",
-            b"false",
-            b"float",
-            b"int",
-            b"iterable",
-            b"mixed",
-            b"never",
-            b"null",
-            b"object",
-            b"resource",
-            b"string",
-            b"true",
-            b"void",
-        ];
-        if BUILTIN.contains(&t) {
-            return t.to_vec();
-        }
-        if let Some(rest) = t.strip_prefix(b"\\") {
-            return rest.to_vec();
-        }
-        for u in &self.ctx.namespace_uses {
-            if u.short_name == t {
-                return u.full_name.clone();
-            }
-        }
-        match &self.ctx.namespace {
-            Some(ns) if !ns.is_global_namespace() => [&ns.full_name[..], b"\\", t].concat(),
-            _ => t.to_vec(),
-        }
+        TypeExpression::new(value)
     }
 
     #[cfg(test)]

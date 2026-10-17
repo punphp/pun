@@ -4,34 +4,6 @@ use super::line::LineRef;
 use super::preg;
 use std::cell::RefCell;
 
-pub const PSR_STANDARD_TAGS: &[&str] = &[
-    "api",
-    "author",
-    "category",
-    "copyright",
-    "deprecated",
-    "example",
-    "global",
-    "internal",
-    "license",
-    "link",
-    "method",
-    "package",
-    "param",
-    "property",
-    "property-read",
-    "property-write",
-    "return",
-    "see",
-    "since",
-    "subpackage",
-    "throws",
-    "todo",
-    "uses",
-    "var",
-    "version",
-];
-
 #[derive(Clone, Debug)]
 pub struct Tag {
     line: LineRef,
@@ -59,12 +31,6 @@ impl Tag {
             *self.name.borrow_mut() = Some(name);
         }
         self.name.borrow().clone().unwrap()
-    }
-
-    pub fn valid(&self) -> bool {
-        PSR_STANDARD_TAGS
-            .iter()
-            .any(|t| t.as_bytes() == self.get_name())
     }
 }
 

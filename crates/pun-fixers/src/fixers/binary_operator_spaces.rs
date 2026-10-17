@@ -1,4 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\Operator\BinaryOperatorSpacesFixer`.
+use pun_tokens::php_compat::str_replace;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
 use crate::analyzers::utils::mb_strwidth;
@@ -77,22 +78,6 @@ struct Levels {
 
 fn is_binary(tokens: &Tokens, index: usize) -> bool {
     TokensAnalyzer::new(tokens).is_binary_operator(index)
-}
-
-/// `str_replace($search, $replace, $s)`.
-fn str_replace(search: &[u8], replace: &[u8], s: &[u8]) -> Vec<u8> {
-    let mut out = Vec::with_capacity(s.len());
-    let mut i = 0;
-    while i < s.len() {
-        if s[i..].starts_with(search) {
-            out.extend_from_slice(replace);
-            i += search.len();
-        } else {
-            out.push(s[i]);
-            i += 1;
-        }
-    }
-    out
 }
 
 fn strpos(haystack: &[u8], needle: &[u8]) -> Option<usize> {

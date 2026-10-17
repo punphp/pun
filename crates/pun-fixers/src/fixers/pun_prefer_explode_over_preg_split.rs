@@ -6,6 +6,7 @@
 //! - an empty pattern (`'//'`, split into characters) is skipped: `explode('')` throws.
 //! - the call keeps its own qualification (`preg_split` → `explode`, `\preg_split` → `\explode`) and the
 //!   separator keeps its quote style.
+use crate::analyzers::helpers::split_list;
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
@@ -178,28 +179,6 @@ fn plain_separator(raw: &[u8]) -> Option<Vec<u8>> {
     }
     // The delimiters are plain characters in the source too, so the separator is the source minus them.
     Some([&[quote], &src[1..src.len() - 1], &[quote]].concat())
-}
-
-/// (first, last) meaningful token of each comma-separated item between `open` and `close`.
-fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)> {
-    let mut items = vec![];
-    let mut k = tokens.get_next_meaningful_token(open).unwrap();
-    while k < close {
-        let start = k;
-        let mut last = k;
-        while k < close && !tokens[k].equals(",", true) {
-            if let Some((t, true)) = Tokens::detect_block_type(&tokens[k]) {
-                k = tokens.find_block_end(t, k);
-            }
-            last = k;
-            k = tokens.get_next_meaningful_token(k).unwrap();
-        }
-        items.push((start, last));
-        if k < close {
-            k = tokens.get_next_meaningful_token(k).unwrap();
-        }
-    }
-    items
 }
 
 #[cfg(test)]

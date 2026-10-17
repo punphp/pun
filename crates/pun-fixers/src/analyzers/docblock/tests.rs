@@ -1,9 +1,9 @@
 //! Upstream tests/DocBlock/*Test.php. Data providers are exported verbatim to tests.json by
 //! scripts/export-docblock-tests.php; each test below mirrors the PHP test method body.
 
+use super::tag::Tag;
 use super::*;
 use serde_json::Value;
-use std::rc::Rc;
 use std::sync::OnceLock;
 
 fn data() -> &'static Value {
@@ -35,35 +35,12 @@ fn list(v: &Value) -> Vec<Vec<u8>> {
     v["items"].as_array().unwrap().iter().map(s).collect()
 }
 
-fn ctx(ns: Option<&Value>, uses: Option<&Value>) -> Rc<Context> {
-    let namespace = ns.filter(|v| !v.is_null()).map(|v| Namespace {
-        full_name: s(&v["fullName"]),
-    });
-    let namespace_uses = uses
-        .map(|u| {
-            u["items"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(|u| NamespaceUse {
-                    full_name: s(&u["fullName"]),
-                    short_name: s(&u["shortName"]),
-                })
-                .collect()
-        })
-        .unwrap_or_default();
-    Rc::new(Context {
-        namespace,
-        namespace_uses,
-    })
-}
-
 fn lossy(v: &[u8]) -> String {
     String::from_utf8_lossy(v).into_owned()
 }
 
 fn ann(line: &[u8]) -> Annotation {
-    Annotation::new(vec![(0, Line::shared(line))], Rc::default())
+    Annotation::new(vec![(0, Line::shared(line))])
 }
 
 fn panics(f: impl FnOnce() + std::panic::UnwindSafe) -> String {
@@ -81,7 +58,7 @@ fn panics(f: impl FnOnce() + std::panic::UnwindSafe) -> String {
     }
 }
 
-// ---- LineTest
+// LineTest
 
 #[test]
 fn line_tests() {
@@ -135,7 +112,7 @@ fn line_set_content() {
     assert_eq!(line.get_content(), b"");
 }
 
-// ---- DocBlockTest
+// DocBlockTest
 
 #[test]
 fn docblock_tests() {
@@ -174,7 +151,7 @@ fn docblock_tests() {
     assert!(doc.is_multi_line());
 }
 
-// ---- ShortDescriptionTest
+// ShortDescriptionTest
 
 #[test]
 fn short_description_get_end() {
@@ -189,7 +166,7 @@ fn short_description_get_end() {
     }
 }
 
-// ---- TagTest / TagComparatorTest
+// TagTest
 
 #[test]
 fn tag_name() {
@@ -198,55 +175,9 @@ fn tag_name() {
         let tag = Tag::new(Line::shared(input));
         assert_eq!(lossy(&tag.get_name()), lossy(&expected));
     }
-    for c in cases("TagTest::testValid") {
-        assert_eq!(
-            Tag::new(Line::shared(s(&c[1]))).valid(),
-            c[0].as_bool().unwrap(),
-            "{:?}",
-            c[1]
-        );
-    }
 }
 
-#[test]
-fn tag_comparator() {
-    for c in cases("TagComparatorTest::testComparatorTogether") {
-        let t1 = Tag::new(Line::shared([b"* @", &s(&c[0])[..]].concat()));
-        let t2 = Tag::new(Line::shared([b"* @", &s(&c[1])[..]].concat()));
-        assert_eq!(
-            tag_comparator::should_be_together(&t1, &t2, tag_comparator::DEFAULT_GROUPS),
-            c[2].as_bool().unwrap()
-        );
-    }
-    for c in cases("TagComparatorTest::testComparatorTogetherWithDefinedGroups") {
-        let groups: Vec<Vec<String>> = c[0]["items"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|g| {
-                g["items"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .map(|t| t.as_str().unwrap().to_string())
-                    .collect()
-            })
-            .collect();
-        let groups: Vec<Vec<&str>> = groups
-            .iter()
-            .map(|g| g.iter().map(String::as_str).collect())
-            .collect();
-        let groups: Vec<&[&str]> = groups.iter().map(Vec::as_slice).collect();
-        let t1 = Tag::new(Line::shared([b"* @", &s(&c[1])[..]].concat()));
-        let t2 = Tag::new(Line::shared([b"* @", &s(&c[2])[..]].concat()));
-        assert_eq!(
-            tag_comparator::should_be_together(&t1, &t2, &groups),
-            c[3].as_bool().unwrap()
-        );
-    }
-}
-
-// ---- AnnotationTest
+// AnnotationTest
 
 #[test]
 fn annotation_sample() {
@@ -327,7 +258,7 @@ fn annotation_types() {
     }
     for c in cases("AnnotationTest::testTypes") {
         let line = Line::shared(s(&c[2]));
-        let tag = Annotation::new(vec![(0, line.clone())], Rc::default());
+        let tag = Annotation::new(vec![(0, line.clone())]);
         assert_eq!(tag.get_types(), list(&c[0]));
         tag.set_types(&list(&c[1]));
         assert_eq!(tag.get_types(), list(&c[1]));
@@ -343,13 +274,6 @@ fn annotation_types() {
 
 #[test]
 fn annotation_type_expression_and_variable_name() {
-    for c in cases("AnnotationTest::testGetTypeExpression") {
-        let a = Annotation::new(vec![(0, Line::shared(s(&c[0])))], ctx(c.get(1), c.get(2)));
-        assert_eq!(
-            a.get_type_expression().unwrap().get_common_type(),
-            c[3].as_str().map(|s| s.as_bytes().to_vec())
-        );
-    }
     for c in cases("AnnotationTest::testGetVariableName") {
         assert_eq!(
             ann(&s(&c[0])).get_variable_name().map(|v| lossy(&v)),
@@ -367,7 +291,7 @@ fn annotation_type_expression_and_variable_name() {
     );
 }
 
-// ---- TypeExpressionTest
+// TypeExpressionTest
 
 fn check_inner_start_index(t: &TypeExpression) -> Vec<(usize, Vec<u8>)> {
     let mut res = vec![];
@@ -384,7 +308,7 @@ fn check_inner_start_index(t: &TypeExpression) -> Vec<(usize, Vec<u8>)> {
 }
 
 fn parse(v: &[u8]) -> TypeExpression {
-    let t = TypeExpression::new(v, Rc::default());
+    let t = TypeExpression::new(v);
     check_inner_start_index(&t);
     t
 }
@@ -420,7 +344,7 @@ fn type_expression_get_types() {
 fn type_expression_parse_invalid() {
     for c in cases("TypeExpressionTest::testParseInvalidException") {
         let v = s(&c[0]);
-        let r = TypeExpression::try_new(&v, Rc::default());
+        let r = TypeExpression::try_new(&v);
         assert!(r.is_err(), "should fail: {}", lossy(&v));
         assert!(
             r.unwrap_err()
@@ -436,7 +360,7 @@ fn type_expression_huge_type() {
         .map(|i| format!("\\X\\Foo{i}").into_bytes())
         .collect();
     let mut str = types.join(&b'|');
-    let e = TypeExpression::plain(&str);
+    let e = TypeExpression::new(&str);
     assert_eq!(e.get_types(), types);
     for i in 0..100 {
         str = [
@@ -449,7 +373,7 @@ fn type_expression_huge_type() {
     }
     let left = b"\\Closure(A|B): void".to_vec();
     let right = [&b"\\Closure("[..], &left, b"): void"].concat();
-    let e = TypeExpression::plain(&[&left[..], b"|(", &str, b")|", &right].concat());
+    let e = TypeExpression::new(&[&left[..], b"|(", &str, b")|", &right].concat());
     assert_eq!(
         e.get_types(),
         vec![left, [&b"("[..], &str, b")"].concat(), right]
@@ -460,55 +384,38 @@ fn type_expression_huge_type() {
 fn type_expression_predicates() {
     for c in cases("TypeExpressionTest::testGetTypesGlue") {
         assert_eq!(
-            TypeExpression::plain(&s(&c[1])).get_types_glue(),
+            TypeExpression::new(&s(&c[1])).get_types_glue(),
             c[0].as_str().map(|g| g.as_bytes()[0])
         );
     }
     for c in cases("TypeExpressionTest::testIsCompositeType") {
         assert_eq!(
-            TypeExpression::plain(&s(&c[1])).is_composite_type(),
+            TypeExpression::new(&s(&c[1])).is_composite_type(),
             c[0].as_bool().unwrap()
         );
     }
     for c in cases("TypeExpressionTest::testIsUnionType") {
         assert_eq!(
-            TypeExpression::plain(&s(&c[1])).is_union_type(),
+            TypeExpression::new(&s(&c[1])).is_union_type(),
             c[0].as_bool().unwrap()
-        );
-    }
-    for c in cases("TypeExpressionTest::testGetCommonType") {
-        let e = TypeExpression::new(&s(&c[0]), ctx(c.get(2), c.get(3)));
-        assert_eq!(
-            e.get_common_type().map(|t| lossy(&t)),
-            c[1].as_str().map(String::from),
-            "{:?}",
-            c[0]
-        );
-    }
-    for c in cases("TypeExpressionTest::testAllowsNull") {
-        assert_eq!(
-            TypeExpression::plain(&s(&c[0])).allows_null(),
-            c[1].as_bool().unwrap(),
-            "{:?}",
-            c[0]
         );
     }
 }
 
 #[test]
 fn type_expression_map_types() {
-    let te = TypeExpression::plain(br"Foo|Bar|($v is \Closure(X, Y): Z ? U : (V&W))");
+    let te = TypeExpression::new(br"Foo|Bar|($v is \Closure(X, Y): Z ? U : (V&W))");
     let add = |t: TypeExpression| {
         let v = t.to_string();
         if !v.starts_with(b"\\") && !v.starts_with(b"(") {
-            TypeExpression::plain(&[b"\\", v].concat())
+            TypeExpression::new(&[b"\\", v].concat())
         } else {
             t
         }
     };
     let remove = |t: TypeExpression| {
         if let Some(r) = t.to_string().strip_prefix(b"\\") {
-            TypeExpression::plain(r)
+            TypeExpression::new(r)
         } else {
             t
         }
@@ -517,7 +424,7 @@ fn type_expression_map_types() {
     te.map_types(&mut |t| {
         log.push(lossy(t.to_string()));
         if t.to_string() == b"Y" {
-            TypeExpression::plain(b"_y_")
+            TypeExpression::new(b"_y_")
         } else {
             t
         }
@@ -568,37 +475,11 @@ fn type_expression_map_types() {
     }
 }
 
-fn crc32(s: &[u8]) -> u32 {
-    let mut crc = 0xFFFF_FFFFu32;
-    for &b in s {
-        crc ^= b as u32;
-        for _ in 0..8 {
-            crc = if crc & 1 != 0 {
-                (crc >> 1) ^ 0xEDB8_8320
-            } else {
-                crc >> 1
-            };
-        }
-    }
-    !crc
-}
-
+/// testSortTypes' inputs (conditionals on a type, nested ones) parse with inner start indexes matching their text.
 #[test]
-fn type_expression_sort_types() {
-    use pun_tokens::php_compat::strcasecmp;
-    let mut case_fx =
-        |a: &TypeExpression, b: &TypeExpression| strcasecmp(a.to_string(), b.to_string()).cmp(&0);
-    let mut crc_fx =
-        |a: &TypeExpression, b: &TypeExpression| crc32(a.to_string()).cmp(&crc32(b.to_string()));
+fn type_expression_parses_sort_types_inputs() {
     for c in cases("TypeExpressionTest::testSortTypes") {
-        let e = parse(&s(&c[0])).sort_types(&mut case_fx);
-        check_inner_start_index(&e);
-        assert_eq!(lossy(e.to_string()), lossy(&s(&c[1])), "{:?}", c[0]);
-        let e = e.sort_types(&mut crc_fx);
-        check_inner_start_index(&e);
-        let e = e.sort_types(&mut case_fx);
-        check_inner_start_index(&e);
-        assert_eq!(lossy(e.to_string()), lossy(&s(&c[1])));
+        assert_eq!(lossy(parse(&s(&c[0])).to_string()), lossy(&s(&c[0])));
     }
 }
 
@@ -613,27 +494,6 @@ fn type_regex_does_not_have_unnamed_capturing_group() {
         .filter(|n| n.is_some())
         .count();
     assert_eq!(named, last);
-}
-
-/// A use whose short name differs from the type must be skipped (expected values from PHP-CS-Fixer's TypeExpression).
-#[test]
-fn type_expression_common_type_with_unrelated_use() {
-    let uses = vec![NamespaceUse {
-        full_name: b"Bar\\Baz".to_vec(),
-        short_name: b"Baz".to_vec(),
-    }];
-    let ctx = Rc::new(Context {
-        namespace: None,
-        namespace_uses: uses,
-    });
-    assert_eq!(
-        TypeExpression::new(b"array|Traversable", ctx.clone()).get_common_type(),
-        Some(b"iterable".to_vec())
-    );
-    assert_eq!(
-        TypeExpression::new(b"array|Baz", ctx).get_common_type(),
-        None
-    );
 }
 
 /// Annotation::getTypes caches: editing the line afterwards doesn't change the reported types (checked against PHP).
