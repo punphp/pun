@@ -16,7 +16,7 @@ mod watch;
 
 use anyhow::{Context, Result};
 use clap::{Args, Parser, Subcommand};
-use pun_config::{Config, Engine, Options};
+use pun_config::{Config, Options};
 use pun_format::{LintError, Pipeline};
 use rayon::prelude::*;
 use report::{FileResult, Status};
@@ -143,9 +143,6 @@ pub struct PunArgs {
     /// Read code from stdin (Pun); `--stdin-filename` gives it a path for exclusion rules.
     #[arg(long)]
     stdin: bool,
-    /// Formatting engine: compat (Pint-identical) or pun (mago-formatter).
-    #[arg(long, value_parser = ["compat", "pun"])]
-    engine: Option<String>,
     /// Print which rules run natively and which are delegated to PHP-CS-Fixer (to stderr).
     #[arg(long)]
     explain: bool,
@@ -270,9 +267,8 @@ fn show_config(fmt: &str, config: Option<PathBuf>, preset: Option<String>) -> Re
     Ok(0)
 }
 
-enum Engine2 {
-    Compat(Pipeline),
-    Pun(String),
+enum Engine {
+    Native(Pipeline),
     /// Every file through real PHP-CS-Fixer (pun-delegate): unported rules or a .php-cs-fixer.php config.
     /// With the enabled rules Pun hasn't ported (empty for a .php-cs-fixer.php run).
     Delegate(pun_delegate::Delegate, Vec<String>),
@@ -280,11 +276,11 @@ enum Engine2 {
 
 type Run = Result<Option<(Vec<u8>, Vec<&'static str>)>, LintError>;
 
-impl Engine2 {
+impl Engine {
     /// The outer error aborts the run (a dead PHP worker, PHP-CS-Fixer's own run-level exceptions).
     fn run(&self, file: &Path, code: &[u8]) -> Result<Run> {
         Ok(match self {
-            Engine2::Compat(p) => {
+            Engine::Native(p) => {
                 let r = p.run(file, code);
                 // Runner::fixFile analyses annotations after linting the input, before any fixer runs.
                 if !matches!(
@@ -298,11 +294,8 @@ impl Engine2 {
                 }
                 r.map(|f| f.map(|f| (f.code, f.applied)))
             }
-            Engine2::Pun(php) => {
-                pun_format::format_pun(code, php).map(|c| c.map(|c| (c, vec!["pun"])))
-            }
             // Linting stays native (TokenizerLinter's messages), as on the native path.
-            Engine2::Delegate(d, _) => match pun_format::lint(code) {
+            Engine::Delegate(d, _) => match pun_format::lint(code) {
                 Err(e) => Err(e),
                 Ok(()) => match d.fix(file, code)? {
                     pun_delegate::Outcome::Unchanged => Ok(None),
@@ -324,18 +317,10 @@ impl Engine2 {
 }
 
 fn load_config(a: &FormatArgs, pint_mode: bool, root: &Path) -> Result<Config> {
-    let engine = a.pun.engine.as_deref().map(|e| {
-        if e == "pun" {
-            Engine::Pun
-        } else {
-            Engine::Compat
-        }
-    });
     let opts = Options {
         config: a.config.clone(),
         no_config: a.no_config,
         preset: a.preset.clone(),
-        engine,
         blade: a.blade,
         pint_mode,
     };
@@ -382,7 +367,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         _ if !pun_config::PRESETS.iter().any(|(n, _)| *n == cfg.preset) => vec![],
         (Some(sel), _) => pun_workspace::git_paths(&cfg, sel)?,
         // A .php-cs-fixer.php brings its own Finder.
-        (None, Engine2::Delegate(d, _)) if cfg.php_cs_fixer.is_some() && a.paths.is_empty() => {
+        (None, Engine::Delegate(d, _)) if cfg.php_cs_fixer.is_some() && a.paths.is_empty() => {
             d.files()?
         }
         (None, _) => pun_workspace::discover(&cfg, &a.paths)?,
@@ -404,7 +389,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
             .or_else(|| cache::default_path(&root))
             .map(|p| {
                 let mut sig = cache::signature(&cfg);
-                if let Engine2::Delegate(d, _) = &engine {
+                if let Engine::Delegate(d, _) = &engine {
                     sig["delegate"] = d.signature();
                 }
                 cache::Cache::load(p, sig)
@@ -433,7 +418,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         }
         let code = std::fs::read(path)
             .with_context(|| format!("Failed to read content from \"{}\".", path.display()))?;
-        if code.is_empty() || (matches!(engine, Engine2::Pun(_)) && r.rel.ends_with(".blade.php")) {
+        if code.is_empty() {
             r.status = Status::Skipped;
             return Ok((r, None, false));
         }
@@ -541,7 +526,7 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     let failed = ((dry_run || a.repair) && results.iter().any(|r| r.status == Status::Fixed))
         || results.iter().any(FileResult::is_error);
 
-    if let Engine2::Compat(p) = &engine {
+    if let Engine::Native(p) = &engine {
         eprint!("{}", p.profile_report());
         if !p.not_ported.is_empty() {
             eprintln!(
@@ -554,48 +539,43 @@ fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     Ok(code.max(u8::from(failed)))
 }
 
-/// The formatter for this config: native, delegated to PHP-CS-Fixer, or mago-formatter.
-fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine2> {
+/// The formatter for this config: native, or delegated to PHP-CS-Fixer.
+fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine> {
     pun_fixers::analyzers::active_preset::set(&cfg.preset);
-    Ok(match cfg.engine {
-        Engine::Compat => {
-            let mut p = Pipeline::new(&cfg.rules, &pun_fixers::all)?;
-            // PUN_PROFILE=1: per-stage timings on stderr after the run.
-            if std::env::var_os("PUN_PROFILE").is_some() {
-                p.enable_profile();
-            }
-            let source = match &cfg.php_cs_fixer {
-                Some(f) => Some(pun_delegate::Source::Config(f.clone())),
-                None => (!p.not_ported.is_empty())
-                    .then(|| pun_delegate::Source::Rules(cfg.configured_rules.clone().into())),
-            };
-            match source {
-                Some(_) if a.pun.native_only && cfg.php_cs_fixer.is_some() => {
-                    anyhow::bail!(
-                        "--native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead."
-                    )
-                }
-                Some(s) if !a.pun.native_only => {
-                    // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
-                    let d = pun_delegate::Delegate::start(
-                        root,
-                        s,
-                        std::env::var_os("PUN_PINT").map(PathBuf::from),
-                    )?;
-                    Engine2::Delegate(d, p.not_ported)
-                }
-                _ => Engine2::Compat(p),
-            }
+    let mut p = Pipeline::new(&cfg.rules, &pun_fixers::all)?;
+    // PUN_PROFILE=1: per-stage timings on stderr after the run.
+    if std::env::var_os("PUN_PROFILE").is_some() {
+        p.enable_profile();
+    }
+    let source = match &cfg.php_cs_fixer {
+        Some(f) => Some(pun_delegate::Source::Config(f.clone())),
+        None => (!p.not_ported.is_empty())
+            .then(|| pun_delegate::Source::Rules(cfg.configured_rules.clone().into())),
+    };
+    Ok(match source {
+        Some(_) if a.pun.native_only && cfg.php_cs_fixer.is_some() => {
+            anyhow::bail!(
+                "--native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead."
+            )
         }
-        Engine::Pun => Engine2::Pun(cfg.php.clone()),
+        Some(s) if !a.pun.native_only => {
+            // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
+            let d = pun_delegate::Delegate::start(
+                root,
+                s,
+                std::env::var_os("PUN_PINT").map(PathBuf::from),
+            )?;
+            Engine::Delegate(d, p.not_ported)
+        }
+        _ => Engine::Native(p),
     })
 }
 
 /// `full` (--explain): the rule list too; `-v` prints only why a run is delegated.
-fn explain(cfg: &Config, engine: &Engine2, full: bool) {
+fn explain(cfg: &Config, engine: &Engine, full: bool) {
     let mut err = std::io::stderr().lock();
     match engine {
-        Engine2::Delegate(d, not_ported) => {
+        Engine::Delegate(d, not_ported) => {
             let why = match &cfg.php_cs_fixer {
                 Some(f) => format!("{} configures the run", f.display()),
                 None => format!(
@@ -615,16 +595,10 @@ fn explain(cfg: &Config, engine: &Engine2, full: bool) {
             }
         }
         _ if !full => {}
-        Engine2::Pun(php) => {
+        Engine::Native(p) => {
             let _ = writeln!(
                 err,
-                "engine: pun (mago-formatter, pint preset, PHP {php}); pint.json rules are ignored"
-            );
-        }
-        Engine2::Compat(p) => {
-            let _ = writeln!(
-                err,
-                "engine: compat (PHP {}), preset {}, {} rules",
+                "native (PHP {}), preset {}, {} rules",
                 cfg.php,
                 cfg.preset,
                 cfg.rules.len()
@@ -640,7 +614,7 @@ fn explain(cfg: &Config, engine: &Engine2, full: bool) {
 }
 
 /// DefaultCommand::fixStdinInput: excluded paths echo the input; otherwise print the fixed code.
-fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine2) -> Result<u8> {
+fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine) -> Result<u8> {
     let mut code = Vec::new();
     std::io::stdin().read_to_end(&mut code)?;
     let mut out = std::io::stdout().lock();
@@ -662,7 +636,7 @@ fn stdin(a: &FormatArgs, cfg: &Config, engine: &Engine2) -> Result<u8> {
 /// reports syntax errors through its unshown JSON report and echoes the input).
 fn fix_text(
     cfg: &Config,
-    engine: &Engine2,
+    engine: &Engine,
     path: &Path,
     check_excluded: bool,
     code: &[u8],

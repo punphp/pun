@@ -26,14 +26,6 @@ pub const PRESETS: [(&str, &str); 5] = [
 /// Other sets stay unexpanded and are reported as not ported.
 const SETS: &str = include_str!("../presets/sets.json");
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
-#[serde(rename_all = "lowercase")]
-pub enum Engine {
-    #[default]
-    Compat,
-    Pun,
-}
-
 /// One enabled fixer. `options` is `Null` when the rule is just `true`.
 #[derive(Debug, Clone, Serialize)]
 pub struct Rule {
@@ -57,8 +49,7 @@ pub struct Finder {
 pub struct Config {
     pub root: PathBuf,
     pub preset: String,
-    pub engine: Engine,
-    /// Target PHP version emulated by the compat engine.
+    /// Target PHP version (`[compat] php`).
     pub php: String,
     /// Enabled rules in merge order (preset, then pint.json, then pun.toml). The pipeline sorts by priority.
     pub rules: Vec<Rule>,
@@ -79,7 +70,6 @@ pub struct Options {
     pub config: Option<PathBuf>,
     pub no_config: bool,
     pub preset: Option<String>,
-    pub engine: Option<Engine>,
     /// `--blade`.
     pub blade: bool,
     /// Invoked as `pint`: ignore pun.toml and .php-cs-fixer.php like Pint does.
@@ -99,7 +89,6 @@ struct PunToml {
 #[derive(Deserialize, Default)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 struct PunFormat {
-    engine: Option<Engine>,
     preset: Option<String>,
     paths: Option<Vec<String>>,
     exclude: Option<Vec<String>>,
@@ -183,7 +172,6 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
 
     let PunToml { format: f, compat } = toml;
     rules.extend(f.rules);
-    let engine = opts.engine.or(f.engine).unwrap_or(Engine::Compat);
     let php = compat.php.unwrap_or_else(|| "8.4".into());
 
     // RuleSet::__construct: only true, false or an options array.
@@ -242,7 +230,6 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
     Ok(Config {
         root: root.to_path_buf(),
         preset,
-        engine,
         php,
         rules,
         finder,
@@ -429,7 +416,7 @@ impl Config {
             .collect();
         serde_json::json!({
             "sources": self.sources,
-            "format": { "engine": self.engine, "preset": self.preset, "rules": rules },
+            "format": { "preset": self.preset, "rules": rules },
             "compat": { "php": self.php },
             "finder": self.finder,
         })
@@ -466,7 +453,7 @@ mod tests {
             ),
             (
                 "pun.toml",
-                "[format]\nengine = \"pun\"\n[format.rules]\nfinal_class = false\n[compat]\nphp = \"8.5\"\n",
+                "[format.rules]\nfinal_class = false\n[compat]\nphp = \"8.5\"\n",
             ),
         ]);
         let c = load(&d, &Options::default()).unwrap();
@@ -485,7 +472,7 @@ mod tests {
         assert!(c.blade);
         assert_eq!(c.finder.exclude, ["x", "b"]);
         assert_eq!(c.finder.not_path, ["y"]);
-        assert_eq!((c.engine, c.php.as_str()), (Engine::Pun, "8.5"));
+        assert_eq!(c.php, "8.5");
     }
 
     #[test]
@@ -616,7 +603,6 @@ mod tests {
             &Options {
                 config: Some("custom.json".into()),
                 blade: true,
-                engine: Some(Engine::Pun),
                 ..Default::default()
             },
         )
@@ -629,7 +615,7 @@ mod tests {
             c.show(),
             serde_json::json!({
                 "sources": [d.join("base.json"), d.join("custom.json")],
-                "format": {"engine": "pun", "preset": "empty", "rules": {"concat_space": {"spacing": "one"}, "single_quote": true, "Pint/laravel_blade": true}},
+                "format": {"preset": "empty", "rules": {"concat_space": {"spacing": "one"}, "single_quote": true, "Pint/laravel_blade": true}},
                 "compat": {"php": "8.4"},
                 "finder": {"in": ["src"], "exclude": [], "notName": ["x", "y"], "notPath": []},
             })

@@ -725,23 +725,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mago-formatter"
-version = "1.57.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bb0f48cae0b517e33c94842024d59ee960d285a284f3d134a85dd9fc96c596f1"
-dependencies = [
- "foldhash",
- "mago-allocator",
- "mago-database",
- "mago-php-version",
- "mago-span",
- "mago-syntax",
- "memchr",
- "schemars",
- "unicode-width",
-]
-
-[[package]]
 name = "mago-linter"
 version = "1.57.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1174,9 +1157,6 @@ name = "punphp-format"
 version = "0.0.1"
 dependencies = [
  "anyhow",
- "mago-allocator",
- "mago-formatter",
- "mago-php-version",
  "pcre2",
  "punphp-config",
  "punphp-tokens",

@@ -12,9 +12,6 @@ categories = ["development-tools"]
 [dependencies]
 anyhow.workspace = true
 serde_json.workspace = true
-mago-formatter.workspace = true
 pun-config.workspace = true
-mago-allocator.workspace = true
-mago-php-version.workspace = true
 pun-tokens.workspace = true
 pcre2.workspace = true

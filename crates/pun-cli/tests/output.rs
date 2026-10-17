@@ -436,8 +436,6 @@ fn error_boxes_like_pint() {
         &["--config=http://example.com/pint.json"],
         // `pun format`'s own flags are unknown options to Pint.
         &["--watch"],
-        &["--engine=pun"],
-        &["--engine", "nope"],
         &["--explain"],
         &["--native-only"],
         &["--stdin"],
