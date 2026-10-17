@@ -35,6 +35,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | CRLF fuzz diff + native framework benchmark: seed-2 Process.php diff was a stale target/debug/pun (fuzz-parity.sh now refuses stale binaries); crlf + mixed-eol fuzz 16 runs 0 differing; scoreboard re-measured with own pint.json, no flags | - | done |
 | Pint-mode polish: Pun-only flags rejected in pint mode, -v exception boxes (class + throw site; PHP frames dropped), --bail abort progress, list pint.json, --preset=nope, LSP config reload, per-file fixer panics, watch exits with its parent, one Node probe (crates/pun-cli, pun-config) | - | done |
 | CI workflows pushed (tests, coverage gate, parity, fuzz, cargo-dist on tags only) | - | done |
+| Token text as spans (PLAN v0.1 item 2): spans into the shared source buffer instead of one `Vec<u8>` per token (crates/pun-tokens, mechanical pun-fixers edits) | perf agent (target-perf/) | doing |
 | Publish: only after format, analyse, lint and migrate all exist (user decision); repo stays private | user | deferred |
 | After v0.1 ships: make pun-harness local dev tooling, not a shipped crate. Move to `tools/harness` (or an `xtask`), `publish = false`, drop it from release/dist. Move `crates/pun-harness/fixtures/` to `crates/pun-fixers/tests/fixtures/` (pun-fixers tests read them). Keep the CI parity job calling it | - | todo (after release) |
 
