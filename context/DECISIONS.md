@@ -106,5 +106,7 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 - **No extension system before 1.0** (2026-10-17). Framework support is compiled in, as Mago's plugins are: Laravel
   (full) and Pest (with the PHPUnit typing it needs), plus deprecation-rules and strict-rules as plain rules. Mockery,
   Livewire, Filament and others come later as extensions; migrate names them unsupported.
-- **Embedded PHP (pun-php):** deferred; system `php` stands in for delegate mode and the oracle.
+- **No PHP fallback** (2026-10-17, format.md Q7): Pun never runs upstream PHP for a rule it doesn't support. `pun
+  migrate` names each unsupported rule while migrating, skips it, and asks the user to send a PR to punphp/pun.
+  Delegate mode (pun-delegate) is removed and pun-php is not built. System `php` is only for the oracle in tests.
 - **Tests:** 100% line coverage per crate, no tautological tests, expected values from the real tools (AGENTS.md).

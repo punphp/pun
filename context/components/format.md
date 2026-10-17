@@ -39,9 +39,9 @@ For each file:
 Around that: file discovery copies Pint's finder rules (pun-workspace), files run in parallel, and a content-hash cache
 skips files already formatted (keyed on Pun's version, PHP version, rules and Blade lockfiles).
 
-**Delegate mode.** If a config turns on a rule Pun hasn't ported, the whole run goes through real PHP-CS-Fixer in
-long-lived `php` workers, so the output is still Pint's. `--explain` shows what ran where; `--native-only` skips the
-unported rules. This needs a system `php` and Pint or PHP-CS-Fixer in `vendor/`.
+**Delegate mode (being removed, Q7).** Today, if a config turns on a rule Pun hasn't ported, the whole run goes
+through real PHP-CS-Fixer in long-lived `php` workers. Decided 2026-10-17: Pun runs no upstream PHP. A rule Pun doesn't
+support is named by `pun migrate` as unsupported, and the user is asked to send a PR to punphp/pun.
 
 **Blade.** With the `laravel-blade` rule on, `.blade.php` files go through Prettier and prettier-plugin-blade in Node,
 exactly as Pint does it (one long-lived Node worker per thread). It needs Node. Blade is about 2.9 s of Pinkary's 4.2 s
@@ -135,7 +135,7 @@ Left, reordered after the first answers:
 4. ~~Port the per preset's 3 rules~~ Not needed: only laravel, psr12 and empty stay as presets (Q4).
 5. **Native Blade formatter** (Blade parser plus Prettier-identical HTML printing), so Blade needs no Node. Large;
    after the first release unless you say otherwise (Q6).
-6. **Embedded PHP** so delegate mode needs no system PHP (PLAN.md C6). Only matters for unported rules (Q7).
+6. ~~Embedded PHP~~ Not needed: no PHP fallback (Q7).
 
 ## 8. Questions
 
@@ -172,7 +172,15 @@ Answered 2026-10-17 (Pushpak):
    available one by one).
 5. **No pun.toml: stop**, with "Run `pun migrate`, or `pun init` for a new project". So `pun init` is new work.
 6. **Blade stays on Node + Prettier** for now; native Blade later.
-7. **System PHP for unported rules: open**, to discuss separately.
+7. **No PHP fallback for unported rules** (answered 2026-10-17). Pun never runs PHP-CS-Fixer or Pint for a rule it
+   doesn't support. `pun migrate` names each unsupported rule while migrating, says it is skipped, and asks the user
+   to send a PR to punphp/pun:
+   ```
+   ⚠ phpdoc_tag_casing  not supported by Pun yet; skipped
+     Want it? Send a PR to https://github.com/punphp/pun
+   ```
+   Delegate mode (pun-delegate, `--native-only`, `--explain`'s delegated part) and embedded PHP (pun-php) are removed.
+   Custom fixer classes in `.php-cs-fixer.php` are unsupported the same way.
 8. **Pun style: open**, explained again in the thread.
 9. **Human output: open**, explained again in the thread.
 10. **Speed and memory are a priority now**, not parked.

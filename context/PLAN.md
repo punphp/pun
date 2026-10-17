@@ -197,7 +197,12 @@ lockfiles). 100% coverage. **Pending:** nothing known; analyse and lint will nee
 
 ## C6. Delegate mode and embedded PHP (pun-delegate, pun-php)
 
-**Goal.** Anything not ported runs through the real upstream code, so compatibility is complete from day one.
+**Decided 2026-10-17: removed.** Pun runs no upstream PHP. A rule Pun doesn't support is named by `pun migrate` as
+unsupported and skipped, with a request to send a PR to punphp/pun (format.md Q7). The work left here is deleting
+pun-delegate, `--native-only` and the delegated part of `--explain`, and updating AGENTS.md. pun-php is not built.
+The oracle (`scripts/oracle.sh`) stays: tests still compare against real upstream tools.
+
+What existed before the decision:
 
 **Done.** Unported or custom fixers send the run through PHP-CS-Fixer in long-lived system `php` workers; `--native-only`
 skips them and lists them; custom fixer classes in `.php-cs-fixer.php` work (reference/oracle.md "Delegate mode");
@@ -207,7 +212,7 @@ skips them and lists them; custom fixer classes in `.php-cs-fixer.php` work (ref
 - pun-php: static libphp (ZTS) behind a Rust SAPI, so delegation needs no system PHP. Not started; deferred by decision.
 - Pinned, checksum-verified PHARs instead of the project's `vendor/` Pint or `$PUN_PINT`.
 - Delegation for analyse (whole run through real PHPStan) and lint (Rector after native rules).
-- Decide whether the release needs pun-php or can require system PHP for delegated rules (Q3).
+- ~~Decide whether the release needs pun-php~~ Decided: neither; no fallback.
 
 ## C7. Analyse (pun-phpstan, pun-analyse, pun-laravel)
 
@@ -327,9 +332,9 @@ These are the calls we need to make while walking through the components; each o
    sharing one box and index. Which components run in parallel first?
 2. ~~Release bar for analyse and lint (C7, C8)~~ Decided: every lint rule and every PHPStan core rule native, Larastan
    and Pest built in, nothing delegated.
-3. **Embedded PHP (C6).** May the release require a system `php` for delegated rules, or is pun-php a release blocker?
-4. **Unported format rules (C2).** Are the 64 delegated format rules acceptable at release, or which must be native?
-   Still open (format.md Q7). With presets cut to laravel, psr12 and empty, none of the preset rules is unported.
+3. ~~Embedded PHP (C6)~~ Decided: no PHP fallback at all, so no pun-php.
+4. ~~Unported format rules (C2)~~ Decided (format.md Q7): unported rules are unsupported, named by migrate, with a
+   request for a PR; no fallback. With presets cut to laravel, psr12 and empty, none of the preset rules is unported.
 5. ~~LSP dependency (C10)~~ Removed: the LSP is the last step.
 6. **1.0 scope (C14).** Memory says one 1.0 release where everything ships at once; the task board says the release needs
    format, analyse, lint and migrate. Are install, run and test part of 1.0 or after it?

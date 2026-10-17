@@ -11,7 +11,7 @@ History before the 2026-10-17 reset (every finished Phase 1 row, with its eviden
 | Component | Task | Owner | Status |
 | --- | --- | --- | --- |
 | C0 | Repo cleanup, context/ folder, component plan | plan-reset thread | done (landed on main) |
-| C2 | Walk through the formatter plan with Pushpak (components/format.md) | plan-reset thread | done (Q7 open) |
+| C2 | Walk through the formatter plan with Pushpak (components/format.md) | plan-reset thread | done |
 | C8 | Walk through the lint plan with Pushpak (components/lint.md) | plan-reset thread | done |
 | C7 | Walk through the analyse plan with Pushpak (components/analyse.md) | plan-reset thread | done |
 | C3, C4 | Walk through `pun init` and the output for every command (components/init.md, output.md) | plan-reset thread | done |
@@ -27,6 +27,7 @@ History before the 2026-10-17 reset (every finished Phase 1 row, with its eviden
 | C7 | M2.3 analyse rules, level 0: 54 identifiers, ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | analyse agent | todo (stopped at 43d9857; trait-method and facade-alias WIP uncommitted) |
 | C7 | `pun analyse` subcommand, agent output, join `pun check` | - | todo |
 | C9 | Migrate `.php-cs-fixer.php` Finder | - | todo |
+| C6, C9 | Remove delegate mode (pun-delegate, `--native-only`); migrate names unsupported rules and asks for a PR to punphp/pun; update AGENTS.md | - | todo |
 | C4 | CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) and the final gates | - | todo (stopped by user) |
 | C10 | LSP | - | removed; last step, after the PHP interpreter (user) |
 | C11 | pun-harness as dev-only tooling; fixtures into pun-fixers | - | todo (after release) |
