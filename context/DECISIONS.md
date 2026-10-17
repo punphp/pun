@@ -95,5 +95,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 - **Analyse builds on Mago's analyser** (2026-10-17, components/analyse.md §8; assistant's call, delegated): one Pun rule per
   PHPStan rule in the mapping, messages may be reworded, Laravel is a built-in Mago plugin. The baseline is its own
   feature (`pun analyse --generate-baseline`, pun-baseline.toml); `pun migrate` never copies a PHPStan baseline.
+- **No extension system before 1.0** (2026-10-17). Framework support is compiled in, as Mago's plugins are: Laravel
+  (full) and Pest (with the PHPUnit typing it needs), plus deprecation-rules and strict-rules as plain rules. Mockery,
+  Livewire, Filament and others come later as extensions; migrate names them unsupported.
 - **Embedded PHP (pun-php):** deferred; system `php` stands in for delegate mode and the oracle.
 - **Tests:** 100% line coverage per crate, no tautological tests, expected values from the real tools (AGENTS.md).

@@ -222,6 +222,28 @@ None of this needs PHP to run: Pun reads the files.
 **Testing:** Larastan's own test suite (its `tests/Type` and `tests/Rules` fixtures) becomes the parity test, as
 PHPStan's fixtures do for core. The corpus adds pinkary and larastan's own source.
 
+## 10. Built-in support, not an extension system (2026-10-17)
+
+**What Mago does.** Mago has no runtime extension system either. Its "plugins" are Rust modules compiled into the
+binary (stdlib, PSL, PSR container, flow-php), each turned on by name in its config. Pun follows the same model: support
+for a framework is Pun code inside the binary, turned on from composer.lock. A real extension system (third-party
+plugins) is planned for later, not now (Pushpak).
+
+**In the core for 1.0** (assistant's call within Pushpak's brief: "super Laravel support and Pest support", no
+bloat):
+- **Laravel**, all of §9.
+- **Pest**, as the official `pestphp/pest-plugin-phpstan` does: `$this` inside test closures is the test case,
+  `expect()` chains are typed, and `uses()` / `pest()->extend()` classes are known. Pest runs on PHPUnit, so the small
+  part of phpstan-phpunit that Pest needs comes with it: `createMock()` returning `MockObject&Foo`, and assertions
+  narrowing types. This also covers plain PHPUnit tests.
+- **Deprecation rules** (phpstan-deprecation-rules, 10 identifiers). These are rules, not type knowledge, and Mago's
+  codex already records `@deprecated`.
+- **strict-rules** stays as plain rules: 27 analyse identifiers and 16 that became lint rules. They add no type
+  knowledge, so they add no bloat.
+
+**Later, as extensions:** Mockery, Carbon macros, Livewire, Filament and the like. `pun migrate` names each one as not
+supported yet. The same goes for a project's own PHP rules and type extensions (Q5). `stubFiles` keep working.
+
 ## Decisions
 
 From earlier rounds (2026-10-17, Pushpak):
@@ -239,3 +261,6 @@ Answered 2026-10-17 (Pushpak):
   `basic` (0-1), `essential` (2-3: PHPDoc and return types), `recommended` (4-5: dead code and argument types; the
   default), `strict` (6-8: missing types, union types and nulls), `max` (9-10: mixed, like PHPStan's `level: max`).
   Each includes the one below. The rules' `tier` field in mapping.toml moves to these five names with the rename.
+- **Q4 extensions:** no extension system now (later). Built in: Laravel (full, §9), Pest (with the PHPUnit part it
+  needs), deprecation rules and strict-rules as plain rules (§10). Everything else is named as unsupported.
+- **Q5 a project's own PHPStan PHP code:** named as unsupported by migrate; `stubFiles` keep working (follows from Q4).
