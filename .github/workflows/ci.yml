@@ -40,6 +40,17 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: test
+      # pun-phpstan's corpus_configs reads these four projects' phpstan configs.
+      - run: sed -i 's#^url = "/home/forge/projects/pinkary.com"#url = "https://github.com/pinkary-project/pinkary.com.git"#' corpus/manifest.toml
+      - uses: actions/cache@v4
+        with:
+          path: |
+            corpus/pinkary
+            corpus/laravel-framework
+            corpus/larastan
+            corpus/laravel-pint
+          key: corpus4-${{ hashFiles('corpus/manifest.toml', 'scripts/corpus.sh') }}
+      - run: scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
       - run: cargo test --workspace --locked
 
   coverage:
@@ -55,6 +66,17 @@ jobs:
         with:
           shared-key: coverage
           cache-directories: target/coverage
+      # pun-phpstan's corpus_configs reads these four projects' phpstan configs.
+      - run: sed -i 's#^url = "/home/forge/projects/pinkary.com"#url = "https://github.com/pinkary-project/pinkary.com.git"#' corpus/manifest.toml
+      - uses: actions/cache@v4
+        with:
+          path: |
+            corpus/pinkary
+            corpus/laravel-framework
+            corpus/larastan
+            corpus/laravel-pint
+          key: corpus4-${{ hashFiles('corpus/manifest.toml', 'scripts/corpus.sh') }}
+      - run: scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
       - run: scripts/coverage.sh
       - if: always()
         run: cat docs/COVERAGE.md >> "$GITHUB_STEP_SUMMARY"
