@@ -15,10 +15,12 @@ use mago_allocator::LocalArena;
 use mago_database::file::FileId;
 use mago_span::HasSpan;
 use mago_syntax::cst::{Node, NodeKind};
+use mago_syntax::walker::Walker;
 use pun_problem::{Fix, Level, Problem, Span, apply_fixes};
 
 pub mod rules;
 pub mod syntax;
+mod walk;
 
 /// What a rule sees besides the node: the file's source, its path and the PHP version the project targets.
 pub struct Context<'a> {
@@ -176,9 +178,16 @@ impl Linter {
             path,
             php_version: self.php_version,
         };
-        let mut found = Found::default();
-        let mut ancestors = Vec::new();
-        self.walk(Node::Program(program), &mut ancestors, &ctx, &mut found);
+        let mut state = walk::State {
+            ancestors: Vec::new(),
+            found: Found::default(),
+        };
+        walk::Walk {
+            linter: self,
+            ctx: &ctx,
+        }
+        .walk_program(program, &mut state);
+        let found = state.found;
         let mut found: Vec<(&'static str, Report)> =
             found.rules.into_iter().zip(found.reports).collect();
         found.sort_by_key(|(_, report)| report.span.start);
@@ -194,22 +203,6 @@ impl Linter {
                 fix: report.fix,
             })
             .collect())
-    }
-
-    fn walk<'ast, 'arena>(
-        &self,
-        node: Node<'ast, 'arena>,
-        ancestors: &mut Vec<Node<'ast, 'arena>>,
-        ctx: &Context<'_>,
-        found: &mut Found,
-    ) {
-        for &(id, i) in &self.by_kind[node.kind() as usize] {
-            self.rules[i].visit(node, ancestors, ctx, &mut found.reports);
-            found.rules.resize(found.reports.len(), id);
-        }
-        ancestors.push(node);
-        node.visit_children(|child| self.walk(child, ancestors, ctx, found));
-        ancestors.pop();
     }
 
     /// Apply every fix, round after round, until no rule has a fix that applies. Each round parses the new source

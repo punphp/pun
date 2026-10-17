@@ -228,6 +228,8 @@ also timed with 30 plain spawn-and-wait runs (median; "precise" below).
 | 1 | laravel-framework | 108.4 ms, 83.5 MB | 102.0 ms, 81.8 MB | 80.9 ms, 84.0 MB | 67.0 ms, 82.8 MB |
 | 2 | pinkary | 44.0 ms, 13.8 MB | 44.4 ms, 13.8 MB | 9.5 ms, 13.7 MB | 7.5 ms, 13.3 MB |
 | 2 | laravel-framework | 100.5 ms, 82.4 MB | 91.5 ms, 81.6 MB | 66.2 ms, 82.5 MB | 53.2 ms, 85.7 MB |
+| 3 | pinkary | 44.3 ms, 12.9 MB | 43.4 ms, 13.4 MB | 7.8 ms, 13.3 MB | 7.65 ms, 13.3 MB |
+| 3 | laravel-framework | 91.9 ms, 84.3 MB | 89.1 ms, 82.2 MB | 51.3 ms, 87.3 MB | 49.0 ms, 85.9 MB |
 
 - round 1: the walk writes every report into one list and tags it with its rule ID, instead of a list per node
   drained into the results per rule, which cost an allocation check and a drain on each of ~2.4M nodes. wall -8%
@@ -256,3 +258,18 @@ also timed with 30 plain spawn-and-wait runs (median; "precise" below).
   change wall time. Peak memory is Mago's arenas: the 462 KB `ValidationValidatorTest.php` takes a 26 MB arena
   (39k 376-byte allocations make 14.7 MB), so one thread alone peaks at 36 MB; only a change in Mago's parser
   would cut it.
+- round 3: `Linter::check` walks the tree with Mago's typed `Walker` instead of recursing through
+  `Node::visit_children`. The walker has one function per node type, inlined into its parent's, where the old walk
+  matched on `Node` and called a closure for each of laravel-framework's 5.2M nodes. A hook per node type pushes the
+  same `Node` onto the ancestor stack, and overrides for the 11 types where the walker and `visit_children` disagree
+  (keywords, terminators, field order, the two `TraitUseAdaptation` cases) keep the nodes, their order and their
+  ancestors identical: equal on 17,438 files (the corpus, phpstan-src's tests, rector-src) and in `tests/walk.rs`.
+  Over pre-parsed trees the walk with ancestors went from 79 to 53 ms; single-thread `check` from 40.9 to 33.9 us
+  per file (-17%). wall -4.5% precise and -3% bench.py on laravel-framework, -2% on pinkary (under bench.py's
+  44 ms floor); rss -1 to -2.5% on laravel-framework, flat on pinkary (bench.py's 13 MB sample moves by 0.5 MB run
+  to run). The walk also needs less stack: 6,619 nested `.` operands fit in a 1 MB thread, against 1,652 before.
+- round 3, no change: what is left is outside the engine. Of the samples of a laravel-framework run, 33% are the
+  kernel's `open` (11 us per file on this machine, against 1.4 us for a `stat`; four threads open faster than eight,
+  but a gate of 1-4 concurrent opens in `examples/check` was slower), 35% Mago's parser, 12% the walk. Copying the
+  source into the arena (`parse_file_content`) is 2.3%, under the 3% bar, and avoiding it needs a `'static` borrow
+  of the source.
