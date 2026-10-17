@@ -5,9 +5,11 @@
 
 pub mod composer;
 mod constraint;
+mod explain;
 pub mod migrate;
 mod schema;
 
+pub use explain::{MAPPING_URL, explain};
 pub use schema::{
     ANALYSE_PRESETS, Analyse, AnalyseRule, Files, LINT_SETS, Level, Lint, LintRule, LintSetting,
     Override,
@@ -498,14 +500,27 @@ fn check_composer(composer: &Composer) -> Result<()> {
 }
 
 impl Config {
-    /// `pun config`: what runs, under Pun rule IDs, written as pun.toml takes it.
+    /// `pun config`: the resolved pun.toml, in its own sections and keys. Every rule that runs is listed under
+    /// `[<command>.rules]` as pun.toml writes it (`<group>/<name>`; a rule with no Pun ID keeps its upstream name), each
+    /// command's `exclude` includes `[files] exclude`, and `ecosystems` and `switches` show what composer.lock and the
+    /// analyse preset turned on.
     pub fn show(&self) -> Value {
-        let id = |r: &Rule| rule_of(&r.name).unwrap_or(&r.name).to_string();
+        let short = |id: &str| id.split_once('/').unwrap().1.to_string();
         let format: Map<String, Value> = (self.rules.iter())
-            .map(|r| (id(r), migrate::value(&r.options)))
+            .map(|r| {
+                let id = rule_of(&r.name).map_or(r.name.clone(), short);
+                (id, migrate::value(&r.options))
+            })
             .collect();
         let lint: Map<String, Value> = (self.lint.rules.iter())
-            .map(|r| (r.id.clone(), r.value()))
+            .map(|r| (short(&r.id), r.value()))
+            .collect();
+        let overrides: Vec<Value> = (self.lint.overrides.iter())
+            .map(|o| {
+                let rules: Map<String, Value> =
+                    o.rules.iter().map(|r| (short(&r.id), r.value())).collect();
+                serde_json::json!({ "files": o.files, "rules": rules })
+            })
             .collect();
         let analyse: Map<String, Value> = (self.analyse.rules.iter())
             .map(|r| {
@@ -513,7 +528,7 @@ impl Config {
                     Value::Null => Value::from("on"),
                     o => o.clone(),
                 };
-                (r.id.clone(), v)
+                (short(&r.id), v)
             })
             .collect();
         let a = &self.analyse;
@@ -525,14 +540,19 @@ impl Config {
         if let Some(b) = &a.baseline {
             analyse["baseline"] = b.as_str().into();
         }
+        let f = &self.finder;
         serde_json::json!({
-            "sources": self.sources,
             "php": { "version": self.php },
             "files": self.files,
-            "format": { "preset": self.preset, "rules": format },
-            "lint": { "sets": self.lint.sets, "ecosystems": self.lint.ecosystems, "rules": lint },
+            "format": {
+                "preset": self.preset, "exclude": f.exclude, "not-name": f.not_name, "not-path": f.not_path,
+                "rules": format,
+            },
+            "lint": {
+                "sets": self.lint.sets, "exclude": self.lint.exclude, "ecosystems": self.lint.ecosystems,
+                "rules": lint, "overrides": overrides,
+            },
             "analyse": analyse,
-            "finder": self.finder,
         })
     }
 }

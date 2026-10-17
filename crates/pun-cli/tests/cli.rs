@@ -760,11 +760,7 @@ fn pun_only_behaviour() {
     assert_eq!(code, Some(0));
     let v: serde_json::Value = serde_json::from_str(&out).unwrap();
     assert_eq!(v["format"]["preset"], "empty");
-    assert_eq!(v["format"]["rules"]["format/arrays/syntax"], true);
-    assert_eq!(
-        v["sources"][1],
-        dir.join("pun.toml").to_string_lossy().as_ref()
-    );
+    assert_eq!(v["format"]["rules"]["arrays/syntax"], true);
     let (out, _, _) = pun(&dir, &["config", "--preset=psr12", "--config=pun.toml"]);
     let t: toml::Value = toml::from_str(&out).unwrap();
     assert_eq!(t["format"]["preset"].as_str(), Some("psr12"));
@@ -867,4 +863,155 @@ fn migrates_php_cs_fixer_config() {
     assert_eq!(a(), "<?php\n$a = 'x';\n$b = sizeof([]);\n");
     pun(&dir, &["check", "--fix"]);
     assert_eq!(a(), "<?php\n$a = 'x';\n$b = count([]);\n");
+}
+
+/// `pun config` on a hand-written pun.toml. Expected text derived by hand from config.md §3 and mapping.toml: each
+/// command's exclude adds `[files] exclude`; `tags = "warn"` turns on the one lint rule of `tags`; the analyse groups
+/// switched off are every group with a `basic` rule, so only the rule named after them runs.
+#[test]
+fn config_prints_resolved_schema() {
+    let dir = tmp("config");
+    let toml = r#"[php]
+version = "8.5"
+
+[files]
+paths = ["app", "tests"]
+exclude = ["storage/**"]
+
+[format]
+preset = "empty"
+exclude = ["app/Generated/**"]
+not-name = ["*.blade.php"]
+not-path = ["app/Legacy.php"]
+
+[format.rules]
+"arrays/syntax" = true
+"operators/concat-spacing" = { spacing = "one" }
+
+[lint]
+exclude = ["database/**"]
+
+[lint.groups]
+tags = "warn"
+
+[lint.rules]
+"style/no-alias-function" = { fix = "off" }
+"dead-code/no-self-assignment" = "error"
+
+[[lint.overrides]]
+files = ["tests/**"]
+rules = { "dead-code/no-self-assignment" = "off" }
+
+[analyse]
+preset = "basic"
+exclude = ["tests/**"]
+baseline = "pun-baseline.toml"
+
+[analyse.rules]
+arrays = "off"
+attributes = "off"
+casing = "off"
+classes = "off"
+comments = "off"
+control-flow = "off"
+dead-code = "off"
+deprecated = "off"
+functions = "off"
+imports = "off"
+phpdoc = "off"
+statements = "off"
+types = "off"
+undefined = "off"
+"undefined/method" = { magic = true }
+"#;
+    std::fs::write(dir.join("pun.toml"), toml).unwrap();
+    let want = r#"# Resolved from pun.toml.
+
+[php]
+version = "8.5"
+
+[files]
+paths = ["app", "tests"]
+exclude = ["storage/**"]
+
+[format]
+preset = "empty"
+exclude = ["storage/**", "app/Generated/**"]
+not-name = ["*.blade.php"]
+not-path = ["app/Legacy.php"]
+
+[format.rules]
+"arrays/syntax" = true
+
+[format.rules."operators/concat-spacing"]
+spacing = "one"
+
+[lint]
+sets = []
+exclude = ["storage/**", "database/**"]
+ecosystems = []
+
+[lint.rules]
+"dead-code/no-self-assignment" = "error"
+"tags/no-invalid-open-tag" = "warn"
+
+[lint.rules."style/no-alias-function"]
+fix = "off"
+
+[[lint.overrides]]
+files = ["tests/**"]
+
+[lint.overrides.rules]
+"dead-code/no-self-assignment" = "off"
+
+[analyse]
+preset = "basic"
+paths = ["app", "tests"]
+exclude = ["storage/**", "tests/**"]
+switches = []
+ecosystems = []
+baseline = "pun-baseline.toml"
+
+[analyse.rules."undefined/method"]
+magic = true
+"#;
+    assert_eq!(
+        pun(&dir, &["config"]),
+        (want.into(), String::new(), Some(0))
+    );
+    // Nothing read (a preset, no pun.toml or composer.json): no comment, and PHP 8.4.
+    let (out, _, code) = pun(&tmp("config-none"), &["config", "--preset=empty"]);
+    assert!(out.starts_with("[php]\nversion = \"8.4\"\n"), "{out}");
+    assert_eq!(code, Some(0));
+}
+
+/// `pun explain`: a lint rule by ID, the same rule by its PHP-CS-Fixer name (named first), and a name that is no rule.
+/// Expected text from mapping.toml's `style/no-alias-function` row, its upstream rows and `[meta.groups] style`.
+#[test]
+fn explain_rule() {
+    let dir = tmp("explain");
+    let text = "lint/style/no-alias-function
+Master functions shall be used instead of aliases.
+
+group     style: One consistent way to write the same thing
+sets      coding-style
+fix       unsafe
+upstream  no_alias_functions (php-cs-fixer)
+          no-alias-function (mago-linter)
+docs      https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml#L";
+    let (out, err, code) = pun(&dir, &["explain", "lint/style/no-alias-function"]);
+    assert!(out.starts_with(text), "{out}");
+    assert_eq!((err.as_str(), code), ("", Some(0)));
+    let (out, _, code) = pun(&dir, &["explain", "no_alias_functions"]);
+    let note = "`no_alias_functions` is `lint/style/no-alias-function` in Pun.\n\n";
+    assert!(out.starts_with(&format!("{note}{text}")), "{out}");
+    assert_eq!(code, Some(0));
+    assert_eq!(
+        pun(&dir, &["explain", "nope"]),
+        (
+            String::new(),
+            "pun: `nope` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)\n".into(),
+            Some(1)
+        )
+    );
 }

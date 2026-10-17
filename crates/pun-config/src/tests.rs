@@ -650,38 +650,46 @@ fn rule_metadata() {
 fn show() {
     let d = dir(&[(
         "pun.toml",
-        "[files]\npaths = [\"app\"]\n[format]\npreset = \"empty\"\n[format.rules]\n\"operators/concat-spacing\" = { spacing = \"one\" }\n\"strings/single-quote\" = true\n[lint.rules]\n\"style/require-final-class\" = \"error\"\n\"style/no-alias-function\" = { level = \"warn\", fix = \"off\", sets = [\"@internal\"] }\n\"types/no-loose-comparison\" = { fix = \"off\" }\n[analyse]\npreset = \"basic\"\n[analyse.rules]\n\"undefined/method\" = { magic = true }\n",
+        "[files]\npaths = [\"app\"]\nexclude = [\"build\"]\n[format]\npreset = \"empty\"\nexclude = [\"gen\"]\n[format.rules]\n\"operators/concat-spacing\" = { spacing = \"one\" }\n\"strings/single-quote\" = true\n[lint.rules]\n\"style/require-final-class\" = \"error\"\n\"style/no-alias-function\" = { level = \"warn\", fix = \"off\", sets = [\"@internal\"] }\n\"types/no-loose-comparison\" = { fix = \"off\" }\n[[lint.overrides]]\nfiles = [\"tests/**\"]\nrules = { \"style/require-final-class\" = \"off\", \"types/no-loose-comparison\" = \"warn\" }\n[analyse]\npreset = \"basic\"\n[analyse.rules]\n\"undefined/method\" = { magic = true }\n",
     )]);
     let v = load(&d, &Options::default()).unwrap().show();
+    // Rules as pun.toml writes them: `<group>/<name>` under their command's table.
     assert_eq!(
         v["lint"],
         json!({
             "sets": [],
+            "exclude": ["build"],
             "ecosystems": [],
             "rules": {
-                "lint/style/no-alias-function": {"level": "warn", "fix": "off", "sets": ["@internal"]},
-                "lint/style/require-final-class": "error",
-                "lint/types/no-loose-comparison": {"fix": "off"},
+                "style/no-alias-function": {"level": "warn", "fix": "off", "sets": ["@internal"]},
+                "style/require-final-class": "error",
+                "types/no-loose-comparison": {"fix": "off"},
             },
+            "overrides": [{
+                "files": ["tests/**"],
+                "rules": {"style/require-final-class": "off", "types/no-loose-comparison": "warn"},
+            }],
         })
     );
     assert_eq!(
         v["format"],
-        json!({"preset": "empty", "rules": {"format/operators/concat-spacing": {"spacing": "one"}, "format/strings/single-quote": true}})
+        json!({
+            "preset": "empty", "exclude": ["build", "gen"], "not-name": [], "not-path": [],
+            "rules": {"operators/concat-spacing": {"spacing": "one"}, "strings/single-quote": true},
+        })
     );
     assert_eq!(
-        (&v["files"], &v["php"], &v["sources"]),
+        (&v["files"], &v["php"]),
         (
-            &json!({"paths": ["app"], "exclude": []}),
+            &json!({"paths": ["app"], "exclude": ["build"]}),
             &json!({"version": "8.4"}),
-            &json!([d.join("pun.toml")])
         )
     );
     assert_eq!(
-        v["analyse"]["rules"]["analyse/undefined/method"],
+        v["analyse"]["rules"]["undefined/method"],
         json!({"magic": true})
     );
-    assert_eq!(v["analyse"]["rules"]["analyse/undefined/function"], "on");
+    assert_eq!(v["analyse"]["rules"]["undefined/function"], "on");
     assert_eq!(v["analyse"]["preset"], "basic");
     // No baseline, no key (TOML has no null); a baseline is a path.
     assert!(v["analyse"].get("baseline").is_none());
@@ -693,6 +701,138 @@ fn show() {
     // A rule Pun can't run (a set it can't expand) shows under its upstream name.
     let c = load(&dir(&[]), &preset("per")).unwrap();
     assert_eq!(c.show()["format"]["rules"]["@PER-CS"], true);
+}
+
+/// The text after `docs      ` is mapping.toml's URL with the line of the rule's own row.
+fn explained(name: &str, id_key: &str) -> String {
+    let out = explain(name).unwrap();
+    let (head, docs) = out.rsplit_once("docs      ").unwrap();
+    let line: usize = docs
+        .strip_prefix(&format!("{MAPPING_URL}#L"))
+        .unwrap()
+        .trim_end()
+        .parse()
+        .unwrap();
+    let row = MAPPING.lines().nth(line - 1).unwrap();
+    assert!(row.starts_with(&format!("\"{id_key}\" = ")), "{row}");
+    head.to_string()
+}
+
+/// Expected text by hand from each rule's row in mapping.toml, the rows of `[upstream.*]` that map to it and its
+/// group's line in `[meta.groups]`.
+#[test]
+fn explain_rules() {
+    assert_eq!(
+        explained("format/arrays/syntax", "arrays/syntax"),
+        "format/arrays/syntax
+PHP arrays should be declared using the configured syntax.
+
+group     arrays: Array literals, list() destructuring and array access
+presets   laravel
+fix       safe
+upstream  array_syntax (php-cs-fixer)
+          LongArrayToShortArray (rector)
+          array-style (mago-linter)
+"
+    );
+    // Without the command part, the same rule.
+    assert_eq!(
+        explained("arrays/syntax", "arrays/syntax"),
+        explained("format/arrays/syntax", "arrays/syntax")
+    );
+    assert_eq!(
+        explained("lint/style/no-alias-function", "style/no-alias-function"),
+        "lint/style/no-alias-function
+Master functions shall be used instead of aliases.
+
+group     style: One consistent way to write the same thing
+sets      coding-style
+fix       unsafe
+upstream  no_alias_functions (php-cs-fixer)
+          no-alias-function (mago-linter)
+"
+    );
+    // No summary; the analyse preset; PHPStan's identifier and parameters, Mago's codes.
+    assert_eq!(
+        explained("analyse/undefined/method", "undefined/method"),
+        "analyse/undefined/method
+
+group     undefined: References to something declared nowhere
+preset    basic
+fix       none
+upstream  method.notFound (phpstan)
+          checkThisOnly (phpstan-parameters)
+          reportMagicMethods (phpstan-parameters)
+          NonExistentMethod (mago-analyzer)
+          PossiblyNonExistentMethod (mago-analyzer)
+"
+    );
+    // Intent, and a Pun-only rule.
+    assert_eq!(
+        explained(
+            "lint/comments/no-unused-ignore",
+            "comments/no-unused-ignore"
+        ),
+        "lint/comments/no-unused-ignore
+A @pun-ignore comment that suppressed nothing. Fix removes it.
+
+group     comments: Comments other than PHPDoc, including ignore comments
+sets      code-quality
+intent    suspicious
+fix       safe
+upstream  none (Pun's own rule)
+"
+    );
+    // A lint rule's fix, and a rule in no preset.
+    let out = explained("analyse/casts/useless", "casts/useless");
+    assert!(
+        out.contains(
+            "preset    recommended\nfix       none\nfixed by  lint/dead-code/no-useless-cast\n"
+        ),
+        "{out}"
+    );
+    let out = explained(
+        "format/arrays/no-space-in-empty",
+        "arrays/no-space-in-empty",
+    );
+    assert!(
+        out.contains("\npresets   none (opt-in by name or group)\n"),
+        "{out}"
+    );
+}
+
+/// An upstream or old name is answered with the Pun ID; names without a rule are errors that say why.
+#[test]
+fn explain_names() {
+    let ok = |n: &str| explain(n).unwrap();
+    assert_eq!(
+        ok("method.notFound"),
+        format!(
+            "`method.notFound` is `analyse/undefined/method` in Pun.\n\n{}",
+            ok("analyse/undefined/method")
+        )
+    );
+    // The old `format.` / `lint.` names, through pun.toml's loose match.
+    assert!(ok("lint.no-alias-functions").starts_with(
+        "`lint.no-alias-functions` is `lint/style/no-alias-function` in Pun.\n\nlint/style/no-alias-function\n"
+    ));
+    let err = |n: &str| format!("{:#}", explain(n).unwrap_err());
+    assert_eq!(
+        err("checkUnionTypes"),
+        "`checkUnionTypes` (phpstan-parameters) is `[analyse] union-types = true` in pun.toml, not a rule"
+    );
+    assert_eq!(
+        err("curly_braces_position"),
+        "`curly_braces_position` (php-cs-fixer) has no Pun rule: deprecated upstream; successor: braces_position"
+    );
+    assert_eq!(
+        err("OverrideFinalPropertyHook"),
+        "`OverrideFinalPropertyHook` (mago-analyzer) has no Pun rule: no PHPStan-parity equivalent; Mago analyzer is not a migrate input"
+    );
+    assert_eq!(
+        err("nope"),
+        "`nope` is not a Pun rule or an upstream rule name (see crates/pun-config/rules/mapping.toml)"
+    );
 }
 
 /// Every error names what to write instead.

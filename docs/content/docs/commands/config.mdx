@@ -9,4 +9,22 @@ pun config --format json
 pun config --preset psr12   # what a built-in preset resolves to
 ```
 
-Prints the resolved configuration: the preset's rules plus your `[format.rules]` and `[lint.rules]`, under Pun rule IDs. Use it to check what a change to `pun.toml` did, or to see what a preset contains.
+Prints the resolved `pun.toml`, in the same sections and keys you write: `[php]`, `[files]`, `[format]`, `[lint]` and `[analyse]`. Use it to check what a change to `pun.toml` did, or to see what a preset contains.
+
+- Every rule that runs is listed under its command's `rules` table as `<group>/<name>`: the preset's format rules, the lint rules your sets, groups and rule lines turn on (with their level, and `fix = "off"` where set), and the analyse rules of your preset. Rules switched off are left out. `[[lint.overrides]]` are listed as written.
+- Each command's `exclude` is the full list it applies: `[files] exclude` plus its own.
+- `ecosystems` shows what composer.lock turned on (Laravel, Pest, PHPUnit), and `[analyse] switches` the type switches of the analyse preset.
+- `[php] version` is your setting, else the lowest version composer.json's `require.php` allows, else 8.4.
+
+The TOML starts with a comment naming the files it was resolved from:
+
+```toml
+# Resolved from composer.json, pun.toml.
+
+[php]
+version = "8.4"
+
+[format]
+preset = "laravel"
+...
+```

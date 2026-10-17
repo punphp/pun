@@ -73,25 +73,37 @@ impl LintRule {
     /// The rule as pun.toml writes it: its level, or a table when it has options or `fix = "off"` (with `level` only
     /// when it is `warn`, the default being `error`).
     pub fn value(&self) -> Value {
-        let level = Value::from(match self.level {
-            Level::Warn => "warn",
-            Level::Error => "error",
-        });
-        if self.fix && self.options.is_null() {
-            return level;
-        }
-        let mut t = serde_json::Map::new();
-        if self.level == Level::Warn {
-            t.insert("level".into(), level);
-        }
-        if !self.fix {
-            t.insert("fix".into(), "off".into());
-        }
-        if let Value::Object(o) = crate::migrate::value(&self.options) {
-            t.extend(o);
-        }
-        Value::Object(t)
+        lint_value(Some(self.level), self.fix, &self.options)
     }
+}
+
+impl LintSetting {
+    /// The line as pun.toml writes it, `"off"` included.
+    pub fn value(&self) -> Value {
+        lint_value(self.level, self.fix, &self.options)
+    }
+}
+
+fn lint_value(level: Option<Level>, fix: bool, options: &Value) -> Value {
+    let level = Value::from(match level {
+        None => "off",
+        Some(Level::Warn) => "warn",
+        Some(Level::Error) => "error",
+    });
+    if fix && options.is_null() {
+        return level;
+    }
+    let mut t = serde_json::Map::new();
+    if level != "error" {
+        t.insert("level".into(), level);
+    }
+    if !fix {
+        t.insert("fix".into(), "off".into());
+    }
+    if let Value::Object(o) = crate::migrate::value(options) {
+        t.extend(o);
+    }
+    Value::Object(t)
 }
 
 /// A rule's line in `[lint.rules]` or an override: `level` is `None` for `"off"`.

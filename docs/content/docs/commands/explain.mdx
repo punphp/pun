@@ -1,0 +1,37 @@
+---
+title: pun explain
+description: Look up a rule's summary, group, sets, fix safety and upstream names.
+---
+
+```bash
+pun explain lint/style/no-alias-function
+pun explain style/no-alias-function     # the command part may be left out
+pun explain no_alias_functions          # a PHP-CS-Fixer, Rector, PHPStan or Mago name
+```
+
+```
+lint/style/no-alias-function
+Master functions shall be used instead of aliases.
+
+group     style: One consistent way to write the same thing
+sets      coding-style
+fix       unsafe
+upstream  no_alias_functions (php-cs-fixer)
+          no-alias-function (mago-linter)
+docs      https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml#L755
+```
+
+- **group**: the rule's group and what the group covers. A group's level in `[lint.groups]` (or `"on"` / `"off"` in `[analyse.rules]`) applies to all its rules.
+- **presets** (format), **sets** (lint) or **preset** (analyse): what turns the rule on. `none (opt-in by name or group)` means only its own line or its group's does.
+- **intent** (some lint rules): `correctness` or `suspicious`.
+- **fix**: `safe`, `unsafe`, `mixed` (safe where analysis proves it) or `none`. Analyse rules have no fix; `fixed by` names the lint rule whose fix resolves the report.
+- **upstream**: every upstream rule this rule replaces, with its tool. `pun migrate` reads these names.
+- **docs**: the rule's entry in Pun's rule mapping.
+
+Given an upstream name or a name from an earlier Pun version, `pun explain` first names the Pun ID to use, then explains it:
+
+```
+`method.notFound` is `analyse/undefined/method` in Pun.
+```
+
+A name with no Pun rule is an error that says why, such as a PHP-CS-Fixer rule deprecated upstream or a PHPStan parameter that is a setting rather than a rule. The exit code is 1.

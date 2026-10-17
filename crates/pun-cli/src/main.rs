@@ -74,6 +74,11 @@ enum Cmd {
         #[arg(long)]
         preset: Option<String>,
     },
+    /// Print a rule's summary, group, sets, fix safety, upstream names and docs link.
+    Explain {
+        /// A rule ID (`format/arrays/syntax`), or an upstream or old name, which is answered with its Pun ID.
+        rule: String,
+    },
 }
 
 /// `pun lint` / `pun check`: `pun format`'s flags plus `--fix`.
@@ -194,6 +199,7 @@ fn main() -> ExitCode {
         Cmd::Migrate(_) => "migrate",
         Cmd::ListFiles(_) => "list-files",
         Cmd::Config { .. } => "config",
+        Cmd::Explain { .. } => "explain",
     };
     let flag = (cli.agent || cli.no_agent).then_some(cli.agent);
     agent::init(flag, name);
@@ -212,6 +218,13 @@ fn main() -> ExitCode {
             preset,
             ..
         } => (show_config(format, config, preset), false),
+        Cmd::Explain { rule } => (
+            pun_config::explain(&rule).map(|t| {
+                print!("{t}");
+                0
+            }),
+            false,
+        ),
     };
     #[cfg(feature = "pprof")]
     if let Some(s) = sampler {
@@ -261,11 +274,20 @@ fn show_config(
         },
     )?;
     let v = cfg.show();
+    let sources: Vec<String> = (cfg.sources.iter())
+        .map(|s| s.strip_prefix(&root).unwrap_or(s).display().to_string())
+        .collect();
+    // TOML starts with the files it was resolved from, as a comment.
+    let toml = match sources.is_empty() {
+        true => toml::to_string(&v)?,
+        false => format!(
+            "# Resolved from {}.\n\n{}",
+            sources.join(", "),
+            toml::to_string(&v)?
+        ),
+    };
     if fmt.is_none() && agent::enabled() {
         // Agent mode: what was loaded in one line, then the TOML as usual.
-        let sources: Vec<String> = (cfg.sources.iter())
-            .map(|s| s.strip_prefix(&root).unwrap_or(s).display().to_string())
-            .collect();
         let detail = [
             format!("preset {}", cfg.preset),
             format!("PHP {}", cfg.php),
@@ -274,11 +296,11 @@ fn show_config(
         ];
         let from = format!("from {}", sources.join(", "));
         print!("{}", agent::render("ok", &detail, &from, &[], false));
-        print!("{}", toml::to_string(&v)?);
+        print!("{toml}");
     } else if fmt == Some(ConfigFormat::Json) {
         println!("{}", serde_json::to_string_pretty(&v)?);
     } else {
-        print!("{}", toml::to_string(&v)?);
+        print!("{toml}");
     }
     Ok(0)
 }

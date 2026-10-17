@@ -258,3 +258,26 @@ Build 7 (wf/files, 2026-10-17), assistant's calls where the plan is silent:
   `--config` is accepted like on every other command.
 - **Not wired yet:** `pun lint` and `pun check` still run over format's (Pint's) file set in one token pass, so
   `[lint] exclude` only shows in `pun list-files --command lint`. Wiring it belongs with the lint engine (lint 1-2).
+
+Build 8 (wf/config-explain, 2026-10-17), assistant's calls where the plan is silent:
+
+- **`pun config` prints pun.toml's own sections and keys**: `[php] version`, `[files]`, `[format]` (preset, exclude,
+  not-name, not-path, rules), `[lint]` (sets, exclude, rules, `[[lint.overrides]]`) and `[analyse]` (preset, paths,
+  exclude, baseline, rules). Rules are keyed `<group>/<name>` under their command's table, as `pun migrate` writes them
+  (a rule with no Pun ID, such as `@PER-CS`, keeps its upstream name); groups and sets are expanded into the rules they
+  turn on, so `[lint.groups]` is not printed. Each command's `exclude` is the full list it applies (`[files] exclude`
+  plus its own). Two resolved-only keys stay: `ecosystems` (lint and analyse) and `[analyse] switches`. Pint's
+  `finder` block and `sources` are gone; the TOML starts with `# Resolved from <files>.` instead (no comment when
+  nothing was read), and agent mode keeps its summary line.
+- **`pun explain <rule>`** takes a full ID or `<group>/<name>` (no two commands share one today), then an upstream key
+  as written in any `[upstream.<tool>]`, then the loose match pun.toml's errors use (other spellings, old `format.` /
+  `lint.` names). Anything but an ID starts with "`<name>` is `<id>` in Pun." and exits 0. An upstream key with no rule
+  is an error with its `drop` / `unsupported` reason, or naming its non-rule target (PHPStan parameters such as
+  `checkUnionTypes`); an unknown name is an error. Errors exit 1.
+- **Its text**: the ID, the summary line when mapping.toml has one, then rows `group` (with the `[meta.groups]` line),
+  `presets` / `sets` / `preset` by command (`none (opt-in by name or group)` when empty), `intent` when set, `fix`
+  (`none` without one), `fixed by` for analyse rules that have it, `upstream` (every `[upstream.*]` row mapping to the
+  ID, as `name (tool)` in file order; `none (Pun's own rule)`), and `docs`.
+- **Docs link**: the docs site has no rule pages and no decided base URL (the output follow-up row in ../PLAN.md §3),
+  so `docs` links the rule's row in mapping.toml on GitHub (`.../crates/pun-config/rules/mapping.toml#L<line>`,
+  `pun_config::MAPPING_URL`). Switch it to the rule page once that row decides the base.
