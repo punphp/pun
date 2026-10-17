@@ -174,10 +174,8 @@ impl NullableTypeDeclarationFixer {
 
     fn normalize_nullable_type(&self, tokens: &mut Tokens, type_analysis: &TypeAnalysis) {
         let mut type_ = type_analysis.name.clone();
-        if !type_.contains(&b'|') && !type_.contains(&b'&') {
-            if type_analysis.is_nullable() {
-                type_.insert(0, b'?');
-            }
+        if !type_.contains(&b'|') && !type_.contains(&b'&') && type_analysis.is_nullable() {
+            type_.insert(0, b'?');
         }
         let (normalized_type, normalized_type_as_string) = if self.question_mark {
             let n = convert_to_nullable_type(&type_);

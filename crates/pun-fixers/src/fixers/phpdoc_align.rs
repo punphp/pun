@@ -259,8 +259,8 @@ impl PhpdocAlignFixer {
                 spacing_for_tag = self.spacing_for_tag(Some(&tag_s));
                 item_opening_line = Some(item);
                 let mut line = [&item.indent[..], b" * @", tag].concat();
-                let hint_vertical_align_indent;
-                if has_static {
+
+                let hint_vertical_align_indent = if has_static {
                     line.extend(self.get_indent(
                         tag_max as i64 - tag.len() as i64 + spacing_for_tag,
                         if !item.static_.is_empty() {
@@ -274,11 +274,10 @@ impl PhpdocAlignFixer {
                     } else {
                         line.extend(self.get_indent(6, 0));
                     }
-                    hint_vertical_align_indent = spacing_for_tag;
+                    spacing_for_tag
                 } else {
-                    hint_vertical_align_indent =
-                        tag_max as i64 - tag.len() as i64 + spacing_for_tag;
-                }
+                    tag_max as i64 - tag.len() as i64 + spacing_for_tag
+                };
                 line.extend(self.get_indent(
                     hint_vertical_align_indent,
                     if !item.hint.is_empty() {
@@ -359,17 +358,16 @@ impl PhpdocAlignFixer {
             item.hint = trim(&item.hint).to_vec();
             return Some(item);
         }
-        if match_comment_only {
-            if let Some(m) = Preg::match_groups(&self.regex_comment_line, line, 0) {
-                return Some(Item {
-                    indent: m.name_str("indent").to_vec(),
-                    tag: None,
-                    hint: vec![],
-                    var: vec![],
-                    static_: vec![],
-                    desc: m.name_str("desc").to_vec(),
-                });
-            }
+        if match_comment_only && let Some(m) = Preg::match_groups(&self.regex_comment_line, line, 0)
+        {
+            return Some(Item {
+                indent: m.name_str("indent").to_vec(),
+                tag: None,
+                hint: vec![],
+                var: vec![],
+                static_: vec![],
+                desc: m.name_str("desc").to_vec(),
+            });
         }
         None
     }

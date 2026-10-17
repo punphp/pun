@@ -4,6 +4,9 @@ use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
 use std::sync::LazyLock;
 
+/// Annotation name => its values.
+pub type Annotations = Vec<(Vec<u8>, Vec<Vec<u8>>)>;
+
 const PATTERN: &str = r"^\h*[*\/]+\h+@(php-cs-fixer-\w+\h+(?:@?[\w\/,])+)";
 
 /// Preg::matchAll adds `/u` (PHP: UTF + UCP) and falls back to the plain pattern when the subject isn't UTF-8.
@@ -28,7 +31,7 @@ pub enum FindError {
 }
 
 /// `find()`: annotation name => sorted values, in first-seen order.
-pub fn find(tokens: &Tokens) -> Result<Vec<(Vec<u8>, Vec<Vec<u8>>)>, FindError> {
+pub fn find(tokens: &Tokens) -> Result<Annotations, FindError> {
     let mut comments: Vec<&[u8]> = vec![];
     let count = tokens.count();
     let mut index = 0;
@@ -68,7 +71,7 @@ pub fn find(tokens: &Tokens) -> Result<Vec<(Vec<u8>, Vec<Vec<u8>>)>, FindError> 
     } else {
         &*BYTES
     };
-    let mut annotations: Vec<(Vec<u8>, Vec<Vec<u8>>)> = vec![];
+    let mut annotations: Annotations = vec![];
     for caps in re.captures_iter(&subject) {
         let m = &caps.unwrap()[1];
         let at = m

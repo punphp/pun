@@ -8,11 +8,14 @@ pub fn is_candidate(tokens: &Tokens) -> bool {
     tokens.is_token_kind_found(Kind::T_DOC_COMMENT)
 }
 
+/// Types content => fixed types content.
+type FixedTypes = HashMap<Vec<u8>, Vec<u8>>;
+
 thread_local! {
     /// fixType's result per (`memo_key`, types content): it depends on nothing else, and the same few types recur
     /// across every docblock of a project. Only successful parses are stored.
     // ponytail: unbounded per thread; a project has at most tens of thousands of distinct type strings.
-    static FIXED_TYPES: RefCell<HashMap<String, HashMap<Vec<u8>, Vec<u8>>>> = RefCell::default();
+    static FIXED_TYPES: RefCell<HashMap<String, FixedTypes>> = RefCell::default();
 }
 
 /// `memo_key` names the fixer and its configuration: two fixers (or configurations) never share results.

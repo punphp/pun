@@ -63,7 +63,8 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
     let b = |i: usize, default: bool| x.get(i).and_then(Value::as_bool).unwrap_or(default);
     let end = |i: usize| x.get(i).and_then(Value::as_u64).map(|e| e as usize);
     let a = TokensAnalyzer::new(t);
-    let r = match name {
+
+    match name {
         "code" => s(&t.generate_code()),
         "contents" => json!(t.iter().map(|k| s(k.get_content())).collect::<Vec<_>>()),
         "count" => json!([
@@ -242,8 +243,7 @@ fn op(t: &mut Tokens, o: &[Value]) -> Value {
             }
             Value::Null
         }
-    };
-    r
+    }
 }
 
 fn guarded(t: &mut Tokens, o: &[Value]) -> Value {

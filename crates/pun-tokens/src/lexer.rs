@@ -501,7 +501,7 @@ impl<'a> Lexer<'a> {
                     self.at(q) == b'$'
                         || (self.at(q) == b'.' && self.at(q + 1) == b'.' && self.at(q + 2) == b'.')
                 };
-                if followed(p + 1) || self.woc_ends(p + 1).into_iter().any(|q| followed(q)) {
+                if followed(p + 1) || self.woc_ends(p + 1).into_iter().any(followed) {
                     (Some(T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG), p + 1)
                 } else {
                     (Some(T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG), p + 1)
@@ -710,10 +710,10 @@ impl<'a> Lexer<'a> {
         if let Some((e, base)) = self.prefixed_number(p) {
             best = (e, prefixed_kind(&self.src[p + 2..e], base));
         }
-        if let Some(e) = lnum {
-            if e > best.0 {
-                best = (e, decimal_kind(&self.src[p..e]));
-            }
+        if let Some(e) = lnum
+            && e > best.0
+        {
+            best = (e, decimal_kind(&self.src[p..e]));
         }
         // DNUM: ({LNUM}?"."{LNUM}) | ({LNUM}"."{LNUM}?)
         let dot = lnum.unwrap_or(p);
@@ -725,10 +725,10 @@ impl<'a> Lexer<'a> {
                 dnum = Some(dot + 1);
             }
         }
-        if let Some(e) = dnum {
-            if e > best.0 {
-                best = (e, T_DNUMBER);
-            }
+        if let Some(e) = dnum
+            && e > best.0
+        {
+            best = (e, T_DNUMBER);
         }
         // EXPONENT_DNUM: ({LNUM}|{DNUM})[eE][+-]?{LNUM}
         for base_end in [lnum, dnum].into_iter().flatten() {
@@ -737,10 +737,10 @@ impl<'a> Lexer<'a> {
                 if matches!(self.at(i), b'+' | b'-') {
                     i += 1;
                 }
-                if let Some(e) = self.lnum_end(i) {
-                    if e > best.0 {
-                        best = (e, T_DNUMBER);
-                    }
+                if let Some(e) = self.lnum_end(i)
+                    && e > best.0
+                {
+                    best = (e, T_DNUMBER);
                 }
             }
         }
@@ -997,10 +997,13 @@ impl<'a> Lexer<'a> {
                     cur -= 1;
                     break;
                 }
-                b'\\' if interpolate => {
-                    if cur < n && self.src[cur] != b'\n' && self.src[cur] != b'\r' {
-                        cur += 1;
-                    }
+                b'\\'
+                    if interpolate
+                        && cur < n
+                        && self.src[cur] != b'\n'
+                        && self.src[cur] != b'\r' =>
+                {
+                    cur += 1;
                 }
                 _ => {}
             }
@@ -1081,10 +1084,8 @@ fn strip(digits: &[u8]) -> Vec<u8> {
 fn decimal_kind(text: &[u8]) -> Kind {
     let mut d = strip(text);
     let octal = d[0] == b'0';
-    if octal {
-        if let Some(i) = d.iter().position(|&c| c == b'8' || c == b'9') {
-            d.truncate(i);
-        }
+    if octal && let Some(i) = d.iter().position(|&c| c == b'8' || c == b'9') {
+        d.truncate(i);
     }
     if d.len() < 19 {
         return T_LNUMBER;

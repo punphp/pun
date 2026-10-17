@@ -375,10 +375,10 @@ impl Tokens {
             .collect();
         if !found.is_empty() {
             for i in start..end {
-                if let Some(id) = self.tokens[i].id {
-                    if found.contains(&id) {
-                        out.get_mut(&id).unwrap().push(i);
-                    }
+                if let Some(id) = self.tokens[i].id
+                    && found.contains(&id)
+                {
+                    out.get_mut(&id).unwrap().push(i);
                 }
             }
         }
@@ -481,7 +481,7 @@ impl Tokens {
         }
         loop {
             index = self.step(index, direction)?;
-            if self.tokens[index].equals_any(&tokens, case_sensitive) {
+            if self.tokens[index].equals_any(tokens, case_sensitive) {
                 return Some(index);
             }
         }
@@ -940,7 +940,8 @@ mod tests {
         t.set(1, t[1].clone());
         t.namespace_declarations(count);
         assert_eq!(runs.get(), 1);
-        let mut edits: Vec<Box<dyn Fn(&mut Tokens)>> = vec![
+        type Edit = Box<dyn Fn(&mut Tokens)>;
+        let mut edits: Vec<Edit> = vec![
             Box::new(|t| t.set(1, Token::new(T_STRING, "bar"))),
             Box::new(|t| t.insert_at(1, vec![Token::new(T_WHITESPACE, " ")])),
             Box::new(|t| {

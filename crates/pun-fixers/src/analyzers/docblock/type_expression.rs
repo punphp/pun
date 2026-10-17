@@ -234,7 +234,7 @@ impl TypeExpression {
         let value = self.value.clone();
         let mut index = 0;
         let matches = loop {
-            let Some(m) = preg::match_at(&pattern, &value, index) else {
+            let Some(m) = preg::match_at(pattern, &value, index) else {
                 return Err(ParseError(value));
             };
             let glue = m.name_str("glue");
@@ -371,7 +371,7 @@ impl TypeExpression {
         let mut index = 0;
         while value.len() != index {
             let m =
-                preg::match_at(&pattern, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
+                preg::match_at(pattern, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
             self.push(start_index + index, m.name_str("types"))?;
             index += m.str(0).len();
         }
@@ -379,6 +379,7 @@ impl TypeExpression {
     }
 
     /// Shared loop of parseCallableTemplateInnerTypes / parseCallableArgumentTypes / parseArrayShapeInnerTypes.
+    #[allow(clippy::too_many_arguments)] // the three upstream loops differ only in these regex pieces
     fn parse_prefixed(
         &mut self,
         start_index: usize,

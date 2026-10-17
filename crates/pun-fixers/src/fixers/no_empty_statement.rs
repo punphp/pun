@@ -136,11 +136,11 @@ impl Fixer for NoEmptyStatementFixer {
                 index += 1;
                 continue;
             }
-            if let Some(next_index) = tokens.get_next_meaningful_token(index) {
-                if tokens[next_index].is_kind(CT_PROPERTY_HOOK_BRACE_CLOSE) {
-                    index += 1;
-                    continue;
-                }
+            if let Some(next_index) = tokens.get_next_meaningful_token(index)
+                && tokens[next_index].is_kind(CT_PROPERTY_HOOK_BRACE_CLOSE)
+            {
+                index += 1;
+                continue;
             }
             // A semicolon might be removed together with its noop statement, for example "<?php 1;"
             let pre_previous_meaningful_index = tokens

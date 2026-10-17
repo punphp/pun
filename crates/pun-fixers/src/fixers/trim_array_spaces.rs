@@ -39,15 +39,15 @@ impl Fixer for TrimArraySpacesFixer {
 
 fn fix_array(tokens: &mut Tokens, index: usize) {
     let mut start_index = index;
-    let end_index;
-    if tokens[start_index].is_kind(T_ARRAY) {
+
+    let end_index = if tokens[start_index].is_kind(T_ARRAY) {
         start_index = tokens.get_next_meaningful_token(start_index).unwrap();
-        end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_index);
+        tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_index)
     } else if tokens[start_index].is_kind(CT_DESTRUCTURING_BRACKET_OPEN) {
-        end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_DESTRUCTURING_BRACKET, start_index);
+        tokens.find_block_end(Tokens::BLOCK_TYPE_DESTRUCTURING_BRACKET, start_index)
     } else {
-        end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, start_index);
-    }
+        tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, start_index)
+    };
 
     let next_index = start_index + 1;
     let next_non_whitespace_index = tokens.get_next_non_whitespace(start_index, None).unwrap();

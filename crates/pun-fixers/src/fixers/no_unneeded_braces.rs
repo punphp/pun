@@ -99,14 +99,13 @@ fn clear_if_is_over_complete_namespace_block(tokens: &mut Tokens) {
         return; // `;`
     }
     let close_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
-    if let Some(after_close_index) = tokens.get_next_meaningful_token(close_index) {
-        if !tokens[after_close_index].is_kind(T_CLOSE_TAG)
+    if let Some(after_close_index) = tokens.get_next_meaningful_token(close_index)
+        && (!tokens[after_close_index].is_kind(T_CLOSE_TAG)
             || tokens
                 .get_next_meaningful_token(after_close_index)
-                .is_some()
-        {
-            return;
-        }
+                .is_some())
+    {
+        return;
     }
     // clear up
     tokens.clear_token_and_merge_surrounding_whitespace(close_index);

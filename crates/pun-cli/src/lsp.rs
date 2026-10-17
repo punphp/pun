@@ -93,15 +93,15 @@ pub fn run() -> Result<u8> {
                     }
                 }
                 DidChangeTextDocument::METHOD => {
-                    if let Ok(p) = from_value::<DidChangeTextDocumentParams>(n.params) {
-                        if let Some(c) = p.content_changes.into_iter().last() {
-                            docs.insert(p.text_document.uri.as_str().to_owned(), c.text);
-                        }
+                    if let Ok(p) = from_value::<DidChangeTextDocumentParams>(n.params)
+                        && let Some(c) = p.content_changes.into_iter().last()
+                    {
+                        docs.insert(p.text_document.uri.as_str().to_owned(), c.text);
                     }
                 }
                 DidCloseTextDocument::METHOD => {
                     if let Ok(p) = from_value::<DidCloseTextDocumentParams>(n.params) {
-                        docs.remove(&p.text_document.uri.as_str().to_owned());
+                        docs.remove(p.text_document.uri.as_str());
                     }
                 }
                 _ => {}
@@ -157,17 +157,17 @@ fn formatting(
     uri: &Uri,
 ) -> Result<Vec<TextEdit>> {
     let text = docs
-        .get(&uri.as_str().to_owned())
+        .get(uri.as_str())
         .ok_or_else(|| anyhow::anyhow!("{} is not open", uri.as_str()))?;
     let path = file_path(uri).ok_or_else(|| anyhow::anyhow!("{} is not a file", uri.as_str()))?;
     let Some(new) = fix_text(cfg, engine, &path, true, text.as_bytes())? else {
         return Ok(vec![]);
     };
     // Positions count UTF-16 units (the protocol's default encoding); the range ends after the last character.
-    let lines = text.split('\n');
+    let mut lines = text.split('\n');
     let end = Position {
         line: (lines.clone().count() - 1) as u32,
-        character: lines.last().unwrap_or("").encode_utf16().count() as u32,
+        character: lines.next_back().unwrap_or("").encode_utf16().count() as u32,
     };
     Ok(vec![TextEdit {
         range: Range {

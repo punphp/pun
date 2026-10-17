@@ -495,10 +495,10 @@ impl GlobalNamespaceImportFixer {
                             .map(|m| (m.str(0).to_vec(), m.offset(0) as usize))
                             .collect();
                     for (ty, offset) in matches.into_iter().rev() {
-                        if let Some(new_type) = callback(&ty) {
-                            if ty != new_type {
-                                full_type.splice(offset..offset + ty.len(), new_type);
-                            }
+                        if let Some(new_type) = callback(&ty)
+                            && ty != new_type
+                        {
+                            full_type.splice(offset..offset + ty.len(), new_type);
                         }
                     }
                     full_type

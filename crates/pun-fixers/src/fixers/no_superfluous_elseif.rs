@@ -48,11 +48,11 @@ fn convert_elseif_to_if(tokens: &mut Tokens, index: usize) {
     let mut whitespace = Vec::new();
     for previous in (1..index).rev() {
         let token = &tokens[previous];
-        if token.is_whitespace(None) {
-            if let Some(m) = Preg::match_groups("/(\\R\\N*)$/", &token.content, 0) {
-                whitespace = m.str(1).to_vec();
-                break;
-            }
+        if token.is_whitespace(None)
+            && let Some(m) = Preg::match_groups("/(\\R\\N*)$/", &token.content, 0)
+        {
+            whitespace = m.str(1).to_vec();
+            break;
         }
     }
     if whitespace.is_empty() {

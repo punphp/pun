@@ -137,19 +137,15 @@ pub mod join_dangling_open_bracket {
         while index < line_count {
             let line = &lines[index];
             if let Some(m) = RawPreg::match_groups("/^<([A-Za-z][A-Za-z0-9:_.\\-]*)$/", trim(line))
+                && index + 1 < line_count
             {
-                if index + 1 < line_count {
-                    let tag = m.str(1);
-                    let next_line = ltrim(&lines[index + 1]);
-                    let closing = [&b"</"[..], tag, b">"].concat();
-                    if !next_line.is_empty()
-                        && next_line[0] == b'>'
-                        && next_line.ends_with(&closing)
-                    {
-                        result.push([rtrim(line), next_line].concat());
-                        index += 2;
-                        continue;
-                    }
+                let tag = m.str(1);
+                let next_line = ltrim(&lines[index + 1]);
+                let closing = [&b"</"[..], tag, b">"].concat();
+                if !next_line.is_empty() && next_line[0] == b'>' && next_line.ends_with(&closing) {
+                    result.push([rtrim(line), next_line].concat());
+                    index += 2;
+                    continue;
                 }
             }
             result.push(line.clone());

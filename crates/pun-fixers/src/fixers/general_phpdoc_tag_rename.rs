@@ -114,16 +114,16 @@ impl Fixer for GeneralPhpdocTagRenameFixer {
             }
         }
         for (from, to) in &normalized {
-            if let Some((_, to2)) = normalized.iter().find(|(f, _)| f == to) {
-                if to2 != to {
-                    bail!(
-                        "[general_phpdoc_tag_rename] Invalid configuration: Cannot change tag \"{}\" to tag \"{}\", as the tag \"{}\" is configured to be replaced to \"{}\".",
-                        String::from_utf8_lossy(from),
-                        String::from_utf8_lossy(to),
-                        String::from_utf8_lossy(to),
-                        String::from_utf8_lossy(to2)
-                    );
-                }
+            if let Some((_, to2)) = normalized.iter().find(|(f, _)| f == to)
+                && to2 != to
+            {
+                bail!(
+                    "[general_phpdoc_tag_rename] Invalid configuration: Cannot change tag \"{}\" to tag \"{}\", as the tag \"{}\" is configured to be replaced to \"{}\".",
+                    String::from_utf8_lossy(from),
+                    String::from_utf8_lossy(to),
+                    String::from_utf8_lossy(to),
+                    String::from_utf8_lossy(to2)
+                );
             }
         }
         *self = GeneralPhpdocTagRenameFixer {

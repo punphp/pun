@@ -76,10 +76,9 @@ impl Fixer for DateTimeImmutableFixer {
             if let Some((_, new)) = function_map
                 .iter()
                 .find(|(k, _)| *k == &lowercase_content[..])
+                && functions_analyzer.is_global_function_call(tokens, index)
             {
-                if functions_analyzer.is_global_function_call(tokens, index) {
-                    tokens.set(index, Token::new(T_STRING, *new));
-                }
+                tokens.set(index, Token::new(T_STRING, *new));
             }
             index += 1;
         }

@@ -199,13 +199,12 @@ fn upstream_fixtures() {
                 if let Some(eol) = arg(&["whitespacesConfig"])
                     .get("lineEnding")
                     .and_then(Value::as_str)
-                {
-                    if body.contains(
+                    && body.contains(
                         r#"str_replace("\n", $whitespacesConfig->getLineEnding(), $expected)"#,
-                    ) {
-                        expected = expected.replace('\n', eol);
-                        input = input.map(|i| i.replace('\n', eol));
-                    }
+                    )
+                {
+                    expected = expected.replace('\n', eol);
+                    input = input.map(|i| i.replace('\n', eol));
                 }
                 let mut config = arg(&["configuration", "config"]);
                 if is_empty_config(&config) {

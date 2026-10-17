@@ -475,10 +475,10 @@ fn to_comparable_names(mut types: Vec<Vec<u8>>, ctx: &Ctx) -> Vec<Vec<u8>> {
                 let intersects = type_.split(|&c| c == b'&').map(<[u8]>::to_vec).collect();
                 return to_comparable_names(intersects, ctx).join(&b'&');
             }
-            if type_ == b"self" {
-                if let Some(s) = ctx.current_symbol {
-                    type_ = s.to_vec();
-                }
+            if type_ == b"self"
+                && let Some(s) = ctx.current_symbol
+            {
+                type_ = s.to_vec();
             }
             let mut type_ = strtolower(&type_);
             if let Some(full) = ctx.short_names.get(&type_) {
@@ -487,10 +487,10 @@ fn to_comparable_names(mut types: Vec<Vec<u8>>, ctx: &Ctx) -> Vec<Vec<u8>> {
             if let Some(rest) = type_.strip_prefix(b"\\") {
                 return rest.to_vec();
             }
-            if let Some(ns) = ctx.namespace {
-                if !TypeAnalysis::new(&type_, None, None).is_reserved_type() {
-                    type_ = [&strtolower(ns)[..], b"\\", &type_].concat();
-                }
+            if let Some(ns) = ctx.namespace
+                && !TypeAnalysis::new(&type_, None, None).is_reserved_type()
+            {
+                type_ = [&strtolower(ns)[..], b"\\", &type_].concat();
             }
             type_
         })

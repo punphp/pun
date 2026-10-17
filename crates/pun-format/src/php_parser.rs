@@ -411,7 +411,7 @@ impl Parser<'_> {
                 }
                 let symbol = la.unwrap().0;
                 yyn += symbol;
-                if yyn < 0 || yyn > YYLAST || YYCHECK[yyn as usize] as i32 != symbol {
+                if !(0..=YYLAST).contains(&yyn) || YYCHECK[yyn as usize] as i32 != symbol {
                     break 'decide YYDEFACT[state as usize] as i32;
                 }
                 let action = YYTABLE[yyn as usize] as i32;

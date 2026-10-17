@@ -89,10 +89,10 @@ fn runtime(root: &Path, source: &Source, pinned: Option<PathBuf>) -> Result<Path
     let autoload = root.join("vendor/autoload.php");
     let has_fixer = root.join("vendor/friendsofphp/php-cs-fixer").is_dir();
     let found = match source {
-        Source::Config(_) => Some(autoload).filter(|_| has_fixer),
+        Source::Config(_) => has_fixer.then_some(autoload),
         Source::Rules(_) => pinned
             .or_else(|| Some(root.join("vendor/laravel/pint/builds/pint")).filter(|p| p.is_file()))
-            .or_else(|| Some(autoload).filter(|_| has_fixer)),
+            .or_else(|| has_fixer.then_some(autoload)),
     };
     found.context(match source {
         Source::Config(_) => "no vendor/friendsofphp/php-cs-fixer: run `composer install` so Pun can load the config's fixers",
