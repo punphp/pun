@@ -274,6 +274,9 @@ Answered 2026-10-17 (Pushpak):
   stays as a label in the output (`[fix:unsafe]`) so reviewers know which changes to read closely. A rule that should
   only report takes `fix = "off"`. `fix = "apply"` and `"safe-only"` go away, and migrate no longer needs to promote
   rules.
+- **Q8: only `error` fails the run; `warn` is printed and never fails.** Every enabled rule is `error` unless set to
+  `warn`; `pun migrate` sets everything to `error`, because PHPStan and Rector fail on anything they report. The
+  syntax is still open (ESLint/oxlint/Biome per-rule values vs level lists, see the thread).
 - **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
 - **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
   support yet (commands.md decisions).
