@@ -172,6 +172,16 @@ fn formats_like_pint_stdin() {
         "{r}"
     );
 
+    // LSP line breaks are \n, \r\n and a lone \r: this document has 3 lines, the last one "// x".
+    let code = "<?php\r\n$a = array(1,2);\r// x";
+    let want = pint(&dir, "app/Cr.php", code);
+    assert_ne!(want, code);
+    s.open(&file("app/Cr.php"), code);
+    assert_eq!(
+        s.format(&file("app/Cr.php"))["result"],
+        json!([{"range": {"start": {"line": 0, "character": 0}, "end": {"line": 2, "character": 4}}, "newText": want}])
+    );
+
     // After a full-text change to code Pint leaves alone: no edits.
     s.notify("textDocument/didChange", json!({"textDocument": {"uri": file("app/A b.php"), "version": 2}, "contentChanges": [{"text": want}]}));
     assert_eq!(pint(&dir, "app/A b.php", &want), want);
@@ -268,8 +278,27 @@ fn broken_config_fails_requests() {
         ("pint.json", r#"{"preset":"empty","extend":"base.json"}"#),
         ("base.json", r#"{"rules":{"array_syntax":true}}"#),
         ("pint.json", r#"{"preset":"empty"}"#),
+        (
+            "pint.json",
+            r#"{"preset":"empty","rules":{"array_syntax":true}}"#,
+        ),
+        (
+            "pint.json",
+            r#"{"preset":"empty","rules":{"single_quote":true}}"#,
+        ),
     ] {
-        std::fs::write(dir.join(file), cfg).unwrap();
+        // Same size and mtime as before (a fast filesystem, one mtime tick): only the content tells.
+        let path = dir.join(file);
+        let before = std::fs::metadata(&path).and_then(|m| m.modified()).ok();
+        std::fs::write(&path, cfg).unwrap();
+        if let Some(t) = before {
+            std::fs::File::options()
+                .write(true)
+                .open(&path)
+                .unwrap()
+                .set_modified(t)
+                .unwrap();
+        }
         let want = pint(&dir, "app/A.php", code);
         let edits = if want == code {
             json!([])
@@ -282,5 +311,19 @@ fn broken_config_fails_requests() {
             "{file}: {cfg}"
         );
     }
+    // A broken extended file: the failed load never listed it, yet fixing it applies to the next request.
+    let uri = format!("file://{}/app/A.php", dir.display());
+    std::fs::write(
+        dir.join("pint.json"),
+        r#"{"preset":"empty","extend":"base.json"}"#,
+    )
+    .unwrap();
+    std::fs::write(dir.join("base.json"), "{bad").unwrap();
+    assert!(s.format(&uri)["error"].is_object());
+    std::fs::write(dir.join("base.json"), r#"{"rules":{"array_syntax":true}}"#).unwrap();
+    assert_eq!(
+        s.format(&uri)["result"][0]["newText"],
+        pint(&dir, "app/A.php", code)
+    );
     s.stop();
 }
