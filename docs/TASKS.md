@@ -41,7 +41,7 @@ uncommitted files, run the parity gate, then commit or revert them before you ta
 | Task | Owner | Status |
 | --- | --- | --- |
 | Phase 2 M2.1: PHPStan config + baseline (crates/pun-phpstan, .oracle/phpstan) | lint-config agent (target-lintcfg/) | done |
-| Phase 2 M2.2: symbol parity (crates/pun-phpstan) | symbols agent (target-symbols/) | doing |
+| Phase 2 M2.2: symbol parity (crates/pun-phpstan) | symbols agent (target-symbols/) | done |
 | pun lsp = PHPantom + Pun rules (evaluation + prototype) (crates/pun-lsp, docs/LSP.md) | lsp agent (target-lsp/) | doing |
 | Rule placement + naming design (docs/RULES.md, crates/pun-config/rules/mapping.toml) | rules-design agent | done |
 
@@ -67,6 +67,7 @@ Command layout (user-approved direction, 2026-10-17):
 - One config: `pun.toml` with `[php]`, `[format]`, `[lint]` (from rector.php), `[analyse]` (from phpstan.neon, explicit rules instead of levels; Larastan = `laravel = true`). `pun migrate` writes it, converts the baseline, rewrites `@phpstan-ignore*` / `@php-cs-fixer-ignore` to `@pun-ignore*`, removes old configs and composer deps, and lists unsupported rules up front (`--dry-run`). PHPDoc type tags (`@phpstan-param` etc.) are kept by default; `pun migrate --phpdoc` (opt-in, apps only) rewrites them to `@pun-*`. Pun reads all three forms.
   Open choices: (1) keep reading legacy configs with a "run pun migrate" hint (proposed) or require pun.toml; (2) Pun's own rule names, with `pun explain` mapping (proposed), or upstream names under a prefix.
 - `pun lsp` = PHPantom (completion, hover, definitions, references) + Pun (formatting, diagnostics, code actions). Evaluation and prototype in crates/pun-lsp.
+- Built-in symbols for `pun analyse` (M2.2): PHPStan's reflection of every built-in (functionMap + deltas, php-8-stubs, its stubs, functionMetadata) is exported once from the pinned PHAR into `crates/pun-phpstan/data/symbols.json` and read by pun-phpstan's own PHPStan type model and `describe()` printer. Not imported into mago-codex's prelude: its types are Mago's (`TUnion`, Mago's printer), so PHPStan's strings would be lost in translation. At M2.3 the data is handed to Mago as a `FileType::Patch` stub over its prelude where Mago's inference needs it; messages always print through pun-phpstan.
 
 ### User decisions (2026-10-17)
 
