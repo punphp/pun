@@ -159,6 +159,8 @@ skips them and lists them; custom fixer classes in `.php-cs-fixer.php` work (ref
 
 ## C7. Analyse (pun-phpstan, pun-analyse, pun-laravel)
 
+Plan under review with Pushpak: components/analyse.md (how it works, config, rules, questions).
+
 **Goal.** `pun analyse` reports PHPStan + Larastan's exact error set (file, line, identifier, message), honouring
 baselines and `ignoreErrors`, so CI can swap with no baseline churn.
 
