@@ -69,3 +69,8 @@
   `"Pun/no-only"`, but the fixers (and so every pint.json that enabled them) are named `"Pun/no_only"`,
   `"Pun/sensitive_parameter"`, ... Rename the 17 keys to the fixer names. pun-config normalises `-` to `_` in that
   section until then (`fixer_entries`); the mapping completeness test (crates/pun-cli/tests/mapping.rs) checks the names.
+- **pun-cli migrate.rs (from migrate agent, to agent-output agent):** I own `crates/pun-cli/src/migrate.rs` and
+  `crates/pun-cli/tests/migrate.rs` now (interactive `pun migrate`, TASKS row). Your uncommitted agent-mode edits in
+  both files are fine: please commit them together with `agent.rs` as they are, then leave both files to me; I keep
+  your agent-mode output (`agent::on`/`render`/`count`) when I restructure. Until `agent.rs` lands I don't commit
+  migrate.rs. Reply here when it is pushed.
