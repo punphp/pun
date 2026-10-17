@@ -265,12 +265,10 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | CI: get CI on main green (coverage red; runs cancelled by the next push) | todo |
 | pun-harness: the comment in src/main.rs about the starter's `preset = "recommended"` is stale (migrate no longer writes it) | todo |
 | tests: crates/pun-cli/tests/watch.rs `watch_reformats_like_pint` fails on macOS (FSEvents re-reports the first run's own writes, which are not recorded in `done`) | todo |
-| scripts/coverage.sh: on macOS fall back to the toolchain's llvm-profdata/llvm-cov when cargo-llvm-cov or flock is missing | todo |
 | CI: clippy gate (`-D warnings`); clippy is at 0 warnings | todo |
 | CI: pun-analyse coverage to 100% (97.59% in CI); regenerate reports/COVERAGE.md | todo |
 | CI: one branch and PR per thread; rewrite AGENTS.md "Work with other agents" (§4 Q1) | todo |
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
-| scripts/coverage.sh: runs on macOS (no `flock`, no cargo-llvm-cov): make the lock optional or document the install | todo |
 | tests: crates/pun-cli/tests/agent.rs `git_selection` passes `-c commit.gpgsign=false` so it does not fail with global gpg signing | todo |
 | tests: crates/pun-cli/tests/migrate.rs pty tests use a `script` invocation that works on macOS (BSD `script` has no `-qec`) | todo |
 | tests: crates/pun-cli/tests/output.rs `ignore_annotations_like_pint` expects the `assert()` message, so it fails on a PHP with `zend.assertions` off (got "Undefined array key 1"); run the oracle with `-d zend.assertions=1` | todo |

@@ -10,7 +10,7 @@
 # Instrumented builds live in target/coverage (reused between runs, never the shared target/llvm-cov-target),
 # serialised with flock so concurrent agents don't mix profraw files. Exclusions: lines `- path:FROM-TO reason`
 # under "## Exclusions" in context/reports/COVERAGE.md are not counted.
-# Needs: rustup component add llvm-tools-preview; cargo install cargo-llvm-cov --locked
+# Needs: rustup component add llvm-tools-preview; cargo install cargo-llvm-cov --locked; on macOS also brew install flock
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -113,6 +113,16 @@ ok = tests_ok == "1" and H == T
 if not only:
     res = os.path.join(os.path.dirname(lcov), "summary.json")
     summary = json.load(open(res)) if os.path.exists(res) else {}
+    # A fresh target/coverage has no summary.json: keep the other crates' rows from the report instead of dropping
+    # them. Their uncovered files go back to the crate that owns the path (punphp-<x> in crates/pun-<x>, punphp in
+    # crates/pun-cli).
+    old = re.search(r"<!-- coverage:begin.*?<!-- coverage:end -->", text, flags=re.S)
+    if old:
+        dir_of = lambda p: "crates/pun-cli/" if p == "punphp" else f"crates/pun-{p.removeprefix('punphp-')}/"
+        for p, t, h, ok_ in re.findall(r"^\| (\S+) \| (\d+) \| (\d+) \| [\d.]+% \| (ok|FAILED) \|$", old.group(0), flags=re.M):
+            if p in summary: continue
+            summary[p] = {"lines": int(t), "hit": int(h), "tests_ok": ok_ == "ok", "files": [], "raw": [
+                l for l in re.findall(r"^- `\S+` .*$", old.group(0), flags=re.M) if l[3:].startswith(dir_of(p))]}
     summary[pkg] = {"lines": T, "hit": H, "tests_ok": tests_ok == "1",
                     "files": [[f, t, h, ranges(m)] for f, t, h, m in rows if h < t]}
     json.dump(summary, open(res, "w"), indent=1)
@@ -126,6 +136,9 @@ if not only:
         for f, t, h, m in s["files"]:
             any_miss = True
             gen.append(f"- `{f}` {pct(t, h):.2f}% ({t - h} lines): {m}")
+        for l in s.get("raw", []):
+            any_miss = True
+            gen.append(l)
     if not any_miss: gen.append("- none")
     gen.append("<!-- coverage:end -->")
     block = "\n".join(gen)
