@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Check crates/pun-config/rules/mapping.toml against the naming rules in context/RULES.md.
+"""Check crates/pun-config/rules/mapping.toml against the naming rules in context/plan/rules.md.
 
 Fails (exit 1) on: a `tentative` entry, a non-kebab-case or duplicate name (rule names and aliases share one namespace
 across all commands), a lint name without a verb prefix, a broken `pun` / `fixed_by` / `conflicts` / `merged`
 reference, an upstream entry that is not exactly one of pun / drop / unsupported, a Rector entry without its class,
 a rule that no upstream entry maps to (unless it is marked `pun_only = true`), and a PHPStan/Larastan entry
-without `variant` when its rule replaces several identifiers. Tiers (context/RULES.md §5): every lint and analyse rule needs a
+without `variant` when its rule replaces several identifiers. Tiers (context/plan/config.md §5): every lint and analyse rule needs a
 valid `tier`, add-on `presets` must name a [meta] add-on, each tier's resolved set must contain the one below it, and no
 tier may enable both sides of a [meta] conflict (alone, or together with a Pint preset). Prints rule counts per tier.
 

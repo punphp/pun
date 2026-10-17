@@ -4,9 +4,8 @@ Pun is one Rust binary for the PHP toolchain. `pun format` produces the same byt
 
 Read these for more:
 
-- `context/TASKS.md`: status and open work. It is the source of truth.
-- `context/PLAN.md`: the global plan and build order; one plan per command in `context/plan/`. Start at `context/README.md`.
-- `context/RULES.md`: rule names and their upstream mapping.
+- `context/PLAN.md`: the source of truth. Every decision, the build order with each row's status, and the open questions. Start here.
+- `context/plan/`: one plan per part, each with its Build list. `plan/rules.md` covers rule placement, naming and the upstream mapping.
 - `README.md`: the behavior users see.
 
 ## Match the upstream tool
@@ -68,7 +67,7 @@ Pinkary is the slowest project for Pun because Blade formatting runs through Pre
 - A fixer's tests come from three sources: upstream fixtures exported to JSON, oracle output in `tests/cases/<fixer>.json` (create it with `scripts/oracle-case.php`), and `tests/metadata.json` (the priority and risky flag from Pint).
 - `pun-config` reads `pun.toml` and nothing else. `rules/mapping.toml` maps Pun rule IDs to upstream names, and `scripts/check-rule-mapping.py` checks it. `migrate.rs` converts `pint.json` and `.php-cs-fixer.php`. `docs/presets/laravel.json` is compiled into the crate, so do not move it.
 - If a rule has no Pun port, `pun-delegate` sends every file of the run through the real PHP-CS-Fixer in `php` worker processes. See `context/reference/oracle.md#delegate-mode`.
-- `pun-cli` builds the `pun` binary. The binary also answers as `pint` when `argv[0]` is `pint`. The crate holds Pint-identical reporters, the compact output for coding agents (`agent.rs`), the cache, `--watch`, and the interactive `migrate`.
+- `pun-cli` builds the `pun` binary. The crate holds Pint-identical reporters, the compact output for coding agents (`agent.rs`), the cache, `--watch`, and the interactive `migrate`.
 - `pun-phpstan` ports PHPStan's config, ignore, and type-string behavior. Its built-in symbols are in `data/symbols.json`. `pun-analyse` builds `pun analyse` on `pun-phpstan` and Mago's analyzer.
 - `pun-harness` is local tooling. It regenerates `context/reports/scoreboard.md`.
 - The commands divide the work like this. `format` changes layout only. `lint` applies code rules, including PHP-CS-Fixer's risky fixers. `analyse` reports type errors. `check` runs all three in one pass.
@@ -106,10 +105,10 @@ Keep a test only if it fails on a plausible wrong implementation. If you cannot 
 
 ## Work with other agents
 
-- Each crate has one owning agent. To use another crate's API, read it and adapt. If you need a change there, add a request to `context/REQUESTS.md`.
+- Each crate has one owning agent. To use another crate's API, read it and adapt. If you need a change there, add a `request` row under the step that needs it in `context/PLAN.md` §3.
 - In the root `Cargo.toml`, append to `[workspace.dependencies]` only.
-- At the start of a session, read `context/TASKS.md` and run `git log -15`, `git status`, and `ps aux | grep -E 'cargo|rustc|php'`. A `doing` row whose agent no longer runs is abandoned. Check its uncommitted files, then commit or revert them.
-- Before you start a task, set its row to `doing` with your owner name and target directory. When you have pushed the work, set the row to `done`.
+- At the start of a session, read `context/PLAN.md` and run `git log -15`, `git status`, and `ps aux | grep -E 'cargo|rustc|php'`. A `doing` row whose agent no longer runs is abandoned. Check its uncommitted files, then commit or revert them.
+- Before you start a task, set its row's status in `context/PLAN.md` §3 to `doing` with your owner name and target directory. When you have pushed the work, delete the row.
 - All agents share one git index. Commit your files in a single step: `git commit -m "..." -- path1 path2`. If `.git/index.lock` exists, wait and retry.
 - After each commit, run `git pull --rebase origin main` and then `git push origin main`. If the push fails, retry once.
 - Rewrite history or force-push only when the user explicitly asks.

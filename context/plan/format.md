@@ -1,7 +1,7 @@
 # Plan: format (`pun format`)
 
 Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". This file is the plan for the formatter:
-how it works today, the decided design, and the build list (§7). Shared schema: config.md; output: output.md.
+how it works today, the decided design, and the build list (§7). Decisions with dates: ../PLAN.md §2. Shared schema: config.md; output: output.md.
 
 ## 1. What it is
 
@@ -38,9 +38,9 @@ For each file:
 Around that: file discovery copies Pint's finder rules (pun-workspace), files run in parallel, and a content-hash cache
 skips files already formatted (keyed on Pun's version, PHP version, rules and Blade lockfiles).
 
-**Delegate mode (being removed, Q7).** Today, if a config turns on a rule Pun hasn't ported, the whole run goes
-through real PHP-CS-Fixer in long-lived `php` workers. Decided 2026-10-17: Pun runs no upstream PHP. A rule Pun doesn't
-support is named by `pun migrate` as unsupported, and the user is asked to send a PR to punphp/pun.
+**Delegate mode (today, being removed).** Today, if a config turns on a rule Pun hasn't ported, the whole run goes
+through real PHP-CS-Fixer in long-lived `php` workers. Decided: Pun runs no upstream PHP (config.md Build 6). An
+unported rule in pun.toml is a config error; `pun migrate` names it, skips it, and asks for a PR to punphp/pun.
 
 **Blade.** With the `laravel-blade` rule on, `.blade.php` files go through Prettier and prettier-plugin-blade in Node,
 exactly as Pint does it (one long-lived Node worker per thread). It needs Node. Blade is about 2.9 s of Pinkary's 4.2 s
@@ -48,88 +48,58 @@ cold run.
 
 ## 3. The config
 
-*The new schema is in config.md; this section describes today's.*
+The schema is config.md §3: `[format] preset` (`laravel`, `psr12`, `empty`), `not-name` / `not-path`, and
+`[format.rules]` as a delta to the preset, with `group/name` keys (§8) and TOML-native options. Format rules have no
+levels: a diff is a diff. They can only be ignored per file, with `// @pun-ignore-file format/<group>/<name>` before
+the first statement (rules.md §4); `pun migrate` rewrites `// @php-cs-fixer-ignore` to this form.
 
-Pun reads only `pun.toml`. `pun migrate` writes it from pint.json (or `.php-cs-fixer.php`); without one, every command
-stops with "No pun.toml found. Run `pun migrate`." unless you pass `--preset` or `--no-config`.
-
-```toml
-[php]
-version = "8.4"                 # the PHP version rules target (default 8.4)
-
-[format]
-preset = "laravel"              # Pint's presets: laravel (default), psr12, per, symfony, empty
-paths = ["app", "tests"]        # what to format when no paths are given
-exclude = ["build"]             # folders to skip (Pint's "exclude")
-not-name = ["*.blade.php"]      # file names to skip (Pint's "notName")
-not-path = ["app/Legacy.php"]   # paths to skip (Pint's "notPath")
-
-[format.rules]                  # only what differs from the preset
-concat-space = { spacing = "one" }
-ordered-imports = { sort-algorithm = "alpha" }
-array-syntax = false            # turn a preset rule off
-```
-
-- A rule's value is `true`, `false`, or a table of its options. Option names are PHP-CS-Fixer's, written in kebab-case
-  (`sort-algorithm` for `sort_algorithm`); option values are upstream's unchanged (`"alpha"`, `"one"`).
-- `pun migrate` writes `[format.rules]` as a delta to the preset, so the file stays short.
-- `pun config` prints the resolved config.
-
-**Rule names.** A format rule's ID is `format.<name>`, where the name is the kebab-case form of the PHP-CS-Fixer name
-Pint users already know: `array_syntax` is `format.array-syntax`, `ordered_imports` is `format.ordered-imports`. Inside
-`[format.rules]` the `format.` part is implied. Writing the old snake_case name is an error that names the Pun ID, so a
-copied rule is never silently ignored. Pint's own rules are `format.laravel-blade` and
-`format.phpdoc-type-annotations-only`. All names and their upstream sources are data in
-crates/pun-config/rules/mapping.toml.
-
-**Ignore comments.** `// @pun-ignore-file format.single-quote` before the first statement skips that rule for the
-file. Format rules can only be ignored per file. `pun migrate` rewrites `// @php-cs-fixer-ignore` to this form.
+*Today* the code still reads the old schema: `format.<name>` IDs, PHP-CS-Fixer option names in kebab-case, and the
+`per` and `symfony` presets.
 
 ## 4. Risky rules are not format rules
 
 PHP-CS-Fixer marks some fixers "risky": they can change behaviour (`final_class`, `strict_comparison`,
 `declare_strict_types`, `no_alias_functions`). Pint runs them like any other rule. Pun moves all 76 of them to
-`pun lint` (decided earlier, RULES.md §1), so `pun format` is always safe on save. Consequences:
+`pun lint` (rules.md §1), so `pun format` is always safe on save. Consequences:
 
 - Pint's laravel preset turns on 4 risky rules and Pinkary's pint.json 10 more. `pun migrate` puts them in
-  `[lint.rules]` with `fix = "apply"`, so `pun check --fix` still does everything `pint` did.
+  `[lint.rules]` at `error`, and `--fix` applies every enabled fix, so `pun check --fix` still does everything `pint` did.
 - So `pun format` alone is **not** Pint-identical on a project that uses risky rules; `pun check --fix` is. The harness
   proves the second.
 
 ## 5. Rules: what exists
 
-208 format rules in total (every safe PHP-CS-Fixer fixer plus Pint's two). 144 are ported natively; the other 64 run
-through delegate mode.
+208 format rules in total today (every safe PHP-CS-Fixer fixer plus Pint's two); 40 of them move to lint
+(commands.md §4), leaving 168. 144 are ported natively.
 
-| Preset | Rules in it | Not ported |
-| --- | --- | --- |
-| laravel | 126 | 0 |
-| psr12 | 52 | 0 |
-| per | 63 | 3 (`attribute-block-no-spaces`, `operator-linebreak`, `ordered-types`) |
-| symfony | 151 | 20 |
+| Preset | Rules today | After the 40 move | Not ported |
+| --- | ---: | ---: | ---: |
+| laravel | 126 | 115 | 0 |
+| psr12 | 52 | 50 | 0 |
 
-The other unported rules are opt-in only (in no preset): Doctrine annotations, PHPUnit fixers, heredoc and string
-rewrites, a few PHPDoc rules.
+The unported rules are in no preset: Doctrine annotations, PHPUnit fixers, heredoc and string rewrites, a few PHPDoc
+rules, and the rules only `per` and `symfony` used. Until one is ported, `pun migrate` names it and skips it.
 
-## 6. Pint's CLI, flag for flag
+## 6. The CLI
 
-Every Pint flag works the same and prints the same output (summary, `-v` diffs, error boxes, colours, JSON, txt,
-checkstyle, JUnit, XML and GitLab reporters, exit codes): `--test`, `--bail`, `--repair`, `--dirty`, `--diff=<branch>`,
-`--config`, `--preset`, `--format`, `--output-to-file`, `--stdin-filename`, `--cache-file`, `-v`, `-q`, `--parallel`.
-Pun adds `--staged`, `--since=<ref>`, `--watch`, `--stdin`, `--no-cache`, `--explain` and `--native-only`. Under a coding
-agent it prints compact `path rule, rule` lines instead (output.md §4).
+Today `pun format` takes every Pint flag (`--test`, `--bail`, `--repair`, `--dirty`, `--diff=<branch>`, `--config`,
+`--preset`, `--format`, `--output-to-file`, `--stdin-filename`, `--cache-file`, `-v`, `-q`, `--parallel`) plus
+`--staged`, `--since=<ref>`, `--watch`, `--stdin`, `--no-cache` and `--explain`. The flags stay. Decided changes:
+`--native-only` goes with delegate mode, the human output becomes Pun's own (§9), and exit codes and the machine
+formats (`--format=json|txt|checkstyle|junit|xml|gitlab|github`) stay Pint-compatible. Under a coding agent it prints
+compact lines (output.md §3).
 
 ## 7. Build
 
 Done for the old design: lexer, transformers, every laravel and psr12 fixer, CLI flags, cache, watch, migrate from
-pint.json, harness and fuzzer. Speed and memory come first (Q10). The steps after config.md Build 1-6 (new names, the
+pint.json, harness and fuzzer. Speed and memory come first (decided). The steps after config.md Build 1-6 (new names, the
 40 rules moved to lint, TOML options, no delegate mode):
 
 1. **Presets cut to three:** remove `per` and `symfony` from `--preset` and pun.toml (migrate expands them).
    *Done when* `--preset per` is an error naming the replacement, and psr12/laravel corpus runs still match.
 2. **The new output** (output.md Build 1-3): file lines, the summary, run errors; Pint's human screen removed; machine
    formats (`--format=json|checkstyle|junit|gitlab|github`) unchanged.
-   *Done when* `scripts/cli-parity.sh` passes on exit codes and machine formats, and the human samples in §10 are pinned.
+   *Done when* `scripts/cli-parity.sh` passes on exit codes and machine formats, and the human samples in §9 are pinned.
 3. **Fewer allocations per token:** the inline `Content` type (24 bytes, 22 inline, else boxed) plus the three clone
    fixes (braces_position and array_indentation token clones, `rhs.to_vec()` in php_parser.rs, per-token lowercasing in
    native_type_declaration_casing). *Done when* cold laravel-framework improves by 5% or more; otherwise drop it.
@@ -139,82 +109,9 @@ pint.json, harness and fuzzer. Speed and memory come first (Q10). The steps afte
 7. **Port the rest of the 208 format rules** that aren't native yet, in usage order, each with upstream fixtures.
    Until a rule is ported, migrate names it as unsupported.
 
-After 1.0: the native Blade formatter (Blade stays on Node + Prettier until then) and a Pun reprinting preset (Q8).
+After 1.0: the native Blade formatter (Blade stays on Node + Prettier until then) and a Pun reprinting preset.
 
-## 8. Questions
-
-My recommendation is marked. Answer by number; one word is enough.
-
-1. **Risky rules in lint.** `pun format` stays safe, and `pun check --fix` is what equals `pint`. Keep that, or make
-   `pun format` alone equal Pint (risky rules back in format)? *Recommend: keep.*
-2. **Rule names.** Kebab-case of the PHP-CS-Fixer names (`array-syntax`), recognisable to Pint users. Keep, or rename
-   format rules to Pun's own vocabulary like lint and analyse were? *Recommend: keep.*
-3. **Options.** Upstream option names in kebab-case, values unchanged. Keep, or redesign options too? *Recommend: keep.*
-4. **Presets.** laravel and psr12 are fully native; per (3 missing) and symfony (20 missing) go through PHP. Which must
-   be fully native for the release: laravel + psr12 only, add per, or all four? *Recommend: laravel + psr12 + per.*
-5. **No pun.toml.** Today Pun stops and says "run `pun migrate`". Pint instead falls back to the laravel preset. Keep
-   the hard stop, or fall back to laravel like Pint? *Recommend: keep the stop.*
-6. **Blade.** Keep Pint's Node + Prettier path for the release and build native Blade after? *Recommend: yes, after.*
-7. **Delegate mode needs system PHP.** Acceptable for the release, given laravel and psr12 never delegate?
-   *Recommend: yes.*
-8. **Pun's own style.** The Mago-based "Pun style" formatter was removed. Do you ever want a Pun style beyond Pint
-   presets (for example a `pun` preset), or is Pint parity the only target? *Recommend: Pint parity only for now.*
-9. **Human output.** Keep Pint's exact terminal output (boxes, colours, wording) for humans, or give Pun its own
-   look while keeping Pint's machine formats? *Recommend: keep Pint's exact output.*
-10. **Speed work (items 2-3).** Worth doing before lint and analyse, or park it, since Pun is already about 50x Pint?
-    *Recommend: park it until after lint and analyse.*
-
-## Decisions
-
-Answered 2026-10-17 (Pushpak):
-
-1. **Risky rules stay in lint.** `pun format` is behaviour-safe; `pun check --fix` is what equals `pint`.
-2. **Rule names stay kebab-case**, but must be made consistent, with an origin-style convention like `laravel/*`,
-   `symfony/<kebab-case>`. Exact scheme being clarified (see Q2 follow-up below).
-3. **Options are redesigned for Rust/TOML**, not copied from PHP-CS-Fixer. `pun migrate` translates upstream options.
-4. **Three presets only: `laravel`, `psr12`, `empty`.** `per` and `symfony` are dropped as presets (their rules stay
-   available one by one).
-5. **No pun.toml: stop**, with "Run `pun migrate`, or `pun init` for a new project". So `pun init` is new work.
-6. **Blade stays on Node + Prettier** for now; native Blade later.
-7. **No PHP fallback for unported rules** (answered 2026-10-17). Pun never runs PHP-CS-Fixer or Pint for a rule it
-   doesn't support. `pun migrate` names each unsupported rule while migrating, says it is skipped, and asks the user
-   to send a PR to punphp/pun:
-   ```
-   ⚠ phpdoc_tag_casing  not supported by Pun yet; skipped
-     Want it? Send a PR to https://github.com/punphp/pun
-   ```
-   Delegate mode (pun-delegate, `--native-only`, `--explain`'s delegated part) and embedded PHP (pun-php) are removed.
-   Custom fixer classes in `.php-cs-fixer.php` are unsupported the same way.
-8. **Pun style: open**, explained again in the thread.
-9. **Human output: open**, explained again in the thread.
-10. **Speed and memory are a priority now**, not parked.
-
-Second round (Pushpak, 2026-10-17):
-
-- **Q2: grouped names (option b), designed for maintenance and growth.** Approved (third round, below).
-- **Q8: a Pun style is wanted in the future**, as its own preset next to Pint's. Not now.
-- **Q9: Pun gets its own modern, coloured terminal output**, modelled on today's Rust tools (oxfmt, Biome, Ruff).
-  Approved (§10). Machine formats (`--format=json`, checkstyle, junit, gitlab) stay as they are.
-
-Third round (Pushpak, 2026-10-17):
-
-- **Names approved:** every rule is `group/name`, full ID `format/group/name`; the full table is in §9.
-- **No aliases.** Breaking renames are fine until the release.
-- **Big runs use parallel processing.** Already true (files are formatted in parallel, one worker per core); it stays
-  that way and is measured by the 8-core benchmark (§7).
-
-### Follow-ups these create
-
-- Q3: design each rule's options as TOML (names, types, enums); the old PHP-CS-Fixer options become migrate input only.
-- Q4: remove `per` and `symfony` from `--preset` and pun.toml; migrate expands a pint.json using them into explicit rules.
-- Q5: add `pun init` (writes a starter pun.toml for a new project) and the new error text.
-- Q2: rename every format rule to `group/name` per the §9 table (mapping.toml, pun-config, fixtures, docs), no aliases.
-- Q9: new human reporter (§10); scripts/cli-parity.sh and tests/output.rs then cover only the machine formats.
-- Q8: a future `preset = "pun"` (whole-file reprint at a line width); park until after 1.0.
-- Q10: the allocation work (§7 item 2) and the 8-core benchmark move up, with a memory target next to the speed one.
-
-
-## 9. Grouped rule names (Q2, approved)
+## 8. Grouped rule names (approved)
 
 **Shape.** Every rule is `<group>/<name>`, and its full ID is `<command>/<group>/<name>`:
 `format/imports/ordered`, `format/phpdoc/align`, `format/laravel/blade`. Biome uses the same idea (`lint/style/useConst`).
@@ -274,8 +171,8 @@ doctrine = false                 # every rule in the group
 `app/User.php  imports/ordered, imports/no-unused` in a report.
 
 **All 208 format rules.** The full rename, grouped. "laravel" and "psr12" mark the presets that turn a rule on;
-"ported" means it runs natively in Rust (the rest go through system PHP in delegate mode). Rules in neither preset stay
-available one by one. Generated from crates/pun-config/rules/mapping.toml; the code rename lands in mapping.toml with
+"ported" means it runs natively in Rust (unported rules are named and skipped by migrate). Rules in neither preset
+stay available one by one. The 40 rules in commands.md §4 leave this table for lint names when they move. Generated from crates/pun-config/rules/mapping.toml; the code rename lands in mapping.toml with
 exactly these names.
 
 | New name | Today | laravel | psr12 | ported |
@@ -509,7 +406,7 @@ exactly these names.
 | `doctrine/annotation-spaces` | `doctrine-annotation-spaces` |  |  |  |
 
 
-## 10. Pun's own terminal output (Q9, approved)
+## 9. Pun's own terminal output (approved)
 
 Today `pun format` prints Pint's screen exactly. The proposal replaces that for humans with the style of current Rust
 tools: Biome and oxfmt (summary line with a time, coloured diffs, code frames for errors) and Ruff (one line per file,
@@ -547,5 +444,31 @@ all for unchanged files unless `-v`. Colour is automatic on a terminal and off w
 **What stays Pint-compatible:** exit codes, and the machine formats `--format=json|checkstyle|junit|gitlab|xml|txt`, so
 CI integrations keep working.
 
-**Open detail:** keep a progress indicator for big runs (Pint shows dots)? *Recommend: a single spinner line with a
-file counter, only on a terminal and only when the run takes over a second.*
+**Progress:** a single spinner line with a file counter, only on a terminal and only when the run takes over a
+second (output.md §1).
+
+## Decisions
+
+Answered 2026-10-17 (Pushpak), over three rounds:
+
+- **Risky rules stay in lint.** `pun format` is behaviour-safe; `pun check --fix` is what equals `pint`.
+- **Grouped names:** every rule is `group/name`, full ID `format/group/name`, designed for maintenance and growth; the
+  table is §8. **No aliases**: breaking renames are fine until the release.
+- **Options are redesigned for TOML**, not copied from PHP-CS-Fixer. `pun migrate` translates upstream options.
+- **Three presets only: `laravel`, `psr12`, `empty`.** `per` and `symfony` are dropped as presets (their rules stay
+  available one by one; migrate expands a pint.json that uses them).
+- **No pun.toml: stop**, with "Run `pun migrate`, or `pun init` for a new project".
+- **Blade stays on Node + Prettier** for now; native Blade after 1.0.
+- **No PHP fallback for unported rules.** Pun never runs PHP-CS-Fixer or Pint. `pun migrate` names each unsupported
+  rule, skips it, and asks for a PR to punphp/pun:
+  ```
+  ⚠ phpdoc_tag_casing  not supported by Pun yet; skipped
+    Want it? Send a PR to https://github.com/punphp/pun
+  ```
+  Delegate mode (pun-delegate, `--native-only`, `--explain`'s delegated part) and embedded PHP (pun-php) are removed.
+  Custom fixer classes in `.php-cs-fixer.php` are unsupported the same way.
+- **A Pun style** (`preset = "pun"`, a whole-file reprint at a line width) is wanted, after 1.0.
+- **Pun's own terminal output** (§9), modelled on oxfmt, Biome and Ruff. Exit codes and machine formats stay
+  Pint-compatible; scripts/cli-parity.sh and tests/output.rs then cover only those.
+- **Speed and memory are a priority now**, with a memory target next to the speed one.
+- **Big runs stay parallel** (one worker per core), measured by the 8-core benchmark (§7).

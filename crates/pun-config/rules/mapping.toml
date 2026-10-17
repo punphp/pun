@@ -1,4 +1,4 @@
-# Pun rule placement and upstream mapping. Design: context/RULES.md. Checked by scripts/check-rule-mapping.py.
+# Pun rule placement and upstream mapping. Design: context/plan/rules.md. Checked by scripts/check-rule-mapping.py.
 # Drives `pun migrate` (upstream config, ignores and baselines -> pun.toml), `pun explain <rule>` (upstream names and
 # docs links) and the generated docs page "Coming from Pint / PHPStan / Rector".
 #
@@ -8,7 +8,7 @@
 #   severity  default severity when enabled (lint/analyse): error | warn | info
 #   tier      (lint/analyse) lowest preset tier that enables it: essential | recommended | strict | pedantic, or none
 #             (opt-in only: configurable codemods, one-time upgrade codemods, the losing side of a [meta] conflict).
-#             Tiers are cumulative; see context/RULES.md §5
+#             Tiers are cumulative; see context/plan/config.md §5
 #   presets   format: Pint presets that enable it. lint/analyse: the add-on (laravel | pest | phpunit) the rule also
 #             needs; it runs when that add-on is on and the selected tier includes its tier
 #   fixed_by  (analyse) lint rules whose fix resolves this report; `pun check` shows one diagnostic

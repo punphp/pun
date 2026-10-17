@@ -696,7 +696,7 @@ mod tests {
             dup("\"a\"")
         );
 
-        // Pun's `@pun-ignore-file` (context/RULES.md §7): rule IDs, bare names or lint IDs, mapped to their fixers via
+        // Pun's `@pun-ignore-file` (context/plan/rules.md §4): rule IDs, bare names or lint IDs, mapped to their fixers via
         // rules/mapping.toml; an unknown ID skips nothing. Exactly one space after the name, like upstream's split.
         let a = found(b"<?php\n// @pun-ignore-file format.single-quote,no-alias-function,nope\n// @php-cs-fixer-ignore x\n").unwrap();
         assert_eq!(

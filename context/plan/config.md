@@ -1,9 +1,9 @@
 # Plan: config, rule names and presets (pun.toml)
 
 Status: **decided, not built** (2026-10-17). This file gathers the config decisions from format.md, lint.md,
-analyse.md, init.md and commands.md into one schema, and lists the work to build it. It is Step 1 of PLAN.md §3, and
-every other plan depends on it. Decisions with dates: DECISIONS.md. Rule placement data: RULES.md and
-crates/pun-config/rules/mapping.toml.
+analyse.md, init.md and commands.md into one schema, and lists the work to build it. It is Step 1 of
+../PLAN.md §3, and every other plan depends on it. Decisions with dates: ../PLAN.md §2. Rule placement,
+naming style and ignore comments: rules.md; the data: crates/pun-config/rules/mapping.toml.
 
 ## 1. What it is
 
@@ -11,7 +11,7 @@ pun.toml is the only config Pun reads. Every command stops without it: "No pun.t
 `pun init` for a new project." `pun migrate` writes it from old configs (plan/migrate.md) and `pun init` writes it for
 a new project (plan/init.md). `pun config` prints the fully resolved config, every rule included.
 
-## 2. Today (pun-config, main at 0800a99)
+## 2. Today (pun-config, main at 7a76be5)
 
 - `[php]`, `[format]` (preset, paths, exclude, not-name, not-path, rules) and `[lint.rules]`.
 - Rule IDs are `format.<name>` / `lint.<name>`, with aliases from before the naming pass.
@@ -81,7 +81,7 @@ for symbols. `pun list-files` shows the result (§7).
   `analyse/undefined/method`). Inside a `[<command>.rules]` table the command part is implied.
 - **One group list for all three commands**, fixed in mapping.toml with a one-line description each. Topic groups
   (`imports`, `arrays`, `phpdoc`, `types`, ...) and ecosystem groups (`laravel`, `pest`, `phpunit`). Upgrade groups
-  are one per target (`laravel-13`, `php-8.5`). The format table is format.md §9; lint and analyse follow the same
+  are one per target (`laravel-13`, `php-8.5`). The format table is format.md §8; lint and analyse follow the same
   rules.
 - **No aliases.** Old Pun names, PHP-CS-Fixer names and PHPStan identifiers in a `rules` table are an error that names
   the Pun ID to use. Only `pun migrate` reads upstream names.
@@ -121,7 +121,8 @@ Each step ends with the existing gates green (`cargo test -p punphp-config`, the
    rules. Errors for removed keys and upstream names that name the replacement.
    *Done when* each key has a test with an expected resolved config derived by hand, and each error has its message
    pinned.
-4. **TOML-native option names** for every format rule (format.md Q3), with migrate translating PHP-CS-Fixer options.
+4. **TOML-native option names** for every format rule (format.md Decisions), with migrate translating PHP-CS-Fixer
+   options.
    *Done when* every option in mapping.toml has a Pun name and type, and the Pint corpus still matches.
 5. **composer.json and composer.lock detection:** the PHP version from `require.php` (lowest allowed version), and
    Laravel, Pest and PHPUnit with their locked versions.
@@ -133,6 +134,9 @@ Each step ends with the existing gates green (`cargo test -p punphp-config`, the
    *Done when* the §7 example gives exactly the listed sets, and Pint's finder rules still hold for format.
 8. **`pun config`** prints the new resolved schema, and **`pun explain <rule>`** prints a rule's summary, group, sets,
    fix safety, upstream names and docs link from mapping.toml.
+9. **The shared problem type** (Pushpak, 2026-10-17): rule ID, path, span (byte range, shown as line:col), message,
+   help, level, and an optional fix (safety, text edits). One small crate that lint, analyse and the renderer
+   (output.md Build 1) all use.
 
 ## 7. `pun list-files` (Pushpak, 2026-10-17, after Mago's `list-files`)
 
@@ -154,7 +158,8 @@ pun list-files [--command format|lint|analyse] [-0] [paths...]
 
 ## Decisions
 
-All from 2026-10-17 (Pushpak), recorded in DECISIONS.md: pun.toml only and stop without it; `group/name` with no
+All from 2026-10-17 (Pushpak), recorded in ../PLAN.md §2: pun.toml only and stop without it; `group/name` with no
 aliases; three format presets; lint sets; oxlint levels; `--fix` applies all, `fix = "off"`; five analyse presets
-with `max` on top; analyse on or off; ecosystems from composer.lock; PHP version from composer.json; no PHP fallback; `pun list-files` like Mago's.
-The `[files]` section with per-command `exclude` (Mago's model) and the `[analyse] preset` key (instead of a top-level `preset`) is the assistant's default for the schema above.
+with `max` on top; analyse on or off; ecosystems from composer.lock; PHP version from composer.json; no PHP
+fallback; `pun list-files` like Mago's. The `[files]` section with per-command `exclude` (Mago's model) and the
+`[analyse] preset` key (instead of a top-level `preset`) are the assistant's defaults for the schema above.

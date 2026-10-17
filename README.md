@@ -39,7 +39,7 @@ pun lint [--fix]        # the [lint] rules (today: PHP-CS-Fixer's risky fixers)
 Pint). Rule names in `pun.toml` are Pun IDs; earlier Pun names still work, and a PHP-CS-Fixer name gets an error naming
 its Pun ID. `pun migrate` reads pint.json the way Pint does (`extend`, `--config`,
 `--preset`) or, without one, a `.php-cs-fixer(.dist).php` through PHP-CS-Fixer itself, and writes a `pun.toml` with
-Pun rule IDs ([context/RULES.md](context/RULES.md)): the preset plus what differs from it under `[format.rules]`, and the
+Pun rule IDs ([context/plan/rules.md](context/plan/rules.md)): the preset plus what differs from it under `[format.rules]`, and the
 risky fixers under `[lint.rules]` with `fix = "apply"`, since they changed behaviour unattended. It rewrites
 `// @php-cs-fixer-ignore rule` comments to `// @pun-ignore-file format.rule`, lists any rule Pun can't run before
 writing anything (and then writes nothing), and is idempotent. On a terminal it first lists the configs it found

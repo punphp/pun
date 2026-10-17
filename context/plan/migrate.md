@@ -1,7 +1,7 @@
 # Plan: `pun migrate`
 
 Status: **decided, not built for the new design** (2026-10-17). Decisions from the format, lint, analyse, init and
-command walkthroughs, gathered here. Decisions with dates: DECISIONS.md.
+command walkthroughs, gathered here. Decisions with dates: ../PLAN.md §2.
 
 ## 1. What it is
 
@@ -9,7 +9,7 @@ command walkthroughs, gathered here. Decisions with dates: DECISIONS.md.
 It moves everything Pun supports, and names everything it doesn't. The proof is the harness: `pun migrate` followed by
 `pun check --fix` gives the same files as the old tools.
 
-## 2. Today (pun-cli migrate.rs, pun-config migrate.rs, main at 0800a99)
+## 2. Today (pun-cli migrate.rs, pun-config migrate.rs, main at 7a76be5)
 
 - Interactive picker: detects pint.json, .php-cs-fixer.php, phpstan.neon, rector.php and mago.toml, shows a checklist
   on a terminal; `--from pint,phpstan` and `--yes` skip it, as do agent mode and no terminal.
@@ -48,7 +48,8 @@ It moves everything Pun supports, and names everything it doesn't. The proof is 
 
 ## 4. Build
 
-1. **Format part on the new names** (after config.md Build 1-4): upstream names to `format/<group>/<name>`, options
+1. **Format part on the new names** (in PLAN.md Step 1, because Step 1's gate runs through migrate; after config.md
+   Build 1-4): upstream names to `format/<group>/<name>`, options
    to TOML names, `per`/`symfony` expansion, the 40 moved rules and the risky rules to `[lint.rules]`, the Finder.
    *Done when* `pun migrate` + `pun check --fix` equals Pint on all 7 corpus projects.
 2. **Unsupported items:** one ⚠ line per item, the PR request once, the baseline note; exit 0 when the rest migrated.
@@ -66,4 +67,4 @@ It moves everything Pun supports, and names everything it doesn't. The proof is 
 From 2026-10-17 (Pushpak): migrate is complete and explicit about what it can't move; unsupported items are named and
 skipped, with a request to send a PR to punphp/pun, never sent to PHP; baselines are never copied; everything
 migrates at `error`; the closest preset is offered interactively; no workflow wiring. Open: `--remove-tools`
-(PLAN.md §5).
+(../PLAN.md §4).

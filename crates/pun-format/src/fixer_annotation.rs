@@ -1,5 +1,5 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\FixerAnnotationAnalyzer` (`// @php-cs-fixer-ignore rule,other`), plus
-//! Pun's own `// @pun-ignore-file format.rule,lint.other` (context/RULES.md §7), found the same way.
+//! Pun's own `// @pun-ignore-file format.rule,lint.other` (context/plan/rules.md §4), found the same way.
 use pcre2::bytes::{Regex, RegexBuilder};
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;

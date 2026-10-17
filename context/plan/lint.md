@@ -1,7 +1,8 @@
 # Plan: lint (`pun lint`)
 
 Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". This file is the plan for the linter:
-how it works today, the decided design, and the build list (§7). Shared schema: config.md; output: output.md.
+how it works today, the decided design, and the build list (§7). Decisions with dates: ../PLAN.md §2. Shared
+schema: config.md; output: output.md.
 
 ## 1. What it is
 
@@ -12,7 +13,7 @@ It replaces three things:
 | --- | --- |
 | Rector (+ rector-laravel, rector-phpunit, pest-plugin-rector) | every rule except the Symfony, Doctrine and downgrade sets, which are unsupported (decided) |
 | PHP-CS-Fixer / Pint | the 76 risky fixers (decided: risky rules are lint, format.md §4) |
-| Mago's linter | its rules, opt-in as `mago.*` today |
+| Mago's linter | its rules, as normal lint rules under Pun names (`mago.*` and `--mago` today) |
 
 The goal is the same changes as `rector process` for the rules a project uses. With the format rules on top,
 `pun check --fix` writes the same bytes as `rector process && pint`.
@@ -37,46 +38,25 @@ There are two separate paths, and neither is the final design.
 - No Rector rule runs at all.
 - There are no per-line diagnostics on the token path (a rule reports a file, not a line).
 - There is no line-level ignore comment yet (only `@pun-ignore-file`).
-- Tiers, add-ons, severities and `--unsafe` are accepted by the config but don't do anything.
+- Tiers, add-ons and severities are accepted by the config but don't do anything.
 
 ## 3. The config
 
-*The new schema is in config.md; this section describes today's.*
+The schema is config.md §3 and §5: `[lint] sets`, `[lint.groups]` and `[lint.rules]` take `"off"`, `"warn"` or
+`"error"` (oxlint), options in a table with `level`, `fix = "off"` for report-only, and `[[lint.overrides]]` per path.
+Only `error` fails; `--deny-warnings` and `--max-warnings <n>` tighten that, and `-A` / `-W` / `-D` set a level for one
+run. `--fix` applies every fix of every enabled rule; safe or unsafe is a label in the output, not a gate. A
+PHP-CS-Fixer or Rector name in `[lint.rules]` is an error that names the Pun ID to use.
 
-```toml
-preset = "recommended"          # the lint + analyse tier: essential | recommended | strict | pedantic
-                                # accepted today, applies nothing yet
-
-[lint.rules]
-require-final-class = { fix = "apply" }   # reported, and applied by --fix
-no-loose-comparison = "warn"              # reported, never applied
-prefer-early-return = "error"
-no-short-ternary = "off"
-```
-
-| Value | Meaning | Implemented |
-| --- | --- | --- |
-| `"error"` / `"warn"` / `"info"` | turn on at that severity | on/off yes; the severity itself is ignored |
-| `"off"` | turn off | yes |
-| `{ fix = "apply" }` | report, and apply with `--fix` even if unsafe | yes |
-| `{ fix = "safe-only" }` | apply only the safe part | parsed, treated as "don't apply" |
-| `{ fix = "off" }` | report, never apply | yes |
-| other keys in the table | rule options (kebab-case, as in format) | yes |
-
-A PHP-CS-Fixer or Rector name in `[lint.rules]` gets an error that names the Pun ID to use.
-`pun migrate` writes the risky rules a pint.json enabled with `fix = "apply"`, because Pint ran them unattended.
-
-**Designed but not built (RULES.md §4-§5):**
-- **Four cumulative tiers** select lint and analyse rules together.
-- **Add-ons** `laravel`, `pest` and `phpunit` add their ecosystem's rules.
-- **Severities:** `warn` fails only with `--error-on-warnings`.
-- **Fix safety:** `--fix` applies safe fixes; unsafe ones need `--fix --unsafe` (as in Biome and Ruff).
+*Today* the code reads the old schema: a top-level `preset` tier that applies nothing, levels `"error"` / `"warn"` /
+`"info"` treated as on or off, and `fix = "apply"` (applied by `--fix`) or `"safe-only"` (treated as don't apply).
+`pun migrate` writes the risky rules a pint.json enabled with `fix = "apply"`. All of that goes in config.md Build 3.
 
 ## 4. Rules: what exists
 
 There are 542 lint rules in crates/pun-config/rules/mapping.toml. Each has its group, fix safety, default severity,
 tier, add-on and upstream sources. The naming pass is done: verb prefixes (`no-`, `prefer-`, `add-`, `require-`),
-109 merged rules, and a shared vocabulary (RULES.md §3).
+109 merged rules, and a shared vocabulary (rules.md §3). The topic-group rename is config.md Build 1.
 
 | | Count |
 | --- | ---: |
@@ -85,15 +65,16 @@ tier, add-on and upstream sources. The naming pass is done: verb prefixes (`no-`
 | From Rector core / rector-laravel / rector-phpunit / pest-plugin-rector | 271 / 82 / 57 / 20 (some rules have several sources) |
 | From Mago (only Mago / shared with others) | 65 / 119 |
 | Fix safety: safe / unsafe / mixed / report only | 252 / 219 / 3 / 68 |
-| Tier: essential / recommended / strict / pedantic / opt-in only | 53 / 166 / 157 / 107 / 59 |
+| Old tier (replaced by sets in config.md Build 1): essential / recommended / strict / pedantic / opt-in only | 53 / 166 / 157 / 107 / 59 |
 | Add-on: laravel / phpunit / pest | 76 / 61 / 18 |
 
 Groups today are intent groups, as in Biome: `correctness`, `suspicious`, `style`, `complexity`, `performance`,
 `security`, plus `dead-code`, `types`, `modernize`, `laravel`, `testing` and `refactor` (configurable codemods such as
-Rector's `RenameMethod`). Q3 asks whether these become topic groups to match format §9.
+Rector's `RenameMethod`). Decided: they become topic groups shared with format (format.md §8), and intent stays as
+data.
 
 Unsupported on purpose: the rector-symfony (116), rector-doctrine (59) and rector-downgrade-php (92) rules. `pun migrate`
-lists them and stops.
+names each one as unsupported and skips it (migrate.md §3).
 
 ## 5. Rector's CLI, flag for flag
 
@@ -103,15 +84,14 @@ lists them and stops.
 | `rector process` | `pun lint --fix` (doesn't format afterwards, as Rector doesn't; `pun check --fix` does both) |
 | `--config rector.php` | `--config pun.toml`; rector.php is read only by `pun migrate` |
 | `--only=SomeRector` | `--only <rule>` (to build) |
-| `--output-format console/json/github/gitlab/junit` | `--format`, same formats as `pun format` (format.md §10) |
+| `--output-format console/json/github/gitlab/junit` | `--format`, same formats as `pun format` (format.md §9) |
 | `--no-diffs`, `--clear-cache`, `--no-progress-bar` | the same flags `pun format` already has |
-| `rector list-rules` | `pun explain` / `pun rules` (C3, to build) |
+| `rector list-rules` | `pun explain <rule>` (config.md Build 8) |
 
-## 6. The big design point: how lint edits code
+## 6. How lint edits code (decided: text edits)
 
 Rector parses with nikic/php-parser, changes the syntax tree, and prints the changed nodes back with php-parser's
-format-preserving printer. Matching Rector's bytes means porting that printer and its quirks (PLAN.md C8 called it "the
-hard core of the component").
+format-preserving printer. Matching Rector's bytes would mean porting that printer and its quirks.
 
 The alternative is what Ruff, Biome, oxlint and Mago do:
 - each rule finds a node in Mago's syntax tree (already a Pun dependency) and returns text edits on byte ranges;
@@ -130,7 +110,7 @@ Type-aware rules (`add-return-type` and others) ask pun-analyse for types, as Re
 Done: the rule catalogue (542 rules with names, groups, safety and upstream mapping), the 31 token-path rules, and
 `pun check --fix` equal to Pint. The steps, after config.md Build 1-6 (names, sets, levels and overrides in pun.toml):
 
-1. **The engine on Mago's syntax tree.** A rule visits the tree and returns problems (span, message, help) and text
+1. **The engine on Mago's syntax tree**, starting as a spike alongside PLAN.md Step 1 (Pushpak, 2026-10-17). A rule visits the tree and returns problems (span, message, help) and text
    edits on byte ranges. Fixes apply in a loop until no rule has more, with overlapping edits deferred to the next
    round. One parse per file, files in parallel, a cache keyed like format's.
    *Done when* two sample rules (one safe, one unsafe) pass Rector's fixtures through `format(pun lint --fix)`.
@@ -138,7 +118,7 @@ Done: the rule catalogue (542 rules with names, groups, safety and upstream mapp
    `--deny-warnings`, `--max-warnings`, `-A`/`-W`/`-D`, `fix = "off"`, and the exit code (1 only for `error`).
    *Done when* each flag and key has a test with a hand-derived expected result.
 3. **Per-line problems for the token path,** so CS-Fixer's risky rules report a line and a frame, not just a file.
-4. **Ignore comments:** `@pun-ignore` on a line, the next line or a region (RULES.md §7), and `no-unused-ignore`.
+4. **Ignore comments:** `@pun-ignore` on a line, the next line or a region (rules.md §4), and `no-unused-ignore`.
 5. **Output** (output.md Build 1-3): problem blocks, `fixable` labels, `[fix:unsafe]`, the summary, `--concise`.
 6. **Mago's rules as normal lint rules** under their Pun names; the `--mago` flag and the `mago-lint` feature removed.
 7. **Rules in usage order,** each passing Rector's own fixtures: Pinkary's rector.php, then dead-code and modernize
@@ -148,48 +128,13 @@ Done: the rule catalogue (542 rules with names, groups, safety and upstream mapp
 8. **Type-aware rules** query analyse's index (analyse.md Build 3) instead of PHPStan.
 9. **`pun migrate` for rector.php** (migrate.md Build 4).
 
-## 8. Questions
-
-1. **How lint edits code (§6).** Range edits on Mago's tree with parity checked after formatting, or a port of
-   php-parser's printer so the output matches Rector byte for byte?
-   *Recommend: range edits. A printer port is months of work, and nobody runs Rector without a formatter after it.*
-2. **What counts as done for 1.0.** Should every Rector rule in the tiers be native, or only the ones the `recommended`
-   tier and the `laravel` add-on turn on, plus what Pinkary uses?
-   *Recommend: recommended + laravel + Pinkary first; the strict and pedantic rules follow after 1.0.*
-3. **Lint groups.** Format §9 says the same group names in all three commands. Lint groups are intent groups today
-   (`suspicious`, `style`, as in Biome). Should lint names become topic groups like format (`lint/imports/no-unused`,
-   `lint/laravel/no-request-all`), with intent kept as data? Or should lint keep intent groups (`lint/suspicious/no-eval`),
-   as Biome does?
-   *Recommend: topic groups, so `imports` or `laravel` means the same thing everywhere. The tiers already sort rules by
-   how strict they are.*
-4. **Tiers.** Keep four tiers (`essential` < `recommended` < `strict` < `pedantic`) selecting lint and analyse
-   together, with `recommended` as the default?
-   *Recommend: yes, as designed (RULES.md §5).*
-5. **Add-ons.** Turn `laravel`, `pest` and `phpunit` on automatically from composer.json, with a way to turn them off?
-   *Recommend: yes. Pun is Laravel-first and the user shouldn't have to say so.*
-6. **Mago rules.** Fold Mago's rules into the normal lint rules (they already have Pun names) and drop `--mago`?
-   *Recommend: yes. One way to turn a rule on.*
-7. **Unsafe fixes.** Should `--fix` apply only safe fixes, with unsafe ones needing `--unsafe` or `fix = "apply"`
-   per rule?
-   *Recommend: yes (Biome and Ruff). `pun migrate` keeps today's behaviour by writing `fix = "apply"` for what Rector
-   and Pint already applied.*
-8. **Severities.** Should `warn` be printed but fail the run only with `--error-on-warnings`?
-   *Recommend: yes (Biome).*
-9. **Unported Rector rules.** If a migrated rector.php uses a rule Pun hasn't ported, should Pun run real Rector for
-   it through system PHP (like format's delegate mode), or skip it with a warning? This ties to format Q7.
-   *Recommend: skip with a warning and list it in `pun migrate`'s report. Delegating to Rector would mean a second
-   parse and a second fix loop with different rules.*
-10. **`pun lint --fix` and formatting.** Keep the rule that `pun lint --fix` doesn't format afterwards, so
-    `pun check --fix` is the one command that does both?
-    *Recommend: keep it.*
-
-## 9. `pun init` and lint presets (Pushpak's user journey, 2026-10-17)
+## 8. `pun init` and lint presets (Pushpak's user journey, 2026-10-17)
 
 **A new, blank Laravel project:** `pun init` asks three things and writes pun.toml.
 1. **Format preset:** `laravel` or `psr12`.
 2. **Analyse preset:** `basic`, `essential`, `recommended` (default), `strict` or `max`, each including the one below
    (analyse.md decisions).
-3. **Lint preset:** see the proposal below.
+3. **Lint sets:** below.
 
 Laravel, Pest and PHPUnit are not questions. Pun reads composer.lock and turns their rules on by itself, including the
 rules for the locked versions (decided).
@@ -220,7 +165,7 @@ Rector has no ladder. Its config is a set of independent toggles, `withPreparedS
 Rector also has gradual levels for adoption (`withDeadCodeLevel(n)`, `withTypeCoverageLevel(n)`), which turn on the
 first n rules of one set.
 
-### Lint presets are sets you tick, not a ladder (approved)
+### Lint presets are sets you tick, not a ladder (decided)
 
 `pun init` question 3 is a checklist, with a default ticked:
 
@@ -258,31 +203,26 @@ bundles unrelated choices: wanting typed code doesn't mean wanting variables ren
 
 Answered 2026-10-17 (Pushpak):
 
-- **Q1: text edits.** Rules return text edits on byte ranges found through Mago's syntax tree, and format tidies the
+- **Text edits.** Rules return text edits on byte ranges found through Mago's syntax tree, and format tidies the
   layout afterwards. There is no php-parser printer port. Parity is `format(pun lint --fix)` equal to
   `format(rector process)`, on Rector's fixtures and the corpus.
-- **Q3: topic groups**, the same group list as format and analyse (`lint/imports/no-unused`,
+- **Topic groups**, the same group list as format and analyse (`lint/imports/no-unused`,
   `lint/laravel/no-request-all`); intent (correctness, suspicious, style) stays as data. Each upgrade target gets its
   own group (`lint/laravel-13/...`, `lint/php-8.5/...`), so one line turns a whole upgrade on.
-- **Q4: named presets for new projects, explicit rules for migrated ones.** New projects pick a preset: `essential`
-  (definite bugs only, about PHPStan level 0-1), `recommended` (the default), `strict` or `pedantic`, each including
-  the one below. `pun migrate` reads the old setup (PHPStan level, strict-rules, rector.php sets), writes the exact
-  rules it maps to into pun.toml, and in interactive mode offers the closest preset ("You're on PHPStan level 8; the
-  closest Pun preset is `strict`. Switch?"), showing how many new problems the switch would report before it writes.
-  `essential` is the "loose" bottom preset; no fifth tier below it.
-- **Q5: Laravel, Pest and PHPUnit turn on automatically** from composer.lock, version rules included; a group can be
-  switched off in pun.toml.
-- **`pun init` asks three things:** the format preset (laravel / psr12), the analyse preset, and the lint preset (§9).
-  Lint gets its own preset choice, separate from analyse.
-- **Lint presets are a checklist of sets** (§9): `[lint] sets = ["dead-code", "modernize", ...]`, with dead-code and
-  modernize ticked by default in `pun init`; Rector's prepared sets migrate 1:1.
-- **Q7: `--fix` applies every fix of every enabled rule**, as Rector does. There is no `--unsafe` flag. Safe/unsafe
+- **Sets for new projects, explicit rules for migrated ones.** Lint presets are a checklist of sets (§8):
+  `[lint] sets = ["dead-code", "modernize", ...]`, with dead-code and modernize ticked by default in `pun init`.
+  This replaced the first answer (a four-tier ladder shared with analyse). `pun migrate` writes the exact rules the old
+  setup ran; Rector's prepared sets migrate 1:1, and in interactive mode it offers the closest sets with a count of the
+  new problems they would report.
+- **`pun init` asks three things:** the format preset (laravel / psr12), the lint sets and the analyse preset.
+- **Laravel, Pest and PHPUnit turn on automatically** from composer.lock, version rules included; their group can be
+  switched off in pun.toml. Nothing to install.
+- **`--fix` applies every fix of every enabled rule**, as Rector does. There is no `--unsafe` flag. Safe/unsafe
   stays as a label in the output (`[fix:unsafe]`) so reviewers know which changes to read closely. A rule that should
-  only report takes `fix = "off"`. `fix = "apply"` and `"safe-only"` go away, and migrate no longer needs to promote
-  rules.
-- **Q8: only `error` fails the run; `warn` is printed and never fails.** Every enabled rule is `error` unless set to
+  only report takes `fix = "off"`. `fix = "apply"` and `"safe-only"` go away.
+- **Only `error` fails the run; `warn` is printed and never fails.** Every enabled rule is `error` unless set to
   `warn`; `pun migrate` sets everything to `error`, because PHPStan and Rector fail on anything they report.
-- **Severity syntax and behaviour follow oxlint** (Pushpak, 2026-10-17):
+- **Severity syntax and behaviour follow oxlint:**
   - Each rule takes `"off"`, `"warn"` or `"error"`. Options go in a table with `level`:
     `"imports/ordered" = { level = "warn", sort = "alphabetical" }`. `"info"` is dropped.
   - A whole group takes a level too, as oxlint does with categories: `[lint.groups] style = "warn"`. A rule's own line
@@ -290,11 +230,10 @@ Answered 2026-10-17 (Pushpak):
   - `--deny-warnings` makes warnings fail the run, and `--max-warnings <n>` fails above n warnings.
   - `-A` / `-W` / `-D <rule or group>` (allow / warn / deny) set a level for one run from the command line.
   - `[[lint.overrides]]` with `files = ["tests/**"]` changes levels for some paths, like oxlint's `overrides`.
-- **Q2: every lint rule runs natively before 1.0** (all 542; Symfony, Doctrine and downgrade sets stay unsupported).
-  Porting order still follows usage (§7 item 5), but 1.0 waits for all of them.
-- **Mago's rules become normal lint rules** and `pun lint --mago` goes away (Q6, assistant's default, not objected to).
-- **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
-- **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
-  support yet (commands.md decisions).
-- **Upgrades are lint rules in their own groups**, not a separate command (commands.md decisions).
-- **Laravel is built in**, so the `laravel` add-on is not something to install (Q5 still asks how it turns on).
+- **Every lint rule runs natively before 1.0** (all 542; Symfony, Doctrine and downgrade sets stay unsupported).
+  Porting order follows usage (§7 item 7), but 1.0 waits for all of them.
+- **Mago's rules become normal lint rules** and `pun lint --mago` goes away (assistant's default, not objected to).
+- **`pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §3).
+- **Unported rules are never delegated.** `pun migrate` names and skips them; a hand-written pun.toml that names one
+  is a config error (exit 2).
+- **Upgrades are lint rules in their own groups**, not a separate command.

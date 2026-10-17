@@ -175,7 +175,7 @@ paths = ["app"]
 #[test]
 fn pun_toml_errors() {
     let e = |toml: &str| err(&dir(&[("pun.toml", toml)]), Options::default());
-    // The four tiers of context/RULES.md §5, nothing else.
+    // The four old tiers; Step 1 replaces them (context/plan/config.md §5).
     for tier in ["essential", "recommended", "strict", "pedantic"] {
         let toml = format!("preset = \"{tier}\"\n");
         assert!(load(&dir(&[("pun.toml", &toml)]), &Options::default()).is_ok());

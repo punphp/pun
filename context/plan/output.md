@@ -1,9 +1,9 @@
 # Plan: terminal output for every command
 
-Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Nothing is built. Pushpak wants one consistent output for format,
-lint, analyse, check, migrate and init. The approved starting point is format.md §10 (✔/✖ per file, a summary line
-with counts and time, colour, rustc-style code frames). This file extends it to every command. Nothing is built.
-Answers go into "Decisions" and DECISIONS.md. Build list: §5.
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Nothing is built. Pushpak wants one
+consistent output for format, lint, analyse, check, migrate and init. The approved starting point is format.md §9
+(✔/✖ per file, a summary line with counts and time, colour, rustc-style code frames). This file extends it to every
+command. Decisions with dates: ../PLAN.md §2. Build list: §4.
 
 ## 1. The shared parts
 
@@ -40,7 +40,8 @@ Every command's human output is built from the same four pieces, so learning one
 ✔ No problems · 412 files in 0.08s
 ```
 
-**4. Run errors** (bad config, missing PHP for a delegated rule): one red line, then a hint.
+**4. Run errors** (bad config, an unknown or unported rule in pun.toml, an unreadable file): one red line, then a
+hint. They exit 2.
 ```
 ✖ pun.toml:7  unknown rule `lint/style/no-short-ternry`
   did you mean `lint/style/no-short-ternary`?
@@ -64,38 +65,17 @@ Every command's human output is built from the same four pieces, so learning one
 | `pun lint` | problem blocks, summary | 1 if any error |
 | `pun lint --fix` | file lines for what was fixed, then problem blocks for what remains, summary | 1 if errors remain |
 | `pun analyse` | problem blocks, summary | 1 if any error |
-| `pun check` | three sections (Format, Lint, Analyse), one summary (decided) | 1 if any error or any file needs formatting |
-| `pun migrate` | one line per config moved, then each unsupported item as a ⚠ block, summary | 1 if anything unsupported stopped it |
+| `pun check` | one status line per step (format, lint, analyse) with its problems under it, one summary (decided) | 1 if any error or any file needs formatting |
+| `pun migrate` | one line per config moved, then each unsupported item as a ⚠ block, summary | 0 when the rest migrated (unsupported items are named and skipped) |
 | `pun init` | init.md §2 | 0 |
 
 Exit code 2 means Pun itself couldn't run: a bad config, an unreadable file, or a crash. That is the same for every
 command.
 
 **Not changed:** the machine formats (`--format=json|checkstyle|junit|gitlab|github|sarif`, Pint's and PHPStan's
-shapes), and agent mode (compact `path:line:col rule message` lines, §4).
+shapes), and agent mode (compact `path:line:col rule message` lines, §3).
 
-## 3. Questions
-
-1. **Problem blocks with code, or one line each?** The default could be the rich block above (oxlint, rustc, Biome)
-   or one line per problem (Ruff's default, ESLint's `compact`), with the other behind a flag.
-   *Recommend: rich blocks by default, with `--concise` for one line each. People read the default; agents already get
-   one-line output.*
-2. **`pun check`: grouped by file, or by command?** By file shows everything about `User.php` together, mixing format,
-   lint and analyse. By command shows three sections.
-   *Recommend: by file, sorted by line. You fix a file, not a command.*
-3. **GitHub Actions.** Detect `GITHUB_ACTIONS` and add `::error` annotations automatically (as oxlint and Biome do),
-   so problems show on the PR diff?
-   *Recommend: yes, on top of the normal output, with `--format=github` to force it.*
-4. **Unchanged files.** Show nothing for clean files (the approved format design), or a dim line each with `-v`?
-   *Recommend: nothing by default, a dim line with `-v`.*
-5. **Pint's own screen.** `pun format` today prints Pint's exact screen. With the new design approved, is Pint's human
-   screen kept anywhere (for example `--format=pint`)?
-   *Recommend: no. Exit codes and machine formats stay Pint-compatible, which is what CI depends on.*
-6. **Brand colours.** Use the terminal's standard red, yellow, green and cyan (they follow the user's theme), or
-   Pun's brand colours from design/tokens.json?
-   *Recommend: standard terminal colours. They are readable on every theme; brand colours go in the docs and site.*
-
-## 4. Agent mode (unchanged)
+## 3. Agent mode (unchanged)
 
 Under a coding agent (laravel/agent-detector v2 env list and `/opt/.devin`, then the agent-detector crate; Cursor's
 `CURSOR_TRACE_ID` alone doesn't count; `PUN_AGENT=1|0`, `--agent` / `--no-agent`, `PAO_FORCE` / `PAO_DISABLE`) every
@@ -114,7 +94,7 @@ Summary line first (a passing run prints only that line); `path:line:col rule me
 `crates/pun-cli/src/agent.rs`, pinned per command in `crates/pun-cli/tests/agent.rs`. Rule IDs switch to the new
 names with config.md Build 1.
 
-## 5. Build
+## 4. Build
 
 1. **The renderer** in pun-cli: file lines, problem blocks (rustc-style frames from a span), the summary line, run
    errors with hints, `--concise`. One module that every command calls.
@@ -124,17 +104,17 @@ names with config.md Build 1.
 4. **GitHub annotations** when `GITHUB_ACTIONS` is set; `--format=github` forces them.
 5. **`pun check`'s grouped view:** one status line per step with its count and time, problems under it, one summary.
 6. **Exit code 2** for run errors in every command.
-   *Done when* each sample in §1, §2 and the Q2 decision is pinned by a test, with and without colour.
+   *Done when* each sample in §1, §2 and the grouped `pun check` decision is pinned by a test, with and without colour.
 
 ## Decisions
 
-From earlier rounds (Pushpak, 2026-10-17): format.md §10 approved; only lint `error` fails (oxlint); analyse findings
+From earlier rounds (Pushpak, 2026-10-17): format.md §9 approved; only lint `error` fails (oxlint); analyse findings
 are always errors.
 
 Answered 2026-10-17 (Pushpak):
 
-- **Q1: problem blocks with code by default**; `--concise` prints one line per problem.
-- **Q2: `pun check` groups by command**, the way Vite+'s `vp check` does. Each step prints one status line with its
+- **Problem blocks with code by default**; `--concise` prints one line per problem.
+- **`pun check` groups by command**, the way Vite+'s `vp check` does. Each step prints one status line with its
   count and time, and its problems follow under it. The final summary line comes last:
   ```
   ✔ format   All 412 files formatted                         (0.08s)
@@ -146,13 +126,13 @@ Answered 2026-10-17 (Pushpak):
   ```
   A passing step is one line. Pushpak reconsidered by file vs by command and kept by command after comparing with
   Vite+, whose output is one `pass:` line per step.
-- **Q3: GitHub annotations are automatic** when `GITHUB_ACTIONS` is set, on top of the normal output; `--format=github`
+- **GitHub annotations are automatic** when `GITHUB_ACTIONS` is set, on top of the normal output; `--format=github`
   forces them.
-- **Q4: clean files print nothing**; `-v` adds a dim line per clean file (assistant default, as approved for format).
-- **Q5: Pint's human screen is dropped** once Pun's output lands. Exit codes and machine formats stay Pint- and
+- **Clean files print nothing**; `-v` adds a dim line per clean file (assistant default, as approved for format).
+- **Pint's human screen is dropped** once Pun's output lands. Exit codes and machine formats stay Pint- and
   PHPStan-compatible; scripts/cli-parity.sh then covers only those. AGENTS.md ("output, messages and exit codes must
   match upstream") needs updating when this is built.
-- **Q6: Pun's brand colours** from design/tokens.json (Sticker Pop) instead of the terminal's standard colours. Pun
+- **Pun's brand colours** from design/tokens.json (Sticker Pop) instead of the terminal's standard colours. Pun
   uses truecolor when `COLORTERM` is `truecolor` or `24bit`, the nearest 256-colour value otherwise, and the standard 16
   colours on basic terminals. It picks the light or dark token variant for readability on the terminal's background
   (dark by default when it can't tell). `NO_COLOR`, piping and `--color` work as in §1.

@@ -1,7 +1,7 @@
 //! `pun migrate`: finds the Pint, PHP-CS-Fixer, PHPStan, Rector and Mago configs, asks which to migrate (a checklist
 //! on a terminal; `--from`/`--yes`, agent mode or no terminal don't ask), and migrates the chosen ones it can. Today
 //! that is the format part: pint.json or `.php-cs-fixer(.dist).php` becomes pun.toml, and `@php-cs-fixer-ignore`
-//! comments become `@pun-ignore-file` with Pun rule IDs (context/RULES.md §7). PHPStan, Rector and Mago are listed and
+//! comments become `@pun-ignore-file` with Pun rule IDs (context/plan/rules.md §4). PHPStan, Rector and Mago are listed and
 //! left untouched. With no config at all it writes a starter pun.toml.
 use crate::{agent, report, root};
 use anyhow::{Result, bail};

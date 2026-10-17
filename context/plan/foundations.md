@@ -1,7 +1,7 @@
 # Plan: foundations, harness, docs and release
 
 Status: housekeeping parts that every command depends on (old components C0, C10-C14). Last checked against main at
-0800a99 (2026-10-17).
+7a76be5 (2026-10-17).
 
 ## 1. CI, gates and how threads work (C0)
 
@@ -11,8 +11,9 @@ in `.oracle/` (reference/oracle.md); 7 corpus projects (`corpus/manifest.toml`).
 
 **Build.**
 1. Get CI on main green: coverage is red (pun-analyse at 97.59%), and runs get cancelled by the next push.
-2. Clippy gate with `-D warnings` (REQUESTS.md).
-3. One branch and PR per thread instead of agents sharing one box and git index (PLAN.md §5 Q1); rewrite AGENTS.md's
+2. Clippy gate with `-D warnings`: clippy already fails the job on errors and the cleanup pass took warnings to 0,
+   so add `-- -D warnings` (ci.yml "ponytail" comment).
+3. One branch and PR per thread instead of agents sharing one box and git index (../PLAN.md §4); rewrite AGENTS.md's
    "Work with other agents" to match.
 4. Update AGENTS.md when the new design lands: rule names, no delegate mode, and "output must match upstream" narrowed
    to exit codes and machine formats.
@@ -38,11 +39,11 @@ one page per rule from mapping.toml; output samples in the docs use the brand co
 ## 4. Release (C13)
 
 **Today.** cargo-dist config (shell, npm `@punphp/pun`, Homebrew tap, 6 targets), Composer shim, release workflow.
-**Build:** after PLAN.md §3 Step 4: name checks on crates.io, Packagist, npm and Homebrew, signing, publishing 1.0.
+**Build:** after ../PLAN.md §3 Step 4: name checks on crates.io, Packagist, npm and Homebrew, signing, publishing 1.0.
 
 ## 5. Later (C10, C14)
 
 - **LSP:** the last step, after 1.0's commands. Nothing is in the repo for it.
-- **`pun install`, `pun run`, `pun test`:** the archived plan's phases 5-7. In 1.0 or after is open (PLAN.md §5 Q2).
+- **`pun install`, `pun run`, `pun test`:** the archived plan's phases 5-7. In 1.0 or after is open (../PLAN.md §4).
 - **Native Blade formatter** and a Pun reprinting preset: after 1.0 (format.md).
-- **An extension system** (Mockery, Livewire, Filament, a project's own rules): after 1.0 (analyse.md §10).
+- **An extension system** (Mockery, Livewire, Filament, a project's own rules): after 1.0 (analyse.md §9).
