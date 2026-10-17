@@ -1,0 +1,360 @@
+{
+    "test": "Functions/CallToNonExistentFunctionRuleTest",
+    "cases": [
+        {
+            "method": "testEmptyFile",
+            "files": [
+                "Functions/data/empty.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToExistingFunction",
+            "files": [
+                "Functions/data/existing-function.php"
+            ],
+            "scan": [
+                "Functions/data/existing-function-definition.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToNonexistentFunction",
+            "files": [
+                "Functions/data/nonexistent-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/nonexistent-function.php",
+                    "line": 5,
+                    "identifier": "function.notFound",
+                    "message": "Function foobarNonExistentFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallToNonexistentNestedFunction",
+            "files": [
+                "Functions/data/nonexistent-nested-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/nonexistent-nested-function.php",
+                    "line": 5,
+                    "identifier": "function.notFound",
+                    "message": "Function barNonExistentFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallToIncorrectCaseFunctionName",
+            "files": [
+                "Functions/data/incorrect-function-case.php"
+            ],
+            "scan": [
+                "Functions/data/incorrect-function-case-definition.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/incorrect-function-case.php",
+                    "line": 9,
+                    "identifier": "arguments.count",
+                    "message": "Function htmlspecialchars invoked with 0 parameters, 1-4 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/incorrect-function-case.php",
+                    "line": 10,
+                    "identifier": "arguments.count",
+                    "message": "Function htmlspecialchars invoked with 0 parameters, 1-4 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14617UseFunctionAlias",
+            "files": [
+                "Functions/data/bug-14617-use-function-alias.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMatchExprAnalysis",
+            "files": [
+                "Functions/data/match-expr-analysis.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/match-expr-analysis.php",
+                    "line": 10,
+                    "identifier": "function.notFound",
+                    "message": "Function lorem not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/match-expr-analysis.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function dolor not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/match-expr-analysis.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function ipsum not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/match-expr-analysis.php",
+                    "line": 12,
+                    "identifier": "function.notFound",
+                    "message": "Function sit not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallToRemovedFunctionsOnPhp8",
+            "files": [
+                "Functions/data/removed-functions-from-php8.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/removed-functions-from-php8.php",
+                    "line": 3,
+                    "identifier": "function.notFound",
+                    "message": "Function convert_cyr_string not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/removed-functions-from-php8.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function ezmlm_hash not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/removed-functions-from-php8.php",
+                    "line": 5,
+                    "identifier": "function.notFound",
+                    "message": "Function fgetss not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/removed-functions-from-php8.php",
+                    "line": 6,
+                    "identifier": "function.notFound",
+                    "message": "Function get_magic_quotes_gpc not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/removed-functions-from-php8.php",
+                    "line": 7,
+                    "identifier": "function.notFound",
+                    "message": "Function hebrevc not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/removed-functions-from-php8.php",
+                    "line": 8,
+                    "identifier": "function.notFound",
+                    "message": "Function imap_header not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/removed-functions-from-php8.php",
+                    "line": 9,
+                    "identifier": "function.notFound",
+                    "message": "Function ldap_control_paged_result not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/removed-functions-from-php8.php",
+                    "line": 10,
+                    "identifier": "function.notFound",
+                    "message": "Function ldap_control_paged_result_response not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/removed-functions-from-php8.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function restore_include_path not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCreateFunctionPhp8",
+            "files": [
+                "Functions/data/create_function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/create_function.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function create_function not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3576",
+            "files": [
+                "Functions/data/bug-3576.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-3576.php",
+                    "line": 14,
+                    "identifier": "function.notFound",
+                    "message": "Function bug3576 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/bug-3576.php",
+                    "line": 17,
+                    "identifier": "function.notFound",
+                    "message": "Function bug3576 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/bug-3576.php",
+                    "line": 26,
+                    "identifier": "function.notFound",
+                    "message": "Function bug3576 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/bug-3576.php",
+                    "line": 29,
+                    "identifier": "function.notFound",
+                    "message": "Function bug3576 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/bug-3576.php",
+                    "line": 38,
+                    "identifier": "function.notFound",
+                    "message": "Function bug3576 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/bug-3576.php",
+                    "line": 41,
+                    "identifier": "function.notFound",
+                    "message": "Function bug3576 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7952",
+            "files": [
+                "Functions/data/bug-7952.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8058",
+            "files": [
+                "Methods/data/bug-8058.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8205",
+            "files": [
+                "Functions/data/bug-8205.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10003",
+            "files": [
+                "Functions/data/bug-10003.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRememberFunctionExistsFromConstructor",
+            "files": [
+                "Functions/data/remember-function-exists-from-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/remember-function-exists-from-constructor.php",
+                    "line": 32,
+                    "identifier": "function.notFound",
+                    "message": "Function another_unknown_function not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14384",
+            "files": [
+                "Functions/data/bug-14384.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8980",
+            "files": [
+                "Functions/data/bug-8980.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-8980.php",
+                    "line": 13,
+                    "identifier": "function.notFound",
+                    "message": "Function funcA not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/bug-8980.php",
+                    "line": 14,
+                    "identifier": "function.notFound",
+                    "message": "Function funcB not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,134 @@
+{
+    "test": "Exceptions/CaughtExceptionExistenceRuleTest",
+    "cases": [
+        {
+            "method": "testCheckCaughtException",
+            "files": [
+                "Exceptions/data/catch.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Exceptions/data/catch.php",
+                    "line": 17,
+                    "identifier": "catch.notThrowable",
+                    "message": "Caught class TestCatch\\FooCatch is not an exception.",
+                    "tip": null
+                },
+                {
+                    "file": "Exceptions/data/catch.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Caught class FooCatchException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassExists",
+            "files": [
+                "Exceptions/data/class-exists.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3690",
+            "files": [
+                "Exceptions/data/bug-3690.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPhpstanInternalClass",
+            "files": [
+                "Classes/data/phpstan-internal-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 14,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 16,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 19,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 25,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 28,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 30,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 34,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 56,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Rector class: RectorPrefix202302\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 59,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHP-Scoper class: _PhpScoper19ae93be897e\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 62,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPUnit class: PHPUnitPHAR\\SebastianBergmann\\Diff\\Exception.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\SebastianBergmann\\Diff\\Exception?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 73,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Box class: _HumbugBox02f3b3909847\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

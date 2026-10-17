@@ -1,0 +1,22 @@
+{
+    "test": "Functions/ArrowFunctionReturnNullsafeByRefRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/arrow-function-nullsafe-by-ref.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/arrow-function-nullsafe-by-ref.php",
+                    "line": 6,
+                    "identifier": "nullsafe.byRef",
+                    "message": "Nullsafe cannot be returned by reference.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "test": "Classes/ReadOnlyClassRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/readonly-class.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

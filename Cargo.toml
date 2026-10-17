@@ -51,6 +51,7 @@ mago-codex = "=1.57.0"
 mago-analyzer = "=1.57.0"
 mago-prelude = { version = "=1.57.0", features = ["build"] }
 mago-php-version = "=1.57.0"
+mago-word = "=1.57.0"
 pun-analyse = { path = "crates/pun-analyse", package = "punphp-analyse" }
 
 [profile.release]

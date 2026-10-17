@@ -1,0 +1,27 @@
+[package]
+name = "punphp-analyse"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Pun's `pun analyse`: PHPStan's rules on Mago's parser, names, codex and inference"
+repository.workspace = true
+homepage = "https://github.com/punphp/pun"
+keywords = ["php", "phpstan", "static-analysis"]
+categories = ["development-tools"]
+
+[lib]
+name = "pun_analyse"
+
+[dependencies]
+pun-phpstan.workspace = true
+mago-allocator.workspace = true
+mago-analyzer.workspace = true
+mago-codex.workspace = true
+mago-database.workspace = true
+mago-names.workspace = true
+mago-prelude.workspace = true
+mago-php-version.workspace = true
+mago-word.workspace = true
+mago-span.workspace = true
+mago-syntax.workspace = true
+serde_json.workspace = true

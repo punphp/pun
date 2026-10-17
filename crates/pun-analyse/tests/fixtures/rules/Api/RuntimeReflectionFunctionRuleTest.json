@@ -1,0 +1,71 @@
+{
+    "test": "Api/RuntimeReflectionFunctionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Api/data/runtime-reflection-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/runtime-reflection-function.php",
+                    "line": 28,
+                    "identifier": "return.missing",
+                    "message": "Method RuntimeReflectionFunction\\Bar::getClass() should return class-string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-function.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method RuntimeReflectionFunction\\Bar::isMethodSupported() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-function.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method RuntimeReflectionFunction\\Bar::getTypeFromMethodCall() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-function.php",
+                    "line": 43,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Function is_a() is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-function.php",
+                    "line": 46,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Function is_subclass_of() is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-function.php",
+                    "line": 49,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Function class_parents() is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-function.php",
+                    "line": 50,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Function class_implements() is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-function.php",
+                    "line": 51,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Function class_uses() is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

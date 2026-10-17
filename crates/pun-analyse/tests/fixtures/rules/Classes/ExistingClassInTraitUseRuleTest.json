@@ -1,0 +1,84 @@
+{
+    "test": "Classes/ExistingClassInTraitUseRuleTest",
+    "cases": [
+        {
+            "method": "testClassWithWrongCase",
+            "files": [
+                "Classes/data/trait-use.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/trait-use.php",
+                    "line": 13,
+                    "identifier": "trait.nameCase",
+                    "message": "Trait TraitUseCase\\FooTrait referenced with incorrect case: TraitUseCase\\FOOTrait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTraitUseError",
+            "files": [
+                "Classes/data/trait-use-error.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/trait-use-error.php",
+                    "line": 8,
+                    "identifier": "trait.notFound",
+                    "message": "Class TraitUseError\\Foo uses unknown trait TraitUseError\\FooTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/trait-use-error.php",
+                    "line": 22,
+                    "identifier": "interface.traitUse",
+                    "message": "Interface TraitUseError\\Baz uses trait TraitUseError\\BarTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/trait-use-error.php",
+                    "line": 27,
+                    "identifier": "trait.notFound",
+                    "message": "Anonymous class uses unknown trait TraitUseError\\FooTrait.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/trait-use-error.php",
+                    "line": 28,
+                    "identifier": "traitUse.interface",
+                    "message": "Anonymous class uses interface TraitUseError\\Baz.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Classes/data/trait-use-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/trait-use-enum.php",
+                    "line": 13,
+                    "identifier": "traitUse.enum",
+                    "message": "Class TraitUseEnum\\Foo uses enum TraitUseEnum\\FooEnum.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/trait-use-enum.php",
+                    "line": 20,
+                    "identifier": "traitUse.enum",
+                    "message": "Anonymous class uses enum TraitUseEnum\\FooEnum.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

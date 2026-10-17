@@ -1,0 +1,22 @@
+{
+    "test": "Api/OldPhpParser4ClassRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Api/data/old-php-parser-4-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/old-php-parser-4-class.php",
+                    "line": 24,
+                    "identifier": "phpParser.classRenamed",
+                    "message": "Class PhpParser\\Node\\Expr\\ArrayItem not found. It has been renamed to PhpParser\\Node\\ArrayItem in PHP-Parser v5.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

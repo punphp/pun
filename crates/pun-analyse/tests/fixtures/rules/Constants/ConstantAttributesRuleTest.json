@@ -1,0 +1,29 @@
+{
+    "test": "Constants/ConstantAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Constants/data/constant-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/constant-attributes.php",
+                    "line": 31,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ConstantAttributes\\IncompatibleAttr does not have the constant target.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/constant-attributes.php",
+                    "line": 34,
+                    "identifier": "attribute.noConstructor",
+                    "message": "Attribute class ConstantAttributes\\MyAttr does not have a constructor and must be instantiated without any parameters.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

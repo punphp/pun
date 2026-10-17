@@ -1,0 +1,64 @@
+{
+    "test": "Classes/ExistingClassesInEnumImplementsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/enum-implements.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/enum-implements.php",
+                    "line": 30,
+                    "identifier": "interface.nameCase",
+                    "message": "Interface EnumImplements\\FooInterface referenced with incorrect case: EnumImplements\\FOOInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-implements.php",
+                    "line": 35,
+                    "identifier": "enumImplements.class",
+                    "message": "Enum EnumImplements\\Foo3 implements class EnumImplements\\FooClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-implements.php",
+                    "line": 40,
+                    "identifier": "enumImplements.trait",
+                    "message": "Enum EnumImplements\\Foo4 implements trait EnumImplements\\FooTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-implements.php",
+                    "line": 45,
+                    "identifier": "enumImplements.enum",
+                    "message": "Enum EnumImplements\\Foo5 implements enum EnumImplements\\FooEnum.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-implements.php",
+                    "line": 50,
+                    "identifier": "interface.notFound",
+                    "message": "Enum EnumImplements\\Foo6 implements unknown interface EnumImplements\\NonexistentInterface.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/enum-implements.php",
+                    "line": 55,
+                    "identifier": "enum.nameCase",
+                    "message": "Enum EnumImplements\\FooEnum referenced with incorrect case: EnumImplements\\FOOEnum.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-implements.php",
+                    "line": 55,
+                    "identifier": "enumImplements.enum",
+                    "message": "Enum EnumImplements\\Foo7 implements enum EnumImplements\\FooEnum.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

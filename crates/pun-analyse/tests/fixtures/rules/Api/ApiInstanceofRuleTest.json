@@ -1,0 +1,67 @@
+{
+    "test": "Api/ApiInstanceofRuleTest",
+    "cases": [
+        {
+            "method": "testRuleInPhpStan",
+            "files": [
+                "Api/data/instanceof-in-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/instanceof-in-phpstan.php",
+                    "line": 13,
+                    "identifier": "phpstanApi.instanceofAssumption",
+                    "message": "Although PHPStan\\Reflection\\ClassReflection is covered by backward compatibility promise, this instanceof assumption might break because it's not guaranteed to always stay the same.",
+                    "tip": "In case of questions how to solve this correctly, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/instanceof-in-phpstan.php",
+                    "line": 17,
+                    "identifier": "phpstanApi.class",
+                    "message": "Asking about instanceof PHPStan\\Reflection\\BetterReflection\\SourceLocator\\AutoloadSourceLocator is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleOutOfPhpStan",
+            "files": [
+                "Api/data/instanceof-out-of-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/instanceof-out-of-phpstan.php",
+                    "line": 17,
+                    "identifier": "phpstanApi.instanceofAssumption",
+                    "message": "Although PHPStan\\Reflection\\ClassReflection is covered by backward compatibility promise, this instanceof assumption might break because it's not guaranteed to always stay the same.",
+                    "tip": "In case of questions how to solve this correctly, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/instanceof-out-of-phpstan.php",
+                    "line": 21,
+                    "identifier": "phpstanApi.class",
+                    "message": "Asking about instanceof PHPStan\\Reflection\\BetterReflection\\SourceLocator\\AutoloadSourceLocator is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/instanceof-out-of-phpstan.php",
+                    "line": 41,
+                    "identifier": "phpstanApi.instanceofAssumption",
+                    "message": "Although PHPStan\\Reflection\\ClassReflection is covered by backward compatibility promise, this instanceof assumption might break because it's not guaranteed to always stay the same.",
+                    "tip": "In case of questions how to solve this correctly, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/instanceof-out-of-phpstan.php",
+                    "line": 53,
+                    "identifier": "phpstanApi.instanceofType",
+                    "message": "Doing instanceof PHPStan\\Type\\ObjectType is error-prone and deprecated. Use Type::isObject() or Type::getObjectClassNames() instead.",
+                    "tip": "Learn more: https://phpstan.org/blog/why-is-instanceof-type-wrong-and-getting-deprecated"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

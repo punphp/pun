@@ -1,0 +1,23 @@
+{
+    "test": "Constants/FinalConstantRuleTest",
+    "cases": [
+        {
+            "method": "testRule#0",
+            "files": [
+                "Constants/data/final-constant.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRule#1",
+            "files": [
+                "Constants/data/final-constant.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

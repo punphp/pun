@@ -1,0 +1,22 @@
+{
+    "test": "Classes/InstantiationCallableRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/instantiation-callable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/instantiation-callable.php",
+                    "line": 11,
+                    "identifier": "callable.notSupported",
+                    "message": "Cannot create callable from the new operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,89 @@
+{
+    "test": "Constants/OverridingConstantRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Constants/data/overriding-constant.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFinal",
+            "files": [
+                "Constants/data/overriding-final-constant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/overriding-final-constant.php",
+                    "line": 18,
+                    "identifier": "classConstant.final",
+                    "message": "Constant OverridingFinalConstant\\Bar::FOO overrides final constant OverridingFinalConstant\\Foo::FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/overriding-final-constant.php",
+                    "line": 19,
+                    "identifier": "classConstant.final",
+                    "message": "Constant OverridingFinalConstant\\Bar::BAR overrides final constant OverridingFinalConstant\\Foo::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/overriding-final-constant.php",
+                    "line": 35,
+                    "identifier": "classConstant.final",
+                    "message": "Constant OverridingFinalConstant\\Baz::BAR overrides final constant OverridingFinalConstant\\FooInterface::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/overriding-final-constant.php",
+                    "line": 69,
+                    "identifier": "classConstant.visibility",
+                    "message": "Private constant OverridingFinalConstant\\PrivateDolor::PROTECTED_CONST overriding protected constant OverridingFinalConstant\\Dolor::PROTECTED_CONST should be protected or public.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/overriding-final-constant.php",
+                    "line": 70,
+                    "identifier": "classConstant.visibility",
+                    "message": "Private constant OverridingFinalConstant\\PrivateDolor::PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::PUBLIC_CONST should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/overriding-final-constant.php",
+                    "line": 71,
+                    "identifier": "classConstant.visibility",
+                    "message": "Private constant OverridingFinalConstant\\PrivateDolor::ANOTHER_PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::ANOTHER_PUBLIC_CONST should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/overriding-final-constant.php",
+                    "line": 80,
+                    "identifier": "classConstant.visibility",
+                    "message": "Protected constant OverridingFinalConstant\\ProtectedDolor::PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::PUBLIC_CONST should also be public.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/overriding-final-constant.php",
+                    "line": 81,
+                    "identifier": "classConstant.visibility",
+                    "message": "Protected constant OverridingFinalConstant\\ProtectedDolor::ANOTHER_PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::ANOTHER_PUBLIC_CONST should also be public.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativeTypes",
+            "files": [
+                "Constants/data/overriding-constant-native-types.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

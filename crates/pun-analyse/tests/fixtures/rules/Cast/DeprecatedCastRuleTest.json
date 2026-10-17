@@ -1,0 +1,43 @@
+{
+    "test": "Cast/DeprecatedCastRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Cast/data/deprecated-cast.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Cast/data/deprecated-cast.php",
+                    "line": 7,
+                    "identifier": "cast.deprecated",
+                    "message": "Non-standard (integer) cast is deprecated in PHP 8.5. Use (int) instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/deprecated-cast.php",
+                    "line": 10,
+                    "identifier": "cast.deprecated",
+                    "message": "Non-standard (boolean) cast is deprecated in PHP 8.5. Use (bool) instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/deprecated-cast.php",
+                    "line": 13,
+                    "identifier": "cast.deprecated",
+                    "message": "Non-standard (double) cast is deprecated in PHP 8.5. Use (float) instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/deprecated-cast.php",
+                    "line": 16,
+                    "identifier": "cast.deprecated",
+                    "message": "Non-standard (binary) cast is deprecated in PHP 8.5. Use (string) instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,1096 @@
+{
+    "test": "Api/ApiClassImplementsRuleTest",
+    "cases": [
+        {
+            "method": "testRuleInPhpStan",
+            "files": [
+                "Api/data/class-implements-in-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/class-implements-in-phpstan.php",
+                    "line": 11,
+                    "identifier": "phpstanApi.interface",
+                    "message": "Implementing PHPStan\\Reflection\\ReflectionProvider\\ReflectionProviderProvider is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/class-implements-in-phpstan.php",
+                    "line": 15,
+                    "identifier": "return.missing",
+                    "message": "Method PHPStan\\ClassImplements\\Foo::getReflectionProvider() should return PHPStan\\Reflection\\ReflectionProvider but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-in-phpstan.php",
+                    "line": 20,
+                    "identifier": "return.missing",
+                    "message": "Method PHPStan\\ClassImplements\\Foo::getDynamicMethodThrowTypeExtensions() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-in-phpstan.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Method PHPStan\\ClassImplements\\Foo::getDynamicStaticMethodThrowTypeExtensions() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-in-phpstan.php",
+                    "line": 35,
+                    "identifier": "return.missing",
+                    "message": "Method PHPStan\\ClassImplements\\Bar::isFunctionSupported() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-in-phpstan.php",
+                    "line": 40,
+                    "identifier": "return.missing",
+                    "message": "Method PHPStan\\ClassImplements\\Bar::getThrowTypeFromFunctionCall() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleOutOfPhpStan",
+            "files": [
+                "Api/data/class-implements-out-of-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 20,
+                    "identifier": "phpstanApi.interface",
+                    "message": "Implementing PHPStan\\Reflection\\ReflectionProvider\\ReflectionProviderProvider is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 24,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Foo::getReflectionProvider() should return PHPStan\\Reflection\\ReflectionProvider but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Foo::getDynamicMethodThrowTypeExtensions() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 34,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Foo::getDynamicStaticMethodThrowTypeExtensions() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 44,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Bar::isFunctionSupported() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 49,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Bar::getThrowTypeFromFunctionCall() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method changeKeyCaseArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method chunkArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method exponentiate() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method fillKeysArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method filterArrayRemovingFalsey() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method flipArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getArraySize() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getArrays() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getClassStringObjectType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getClassStringType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getConstantArrays() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getConstantScalarTypes() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getConstantScalarValues() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getConstantStrings() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getEnumCaseObject() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getEnumCases() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getFiniteTypes() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getFirstIterableKeyType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getFirstIterableValueType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getKeysArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getKeysArrayFiltered() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getLastIterableKeyType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getLastIterableValueType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getObjectClassNames() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getObjectClassReflections() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getObjectTypeOrClassStringObjectType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getTemplateType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method getValuesArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method hasTemplateOrLateResolvableType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method intersectKeyArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isBoolean() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isClassString() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isConstantArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isConstantScalarValue() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isConstantValue() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isDecimalIntegerString() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isEnum() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isFalse() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isFloat() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isInteger() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isLowercaseString() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isNonFalsyString() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isNull() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isObject() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isOffsetAccessLegal() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isScalar() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isTrue() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isUppercaseString() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method isVoid() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method looseCompare() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method makeAllArrayKeysOptional() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method makeListMaybe() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method mapKeyType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method mapValueType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method popArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method reverseArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method searchArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method setExistingOffsetValueType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method shiftArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method shuffleArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method sliceArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method spliceArray() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method toBitwiseNotType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method toClassConstantType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method toCoercedArgumentType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method toGetClassResultType() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method toObjectTypeForInstanceofCheck() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method toObjectTypeForIsACheck() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method toPhpDocNode() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class App\\ClassImplements\\Baz contains abstract method truncateListToSize() from interface PHPStan\\Type\\Type.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 54,
+                    "identifier": "phpstanApi.interface",
+                    "message": "Implementing PHPStan\\Type\\Type is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getReferencedClasses() should return list<string> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 61,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type PHPStan\\TrinaryLogic of method App\\ClassImplements\\Baz::accepts() is not covariant with return type PHPStan\\Type\\AcceptsResult of method PHPStan\\Type\\Type::accepts().",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 63,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::accepts() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 66,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type PHPStan\\TrinaryLogic of method App\\ClassImplements\\Baz::isSuperTypeOf() is not covariant with return type PHPStan\\Type\\IsSuperTypeOfResult of method PHPStan\\Type\\Type::isSuperTypeOf().",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 68,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isSuperTypeOf() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 73,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::equals() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 78,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::describe() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 83,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::canAccessProperties() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 88,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::hasProperty() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 91,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type PHPStan\\Reflection\\PropertyReflection of method App\\ClassImplements\\Baz::getProperty() is not covariant with return type PHPStan\\Reflection\\ExtendedPropertyReflection of method PHPStan\\Type\\Type::getProperty().",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 93,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getProperty() should return PHPStan\\Reflection\\PropertyReflection but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 98,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getUnresolvedPropertyPrototype() should return PHPStan\\Reflection\\Type\\UnresolvedPropertyPrototypeReflection but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 103,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::hasInstanceProperty() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 106,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type PHPStan\\Reflection\\PropertyReflection of method App\\ClassImplements\\Baz::getInstanceProperty() is not covariant with return type PHPStan\\Reflection\\ExtendedPropertyReflection of method PHPStan\\Type\\Type::getInstanceProperty().",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 108,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getInstanceProperty() should return PHPStan\\Reflection\\PropertyReflection but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 113,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getUnresolvedInstancePropertyPrototype() should return PHPStan\\Reflection\\Type\\UnresolvedPropertyPrototypeReflection but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 118,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::hasStaticProperty() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 121,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type PHPStan\\Reflection\\PropertyReflection of method App\\ClassImplements\\Baz::getStaticProperty() is not covariant with return type PHPStan\\Reflection\\ExtendedPropertyReflection of method PHPStan\\Type\\Type::getStaticProperty().",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 123,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getStaticProperty() should return PHPStan\\Reflection\\PropertyReflection but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 128,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getUnresolvedStaticPropertyPrototype() should return PHPStan\\Reflection\\Type\\UnresolvedPropertyPrototypeReflection but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 133,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::canCallMethods() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 138,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::hasMethod() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 143,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getMethod() should return PHPStan\\Reflection\\ExtendedMethodReflection but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 148,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getUnresolvedMethodPrototype() should return PHPStan\\Reflection\\Type\\UnresolvedMethodPrototypeReflection but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 153,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::canAccessConstants() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 158,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::hasConstant() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 163,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getConstant() should return PHPStan\\Reflection\\ClassConstantReflection but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 168,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isIterable() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 173,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isIterableAtLeastOnce() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 178,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getIterableKeyType() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 183,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getIterableValueType() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 188,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isArray() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 193,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isOversizedArray() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 198,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isList() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 203,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isOffsetAccessible() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 208,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::hasOffsetValueType() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 213,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getOffsetValueType() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 218,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::setOffsetValueType() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 223,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::unsetOffset() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 228,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isCallable() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 233,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getCallableParametersAcceptors() should return list<PHPStan\\Reflection\\Callables\\CallableParametersAcceptor> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 238,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isCloneable() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 243,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::toBoolean() should return PHPStan\\Type\\BooleanType but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 248,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::toNumber() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 253,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::toAbsoluteNumber() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 258,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::toInteger() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 263,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::toFloat() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 268,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::toString() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 273,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::toArray() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 278,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::toArrayKey() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 283,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isSmallerThan() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 288,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isSmallerThanOrEqual() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 293,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isString() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 298,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isNumericString() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 303,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isNonEmptyString() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 308,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::isLiteralString() should return PHPStan\\TrinaryLogic but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 313,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getSmallerType() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 318,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getSmallerOrEqualType() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 323,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getGreaterType() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 328,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getGreaterOrEqualType() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 333,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::inferTemplateTypes() should return PHPStan\\Type\\Generic\\TemplateTypeMap but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 338,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::getReferencedTemplateTypes() should return list<PHPStan\\Type\\Generic\\TemplateTypeReference> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 343,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::traverse() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 348,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::traverseSimultaneously() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 353,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::generalize() should return PHPStan\\Type\\Type but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 358,
+                    "identifier": "return.missing",
+                    "message": "Method App\\ClassImplements\\Baz::tryRemove() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 363,
+                    "identifier": "phpstanApi.interface",
+                    "message": "Implementing PHPStan\\Reflection\\ReflectionProvider is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 368,
+                    "identifier": "phpstanApi.interface",
+                    "message": "Implementing PHPStan\\Analyser\\Scope is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 373,
+                    "identifier": "phpstanApi.interface",
+                    "message": "Implementing PHPStan\\Reflection\\FunctionReflection is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/class-implements-out-of-phpstan.php",
+                    "line": 377,
+                    "identifier": "phpstanApi.interface",
+                    "message": "Implementing PHPStan\\Reflection\\ExtendedMethodReflection is not covered by backward compatibility promise. The interface might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

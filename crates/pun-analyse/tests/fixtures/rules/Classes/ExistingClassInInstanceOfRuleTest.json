@@ -1,0 +1,96 @@
+{
+    "test": "Classes/ExistingClassInInstanceOfRuleTest",
+    "cases": [
+        {
+            "method": "testClassDoesNotExist",
+            "files": [
+                "Classes/data/instanceof.php",
+                "Classes/data/instanceof-defined.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/instanceof.php",
+                    "line": 7,
+                    "identifier": "class.notFound",
+                    "message": "Class InstanceOfNamespaceRule\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instanceof.php",
+                    "line": 9,
+                    "identifier": "outOfClass.self",
+                    "message": "Using self outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instanceof.php",
+                    "line": 15,
+                    "identifier": "outOfClass.parent",
+                    "message": "Using parent outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instanceof.php",
+                    "line": 17,
+                    "identifier": "outOfClass.self",
+                    "message": "Using self outside of class scope.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClassExists",
+            "files": [
+                "Classes/data/instanceof-class-exists.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/instanceof-class-exists.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7720",
+            "files": [
+                "Classes/data/bug-7720.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-7720.php",
+                    "line": 17,
+                    "identifier": "instanceof.trait",
+                    "message": "Instanceof between mixed and trait Bug7720\\FooBar will always evaluate to false.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRememberClassExistsFromConstructor",
+            "files": [
+                "Classes/data/remember-class-exists-from-constructor.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14617",
+            "files": [
+                "Classes/data/bug-14617.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

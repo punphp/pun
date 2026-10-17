@@ -1,0 +1,14 @@
+{
+    "test": "Constants/DynamicClassConstantFetchRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Constants/data/dynamic-class-constant-fetch.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

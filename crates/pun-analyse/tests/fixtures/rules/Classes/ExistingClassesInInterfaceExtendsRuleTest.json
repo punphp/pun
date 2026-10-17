@@ -1,0 +1,91 @@
+{
+    "test": "Classes/ExistingClassesInInterfaceExtendsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/extends-implements.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 15,
+                    "identifier": "class.nameCase",
+                    "message": "Class ExtendsImplements\\Foo referenced with incorrect case: ExtendsImplements\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 15,
+                    "identifier": "interface.nameCase",
+                    "message": "Interface ExtendsImplements\\FooInterface referenced with incorrect case: ExtendsImplements\\FOOInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 30,
+                    "identifier": "interface.nameCase",
+                    "message": "Interface ExtendsImplements\\FooInterface referenced with incorrect case: ExtendsImplements\\FOOInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 43,
+                    "identifier": "class.extendsFinalByPhpDoc",
+                    "message": "Class ExtendsImplements\\ExtendsFinalWithAnnotation extends @final class ExtendsImplements\\FinalWithAnnotation.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleExtendsError",
+            "files": [
+                "Classes/data/interface-extends-error.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/interface-extends-error.php",
+                    "line": 5,
+                    "identifier": "interface.notFound",
+                    "message": "Interface InterfaceExtendsError\\Foo extends unknown interface InterfaceExtendsError\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/interface-extends-error.php",
+                    "line": 15,
+                    "identifier": "interfaceExtends.class",
+                    "message": "Interface InterfaceExtendsError\\Lorem extends class InterfaceExtendsError\\BazClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/interface-extends-error.php",
+                    "line": 25,
+                    "identifier": "interfaceExtends.trait",
+                    "message": "Interface InterfaceExtendsError\\Ipsum extends trait InterfaceExtendsError\\DolorTrait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Classes/data/interface-extends-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/interface-extends-enum.php",
+                    "line": 10,
+                    "identifier": "interfaceExtends.enum",
+                    "message": "Interface InterfaceExtendsEnum\\Foo extends enum InterfaceExtendsEnum\\FooEnum.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

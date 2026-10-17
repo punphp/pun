@@ -1,0 +1,22 @@
+{
+    "test": "Constants/FinalPrivateConstantRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Constants/data/final-private-const.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/final-private-const.php",
+                    "line": 8,
+                    "identifier": "classConstant.finalPrivate",
+                    "message": "Private constant FinalPrivateConstants\\User::FINAL_PRIVATE() cannot be final as it is never overridden by other classes.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

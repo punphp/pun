@@ -1,0 +1,19 @@
+# Rule-fixture cases (test::method) whose errors for ported identifiers still differ from PHPStan level 0.
+# tests/rules.rs fails when a listed case passes or an unlisted one fails.
+# method.staticCall on PHPStan\Node\InClassNode::__construct(): PHPStan's own classes, the parent::__construct() special case
+Api/ApiStaticCallRuleTest::testRuleOutOfPhpStan
+# attribute arguments (ClassAttributesRule and friends) not ported
+Classes/ClassAttributesRuleTest::testRule
+# dynamic constant names (`Foo::{$name}`) need the name's type
+Classes/ClassConstantRuleTest::testDynamicAccess
+# `new $object` where Mago types an object of an unknown class as mixed
+Classes/InstantiationRuleTest::testInstantiation
+Classes/InstantiationRuleTest::testBug4471
+# @phpstan-type / @phpstan-import-type aliases (LocalTypeAliasesRule & co.) not ported
+Classes/LocalTypeAliasesRuleTest::testRule
+Classes/LocalTypeAliasesRuleTest::testEnums
+Classes/LocalTypeTraitAliasesRuleTest::testRule
+Classes/LocalTypeTraitUseAliasesRuleTest::testRule
+Classes/LocalTypeTraitUseAliasesRuleTest::testRuleSpecific
+# the ignored error on line 12 comes from a level-0 rule not ported yet
+Functions/CallToFunctionParametersRuleTest::testBug6175

@@ -1,0 +1,277 @@
+{
+    "test": "Classes/ExistingClassInClassExtendsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/extends-implements.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 15,
+                    "identifier": "class.nameCase",
+                    "message": "Class ExtendsImplements\\Foo referenced with incorrect case: ExtendsImplements\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 15,
+                    "identifier": "interface.nameCase",
+                    "message": "Interface ExtendsImplements\\FooInterface referenced with incorrect case: ExtendsImplements\\FOOInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 30,
+                    "identifier": "interface.nameCase",
+                    "message": "Interface ExtendsImplements\\FooInterface referenced with incorrect case: ExtendsImplements\\FOOInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 43,
+                    "identifier": "class.extendsFinalByPhpDoc",
+                    "message": "Class ExtendsImplements\\ExtendsFinalWithAnnotation extends @final class ExtendsImplements\\FinalWithAnnotation.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleExtendsError",
+            "files": [
+                "Classes/data/extends-error.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/extends-error.php",
+                    "line": 5,
+                    "identifier": "class.notFound",
+                    "message": "Class ExtendsError\\Foo extends unknown class ExtendsError\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/extends-error.php",
+                    "line": 15,
+                    "identifier": "class.extendsInterface",
+                    "message": "Class ExtendsError\\Lorem extends interface ExtendsError\\BazInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-error.php",
+                    "line": 25,
+                    "identifier": "class.extendsTrait",
+                    "message": "Class ExtendsError\\Ipsum extends trait ExtendsError\\DolorTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-error.php",
+                    "line": 30,
+                    "identifier": "class.extendsTrait",
+                    "message": "Anonymous class extends trait ExtendsError\\DolorTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-error.php",
+                    "line": 39,
+                    "identifier": "class.extendsFinal",
+                    "message": "Class ExtendsError\\Sit extends final class ExtendsError\\FinalFoo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFinalByTag",
+            "files": [
+                "Classes/data/extends-final-by-tag.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/extends-final-by-tag.php",
+                    "line": 21,
+                    "identifier": "class.extendsFinalByPhpDoc",
+                    "message": "Class ExtendsFinalByTag\\Bar2 extends @final class ExtendsFinalByTag\\Bar.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Classes/data/class-extends-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-extends-enum.php",
+                    "line": 10,
+                    "identifier": "class.disallowedSubtype",
+                    "message": "Type ClassExtendsEnum\\Foo is not allowed to be a subtype of ClassExtendsEnum\\FooEnum.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-extends-enum.php",
+                    "line": 10,
+                    "identifier": "class.extendsEnum",
+                    "message": "Class ClassExtendsEnum\\Foo extends enum ClassExtendsEnum\\FooEnum.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-extends-enum.php",
+                    "line": 16,
+                    "identifier": "class.disallowedSubtype",
+                    "message": "Type AnonymousClass5fb5733cd7b2cce2d535c96fd6b58b51 is not allowed to be a subtype of ClassExtendsEnum\\FooEnum.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-extends-enum.php",
+                    "line": 16,
+                    "identifier": "class.extendsEnum",
+                    "message": "Anonymous class extends enum ClassExtendsEnum\\FooEnum.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhpstanInternalClass",
+            "files": [
+                "Classes/data/phpstan-internal-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 14,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 16,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 19,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 25,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 28,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 30,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 34,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 56,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Rector class: RectorPrefix202302\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 59,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHP-Scoper class: _PhpScoper19ae93be897e\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 62,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPUnit class: PHPUnitPHAR\\SebastianBergmann\\Diff\\Exception.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\SebastianBergmann\\Diff\\Exception?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 73,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Box class: _HumbugBox02f3b3909847\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReadonly",
+            "files": [
+                "Classes/data/extends-readonly-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/extends-readonly-class.php",
+                    "line": 25,
+                    "identifier": "class.readOnly",
+                    "message": "Readonly class ExtendsReadOnlyClass\\Foo extends non-readonly class ExtendsReadOnlyClass\\Nonreadonly.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-readonly-class.php",
+                    "line": 30,
+                    "identifier": "class.nonReadOnly",
+                    "message": "Non-readonly class ExtendsReadOnlyClass\\Bar extends readonly class ExtendsReadOnlyClass\\ReadonlyClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-readonly-class.php",
+                    "line": 35,
+                    "identifier": "class.nonReadOnly",
+                    "message": "Anonymous non-readonly class extends readonly class ExtendsReadOnlyClass\\ReadonlyClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-readonly-class.php",
+                    "line": 39,
+                    "identifier": "class.readOnly",
+                    "message": "Anonymous readonly class extends non-readonly class ExtendsReadOnlyClass\\Nonreadonly.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14617",
+            "files": [
+                "Classes/data/bug-14617.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

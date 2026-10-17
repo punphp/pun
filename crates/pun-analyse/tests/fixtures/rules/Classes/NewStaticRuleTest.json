@@ -1,0 +1,74 @@
+{
+    "test": "Classes/NewStaticRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/new-static.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/new-static.php",
+                    "line": 10,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                },
+                {
+                    "file": "Classes/data/new-static.php",
+                    "line": 25,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithConsistentConstructor",
+            "files": [
+                "Classes/data/new-static-consistent-constructor.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9654",
+            "files": [
+                "Classes/data/bug-9654.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11316",
+            "files": [
+                "Classes/data/bug-11316.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10722",
+            "files": [
+                "Classes/data/bug-10722.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10274",
+            "files": [
+                "Classes/data/bug-10274.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}
