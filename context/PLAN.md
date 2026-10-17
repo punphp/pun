@@ -156,10 +156,11 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | config 3: new pun.toml schema (`[files]`, presets, sets, levels, groups, overrides, `[analyse]`) | doing (workflow, wf/schema) |
 | config 4: TOML-native option names for format rules | doing (workflow, wf/options) |
 | config 3 follow-up: default `[php] version` to `pun_config::composer::detect(root).php_version()` when pun.toml sets none; update pun-cli/tests/agent.rs (expects PHP 8.4 for a ^8.5 project) | todo |
-| config 6: remove delegate mode (pun-delegate, `--native-only`); update AGENTS.md | doing (workflow, wf/no-delegate) |
 | config 7: `[files]` + per-command exclude, `pun list-files` | doing (workflow, wf/files) |
 | config 8: `pun config` on the new schema, `pun explain <rule>` | doing (workflow, wf/config-explain) |
 | migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | doing (workflow, wf/migrate-format) |
+| migrate 1 follow-up: read `.php-cs-fixer.php` statically (no system PHP), replacing crates/pun-cli/src/php_cs_fixer_rules.php | todo |
+| config 3 follow-up: decide whether every config error exits 2 like the unported-rule error (config 6 keeps the others at 1) | todo |
 
 **Gate:** the 7-project corpus still gives 0 differing files with `pun migrate` + `pun check --fix`, and
 `scripts/check-rule-mapping.py` passes on the new names.
@@ -194,6 +195,8 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | format 4-5: memory target; 8-core benchmark in CI (laravel-framework under 1 s cold) | todo |
 | format 6: swap `vendor/bin/pint` for Pun in Pinkary's CI | todo |
 | format 7: port the remaining format rules (144 of 208 native) | todo |
+| format: delete or re-justify `pun_ignored` and the delegate-mode comments in crates/pun-format/src/lib.rs (unused since config 6) | todo |
+| format: pun-fixers build.rs adds rerun-if-changed on the source dir (generated fixers.rs in a shared target dir can point at another worktree) | todo |
 | migrate 2-3: unsupported list with the PR request, the new output | todo |
 | init 1-3, 5: detect, the three questions, write pun.toml, non-interactive | todo |
 | init 4: one `pun check`, then offer fix and baseline | blocked (analyse 1-2) |
@@ -253,6 +256,10 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | CI: CLI polish item 7 (`script` check in CI, skip message in tests/migrate.rs) | todo (stopped by Pushpak) |
 | scripts/coverage.sh: runs on macOS (no `flock`, no cargo-llvm-cov): make the lock optional or document the install | todo |
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
+| scripts/fuzz-parity.sh: drop the `PUN_PINT` passthrough and its comment (delegate mode removed) | todo |
+| reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
+| design/components/DocsPage/preview.html: remove the 'Needs PHP for those rules' / `--native-only` callout | todo |
+| wf tooling: link crates/pun-fixers/node_modules into worktrees (blade_like_pint needs it) | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 
 ## 4. Open questions
