@@ -3,46 +3,47 @@ title: Introduction
 description: Pun is one fast Rust binary for the whole PHP toolchain, with the same results as the tools you use today.
 ---
 
-Pun is to PHP what Bun is to JavaScript: one install that replaces the pile of tools a Laravel project runs on every commit. It formats like Pint, and next it will analyse like PHPStan and Larastan and refactor like Rector, from one `pun.toml`.
+Pun is to PHP what Bun is to JavaScript: one install that replaces the pile of tools a Laravel project runs on every commit. It formats like Pint, refactors like Rector and analyses like PHPStan and Larastan, from one `pun.toml`, in one process.
 
 ![The Pun mascot, sprinting](/mascot-512.png)
 
-## Why
+## Why Pun
 
-A Laravel project runs four or five PHP tools on every commit. Each one is slow (Pint takes 190 s on laravel/framework), has its own config format, rule names and ignore comments, overlaps with the others, and prints for humans while coding agents pay for every token. Rust tools are fast but not drop-in, so switching costs a reformat diff and a new baseline.
+A Laravel project runs four or five PHP tools on every commit. Each one is slow (Pint takes 190 s on laravel/framework), has its own config format, rule names and ignore comments, overlaps with the others, and prints for humans while coding agents pay for every token.
 
-Pun goes for **exact parity first**, so migration day changes nothing. Every command is checked against pinned versions of the real tools, their own test suites, real projects and a fuzzer.
+Pun goes for **exact parity first**, so switching changes nothing. Every command is checked against pinned versions of the real tools, their own test suites, real projects and a fuzzer. Then it gives you a better model: one config, one set of rule names, no levels.
 
 ## Commands
 
-| Command | Replaces | Status |
+| Command | Does | Replaces |
 | --- | --- | --- |
-| [`pun format`](/docs/commands/format) | Pint, PHP-CS-Fixer | Done: Pint-identical on every corpus project |
-| [`pun lsp`](/docs/commands/lsp) | Format-on-save plugins | Formatting today; code intelligence in progress |
-| [`pun lint`](/docs/commands/lint) | Rector, Mago's linter | Mago's Laravel lint rules today; Rector next |
-| `pun analyse` | PHPStan, Larastan | In progress |
-| `pun check` | All three in one pass | Designed |
-| `pun migrate` | Hand-editing configs | Designed |
+| [`pun format`](/docs/commands/format) | Fixes layout, byte for byte like Pint | Pint, PHP-CS-Fixer |
+| [`pun lint`](/docs/commands/lint) | Reports and fixes code rules | Rector, Mago's linter |
+| [`pun analyse`](/docs/commands/analyse) | Reports type errors | PHPStan, Larastan |
+| [`pun check`](/docs/commands/check) | All three in one pass | `rector process && pint && phpstan` |
+| [`pun migrate`](/docs/commands/migrate) | Moves a project onto `pun.toml` | Hand-editing configs |
+| [`pun lsp`](/docs/commands/lsp) | Editor server | Format-on-save plugins, PHP language servers |
 
 Under a coding agent, every command switches to compact `path:line:col rule message` output.
 
 ## Principles
 
 - **Prove it.** Every speed and parity claim is checked against the real tool. See [Parity](/docs/parity).
-- **No PHP or Node needed** to check a project. PHP is only used for rules Pun hasn't ported yet ([delegate mode](/docs/configuration/delegate-mode)).
-- **Small, ported code.** Fixers are ported function by function from PHP-CS-Fixer, with 100% test coverage.
+- **No PHP or Node needed** to check a project.
+- **Laravel first.** Larastan and rector-laravel behaviour are built in, not plugins.
+- **PHP 8.4+.** Pun targets modern PHP and says so clearly on older projects.
 
 <CardGroup cols={2}>
   <Card title="Installation" href="/docs/installation" icon="download">
-    Shell, Homebrew, npm, Composer, or from source.
+Shell, Homebrew, npm, Composer, or from source.
   </Card>
   <Card title="Quickstart" href="/docs/quickstart" icon="zap">
-    Swap Pint for Pun in a minute.
+Your first pun check in a minute.
   </Card>
-  <Card title="pun format" href="/docs/commands/format" icon="wand-sparkles">
-    Every flag, output format and behaviour.
+  <Card title="pun migrate" href="/docs/commands/migrate" icon="arrow-right-left">
+Move pint.json, phpstan.neon and rector.php onto one file.
   </Card>
-  <Card title="Migrating from Pint" href="/docs/guides/migrating-from-pint" icon="arrow-right-left">
-    Switch scripts, CI and editors with zero diff.
+  <Card title="Presets" href="/docs/configuration/presets" icon="layers">
+Four tiers instead of ten levels.
   </Card>
 </CardGroup>

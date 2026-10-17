@@ -6,15 +6,8 @@ import { defineConfig } from "blume";
 export default defineConfig({
   title: "Pun",
   description:
-    "One fast Rust binary for the whole PHP toolchain. Pint-identical formatting today; analyse, lint and migrate next.",
+    "One fast Rust binary for the whole PHP toolchain: format, lint, analyse and migrate, with the same results as Pint, Rector and PHPStan.",
   logo: { image: "/logo.svg", text: "" },
-
-  banner: {
-    content: "Pun is pre-release: pun format is done, v0.1 ships once format, analyse, lint and migrate exist.",
-    link: { text: "See the roadmap", href: "/docs/roadmap" },
-    dismissible: true,
-    id: "pre-release",
-  },
 
   content: {
     root: "content",
@@ -52,7 +45,6 @@ export default defineConfig({
     links: [
       { label: "Docs", href: "/docs" },
       { label: "Parity", href: "/docs/parity" },
-      { label: "Roadmap", href: "/docs/roadmap" },
       { label: "Report an issue", href: "https://github.com/punphp/pun/issues" },
     ],
   },
@@ -60,7 +52,7 @@ export default defineConfig({
   agents: {
     llmsTxt: {
       details:
-        "Pun is a single Rust binary that replaces Pint, PHP-CS-Fixer, PHPStan + Larastan and Rector for PHP projects, with output identical to the tools it replaces. `pun format` is done and byte-identical to Laravel Pint; it reads pint.json as is. Under a coding agent, pun switches to compact agent output automatically.",
+        "Pun is a single Rust binary that replaces Pint, PHP-CS-Fixer, Rector, PHPStan and Larastan for PHP 8.4+ projects, with output identical to the tools it replaces: `pun format` (Pint), `pun lint` (Rector), `pun analyse` (PHPStan + Larastan), `pun check` (all three in one pass), `pun migrate` (moves a project onto one pun.toml) and `pun lsp` (editor server). It reads pint.json, phpstan.neon and rector.php as they are. Under a coding agent, every command switches to compact agent output automatically.",
     },
   },
 

@@ -1,0 +1,43 @@
+---
+title: pun migrate
+description: Move a project onto one pun.toml, from pint.json, .php-cs-fixer.php, phpstan.neon and rector.php, with zero behaviour change.
+---
+
+```bash
+pun migrate --dry-run   # show what would change, change nothing
+pun migrate             # do it
+```
+
+`pun migrate` is a one-time move onto `pun.toml`. Migration day changes no behaviour: the same files get formatted the same way, and the same errors are reported.
+
+<Steps>
+  <Step title="Read and report">
+
+`--dry-run` reads `pint.json`, `.php-cs-fixer.php`, `phpstan.neon` and its baseline, and `rector.php`. It prints the `pun.toml` it would write and lists every rule, extension and Rector rule it can't run natively, before anything changes.
+
+  </Step>
+  <Step title="Write pun.toml">
+
+PHPStan levels (plus strict-rules, deprecation-rules and Larastan) are expanded into the explicit list of rules they ran. `--preset` writes the closest [tier](/docs/configuration/presets) plus overrides instead, resolving to the same rules.
+
+  </Step>
+  <Step title="Convert the baseline">
+
+`phpstan-baseline.neon` becomes `pun-baseline.toml`, under Pun rule names.
+
+  </Step>
+  <Step title="Rewrite ignore comments">
+
+`@phpstan-ignore <id>` becomes `@pun-ignore <rule>`, `@phpstan-ignore-next-line` becomes `@pun-ignore-next-line` with the rules PHPStan reported there, and `@php-cs-fixer-ignore <rule>` becomes `@pun-ignore-file format.<rule>`.
+
+  </Step>
+  <Step title="Switch the workflow">
+
+Composer scripts, GitHub Actions and GitLab CI steps, editor settings and pre-commit hooks move to `pun check`. If Laravel Boost is installed, a Pun guideline is added so coding agents call `pun`.
+
+  </Step>
+</Steps>
+
+PHPDoc type tags (`@phpstan-param`, `@psalm-var` and the rest) stay as they are, since editors and library users rely on them. `--phpdoc` rewrites them to `@pun-*` for applications.
+
+Replaced dev dependencies stay installed unless you pass `--remove-tools`, so rolling back is reverting one commit.
