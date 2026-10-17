@@ -55,7 +55,11 @@ fn oracle() -> Option<PathBuf> {
 
 fn tmp(name: &str) -> PathBuf {
     static N: AtomicUsize = AtomicUsize::new(0);
-    let d = std::env::temp_dir().join(format!("pun-flags-{name}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::Relaxed)));
+    let d = std::env::temp_dir().join(format!(
+        "pun-flags-{name}-{}-{}",
+        std::process::id(),
+        N.fetch_add(1, Ordering::Relaxed)
+    ));
     let _ = std::fs::remove_dir_all(&d);
     std::fs::create_dir_all(&d).unwrap();
     d.canonicalize().unwrap()
@@ -63,11 +67,19 @@ fn tmp(name: &str) -> PathBuf {
 
 fn snapshot(dir: &Path, rel: &str, out: &mut BTreeMap<String, Vec<u8>>) {
     for e in std::fs::read_dir(dir.join(rel)).unwrap().flatten() {
-        let r = if rel.is_empty() { e.file_name().to_string_lossy().into_owned() } else { format!("{rel}/{}", e.file_name().to_string_lossy()) };
+        let r = if rel.is_empty() {
+            e.file_name().to_string_lossy().into_owned()
+        } else {
+            format!("{rel}/{}", e.file_name().to_string_lossy())
+        };
         if r == ".git" || r == "home" || e.path().is_symlink() {
             continue;
         }
-        if e.path().is_dir() { snapshot(dir, &r, out) } else { out.insert(r, std::fs::read(e.path()).unwrap()); }
+        if e.path().is_dir() {
+            snapshot(dir, &r, out)
+        } else {
+            out.insert(r, std::fs::read(e.path()).unwrap());
+        }
     }
 }
 
@@ -82,28 +94,58 @@ struct Run {
 /// Builds `BASE + script` in a fresh dir and runs `program` from `sub` with an isolated HOME/TMPDIR (no Pint result
 /// cache, no Pun cache). Repo paths in the output become `ROOT`.
 fn run(program: &[&str], script: &str, sub: &str, args: &[&str], stdin: &[u8]) -> Run {
-    let dir = tmp("repo");
+    // One path per test thread, so a path wrapped in an error box is the same for both tools.
+    thread_local! { static REPO: PathBuf = tmp("repo"); }
+    let dir = REPO.with(PathBuf::clone);
+    std::fs::remove_dir_all(&dir).unwrap();
+    std::fs::create_dir_all(&dir).unwrap();
     let corpus = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../corpus/laravel-laravel");
-    let ok = Command::new("bash").args(["-ec", &format!("{BASE}\n{script}")]).current_dir(&dir).env("CORPUS", corpus).output().unwrap();
-    assert!(ok.status.success(), "setup: {}", String::from_utf8_lossy(&ok.stderr));
+    let ok = Command::new("bash")
+        .args(["-ec", &format!("{BASE}\n{script}")])
+        .current_dir(&dir)
+        .env("CORPUS", corpus)
+        .output()
+        .unwrap();
+    assert!(
+        ok.status.success(),
+        "setup: {}",
+        String::from_utf8_lossy(&ok.stderr)
+    );
     let home = dir.join("home");
     std::fs::create_dir_all(&home).unwrap();
     let mut c = Command::new(program[0]);
-    c.args(&program[1..]).args(args).current_dir(dir.join(sub)).env_clear();
+    c.args(&program[1..])
+        .args(args)
+        .current_dir(dir.join(sub))
+        .env_clear();
     for k in ["PATH", "LLVM_PROFILE_FILE"] {
         if let Ok(v) = std::env::var(k) {
             c.env(k, v);
         }
     }
-    c.env("HOME", &home).env("TMPDIR", &home).env("COLUMNS", "80").stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped());
+    c.env("HOME", &home)
+        .env("TMPDIR", &home)
+        .env("COLUMNS", "200")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
     let mut child = c.spawn().unwrap();
     child.stdin.take().unwrap().write_all(stdin).unwrap();
     let out = child.wait_with_output().unwrap();
     let mut files = BTreeMap::new();
     snapshot(&dir, "", &mut files);
     let root = dir.to_string_lossy().into_owned();
-    let norm = |b: &[u8]| String::from_utf8_lossy(b).replace(&root, "ROOT").replace(&root.replace('/', "\\/"), "ROOT");
-    Run { stdout: norm(&out.stdout), stderr: norm(&out.stderr), code: out.status.code(), files }
+    let norm = |b: &[u8]| {
+        String::from_utf8_lossy(b)
+            .replace(&root, "ROOT")
+            .replace(&root.replace('/', "\\/"), "ROOT")
+    };
+    Run {
+        stdout: norm(&out.stdout),
+        stderr: norm(&out.stderr),
+        code: out.status.code(),
+        files,
+    }
 }
 
 struct Cx {
@@ -116,25 +158,61 @@ impl Cx {
         let oracle = oracle()?.to_string_lossy().into_owned();
         let p = tmp("bin").join("pint");
         std::os::unix::fs::symlink(env!("CARGO_BIN_EXE_pun"), &p).unwrap();
-        Some(Cx { oracle, alias: p.to_string_lossy().into_owned() })
+        Some(Cx {
+            oracle,
+            alias: p.to_string_lossy().into_owned(),
+        })
     }
     fn pint(&self, script: &str, sub: &str, args: &[&str], stdin: &[u8]) -> Run {
         run(&["php", &self.oracle], script, sub, args, stdin)
     }
     /// The `pint` alias, or `pun format` for Pun's own flags (`pint` rejects them like Pint).
     fn ours(&self, script: &str, sub: &str, args: &[&str], stdin: &[u8]) -> Run {
-        let pun_only = args.iter().any(|a| ["--stdin", "--staged", "--since"].contains(&a.split('=').next().unwrap()));
-        let cmd: &[&str] = if pun_only { &[env!("CARGO_BIN_EXE_pun"), "format"] } else { &[&self.alias] };
+        let pun_only = args
+            .iter()
+            .any(|a| ["--stdin", "--staged", "--since"].contains(&a.split('=').next().unwrap()));
+        let cmd: &[&str] = if pun_only {
+            &[env!("CARGO_BIN_EXE_pun"), "format"]
+        } else {
+            &[&self.alias]
+        };
         run(cmd, script, sub, args, stdin)
     }
     /// Same output, exit code and files; `pint_args` for Pun-only spellings.
-    fn same_as(&self, script: &str, sub: &str, args: &[&str], pint_args: &[&str], stdin: &[u8]) -> Run {
+    fn same_as(
+        &self,
+        script: &str,
+        sub: &str,
+        args: &[&str],
+        pint_args: &[&str],
+        stdin: &[u8],
+    ) -> Run {
         let want = self.pint(script, sub, pint_args, stdin);
         let mut got = self.ours(script, sub, args, stdin);
         if args.iter().any(|a| *a == "--parallel" || *a == "-p") {
             // Pint prints progress in worker completion order; only the multiset is stable.
-            let sorted = |s: &str| s.split('\n').map(|l| if l.starts_with("  ") && !l.trim().is_empty() && l.trim().chars().all(|c| ".⨯✓!".contains(c)) { let mut c: Vec<char> = l.chars().collect(); c.sort(); c.into_iter().collect() } else { l.to_string() }).collect::<Vec<_>>().join("\n");
-            got.stdout = if sorted(&got.stdout) == sorted(&want.stdout) { want.stdout.clone() } else { got.stdout };
+            let sorted = |s: &str| {
+                s.split('\n')
+                    .map(|l| {
+                        if l.starts_with("  ")
+                            && !l.trim().is_empty()
+                            && l.trim().chars().all(|c| ".⨯✓!".contains(c))
+                        {
+                            let mut c: Vec<char> = l.chars().collect();
+                            c.sort();
+                            c.into_iter().collect()
+                        } else {
+                            l.to_string()
+                        }
+                    })
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            };
+            got.stdout = if sorted(&got.stdout) == sorted(&want.stdout) {
+                want.stdout.clone()
+            } else {
+                got.stdout
+            };
         }
         assert_eq!(got, want, "{sub:?} {args:?}");
         want
@@ -147,13 +225,26 @@ impl Cx {
         let r = self.same(script, "", args);
         let squash = |s: &str| s.split_whitespace().collect::<String>();
         assert_eq!(r.code, Some(1), "{args:?}: {r:?}");
-        assert!(squash(&r.stdout).contains(&squash(message)), "{args:?}: pint said {}", r.stdout);
+        assert!(
+            squash(&r.stdout).contains(&squash(message)),
+            "{args:?}: pint said {}",
+            r.stdout
+        );
     }
 }
 
 /// The `--format=txt` file list, sorted (Pint lists in readdir order).
 fn listed(r: &Run) -> Vec<&str> {
-    let mut v: Vec<&str> = r.stdout.lines().filter_map(|l| l.trim_start().split_once(") ").filter(|(n, _)| n.parse::<u32>().is_ok()).map(|x| x.1)).collect();
+    let mut v: Vec<&str> = r
+        .stdout
+        .lines()
+        .filter_map(|l| {
+            l.trim_start()
+                .split_once(") ")
+                .filter(|(n, _)| n.parse::<u32>().is_ok())
+                .map(|x| x.1)
+        })
+        .collect();
     v.sort();
     v
 }
@@ -165,7 +256,18 @@ fn listed(r: &Run) -> Vec<&str> {
 fn dirty_matches_pint() {
     let Some(cx) = Cx::new() else { return };
     let r = cx.same(DIRTY, "", &["--dirty", "--test", "--format=txt"]);
-    assert_eq!(listed(&r), ["app/Mod.php", "app/New.php", "app/Renamed.php", "app/Staged.php", "newdir/deep/X.php", "sub/T.php", "sub/inner/U.php"]);
+    assert_eq!(
+        listed(&r),
+        [
+            "app/Mod.php",
+            "app/New.php",
+            "app/Renamed.php",
+            "app/Staged.php",
+            "newdir/deep/X.php",
+            "sub/T.php",
+            "sub/inner/U.php"
+        ]
+    );
     cx.same(DIRTY, "", &["--dirty"]);
     cx.same(DIRTY, "", &["--dirty", "app/Clean.php"]);
     let r = cx.same(DIRTY, "sub", &["--dirty", "--test", "--format=txt"]);
@@ -182,13 +284,27 @@ fn dirty_matches_pint() {
 fn diff_matches_pint() {
     let Some(cx) = Cx::new() else { return };
     let r = cx.same(DIVERGED, "", &["--diff=main", "--test", "--format=txt"]);
-    assert_eq!(listed(&r), ["app/Mod.php", "app/Renamed.php", "sub/T.php", "sub/Un tr.php", "sub/Untr.php", "sub/inner/S.php"]);
+    assert_eq!(
+        listed(&r),
+        [
+            "app/Mod.php",
+            "app/Renamed.php",
+            "sub/T.php",
+            "sub/Un tr.php",
+            "sub/Untr.php",
+            "sub/inner/S.php"
+        ]
+    );
     cx.same(DIVERGED, "", &["--diff=main"]);
     let r = cx.same(DIVERGED, "sub", &["--diff=main", "--test", "--format=txt"]);
     assert_eq!(listed(&r), ["Un tr.php", "Untr.php"]);
     cx.same(DIVERGED, "", &["--diff=nope", "--format=json"]);
     // --dirty wins over --diff.
-    cx.same(DIVERGED, "", &["--diff=main", "--dirty", "--test", "--format=txt"]);
+    cx.same(
+        DIVERGED,
+        "",
+        &["--diff=main", "--dirty", "--test", "--format=txt"],
+    );
 }
 
 /// Git-selected files go through the resolver like path arguments: a symlink is fixed as its target (and shows as
@@ -200,7 +316,11 @@ fn git_selection_resolves_symlinks_like_pint() {
     let r = cx.same(link, "", &["--dirty"]);
     assert_eq!(r.files["app/Mod.php"], b"<?php\n\n$a = [1, 2];\n");
     cx.same(link, "", &["--diff=main", "--test", "--format=json"]);
-    cx.same_error("ln -s Missing.php app/Dangling.php", &["--dirty"], r#"The path "ROOT/app/Dangling.php" is not readable."#);
+    cx.same_error(
+        "ln -s Missing.php app/Dangling.php",
+        &["--dirty"],
+        r#"The path "ROOT/app/Dangling.php" is not readable."#,
+    );
 }
 
 /// `--repair` fixes and fails when anything changed, `--bail` stops at the first fixable file without writing.
@@ -227,7 +347,13 @@ fn repair_and_bail_match_pint() {
 #[test]
 fn parallel_matches_pint() {
     let Some(cx) = Cx::new() else { return };
-    for args in [&["--parallel"][..], &["-p", "--test"], &["--parallel", "--max-processes=1", "--test"], &["--parallel", "--max-processes=abc", "--test"], &["--max-processes=3", "--test"]] {
+    for args in [
+        &["--parallel"][..],
+        &["-p", "--test"],
+        &["--parallel", "--max-processes=1", "--test"],
+        &["--parallel", "--max-processes=abc", "--test"],
+        &["--max-processes=3", "--test"],
+    ] {
         cx.same("", "", args);
     }
 }
@@ -253,7 +379,11 @@ printf '{"preset":"empty","rules":{"array_syntax":true},"notName":["Keep.php"]}'
         cx.same(cfg, sub, args);
     }
     let bad = &format!("{cfg}\nprintf 'not json' > bad.json");
-    cx.same_error(bad, &["--config=bad.json"], "The configuration file [bad.json] is not valid JSON.");
+    cx.same_error(
+        bad,
+        &["--config=bad.json"],
+        "The configuration file [bad.json] is not valid JSON.",
+    );
 }
 
 /// `--output-to-file` writes only with `--output-format` or `--format`; an unwritable target is PHP's
@@ -266,13 +396,32 @@ fn output_to_file_matches_pint() {
         &["--output-to-file=r.json", "--output-format=json"],
         &["--test", "--output-to-file=r.txt"],
         &["--test", "--output-to-file=r.txt", "--format=txt"],
-        &["--test", "--output-to-file=r.xml", "--format=json", "--output-format=checkstyle"],
+        &[
+            "--test",
+            "--output-to-file=r.xml",
+            "--format=json",
+            "--output-format=checkstyle",
+        ],
         &["--test", "--output-to-file=r.x", "--output-format=gitlab"],
         &["--test", "--output-to-file=r.x", "--output-format=nope"],
-        &["--test", "-q", "--output-to-file=r.x", "--output-format=junit"],
+        &[
+            "--test",
+            "-q",
+            "--output-to-file=r.x",
+            "--output-format=junit",
+        ],
         &["--dirty", "--output-to-file=r.json", "--output-format=json"],
-        &["--test", "--output-to-file=nodir/r.json", "--output-format=json"],
-        &["--test", "--output-to-file=app", "--output-format=json", "--ansi"],
+        &[
+            "--test",
+            "--output-to-file=nodir/r.json",
+            "--output-format=json",
+        ],
+        &[
+            "--test",
+            "--output-to-file=app",
+            "--output-format=json",
+            "--ansi",
+        ],
     ] {
         cx.same("bad app/New.php", "", args);
     }
@@ -284,24 +433,50 @@ fn output_to_file_matches_pint() {
 fn stdin_matches_pint() {
     let Some(cx) = Cx::new() else { return };
     let cfg = r#"printf '{"preset":"empty","rules":{"array_syntax":true},"notName":["Keep.php"]}' > pint.json"#;
-    for input in [&b"<?php\n$a = array(1,2);   \n"[..], b"<?php\nfunction (\n", b""] {
+    for input in [
+        &b"<?php\n$a = array(1,2);   \n"[..],
+        b"<?php\nfunction (\n",
+        b"",
+    ] {
         for (args, pint_args) in [
             (&["--stdin"][..], &["-"][..]),
             (&["--stdin", "--test"], &["-", "--test"]),
             (&["--stdin", "--no-config"], &["-", "--no-config"]),
             (&["-", "--bail"], &["-", "--bail"]),
-            (&["--stdin-filename=app/X.php"], &["--stdin-filename=app/X.php"]),
-            (&["--stdin", "--stdin-filename=app/Keep.php"], &["-", "--stdin-filename=app/Keep.php"]),
-            (&["--stdin-filename=storage/a/X.php", "-"], &["--stdin-filename=storage/a/X.php", "-"]),
-            (&["--stdin-filename=app/X.php", "--repair"], &["--stdin-filename=app/X.php", "--repair"]),
+            (
+                &["--stdin-filename=app/X.php"],
+                &["--stdin-filename=app/X.php"],
+            ),
+            (
+                &["--stdin", "--stdin-filename=app/Keep.php"],
+                &["-", "--stdin-filename=app/Keep.php"],
+            ),
+            (
+                &["--stdin-filename=storage/a/X.php", "-"],
+                &["--stdin-filename=storage/a/X.php", "-"],
+            ),
+            (
+                &["--stdin-filename=app/X.php", "--repair"],
+                &["--stdin-filename=app/X.php", "--repair"],
+            ),
         ] {
             cx.same_as(cfg, "", args, pint_args, input);
         }
     }
     // A fixer exception (a panic in Pun) echoes the input too.
-    let cfg = r#"printf '{"preset":"empty","rules":{"combine_consecutive_unsets":true}}' > pint.json"#;
-    let r = cx.same_as(cfg, "", &["-"], &["-"], b"<?php unset($a ); unset( $b );\nunset($x, ); unset( $y);");
-    assert!(r.stdout.starts_with("<?php unset($a ); unset( $b );") && r.stderr.is_empty(), "{r:?}");
+    let cfg =
+        r#"printf '{"preset":"empty","rules":{"combine_consecutive_unsets":true}}' > pint.json"#;
+    let r = cx.same_as(
+        cfg,
+        "",
+        &["-"],
+        &["-"],
+        b"<?php unset($a ); unset( $b );\nunset($x, ); unset( $y);",
+    );
+    assert!(
+        r.stdout.starts_with("<?php unset($a ); unset( $b );") && r.stderr.is_empty(),
+        "{r:?}"
+    );
 }
 
 /// Pun's `--staged` (`git diff --cached`) and `--since=<ref>` (`git diff <ref>` against the worktree, no merge-base,
@@ -314,11 +489,26 @@ fn staged_and_since_match_pint_on_the_same_files() {
     for (flag, files) in [
         ("--staged", &["app/Renamed.php", "sub/T.php"][..]),
         // main's own commits count too (Keep.php); MainOnly.php is absent from the worktree.
-        ("--since=main", &["app/Keep.php", "app/Mod.php", "app/Renamed.php", "sub/T.php", "sub/inner/S.php", "sub/Untr.php", "sub/Un tr.php"]),
+        (
+            "--since=main",
+            &[
+                "app/Keep.php",
+                "app/Mod.php",
+                "app/Renamed.php",
+                "sub/T.php",
+                "sub/inner/S.php",
+                "sub/Untr.php",
+                "sub/Un tr.php",
+            ],
+        ),
     ] {
         let got = cx.ours(DIVERGED, "", &[&txt[..], &[flag]].concat(), b"");
         let want = cx.pint(DIVERGED, "", &[&txt[..], files].concat(), b"");
-        assert_eq!((listed(&got), got.code), (listed(&want), want.code), "{flag}");
+        assert_eq!(
+            (listed(&got), got.code),
+            (listed(&want), want.code),
+            "{flag}"
+        );
         assert_eq!(listed(&got).len(), files.len(), "{flag}");
     }
     cx.same_as(DIVERGED, "", &["--since=nope"], &["--diff=nope"], b"");
