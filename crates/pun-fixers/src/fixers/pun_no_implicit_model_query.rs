@@ -33,34 +33,71 @@ impl Fixer for NoImplicitModelQuery {
                 continue;
             }
             // PHP-CS-Fixer tokens split `\App\User` into T_NS_SEPARATOR / T_STRING parts.
-            let Some(class) = tokens.get_prev_meaningful_token(i).filter(|&c| tokens[c].is_kind(T_STRING)) else { continue };
+            let Some(class) = tokens
+                .get_prev_meaningful_token(i)
+                .filter(|&c| tokens[c].is_kind(T_STRING))
+            else {
+                continue;
+            };
             let mut start = class;
-            while let Some(p) = tokens.get_prev_meaningful_token(start).filter(|&p| tokens[p].is_given_kind(&[T_NS_SEPARATOR, T_STRING, T_NAMESPACE])) {
+            while let Some(p) = tokens
+                .get_prev_meaningful_token(start)
+                .filter(|&p| tokens[p].is_given_kind(&[T_NS_SEPARATOR, T_STRING, T_NAMESPACE]))
+            {
                 start = p;
             }
             if tokens.get_prev_meaningful_token(start).is_some_and(|p| {
-                tokens[p].is_given_kind(&[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_NEW])
+                tokens[p].is_given_kind(&[
+                    T_OBJECT_OPERATOR,
+                    T_NULLSAFE_OBJECT_OPERATOR,
+                    T_DOUBLE_COLON,
+                    T_NEW,
+                ])
             }) {
                 continue;
             }
-            let Some(method) = tokens.get_next_meaningful_token(i).filter(|&m| tokens[m].is_kind(T_STRING)) else { continue };
-            if !tokens.get_next_meaningful_token(method).is_some_and(|n| tokens[n].equals("(", true)) {
+            let Some(method) = tokens
+                .get_next_meaningful_token(i)
+                .filter(|&m| tokens[m].is_kind(T_STRING))
+            else {
+                continue;
+            };
+            if !tokens
+                .get_next_meaningful_token(method)
+                .is_some_and(|n| tokens[n].equals("(", true))
+            {
                 continue;
             }
-            if !QUERY_BUILDER_METHODS.iter().any(|m| tokens[method].get_content().eq_ignore_ascii_case(m.as_bytes())) {
+            if !QUERY_BUILDER_METHODS.iter().any(|m| {
+                tokens[method]
+                    .get_content()
+                    .eq_ignore_ascii_case(m.as_bytes())
+            }) {
                 continue;
             }
             let short = tokens[class].get_content().to_ascii_lowercase();
             if start == class && (short == b"self" || short == b"parent") {
                 continue;
             }
-            let resolved = if start != class { short } else { aliases.get(&short).cloned().unwrap_or(short) };
-            if KNOWN_NON_MODEL_CLASSES.iter().any(|c| c.as_bytes().eq_ignore_ascii_case(&resolved)) {
+            let resolved = if start != class {
+                short
+            } else {
+                aliases.get(&short).cloned().unwrap_or(short)
+            };
+            if KNOWN_NON_MODEL_CLASSES
+                .iter()
+                .any(|c| c.as_bytes().eq_ignore_ascii_case(&resolved))
+            {
                 continue;
             }
             tokens.insert_at(
                 method,
-                vec![Token::new(T_STRING, "query"), Token::char("("), Token::char(")"), Token::new(T_OBJECT_OPERATOR, "->")],
+                vec![
+                    Token::new(T_STRING, "query"),
+                    Token::char("("),
+                    Token::char(")"),
+                    Token::new(T_OBJECT_OPERATOR, "->"),
+                ],
             );
         }
     }
@@ -73,10 +110,17 @@ fn import_aliases(tokens: &Tokens) -> HashMap<Vec<u8>, Vec<u8>> {
         if !tokens[i].is_kind(T_AS) {
             continue;
         }
-        let name = tokens.get_prev_meaningful_token(i).filter(|&n| tokens[n].is_kind(T_STRING));
-        let alias = tokens.get_next_meaningful_token(i).filter(|&a| tokens[a].is_kind(T_STRING));
+        let name = tokens
+            .get_prev_meaningful_token(i)
+            .filter(|&n| tokens[n].is_kind(T_STRING));
+        let alias = tokens
+            .get_next_meaningful_token(i)
+            .filter(|&a| tokens[a].is_kind(T_STRING));
         if let (Some(name), Some(alias)) = (name, alias) {
-            map.insert(tokens[alias].get_content().to_ascii_lowercase(), tokens[name].get_content().to_ascii_lowercase());
+            map.insert(
+                tokens[alias].get_content().to_ascii_lowercase(),
+                tokens[name].get_content().to_ascii_lowercase(),
+            );
         }
     }
     map
@@ -84,20 +128,100 @@ fn import_aliases(tokens: &Tokens) -> HashMap<Vec<u8>, Vec<u8>> {
 
 /// Eloquent query-builder methods that start or constrain a query when forwarded from a model (Mago's list).
 const QUERY_BUILDER_METHODS: &[&str] = &[
-    "where", "orWhere", "whereNot", "whereIn", "whereNotIn", "whereNull", "whereNotNull", "whereBetween",
-    "whereNotBetween", "whereDate", "whereTime", "whereColumn", "whereExists", "whereHas", "whereDoesntHave",
-    "whereRelation", "whereBelongsTo", "orderBy", "orderByDesc", "latest", "oldest", "inRandomOrder", "groupBy",
-    "having", "with", "withCount", "withSum", "withMax", "withMin", "withAvg", "withWhereHas", "withTrashed",
-    "withoutTrashed", "onlyTrashed", "has", "orHas", "doesntHave", "limit", "take", "skip", "offset", "distinct",
+    "where",
+    "orWhere",
+    "whereNot",
+    "whereIn",
+    "whereNotIn",
+    "whereNull",
+    "whereNotNull",
+    "whereBetween",
+    "whereNotBetween",
+    "whereDate",
+    "whereTime",
+    "whereColumn",
+    "whereExists",
+    "whereHas",
+    "whereDoesntHave",
+    "whereRelation",
+    "whereBelongsTo",
+    "orderBy",
+    "orderByDesc",
+    "latest",
+    "oldest",
+    "inRandomOrder",
+    "groupBy",
+    "having",
+    "with",
+    "withCount",
+    "withSum",
+    "withMax",
+    "withMin",
+    "withAvg",
+    "withWhereHas",
+    "withTrashed",
+    "withoutTrashed",
+    "onlyTrashed",
+    "has",
+    "orHas",
+    "doesntHave",
+    "limit",
+    "take",
+    "skip",
+    "offset",
+    "distinct",
 ];
 
 /// Laravel facade and helper classes whose static methods share query-builder names (Mago's list).
 const KNOWN_NON_MODEL_CLASSES: &[&str] = &[
-    "Arr", "Str", "Number", "Js", "Collection", "LazyCollection", "Fluent", "Stringable", "Uri", "DB", "Schema",
-    "Cache", "Config", "Route", "View", "Log", "Http", "Storage", "File", "Validator", "Hash", "Auth", "Gate",
-    "Event", "Queue", "Mail", "Notification", "Session", "Cookie", "Redirect", "Response", "Request", "URL", "App",
-    "Artisan", "Blade", "Bus", "Date", "Lang", "Password", "Process", "RateLimiter", "Pipeline", "Context", "Crypt",
-    "Broadcast", "Concurrency", "Vite",
+    "Arr",
+    "Str",
+    "Number",
+    "Js",
+    "Collection",
+    "LazyCollection",
+    "Fluent",
+    "Stringable",
+    "Uri",
+    "DB",
+    "Schema",
+    "Cache",
+    "Config",
+    "Route",
+    "View",
+    "Log",
+    "Http",
+    "Storage",
+    "File",
+    "Validator",
+    "Hash",
+    "Auth",
+    "Gate",
+    "Event",
+    "Queue",
+    "Mail",
+    "Notification",
+    "Session",
+    "Cookie",
+    "Redirect",
+    "Response",
+    "Request",
+    "URL",
+    "App",
+    "Artisan",
+    "Blade",
+    "Bus",
+    "Date",
+    "Lang",
+    "Password",
+    "Process",
+    "RateLimiter",
+    "Pipeline",
+    "Context",
+    "Crypt",
+    "Broadcast",
+    "Concurrency",
+    "Vite",
 ];
 
 #[cfg(test)]
@@ -135,7 +259,10 @@ mod tests {
 
     #[test]
     fn edge_cases() {
-        assert_eq!(fix("<?php \\App\\Models\\User::WhereIn('id', [1]);"), "<?php \\App\\Models\\User::query()->WhereIn('id', [1]);");
+        assert_eq!(
+            fix("<?php \\App\\Models\\User::WhereIn('id', [1]);"),
+            "<?php \\App\\Models\\User::query()->WhereIn('id', [1]);"
+        );
         for same in [
             "<?php use Illuminate\\Support\\Facades\\DB as Database; Database::where('a');",
             "<?php \\Illuminate\\Support\\Facades\\Cache::has('k');",

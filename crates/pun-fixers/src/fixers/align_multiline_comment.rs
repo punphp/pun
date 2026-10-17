@@ -16,7 +16,11 @@ struct AlignMultilineCommentFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(AlignMultilineCommentFixer { comment_type: "phpdocs_only".into(), token_kinds: vec![T_DOC_COMMENT], line_ending: b"\n".to_vec() })
+    Box::new(AlignMultilineCommentFixer {
+        comment_type: "phpdocs_only".into(),
+        token_kinds: vec![T_DOC_COMMENT],
+        line_ending: b"\n".to_vec(),
+    })
 }
 
 impl Fixer for AlignMultilineCommentFixer {
@@ -31,7 +35,11 @@ impl Fixer for AlignMultilineCommentFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let c = resolve(self.name(), options, &["comment_type"])?;
-        self.comment_type = c.string("comment_type", "phpdocs_only", &["phpdocs_only", "phpdocs_like", "all_multiline"])?;
+        self.comment_type = c.string(
+            "comment_type",
+            "phpdocs_only",
+            &["phpdocs_only", "phpdocs_like", "all_multiline"],
+        )?;
         self.token_kinds = vec![T_DOC_COMMENT];
         if self.comment_type != "phpdocs_only" {
             self.token_kinds.push(T_COMMENT);
@@ -54,9 +62,15 @@ impl Fixer for AlignMultilineCommentFixer {
                 previous_index -= 1;
             }
             if tokens[previous_index].is_kind(T_OPEN_TAG) {
-                whitespace = [Preg::replace(r"/\S/", "", &tokens[previous_index].content), whitespace].concat();
+                whitespace = [
+                    Preg::replace(r"/\S/", "", &tokens[previous_index].content),
+                    whitespace,
+                ]
+                .concat();
             }
-            let Some(m) = Preg::match_groups(r"/\R(\h*)$/", &whitespace, 0) else { continue };
+            let Some(m) = Preg::match_groups(r"/\R(\h*)$/", &whitespace, 0) else {
+                continue;
+            };
             if token.is_kind(T_COMMENT)
                 && self.comment_type != "all_multiline"
                 && Preg::r#match(r"/\R(?:\R|\s*[^\s\*])/", &token.content)

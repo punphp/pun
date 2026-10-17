@@ -39,7 +39,12 @@ impl Fixer for MagicMethodCasingFixer {
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         tokens.is_token_kind_found(T_STRING)
-            && tokens.is_any_token_kinds_found(&[T_FUNCTION, T_DOUBLE_COLON, T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR])
+            && tokens.is_any_token_kinds_found(&[
+                T_FUNCTION,
+                T_DOUBLE_COLON,
+                T_OBJECT_OPERATOR,
+                T_NULLSAFE_OBJECT_OPERATOR,
+            ])
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let mut in_class = 0;
@@ -50,7 +55,9 @@ impl Fixer for MagicMethodCasingFixer {
             if in_class == 0 && tokens[i].is_classy() {
                 in_class = 1;
                 // Upstream `++$index` on a null index restarts at 1; every classy in valid code has a `{`.
-                index = tokens.get_next_token_of_kind(i, &["{".into()], true).map_or(1, |n| n as isize + 1);
+                index = tokens
+                    .get_next_token_of_kind(i, &["{".into()], true)
+                    .map_or(1, |n| n as isize + 1);
                 continue;
             }
             index += 1;
@@ -72,7 +79,9 @@ impl Fixer for MagicMethodCasingFixer {
                 continue; // cheap look ahead
             }
             let name = content.to_ascii_lowercase();
-            let Some(&(_, name_in_correct_casing)) = MAGIC_NAMES.iter().find(|(n, _)| n.as_bytes() == &name[..]) else {
+            let Some(&(_, name_in_correct_casing)) =
+                MAGIC_NAMES.iter().find(|(n, _)| n.as_bytes() == &name[..])
+            else {
                 continue; // method name is not one of the magic ones we can fix
             };
             if name_in_correct_casing.as_bytes() == &content[..] {
@@ -89,7 +98,9 @@ impl Fixer for MagicMethodCasingFixer {
                 tokens.set(i, Token::new(T_STRING, name_in_correct_casing));
                 continue;
             }
-            if (name == b"__callstatic" || name == b"__set_state") && is_static_method_call(tokens, i) {
+            if (name == b"__callstatic" || name == b"__set_state")
+                && is_static_method_call(tokens, i)
+            {
                 tokens.set(i, Token::new(T_STRING, name_in_correct_casing));
             }
         }

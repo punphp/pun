@@ -7,13 +7,21 @@ pub struct Utils;
 impl Utils {
     /// Converts a camel cased string to a snake cased string.
     pub fn camel_case_to_underscore(string: &str) -> String {
-        let replaced = Preg::replace("/(?<!^)(?<!_)((?=[\\p{Lu}][^\\p{Lu}])|(?<![\\p{Lu}])(?=[\\p{Lu}]))/", "_", string);
+        let replaced = Preg::replace(
+            "/(?<!^)(?<!_)((?=[\\p{Lu}][^\\p{Lu}])|(?<![\\p{Lu}])(?=[\\p{Lu}]))/",
+            "_",
+            string,
+        );
         String::from_utf8_lossy(&replaced).to_lowercase() // mb_strtolower
     }
 
     /// Everything after the final newline of a whitespace token.
     pub fn calculate_trailing_whitespace_indent(token: &Token) -> Vec<u8> {
-        assert!(token.is_whitespace(None), "The given token must be whitespace, got \"{:?}\".", token.get_name());
+        assert!(
+            token.is_whitespace(None),
+            "The given token must be whitespace, got \"{:?}\".",
+            token.get_name()
+        );
         let content = token.get_content();
         let mut s = Vec::with_capacity(content.len());
         let mut i = 0;
@@ -30,7 +38,11 @@ impl Utils {
         }
         match s.iter().rposition(|&b| b == b'\n') {
             None => Vec::new(),
-            Some(p) => s[p..].iter().skip_while(|&&b| b == b'\n').copied().collect(),
+            Some(p) => s[p..]
+                .iter()
+                .skip_while(|&&b| b == b'\n')
+                .copied()
+                .collect(),
         }
     }
 }
@@ -40,7 +52,25 @@ impl Utils {
 pub fn mb_strwidth(s: &[u8]) -> usize {
     String::from_utf8_lossy(s)
         .chars()
-        .map(|c| if c != '\u{FFFD}' && WIDE.binary_search_by(|&(a, b)| if (c as u32) < a { std::cmp::Ordering::Greater } else if (c as u32) > b { std::cmp::Ordering::Less } else { std::cmp::Ordering::Equal }).is_ok() { 2 } else { 1 })
+        .map(|c| {
+            if c != '\u{FFFD}'
+                && WIDE
+                    .binary_search_by(|&(a, b)| {
+                        if (c as u32) < a {
+                            std::cmp::Ordering::Greater
+                        } else if (c as u32) > b {
+                            std::cmp::Ordering::Less
+                        } else {
+                            std::cmp::Ordering::Equal
+                        }
+                    })
+                    .is_ok()
+            {
+                2
+            } else {
+                1
+            }
+        })
         .sum()
 }
 
@@ -55,13 +85,35 @@ mod tests {
     // Expected values from PHP 8.5: Utils::camelCaseToUnderscore, Utils::calculateTrailingWhitespaceIndent, mb_strwidth.
     #[test]
     fn php_values() {
-        for (i, o) in [("testFooBar", "test_foo_bar"), ("TestFooBAR", "test_foo_bar"), ("test_FooBar", "test_foo_bar"), ("HTMLParser", "html_parser"), ("ÉcoleÜber", "école_über"), ("a", "a")] {
+        for (i, o) in [
+            ("testFooBar", "test_foo_bar"),
+            ("TestFooBAR", "test_foo_bar"),
+            ("test_FooBar", "test_foo_bar"),
+            ("HTMLParser", "html_parser"),
+            ("ÉcoleÜber", "école_über"),
+            ("a", "a"),
+        ] {
             assert_eq!(Utils::camel_case_to_underscore(i), o, "{i}");
         }
-        for (i, o) in [("\n    ", "    "), ("  ", ""), ("\r\n\t\t", "\t\t"), ("\r  \r", "")] {
-            assert_eq!(Utils::calculate_trailing_whitespace_indent(&Token::new(T_WHITESPACE, i)), o.as_bytes(), "{i:?}");
+        for (i, o) in [
+            ("\n    ", "    "),
+            ("  ", ""),
+            ("\r\n\t\t", "\t\t"),
+            ("\r  \r", ""),
+        ] {
+            assert_eq!(
+                Utils::calculate_trailing_whitespace_indent(&Token::new(T_WHITESPACE, i)),
+                o.as_bytes(),
+                "{i:?}"
+            );
         }
-        for (i, o) in [(&b"abc"[..], 3), ("日本語".as_bytes(), 6), ("a😀b".as_bytes(), 4), (b"\xff\xfe", 2), (b"\xe6\x97", 1)] {
+        for (i, o) in [
+            (&b"abc"[..], 3),
+            ("日本語".as_bytes(), 6),
+            ("a😀b".as_bytes(), 4),
+            (b"\xff\xfe", 2),
+            (b"\xe6\x97", 1),
+        ] {
             assert_eq!(mb_strwidth(i), o, "{i:?}");
         }
     }

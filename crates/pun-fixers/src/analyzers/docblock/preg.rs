@@ -15,7 +15,11 @@ pub fn captures<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Option<Caps
     Preg::match_groups(pattern, subject, 0)
 }
 
-pub fn match_at<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8], offset: usize) -> Option<Caps<'s>> {
+pub fn match_at<'s>(
+    pattern: impl AsRef<[u8]>,
+    subject: &'s [u8],
+    offset: usize,
+) -> Option<Caps<'s>> {
     Preg::match_at(pattern, subject, 0, offset)
 }
 
@@ -23,12 +27,20 @@ pub fn match_all<'s>(pattern: impl AsRef<[u8]>, subject: &'s [u8]) -> Vec<Caps<'
     Preg::match_all(pattern, subject, 0)
 }
 
-pub fn replace(pattern: impl AsRef<[u8]>, replacement: &[u8], subject: &[u8], limit: isize) -> Vec<u8> {
+pub fn replace(
+    pattern: impl AsRef<[u8]>,
+    replacement: &[u8],
+    subject: &[u8],
+    limit: isize,
+) -> Vec<u8> {
     Preg::replace_limit(pattern, replacement, subject, limit).0
 }
 
 pub fn split(pattern: impl AsRef<[u8]>, subject: &[u8], flags: u32) -> Vec<Vec<u8>> {
-    Preg::split(pattern, subject, -1, flags).into_iter().map(|p| p.text).collect()
+    Preg::split(pattern, subject, -1, flags)
+        .into_iter()
+        .map(|p| p.text)
+        .collect()
 }
 
 /// PHP `preg_quote`.

@@ -9,7 +9,11 @@ use std::path::Path;
 
 /// `PhpFragmentFormatter::DENYLIST` / `FRAGMENT_DENYLIST`.
 const DENYLIST: &[&str] = &["no_closing_tag", "Pint/laravel_blade"];
-const FRAGMENT_DENYLIST: &[&str] = &["fully_qualified_strict_types", "no_unused_imports", "declare_strict_types"];
+const FRAGMENT_DENYLIST: &[&str] = &[
+    "fully_qualified_strict_types",
+    "no_unused_imports",
+    "declare_strict_types",
+];
 
 /// `PhpFragmentFormatter`: the active preset's fixers (never the project's own overrides, like Pint's
 /// sequential runner), memoized per fragment/file key.
@@ -21,7 +25,11 @@ pub struct PhpFragmentFormatter {
 
 impl PhpFragmentFormatter {
     pub fn new(preset: String) -> Self {
-        PhpFragmentFormatter { preset, fragment: OnceCell::new(), file: OnceCell::new() }
+        PhpFragmentFormatter {
+            preset,
+            fragment: OnceCell::new(),
+            file: OnceCell::new(),
+        }
     }
 
     /// Format a PHP document that already opens with "<?php".
@@ -49,9 +57,22 @@ impl PhpFragmentFormatter {
     fn fixers(&self, fragment: bool) -> Option<&Pipeline> {
         let cell = if fragment { &self.fragment } else { &self.file };
         cell.get_or_init(|| {
-            let deny: Vec<&str> = if fragment { [DENYLIST, FRAGMENT_DENYLIST].concat() } else { DENYLIST.to_vec() };
-            let rules: Vec<pun_config::Rule> = preset_rules(&self.preset).into_iter().filter(|r| !deny.contains(&r.name.as_str())).collect();
-            Pipeline::new(&rules, &|| crate::all().into_iter().filter(|f: &Box<dyn Fixer>| f.name() != "Pint/laravel_blade").collect()).ok()
+            let deny: Vec<&str> = if fragment {
+                [DENYLIST, FRAGMENT_DENYLIST].concat()
+            } else {
+                DENYLIST.to_vec()
+            };
+            let rules: Vec<pun_config::Rule> = preset_rules(&self.preset)
+                .into_iter()
+                .filter(|r| !deny.contains(&r.name.as_str()))
+                .collect();
+            Pipeline::new(&rules, &|| {
+                crate::all()
+                    .into_iter()
+                    .filter(|f: &Box<dyn Fixer>| f.name() != "Pint/laravel_blade")
+                    .collect()
+            })
+            .ok()
         })
         .as_ref()
     }
@@ -59,15 +80,27 @@ impl PhpFragmentFormatter {
 
 /// `resources/presets/{$preset}.php`'s `getRules()`, read like pun_config::load reads presets.
 fn preset_rules(preset: &str) -> Vec<pun_config::Rule> {
-    let Some((_, json)) = pun_config::PRESETS.iter().find(|(n, _)| *n == preset) else { return Vec::new() };
-    let Ok(mut rules) = serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(json) else { return Vec::new() };
+    let Some((_, json)) = pun_config::PRESETS.iter().find(|(n, _)| *n == preset) else {
+        return Vec::new();
+    };
+    let Ok(mut rules) = serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(json)
+    else {
+        return Vec::new();
+    };
     if let Some(serde_json::Value::Object(r)) = rules.remove("rules_as_configured") {
         rules = r;
     }
     rules
         .into_iter()
         .filter(|(_, v)| *v != serde_json::Value::Bool(false))
-        .map(|(name, v)| pun_config::Rule { name, options: if v == serde_json::Value::Bool(true) { serde_json::Value::Null } else { v } })
+        .map(|(name, v)| pun_config::Rule {
+            name,
+            options: if v == serde_json::Value::Bool(true) {
+                serde_json::Value::Null
+            } else {
+                v
+            },
+        })
         .collect()
 }
 
@@ -80,8 +113,21 @@ fn control_directive(lower: &[u8]) -> Option<&'static [u8]> {
 }
 
 const SKIP_DIRECTIVES: &[&[u8]] = &[
-    b"php", b"media", b"supports", b"scope", b"keyframes", b"font", b"import", b"charset", b"namespace", b"page", b"container",
-    b"layer", b"property", b"apply", b"tailwind",
+    b"php",
+    b"media",
+    b"supports",
+    b"scope",
+    b"keyframes",
+    b"font",
+    b"import",
+    b"charset",
+    b"namespace",
+    b"page",
+    b"container",
+    b"layer",
+    b"property",
+    b"apply",
+    b"tailwind",
 ];
 
 const COMPONENT_PREFIXES: &[&str] = &["x", "s", "statamic", "flux", "livewire", "native"];
@@ -135,7 +181,11 @@ impl PhpBlockFormatting {
             if within(offset, verbatim) {
                 continue;
             }
-            edits.push((offset, region.len(), self.format_region(region, indent_at(content, offset))));
+            edits.push((
+                offset,
+                region.len(),
+                self.format_region(region, indent_at(content, offset)),
+            ));
         }
         edits
     }
@@ -152,7 +202,9 @@ impl PhpBlockFormatting {
                 continue;
             }
             let open = start + m.str(0).len() - 1;
-            let Some(close) = match_paren(content, open) else { continue };
+            let Some(close) = match_paren(content, open) else {
+                continue;
+            };
             let arg = &content[open + 1..close];
             let formatted = self.format_directive_arg(name, arg, line_indent_at(content, start));
             if formatted != arg {
@@ -170,9 +222,17 @@ impl PhpBlockFormatting {
             Some(keyword) => [keyword, b" (", arg, b") {}"].concat(),
             None => [b"__pint__(", arg, b");"].concat(),
         };
-        let formatted = strip_php_wrapper(&self.formatter.format(&[b"<?php\n", &host[..], b"\n"].concat(), true));
-        let Some(open) = strpos(&formatted, b"(", 0) else { return arg.to_vec() };
-        let Some(close) = match_paren(&formatted, open) else { return arg.to_vec() };
+        let formatted = strip_php_wrapper(
+            &self
+                .formatter
+                .format(&[b"<?php\n", &host[..], b"\n"].concat(), true),
+        );
+        let Some(open) = strpos(&formatted, b"(", 0) else {
+            return arg.to_vec();
+        };
+        let Some(close) = match_paren(&formatted, open) else {
+            return arg.to_vec();
+        };
         reindent_arg(&formatted[open + 1..close], indent)
     }
 
@@ -197,7 +257,9 @@ impl PhpBlockFormatting {
             if start > 0 && content[start - 1] == b'@' {
                 continue;
             }
-            if let Some(formatted) = self.format_echo(expr, line_indent_at(content, start), unescaped) {
+            if let Some(formatted) =
+                self.format_echo(expr, line_indent_at(content, start), unescaped)
+            {
                 if formatted != region {
                     edits.push((start, region.len(), formatted));
                 }
@@ -212,13 +274,21 @@ impl PhpBlockFormatting {
         }
         // De-indent to column zero so Pint's output stays idempotent across runs.
         let core = deindent(trim_chars(expr, b"\r\n"));
-        let formatted = strip_php_wrapper(&self.formatter.format(&[b"<?php\n", &core[..], b";\n"].concat(), true));
+        let formatted = strip_php_wrapper(
+            &self
+                .formatter
+                .format(&[b"<?php\n", &core[..], b";\n"].concat(), true),
+        );
         let formatted = RawPreg::replace("/;$/", "", &formatted).unwrap_or_default();
         if trim(&formatted).is_empty() {
             return None;
         }
         let inner = reindent(&formatted, &[indent, b"    "].concat());
-        let (head, tail): (&[u8], &[u8]) = if unescaped { (b"{!!", b"!!}") } else { (b"{{", b"}}") };
+        let (head, tail): (&[u8], &[u8]) = if unescaped {
+            (b"{!!", b"!!}")
+        } else {
+            (b"{{", b"}}")
+        };
         Some([head, b"\n", &inner, b"\n", indent, tail].concat())
     }
 
@@ -230,14 +300,21 @@ impl PhpBlockFormatting {
         let mut skip = edit_spans(regions);
         skip.extend_from_slice(verbatim);
         let mut edits = Vec::new();
-        for m in RawPreg::match_all("/(?<![\\w:-])(:[\\w.:-]+)\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)')/", content) {
+        for m in RawPreg::match_all(
+            "/(?<![\\w:-])(:[\\w.:-]+)\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)')/",
+            content,
+        ) {
             let name = m.str(1);
             let start = m.offset(0) as usize;
             // "::attr" is an escaped literal attribute, not a bound expression.
             if name.starts_with(b"::") || !within(start, &tags) || within(start, &skip) {
                 continue;
             }
-            let (value, value_start) = if m.offset(2) != -1 { (m.str(2), m.offset(2)) } else { (m.str(3), m.offset(3)) };
+            let (value, value_start) = if m.offset(2) != -1 {
+                (m.str(2), m.offset(2))
+            } else {
+                (m.str(3), m.offset(3))
+            };
             if let Some(formatted) = self.format_attribute_expr(value) {
                 if formatted != value {
                     edits.push((value_start as usize, value.len(), formatted));
@@ -251,15 +328,25 @@ impl PhpBlockFormatting {
         if trim(expr).is_empty() || contains(expr, b"{{") {
             return None;
         }
-        let formatted = strip_php_wrapper(&self.formatter.format(&[b"<?php\n__pint__(", expr, b");\n"].concat(), true));
+        let formatted = strip_php_wrapper(
+            &self
+                .formatter
+                .format(&[b"<?php\n__pint__(", expr, b");\n"].concat(), true),
+        );
         let open = strpos(&formatted, b"(", 0)?;
         let close = match_paren(&formatted, open)?;
         let inner = &formatted[open + 1..close];
-        if contains(inner, b"\n") { None } else { Some(inner.to_vec()) }
+        if contains(inner, b"\n") {
+            None
+        } else {
+            Some(inner.to_vec())
+        }
     }
 
     fn format_region(&self, region: &[u8], indent: Option<&[u8]>) -> Vec<u8> {
-        let Some(indent) = indent else { return region.to_vec() };
+        let Some(indent) = indent else {
+            return region.to_vec();
+        };
         if let Some(m) = RawPreg::match_groups("/^@php(.*)@endphp$/is", region) {
             return self.format_php_block(m.str(1), indent);
         }
@@ -269,9 +356,17 @@ impl PhpBlockFormatting {
     fn format_php_block(&self, body: &[u8], indent: &[u8]) -> Vec<u8> {
         let core = dedent(trim_chars(body, b"\r\n"));
         if trim(&core).is_empty() {
-            return if contains(body, b"\n") { b"@php @endphp".to_vec() } else { [b"@php", body, b"@endphp"].concat() };
+            return if contains(body, b"\n") {
+                b"@php @endphp".to_vec()
+            } else {
+                [b"@php", body, b"@endphp"].concat()
+            };
         }
-        let statements = strip_php_wrapper(&self.formatter.format(&[b"<?php\n", &core[..], b"\n"].concat(), true));
+        let statements = strip_php_wrapper(
+            &self
+                .formatter
+                .format(&[b"<?php\n", &core[..], b"\n"].concat(), true),
+        );
         if !contains(body, b"\n") && !contains(&statements, b"\n") {
             return [b"@php ", &statements[..], b" @endphp"].concat();
         }
@@ -293,7 +388,13 @@ fn reindent_arg(inner: &[u8], indent: &[u8]) -> Vec<u8> {
     let lines: Vec<Vec<u8>> = inner
         .split(|&b| b == b'\n')
         .enumerate()
-        .map(|(index, line)| if index == 0 || line.is_empty() { line.to_vec() } else { [indent, line].concat() })
+        .map(|(index, line)| {
+            if index == 0 || line.is_empty() {
+                line.to_vec()
+            } else {
+                [indent, line].concat()
+            }
+        })
         .collect();
     lines.join(&b'\n')
 }
@@ -373,7 +474,9 @@ fn match_paren(content: &[u8], open: usize) -> Option<usize> {
 }
 
 fn within(offset: usize, spans: &[Span]) -> bool {
-    spans.iter().any(|&(start, end)| offset >= start && offset < end)
+    spans
+        .iter()
+        .any(|&(start, end)| offset >= start && offset < end)
 }
 
 fn line_start(content: &[u8], offset: usize) -> usize {
@@ -382,13 +485,20 @@ fn line_start(content: &[u8], offset: usize) -> usize {
 
 fn line_indent_at(content: &[u8], offset: usize) -> &[u8] {
     let rest = &content[line_start(content, offset)..];
-    let n = rest.iter().take_while(|&&c| c == b' ' || c == b'\t').count();
+    let n = rest
+        .iter()
+        .take_while(|&&c| c == b' ' || c == b'\t')
+        .count();
     &rest[..n]
 }
 
 fn indent_at(content: &[u8], offset: usize) -> Option<&[u8]> {
     let prefix = &content[line_start(content, offset)..offset];
-    if trim(prefix).is_empty() { Some(prefix) } else { None }
+    if trim(prefix).is_empty() {
+        Some(prefix)
+    } else {
+        None
+    }
 }
 
 fn strip_php_wrapper(formatted: &[u8]) -> Vec<u8> {
@@ -396,7 +506,10 @@ fn strip_php_wrapper(formatted: &[u8]) -> Vec<u8> {
 }
 
 fn deindent(text: &[u8]) -> Vec<u8> {
-    let lines: Vec<&[u8]> = text.split(|&b| b == b'\n').map(|line| ltrim_chars(line, b" \t")).collect();
+    let lines: Vec<&[u8]> = text
+        .split(|&b| b == b'\n')
+        .map(|line| ltrim_chars(line, b" \t"))
+        .collect();
     lines.join(&b'\n')
 }
 
@@ -411,11 +524,29 @@ fn dedent(text: &[u8]) -> Vec<u8> {
     if shortest == 0 {
         return text.to_vec();
     }
-    let lines: Vec<&[u8]> = lines.into_iter().map(|line| if trim(line).is_empty() { line } else { &line[shortest.min(line.len())..] }).collect();
+    let lines: Vec<&[u8]> = lines
+        .into_iter()
+        .map(|line| {
+            if trim(line).is_empty() {
+                line
+            } else {
+                &line[shortest.min(line.len())..]
+            }
+        })
+        .collect();
     lines.join(&b'\n')
 }
 
 fn reindent(text: &[u8], prefix: &[u8]) -> Vec<u8> {
-    let lines: Vec<Vec<u8>> = text.split(|&b| b == b'\n').map(|line| if line.is_empty() { line.to_vec() } else { [prefix, line].concat() }).collect();
+    let lines: Vec<Vec<u8>> = text
+        .split(|&b| b == b'\n')
+        .map(|line| {
+            if line.is_empty() {
+                line.to_vec()
+            } else {
+                [prefix, line].concat()
+            }
+        })
+        .collect();
     lines.join(&b'\n')
 }

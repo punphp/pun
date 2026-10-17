@@ -39,8 +39,14 @@ impl BlankLineAfterNamespaceFixer {
 
     fn get_token_to_insert(&self, current_content: &[u8], is_last_index: bool) -> Token {
         let ending = self.whitespaces_config.get_line_ending();
-        let empty_lines = if is_last_index { ending.to_string() } else { format!("{ending}{ending}") };
-        let indent = Preg::match_groups("/^.*\\R( *)$/s", current_content, 0).map(|m| m.str(1).to_vec()).unwrap_or_default();
+        let empty_lines = if is_last_index {
+            ending.to_string()
+        } else {
+            format!("{ending}{ending}")
+        };
+        let indent = Preg::match_groups("/^.*\\R( *)$/s", current_content, 0)
+            .map(|m| m.str(1).to_vec())
+            .unwrap_or_default();
         Token::new(T_WHITESPACE, [empty_lines.as_bytes(), &indent].concat())
     }
 }
@@ -65,19 +71,24 @@ impl Fixer for BlankLineAfterNamespaceFixer {
             if !tokens[index].is_kind(T_NAMESPACE) {
                 continue;
             }
-            let semicolon_index = tokens.get_next_token_of_kind(index, &[";".into(), "{".into(), T_CLOSE_TAG.into()], true).unwrap();
+            let semicolon_index = tokens
+                .get_next_token_of_kind(index, &[";".into(), "{".into(), T_CLOSE_TAG.into()], true)
+                .unwrap();
             if !tokens[semicolon_index].equals(";", true) {
                 continue;
             }
-            let index_to_ensure_blank_line_after = Self::get_index_to_ensure_blank_line_after(tokens, semicolon_index);
-            let index_to_ensure_blank_line = tokens.get_non_empty_sibling(index_to_ensure_blank_line_after, 1);
+            let index_to_ensure_blank_line_after =
+                Self::get_index_to_ensure_blank_line_after(tokens, semicolon_index);
+            let index_to_ensure_blank_line =
+                tokens.get_non_empty_sibling(index_to_ensure_blank_line_after, 1);
             match index_to_ensure_blank_line {
                 Some(i) if tokens[i].is_whitespace(None) => {
                     let t = self.get_token_to_insert(tokens[i].get_content(), i == last_index);
                     tokens.set(i, t);
                 }
                 _ => {
-                    let t = self.get_token_to_insert(b"", index_to_ensure_blank_line_after == last_index);
+                    let t = self
+                        .get_token_to_insert(b"", index_to_ensure_blank_line_after == last_index);
                     tokens.insert_at(index_to_ensure_blank_line_after + 1, vec![t]);
                 }
             }

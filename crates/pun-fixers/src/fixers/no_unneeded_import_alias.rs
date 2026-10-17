@@ -29,20 +29,27 @@ impl Fixer for NoUnneededImportAliasFixer {
                 continue;
             }
             let mut import_index = tokens.get_prev_meaningful_token(index).unwrap();
-            if !tokens[import_index].is_kind(Kind::T_STRING) || tokens[import_index].content != tokens[alias_index].content {
+            if !tokens[import_index].is_kind(Kind::T_STRING)
+                || tokens[import_index].content != tokens[alias_index].content
+            {
                 continue;
             }
             loop {
                 import_index = tokens.get_prev_meaningful_token(import_index).unwrap();
                 let t = &tokens[import_index];
-                if !(t.is_given_kind(&[Kind::T_NS_SEPARATOR, Kind::T_STRING, Kind::T_AS]) || t.equals(",", true)) {
+                if !(t.is_given_kind(&[Kind::T_NS_SEPARATOR, Kind::T_STRING, Kind::T_AS])
+                    || t.equals(",", true))
+                {
                     break;
                 }
             }
-            if tokens[import_index].is_given_kind(&[Kind::CT_FUNCTION_IMPORT, Kind::CT_CONST_IMPORT]) {
+            if tokens[import_index]
+                .is_given_kind(&[Kind::CT_FUNCTION_IMPORT, Kind::CT_CONST_IMPORT])
+            {
                 import_index = tokens.get_prev_meaningful_token(import_index).unwrap();
             }
-            if !tokens[import_index].is_given_kind(&[Kind::T_USE, Kind::CT_GROUP_IMPORT_BRACE_OPEN]) {
+            if !tokens[import_index].is_given_kind(&[Kind::T_USE, Kind::CT_GROUP_IMPORT_BRACE_OPEN])
+            {
                 continue;
             }
             tokens.clear_token_and_merge_surrounding_whitespace(alias_index);

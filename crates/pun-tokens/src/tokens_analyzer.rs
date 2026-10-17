@@ -99,7 +99,10 @@ impl<'a> TokensAnalyzer<'a> {
     }
 
     pub fn get_classy_modifiers(&self, mut index: usize) -> ClassyModifiers {
-        assert!(self.tokens[index].is_classy(), "Not an \"classy\" at given index {index}.");
+        assert!(
+            self.tokens[index].is_classy(),
+            "Not an \"classy\" at given index {index}."
+        );
         let mut m = ClassyModifiers::default();
         loop {
             index = self.prev(index);
@@ -152,7 +155,8 @@ impl<'a> TokensAnalyzer<'a> {
 
     pub fn is_block_multiline(&self, mut index: usize) -> bool {
         let t = self.tokens;
-        let (bt, start) = Tokens::detect_block_type(&t[index]).unwrap_or((Tokens::BLOCK_TYPE_BRACE, false));
+        let (bt, start) =
+            Tokens::detect_block_type(&t[index]).unwrap_or((Tokens::BLOCK_TYPE_BRACE, false));
         assert!(start, "Not an block start at given index {index}.");
         let end = t.find_block_end(bt, index);
         index += 1;
@@ -162,7 +166,10 @@ impl<'a> TokensAnalyzer<'a> {
                 continue;
             }
             let token = &t[index];
-            if token.is_whitespace(None) && !t[index - 1].is_kind(T_END_HEREDOC) && token.content.contains(&b'\n') {
+            if token.is_whitespace(None)
+                && !t[index - 1].is_kind(T_END_HEREDOC)
+                && token.content.contains(&b'\n')
+            {
                 return true;
             }
             index += 1;
@@ -171,7 +178,10 @@ impl<'a> TokensAnalyzer<'a> {
     }
 
     pub fn get_method_attributes(&self, index: usize) -> MethodAttributes {
-        assert!(self.tokens[index].is_kind(T_FUNCTION), "No T_FUNCTION at given index {index}");
+        assert!(
+            self.tokens[index].is_kind(T_FUNCTION),
+            "No T_FUNCTION at given index {index}"
+        );
         let mut a = MethodAttributes::default();
         let mut i = index;
         while let Some(p) = self.tokens.get_prev_meaningful_token(i) {
@@ -189,7 +199,10 @@ impl<'a> TokensAnalyzer<'a> {
 
     pub fn is_anonymous_class(&self, index: usize) -> bool {
         let t = self.tokens;
-        assert!(t[index].is_classy(), "No classy token at given index {index}.");
+        assert!(
+            t[index].is_classy(),
+            "No classy token at given index {index}."
+        );
         if !t[index].is_kind(T_CLASS) {
             return false;
         }
@@ -205,7 +218,10 @@ impl<'a> TokensAnalyzer<'a> {
     }
 
     pub fn is_lambda(&self, index: usize) -> bool {
-        assert!(self.tokens[index].is_given_kind(&[T_FUNCTION, T_FN]), "No T_FUNCTION or T_FN at given index {index}");
+        assert!(
+            self.tokens[index].is_given_kind(&[T_FUNCTION, T_FN]),
+            "No T_FUNCTION or T_FN at given index {index}"
+        );
         let mut start = self.next(index);
         if self.tokens[start].is_kind(CT_RETURN_REF) {
             start = self.next(start);
@@ -215,7 +231,10 @@ impl<'a> TokensAnalyzer<'a> {
 
     pub fn get_last_token_index_of_arrow_function(&self, index: usize) -> usize {
         let t = self.tokens;
-        assert!(t[index].is_kind(T_FN), "Not an \"arrow function\" at given index {index}.");
+        assert!(
+            t[index].is_kind(T_FN),
+            "Not an \"arrow function\" at given index {index}."
+        );
         let stop = [c(")"), c("]"), c(","), c(";"), k(T_CLOSE_TAG)];
         let mut index = idx(t.get_next_token_of_kind(index, &[k(T_DOUBLE_ARROW)], true));
         loop {
@@ -301,7 +320,16 @@ impl<'a> TokensAnalyzer<'a> {
         }
         let p = idx(t.get_prev_token_of_kind(
             index,
-            &[c(";"), c("{"), c("}"), k(T_DOUBLE_ARROW), k(T_FN), k(T_FUNCTION), k(T_OPEN_TAG), k(T_OPEN_TAG_WITH_ECHO)],
+            &[
+                c(";"),
+                c("{"),
+                c("}"),
+                k(T_DOUBLE_ARROW),
+                k(T_FN),
+                k(T_FUNCTION),
+                k(T_OPEN_TAG),
+                k(T_OPEN_TAG_WITH_ECHO),
+            ],
             true,
         ));
         t[p].is_given_kind(&[T_FN, T_FUNCTION])
@@ -309,7 +337,11 @@ impl<'a> TokensAnalyzer<'a> {
 
     pub fn is_binary_operator(&self, index: usize) -> bool {
         let token = &self.tokens[index];
-        if token.is_given_kind(&[T_INLINE_HTML, T_ENCAPSED_AND_WHITESPACE, CT_TYPE_INTERSECTION]) {
+        if token.is_given_kind(&[
+            T_INLINE_HTML,
+            T_ENCAPSED_AND_WHITESPACE,
+            CT_TYPE_INTERSECTION,
+        ]) {
             return false;
         }
         if matches!(&token.content[..], b"+" | b"-" | b"&") {
@@ -350,12 +382,18 @@ impl<'a> TokensAnalyzer<'a> {
                     | T_COALESCE_EQUAL
             );
         }
-        matches!(&token.content[..], b"=" | b"*" | b"/" | b"%" | b"<" | b">" | b"|" | b"^" | b".")
+        matches!(
+            &token.content[..],
+            b"=" | b"*" | b"/" | b"%" | b"<" | b">" | b"|" | b"^" | b"."
+        )
     }
 
     pub fn is_while_part_of_do_while(&self, index: usize) -> bool {
         let t = self.tokens;
-        assert!(t[index].is_kind(T_WHILE), "No T_WHILE at given index {index}");
+        assert!(
+            t[index].is_kind(T_WHILE),
+            "No T_WHILE at given index {index}"
+        );
         let end = self.prev(index);
         if !t[end].equals("}", true) {
             return false;
@@ -366,7 +404,10 @@ impl<'a> TokensAnalyzer<'a> {
 
     pub fn is_enum_case(&self, case_index: usize) -> bool {
         let t = self.tokens;
-        assert!(t[case_index].is_kind(T_CASE), "No T_CASE given at index {case_index}");
+        assert!(
+            t[case_index].is_kind(T_CASE),
+            "No T_CASE given at index {case_index}"
+        );
         if !t.is_token_kind_found(T_ENUM) {
             return false;
         }
@@ -387,14 +428,27 @@ impl<'a> TokensAnalyzer<'a> {
         token.is_kind(T_VARIABLE)
             && matches!(
                 &token.content.to_ascii_uppercase()[..],
-                b"$_COOKIE" | b"$_ENV" | b"$_FILES" | b"$_GET" | b"$_POST" | b"$_REQUEST" | b"$_SERVER" | b"$_SESSION" | b"$GLOBALS"
+                b"$_COOKIE"
+                    | b"$_ENV"
+                    | b"$_FILES"
+                    | b"$_GET"
+                    | b"$_POST"
+                    | b"$_REQUEST"
+                    | b"$_SERVER"
+                    | b"$_SESSION"
+                    | b"$GLOBALS"
             )
     }
 
-    fn find_classy_elements(&self, class_index: usize, mut index: usize) -> (usize, BTreeMap<usize, ClassyElement>) {
+    fn find_classy_elements(
+        &self,
+        class_index: usize,
+        mut index: usize,
+    ) -> (usize, BTreeMap<usize, ClassyElement>) {
         let t = self.tokens;
         let mut elements = BTreeMap::new();
-        let merge = |elements: &mut BTreeMap<usize, ClassyElement>, new: BTreeMap<usize, ClassyElement>| {
+        let merge = |elements: &mut BTreeMap<usize, ClassyElement>,
+                     new: BTreeMap<usize, ClassyElement>| {
             for (k, v) in new {
                 elements.entry(k).or_insert(v);
             }
@@ -459,7 +513,11 @@ impl<'a> TokensAnalyzer<'a> {
                 if braces == 0 && token.is_kind(T_VARIABLE) {
                     add(index, ClassyElementType::Property);
                 } else if token.is_kind(CT_PROPERTY_HOOK_BRACE_OPEN) {
-                    index = idx(t.get_next_token_of_kind(index, &[k(CT_PROPERTY_HOOK_BRACE_CLOSE)], true));
+                    index = idx(t.get_next_token_of_kind(
+                        index,
+                        &[k(CT_PROPERTY_HOOK_BRACE_CLOSE)],
+                        true,
+                    ));
                 } else if token.is_kind(T_ATTRIBUTE) {
                     index = t.find_block_end(Tokens::BLOCK_TYPE_ATTRIBUTE, index);
                 } else if token.is_kind(T_FUNCTION) {
@@ -483,7 +541,8 @@ impl<'a> TokensAnalyzer<'a> {
                             let found = t.find_given_kinds(&kinds, open, Some(close));
                             for kd in kinds {
                                 for &m in &found[&kd] {
-                                    let var = idx(t.get_next_token_of_kind(m, &[k(T_VARIABLE)], true));
+                                    let var =
+                                        idx(t.get_next_token_of_kind(m, &[k(T_VARIABLE)], true));
                                     add(var, ClassyElementType::PromotedProperty);
                                 }
                             }
@@ -513,8 +572,23 @@ mod tests {
             b"<?php class A { use T; const X = 1; public int $p; public function __construct(private int $q) {} function f() { $x = -1; $i++; return new class { public $z; }; } }",
         );
         let a = TokensAnalyzer::new(&t);
-        let kinds: Vec<&str> = a.get_classy_elements().values().map(|e| e.kind.as_str()).collect();
-        assert_eq!(kinds, ["trait_import", "const", "property", "method", "promoted_property", "method", "property"]);
+        let kinds: Vec<&str> = a
+            .get_classy_elements()
+            .values()
+            .map(|e| e.kind.as_str())
+            .collect();
+        assert_eq!(
+            kinds,
+            [
+                "trait_import",
+                "const",
+                "property",
+                "method",
+                "promoted_property",
+                "method",
+                "property"
+            ]
+        );
         let minus = t.iter().position(|x| x.content == b"-").unwrap();
         assert!(a.is_unary_predecessor_operator(minus) && !a.is_binary_operator(minus));
         let inc = t.iter().position(|x| x.is_kind(T_INC)).unwrap();

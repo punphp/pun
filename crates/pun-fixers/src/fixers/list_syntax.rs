@@ -11,7 +11,9 @@ struct ListSyntaxFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ListSyntaxFixer { candidate_token_kind: T_LIST })
+    Box::new(ListSyntaxFixer {
+        candidate_token_kind: T_LIST,
+    })
 }
 
 impl Fixer for ListSyntaxFixer {
@@ -23,8 +25,11 @@ impl Fixer for ListSyntaxFixer {
     }
     fn configure(&mut self, options: &Value) -> anyhow::Result<()> {
         let c = resolve(self.name(), options, &["syntax"])?;
-        self.candidate_token_kind =
-            if c.string("syntax", "short", &["long", "short"])? == "long" { CT_DESTRUCTURING_BRACKET_OPEN } else { T_LIST };
+        self.candidate_token_kind = if c.string("syntax", "short", &["long", "short"])? == "long" {
+            CT_DESTRUCTURING_BRACKET_OPEN
+        } else {
+            T_LIST
+        };
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
@@ -44,7 +49,13 @@ impl Fixer for ListSyntaxFixer {
 }
 
 fn fix_to_long_syntax(tokens: &mut Tokens, index: usize) {
-    let close_index = tokens.get_next_token_of_kind(index, &[CT_DESTRUCTURING_BRACKET_CLOSE.into(), "[".into()], true).unwrap();
+    let close_index = tokens
+        .get_next_token_of_kind(
+            index,
+            &[CT_DESTRUCTURING_BRACKET_CLOSE.into(), "[".into()],
+            true,
+        )
+        .unwrap();
     if !tokens[close_index].is_kind(CT_DESTRUCTURING_BRACKET_CLOSE) {
         return;
     }
@@ -54,7 +65,9 @@ fn fix_to_long_syntax(tokens: &mut Tokens, index: usize) {
 }
 
 fn fix_to_short_syntax(tokens: &mut Tokens, index: usize) {
-    let open_index = tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap();
+    let open_index = tokens
+        .get_next_token_of_kind(index, &["(".into()], true)
+        .unwrap();
     let close_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_index);
     tokens.set(open_index, Token::new(CT_DESTRUCTURING_BRACKET_OPEN, "["));
     tokens.set(close_index, Token::new(CT_DESTRUCTURING_BRACKET_CLOSE, "]"));

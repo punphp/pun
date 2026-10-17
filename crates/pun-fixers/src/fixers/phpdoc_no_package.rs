@@ -7,7 +7,9 @@ use std::path::Path;
 struct PhpdocNoPackageFixer(GeneralPhpdocAnnotationRemove);
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocNoPackageFixer(GeneralPhpdocAnnotationRemove { annotations: &["package", "subpackage"] }))
+    Box::new(PhpdocNoPackageFixer(GeneralPhpdocAnnotationRemove {
+        annotations: &["package", "subpackage"],
+    }))
 }
 
 impl Fixer for PhpdocNoPackageFixer {

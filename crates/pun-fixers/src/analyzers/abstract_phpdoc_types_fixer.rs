@@ -18,7 +18,12 @@ thread_local! {
 /// `memo_key` names the fixer and its configuration: two fixers (or configurations) never share results.
 /// `may_change(docblock)` is false only when `normalize` provably leaves every type in it as it is (the docblock is
 /// then not parsed at all).
-pub fn apply_fix(tokens: &mut Tokens, memo_key: &str, may_change: &dyn Fn(&[u8]) -> bool, normalize: &dyn Fn(&[u8]) -> Vec<u8>) {
+pub fn apply_fix(
+    tokens: &mut Tokens,
+    memo_key: &str,
+    may_change: &dyn Fn(&[u8]) -> bool,
+    normalize: &dyn Fn(&[u8]) -> Vec<u8>,
+) {
     for index in 0..tokens.count() {
         if !tokens[index].is_kind(Kind::T_DOC_COMMENT) || !may_change(&tokens[index].content) {
             continue;
@@ -36,13 +41,30 @@ pub fn apply_fix(tokens: &mut Tokens, memo_key: &str, may_change: &dyn Fn(&[u8])
 }
 
 fn fix_type(annotation: &Annotation, memo_key: &str, normalize: &dyn Fn(&[u8]) -> Vec<u8>) {
-    let Some(content) = annotation.get_types_content() else { return };
-    let cached = FIXED_TYPES.with(|m| m.borrow().get(memo_key).and_then(|m| m.get(&content).cloned()));
+    let Some(content) = annotation.get_types_content() else {
+        return;
+    };
+    let cached = FIXED_TYPES.with(|m| {
+        m.borrow()
+            .get(memo_key)
+            .and_then(|m| m.get(&content).cloned())
+    });
     let new = cached.unwrap_or_else(|| {
         let type_expression = annotation.get_type_expression().unwrap();
-        let new = type_expression.map_types(&mut |t| if !t.is_composite_type() { TypeExpression::plain(&normalize(t.to_string())) } else { t });
+        let new = type_expression.map_types(&mut |t| {
+            if !t.is_composite_type() {
+                TypeExpression::plain(&normalize(t.to_string()))
+            } else {
+                t
+            }
+        });
         let new = new.to_string().to_vec();
-        FIXED_TYPES.with(|m| m.borrow_mut().entry(memo_key.to_string()).or_default().insert(content, new.clone()));
+        FIXED_TYPES.with(|m| {
+            m.borrow_mut()
+                .entry(memo_key.to_string())
+                .or_default()
+                .insert(content, new.clone())
+        });
         new
     });
     annotation.set_types(&[new]);

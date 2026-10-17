@@ -2,7 +2,7 @@
 use crate::analyzers::preg::Preg;
 use crate::analyzers::utils::Utils;
 use pun_format::Fixer;
-use pun_tokens::{php_compat, Kind::*, Token, Tokens};
+use pun_tokens::{Kind::*, Token, Tokens, php_compat};
 use std::path::Path;
 
 struct PhpdocIndentFixer;
@@ -29,14 +29,17 @@ impl Fixer for PhpdocIndentFixer {
             let token = tokens[index].clone();
             let next_index = tokens.get_next_meaningful_token(index);
             // skip if there is no next token or if next token is block end `}`
-            let Some(next_index) = next_index.filter(|&n| !tokens[n].equals("}", true)) else { continue };
+            let Some(next_index) = next_index.filter(|&n| !tokens[n].equals("}", true)) else {
+                continue;
+            };
 
             let prev_index = index - 1;
             let prev_token = tokens[prev_index].clone();
 
             // ignore inline docblocks
             if prev_token.is_kind(T_OPEN_TAG)
-                || (prev_token.is_whitespace(Some(b" \t")) && !tokens[index - 2].is_kind(T_OPEN_TAG))
+                || (prev_token.is_whitespace(Some(b" \t"))
+                    && !tokens[index - 2].is_kind(T_OPEN_TAG))
                 || prev_token.equals_any(&[";".into(), ",".into(), "{".into(), "(".into()], true)
             {
                 continue;
@@ -50,14 +53,23 @@ impl Fixer for PhpdocIndentFixer {
 
             let new_prev_content = fix_whitespace_before_docblock(&prev_token.content, &indent);
 
-            tokens.set(index, Token::new(T_DOC_COMMENT, fix_doc_block(&token.content, &indent)));
+            tokens.set(
+                index,
+                Token::new(T_DOC_COMMENT, fix_doc_block(&token.content, &indent)),
+            );
 
             if !prev_token.is_whitespace(None) {
                 if !indent.is_empty() {
                     tokens.insert_at(index, vec![Token::new(T_WHITESPACE, indent)]);
                 }
             } else if !new_prev_content.is_empty() {
-                tokens.set(prev_index, Token { id: prev_token.id, content: new_prev_content });
+                tokens.set(
+                    prev_index,
+                    Token {
+                        id: prev_token.id,
+                        content: new_prev_content,
+                    },
+                );
             } else {
                 tokens.clear_at(prev_index);
             }

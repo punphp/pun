@@ -24,7 +24,11 @@ fn explode<'a>(delimiter: &[u8], s: &'a [u8]) -> Vec<&'a [u8]> {
 
 /// `substr($s, $start, $len)` for non-negative arguments.
 fn substr(s: &[u8], start: usize, len: usize) -> &[u8] {
-    if start >= s.len() { b"" } else { &s[start..(start + len).min(s.len())] }
+    if start >= s.len() {
+        b""
+    } else {
+        &s[start..(start + len).min(s.len())]
+    }
 }
 
 impl Fixer for FullOpeningTagFixer {
@@ -41,7 +45,12 @@ impl Fixer for FullOpeningTagFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let content = tokens.generate_code();
         // replace all <? with <?php to replace all short open tags even without short_open_tag option enabled
-        let (new_content, count) = Preg::replace_limit("/<\\?(?:phP|pHp|pHP|Php|PhP|PHp|PHP)?(\\s|$)/", "<?php$1", &content, -1);
+        let (new_content, count) = Preg::replace_limit(
+            "/<\\?(?:phP|pHp|pHP|Php|PhP|PHp|PHP)?(\\s|$)/",
+            "<?php$1",
+            &content,
+            -1,
+        );
         if count == 0 {
             return;
         }
@@ -61,7 +70,13 @@ impl Fixer for FullOpeningTagFixer {
                 continue;
             }
             let mut len = token.get_content().len();
-            if token.is_given_kind(&[T_COMMENT, T_DOC_COMMENT, T_CONSTANT_ENCAPSED_STRING, T_ENCAPSED_AND_WHITESPACE, T_STRING]) {
+            if token.is_given_kind(&[
+                T_COMMENT,
+                T_DOC_COMMENT,
+                T_CONSTANT_ENCAPSED_STRING,
+                T_ENCAPSED_AND_WHITESPACE,
+                T_STRING,
+            ]) {
                 let mut token_content = Vec::new();
                 let mut token_content_length = 0;
                 let parts = explode(b"<?php", token.get_content());
@@ -70,7 +85,11 @@ impl Fixer for FullOpeningTagFixer {
                     token_content.extend_from_slice(part);
                     token_content_length += part.len();
                     if i != i_last {
-                        let original_token_content = substr(&content, tokens_old_content_length + token_content_length, 5);
+                        let original_token_content = substr(
+                            &content,
+                            tokens_old_content_length + token_content_length,
+                            5,
+                        );
                         if strtolower(original_token_content) == b"<?php" {
                             token_content.extend_from_slice(original_token_content);
                             token_content_length += 5;
@@ -81,7 +100,13 @@ impl Fixer for FullOpeningTagFixer {
                     }
                 }
                 len = token_content.len();
-                new_tokens.set(index, Token { id: token.get_id(), content: token_content });
+                new_tokens.set(
+                    index,
+                    Token {
+                        id: token.get_id(),
+                        content: token_content,
+                    },
+                );
             }
             tokens_old_content_length += len;
         }

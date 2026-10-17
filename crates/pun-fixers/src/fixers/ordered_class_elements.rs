@@ -25,38 +25,110 @@ const TYPE_HIERARCHY: &[(&str, Option<&[&str]>)] = &[
     ("property_public", Some(&["property", "public"])),
     ("property_protected", Some(&["property", "protected"])),
     ("property_private", Some(&["property", "private"])),
-    ("property_public_abstract", Some(&["property_abstract", "property_public"])),
-    ("property_public_readonly", Some(&["property_readonly", "property_public"])),
-    ("property_protected_abstract", Some(&["property_abstract", "property_protected"])),
-    ("property_protected_readonly", Some(&["property_readonly", "property_protected"])),
-    ("property_private_readonly", Some(&["property_readonly", "property_private"])),
-    ("property_public_static", Some(&["property_static", "property_public"])),
-    ("property_protected_static", Some(&["property_static", "property_protected"])),
-    ("property_private_static", Some(&["property_static", "property_private"])),
+    (
+        "property_public_abstract",
+        Some(&["property_abstract", "property_public"]),
+    ),
+    (
+        "property_public_readonly",
+        Some(&["property_readonly", "property_public"]),
+    ),
+    (
+        "property_protected_abstract",
+        Some(&["property_abstract", "property_protected"]),
+    ),
+    (
+        "property_protected_readonly",
+        Some(&["property_readonly", "property_protected"]),
+    ),
+    (
+        "property_private_readonly",
+        Some(&["property_readonly", "property_private"]),
+    ),
+    (
+        "property_public_static",
+        Some(&["property_static", "property_public"]),
+    ),
+    (
+        "property_protected_static",
+        Some(&["property_static", "property_protected"]),
+    ),
+    (
+        "property_private_static",
+        Some(&["property_static", "property_private"]),
+    ),
     ("method", None),
     ("method_abstract", Some(&["method"])),
     ("method_static", Some(&["method"])),
     ("method_public", Some(&["method", "public"])),
     ("method_protected", Some(&["method", "protected"])),
     ("method_private", Some(&["method", "private"])),
-    ("method_public_abstract", Some(&["method_abstract", "method_public"])),
-    ("method_protected_abstract", Some(&["method_abstract", "method_protected"])),
-    ("method_private_abstract", Some(&["method_abstract", "method_private"])),
-    ("method_public_abstract_static", Some(&["method_abstract", "method_static", "method_public"])),
-    ("method_protected_abstract_static", Some(&["method_abstract", "method_static", "method_protected"])),
-    ("method_private_abstract_static", Some(&["method_abstract", "method_static", "method_private"])),
-    ("method_public_static", Some(&["method_static", "method_public"])),
-    ("method_protected_static", Some(&["method_static", "method_protected"])),
-    ("method_private_static", Some(&["method_static", "method_private"])),
+    (
+        "method_public_abstract",
+        Some(&["method_abstract", "method_public"]),
+    ),
+    (
+        "method_protected_abstract",
+        Some(&["method_abstract", "method_protected"]),
+    ),
+    (
+        "method_private_abstract",
+        Some(&["method_abstract", "method_private"]),
+    ),
+    (
+        "method_public_abstract_static",
+        Some(&["method_abstract", "method_static", "method_public"]),
+    ),
+    (
+        "method_protected_abstract_static",
+        Some(&["method_abstract", "method_static", "method_protected"]),
+    ),
+    (
+        "method_private_abstract_static",
+        Some(&["method_abstract", "method_static", "method_private"]),
+    ),
+    (
+        "method_public_static",
+        Some(&["method_static", "method_public"]),
+    ),
+    (
+        "method_protected_static",
+        Some(&["method_static", "method_protected"]),
+    ),
+    (
+        "method_private_static",
+        Some(&["method_static", "method_private"]),
+    ),
 ];
 const SPECIAL_TYPES: &[&str] = &["construct", "destruct", "magic", "phpunit"];
 const DEFAULT_ORDER: &[&str] = &[
-    "use_trait", "case", "constant_public", "constant_protected", "constant_private", "property_public", "property_protected",
-    "property_private", "construct", "destruct", "magic", "phpunit", "method_public", "method_protected", "method_private",
+    "use_trait",
+    "case",
+    "constant_public",
+    "constant_protected",
+    "constant_private",
+    "property_public",
+    "property_protected",
+    "property_private",
+    "construct",
+    "destruct",
+    "magic",
+    "phpunit",
+    "method_public",
+    "method_protected",
+    "method_private",
 ];
 const PHPUNIT: &[&str] = &[
-    "setupbeforeclass", "dosetupbeforeclass", "teardownafterclass", "doteardownafterclass", "setup", "dosetup", "assertpreconditions",
-    "assertpostconditions", "teardown", "doteardown",
+    "setupbeforeclass",
+    "dosetupbeforeclass",
+    "teardownafterclass",
+    "doteardownafterclass",
+    "setup",
+    "dosetup",
+    "assertpreconditions",
+    "assertpostconditions",
+    "teardown",
+    "doteardown",
 ];
 
 struct OrderedClassElementsFixer {
@@ -66,7 +138,11 @@ struct OrderedClassElementsFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = OrderedClassElementsFixer { type_position: HashMap::new(), sort_alpha: false, case_sensitive: false };
+    let mut f = OrderedClassElementsFixer {
+        type_position: HashMap::new(),
+        sort_alpha: false,
+        case_sensitive: false,
+    };
     f.configure(&Value::Null).unwrap();
     Box::new(f)
 }
@@ -91,22 +167,37 @@ impl Fixer for OrderedClassElementsFixer {
         65
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let r = resolve(self.name(), options, &["order", "sort_algorithm", "case_sensitive"])?;
+        let r = resolve(
+            self.name(),
+            options,
+            &["order", "sort_algorithm", "case_sensitive"],
+        )?;
         let order = r.strings("order", DEFAULT_ORDER, &[])?;
-        let ok = order.iter().any(|v| TYPE_HIERARCHY.iter().any(|(t, _)| t == v) || SPECIAL_TYPES.contains(&v.as_str()) || v.starts_with("method:"));
+        let ok = order.iter().any(|v| {
+            TYPE_HIERARCHY.iter().any(|(t, _)| t == v)
+                || SPECIAL_TYPES.contains(&v.as_str())
+                || v.starts_with("method:")
+        });
         if !ok {
-            bail!("[ordered_class_elements] Invalid configuration: The option \"order\" with value array is invalid.");
+            bail!(
+                "[ordered_class_elements] Invalid configuration: The option \"order\" with value array is invalid."
+            );
         }
         self.sort_alpha = r.string("sort_algorithm", "none", &["none", "alpha"])? == "alpha";
         self.case_sensitive = r.bool("case_sensitive", false)?;
 
         // insertion-ordered map with nullable values, like upstream's array
         let mut pos: Vec<(String, Option<i64>)> = vec![];
-        let set = |pos: &mut Vec<(String, Option<i64>)>, k: &str, v: Option<i64>| match pos.iter_mut().find(|(x, _)| x == k) {
+        let set = |pos: &mut Vec<(String, Option<i64>)>, k: &str, v: Option<i64>| match pos
+            .iter_mut()
+            .find(|(x, _)| x == k)
+        {
             Some(e) => e.1 = v,
             None => pos.push((k.to_string(), v)),
         };
-        let isset = |pos: &Vec<(String, Option<i64>)>, k: &str| pos.iter().find(|(x, _)| x == k).and_then(|e| e.1);
+        let isset = |pos: &Vec<(String, Option<i64>)>, k: &str| {
+            pos.iter().find(|(x, _)| x == k).and_then(|e| e.1)
+        };
         for (i, t) in order.iter().enumerate() {
             set(&mut pos, t, Some(i as i64));
         }
@@ -118,7 +209,10 @@ impl Fixer for OrderedClassElementsFixer {
             set(&mut pos, t, v);
         }
         let last = order.len() as i64;
-        self.type_position = pos.into_iter().map(|(k, v)| (k, v.unwrap_or(last) * 10)).collect();
+        self.type_position = pos
+            .into_iter()
+            .map(|(k, v)| (k, v.unwrap_or(last) * 10))
+            .collect();
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
@@ -132,7 +226,9 @@ impl Fixer for OrderedClassElementsFixer {
                 i += 1;
                 continue;
             }
-            i = tokens.get_next_token_of_kind(i, &["{".into()], true).unwrap();
+            i = tokens
+                .get_next_token_of_kind(i, &["{".into()], true)
+                .unwrap();
             let elements = get_elements(tokens, i);
             if elements.is_empty() {
                 i += 1;
@@ -152,7 +248,16 @@ fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
     let mut start_index = start + 1;
     let mut elements = vec![];
     loop {
-        let mut e = Element { start: start_index, end: 0, visibility: "public", abstract_: false, static_: false, readonly: false, type_: "", name: vec![] };
+        let mut e = Element {
+            start: start_index,
+            end: 0,
+            visibility: "public",
+            abstract_: false,
+            static_: false,
+            readonly: false,
+            type_: "",
+            name: vec![],
+        };
         let mut i = start_index;
         loop {
             let token = &tokens[i];
@@ -177,11 +282,21 @@ fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
                 e.readonly = true;
             }
             if token.is_given_kind(&[Kind::T_PROTECTED, Kind::T_PRIVATE]) {
-                e.visibility = if strtolower(&token.content) == b"protected" { "protected" } else { "private" };
+                e.visibility = if strtolower(&token.content) == b"protected" {
+                    "protected"
+                } else {
+                    "private"
+                };
                 i += 1;
                 continue;
             }
-            if !token.is_given_kind(&[Kind::CT_USE_TRAIT, Kind::T_CASE, Kind::T_CONST, Kind::T_VARIABLE, Kind::T_FUNCTION]) {
+            if !token.is_given_kind(&[
+                Kind::CT_USE_TRAIT,
+                Kind::T_CASE,
+                Kind::T_CONST,
+                Kind::T_VARIABLE,
+                Kind::T_FUNCTION,
+            ]) {
                 i += 1;
                 continue;
             }
@@ -193,10 +308,25 @@ fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
             if ty == "property" {
                 e.name = tokens[i].content.clone();
             } else if ty == "constant" {
-                let eq = tokens.get_next_token_of_kind(i, &["=".into()], true).unwrap();
-                e.name = tokens[tokens.get_prev_meaningful_token(eq).unwrap()].content.clone();
-            } else if ["use_trait", "case", "method", "magic", "construct", "destruct"].contains(&ty) {
-                e.name = tokens[tokens.get_next_meaningful_token(i).unwrap()].content.clone();
+                let eq = tokens
+                    .get_next_token_of_kind(i, &["=".into()], true)
+                    .unwrap();
+                e.name = tokens[tokens.get_prev_meaningful_token(eq).unwrap()]
+                    .content
+                    .clone();
+            } else if [
+                "use_trait",
+                "case",
+                "method",
+                "magic",
+                "construct",
+                "destruct",
+            ]
+            .contains(&ty)
+            {
+                e.name = tokens[tokens.get_next_meaningful_token(i).unwrap()]
+                    .content
+                    .clone();
             }
             e.end = find_element_end(tokens, i);
             break;
@@ -228,8 +358,16 @@ fn detect_element_type(tokens: &Tokens, index: usize) -> (&'static str, Option<V
         return ("destruct", None);
     }
     let phpunit: Vec<Proto> = [
-        "setUpBeforeClass", "doSetUpBeforeClass", "tearDownAfterClass", "doTearDownAfterClass", "setUp", "doSetUp", "assertPreConditions",
-        "assertPostConditions", "tearDown", "doTearDown",
+        "setUpBeforeClass",
+        "doSetUpBeforeClass",
+        "tearDownAfterClass",
+        "doTearDownAfterClass",
+        "setUp",
+        "doSetUp",
+        "assertPreConditions",
+        "assertPostConditions",
+        "tearDown",
+        "doTearDown",
     ]
     .iter()
     .map(|n| (Kind::T_STRING, *n).into())
@@ -237,14 +375,34 @@ fn detect_element_type(tokens: &Tokens, index: usize) -> (&'static str, Option<V
     if name.equals_any(&phpunit, false) {
         return ("phpunit", Some(strtolower(&name.content)));
     }
-    (if name.content.starts_with(b"__") { "magic" } else { "method" }, None)
+    (
+        if name.content.starts_with(b"__") {
+            "magic"
+        } else {
+            "method"
+        },
+        None,
+    )
 }
 
 fn find_element_end(tokens: &Tokens, index: usize) -> usize {
-    let mut index = tokens.get_next_token_of_kind(index, &["(".into(), "{".into(), ";".into(), Kind::CT_PROPERTY_HOOK_BRACE_OPEN.into()], true).unwrap();
+    let mut index = tokens
+        .get_next_token_of_kind(
+            index,
+            &[
+                "(".into(),
+                "{".into(),
+                ";".into(),
+                Kind::CT_PROPERTY_HOOK_BRACE_OPEN.into(),
+            ],
+            true,
+        )
+        .unwrap();
     if tokens[index].equals("(", true) {
         index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
-        index = tokens.get_next_token_of_kind(index, &["{".into(), ";".into()], true).unwrap();
+        index = tokens
+            .get_next_token_of_kind(index, &["{".into(), ";".into()], true)
+            .unwrap();
     }
     if tokens[index].equals("{", true) {
         index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
@@ -257,20 +415,36 @@ fn find_element_end(tokens: &Tokens, index: usize) -> usize {
         index += 1;
     }
     index -= 1;
-    if tokens[index].is_whitespace(None) { index - 1 } else { index }
+    if tokens[index].is_whitespace(None) {
+        index - 1
+    } else {
+        index
+    }
 }
 
 impl OrderedClassElementsFixer {
     fn sort_elements(&self, elements: &[Element]) -> Vec<Element> {
-        let mut v: Vec<(i64, &Element)> = elements.iter().map(|e| (self.get_type_position(e), e)).collect();
-        v.sort_by(|a, b| if a.0 == b.0 { self.sort_group_elements(a.1, b.1) } else { a.0.cmp(&b.0) });
+        let mut v: Vec<(i64, &Element)> = elements
+            .iter()
+            .map(|e| (self.get_type_position(e), e))
+            .collect();
+        v.sort_by(|a, b| {
+            if a.0 == b.0 {
+                self.sort_group_elements(a.1, b.1)
+            } else {
+                a.0.cmp(&b.0)
+            }
+        });
         v.into_iter().map(|(_, e)| e.clone()).collect()
     }
 
     fn get_type_position(&self, e: &Element) -> i64 {
         let mut ty = e.type_.to_string();
         if ["method", "magic", "phpunit"].contains(&e.type_) {
-            if let Some(&p) = self.type_position.get(&format!("method:{}", String::from_utf8_lossy(&e.name))) {
+            if let Some(&p) = self
+                .type_position
+                .get(&format!("method:{}", String::from_utf8_lossy(&e.name)))
+            {
                 return p;
             }
         }
@@ -278,7 +452,8 @@ impl OrderedClassElementsFixer {
             if let Some(&p) = self.type_position.get(e.type_) {
                 let mut position = p;
                 if e.type_ == "phpunit" {
-                    position += PHPUNIT.iter().position(|n| n.as_bytes() == e.name).unwrap() as i64 + 1;
+                    position +=
+                        PHPUNIT.iter().position(|n| n.as_bytes() == e.name).unwrap() as i64 + 1;
                 }
                 return position;
             }
@@ -296,12 +471,19 @@ impl OrderedClassElementsFixer {
                 ty += "_readonly";
             }
         }
-        *self.type_position.get(&ty).unwrap_or_else(|| panic!("ordered_class_elements: no position for {ty}"))
+        *self
+            .type_position
+            .get(&ty)
+            .unwrap_or_else(|| panic!("ordered_class_elements: no position for {ty}"))
     }
 
     fn sort_group_elements(&self, a: &Element, b: &Element) -> Ordering {
         if self.sort_alpha {
-            return if self.case_sensitive { a.name.cmp(&b.name) } else { strcasecmp(&a.name, &b.name).cmp(&0) };
+            return if self.case_sensitive {
+                a.name.cmp(&b.name)
+            } else {
+                strcasecmp(&a.name, &b.name).cmp(&0)
+            };
         }
         a.start.cmp(&b.start)
     }

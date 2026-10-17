@@ -1,7 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\Comment\SingleLineCommentSpacingFixer`.
 use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
-use pun_tokens::{php_compat, Kind::*, Token, Tokens};
+use pun_tokens::{Kind::*, Token, Tokens, php_compat};
 use std::path::Path;
 
 struct SingleLineCommentSpacingFixer;
@@ -37,7 +37,12 @@ impl Fixer for SingleLineCommentSpacingFixer {
                     if content_length < 5 || content[2] == b'*' || content.contains(&b'\n') {
                         continue; // cheap check for "/**/", comment that looks like a PHPDoc, or multi line comment
                     }
-                    let c = [php_compat::rtrim(&content[..content_length - 2]), b" ", &content[content_length - 2..]].concat();
+                    let c = [
+                        php_compat::rtrim(&content[..content_length - 2]),
+                        b" ",
+                        &content[content_length - 2..],
+                    ]
+                    .concat();
                     new_content = fix_comment_leading_space(&c, "/*");
                 } else {
                     // double slash comment

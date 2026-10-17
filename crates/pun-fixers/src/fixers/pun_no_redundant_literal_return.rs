@@ -35,14 +35,18 @@ impl Fixer for NoRedundantLiteralReturn {
 
 fn fix_if(tokens: &mut Tokens, i: usize) -> Option<()> {
     let prev = tokens.get_prev_meaningful_token(i)?;
-    if !(tokens[prev].equals_any(&[";".into(), "{".into(), "}".into(), ":".into()], true) || tokens[prev].is_kind(T_OPEN_TAG)) {
+    if !(tokens[prev].equals_any(&[";".into(), "{".into(), "}".into(), ":".into()], true)
+        || tokens[prev].is_kind(T_OPEN_TAG))
+    {
         return None;
     }
     let mut k = i;
     let mut var: Option<Vec<u8>> = None;
     // `if` and every `elseif`: `(<var> === <lit>)` then a body that only returns `<lit>`.
     loop {
-        let open = tokens.get_next_meaningful_token(k).filter(|&o| tokens[o].equals("(", true))?;
+        let open = tokens
+            .get_next_meaningful_token(k)
+            .filter(|&o| tokens[o].equals("(", true))?;
         let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
         let (v, lit) = condition(tokens, open, close)?;
         if var.as_ref().is_some_and(|w| *w != v) {
@@ -59,20 +63,35 @@ fn fix_if(tokens: &mut Tokens, i: usize) -> Option<()> {
         }
     }
     let var = var?;
-    let is_var = |r: &[usize], tokens: &Tokens| r.len() == 1 && tokens[r[0]].is_kind(T_VARIABLE) && tokens[r[0]].get_content() == var.as_slice();
+    let is_var = |r: &[usize], tokens: &Tokens| {
+        r.len() == 1
+            && tokens[r[0]].is_kind(T_VARIABLE)
+            && tokens[r[0]].get_content() == var.as_slice()
+    };
     if tokens[k].is_kind(T_ELSE) {
         let (ret, end) = return_body(tokens, k)?;
         if !is_var(&ret, tokens) || (i..=end).any(|j| tokens[j].is_comment()) {
             return None;
         }
-        tokens.override_range(i, end, vec![Token::new(T_RETURN, "return"), Token::new(T_WHITESPACE, " "), Token::new(T_VARIABLE, var), Token::char(";")]);
+        tokens.override_range(
+            i,
+            end,
+            vec![
+                Token::new(T_RETURN, "return"),
+                Token::new(T_WHITESPACE, " "),
+                Token::new(T_VARIABLE, var),
+                Token::char(";"),
+            ],
+        );
     } else {
         // The next statement must be `return <var>;`.
         if !tokens[k].is_kind(T_RETURN) || (i..k).any(|j| tokens[j].is_comment()) {
             return None;
         }
         let v = tokens.get_next_meaningful_token(k)?;
-        tokens.get_next_meaningful_token(v).filter(|&s| tokens[s].equals(";", true))?;
+        tokens
+            .get_next_meaningful_token(v)
+            .filter(|&s| tokens[s].equals(";", true))?;
         if !is_var(&[v], tokens) {
             return None;
         }
@@ -83,11 +102,21 @@ fn fix_if(tokens: &mut Tokens, i: usize) -> Option<()> {
 
 /// `(<var> === <lit>)` or `(<lit> === <var>)`: the variable name and the normalized literal.
 fn condition(tokens: &Tokens, open: usize, close: usize) -> Option<(Vec<u8>, Vec<Vec<u8>>)> {
-    let inner: Vec<usize> = (open + 1..close).filter(|&k| !tokens[k].is_whitespace(None)).collect();
-    let op = inner.iter().position(|&k| tokens[k].is_kind(T_IS_IDENTICAL))?;
+    let inner: Vec<usize> = (open + 1..close)
+        .filter(|&k| !tokens[k].is_whitespace(None))
+        .collect();
+    let op = inner
+        .iter()
+        .position(|&k| tokens[k].is_kind(T_IS_IDENTICAL))?;
     let (lhs, rhs) = (&inner[..op], &inner[op + 1..]);
     let is_var = |s: &[usize]| s.len() == 1 && tokens[s[0]].is_kind(T_VARIABLE);
-    let (v, lit) = if is_var(lhs) { (lhs, rhs) } else if is_var(rhs) { (rhs, lhs) } else { return None };
+    let (v, lit) = if is_var(lhs) {
+        (lhs, rhs)
+    } else if is_var(rhs) {
+        (rhs, lhs)
+    } else {
+        return None;
+    };
     Some((tokens[v[0]].get_content().to_vec(), literal(tokens, lit)?))
 }
 
@@ -117,7 +146,9 @@ fn return_body(tokens: &Tokens, after: usize) -> Option<(Vec<usize>, usize)> {
         }
     }
     if braced {
-        k = tokens.get_next_meaningful_token(k).filter(|&b| tokens[b].equals("}", true))?;
+        k = tokens
+            .get_next_meaningful_token(k)
+            .filter(|&b| tokens[b].equals("}", true))?;
     }
     (!expr.is_empty()).then_some((expr, k))
 }
@@ -132,14 +163,20 @@ fn literal(tokens: &Tokens, ks: &[usize]) -> Option<Vec<Vec<u8>>> {
         let c = t.get_content();
         let norm = if t.is_kind(T_CONSTANT_ENCAPSED_STRING) {
             let inner = &c[1..c.len() - 1];
-            if (c[0] == b'\'' && !inner.contains(&b'\\')) || (c[0] == b'"' && !inner.iter().any(|&b| b == b'\\' || b == b'$')) {
+            if (c[0] == b'\'' && !inner.contains(&b'\\'))
+                || (c[0] == b'"' && !inner.iter().any(|&b| b == b'\\' || b == b'$'))
+            {
                 [b"s:", inner].concat()
             } else {
                 [b"r:", c].concat()
             }
         } else if t.is_kind(T_LNUMBER) {
             [b"i:", c].concat()
-        } else if t.is_kind(T_STRING) && [&b"null"[..], b"true", b"false"].iter().any(|w| c.eq_ignore_ascii_case(w)) {
+        } else if t.is_kind(T_STRING)
+            && [&b"null"[..], b"true", b"false"]
+                .iter()
+                .any(|w| c.eq_ignore_ascii_case(w))
+        {
             c.to_ascii_lowercase()
         } else if t.is_kind(T_ARRAY) {
             after_array = true;
@@ -198,14 +235,36 @@ mod tests {
             ("$x === array()", "array()"),
             ("$x === [1, 2, 3]", "[1, 2, 3]"),
         ] {
-            assert_eq!(fix(&func(&format!("    if ({cond}) {{\n        return {lit};\n    }}\n    return $x;"))), ret);
+            assert_eq!(
+                fix(&func(&format!(
+                    "    if ({cond}) {{\n        return {lit};\n    }}\n    return $x;"
+                ))),
+                ret
+            );
         }
         // with_else_clause, with_elseif_and_return, with_elseif_and_else, multiple_elseif_clauses
-        assert_eq!(fix(&func("    if ($x === null) {\n        return null;\n    } else {\n        return $x;\n    }")), ret);
-        assert_eq!(fix(&func("    if ($x === null) {\n        return null;\n    } elseif ($x === '') {\n        return '';\n    }\n    return $x;")), ret);
-        assert_eq!(fix(&func("    if ($x === null) {\n        return null;\n    } elseif ($x === '') {\n        return '';\n    } else {\n        return $x;\n    }")), ret);
         assert_eq!(
-            fix(&func("    if ($x === null) {\n        return null;\n    } elseif ($x === '') {\n        return '';\n    } elseif ($x === 0) {\n        return 0;\n    }\n    return $x;")),
+            fix(&func(
+                "    if ($x === null) {\n        return null;\n    } else {\n        return $x;\n    }"
+            )),
+            ret
+        );
+        assert_eq!(
+            fix(&func(
+                "    if ($x === null) {\n        return null;\n    } elseif ($x === '') {\n        return '';\n    }\n    return $x;"
+            )),
+            ret
+        );
+        assert_eq!(
+            fix(&func(
+                "    if ($x === null) {\n        return null;\n    } elseif ($x === '') {\n        return '';\n    } else {\n        return $x;\n    }"
+            )),
+            ret
+        );
+        assert_eq!(
+            fix(&func(
+                "    if ($x === null) {\n        return null;\n    } elseif ($x === '') {\n        return '';\n    } elseif ($x === 0) {\n        return 0;\n    }\n    return $x;"
+            )),
             ret
         );
         for same in [
@@ -225,17 +284,37 @@ mod tests {
     #[test]
     fn edge_cases() {
         let ret = func("    return $x;");
-        assert_eq!(fix(&func("    if ($x === NULL) return null;\n    return $x;")), ret);
-        assert_eq!(fix(&func("    if ($x === ['a' => \"b\",]) {\n        return ['a' => 'b'];\n    }\n    return $x;")), ret);
-        assert_eq!(fix(&func("    if ($x === [1]) {\n        return array(1);\n    }\n    return $x;")), ret);
-        assert_eq!(fix(&func("    if ($x === \"a\\n\") {\n        return \"a\\n\";\n    }\n    return $x;")), ret);
+        assert_eq!(
+            fix(&func("    if ($x === NULL) return null;\n    return $x;")),
+            ret
+        );
+        assert_eq!(
+            fix(&func(
+                "    if ($x === ['a' => \"b\",]) {\n        return ['a' => 'b'];\n    }\n    return $x;"
+            )),
+            ret
+        );
+        assert_eq!(
+            fix(&func(
+                "    if ($x === [1]) {\n        return array(1);\n    }\n    return $x;"
+            )),
+            ret
+        );
+        assert_eq!(
+            fix(&func(
+                "    if ($x === \"a\\n\") {\n        return \"a\\n\";\n    }\n    return $x;"
+            )),
+            ret
+        );
         for same in [
             func("    if ($x === 0.0) {\n        return 0.0;\n    }\n    return $x;"),
             func("    if ($x === -1) {\n        return -1;\n    }\n    return $x;"),
             func("    if ($x === FOO) {\n        return FOO;\n    }\n    return $x;"),
             func("    if ($x === null):\n        return null;\n    endif;\n    return $x;"),
             func("    if ($x === null) {\n        return null; // why\n    }\n    return $x;"),
-            func("    if ($x === null) {\n        return null;\n    } else if ($x === '') {\n        return '';\n    }\n    return $x;"),
+            func(
+                "    if ($x === null) {\n        return null;\n    } else if ($x === '') {\n        return '';\n    }\n    return $x;",
+            ),
             func("    if ($x === null) {\n        return null;\n    }\n    return $x + 1;"),
             // Escaped strings are compared by their source text only, so equal values spelled differently are kept.
             func("    if ($x === 'a\\'b') {\n        return \"a'b\";\n    }\n    return $x;"),

@@ -42,13 +42,17 @@ pub struct ParseLexer<'a> {
 }
 
 fn newlines(s: &[u8]) -> u32 {
-    (0..s.len()).filter(|&i| s[i] == b'\n' || (s[i] == b'\r' && s.get(i + 1) != Some(&b'\n'))).count() as u32
+    (0..s.len())
+        .filter(|&i| s[i] == b'\n' || (s[i] == b'\r' && s.get(i + 1) != Some(&b'\n')))
+        .count() as u32
 }
 
 const MIXED: &str = "Invalid indentation - tabs and spaces cannot be mixed";
 
 fn body_indentation_error(indentation: usize) -> String {
-    format!("Invalid body indentation level (expecting an indentation level of at least {indentation})")
+    format!(
+        "Invalid body indentation level (expecting an indentation level of at least {indentation})"
+    )
 }
 
 /// Indentation characters: (mixed tabs and spaces, spaces only).
@@ -66,14 +70,25 @@ fn escape_error(s: &[u8]) -> Option<(&'static str, u32)> {
         if s[i] == b'\\' && i + 1 < s.len() {
             i += 1;
             if s[i] == b'u' && s.get(i + 1) == Some(&b'{') {
-                let digits = s[i + 2..].iter().take_while(|c| c.is_ascii_hexdigit()).count();
+                let digits = s[i + 2..]
+                    .iter()
+                    .take_while(|c| c.is_ascii_hexdigit())
+                    .count();
                 if digits == 0 || s.get(i + 2 + digits) != Some(&b'}') {
                     return Some(("Invalid UTF-8 codepoint escape sequence", newlines(&s[..i])));
                 }
                 let hex = &s[i + 2..i + 2 + digits];
                 let hex = &hex[hex.iter().position(|&c| c != b'0').unwrap_or(hex.len())..];
-                if hex.len() > 6 || hex.iter().fold(0u32, |v, &c| v * 16 + (c as char).to_digit(16).unwrap()) > 0x10FFFF {
-                    return Some(("Invalid UTF-8 codepoint escape sequence: Codepoint too large", newlines(&s[..i])));
+                if hex.len() > 6
+                    || hex
+                        .iter()
+                        .fold(0u32, |v, &c| v * 16 + (c as char).to_digit(16).unwrap())
+                        > 0x10FFFF
+                {
+                    return Some((
+                        "Invalid UTF-8 codepoint escape sequence: Codepoint too large",
+                        newlines(&s[..i]),
+                    ));
                 }
                 i += 2 + digits;
             }
@@ -84,11 +99,28 @@ fn escape_error(s: &[u8]) -> Option<(&'static str, u32)> {
 }
 
 fn next_newline(s: &[u8], from: usize) -> Option<(usize, usize)> {
-    (from..s.len()).find(|&i| s[i] == b'\r' || s[i] == b'\n').map(|i| (i, if s[i] == b'\r' && s.get(i + 1) == Some(&b'\n') { 2 } else { 1 }))
+    (from..s.len())
+        .find(|&i| s[i] == b'\r' || s[i] == b'\n')
+        .map(|i| {
+            (
+                i,
+                if s[i] == b'\r' && s.get(i + 1) == Some(&b'\n') {
+                    2
+                } else {
+                    1
+                },
+            )
+        })
 }
 
 /// `strip_multiline_string_indentation`'s errors, with the number of newlines before the bad line.
-fn strip_error(s: &[u8], indentation: usize, using_spaces: bool, newline_at_start: bool, newline_at_end: bool) -> Option<(String, u32)> {
+fn strip_error(
+    s: &[u8],
+    indentation: usize,
+    using_spaces: bool,
+    newline_at_start: bool,
+    newline_at_end: bool,
+) -> Option<(String, u32)> {
     let end = s.len();
     let mut str = 0;
     let mut count = 0;
@@ -122,7 +154,9 @@ fn strip_error(s: &[u8], indentation: usize, using_spaces: bool, newline_at_star
 }
 
 fn invalid_octal(text: &[u8]) -> bool {
-    text[0] == b'0' && text.iter().all(|c| c.is_ascii_digit() || *c == b'_') && text.iter().any(|c| matches!(c, b'8' | b'9'))
+    text[0] == b'0'
+        && text.iter().all(|c| c.is_ascii_digit() || *c == b'_')
+        && text.iter().any(|c| matches!(c, b'8' | b'9'))
 }
 
 fn unterminated_comment(text: &[u8]) -> bool {
@@ -155,7 +189,10 @@ impl<'a> ParseLexer<'a> {
     }
 
     fn err<T>(&self, message: impl Into<String>, line: u32) -> Result<T, LexError> {
-        Err(LexError { message: message.into(), line })
+        Err(LexError {
+            message: message.into(),
+            line,
+        })
     }
 
     fn bad_nesting(&self, opening: u8, line: u32, closing: Option<u8>) -> LexError {
@@ -166,7 +203,10 @@ impl<'a> ParseLexer<'a> {
         if let Some(c) = closing {
             m += &format!(" does not match '{}'", c as char);
         }
-        LexError { message: m, line: self.lineno }
+        LexError {
+            message: m,
+            line: self.lineno,
+        }
     }
 
     /// The next token, `Ok(None)` at the end of file. Mirrors `zendlex()` + `lex_scan()`.
@@ -176,7 +216,8 @@ impl<'a> ParseLexer<'a> {
             self.increment_lineno = false;
         }
         loop {
-            let Some((kind, start, end)) = (if self.stopped { None } else { self.lx.next() }) else {
+            let Some((kind, start, end)) = (if self.stopped { None } else { self.lx.next() })
+            else {
                 if let Some(&(c, line)) = self.nesting.last() {
                     return Err(self.bad_nesting(c, line, None));
                 }
@@ -185,25 +226,56 @@ impl<'a> ParseLexer<'a> {
             let state = self.lx.tok_state;
             let text = &self.src[start..end];
             let ch = text.last().copied().unwrap_or(0);
-            let tok = ParseToken { kind, ch, start, end };
+            let tok = ParseToken {
+                kind,
+                ch,
+                start,
+                end,
+            };
             match kind {
                 Some(T_WHITESPACE | T_OPEN_TAG | T_COMMENT | T_DOC_COMMENT) => {
                     if unterminated_comment(text) {
-                        return self.err(format!("Unterminated comment starting line {}", self.lineno), self.lineno);
+                        return self.err(
+                            format!("Unterminated comment starting line {}", self.lineno),
+                            self.lineno,
+                        );
                     }
                     self.lineno += newlines(text);
                     continue;
                 }
                 Some(T_CLOSE_TAG) => {
                     self.increment_lineno = text.len() > 2;
-                    return Ok(Some(ParseToken { kind: None, ch: b';', ..tok }));
+                    return Ok(Some(ParseToken {
+                        kind: None,
+                        ch: b';',
+                        ..tok
+                    }));
                 }
-                Some(T_OPEN_TAG_WITH_ECHO) => return Ok(Some(ParseToken { kind: Some(T_ECHO), ..tok })),
-                Some(T_LNUMBER | T_DNUMBER) if invalid_octal(text) => return self.err("Invalid numeric literal", self.lineno),
-                Some(T_DOUBLE_CAST) if !self.scan_ahead && text[1..].iter().filter(|c| c.is_ascii_alphabetic()).map(u8::to_ascii_lowercase).eq(*b"real") => {
-                    return self.err("The (real) cast has been removed, use (float) instead", self.lineno);
+                Some(T_OPEN_TAG_WITH_ECHO) => {
+                    return Ok(Some(ParseToken {
+                        kind: Some(T_ECHO),
+                        ..tok
+                    }));
                 }
-                Some(T_CONSTANT_ENCAPSED_STRING) if text[0] == b'"' || (text[0] | 0x20 == b'b' && text[1] == b'"') => {
+                Some(T_LNUMBER | T_DNUMBER) if invalid_octal(text) => {
+                    return self.err("Invalid numeric literal", self.lineno);
+                }
+                Some(T_DOUBLE_CAST)
+                    if !self.scan_ahead
+                        && text[1..]
+                            .iter()
+                            .filter(|c| c.is_ascii_alphabetic())
+                            .map(u8::to_ascii_lowercase)
+                            .eq(*b"real") =>
+                {
+                    return self.err(
+                        "The (real) cast has been removed, use (float) instead",
+                        self.lineno,
+                    );
+                }
+                Some(T_CONSTANT_ENCAPSED_STRING)
+                    if text[0] == b'"' || (text[0] | 0x20 == b'b' && text[1] == b'"') =>
+                {
                     let q = (text[0] != b'"') as usize;
                     if let Some((m, at)) = escape_error(&text[q + 1..text.len() - 1]) {
                         return self.err(m, self.lineno + at);
@@ -225,12 +297,18 @@ impl<'a> ParseLexer<'a> {
                     self.docs.pop();
                 }
                 Some(T_ATTRIBUTE) => self.nesting.push((b'[', self.lineno)),
-                Some(T_CURLY_OPEN | T_DOLLAR_OPEN_CURLY_BRACES) => self.nesting.push((b'{', self.lineno)),
+                Some(T_CURLY_OPEN | T_DOLLAR_OPEN_CURLY_BRACES) => {
+                    self.nesting.push((b'{', self.lineno))
+                }
                 None if state == State::Scripting => match ch {
                     b'(' | b'[' | b'{' => self.nesting.push((ch, self.lineno)),
                     b')' | b']' | b'}' => match self.nesting.pop() {
-                        None => return self.err(format!("Unmatched '{}'", ch as char), self.lineno),
-                        Some((o, line)) if (o == b'{') != (ch == b'}') || (o == b'[') != (ch == b']') => {
+                        None => {
+                            return self.err(format!("Unmatched '{}'", ch as char), self.lineno);
+                        }
+                        Some((o, line))
+                            if (o == b'{') != (ch == b'}') || (o == b'[') != (ch == b']') =>
+                        {
                             return Err(self.bad_nesting(o, line, Some(ch)));
                         }
                         Some(_) => {}
@@ -260,7 +338,12 @@ impl<'a> ParseLexer<'a> {
         }
         // Scan ahead (not in parser mode, fresh nesting stack) to the matching T_END_HEREDOC for the
         // closing label's indentation; a scanner exception or the end of file stops the scan.
-        let mut ahead = ParseLexer { lx: self.lx.clone(), lineno: self.lineno, scan_ahead: true, ..ParseLexer::new(self.src) };
+        let mut ahead = ParseLexer {
+            lx: self.lx.clone(),
+            lineno: self.lineno,
+            scan_ahead: true,
+            ..ParseLexer::new(self.src)
+        };
         let (mut level, mut first) = (1, None);
         while level > 0 {
             let Ok(Some(t)) = ahead.next_token() else {
@@ -274,7 +357,11 @@ impl<'a> ParseLexer<'a> {
             }
         }
         let (indentation, spaces) = ahead.ahead_indentation;
-        if matches!(first, Some(Some(T_VARIABLE | T_DOLLAR_OPEN_CURLY_BRACES | T_CURLY_OPEN))) && indentation > 0 {
+        if matches!(
+            first,
+            Some(Some(T_VARIABLE | T_DOLLAR_OPEN_CURLY_BRACES | T_CURLY_OPEN))
+        ) && indentation > 0
+        {
             return self.err(body_indentation_error(indentation), self.lineno);
         }
         self.docs.push((indentation, spaces));
@@ -302,7 +389,13 @@ impl<'a> ParseLexer<'a> {
             self.increment_lineno = true;
         }
         // The heredoc rule returns early (no stripping) at the end of file after a newline and indentation.
-        let eof_after_newline = !closed && tok.end == self.src.len() && text.iter().rev().find(|&&c| c != b' ' && c != b'\t').is_some_and(|&c| c == b'\n' || c == b'\r');
+        let eof_after_newline = !closed
+            && tok.end == self.src.len()
+            && text
+                .iter()
+                .rev()
+                .find(|&&c| c != b' ' && c != b'\t')
+                .is_some_and(|&c| c == b'\n' || c == b'\r');
         if !self.scan_ahead && (closed || (state == State::Heredoc && !eof_after_newline)) {
             let (indentation, spaces) = *self.docs.last().unwrap();
             let at_start = matches!(self.src[tok.start - 1], b'\n' | b'\r');

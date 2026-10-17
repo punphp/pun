@@ -15,7 +15,9 @@ pub type LineRef = Rc<RefCell<Line>>;
 
 impl Line {
     pub fn new(content: impl Into<Vec<u8>>) -> Self {
-        Line { content: content.into() }
+        Line {
+            content: content.into(),
+        }
     }
 
     pub fn shared(content: impl Into<Vec<u8>>) -> LineRef {
@@ -28,7 +30,14 @@ impl Line {
 
     pub fn contains_useful_content(&self) -> bool {
         preg::is_match(r"/\*\s*\S+/", &self.content)
-            && !trim(&self.content.iter().map(|&c| if c == b'/' || c == b'*' { b' ' } else { c }).collect::<Vec<_>>()).is_empty()
+            && !trim(
+                &self
+                    .content
+                    .iter()
+                    .map(|&c| if c == b'/' || c == b'*' { b' ' } else { c })
+                    .collect::<Vec<_>>(),
+            )
+            .is_empty()
     }
 
     pub fn contains_a_tag(&self) -> bool {
@@ -37,7 +46,11 @@ impl Line {
         }
         // ASCII `\s`: space, TAB, LF, VT, FF, CR.
         self.content.iter().enumerate().any(|(i, &b)| {
-            b == b'*' && self.content[i + 1..].iter().find(|c| !matches!(c, b' ' | b'\t' | b'\n' | 0x0b | 0x0c | b'\r')) == Some(&b'@')
+            b == b'*'
+                && self.content[i + 1..]
+                    .iter()
+                    .find(|c| !matches!(c, b' ' | b'\t' | b'\n' | 0x0b | 0x0c | b'\r'))
+                    == Some(&b'@')
         })
     }
 
@@ -58,7 +71,9 @@ impl Line {
     }
 
     pub fn add_blank(&mut self) {
-        let Some(m) = preg::captures(r"/^(\h*\*)[^\r\n]*(\r?\n)$/", &self.content) else { return };
+        let Some(m) = preg::captures(r"/^(\h*\*)[^\r\n]*(\r?\n)$/", &self.content) else {
+            return;
+        };
         let add = [m.str(1), m.str(2)].concat();
         self.content.extend(add);
     }

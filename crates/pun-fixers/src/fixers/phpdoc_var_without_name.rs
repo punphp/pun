@@ -1,13 +1,23 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocVarWithoutNameFixer`.
-use crate::analyzers::docblock::{DocBlock, LineRef, replace_all, type_expression::REGEX_IDENTIFIER};
+use crate::analyzers::docblock::{
+    DocBlock, LineRef, replace_all, type_expression::REGEX_IDENTIFIER,
+};
 use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
 use pun_tokens::{Kind, Token, Tokens};
 use std::collections::BTreeMap;
 use std::path::Path;
 
-const PROPERTY_MODIFIER_KINDS: &[Kind] =
-    &[Kind::T_PRIVATE, Kind::T_PROTECTED, Kind::T_PUBLIC, Kind::T_VAR, Kind::T_READONLY, Kind::T_PRIVATE_SET, Kind::T_PROTECTED_SET, Kind::T_PUBLIC_SET];
+const PROPERTY_MODIFIER_KINDS: &[Kind] = &[
+    Kind::T_PRIVATE,
+    Kind::T_PROTECTED,
+    Kind::T_PUBLIC,
+    Kind::T_VAR,
+    Kind::T_READONLY,
+    Kind::T_PRIVATE_SET,
+    Kind::T_PROTECTED_SET,
+    Kind::T_PUBLIC_SET,
+];
 
 struct PhpdocVarWithoutNameFixer;
 
@@ -23,14 +33,17 @@ impl Fixer for PhpdocVarWithoutNameFixer {
         0
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_token_kind_found(Kind::T_DOC_COMMENT) && tokens.is_any_token_kinds_found(&[Kind::T_CLASS, Kind::T_TRAIT])
+        tokens.is_token_kind_found(Kind::T_DOC_COMMENT)
+            && tokens.is_any_token_kinds_found(&[Kind::T_CLASS, Kind::T_TRAIT])
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
             if !tokens[index].is_kind(Kind::T_DOC_COMMENT) {
                 continue;
             }
-            let Some(mut next_index) = tokens.get_next_meaningful_token(index) else { continue };
+            let Some(mut next_index) = tokens.get_next_meaningful_token(index) else {
+                continue;
+            };
             if tokens[next_index].is_kind(Kind::T_STATIC) {
                 next_index = tokens.get_next_meaningful_token(next_index).unwrap();
             }
@@ -52,7 +65,10 @@ impl Fixer for PhpdocVarWithoutNameFixer {
 fn fix_line(line: &LineRef) {
     let content = line.borrow().get_content().to_vec();
     let matches: Vec<Vec<u8>> =
-        Preg::match_all(format!(r"/ \${REGEX_IDENTIFIER}(?<!\$this)/"), &content, 0).iter().map(|m| m.str(0).to_vec()).collect();
+        Preg::match_all(format!(r"/ \${REGEX_IDENTIFIER}(?<!\$this)/"), &content, 0)
+            .iter()
+            .map(|m| m.str(0).to_vec())
+            .collect();
     for m in matches {
         let new = replace_all(line.borrow().get_content(), &m, b"");
         line.borrow_mut().set_content(new);

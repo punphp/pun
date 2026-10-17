@@ -4,12 +4,22 @@ use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use anyhow::Result;
 use pun_format::Fixer;
-use pun_tokens::{token::CLASSY_KINDS, Kind, Kind::*, Tokens, TokensAnalyzer};
+use pun_tokens::{Kind, Kind::*, Tokens, TokensAnalyzer, token::CLASSY_KINDS};
 use serde_json::Value;
 use std::path::Path;
 
-const PROPERTY_MODIFIERS: &[Kind] =
-    &[T_PRIVATE, T_PROTECTED, T_PUBLIC, T_STATIC, T_VAR, T_FINAL, T_READONLY, T_PUBLIC_SET, T_PROTECTED_SET, T_PRIVATE_SET];
+const PROPERTY_MODIFIERS: &[Kind] = &[
+    T_PRIVATE,
+    T_PROTECTED,
+    T_PUBLIC,
+    T_STATIC,
+    T_VAR,
+    T_FINAL,
+    T_READONLY,
+    T_PUBLIC_SET,
+    T_PROTECTED_SET,
+    T_PRIVATE_SET,
+];
 
 struct TypeDeclarationSpacesFixer {
     elements: Vec<String>,
@@ -17,7 +27,9 @@ struct TypeDeclarationSpacesFixer {
 
 pub fn fixer() -> Box<dyn Fixer> {
     // Future::getV4OrV3(['function', 'property', 'constant'], ['function', 'property'])
-    Box::new(TypeDeclarationSpacesFixer { elements: vec!["function".into(), "property".into()] })
+    Box::new(TypeDeclarationSpacesFixer {
+        elements: vec!["function".into(), "property".into()],
+    })
 }
 
 impl Fixer for TypeDeclarationSpacesFixer {
@@ -28,11 +40,16 @@ impl Fixer for TypeDeclarationSpacesFixer {
         0
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_any_token_kinds_found(CLASSY_KINDS) || tokens.is_any_token_kinds_found(&[T_FN, T_FUNCTION])
+        tokens.is_any_token_kinds_found(CLASSY_KINDS)
+            || tokens.is_any_token_kinds_found(&[T_FN, T_FUNCTION])
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let o = resolve(self.name(), options, &["elements"])?;
-        self.elements = o.strings("elements", &["function", "property"], &["function", "property", "constant"])?;
+        self.elements = o.strings(
+            "elements",
+            &["function", "property"],
+            &["function", "property", "constant"],
+        )?;
         Ok(())
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
@@ -44,7 +61,11 @@ impl Fixer for TypeDeclarationSpacesFixer {
                 continue;
             }
             if ty == "method" && has("function") {
-                ensure_single_space_at_function_argument_typehint(&functions_analyzer, tokens, index);
+                ensure_single_space_at_function_argument_typehint(
+                    &functions_analyzer,
+                    tokens,
+                    index,
+                );
                 continue;
             }
             if ty == "const" && has("constant") {
@@ -71,9 +92,19 @@ fn get_elements(tokens: &Tokens) -> Vec<(usize, &'static str)> {
     elements
 }
 
-fn ensure_single_space_at_function_argument_typehint(functions_analyzer: &FunctionsAnalyzer, tokens: &mut Tokens, index: usize) {
-    for (_, argument_info) in functions_analyzer.get_function_arguments(tokens, index).into_iter().rev() {
-        let Some(argument_type) = argument_info.type_analysis else { continue };
+fn ensure_single_space_at_function_argument_typehint(
+    functions_analyzer: &FunctionsAnalyzer,
+    tokens: &mut Tokens,
+    index: usize,
+) {
+    for (_, argument_info) in functions_analyzer
+        .get_function_arguments(tokens, index)
+        .into_iter()
+        .rev()
+    {
+        let Some(argument_type) = argument_info.type_analysis else {
+            continue;
+        };
         tokens.ensure_whitespace_at_index(argument_type.get_end_index() + 1, 0, b" ");
     }
 }
@@ -86,23 +117,33 @@ fn ensure_single_space_at_property_typehint(tokens: &mut Tokens, mut index: usiz
             break;
         }
     }
-    let Some(property_type) = collect_type_analysis(tokens, index, property_index) else { return };
+    let Some(property_type) = collect_type_analysis(tokens, index, property_index) else {
+        return;
+    };
     tokens.ensure_whitespace_at_index(property_type.get_end_index() + 1, 0, b" ");
 }
 
 fn ensure_single_space_at_constant_typehint(tokens: &mut Tokens, index: usize) {
     let const_index = index;
-    let Some(equals_index) = tokens.get_next_token_of_kind(const_index, &["=".into()], true) else { return };
+    let Some(equals_index) = tokens.get_next_token_of_kind(const_index, &["=".into()], true) else {
+        return;
+    };
     // upstream returns unless this is T_STRING; the tokenizer turns keyword-named constants into T_STRING too
     let name_index = tokens.get_prev_meaningful_token(equals_index).unwrap();
-    let Some(type_end_index) = tokens.get_prev_meaningful_token(name_index) else { return };
+    let Some(type_end_index) = tokens.get_prev_meaningful_token(name_index) else {
+        return;
+    };
     if tokens[type_end_index].is_kind(T_CONST) {
         return;
     }
     tokens.ensure_whitespace_at_index(type_end_index + 1, 0, b" ");
 }
 
-fn collect_type_analysis(tokens: &Tokens, start_index: usize, end_index: usize) -> Option<TypeAnalysis> {
+fn collect_type_analysis(
+    tokens: &Tokens,
+    start_index: usize,
+    end_index: usize,
+) -> Option<TypeAnalysis> {
     let mut ty = Vec::new();
     let type_start_index = tokens.get_next_meaningful_token(start_index).unwrap();
     let mut type_end_index = type_start_index;

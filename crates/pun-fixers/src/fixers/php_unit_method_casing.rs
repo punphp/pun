@@ -1,5 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\PhpUnit\PhpUnitMethodCasingFixer`.
-use crate::analyzers::abstract_php_unit_fixer::{apply_fix, get_doc_block_index, is_candidate, is_test_attribute_present};
+use crate::analyzers::abstract_php_unit_fixer::{
+    apply_fix, get_doc_block_index, is_candidate, is_test_attribute_present,
+};
 use crate::analyzers::docblock::DocBlock;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
@@ -28,14 +30,17 @@ impl Fixer for PhpUnitMethodCasingFixer {
     }
     fn configure(&mut self, options: &Value) -> anyhow::Result<()> {
         let c = resolve(self.name(), options, &["case"])?;
-        self.camel_case = c.string("case", "camel_case", &["camel_case", "snake_case"])? == "camel_case";
+        self.camel_case =
+            c.string("case", "camel_case", &["camel_case", "snake_case"])? == "camel_case";
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         is_candidate(tokens)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        apply_fix(tokens, |tokens, start, end| self.apply_php_unit_class_fix(tokens, start, end));
+        apply_fix(tokens, |tokens, start, end| {
+            self.apply_php_unit_class_fix(tokens, start, end)
+        });
     }
 }
 
@@ -51,7 +56,8 @@ impl PhpUnitMethodCasingFixer {
                 continue;
             }
             let function_name_index = tokens.get_next_meaningful_token(index).unwrap();
-            existing_function_names_lowercase.insert(tokens[function_name_index].content.to_ascii_lowercase());
+            existing_function_names_lowercase
+                .insert(tokens[function_name_index].content.to_ascii_lowercase());
         }
         for index in (start_index + 1..end_index).rev() {
             if !self.is_test_method(tokens, index) {
@@ -86,7 +92,11 @@ impl PhpUnitMethodCasingFixer {
             let mut out = Vec::with_capacity(function_name_part.len());
             let mut upper_next = true;
             for &c in function_name_part {
-                out.push(if upper_next { c.to_ascii_uppercase() } else { c });
+                out.push(if upper_next {
+                    c.to_ascii_uppercase()
+                } else {
+                    c
+                });
                 upper_next = c == b'_';
             }
             out.retain(|&c| c != b'_');
@@ -95,7 +105,8 @@ impl PhpUnitMethodCasingFixer {
             }
             out
         } else {
-            Utils::camel_case_to_underscore(&String::from_utf8_lossy(function_name_part)).into_bytes()
+            Utils::camel_case_to_underscore(&String::from_utf8_lossy(function_name_part))
+                .into_bytes()
         };
         let mut parts: Vec<Vec<u8>> = parts.into_iter().map(<[u8]>::to_vec).collect();
         parts.push(new_part);
@@ -117,12 +128,19 @@ impl PhpUnitMethodCasingFixer {
         }
         let doc_block_index = get_doc_block_index(tokens, index);
         tokens[doc_block_index].is_kind(T_DOC_COMMENT)
-            && tokens[doc_block_index].content.windows(5).any(|w| w == b"@test")
+            && tokens[doc_block_index]
+                .content
+                .windows(5)
+                .any(|w| w == b"@test")
     }
 
     fn update_doc_block(&self, tokens: &mut Tokens, doc_block_index: usize) {
         let doc = DocBlock::new(&tokens[doc_block_index].content);
-        let mut lines: Vec<Vec<u8>> = doc.get_lines().iter().map(|l| l.borrow().get_content().to_vec()).collect();
+        let mut lines: Vec<Vec<u8>> = doc
+            .get_lines()
+            .iter()
+            .map(|l| l.borrow().get_content().to_vec())
+            .collect();
         let mut doc_block_needs_update = false;
         for line in lines.iter_mut() {
             if !line.windows(8).any(|w| w == b"@depends") {

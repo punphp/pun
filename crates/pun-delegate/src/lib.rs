@@ -67,7 +67,11 @@ impl Worker {
         let mut line = String::new();
         self.stdout.read_line(&mut line)?;
         let mut parts = line.split_whitespace();
-        let (Some(kind), Some(head), Some(len)) = (parts.next(), parts.next(), parts.next().and_then(|n| n.parse().ok())) else {
+        let (Some(kind), Some(head), Some(len)) = (
+            parts.next(),
+            parts.next(),
+            parts.next().and_then(|n| n.parse().ok()),
+        ) else {
             bail!("the PHP worker exited unexpectedly (see its output above)");
         };
         let mut body = vec![0; len];
@@ -104,11 +108,21 @@ impl Delegate {
             Source::Rules(r) => ("rules", r.to_string()),
             Source::Config(p) => ("config", p.to_string_lossy().into_owned()),
         };
-        let d = Delegate { root: root.to_path_buf(), runtime, mode, arg, fixers: vec![], idle: Mutex::default() };
+        let d = Delegate {
+            root: root.to_path_buf(),
+            runtime,
+            mode,
+            arg,
+            fixers: vec![],
+            idle: Mutex::default(),
+        };
         let (w, list) = d.spawn()?;
         let list: Vec<(String, i32)> = serde_json::from_slice(&list)?;
         // Leaked once per run: fixer names are reported as &'static str like native ones.
-        let fixers = list.into_iter().map(|(n, p)| (&*Box::leak(n.into_boxed_str()), p)).collect();
+        let fixers = list
+            .into_iter()
+            .map(|(n, p)| (&*Box::leak(n.into_boxed_str()), p))
+            .collect();
         d.idle.lock().unwrap().push(w);
         Ok(Delegate { fixers, ..d })
     }
@@ -123,8 +137,15 @@ impl Delegate {
             .stdout(Stdio::piped())
             .spawn()
             .context("delegate mode needs `php` on PATH")?;
-        let (stdin, stdout) = (child.stdin.take(), BufReader::new(child.stdout.take().unwrap()));
-        let mut w = Worker { child, stdin, stdout };
+        let (stdin, stdout) = (
+            child.stdin.take(),
+            BufReader::new(child.stdout.take().unwrap()),
+        );
+        let mut w = Worker {
+            child,
+            stdin,
+            stdout,
+        };
         let (kind, _, list) = w.reply()?;
         if kind == "E" {
             bail!("{}", String::from_utf8_lossy(&list));
@@ -160,21 +181,38 @@ impl Delegate {
         Ok(match kind.as_str() {
             "S" => Outcome::Unchanged,
             "E" => Outcome::Failed(String::from_utf8_lossy(&body).into_owned()),
-            _ => Outcome::Fixed(body, applied.split(',').map(|i| self.fixers[i.parse::<usize>().unwrap()].0).collect()),
+            _ => Outcome::Fixed(
+                body,
+                applied
+                    .split(',')
+                    .map(|i| self.fixers[i.parse::<usize>().unwrap()].0)
+                    .collect(),
+            ),
         })
     }
 
     /// The config's Finder, as PHP-CS-Fixer resolves it (`.php-cs-fixer.php` only).
     pub fn files(&self) -> Result<Vec<PathBuf>> {
         let (_, _, list) = self.call(&[b"L\n"])?;
-        Ok(String::from_utf8_lossy(&list).lines().map(PathBuf::from).collect())
+        Ok(String::from_utf8_lossy(&list)
+            .lines()
+            .map(PathBuf::from)
+            .collect())
     }
 
     /// What delegated results depend on besides Pun's own signature: the runtime, the config file and the installed
     /// packages. ponytail: like PHP-CS-Fixer's own cache, edits to project-local custom fixer classes aren't seen.
     pub fn signature(&self) -> Value {
-        let stamp = |p: &Path| std::fs::metadata(p).ok().map(|m| format!("{} {:?}", m.len(), m.modified().ok()));
-        let config = if self.mode == "config" { std::fs::read(&self.arg).ok() } else { None };
+        let stamp = |p: &Path| {
+            std::fs::metadata(p)
+                .ok()
+                .map(|m| format!("{} {:?}", m.len(), m.modified().ok()))
+        };
+        let config = if self.mode == "config" {
+            std::fs::read(&self.arg).ok()
+        } else {
+            None
+        };
         json!({
             "runtime": [self.runtime, stamp(&self.runtime)],
             "installed": stamp(&self.root.join("vendor/composer/installed.json")),

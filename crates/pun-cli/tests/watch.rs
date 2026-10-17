@@ -36,8 +36,19 @@ fn pint(before: &[(&str, &str)], files: &[(&str, &str)], explicit: bool) -> (Str
     write(&dir, files);
     let mut args = vec![oracle().unwrap().to_str().unwrap().to_string()];
     args.extend(files.iter().filter(|_| explicit).map(|f| f.0.to_string()));
-    let out = Command::new("php").args(&args).current_dir(&dir).env_clear().env("PATH", std::env::var("PATH").unwrap()).env("HOME", &dir).env("COLUMNS", "80").output().unwrap();
-    let after = files.iter().map(|f| std::fs::read_to_string(dir.join(f.0)).unwrap()).collect();
+    let out = Command::new("php")
+        .args(&args)
+        .current_dir(&dir)
+        .env_clear()
+        .env("PATH", std::env::var("PATH").unwrap())
+        .env("HOME", &dir)
+        .env("COLUMNS", "80")
+        .output()
+        .unwrap();
+    let after = files
+        .iter()
+        .map(|f| std::fs::read_to_string(dir.join(f.0)).unwrap())
+        .collect();
     (String::from_utf8(out.stdout).unwrap(), after)
 }
 
@@ -53,7 +64,12 @@ impl Drop for Reap {
 
 fn watcher(dir: &Path, home: &Path) -> Command {
     let mut c = Command::new(env!("CARGO_BIN_EXE_pun"));
-    c.args(["format", "--watch"]).current_dir(dir).env_clear().env("PATH", std::env::var("PATH").unwrap()).env("HOME", home).env("COLUMNS", "80");
+    c.args(["format", "--watch"])
+        .current_dir(dir)
+        .env_clear()
+        .env("PATH", std::env::var("PATH").unwrap())
+        .env("HOME", home)
+        .env("COLUMNS", "80");
     if let Ok(v) = std::env::var("LLVM_PROFILE_FILE") {
         c.env("LLVM_PROFILE_FILE", v);
     }
@@ -63,7 +79,11 @@ fn watcher(dir: &Path, home: &Path) -> Command {
 fn wait_for(what: &str, buf: &Mutex<String>, cond: impl Fn(&str) -> bool) {
     let start = Instant::now();
     while !cond(&buf.lock().unwrap()) {
-        assert!(start.elapsed() < Duration::from_secs(60), "timed out waiting for {what}; got {:?}", buf.lock().unwrap());
+        assert!(
+            start.elapsed() < Duration::from_secs(60),
+            "timed out waiting for {what}; got {:?}",
+            buf.lock().unwrap()
+        );
         std::thread::sleep(Duration::from_millis(20));
     }
 }
@@ -74,11 +94,22 @@ fn watch_reformats_like_pint() {
         return;
     }
     const CFG: &str = r#"{"preset":"laravel","notName":["Skip.php"]}"#;
-    let start = [("pint.json", CFG), ("app/A.php", "<?php\n$a = array(1,2);\n"), ("app/Clean.php", "<?php\n\n$c = 1;\n")];
+    let start = [
+        ("pint.json", CFG),
+        ("app/A.php", "<?php\n$a = array(1,2);\n"),
+        ("app/Clean.php", "<?php\n\n$c = 1;\n"),
+    ];
     let dir = fresh("live");
     write(&dir, &start);
     let home = fresh("home");
-    let mut child = Reap(watcher(&dir, &home).stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped()).spawn().unwrap());
+    let mut child = Reap(
+        watcher(&dir, &home)
+            .stdin(Stdio::null())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap(),
+    );
     let child_out = child.0.stdout.take().unwrap();
     let child_err = child.0.stderr.take().unwrap();
     let collect = |mut r: Box<dyn Read + Send>| {
@@ -87,7 +118,9 @@ fn watch_reformats_like_pint() {
         std::thread::spawn(move || {
             let mut chunk = [0; 4096];
             while let Ok(n @ 1..) = r.read(&mut chunk) {
-                b.lock().unwrap().push_str(&String::from_utf8_lossy(&chunk[..n]));
+                b.lock()
+                    .unwrap()
+                    .push_str(&String::from_utf8_lossy(&chunk[..n]));
             }
         });
         buf
@@ -102,14 +135,26 @@ fn watch_reformats_like_pint() {
     std::thread::sleep(Duration::from_millis(500));
 
     // A new file and an edited one are re-run together; excluded files (notName, vendor) are not touched.
-    let fixed = [("pint.json", CFG), ("app/A.php", "<?php\n\n$a = [1, 2];\n"), ("app/Clean.php", "<?php\n\n$c = 1;\n")];
-    let edits = [("app/A.php", "<?php\n\n$a = [1, 2];\n$b = array( 3 );\n"), ("app/B.php", "<?php\nif($x){echo 1;}\n")];
-    let excluded = [("app/Skip.php", "<?php\n$s = array(1);\n"), ("vendor/V.php", "<?php\n$v = array(1);\n")];
+    let fixed = [
+        ("pint.json", CFG),
+        ("app/A.php", "<?php\n\n$a = [1, 2];\n"),
+        ("app/Clean.php", "<?php\n\n$c = 1;\n"),
+    ];
+    let edits = [
+        ("app/A.php", "<?php\n\n$a = [1, 2];\n$b = array( 3 );\n"),
+        ("app/B.php", "<?php\nif($x){echo 1;}\n"),
+    ];
+    let excluded = [
+        ("app/Skip.php", "<?php\n$s = array(1);\n"),
+        ("vendor/V.php", "<?php\n$v = array(1);\n"),
+    ];
     write(&dir, &excluded);
     write(&dir, &edits);
     let (second, after) = pint(&fixed, &edits, true);
     assert!(second.contains("2 files"), "{second}");
-    wait_for("the re-run", &out, |o| o.len() >= first.len() + second.len());
+    wait_for("the re-run", &out, |o| {
+        o.len() >= first.len() + second.len()
+    });
     assert_eq!(out.lock().unwrap()[first.len()..], second);
     for ((f, _), want) in edits.iter().zip(&after) {
         assert_eq!(std::fs::read_to_string(dir.join(f)).unwrap(), *want, "{f}");
@@ -123,10 +168,21 @@ fn watch_reformats_like_pint() {
 
     // A broken pint.json, then an unreadable file: reported on stderr, and the watch goes on.
     write(&dir, &[("pint.json", "{bad")]);
-    wait_for("the config error", &err, |e| e.contains("is not valid JSON."));
+    wait_for("the config error", &err, |e| {
+        e.contains("is not valid JSON.")
+    });
     write(&dir, &[("pint.json", CFG), ("app/U.php", "<?php\n")]);
-    std::fs::set_permissions(dir.join("app/U.php"), std::os::unix::fs::PermissionsExt::from_mode(0o000)).unwrap();
-    wait_for("the read error", &err, |e| e.contains(&format!("Failed to read content from \"{}/app/U.php\".", dir.display())));
+    std::fs::set_permissions(
+        dir.join("app/U.php"),
+        std::os::unix::fs::PermissionsExt::from_mode(0o000),
+    )
+    .unwrap();
+    wait_for("the read error", &err, |e| {
+        e.contains(&format!(
+            "Failed to read content from \"{}/app/U.php\".",
+            dir.display()
+        ))
+    });
     assert_eq!(out.lock().unwrap().len(), first.len() + second.len());
 
     // Removing the project ends the watch.
@@ -142,15 +198,28 @@ fn watch_ends_with_its_parent() {
     let home = fresh("orphan-home");
     let w = watcher(&dir, &home);
     let program = w.get_program().to_str().unwrap().to_string();
-    let args: Vec<String> = w.get_args().map(|a| format!("'{}'", a.to_str().unwrap())).collect();
+    let args: Vec<String> = w
+        .get_args()
+        .map(|a| format!("'{}'", a.to_str().unwrap()))
+        .collect();
     let mut sh = Command::new("sh");
     // The shell exits once the first run has printed, so the watcher has seen its parent.
     let log = home.join("out");
-    let script = format!("'{program}' {} >'{}' 2>&1 </dev/null & echo $!; while [ ! -s '{}' ]; do sleep 0.05; done", args.join(" "), log.display(), log.display());
+    let script = format!(
+        "'{program}' {} >'{}' 2>&1 </dev/null & echo $!; while [ ! -s '{}' ]; do sleep 0.05; done",
+        args.join(" "),
+        log.display(),
+        log.display()
+    );
     sh.args(["-c", &script]).current_dir(&dir);
-    sh.env_clear().envs(w.get_envs().filter_map(|(k, v)| v.map(|v| (k, v))));
-    let pid = String::from_utf8(sh.output().unwrap().stdout).unwrap().trim().to_string();
-    let alive = || std::fs::read_to_string(format!("/proc/{pid}/stat")).is_ok_and(|s| !s.contains(") Z "));
+    sh.env_clear()
+        .envs(w.get_envs().filter_map(|(k, v)| v.map(|v| (k, v))));
+    let pid = String::from_utf8(sh.output().unwrap().stdout)
+        .unwrap()
+        .trim()
+        .to_string();
+    let alive =
+        || std::fs::read_to_string(format!("/proc/{pid}/stat")).is_ok_and(|s| !s.contains(") Z "));
     let start = Instant::now();
     while alive() {
         if start.elapsed() > Duration::from_secs(20) {

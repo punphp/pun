@@ -26,13 +26,23 @@ impl NamespacesAnalyzer {
                 index += 1;
                 continue;
             }
-            let declaration_end_index = tokens.get_next_token_of_kind(index, &[";".into(), "{".into()], true).unwrap();
-            let namespace = trim(&tokens.generate_partial_code(index + 1, declaration_end_index - 1)).to_vec();
-            let short_name = namespace.rsplit(|&c| c == b'\\').next().unwrap_or(&[]).to_vec();
+            let declaration_end_index = tokens
+                .get_next_token_of_kind(index, &[";".into(), "{".into()], true)
+                .unwrap();
+            let namespace =
+                trim(&tokens.generate_partial_code(index + 1, declaration_end_index - 1)).to_vec();
+            let short_name = namespace
+                .rsplit(|&c| c == b'\\')
+                .next()
+                .unwrap_or(&[])
+                .to_vec();
             let scope_end_index = if tokens[declaration_end_index].equals("{", true) {
                 tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, declaration_end_index)
             } else {
-                tokens.get_next_token_of_kind(declaration_end_index, &[T_NAMESPACE.into()], true).unwrap_or(count) - 1
+                tokens
+                    .get_next_token_of_kind(declaration_end_index, &[T_NAMESPACE.into()], true)
+                    .unwrap_or(count)
+                    - 1
             };
             namespaces.push(NamespaceAnalysis {
                 full_name: namespace,
@@ -46,7 +56,11 @@ impl NamespacesAnalyzer {
             index = scope_end_index + 1;
         }
         if namespaces.is_empty() && tokens.is_token_kind_found(T_OPEN_TAG) {
-            let open_tag_index = if tokens[0].is_kind(T_INLINE_HTML) { 1 } else { 0 };
+            let open_tag_index = if tokens[0].is_kind(T_INLINE_HTML) {
+                1
+            } else {
+                0
+            };
             namespaces.push(NamespaceAnalysis {
                 full_name: Vec::new(),
                 short_name: Vec::new(),

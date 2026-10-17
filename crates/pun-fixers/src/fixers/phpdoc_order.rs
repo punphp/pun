@@ -12,7 +12,9 @@ struct PhpdocOrderFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = PhpdocOrderFixer { configuration_order: vec![] };
+    let mut f = PhpdocOrderFixer {
+        configuration_order: vec![],
+    };
     f.configure(&Value::Null).unwrap();
     Box::new(f)
 }
@@ -28,7 +30,9 @@ impl Fixer for PhpdocOrderFixer {
         let r = resolve(self.name(), options, &["order"])?;
         let order = r.strings("order", &["param", "throws", "return"], &[])?;
         if order.len() < 2 {
-            bail!("[phpdoc_order] Invalid configuration: The option \"order\" value is invalid. Minimum two tags are required.");
+            bail!(
+                "[phpdoc_order] Invalid configuration: The option \"order\" value is invalid. Minimum two tags are required."
+            );
         }
         let mut dups: Vec<&String> = vec![];
         for (i, t) in order.iter().enumerate() {
@@ -70,12 +74,20 @@ impl Fixer for PhpdocOrderFixer {
                 continue;
             }
             let mut content = tokens[index].content.clone();
-            let mut successors: Vec<&str> = self.configuration_order.iter().map(String::as_str).collect();
+            let mut successors: Vec<&str> = self
+                .configuration_order
+                .iter()
+                .map(String::as_str)
+                .collect();
             while successors.len() >= 3 {
                 let predecessor = successors.remove(0);
                 content = move_annotations_before(predecessor, &successors, &content);
             }
-            let mut predecessors: Vec<&str> = self.configuration_order.iter().map(String::as_str).collect();
+            let mut predecessors: Vec<&str> = self
+                .configuration_order
+                .iter()
+                .map(String::as_str)
+                .collect();
             let last = predecessors.pop().unwrap();
             content = move_annotations_after(last, &predecessors, &content);
             tokens.set(index, Token::new(Kind::T_DOC_COMMENT, content));

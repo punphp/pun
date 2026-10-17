@@ -31,10 +31,20 @@ impl Fixer for FunctionDeclarationFixer {
         31
     }
     fn configure(&mut self, options: &Value) -> anyhow::Result<()> {
-        let c = resolve(self.name(), options, &["closure_function_spacing", "closure_fn_spacing", "trailing_comma_single_line"])?;
-        self.closure_function_spacing_none = c.string("closure_function_spacing", "one", SUPPORTED_SPACINGS)? == "none";
+        let c = resolve(
+            self.name(),
+            options,
+            &[
+                "closure_function_spacing",
+                "closure_fn_spacing",
+                "trailing_comma_single_line",
+            ],
+        )?;
+        self.closure_function_spacing_none =
+            c.string("closure_function_spacing", "one", SUPPORTED_SPACINGS)? == "none";
         // Future::getV4OrV3('none', 'one'): v3 default.
-        self.closure_fn_spacing_none = c.string("closure_fn_spacing", "one", SUPPORTED_SPACINGS)? == "none";
+        self.closure_fn_spacing_none =
+            c.string("closure_fn_spacing", "one", SUPPORTED_SPACINGS)? == "none";
         self.trailing_comma_single_line = c.bool("trailing_comma_single_line", false)?;
         Ok(())
     }
@@ -49,37 +59,63 @@ impl Fixer for FunctionDeclarationFixer {
             let token = tokens[index].clone();
             // Upstream also stops at `;`/`?>` and skips; in valid code a T_FUNCTION/T_FN always reaches its `(` first
             // (`use function` is CT_FUNCTION_IMPORT).
-            let start_parenthesis_index = tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap();
-            let end_parenthesis_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_parenthesis_index);
-            if !self.trailing_comma_single_line && !tokens.is_partial_code_multiline(index, end_parenthesis_index) {
-                let comma_index = tokens.get_prev_meaningful_token(end_parenthesis_index).unwrap();
+            let start_parenthesis_index = tokens
+                .get_next_token_of_kind(index, &["(".into()], true)
+                .unwrap();
+            let end_parenthesis_index =
+                tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, start_parenthesis_index);
+            if !self.trailing_comma_single_line
+                && !tokens.is_partial_code_multiline(index, end_parenthesis_index)
+            {
+                let comma_index = tokens
+                    .get_prev_meaningful_token(end_parenthesis_index)
+                    .unwrap();
                 if tokens[comma_index].equals(",", true) {
                     tokens.clear_token_and_merge_surrounding_whitespace(comma_index);
                 }
             }
-            let start_brace_index =
-                tokens.get_next_token_of_kind(end_parenthesis_index, &[";".into(), "{".into(), T_DOUBLE_ARROW.into()], true).unwrap();
+            let start_brace_index = tokens
+                .get_next_token_of_kind(
+                    end_parenthesis_index,
+                    &[";".into(), "{".into(), T_DOUBLE_ARROW.into()],
+                    true,
+                )
+                .unwrap();
             // fix single-line whitespace before { or =>
             if tokens[start_brace_index].equals_any(&["{".into(), T_DOUBLE_ARROW.into()], true)
                 && (!tokens[start_brace_index - 1].is_whitespace(None)
-                    || tokens[start_brace_index - 1].is_whitespace(Some(SINGLE_LINE_WHITESPACE_OPTIONS)))
+                    || tokens[start_brace_index - 1]
+                        .is_whitespace(Some(SINGLE_LINE_WHITESPACE_OPTIONS)))
             {
                 tokens.ensure_whitespace_at_index(start_brace_index - 1, 1, b" ");
             }
-            let after_parenthesis_index = tokens.get_next_non_whitespace(end_parenthesis_index, None).unwrap();
+            let after_parenthesis_index = tokens
+                .get_next_non_whitespace(end_parenthesis_index, None)
+                .unwrap();
             if tokens[after_parenthesis_index].is_kind(CT_USE_LAMBDA) {
                 // fix whitespace after CT:T_USE_LAMBDA (we might add a token, so do this before determining start and end parenthesis)
                 tokens.ensure_whitespace_at_index(after_parenthesis_index + 1, 0, b" ");
-                let use_start_parenthesis_index = tokens.get_next_token_of_kind(after_parenthesis_index, &["(".into()], true).unwrap();
-                let use_end_parenthesis_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, use_start_parenthesis_index);
-                if !self.trailing_comma_single_line && !tokens.is_partial_code_multiline(index, use_end_parenthesis_index) {
-                    let comma_index = tokens.get_prev_meaningful_token(use_end_parenthesis_index).unwrap();
+                let use_start_parenthesis_index = tokens
+                    .get_next_token_of_kind(after_parenthesis_index, &["(".into()], true)
+                    .unwrap();
+                let use_end_parenthesis_index = tokens
+                    .find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, use_start_parenthesis_index);
+                if !self.trailing_comma_single_line
+                    && !tokens.is_partial_code_multiline(index, use_end_parenthesis_index)
+                {
+                    let comma_index = tokens
+                        .get_prev_meaningful_token(use_end_parenthesis_index)
+                        .unwrap();
                     if tokens[comma_index].equals(",", true) {
                         tokens.clear_token_and_merge_surrounding_whitespace(comma_index);
                     }
                 }
                 // remove single-line edge whitespaces inside use parentheses
-                fix_parenthesis_inner_edge(tokens, use_start_parenthesis_index, use_end_parenthesis_index);
+                fix_parenthesis_inner_edge(
+                    tokens,
+                    use_start_parenthesis_index,
+                    use_end_parenthesis_index,
+                );
                 // fix whitespace before CT::T_USE_LAMBDA
                 tokens.ensure_whitespace_at_index(after_parenthesis_index - 1, 1, b" ");
             }
@@ -89,12 +125,18 @@ impl Fixer for FunctionDeclarationFixer {
             // remove whitespace before (
             if !is_lambda
                 && tokens[start_parenthesis_index - 1].is_whitespace(None)
-                && !tokens[tokens.get_prev_non_whitespace(start_parenthesis_index - 1, None).unwrap()].is_comment()
+                && !tokens[tokens
+                    .get_prev_non_whitespace(start_parenthesis_index - 1, None)
+                    .unwrap()]
+                .is_comment()
             {
                 tokens.clear_at(start_parenthesis_index - 1);
             }
-            let spacing_none =
-                if token.is_kind(T_FN) { self.closure_fn_spacing_none } else { self.closure_function_spacing_none };
+            let spacing_none = if token.is_kind(T_FN) {
+                self.closure_fn_spacing_none
+            } else {
+                self.closure_function_spacing_none
+            };
             if is_lambda && spacing_none {
                 // optionally remove whitespace after T_FUNCTION of a closure
                 if tokens[index + 1].is_whitespace(None) {

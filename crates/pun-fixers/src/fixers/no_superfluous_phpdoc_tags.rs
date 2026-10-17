@@ -15,9 +15,26 @@ use std::path::Path;
 use std::sync::LazyLock;
 
 const SYMBOL_KINDS: &[Kind] = &[T_CLASS, T_INTERFACE, T_ENUM];
-const MODIFIER_KINDS: &[Kind] =
-    &[T_PRIVATE, T_PROTECTED, T_PUBLIC, T_ABSTRACT, T_FINAL, T_STATIC, T_READONLY, T_PRIVATE_SET, T_PROTECTED_SET, T_PUBLIC_SET];
-const TYPE_KINDS: &[Kind] = &[CT_NULLABLE_TYPE, CT_ARRAY_TYPEHINT, CT_TYPE_ALTERNATION, CT_TYPE_INTERSECTION, T_STRING, T_NS_SEPARATOR];
+const MODIFIER_KINDS: &[Kind] = &[
+    T_PRIVATE,
+    T_PROTECTED,
+    T_PUBLIC,
+    T_ABSTRACT,
+    T_FINAL,
+    T_STATIC,
+    T_READONLY,
+    T_PRIVATE_SET,
+    T_PROTECTED_SET,
+    T_PUBLIC_SET,
+];
+const TYPE_KINDS: &[Kind] = &[
+    CT_NULLABLE_TYPE,
+    CT_ARRAY_TYPEHINT,
+    CT_TYPE_ALTERNATION,
+    CT_TYPE_INTERSECTION,
+    T_STRING,
+    T_NS_SEPARATOR,
+];
 
 /// `array{types: list<string>, allows_null: bool}`.
 #[derive(Clone)]
@@ -27,7 +44,10 @@ struct TypeInfo {
 }
 
 fn no_type_info() -> TypeInfo {
-    TypeInfo { types: vec![], allows_null: true }
+    TypeInfo {
+        types: vec![],
+        allows_null: true,
+    }
 }
 
 #[derive(PartialEq)]
@@ -71,7 +91,12 @@ impl Fixer for NoSuperfluousPhpdocTagsFixer {
         tokens.is_token_kind_found(T_DOC_COMMENT)
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let keys = ["allow_mixed", "remove_inheritdoc", "allow_hidden_params", "allow_unused_params"];
+        let keys = [
+            "allow_mixed",
+            "remove_inheritdoc",
+            "allow_hidden_params",
+            "allow_unused_params",
+        ];
         let r = resolve(self.name(), options, &keys)?;
         self.allow_mixed = r.bool("allow_mixed", false)?;
         self.remove_inheritdoc = r.bool("remove_inheritdoc", false)?;
@@ -101,15 +126,24 @@ impl Fixer for NoSuperfluousPhpdocTagsFixer {
                 continue;
             }
             if token.is_given_kind(SYMBOL_KINDS) {
-                current_symbol = Some(tokens[tokens.get_next_meaningful_token(index).unwrap()].content.clone());
-                let open = tokens.get_next_token_of_kind(index, &["{".into()], true).unwrap();
-                current_symbol_end_index = Some(tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open));
+                current_symbol = Some(
+                    tokens[tokens.get_next_meaningful_token(index).unwrap()]
+                        .content
+                        .clone(),
+                );
+                let open = tokens
+                    .get_next_token_of_kind(index, &["{".into()], true)
+                    .unwrap();
+                current_symbol_end_index =
+                    Some(tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open));
                 continue;
             }
             if !token.is_kind(T_DOC_COMMENT) {
                 continue;
             }
-            let Some(element) = find_documented_element(tokens, index) else { continue };
+            let Some(element) = find_documented_element(tokens, index) else {
+                continue;
+            };
             let initial_content = tokens[index].content.clone();
             let mut content = initial_content.clone();
             if self.remove_inheritdoc {
@@ -122,10 +156,18 @@ impl Fixer for NoSuperfluousPhpdocTagsFixer {
                 .full_name
                 .clone();
             let namespace = (!namespace.is_empty()).then_some(namespace);
-            let ctx = Ctx { namespace: namespace.as_deref(), current_symbol: current_symbol.as_deref(), short_names: &short_names };
+            let ctx = Ctx {
+                namespace: namespace.as_deref(),
+                current_symbol: current_symbol.as_deref(),
+                short_names: &short_names,
+            };
             content = match element.type_ {
-                ElementType::Function => self.fix_function_doc_comment(&content, tokens, &element, &ctx),
-                ElementType::Property => self.fix_property_doc_comment(&content, tokens, &element, &ctx),
+                ElementType::Function => {
+                    self.fix_function_doc_comment(&content, tokens, &element, &ctx)
+                }
+                ElementType::Property => {
+                    self.fix_property_doc_comment(&content, tokens, &element, &ctx)
+                }
                 ElementType::Classy => fix_class_doc_comment(&content, &element),
             };
             if content.is_empty() {
@@ -145,12 +187,19 @@ struct Ctx<'a> {
 }
 
 fn find_documented_element(tokens: &Tokens, doc_comment_index: usize) -> Option<Element> {
-    let mut element = Element { index: 0, type_: ElementType::Classy, modifiers: vec![], first_type_index: None };
+    let mut element = Element {
+        index: 0,
+        type_: ElementType::Classy,
+        modifiers: vec![],
+        first_type_index: None,
+    };
     let mut index = tokens.get_next_meaningful_token(doc_comment_index);
     let is_attribute = |i: Option<usize>| i.is_some_and(|i| tokens[i].is_kind(T_ATTRIBUTE));
     if is_attribute(index) {
         loop {
-            index = tokens.get_next_meaningful_token(tokens.find_block_end(Tokens::BLOCK_TYPE_ATTRIBUTE, index.unwrap()));
+            index = tokens.get_next_meaningful_token(
+                tokens.find_block_end(Tokens::BLOCK_TYPE_ATTRIBUTE, index.unwrap()),
+            );
             if !is_attribute(index) {
                 break;
             }
@@ -184,9 +233,17 @@ fn find_documented_element(tokens: &Tokens, doc_comment_index: usize) -> Option<
 }
 
 impl NoSuperfluousPhpdocTagsFixer {
-    fn fix_function_doc_comment(&self, content: &[u8], tokens: &Tokens, element: &Element, ctx: &Ctx) -> Vec<u8> {
+    fn fix_function_doc_comment(
+        &self,
+        content: &[u8],
+        tokens: &Tokens,
+        element: &Element,
+        ctx: &Ctx,
+    ) -> Vec<u8> {
         let doc_block = DocBlock::new(content);
-        let opening = tokens.get_next_token_of_kind(element.index, &["(".into()], true).unwrap();
+        let opening = tokens
+            .get_next_token_of_kind(element.index, &["(".into()], true)
+            .unwrap();
         let closing = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, opening);
         let arguments_info = self.get_arguments_info(tokens, opening + 1, closing - 1);
 
@@ -216,7 +273,13 @@ impl NoSuperfluousPhpdocTagsFixer {
         doc_block.get_content()
     }
 
-    fn fix_property_doc_comment(&self, content: &[u8], tokens: &Tokens, element: &Element, ctx: &Ctx) -> Vec<u8> {
+    fn fix_property_doc_comment(
+        &self,
+        content: &[u8],
+        tokens: &Tokens,
+        element: &Element,
+        ctx: &Ctx,
+    ) -> Vec<u8> {
         let property_type_info = match element.first_type_index {
             Some(i) => parse_type_hint(tokens, i),
             None => no_type_info(),
@@ -230,21 +293,38 @@ impl NoSuperfluousPhpdocTagsFixer {
         doc_block.get_content()
     }
 
-    fn get_arguments_info(&self, tokens: &Tokens, start: usize, end: usize) -> BTreeMap<Vec<u8>, TypeInfo> {
+    fn get_arguments_info(
+        &self,
+        tokens: &Tokens,
+        start: usize,
+        end: usize,
+    ) -> BTreeMap<Vec<u8>, TypeInfo> {
         let mut arguments_info = BTreeMap::new();
         for index in start..=end {
             let token = &tokens[index];
             if !token.is_kind(T_VARIABLE) {
                 continue;
             }
-            let before_argument_index =
-                tokens.get_prev_token_of_kind(index, &["(".into(), ",".into(), CT_ATTRIBUTE_CLOSE.into()], true).unwrap();
-            let type_index = tokens.get_next_meaningful_token(before_argument_index).unwrap();
-            let mut info = if type_index != index { parse_type_hint(tokens, type_index) } else { no_type_info() };
+            let before_argument_index = tokens
+                .get_prev_token_of_kind(
+                    index,
+                    &["(".into(), ",".into(), CT_ATTRIBUTE_CLOSE.into()],
+                    true,
+                )
+                .unwrap();
+            let type_index = tokens
+                .get_next_meaningful_token(before_argument_index)
+                .unwrap();
+            let mut info = if type_index != index {
+                parse_type_hint(tokens, type_index)
+            } else {
+                no_type_info()
+            };
             if !info.allows_null {
                 let next_index = tokens.get_next_meaningful_token(index).unwrap();
                 if tokens[next_index].equals("=", true)
-                    && tokens[tokens.get_next_meaningful_token(next_index).unwrap()].equals((T_STRING, "null"), false)
+                    && tokens[tokens.get_next_meaningful_token(next_index).unwrap()]
+                        .equals((T_STRING, "null"), false)
                 {
                     info.allows_null = true;
                 }
@@ -263,15 +343,28 @@ impl NoSuperfluousPhpdocTagsFixer {
         arguments_info
     }
 
-    fn annotation_is_superfluous(&self, annotation: &Annotation, info: &TypeInfo, ctx: &Ctx) -> bool {
+    fn annotation_is_superfluous(
+        &self,
+        annotation: &Annotation,
+        info: &TypeInfo,
+        ctx: &Ctx,
+    ) -> bool {
         let tag = annotation.get_tag().get_name();
         static PARAM: LazyLock<String> = LazyLock::new(|| {
-            format!(r"{{\*\h*@param(?:\h+{REGEX_TYPES})?(?!\S)(?:\h+(?:\&\h*)?(?:\.{{3}}\h*)?\$\S+)?(?:\s+(?<description>(?!\*+\/)\S+))?}}s")
+            format!(
+                r"{{\*\h*@param(?:\h+{REGEX_TYPES})?(?!\S)(?:\h+(?:\&\h*)?(?:\.{{3}}\h*)?\$\S+)?(?:\s+(?<description>(?!\*+\/)\S+))?}}s"
+            )
         });
-        static VAR: LazyLock<String> =
-            LazyLock::new(|| format!(r"{{\*\h*@var(?:\h+{REGEX_TYPES})?(?!\S)(?:\h+\$\S+)?(?:\s+(?<description>(?!\*\/)\S+))?}}s"));
-        static RETURN: LazyLock<String> =
-            LazyLock::new(|| format!(r"{{\*\h*@return(?:\h+{REGEX_TYPES})?(?!\S)(?:\s+(?<description>(?!\*\/)\S+))?}}s"));
+        static VAR: LazyLock<String> = LazyLock::new(|| {
+            format!(
+                r"{{\*\h*@var(?:\h+{REGEX_TYPES})?(?!\S)(?:\h+\$\S+)?(?:\s+(?<description>(?!\*\/)\S+))?}}s"
+            )
+        });
+        static RETURN: LazyLock<String> = LazyLock::new(|| {
+            format!(
+                r"{{\*\h*@return(?:\h+{REGEX_TYPES})?(?!\S)(?:\s+(?<description>(?!\*\/)\S+))?}}s"
+            )
+        });
         let regex: &str = if tag == b"param" {
             &PARAM
         } else if tag == b"var" {
@@ -315,9 +408,14 @@ impl NoSuperfluousPhpdocTagsFixer {
 }
 
 fn get_return_type_info(tokens: &Tokens, closing_parenthesis_index: usize) -> TypeInfo {
-    let colon_index = tokens.get_next_meaningful_token(closing_parenthesis_index).unwrap();
+    let colon_index = tokens
+        .get_next_meaningful_token(closing_parenthesis_index)
+        .unwrap();
     if tokens[colon_index].is_kind(CT_TYPE_COLON) {
-        parse_type_hint(tokens, tokens.get_next_meaningful_token(colon_index).unwrap())
+        parse_type_hint(
+            tokens,
+            tokens.get_next_meaningful_token(colon_index).unwrap(),
+        )
     } else {
         no_type_info()
     }
@@ -328,7 +426,8 @@ fn parse_type_hint(tokens: &Tokens, mut index: usize) -> TypeInfo {
     let mut types = vec![];
     loop {
         let mut type_ = Vec::new();
-        if tokens[index].is_given_kind(&[T_READONLY, T_PRIVATE_SET, T_PROTECTED_SET, T_PUBLIC_SET]) {
+        if tokens[index].is_given_kind(&[T_READONLY, T_PRIVATE_SET, T_PROTECTED_SET, T_PUBLIC_SET])
+        {
             index = tokens.get_next_meaningful_token(index).unwrap();
         }
         if tokens[index].is_given_kind(&[
@@ -343,7 +442,13 @@ fn parse_type_hint(tokens: &Tokens, mut index: usize) -> TypeInfo {
             allows_null = true;
             index = tokens.get_next_meaningful_token(index).unwrap();
         }
-        while tokens[index].is_given_kind(&[T_NS_SEPARATOR, T_STATIC, T_STRING, CT_ARRAY_TYPEHINT, T_CALLABLE]) {
+        while tokens[index].is_given_kind(&[
+            T_NS_SEPARATOR,
+            T_STATIC,
+            T_STRING,
+            CT_ARRAY_TYPEHINT,
+            T_CALLABLE,
+        ]) {
             type_.extend_from_slice(&tokens[index].content);
             index = tokens.get_next_meaningful_token(index).unwrap();
         }
@@ -404,7 +509,10 @@ fn fix_class_doc_comment(content: &[u8], element: &Element) -> Vec<u8> {
 
 fn remove_superfluous_inherit_doc(doc_comment: &[u8]) -> Vec<u8> {
     // The pattern needs the tag; without it the replacement returns the comment unchanged.
-    if !doc_comment.windows(10).any(|w| w.eq_ignore_ascii_case(b"inheritdoc")) {
+    if !doc_comment
+        .windows(10)
+        .any(|w| w.eq_ignore_ascii_case(b"inheritdoc"))
+    {
         return doc_comment.to_vec();
     }
     Preg::replace(

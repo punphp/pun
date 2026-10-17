@@ -20,7 +20,11 @@ impl NoBlankLinesAfterClassOpeningFixer {
         if content.iter().filter(|&&b| b == b'\n').count() > 1 {
             // the final bit of the whitespace must be the next statement's indentation
             let last = content.iter().rposition(|&b| b == b'\n').unwrap();
-            let new = [self.whitespaces_config.get_line_ending().as_bytes(), &content[last + 1..]].concat();
+            let new = [
+                self.whitespaces_config.get_line_ending().as_bytes(),
+                &content[last + 1..],
+            ]
+            .concat();
             tokens.set(index, Token::new(T_WHITESPACE, new));
         }
     }
@@ -45,7 +49,9 @@ impl Fixer for NoBlankLinesAfterClassOpeningFixer {
             if !tokens[index].is_classy() {
                 continue;
             }
-            let start_brace_index = tokens.get_next_token_of_kind(index, &["{".into()], true).unwrap();
+            let start_brace_index = tokens
+                .get_next_token_of_kind(index, &["{".into()], true)
+                .unwrap();
             if !tokens[start_brace_index + 1].is_whitespace(None) {
                 continue;
             }

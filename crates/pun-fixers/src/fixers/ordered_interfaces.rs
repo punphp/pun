@@ -15,7 +15,11 @@ struct OrderedInterfacesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(OrderedInterfacesFixer { order_length: false, descend: false, case_sensitive: false })
+    Box::new(OrderedInterfacesFixer {
+        order_length: false,
+        descend: false,
+        case_sensitive: false,
+    })
 }
 
 impl Fixer for OrderedInterfacesFixer {
@@ -26,14 +30,19 @@ impl Fixer for OrderedInterfacesFixer {
         0
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let r = resolve(self.name(), options, &["order", "direction", "case_sensitive"])?;
+        let r = resolve(
+            self.name(),
+            options,
+            &["order", "direction", "case_sensitive"],
+        )?;
         self.order_length = r.string("order", "alpha", &["alpha", "length"])? == "length";
         self.descend = r.string("direction", "ascend", &["ascend", "descend"])? == "descend";
         self.case_sensitive = r.bool("case_sensitive", false)?;
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_token_kind_found(Kind::T_IMPLEMENTS) || tokens.is_all_token_kinds_found(&[Kind::T_INTERFACE, Kind::T_EXTENDS])
+        tokens.is_token_kind_found(Kind::T_IMPLEMENTS)
+            || tokens.is_all_token_kinds_found(&[Kind::T_INTERFACE, Kind::T_EXTENDS])
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
@@ -42,13 +51,20 @@ impl Fixer for OrderedInterfacesFixer {
                     continue;
                 }
                 let name_token_index = tokens.get_prev_meaningful_token(index).unwrap();
-                let interface_token_index = tokens.get_prev_meaningful_token(name_token_index).unwrap();
+                let interface_token_index =
+                    tokens.get_prev_meaningful_token(name_token_index).unwrap();
                 if !tokens[interface_token_index].is_kind(Kind::T_INTERFACE) {
                     continue;
                 }
             }
             let implements_start = index + 1;
-            let implements_end = tokens.get_prev_meaningful_token(tokens.get_next_token_of_kind(implements_start, &["{".into()], true).unwrap()).unwrap();
+            let implements_end = tokens
+                .get_prev_meaningful_token(
+                    tokens
+                        .get_next_token_of_kind(implements_start, &["{".into()], true)
+                        .unwrap(),
+                )
+                .unwrap();
             let interfaces_tokens = get_interfaces(tokens, implements_start, implements_end);
             if interfaces_tokens.len() == 1 {
                 continue;
@@ -64,14 +80,26 @@ impl Fixer for OrderedInterfacesFixer {
                 .map(|(original_index, interface)| {
                     let mut normalized = Vec::new();
                     // every chunk has a name: an empty one (`implements A, B, {`) is a parse error
-                    let start = interface.iter().position(|t| !matches!(t.id, Some(Kind::T_WHITESPACE | Kind::T_COMMENT | Kind::T_DOC_COMMENT)) && !t.content.is_empty()).unwrap();
+                    let start = interface
+                        .iter()
+                        .position(|t| {
+                            !matches!(
+                                t.id,
+                                Some(Kind::T_WHITESPACE | Kind::T_COMMENT | Kind::T_DOC_COMMENT)
+                            ) && !t.content.is_empty()
+                        })
+                        .unwrap();
                     for t in &interface[start..] {
                         if t.is_comment() || t.is_whitespace(None) {
                             break;
                         }
                         normalized.extend(replace_all(&t.content, b"\\", b" "));
                     }
-                    I { tokens: interface, normalized, original_index }
+                    I {
+                        tokens: interface,
+                        normalized,
+                        original_index,
+                    }
                 })
                 .collect();
             interfaces.sort_by(|a, b| {
@@ -84,7 +112,11 @@ impl Fixer for OrderedInterfacesFixer {
                 };
                 if self.descend { score.reverse() } else { score }
             });
-            if interfaces.iter().enumerate().all(|(i, x)| x.original_index == i) {
+            if interfaces
+                .iter()
+                .enumerate()
+                .all(|(i, x)| x.original_index == i)
+            {
                 continue;
             }
             let mut iter = interfaces.into_iter();

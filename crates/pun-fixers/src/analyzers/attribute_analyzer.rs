@@ -27,7 +27,9 @@ impl AttributeAnalyzer {
             return false;
         }
         // T_OPEN_TAG is in the list, so a T_STRING always finds one.
-        let attribute_start_index = tokens.get_prev_token_of_kind(index, TOKEN_KINDS_NOT_ALLOWED_IN_ATTRIBUTE, true).unwrap();
+        let attribute_start_index = tokens
+            .get_prev_token_of_kind(index, TOKEN_KINDS_NOT_ALLOWED_IN_ATTRIBUTE, true)
+            .unwrap();
         if !tokens[attribute_start_index].is_kind(T_ATTRIBUTE) {
             return false;
         }
@@ -44,7 +46,10 @@ impl AttributeAnalyzer {
     }
 
     pub fn collect(tokens: &Tokens, mut index: usize) -> Vec<AttributeAnalysis> {
-        assert!(tokens[index].is_kind(T_ATTRIBUTE), "Given index must point to an attribute.");
+        assert!(
+            tokens[index].is_kind(T_ATTRIBUTE),
+            "Given index must point to an attribute."
+        );
         // Rewind to first attribute in group
         loop {
             let prev_index = tokens.get_prev_meaningful_token(index).unwrap();
@@ -67,7 +72,10 @@ impl AttributeAnalyzer {
     }
 
     pub fn collect_one(tokens: &Tokens, index: usize) -> AttributeAnalysis {
-        assert!(tokens[index].is_kind(T_ATTRIBUTE), "Given index must point to an attribute.");
+        assert!(
+            tokens[index].is_kind(T_ATTRIBUTE),
+            "Given index must point to an attribute."
+        );
         let mut start_index = index;
         let prev_index = tokens.get_prev_meaningful_token(index).unwrap();
         if tokens[prev_index].is_kind(CT_ATTRIBUTE_CLOSE) {
@@ -85,21 +93,40 @@ impl AttributeAnalyzer {
         }
     }
 
-    fn collect_attributes(tokens: &Tokens, mut index: usize, closing_index: usize) -> Vec<Attribute> {
+    fn collect_attributes(
+        tokens: &Tokens,
+        mut index: usize,
+        closing_index: usize,
+    ) -> Vec<Attribute> {
         let mut elements = Vec::new();
         loop {
             let attribute_start_index = index + 1;
-            let name_start_index = tokens.get_next_token_of_kind(index, &[T_STRING.into(), T_NS_SEPARATOR.into()], true).unwrap();
-            index = tokens
-                .get_next_token_of_kind(attribute_start_index, &["(".into(), ",".into(), CT_ATTRIBUTE_CLOSE.into()], true)
+            let name_start_index = tokens
+                .get_next_token_of_kind(index, &[T_STRING.into(), T_NS_SEPARATOR.into()], true)
                 .unwrap();
-            let attribute_name = tokens.generate_partial_code(name_start_index, tokens.get_prev_meaningful_token(index).unwrap());
+            index = tokens
+                .get_next_token_of_kind(
+                    attribute_start_index,
+                    &["(".into(), ",".into(), CT_ATTRIBUTE_CLOSE.into()],
+                    true,
+                )
+                .unwrap();
+            let attribute_name = tokens.generate_partial_code(
+                name_start_index,
+                tokens.get_prev_meaningful_token(index).unwrap(),
+            );
             // Find closing parentheses, we need to do this in case there's a comma inside the parentheses
             if tokens[index].equals("(", true) {
                 index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
-                index = tokens.get_next_token_of_kind(index, &[",".into(), CT_ATTRIBUTE_CLOSE.into()], true).unwrap();
+                index = tokens
+                    .get_next_token_of_kind(index, &[",".into(), CT_ATTRIBUTE_CLOSE.into()], true)
+                    .unwrap();
             }
-            elements.push(Attribute { start: attribute_start_index, end: index - 1, name: attribute_name });
+            elements.push(Attribute {
+                start: attribute_start_index,
+                end: index - 1,
+                name: attribute_name,
+            });
             let mut next_index = index;
             // In case there's a comma right before T_ATTRIBUTE_CLOSE
             if next_index < closing_index {
@@ -134,8 +161,24 @@ mod tests {
         let got: Vec<_> = AttributeAnalyzer::collect(&tokens, 1)
             .iter()
             .map(|a| {
-                let attrs: Vec<_> = a.attributes.iter().map(|x| (x.start, x.end, String::from_utf8_lossy(&x.name).into_owned())).collect();
-                (a.start_index, a.end_index, a.opening_bracket_index, a.closing_bracket_index, attrs)
+                let attrs: Vec<_> = a
+                    .attributes
+                    .iter()
+                    .map(|x| {
+                        (
+                            x.start,
+                            x.end,
+                            String::from_utf8_lossy(&x.name).into_owned(),
+                        )
+                    })
+                    .collect();
+                (
+                    a.start_index,
+                    a.end_index,
+                    a.opening_bracket_index,
+                    a.closing_bracket_index,
+                    attrs,
+                )
             })
             .collect();
         let s = |v: &str| v.to_string();
@@ -156,6 +199,9 @@ mod tests {
             .filter(|&i| tokens[i].is_kind(T_STRING))
             .map(|i| (i, AttributeAnalyzer::is_attribute(&tokens, i)))
             .collect();
-        assert_eq!(got, [(2, true), (4, false), (8, true), (10, false), (16, false)]);
+        assert_eq!(
+            got,
+            [(2, true), (4, false), (8, true), (10, false), (16, false)]
+        );
     }
 }

@@ -1,7 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\ClassUsage\DateTimeImmutableFixer`.
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use pun_format::Fixer;
-use pun_tokens::{php_compat, Kind::*, Token, Tokens};
+use pun_tokens::{Kind::*, Token, Tokens, php_compat};
 use std::path::Path;
 
 struct DateTimeImmutableFixer;
@@ -25,8 +25,13 @@ impl Fixer for DateTimeImmutableFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let functions_analyzer = FunctionsAnalyzer::new();
-        let function_map: [(&[u8], &str); 2] =
-            [(b"date_create", "date_create_immutable"), (b"date_create_from_format", "date_create_immutable_from_format")];
+        let function_map: [(&[u8], &str); 2] = [
+            (b"date_create", "date_create_immutable"),
+            (
+                b"date_create_from_format",
+                "date_create_immutable_from_format",
+            ),
+        ];
         let mut is_in_namespace = false;
         let mut is_imported = false; // e.g. use DateTime;
 
@@ -68,7 +73,10 @@ impl Fixer for DateTimeImmutableFixer {
                 index += 1;
                 continue;
             }
-            if let Some((_, new)) = function_map.iter().find(|(k, _)| *k == &lowercase_content[..]) {
+            if let Some((_, new)) = function_map
+                .iter()
+                .find(|(k, _)| *k == &lowercase_content[..])
+            {
                 if functions_analyzer.is_global_function_call(tokens, index) {
                     tokens.set(index, Token::new(T_STRING, *new));
                 }
@@ -97,10 +105,14 @@ fn fix_class_usage(tokens: &mut Tokens, index: usize, is_in_namespace: bool, is_
         if !tokens[prev_prev_index].is_kind(T_STRING) {
             is_used_with_leading_backslash = true;
         }
-    } else if !tokens[prev_index].is_kind(T_DOUBLE_COLON) && !tokens[prev_index].is_object_operator() {
+    } else if !tokens[prev_index].is_kind(T_DOUBLE_COLON)
+        && !tokens[prev_index].is_object_operator()
+    {
         is_used_alone = true;
     }
-    if is_used_with_leading_backslash || (is_used_alone && ((is_in_namespace && is_imported) || !is_in_namespace)) {
+    if is_used_with_leading_backslash
+        || (is_used_alone && ((is_in_namespace && is_imported) || !is_in_namespace))
+    {
         tokens.set(index, Token::new(T_STRING, "DateTimeImmutable"));
         if is_in_namespace && is_used_alone {
             tokens.insert_at(index, vec![Token::new(T_NS_SEPARATOR, "\\")]);

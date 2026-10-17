@@ -33,14 +33,19 @@ impl Fixer for PreferExplodeOverPregSplit {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let analyzer = FunctionsAnalyzer::new();
         for i in (0..tokens.count()).rev() {
-            if !tokens[i].is_kind(T_STRING) || !tokens[i].get_content().eq_ignore_ascii_case(b"preg_split") || !analyzer.is_global_function_call(tokens, i) {
+            if !tokens[i].is_kind(T_STRING)
+                || !tokens[i].get_content().eq_ignore_ascii_case(b"preg_split")
+                || !analyzer.is_global_function_call(tokens, i)
+            {
                 continue;
             }
             let open = tokens.get_next_meaningful_token(i).unwrap();
             let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
             let args = split_list(tokens, open, close);
             if !(2..=4).contains(&args.len())
-                || args.iter().any(|&(s, _)| tokens[s].is_given_kind(&[T_ELLIPSIS, CT_NAMED_ARGUMENT_NAME]))
+                || args
+                    .iter()
+                    .any(|&(s, _)| tokens[s].is_given_kind(&[T_ELLIPSIS, CT_NAMED_ARGUMENT_NAME]))
                 || (open..=close).any(|k| tokens[k].is_comment())
             {
                 continue;
@@ -49,24 +54,45 @@ impl Fixer for PreferExplodeOverPregSplit {
             if ps != pe || !tokens[ps].is_kind(T_CONSTANT_ENCAPSED_STRING) {
                 continue;
             }
-            let Some(separator) = plain_separator(tokens[ps].get_content()) else { continue };
+            let Some(separator) = plain_separator(tokens[ps].get_content()) else {
+                continue;
+            };
             // Remove limit and flags (`drop_from` = first argument to remove), or keep a positive literal limit.
-            let drop_from = match args.get(2).map(|&(s, e)| (s..=e).filter(|&k| !tokens[k].is_whitespace(None)).map(|k| &tokens[k]).collect::<Vec<_>>()) {
+            let drop_from = match args.get(2).map(|&(s, e)| {
+                (s..=e)
+                    .filter(|&k| !tokens[k].is_whitespace(None))
+                    .map(|k| &tokens[k])
+                    .collect::<Vec<_>>()
+            }) {
                 None => None,
                 Some(limit) => {
-                    let lit = |t: &Token| t.is_kind(T_LNUMBER) && t.get_content().iter().all(u8::is_ascii_digit);
+                    let lit = |t: &Token| {
+                        t.is_kind(T_LNUMBER) && t.get_content().iter().all(u8::is_ascii_digit)
+                    };
                     let no_limit = match limit.as_slice() {
                         [n] if lit(n) => n.get_content().iter().all(|&c| c == b'0'),
-                        [n] if n.is_kind(T_STRING) && n.get_content().eq_ignore_ascii_case(b"null") => true,
+                        [n] if n.is_kind(T_STRING)
+                            && n.get_content().eq_ignore_ascii_case(b"null") =>
+                        {
+                            true
+                        }
                         [m, n] if m.equals("-", true) && lit(n) => true,
                         _ => continue,
                     };
                     if let Some(&(s, e)) = args.get(3)
-                        && !(s == e && tokens[s].is_kind(T_LNUMBER) && tokens[s].get_content() == b"0")
+                        && !(s == e
+                            && tokens[s].is_kind(T_LNUMBER)
+                            && tokens[s].get_content() == b"0")
                     {
                         continue;
                     }
-                    if no_limit { Some(2) } else if args.len() == 4 { Some(3) } else { None }
+                    if no_limit {
+                        Some(2)
+                    } else if args.len() == 4 {
+                        Some(3)
+                    } else {
+                        None
+                    }
                 }
             };
             if let Some(d) = drop_from {
@@ -101,12 +127,29 @@ fn plain_separator(raw: &[u8]) -> Option<Vec<u8>> {
                 b'e' => (0x1b, 2),
                 b'f' => (0x0c, 2),
                 b'x' => {
-                    let hex: Vec<u8> = src[k + 2..].iter().take(2).copied().take_while(u8::is_ascii_hexdigit).collect();
-                    (u8::from_str_radix(std::str::from_utf8(&hex).ok()?, 16).ok()?, 2 + hex.len())
+                    let hex: Vec<u8> = src[k + 2..]
+                        .iter()
+                        .take(2)
+                        .copied()
+                        .take_while(u8::is_ascii_hexdigit)
+                        .collect();
+                    (
+                        u8::from_str_radix(std::str::from_utf8(&hex).ok()?, 16).ok()?,
+                        2 + hex.len(),
+                    )
                 }
                 b'0'..=b'7' => {
-                    let oct: Vec<u8> = src[k + 1..].iter().take(3).copied().take_while(|c| (b'0'..=b'7').contains(c)).collect();
-                    ((u32::from_str_radix(std::str::from_utf8(&oct).ok()?, 8).ok()? & 0xff) as u8, 1 + oct.len())
+                    let oct: Vec<u8> = src[k + 1..]
+                        .iter()
+                        .take(3)
+                        .copied()
+                        .take_while(|c| (b'0'..=b'7').contains(c))
+                        .collect();
+                    (
+                        (u32::from_str_radix(std::str::from_utf8(&oct).ok()?, 8).ok()? & 0xff)
+                            as u8,
+                        1 + oct.len(),
+                    )
                 }
                 _ => return None,
             };
@@ -125,7 +168,12 @@ fn plain_separator(raw: &[u8]) -> Option<Vec<u8>> {
         return None;
     }
     let body = &pattern[1..pattern.len() - 1];
-    if body.iter().any(|c| *c == delimiter || META_CHARS.contains(c)) || src[0] != delimiter || src[src.len() - 1] != delimiter {
+    if body
+        .iter()
+        .any(|c| *c == delimiter || META_CHARS.contains(c))
+        || src[0] != delimiter
+        || src[src.len() - 1] != delimiter
+    {
         return None;
     }
     // The delimiters are plain characters in the source too, so the separator is the source minus them.
@@ -169,19 +217,49 @@ mod tests {
     #[test]
     fn mago_cases() {
         for (from, to) in [
-            ("$parts = preg_split('/, /', $s);", "$parts = explode(', ', $s);"),
-            ("$parts = preg_split('/, /', $s, 3);", "$parts = explode(', ', $s, 3);"),
+            (
+                "$parts = preg_split('/, /', $s);",
+                "$parts = explode(', ', $s);",
+            ),
+            (
+                "$parts = preg_split('/, /', $s, 3);",
+                "$parts = explode(', ', $s, 3);",
+            ),
             // fix_drops_zero_flags: Mago keeps the -1, which explode() reads as "drop the last piece".
-            ("$parts = preg_split('/, /', $s, -1, 0);", "$parts = explode(', ', $s);"),
-            ("$parts = preg_split('#abc#', $s);", "$parts = explode('abc', $s);"),
+            (
+                "$parts = preg_split('/, /', $s, -1, 0);",
+                "$parts = explode(', ', $s);",
+            ),
+            (
+                "$parts = preg_split('#abc#', $s);",
+                "$parts = explode('abc', $s);",
+            ),
             // fix_hash_delimited_pattern_in_namespace: Mago writes `\explode`, Pun keeps the call's qualification.
-            ("namespace App;\n$parts = preg_split('#abc#', $s);", "namespace App;\n$parts = explode('abc', $s);"),
-            ("$parts = preg_split(\"/\\n\\n/\", $s);", "$parts = explode(\"\\n\\n\", $s);"),
-            ("$parts = preg_split(\"/\\t/\", $s);", "$parts = explode(\"\\t\", $s);"),
-            ("$parts = preg_split(\"/\\r\\n/\", $s);", "$parts = explode(\"\\r\\n\", $s);"),
-            ("$parts = preg_split(\"/\\x01/\", $s);", "$parts = explode(\"\\x01\", $s);"),
+            (
+                "namespace App;\n$parts = preg_split('#abc#', $s);",
+                "namespace App;\n$parts = explode('abc', $s);",
+            ),
+            (
+                "$parts = preg_split(\"/\\n\\n/\", $s);",
+                "$parts = explode(\"\\n\\n\", $s);",
+            ),
+            (
+                "$parts = preg_split(\"/\\t/\", $s);",
+                "$parts = explode(\"\\t\", $s);",
+            ),
+            (
+                "$parts = preg_split(\"/\\r\\n/\", $s);",
+                "$parts = explode(\"\\r\\n\", $s);",
+            ),
+            (
+                "$parts = preg_split(\"/\\x01/\", $s);",
+                "$parts = explode(\"\\x01\", $s);",
+            ),
         ] {
-            assert_eq!(fix(&format!("<?php\n\n{from}\n")), format!("<?php\n\n{to}\n"));
+            assert_eq!(
+                fix(&format!("<?php\n\n{from}\n")),
+                format!("<?php\n\n{to}\n")
+            );
         }
         for same in [
             "<?php\n\n$parts = preg_split('/\\s+/', $s);\n",
@@ -196,12 +274,30 @@ mod tests {
 
     #[test]
     fn edge_cases() {
-        assert_eq!(fix("<?php \\preg_split('~;~', $s, 0);"), "<?php \\explode(';', $s);");
-        assert_eq!(fix("<?php preg_split('/,/', $s, null);"), "<?php explode(',', $s);");
-        assert_eq!(fix("<?php preg_split('/,/', $s, 2, 0);"), "<?php explode(',', $s, 2);");
-        assert_eq!(fix("<?php preg_split(\"/\\x2c/\", $s);"), "<?php explode(\"\\x2c\", $s);");
-        assert_eq!(fix("<?php preg_split(\"/\\v\\e\\f/\", $s);"), "<?php explode(\"\\v\\e\\f\", $s);");
-        assert_eq!(fix("<?php preg_split(\"/\\54/\", trim($s));"), "<?php explode(\"\\54\", trim($s));");
+        assert_eq!(
+            fix("<?php \\preg_split('~;~', $s, 0);"),
+            "<?php \\explode(';', $s);"
+        );
+        assert_eq!(
+            fix("<?php preg_split('/,/', $s, null);"),
+            "<?php explode(',', $s);"
+        );
+        assert_eq!(
+            fix("<?php preg_split('/,/', $s, 2, 0);"),
+            "<?php explode(',', $s, 2);"
+        );
+        assert_eq!(
+            fix("<?php preg_split(\"/\\x2c/\", $s);"),
+            "<?php explode(\"\\x2c\", $s);"
+        );
+        assert_eq!(
+            fix("<?php preg_split(\"/\\v\\e\\f/\", $s);"),
+            "<?php explode(\"\\v\\e\\f\", $s);"
+        );
+        assert_eq!(
+            fix("<?php preg_split(\"/\\54/\", trim($s));"),
+            "<?php explode(\"\\54\", trim($s));"
+        );
         for same in [
             "<?php preg_split('//', $s);",
             "<?php preg_split('/,/', $s, $limit);",

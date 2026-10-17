@@ -33,7 +33,8 @@ impl Fixer for NoMultilineWhitespaceAroundDoubleArrowFixer {
             if !tokens[index].is_kind(T_DOUBLE_ARROW) {
                 continue;
             }
-            if !tokens[index - 2].is_comment() || tokens[index - 2].get_content().starts_with(b"/*") {
+            if !tokens[index - 2].is_comment() || tokens[index - 2].get_content().starts_with(b"/*")
+            {
                 fix_whitespace(tokens, index - 1);
             }
             // do not move anything about if there is a comment following the whitespace

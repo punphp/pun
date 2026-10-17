@@ -30,11 +30,18 @@ impl Fixer for IntegerLiteralCaseFixer {
             let matches = content.len() > 2
                 && content[0] == b'0'
                 && b"boxBOX".contains(&content[1])
-                && content[2..].iter().all(|c| c.is_ascii_hexdigit() || *c == b'_');
+                && content[2..]
+                    .iter()
+                    .all(|c| c.is_ascii_hexdigit() || *c == b'_');
             if !matches {
                 continue;
             }
-            let new_content = [&b"0"[..], &[content[1].to_ascii_lowercase()], &content[2..].to_ascii_uppercase()].concat();
+            let new_content = [
+                &b"0"[..],
+                &[content[1].to_ascii_lowercase()],
+                &content[2..].to_ascii_uppercase(),
+            ]
+            .concat();
             if *content == new_content {
                 continue;
             }

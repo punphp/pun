@@ -30,12 +30,17 @@ impl Fixer for PreferArrayValidationRules {
             .into_iter()
             .filter(|(i, e)| {
                 e.kind == ClassyElementType::Method
-                    && tokens.get_next_meaningful_token(*i).is_some_and(|n| tokens[n].get_content().eq_ignore_ascii_case(b"rules"))
+                    && tokens
+                        .get_next_meaningful_token(*i)
+                        .is_some_and(|n| tokens[n].get_content().eq_ignore_ascii_case(b"rules"))
             })
             .map(|(i, _)| i)
             .collect();
         for &method in methods.iter().rev() {
-            let Some(open) = tokens.get_next_token_of_kind(method, &["{".into(), ";".into()], true) else { continue };
+            let Some(open) = tokens.get_next_token_of_kind(method, &["{".into(), ";".into()], true)
+            else {
+                continue;
+            };
             if !tokens[open].equals("{", true) {
                 continue;
             }
@@ -66,9 +71,18 @@ fn replacement(tokens: &Tokens, i: usize) -> Option<Vec<Token>> {
     if !tokens[i].is_kind(T_CONSTANT_ENCAPSED_STRING) {
         return None;
     }
-    let arrow = tokens.get_prev_meaningful_token(i).filter(|&a| tokens[a].is_kind(T_DOUBLE_ARROW))?;
-    tokens.get_prev_meaningful_token(arrow).filter(|&k| tokens[k].is_kind(T_CONSTANT_ENCAPSED_STRING))?;
-    tokens.get_next_meaningful_token(i).filter(|&n| tokens[n].equals_any(&[",".into(), ")".into(), CT_ARRAY_BRACKET_CLOSE.into()], true))?;
+    let arrow = tokens
+        .get_prev_meaningful_token(i)
+        .filter(|&a| tokens[a].is_kind(T_DOUBLE_ARROW))?;
+    tokens
+        .get_prev_meaningful_token(arrow)
+        .filter(|&k| tokens[k].is_kind(T_CONSTANT_ENCAPSED_STRING))?;
+    tokens.get_next_meaningful_token(i).filter(|&n| {
+        tokens[n].equals_any(
+            &[",".into(), ")".into(), CT_ARRAY_BRACKET_CLOSE.into()],
+            true,
+        )
+    })?;
     let raw = tokens[i].get_content();
     let quote = raw[0];
     if !(quote == b'\'' || quote == b'"') {
@@ -79,7 +93,10 @@ fn replacement(tokens: &Tokens, i: usize) -> Option<Vec<Token>> {
         return None;
     }
     let segments: Vec<&[u8]> = content.split(|&b| b == b'|').collect();
-    if segments.iter().any(|s| s.is_empty() || s.iter().any(|b| matches!(b, b'\'' | b'\\' | b'$'))) {
+    if segments
+        .iter()
+        .any(|s| s.is_empty() || s.iter().any(|b| matches!(b, b'\'' | b'\\' | b'$')))
+    {
         return None;
     }
     let mut out = vec![Token::new(CT_ARRAY_BRACKET_OPEN, "[")];
@@ -88,7 +105,10 @@ fn replacement(tokens: &Tokens, i: usize) -> Option<Vec<Token>> {
             out.push(Token::char(","));
             out.push(Token::new(T_WHITESPACE, " "));
         }
-        out.push(Token::new(T_CONSTANT_ENCAPSED_STRING, [b"'", *s, b"'"].concat()));
+        out.push(Token::new(
+            T_CONSTANT_ENCAPSED_STRING,
+            [b"'", *s, b"'"].concat(),
+        ));
     }
     out.push(Token::new(CT_ARRAY_BRACKET_CLOSE, "]"));
     Some(out)
@@ -107,26 +127,56 @@ mod tests {
     }
 
     fn class(name: &str, method: &str, items: &str) -> String {
-        format!("<?php\n\nclass {name}\n{{\n    public function {method}(): array\n    {{\n        return [\n{items}        ];\n    }}\n}}\n")
+        format!(
+            "<?php\n\nclass {name}\n{{\n    public function {method}(): array\n    {{\n        return [\n{items}        ];\n    }}\n}}\n"
+        )
     }
 
     #[test]
     fn mago_cases() {
         // fix_pipe_string_to_array
         assert_eq!(
-            fix(&class("StoreUserRequest", "rules", "            'name' => 'required|string|max:255',\n")),
-            class("StoreUserRequest", "rules", "            'name' => ['required', 'string', 'max:255'],\n")
+            fix(&class(
+                "StoreUserRequest",
+                "rules",
+                "            'name' => 'required|string|max:255',\n"
+            )),
+            class(
+                "StoreUserRequest",
+                "rules",
+                "            'name' => ['required', 'string', 'max:255'],\n"
+            )
         );
         // pipe_delimited_rule_string (count = 2)
         assert_eq!(
-            fix(&class("StoreUserRequest", "rules", "            'name' => 'required|string|max:255',\n            'email' => 'required|email',\n")),
-            class("StoreUserRequest", "rules", "            'name' => ['required', 'string', 'max:255'],\n            'email' => ['required', 'email'],\n")
+            fix(&class(
+                "StoreUserRequest",
+                "rules",
+                "            'name' => 'required|string|max:255',\n            'email' => 'required|email',\n"
+            )),
+            class(
+                "StoreUserRequest",
+                "rules",
+                "            'name' => ['required', 'string', 'max:255'],\n            'email' => ['required', 'email'],\n"
+            )
         );
         // array_rules, single_rule_string, regex_rule_not_split, pipe_string_outside_rules_method
         for same in [
-            class("StoreUserRequest", "rules", "            'name' => ['required', 'string'],\n"),
-            class("StoreUserRequest", "rules", "            'name' => 'required',\n"),
-            class("StoreUserRequest", "rules", "            'slug' => 'required|regex:/^[a-z]+|[0-9]+$/',\n"),
+            class(
+                "StoreUserRequest",
+                "rules",
+                "            'name' => ['required', 'string'],\n",
+            ),
+            class(
+                "StoreUserRequest",
+                "rules",
+                "            'name' => 'required',\n",
+            ),
+            class(
+                "StoreUserRequest",
+                "rules",
+                "            'slug' => 'required|regex:/^[a-z]+|[0-9]+$/',\n",
+            ),
             class("Report", "build", "            'label' => 'left|right',\n"),
         ] {
             assert_eq!(fix(&same), same);
@@ -136,7 +186,11 @@ mod tests {
     #[test]
     fn edge_cases() {
         assert_eq!(
-            fix(&class("R", "RULES", "            \"a\" => \"nullable|int\"\n")),
+            fix(&class(
+                "R",
+                "RULES",
+                "            \"a\" => \"nullable|int\"\n"
+            )),
             class("R", "RULES", "            \"a\" => ['nullable', 'int']\n")
         );
         for same in [

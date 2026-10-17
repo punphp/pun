@@ -12,15 +12,24 @@ use serde_json::Value;
 use std::path::Path;
 
 const TO_TYPES: [&str; 3] = ["$this", "static", "self"];
-const DEFAULT: [(&str, &str); 6] =
-    [("this", "$this"), ("@this", "$this"), ("$self", "self"), ("@self", "self"), ("$static", "static"), ("@static", "static")];
+const DEFAULT: [(&str, &str); 6] = [
+    ("this", "$this"),
+    ("@this", "$this"),
+    ("$self", "self"),
+    ("@self", "self"),
+    ("$static", "static"),
+    ("@static", "static"),
+];
 
 struct PhpdocReturnSelfReferenceFixer {
     replacements: Vec<(Vec<u8>, Vec<u8>)>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let replacements = DEFAULT.iter().map(|(f, t)| (f.as_bytes().to_vec(), t.as_bytes().to_vec())).collect();
+    let replacements = DEFAULT
+        .iter()
+        .map(|(f, t)| (f.as_bytes().to_vec(), t.as_bytes().to_vec()))
+        .collect();
     Box::new(PhpdocReturnSelfReferenceFixer { replacements })
 }
 
@@ -43,17 +52,42 @@ impl Fixer for PhpdocReturnSelfReferenceFixer {
         c.check_types("replacements", &["string[]"])?;
         let entries: Vec<(String, &str)> = match c.get("replacements") {
             None => return Ok(()),
-            Some(Value::Object(map)) => map.iter().map(|(k, v)| (format!("string#{}", k.to_ascii_lowercase()), v.as_str().unwrap())).collect(),
-            Some(v) => v.as_array().unwrap().iter().enumerate().map(|(i, v)| (format!("integer#{i}"), v.as_str().unwrap())).collect(),
+            Some(Value::Object(map)) => map
+                .iter()
+                .map(|(k, v)| {
+                    (
+                        format!("string#{}", k.to_ascii_lowercase()),
+                        v.as_str().unwrap(),
+                    )
+                })
+                .collect(),
+            Some(v) => v
+                .as_array()
+                .unwrap()
+                .iter()
+                .enumerate()
+                .map(|(i, v)| (format!("integer#{i}"), v.as_str().unwrap()))
+                .collect(),
         };
         let defaults: Vec<&str> = DEFAULT.iter().map(|(f, _)| *f).collect();
         let mut replacements: Vec<(Vec<u8>, Vec<u8>)> = vec![];
         for (from, to) in entries {
-            let Some(key) = from.strip_prefix("string#").filter(|k| defaults.contains(k)) else {
-                bail!("[{}] Invalid configuration: Unknown key \"{from}\", expected any of {}.", self.name(), join(&defaults));
+            let Some(key) = from
+                .strip_prefix("string#")
+                .filter(|k| defaults.contains(k))
+            else {
+                bail!(
+                    "[{}] Invalid configuration: Unknown key \"{from}\", expected any of {}.",
+                    self.name(),
+                    join(&defaults)
+                );
             };
             if !TO_TYPES.contains(&to) {
-                bail!("[{}] Invalid configuration: Unknown value \"string#{to}\", expected any of {}.", self.name(), join(&TO_TYPES));
+                bail!(
+                    "[{}] Invalid configuration: Unknown value \"string#{to}\", expected any of {}.",
+                    self.name(),
+                    join(&TO_TYPES)
+                );
             }
             replacements.retain(|(f, _)| f != key.as_bytes());
             replacements.push((key.as_bytes().to_vec(), to.as_bytes().to_vec()));
@@ -62,7 +96,9 @@ impl Fixer for PhpdocReturnSelfReferenceFixer {
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.count() > 10 && tokens.is_all_token_kinds_found(&[T_DOC_COMMENT, T_FUNCTION]) && tokens.is_any_token_kinds_found(CLASSY_KINDS)
+        tokens.count() > 10
+            && tokens.is_all_token_kinds_found(&[T_DOC_COMMENT, T_FUNCTION])
+            && tokens.is_any_token_kinds_found(CLASSY_KINDS)
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let methods: Vec<usize> = TokensAnalyzer::new(tokens)
@@ -82,7 +118,14 @@ impl PhpdocReturnSelfReferenceFixer {
         // find PHPDoc of method (if any)
         loop {
             let token_index = tokens.get_prev_meaningful_token(index).unwrap();
-            if !tokens[token_index].is_given_kind(&[T_STATIC, T_FINAL, T_ABSTRACT, T_PRIVATE, T_PROTECTED, T_PUBLIC]) {
+            if !tokens[token_index].is_given_kind(&[
+                T_STATIC,
+                T_FINAL,
+                T_ABSTRACT,
+                T_PRIVATE,
+                T_PROTECTED,
+                T_PUBLIC,
+            ]) {
                 break;
             }
             index = token_index;
@@ -92,7 +135,13 @@ impl PhpdocReturnSelfReferenceFixer {
             return;
         }
         let doc_block = DocBlock::new(&tokens[doc_index].content);
-        let Some(returns_block) = doc_block.get_annotations_of_type(&["return"]).into_iter().next() else { return };
+        let Some(returns_block) = doc_block
+            .get_annotations_of_type(&["return"])
+            .into_iter()
+            .next()
+        else {
+            return;
+        };
         let types = returns_block.get_types();
         if types.is_empty() {
             return;
@@ -101,13 +150,19 @@ impl PhpdocReturnSelfReferenceFixer {
             .iter()
             .map(|t| {
                 let lower = strtolower(t);
-                self.replacements.iter().find(|(f, _)| *f == lower).map_or_else(|| t.clone(), |(_, to)| to.clone())
+                self.replacements
+                    .iter()
+                    .find(|(f, _)| *f == lower)
+                    .map_or_else(|| t.clone(), |(_, to)| to.clone())
             })
             .collect();
         if types == new_types {
             return;
         }
         returns_block.set_types(&new_types);
-        tokens.set(doc_index, Token::new(T_DOC_COMMENT, doc_block.get_content()));
+        tokens.set(
+            doc_index,
+            Token::new(T_DOC_COMMENT, doc_block.get_content()),
+        );
     }
 }

@@ -9,7 +9,11 @@ pub struct ClassyAnalyzer;
 impl ClassyAnalyzer {
     pub fn is_classy_invocation(&self, tokens: &Tokens, index: usize) -> bool {
         let token = &tokens[index];
-        assert!(token.is_kind(T_STRING), "No T_STRING at given index {index}, got \"{:?}\".", token.get_name());
+        assert!(
+            token.is_kind(T_STRING),
+            "No T_STRING at given index {index}, got \"{:?}\".",
+            token.get_name()
+        );
         if TypeAnalysis::new(&token.content, None, None).is_reserved_type() {
             return false;
         }
@@ -18,7 +22,13 @@ impl ClassyAnalyzer {
         if next_token.is_kind(T_NS_SEPARATOR) {
             return false;
         }
-        if next_token.is_given_kind(&[T_DOUBLE_COLON, T_ELLIPSIS, CT_TYPE_ALTERNATION, CT_TYPE_INTERSECTION, T_VARIABLE]) {
+        if next_token.is_given_kind(&[
+            T_DOUBLE_COLON,
+            T_ELLIPSIS,
+            CT_TYPE_ALTERNATION,
+            CT_TYPE_INTERSECTION,
+            T_VARIABLE,
+        ]) {
             return true;
         }
         let mut prev = tokens.get_prev_meaningful_token(index).unwrap();
@@ -52,11 +62,20 @@ impl ClassyAnalyzer {
         // `Foo & $bar` could be:
         //   - function reference parameter: function baz(Foo & $bar) {}
         //   - bit operator: $x = Foo & $bar;
-        if next_token.equals("&", true) && tokens[tokens.get_next_meaningful_token(next).unwrap()].is_kind(T_VARIABLE) {
+        if next_token.equals("&", true)
+            && tokens[tokens.get_next_meaningful_token(next).unwrap()].is_kind(T_VARIABLE)
+        {
             let check_index = tokens
                 .get_prev_token_of_kind(
                     prev + 1,
-                    &[";".into(), "{".into(), "}".into(), T_FUNCTION.into(), T_OPEN_TAG.into(), T_OPEN_TAG_WITH_ECHO.into()],
+                    &[
+                        ";".into(),
+                        "{".into(),
+                        "}".into(),
+                        T_FUNCTION.into(),
+                        T_OPEN_TAG.into(),
+                        T_OPEN_TAG_WITH_ECHO.into(),
+                    ],
                     true,
                 )
                 .unwrap();
@@ -67,7 +86,15 @@ impl ClassyAnalyzer {
         }
         loop {
             prev = tokens.get_prev_meaningful_token(prev).unwrap();
-            if !tokens[prev].equals_any(&[",".into(), T_NS_SEPARATOR.into(), T_STRING.into(), CT_NAMESPACE_OPERATOR.into()], true) {
+            if !tokens[prev].equals_any(
+                &[
+                    ",".into(),
+                    T_NS_SEPARATOR.into(),
+                    T_STRING.into(),
+                    CT_NAMESPACE_OPERATOR.into(),
+                ],
+                true,
+            ) {
                 break;
             }
         }

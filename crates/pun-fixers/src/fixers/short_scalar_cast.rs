@@ -51,7 +51,10 @@ impl Fixer for ShortScalarCastFixer {
                 b"binary" => b"string",
                 _ => continue,
             };
-            let new = Token::new(tokens[index].id.unwrap(), str_replace(cast_from, cast_to, content));
+            let new = Token::new(
+                tokens[index].id.unwrap(),
+                str_replace(cast_from, cast_to, content),
+            );
             tokens.set(index, new);
         }
     }

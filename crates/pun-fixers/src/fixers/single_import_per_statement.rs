@@ -3,7 +3,7 @@ use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::whitespaces_analyzer::WhitespacesAnalyzer;
 use anyhow::Result;
 use pun_format::{Fixer, WhitespacesFixerConfig};
-use pun_tokens::{php_compat, Kind::*, Token, Tokens, TokensAnalyzer};
+use pun_tokens::{Kind::*, Token, Tokens, TokensAnalyzer, php_compat};
 use serde_json::Value;
 use std::path::Path;
 
@@ -13,7 +13,10 @@ struct SingleImportPerStatementFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SingleImportPerStatementFixer { group_to_single_imports: true, whitespaces_config: Default::default() })
+    Box::new(SingleImportPerStatementFixer {
+        group_to_single_imports: true,
+        whitespaces_config: Default::default(),
+    })
 }
 
 impl Fixer for SingleImportPerStatementFixer {
@@ -35,9 +38,15 @@ impl Fixer for SingleImportPerStatementFixer {
         self.whitespaces_config = config.clone();
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
-        let uses: Vec<usize> = TokensAnalyzer::new(tokens).get_import_use_indexes(false).into_values().flatten().collect();
+        let uses: Vec<usize> = TokensAnalyzer::new(tokens)
+            .get_import_use_indexes(false)
+            .into_values()
+            .flatten()
+            .collect();
         for &index in uses.iter().rev() {
-            let end_index = tokens.get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true).unwrap();
+            let end_index = tokens
+                .get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true)
+                .unwrap();
             let group_close = tokens.get_prev_meaningful_token(end_index).unwrap();
             if tokens[group_close].is_kind(CT_GROUP_IMPORT_BRACE_CLOSE) {
                 if self.group_to_single_imports {
@@ -79,13 +88,22 @@ fn get_group_declaration(tokens: &Tokens, index: usize) -> (Vec<u8>, usize, usiz
     )
 }
 
-fn get_group_statements(tokens: &Tokens, group_prefix: &[u8], group_open_index: usize, group_close_index: usize, comment: &[u8]) -> Vec<Vec<u8>> {
+fn get_group_statements(
+    tokens: &Tokens,
+    group_prefix: &[u8],
+    group_open_index: usize,
+    group_close_index: usize,
+    comment: &[u8],
+) -> Vec<Vec<u8>> {
     let mut statements: Vec<Vec<u8>> = Vec::new();
     let mut statement = group_prefix.to_vec();
     let mut i = group_open_index + 1;
     while i <= group_close_index {
         let token = &tokens[i];
-        if token.equals(",", true) && tokens[tokens.get_next_meaningful_token(i).unwrap()].is_kind(CT_GROUP_IMPORT_BRACE_CLOSE) {
+        if token.equals(",", true)
+            && tokens[tokens.get_next_meaningful_token(i).unwrap()]
+                .is_kind(CT_GROUP_IMPORT_BRACE_CLOSE)
+        {
             i += 1;
             continue;
         }
@@ -124,8 +142,15 @@ fn get_group_statements(tokens: &Tokens, group_prefix: &[u8], group_open_index: 
 
 impl SingleImportPerStatementFixer {
     fn fix_group_use(&self, tokens: &mut Tokens, index: usize, end_index: usize) {
-        let (group_prefix, group_open_index, group_close_index, comment) = get_group_declaration(tokens, index);
-        let statements = get_group_statements(tokens, &group_prefix, group_open_index, group_close_index, &comment);
+        let (group_prefix, group_open_index, group_close_index, comment) =
+            get_group_declaration(tokens, index);
+        let statements = get_group_statements(
+            tokens,
+            &group_prefix,
+            group_open_index,
+            group_close_index,
+            &comment,
+        );
 
         tokens.clear_range(index, group_close_index);
         if tokens[end_index].equals(";", true) {
@@ -133,7 +158,8 @@ impl SingleImportPerStatementFixer {
         }
 
         let ending = self.whitespaces_config.get_line_ending().as_bytes();
-        let mut import_tokens = Tokens::from_code(&[&b"<?php "[..], &statements.join(ending)].concat());
+        let mut import_tokens =
+            Tokens::from_code(&[&b"<?php "[..], &statements.join(ending)].concat());
         import_tokens.clear_at(0);
         import_tokens.clear_empty_tokens();
         tokens.insert_at(index, import_tokens.iter().cloned().collect());
@@ -142,9 +168,15 @@ impl SingleImportPerStatementFixer {
     fn fix_multiple_use(&self, tokens: &mut Tokens, index: usize, end_index: usize) {
         let next_token_index = tokens.get_next_meaningful_token(index).unwrap();
         let leading_tokens = if tokens[next_token_index].is_kind(CT_FUNCTION_IMPORT) {
-            vec![Token::new(CT_FUNCTION_IMPORT, "function"), Token::new(T_WHITESPACE, " ")]
+            vec![
+                Token::new(CT_FUNCTION_IMPORT, "function"),
+                Token::new(T_WHITESPACE, " "),
+            ]
         } else if tokens[next_token_index].is_kind(CT_CONST_IMPORT) {
-            vec![Token::new(CT_CONST_IMPORT, "const"), Token::new(T_WHITESPACE, " ")]
+            vec![
+                Token::new(CT_CONST_IMPORT, "const"),
+                Token::new(T_WHITESPACE, " "),
+            ]
         } else {
             vec![]
         };
@@ -167,7 +199,10 @@ impl SingleImportPerStatementFixer {
             if tokens[i - 1].is_whitespace(None) {
                 tokens.set(i - 1, Token::new(T_WHITESPACE, [ending, &indent].concat()));
             } else if !tokens[i - 1].content.contains(&b'\n') {
-                tokens.insert_at(i, vec![Token::new(T_WHITESPACE, [ending, &indent].concat())]);
+                tokens.insert_at(
+                    i,
+                    vec![Token::new(T_WHITESPACE, [ending, &indent].concat())],
+                );
             }
             i -= 1;
         }

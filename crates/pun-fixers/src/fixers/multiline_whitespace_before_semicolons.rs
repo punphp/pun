@@ -16,7 +16,10 @@ struct MultilineWhitespaceBeforeSemicolonsFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(MultilineWhitespaceBeforeSemicolonsFixer { strategy: STRATEGY_NO_MULTI_LINE.into(), whitespaces_config: Default::default() })
+    Box::new(MultilineWhitespaceBeforeSemicolonsFixer {
+        strategy: STRATEGY_NO_MULTI_LINE.into(),
+        whitespaces_config: Default::default(),
+    })
 }
 
 impl MultilineWhitespaceBeforeSemicolonsFixer {
@@ -28,7 +31,11 @@ impl MultilineWhitespaceBeforeSemicolonsFixer {
             if !tokens[index].is_whitespace(None) && !tokens[index].is_comment() {
                 break;
             }
-            if tokens[index].get_content().windows(line_ending.len()).any(|w| w == line_ending) {
+            if tokens[index]
+                .get_content()
+                .windows(line_ending.len())
+                .any(|w| w == line_ending)
+            {
                 return index;
             }
             index += 1;
@@ -38,7 +45,13 @@ impl MultilineWhitespaceBeforeSemicolonsFixer {
 
     /// Find the index for the previous significant token. Return the given index when there's no significant token.
     fn get_previous_significant_token_index(mut index: usize, tokens: &Tokens) -> usize {
-        let stop_tokens = [T_LNUMBER, T_DNUMBER, T_STRING, T_VARIABLE, T_CONSTANT_ENCAPSED_STRING];
+        let stop_tokens = [
+            T_LNUMBER,
+            T_DNUMBER,
+            T_STRING,
+            T_VARIABLE,
+            T_CONSTANT_ENCAPSED_STRING,
+        ];
         while index > 0 {
             if tokens[index].is_given_kind(&stop_tokens) || tokens[index].equals(")", true) {
                 return index;
@@ -52,7 +65,18 @@ impl MultilineWhitespaceBeforeSemicolonsFixer {
     fn find_whitespace_before_first_call(mut index: usize, tokens: &Tokens) -> Option<Vec<u8>> {
         let mut is_multiline_call = false;
         let mut prev_index = tokens.get_prev_meaningful_token(index).unwrap();
-        while !tokens[prev_index].equals_any(&[";".into(), ":".into(), "{".into(), "}".into(), T_OPEN_TAG.into(), T_OPEN_TAG_WITH_ECHO.into(), T_ELSE.into()], true) {
+        while !tokens[prev_index].equals_any(
+            &[
+                ";".into(),
+                ":".into(),
+                "{".into(),
+                "}".into(),
+                T_OPEN_TAG.into(),
+                T_OPEN_TAG_WITH_ECHO.into(),
+                T_ELSE.into(),
+            ],
+            true,
+        ) {
             index = prev_index;
             prev_index = tokens.get_prev_meaningful_token(index).unwrap();
             if let Some((block_type, false)) = Tokens::detect_block_type(&tokens[index]) {
@@ -61,7 +85,8 @@ impl MultilineWhitespaceBeforeSemicolonsFixer {
             }
             if tokens[index].is_object_operator() || tokens[index].is_kind(T_DOUBLE_COLON) {
                 prev_index = tokens.get_prev_meaningful_token(index).unwrap();
-                is_multiline_call = is_multiline_call || tokens.is_partial_code_multiline(prev_index, index);
+                is_multiline_call =
+                    is_multiline_call || tokens.is_partial_code_multiline(prev_index, index);
             }
         }
         is_multiline_call.then(|| WhitespacesAnalyzer::detect_indent(tokens, index))
@@ -80,7 +105,11 @@ impl Fixer for MultilineWhitespaceBeforeSemicolonsFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let r = resolve(self.name(), options, &["strategy"])?;
-        self.strategy = r.string("strategy", STRATEGY_NO_MULTI_LINE, &[STRATEGY_NO_MULTI_LINE, STRATEGY_NEW_LINE_FOR_CHAINED_CALLS])?;
+        self.strategy = r.string(
+            "strategy",
+            STRATEGY_NO_MULTI_LINE,
+            &[STRATEGY_NO_MULTI_LINE, STRATEGY_NEW_LINE_FOR_CHAINED_CALLS],
+        )?;
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
@@ -95,7 +124,9 @@ impl Fixer for MultilineWhitespaceBeforeSemicolonsFixer {
         let mut index = 0;
         while index < count {
             if tokens[index].is_kind(T_CONST) {
-                index = tokens.get_next_token_of_kind(index, &[";".into()], true).unwrap();
+                index = tokens
+                    .get_next_token_of_kind(index, &[";".into()], true)
+                    .unwrap();
                 index += 1;
                 continue;
             }
@@ -137,7 +168,8 @@ impl Fixer for MultilineWhitespaceBeforeSemicolonsFixer {
                     tokens.clear_at(previous_index);
                     tokens.clear_at(index);
                     // find the significant token index before the semicolon
-                    let significant_token_index = Self::get_previous_significant_token_index(index, tokens);
+                    let significant_token_index =
+                        Self::get_previous_significant_token_index(index, tokens);
                     // insert the semicolon
                     tokens.insert_at(significant_token_index + 1, vec![Token::char(";")]);
                 } else {

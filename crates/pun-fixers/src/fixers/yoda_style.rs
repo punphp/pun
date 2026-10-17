@@ -22,7 +22,11 @@ struct YodaStyleFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = YodaStyleFixer { always_move_variable: false, candidate_types: Vec::new(), candidates_map: Vec::new() };
+    let mut f = YodaStyleFixer {
+        always_move_variable: false,
+        candidate_types: Vec::new(),
+        candidates_map: Vec::new(),
+    };
     f.resolve_configuration(Some(true), Some(true), None);
     Box::new(f)
 }
@@ -35,7 +39,16 @@ impl Fixer for YodaStyleFixer {
         0
     }
     fn configure(&mut self, options: &Value) -> anyhow::Result<()> {
-        let c = resolve(self.name(), options, &["equal", "identical", "less_and_greater", "always_move_variable"])?;
+        let c = resolve(
+            self.name(),
+            options,
+            &[
+                "equal",
+                "identical",
+                "less_and_greater",
+                "always_move_variable",
+            ],
+        )?;
         let equal = c.opt_bool("equal", Some(true))?;
         let identical = c.opt_bool("identical", Some(true))?;
         let less_and_greater = c.opt_bool("less_and_greater", None)?;
@@ -94,12 +107,26 @@ const LOWER_PRECEDENCE_ASSIGNMENT_KINDS: &[Kind] = &[
     T_COALESCE_EQUAL,
 ];
 
-const INDEX_OPEN: [Proto<'static>; 2] = [Proto::Char(b"["), Proto::KindContent(CT_ARRAY_INDEX_BRACE_OPEN, b"{")];
+const INDEX_OPEN: [Proto<'static>; 2] = [
+    Proto::Char(b"["),
+    Proto::KindContent(CT_ARRAY_INDEX_BRACE_OPEN, b"{"),
+];
 
 fn is_of_lower_precedence(token: &Token) -> bool {
     is_of_lower_precedence_assignment(token)
         || token.is_given_kind(LOWER_PRECEDENCE_KINDS)
-        || token.equals_any(&["&".into(), "|".into(), "^".into(), "?".into(), ":".into(), ",".into(), ";".into()], true)
+        || token.equals_any(
+            &[
+                "&".into(),
+                "|".into(),
+                "^".into(),
+                "?".into(),
+                ":".into(),
+                ",".into(),
+                ";".into(),
+            ],
+            true,
+        )
 }
 
 fn is_of_lower_precedence_assignment(token: &Token) -> bool {
@@ -107,7 +134,12 @@ fn is_of_lower_precedence_assignment(token: &Token) -> bool {
 }
 
 impl YodaStyleFixer {
-    fn resolve_configuration(&mut self, equal: Option<bool>, identical: Option<bool>, less_and_greater: Option<bool>) {
+    fn resolve_configuration(
+        &mut self,
+        equal: Option<bool>,
+        identical: Option<bool>,
+        less_and_greater: Option<bool>,
+    ) {
         let mut candidate_types = Vec::new();
         self.candidates_map.clear();
         if let Some(e) = equal {
@@ -120,13 +152,21 @@ impl YodaStyleFixer {
         }
         if let Some(l) = less_and_greater {
             candidate_types.push((Candidate::Kind(T_IS_SMALLER_OR_EQUAL), l));
-            self.candidates_map.push((Candidate::Kind(T_IS_SMALLER_OR_EQUAL), Token::new(T_IS_GREATER_OR_EQUAL, ">=")));
+            self.candidates_map.push((
+                Candidate::Kind(T_IS_SMALLER_OR_EQUAL),
+                Token::new(T_IS_GREATER_OR_EQUAL, ">="),
+            ));
             candidate_types.push((Candidate::Kind(T_IS_GREATER_OR_EQUAL), l));
-            self.candidates_map.push((Candidate::Kind(T_IS_GREATER_OR_EQUAL), Token::new(T_IS_SMALLER_OR_EQUAL, "<=")));
+            self.candidates_map.push((
+                Candidate::Kind(T_IS_GREATER_OR_EQUAL),
+                Token::new(T_IS_SMALLER_OR_EQUAL, "<="),
+            ));
             candidate_types.push((Candidate::Char("<"), l));
-            self.candidates_map.push((Candidate::Char("<"), Token::char(">")));
+            self.candidates_map
+                .push((Candidate::Char("<"), Token::char(">")));
             candidate_types.push((Candidate::Char(">"), l));
-            self.candidates_map.push((Candidate::Char(">"), Token::char("<")));
+            self.candidates_map
+                .push((Candidate::Char(">"), Token::char("<")));
         }
         self.candidate_types = candidate_types;
     }
@@ -164,7 +204,11 @@ impl YodaStyleFixer {
             }
         }
         let prev = tokens.get_prev_meaningful_token(index).unwrap();
-        if tokens[prev].is_kind(T_CLOSE_TAG) { tokens.get_prev_meaningful_token(prev).unwrap() } else { prev }
+        if tokens[prev].is_kind(T_CLOSE_TAG) {
+            tokens.get_prev_meaningful_token(prev).unwrap()
+        } else {
+            prev
+        }
     }
 
     fn find_comparison_start(&self, tokens: &Tokens, index: usize) -> usize {
@@ -251,7 +295,12 @@ impl YodaStyleFixer {
     }
 
     fn fix_tokens_compare_part(&self, tokens: &Tokens, start: usize, end: usize) -> Vec<Token> {
-        let code = [&b"<?php "[..], &tokens.generate_partial_code(start, end), b";"].concat();
+        let code = [
+            &b"<?php "[..],
+            &tokens.generate_partial_code(start, end),
+            b";",
+        ]
+        .concat();
         let mut new_tokens = Tokens::from_code(&code);
         self.fix_tokens(&mut new_tokens);
         let last = new_tokens.count() - 1;
@@ -261,13 +310,29 @@ impl YodaStyleFixer {
         new_tokens.iter().cloned().collect()
     }
 
-    fn get_compare_fixable_info(&self, tokens: &Tokens, index: usize, yoda: bool) -> Option<((usize, usize), (usize, usize))> {
-        let right = (tokens.get_next_meaningful_token(index).unwrap(), self.find_comparison_end(tokens, index));
-        if !yoda && tokens.get_next_meaningful_token(right.1).is_some_and(|n| is_of_lower_precedence_assignment(&tokens[n])) {
+    fn get_compare_fixable_info(
+        &self,
+        tokens: &Tokens,
+        index: usize,
+        yoda: bool,
+    ) -> Option<((usize, usize), (usize, usize))> {
+        let right = (
+            tokens.get_next_meaningful_token(index).unwrap(),
+            self.find_comparison_end(tokens, index),
+        );
+        if !yoda
+            && tokens
+                .get_next_meaningful_token(right.1)
+                .is_some_and(|n| is_of_lower_precedence_assignment(&tokens[n]))
+        {
             return None;
         }
-        let left = (self.find_comparison_start(tokens, index), tokens.get_prev_meaningful_token(index).unwrap());
-        if is_list_statement(tokens, left.0, left.1) || is_list_statement(tokens, right.0, right.1) {
+        let left = (
+            self.find_comparison_start(tokens, index),
+            tokens.get_prev_meaningful_token(index).unwrap(),
+        );
+        if is_list_statement(tokens, left.0, left.1) || is_list_statement(tokens, right.0, right.1)
+        {
             return None; // do not fix lists assignment inside statements
         }
         let strict = self.always_move_variable;
@@ -281,12 +346,22 @@ impl YodaStyleFixer {
             left_side_is_variable = left_side_is_variable && !tokens[left.0].equals("(", true);
             right_side_is_variable = right_side_is_variable && !tokens[right.0].equals("(", true);
         }
-        if (yoda && !left_side_is_variable) || (!yoda && !right_side_is_variable) { None } else { Some((left, right)) }
+        if (yoda && !left_side_is_variable) || (!yoda && !right_side_is_variable) {
+            None
+        } else {
+            Some((left, right))
+        }
     }
 }
 
 fn is_list_statement(tokens: &Tokens, index: usize, end: usize) -> bool {
-    (index..=end).any(|i| tokens[i].is_given_kind(&[T_LIST, CT_DESTRUCTURING_BRACKET_OPEN, CT_DESTRUCTURING_BRACKET_CLOSE]))
+    (index..=end).any(|i| {
+        tokens[i].is_given_kind(&[
+            T_LIST,
+            CT_DESTRUCTURING_BRACKET_OPEN,
+            CT_DESTRUCTURING_BRACKET_CLOSE,
+        ])
+    })
 }
 
 fn is_variable(tokens: &Tokens, start: usize, end: usize, strict: bool) -> bool {
@@ -343,8 +418,14 @@ fn is_variable(tokens: &Tokens, start: usize, end: usize, strict: bool) -> bool 
             continue;
         }
         // $a[...], a[...] (as in $c->a[$b]), $a{...} or a{...} (as in $c->a{$b})
-        if current.is_kind(if expect_string { T_STRING } else { T_VARIABLE }) && next.equals_any(&INDEX_OPEN, true) {
-            let bt = if next.equals("[", true) { Tokens::BLOCK_TYPE_INDEX_BRACKET } else { Tokens::BLOCK_TYPE_INDEX_BRACE };
+        if current.is_kind(if expect_string { T_STRING } else { T_VARIABLE })
+            && next.equals_any(&INDEX_OPEN, true)
+        {
+            let bt = if next.equals("[", true) {
+                Tokens::BLOCK_TYPE_INDEX_BRACKET
+            } else {
+                Tokens::BLOCK_TYPE_INDEX_BRACE
+            };
             index = tokens.find_block_end(bt, next_index);
             if index == end {
                 return true;
@@ -392,7 +473,10 @@ fn is_constant(tokens: &Tokens, mut index: usize, end: usize) -> bool {
             return false;
         }
         if expect_array_only {
-            if token.equals_any(&["(".into(), ")".into(), CT_ARRAY_BRACKET_CLOSE.into()], true) {
+            if token.equals_any(
+                &["(".into(), ")".into(), CT_ARRAY_BRACKET_CLOSE.into()],
+                true,
+            ) {
                 continue;
             }
             return false;
@@ -409,7 +493,14 @@ fn is_constant(tokens: &Tokens, mut index: usize, end: usize) -> bool {
             continue;
         }
         if token.is_given_kind(&[T_LNUMBER, T_DNUMBER, T_CONSTANT_ENCAPSED_STRING])
-            || token.equals_any(&[(T_STRING, "true").into(), (T_STRING, "false").into(), (T_STRING, "null").into()], true)
+            || token.equals_any(
+                &[
+                    (T_STRING, "true").into(),
+                    (T_STRING, "false").into(),
+                    (T_STRING, "null").into(),
+                ],
+                true,
+            )
         {
             expect_nothing = true;
             continue;

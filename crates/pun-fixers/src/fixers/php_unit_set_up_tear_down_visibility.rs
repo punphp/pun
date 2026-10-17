@@ -53,12 +53,25 @@ fn apply_php_unit_class_fix(tokens: &mut Tokens, start_index: usize, end_index: 
             continue;
         }
         counter += 1;
-        let visibility = TokensAnalyzer::new(tokens).get_method_attributes(index).visibility;
+        let visibility = TokensAnalyzer::new(tokens)
+            .get_method_attributes(index)
+            .visibility;
         if visibility == Some(Kind::T_PUBLIC) {
-            let visibility_index = tokens.get_prev_token_of_kind(index, &[Kind::T_PUBLIC.into()], true).unwrap();
-            tokens.set(visibility_index, Token::new(Kind::T_PROTECTED, b"protected".to_vec()));
+            let visibility_index = tokens
+                .get_prev_token_of_kind(index, &[Kind::T_PUBLIC.into()], true)
+                .unwrap();
+            tokens.set(
+                visibility_index,
+                Token::new(Kind::T_PROTECTED, b"protected".to_vec()),
+            );
         } else if visibility.is_none() {
-            slices_to_insert.insert(index, vec![Token::new(Kind::T_PROTECTED, b"protected".to_vec()), Token::new(Kind::T_WHITESPACE, b" ".to_vec())]);
+            slices_to_insert.insert(
+                index,
+                vec![
+                    Token::new(Kind::T_PROTECTED, b"protected".to_vec()),
+                    Token::new(Kind::T_WHITESPACE, b" ".to_vec()),
+                ],
+            );
         }
         index += 1;
     }

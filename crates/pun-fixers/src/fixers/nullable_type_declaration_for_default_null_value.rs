@@ -13,7 +13,9 @@ struct NullableTypeDeclarationForDefaultNullValueFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NullableTypeDeclarationForDefaultNullValueFixer { use_nullable_type_declaration: true })
+    Box::new(NullableTypeDeclarationForDefaultNullValueFixer {
+        use_nullable_type_declaration: true,
+    })
 }
 
 const CONSTRUCTOR_PROPERTY_MODIFIERS: &[Kind] = &[
@@ -39,7 +41,8 @@ impl Fixer for NullableTypeDeclarationForDefaultNullValueFixer {
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_token_kind_found(T_VARIABLE) && tokens.is_any_token_kinds_found(&[T_FUNCTION, T_FN])
+        tokens.is_token_kind_found(T_VARIABLE)
+            && tokens.is_any_token_kinds_found(&[T_FUNCTION, T_FN])
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let functions_analyzer = FunctionsAnalyzer::new();
@@ -56,13 +59,23 @@ impl Fixer for NullableTypeDeclarationForDefaultNullValueFixer {
 impl NullableTypeDeclarationForDefaultNullValueFixer {
     fn fix_function_parameters(&self, tokens: &mut Tokens, arguments: Vec<ArgumentAnalysis>) {
         for argument_info in arguments.into_iter().rev() {
-            let Some(argument_type_info) = argument_info.type_analysis else { continue };
+            let Some(argument_type_info) = argument_info.type_analysis else {
+                continue;
+            };
             let lower = argument_type_info.name.to_ascii_lowercase();
-            if lower == b"mixed" || lower == b"null" || !argument_info.default.as_ref().is_some_and(|d| d.eq_ignore_ascii_case(b"null")) {
+            if lower == b"mixed"
+                || lower == b"null"
+                || !argument_info
+                    .default
+                    .as_ref()
+                    .is_some_and(|d| d.eq_ignore_ascii_case(b"null"))
+            {
                 continue;
             }
             if !self.use_nullable_type_declaration {
-                let visibility = &tokens[tokens.get_prev_meaningful_token(argument_type_info.get_start_index()).unwrap()];
+                let visibility = &tokens[tokens
+                    .get_prev_meaningful_token(argument_type_info.get_start_index())
+                    .unwrap()];
                 if visibility.is_given_kind(CONSTRUCTOR_PROPERTY_MODIFIERS) {
                     continue;
                 }
@@ -79,7 +92,10 @@ impl NullableTypeDeclarationForDefaultNullValueFixer {
     fn fix_single_type_parameter(&self, tokens: &mut Tokens, info: &TypeAnalysis) {
         if self.use_nullable_type_declaration {
             if !info.is_nullable() {
-                tokens.insert_at(info.get_start_index(), vec![Token::new(CT_NULLABLE_TYPE, "?")]);
+                tokens.insert_at(
+                    info.get_start_index(),
+                    vec![Token::new(CT_NULLABLE_TYPE, "?")],
+                );
             }
         } else if info.is_nullable() {
             let start_index = info.get_start_index();
@@ -97,13 +113,33 @@ impl NullableTypeDeclarationForDefaultNullValueFixer {
             let mut end_index = info.get_end_index();
             if name.contains(&b'&') && !name.contains(&b'|') {
                 end_index += 2;
-                tokens.insert_at(info.get_start_index(), vec![Token::new(CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN, "(")]);
-                tokens.insert_at(end_index, vec![Token::new(CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE, ")")]);
+                tokens.insert_at(
+                    info.get_start_index(),
+                    vec![Token::new(
+                        CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN,
+                        "(",
+                    )],
+                );
+                tokens.insert_at(
+                    end_index,
+                    vec![Token::new(
+                        CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE,
+                        ")",
+                    )],
+                );
             }
-            tokens.insert_at(end_index + 1, vec![Token::new(CT_TYPE_ALTERNATION, "|"), Token::new(T_STRING, "null")]);
+            tokens.insert_at(
+                end_index + 1,
+                vec![
+                    Token::new(CT_TYPE_ALTERNATION, "|"),
+                    Token::new(T_STRING, "null"),
+                ],
+            );
         } else if info.is_nullable() {
             let start_index = info.get_start_index();
-            let mut index = tokens.get_next_token_of_kind(start_index - 1, &[(T_STRING, "null").into()], false).unwrap();
+            let mut index = tokens
+                .get_next_token_of_kind(start_index - 1, &[(T_STRING, "null").into()], false)
+                .unwrap();
             if index == start_index {
                 tokens.remove_trailing_whitespace(index, None);
                 tokens.clear_token_and_merge_surrounding_whitespace(index);
@@ -123,12 +159,20 @@ impl NullableTypeDeclarationForDefaultNullValueFixer {
             }
             if name.contains(&b'&') && name.iter().filter(|&&c| c == b'|').count() == 1 {
                 let index = tokens
-                    .get_next_token_of_kind(start_index - 1, &[CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN.into()], true)
+                    .get_next_token_of_kind(
+                        start_index - 1,
+                        &[CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN.into()],
+                        true,
+                    )
                     .unwrap();
                 tokens.remove_trailing_whitespace(index, None);
                 tokens.clear_token_and_merge_surrounding_whitespace(index);
                 let index = tokens
-                    .get_prev_token_of_kind(info.get_end_index() + 1, &[CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE.into()], true)
+                    .get_prev_token_of_kind(
+                        info.get_end_index() + 1,
+                        &[CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE.into()],
+                        true,
+                    )
                     .unwrap();
                 tokens.remove_leading_whitespace(index, None);
                 tokens.clear_token_and_merge_surrounding_whitespace(index);

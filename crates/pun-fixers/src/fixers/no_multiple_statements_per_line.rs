@@ -34,7 +34,12 @@ impl Fixer for NoMultipleStatementsPerLineFixer {
         let mut max = tokens.count() - 1;
         while index < max {
             if tokens[index].is_kind(T_FOR) {
-                index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap());
+                index = tokens.find_block_end(
+                    Tokens::BLOCK_TYPE_PARENTHESIS,
+                    tokens
+                        .get_next_token_of_kind(index, &["(".into()], true)
+                        .unwrap(),
+                );
                 index += 1;
                 continue;
             }
@@ -57,7 +62,18 @@ impl Fixer for NoMultipleStatementsPerLineFixer {
                     next_index += 1;
                     continue;
                 }
-                if !token.equals_any(&["}".into(), T_CLOSE_TAG.into(), T_ENDIF.into(), T_ENDFOR.into(), T_ENDSWITCH.into(), T_ENDWHILE.into(), T_ENDFOREACH.into()], true) {
+                if !token.equals_any(
+                    &[
+                        "}".into(),
+                        T_CLOSE_TAG.into(),
+                        T_ENDIF.into(),
+                        T_ENDFOR.into(),
+                        T_ENDSWITCH.into(),
+                        T_ENDWHILE.into(),
+                        T_ENDFOREACH.into(),
+                    ],
+                    true,
+                ) {
                     let mut whitespace_index = index;
                     loop {
                         whitespace_index += 1;
@@ -65,7 +81,11 @@ impl Fixer for NoMultipleStatementsPerLineFixer {
                             break;
                         }
                     }
-                    let newline = [self.whitespaces_config.get_line_ending().as_bytes(), &get_line_indentation(tokens, index)].concat();
+                    let newline = [
+                        self.whitespaces_config.get_line_ending().as_bytes(),
+                        &get_line_indentation(tokens, index),
+                    ]
+                    .concat();
                     if tokens.ensure_whitespace_at_index(whitespace_index, 0, &newline) {
                         max += 1;
                     }

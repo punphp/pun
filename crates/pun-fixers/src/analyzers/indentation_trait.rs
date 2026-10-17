@@ -12,7 +12,9 @@ pub fn get_line_indentation(tokens: &Tokens, index: usize) -> Vec<u8> {
 
 pub fn extract_indent(content: &[u8]) -> Vec<u8> {
     if !content.is_ascii() {
-        return Preg::match_groups("/\\R(\\h*)[^\\r\\n]*$/D", content, 0).map(|m| m.str(1).to_vec()).unwrap_or_default();
+        return Preg::match_groups("/\\R(\\h*)[^\\r\\n]*$/D", content, 0)
+            .map(|m| m.str(1).to_vec())
+            .unwrap_or_default();
     }
     // ASCII: the leftmost (atomic) `\R` with no CR/LF after it is the one covering the last CR/LF (a CRLF pair counts
     // from its CR), else the first VT/FF; group 1 is the run of spaces and tabs after it.
@@ -24,12 +26,20 @@ pub fn extract_indent(content: &[u8]) -> Vec<u8> {
         },
     };
     let rest = &content[after..];
-    rest[..rest.iter().position(|b| !matches!(b, b' ' | b'\t')).unwrap_or(rest.len())].to_vec()
+    rest[..rest
+        .iter()
+        .position(|b| !matches!(b, b' ' | b'\t'))
+        .unwrap_or(rest.len())]
+        .to_vec()
 }
 
 pub fn get_previous_newline_token_index(tokens: &Tokens, mut index: usize) -> Option<usize> {
     while index > 0 {
-        index = tokens.get_prev_token_of_kind(index, &[T_WHITESPACE.into(), T_INLINE_HTML.into()], true)?;
+        index = tokens.get_prev_token_of_kind(
+            index,
+            &[T_WHITESPACE.into(), T_INLINE_HTML.into()],
+            true,
+        )?;
         if is_new_line_token(tokens, index) {
             return Some(index);
         }
@@ -40,14 +50,22 @@ pub fn get_previous_newline_token_index(tokens: &Tokens, mut index: usize) -> Op
 pub fn compute_new_line_content(tokens: &Tokens, index: usize) -> Vec<u8> {
     let content = tokens[index].get_content();
     if index != 0 && tokens[index - 1].is_given_kind(&[T_OPEN_TAG, T_CLOSE_TAG]) {
-        return [Preg::replace("/\\S/", "", tokens[index - 1].get_content()).as_slice(), content].concat();
+        return [
+            Preg::replace("/\\S/", "", tokens[index - 1].get_content()).as_slice(),
+            content,
+        ]
+        .concat();
     }
     content.to_vec()
 }
 
 pub fn is_new_line_token(tokens: &Tokens, index: usize) -> bool {
     let token = &tokens[index];
-    if token.is_kind(T_OPEN_TAG) && index + 1 < tokens.count() && !tokens[index + 1].is_whitespace(None) && Preg::r#match("/\\R/", token.get_content()) {
+    if token.is_kind(T_OPEN_TAG)
+        && index + 1 < tokens.count()
+        && !tokens[index + 1].is_whitespace(None)
+        && Preg::r#match("/\\R/", token.get_content())
+    {
         return true;
     }
     if !tokens[index].is_given_kind(&[T_WHITESPACE, T_INLINE_HTML]) {
@@ -62,12 +80,27 @@ mod tests {
     fn extract_indent_matches_php() {
         // PhpCsFixer\Preg::match('/\R(\h*)[^\r\n]*$/D', $s, $m) ? $m[1] : '' on PHP 8.5.
         let cases: &[(&str, &str)] = &[
-            ("", ""), ("abc", ""), ("\n    x", "    "), ("\r\n\t y", "\t "), ("a\n  b\n    ", "    "), ("\x0b  a", "  "),
-            ("\x0c\t\n  z", "  "), ("a\x0b \n\t\tq", "\t\t"), ("\r", ""), ("  \r\n", ""), ("x\n\x0b  y", ""),
-            ("\n \x0c  \t", " "), ("\r\r\n  w", "  "), ("é\n  x", "  "),
+            ("", ""),
+            ("abc", ""),
+            ("\n    x", "    "),
+            ("\r\n\t y", "\t "),
+            ("a\n  b\n    ", "    "),
+            ("\x0b  a", "  "),
+            ("\x0c\t\n  z", "  "),
+            ("a\x0b \n\t\tq", "\t\t"),
+            ("\r", ""),
+            ("  \r\n", ""),
+            ("x\n\x0b  y", ""),
+            ("\n \x0c  \t", " "),
+            ("\r\r\n  w", "  "),
+            ("é\n  x", "  "),
         ];
         for &(s, want) in cases {
-            assert_eq!(super::extract_indent(s.as_bytes()), want.as_bytes(), "{s:?}");
+            assert_eq!(
+                super::extract_indent(s.as_bytes()),
+                want.as_bytes(),
+                "{s:?}"
+            );
         }
     }
 }

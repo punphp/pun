@@ -43,7 +43,14 @@ impl Fixer for ConstantCaseFixer {
         ];
         for index in 0..tokens.len() {
             let token = &tokens[index];
-            if !token.equals_any(&[(T_STRING, "true").into(), (T_STRING, "false").into(), (T_STRING, "null").into()], false) {
+            if !token.equals_any(
+                &[
+                    (T_STRING, "true").into(),
+                    (T_STRING, "false").into(),
+                    (T_STRING, "null").into(),
+                ],
+                false,
+            ) {
                 continue;
             }
             let prev_index = tokens.get_prev_meaningful_token(index).unwrap_or(0);
@@ -52,14 +59,20 @@ impl Fixer for ConstantCaseFixer {
             }
             // Upstream reads `$tokens[null]` (= token 0) when nothing follows; valid code always has `;` or `?>`.
             let next_index = tokens.get_next_meaningful_token(index).unwrap_or(0);
-            if tokens[next_index].is_given_kind(&[T_DOUBLE_COLON, T_NS_SEPARATOR]) || tokens[next_index].equals("=", false) {
+            if tokens[next_index].is_given_kind(&[T_DOUBLE_COLON, T_NS_SEPARATOR])
+                || tokens[next_index].equals("=", false)
+            {
                 continue;
             }
             if tokens[prev_index].is_kind(T_CASE) && tokens[next_index].equals(";", true) {
                 continue;
             }
             let token = &tokens[index];
-            let content = if self.upper { token.content.to_ascii_uppercase() } else { token.content.to_ascii_lowercase() };
+            let content = if self.upper {
+                token.content.to_ascii_uppercase()
+            } else {
+                token.content.to_ascii_lowercase()
+            };
             tokens.set(index, Token::new(token.id.unwrap(), content));
         }
     }

@@ -43,7 +43,8 @@ impl Fixer for CombineConsecutiveIssetsFixer {
         let mut index = 1;
         while index < token_count {
             if !tokens[index].is_kind(T_ISSET)
-                || !tokens[tokens.get_prev_meaningful_token(index).unwrap()].equals_any(&BEFORE_ISSET, true)
+                || !tokens[tokens.get_prev_meaningful_token(index).unwrap()]
+                    .equals_any(&BEFORE_ISSET, true)
             {
                 index += 1;
                 continue;
@@ -52,7 +53,9 @@ impl Fixer for CombineConsecutiveIssetsFixer {
             let mut isset_close_brace_index = isset_info[isset_info.len() - 1]; // ')' token
             // one index after the previous meaningful of ')'
             let mut insert_location = isset_info[isset_info.len() - 2] + 1;
-            let mut boolean_and_index = tokens.get_next_meaningful_token(isset_close_brace_index).unwrap();
+            let mut boolean_and_index = tokens
+                .get_next_meaningful_token(isset_close_brace_index)
+                .unwrap();
 
             while tokens[boolean_and_index].is_kind(T_BOOLEAN_AND) {
                 let isset_index = tokens.get_next_meaningful_token(boolean_and_index).unwrap();
@@ -61,15 +64,25 @@ impl Fixer for CombineConsecutiveIssetsFixer {
                     break;
                 }
                 let next_isset_info = get_isset_info(tokens, isset_index);
-                let next_meaningful_index = tokens.get_next_meaningful_token(next_isset_info[next_isset_info.len() - 1]).unwrap();
+                let next_meaningful_index = tokens
+                    .get_next_meaningful_token(next_isset_info[next_isset_info.len() - 1])
+                    .unwrap();
                 if !tokens[next_meaningful_index].equals_any(&AFTER_ISSET, true) {
                     index = next_meaningful_index;
                     break;
                 }
                 // clone what we want to move, not the '(' and ')' of the 'isset' statement we're merging
                 let mut clones = vec![Token::char(","), Token::new(T_WHITESPACE, " ")];
-                clones.extend(next_isset_info[1..next_isset_info.len() - 1].iter().map(|&i| tokens[i].clone()));
-                for i in next_isset_info.iter().copied().chain([isset_index, boolean_and_index]) {
+                clones.extend(
+                    next_isset_info[1..next_isset_info.len() - 1]
+                        .iter()
+                        .map(|&i| tokens[i].clone()),
+                );
+                for i in next_isset_info
+                    .iter()
+                    .copied()
+                    .chain([isset_index, boolean_and_index])
+                {
                     tokens.clear_token_and_merge_surrounding_whitespace(i);
                 }
                 let inserted = clones.len();
@@ -77,7 +90,9 @@ impl Fixer for CombineConsecutiveIssetsFixer {
                 token_count += inserted;
                 isset_close_brace_index += inserted;
                 insert_location += inserted;
-                boolean_and_index = tokens.get_next_meaningful_token(isset_close_brace_index).unwrap();
+                boolean_and_index = tokens
+                    .get_next_meaningful_token(isset_close_brace_index)
+                    .unwrap();
             }
             index += 1;
         }

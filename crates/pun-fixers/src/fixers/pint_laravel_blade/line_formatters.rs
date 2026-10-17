@@ -76,7 +76,11 @@ pub mod strip_sensitive_leading_blank_lines {
         None
     }
 
-    fn opens_wrapped_sensitive_tag(lines: &[Vec<u8>], line_count: usize, index: usize) -> Option<usize> {
+    fn opens_wrapped_sensitive_tag(
+        lines: &[Vec<u8>],
+        line_count: usize,
+        index: usize,
+    ) -> Option<usize> {
         let m = RawPreg::match_groups("/^<([A-Za-z][A-Za-z0-9]*)$/", trim(&lines[index]))?;
         if !SENSITIVE.contains(&&m.str(1).to_ascii_lowercase()[..]) {
             return None;
@@ -106,7 +110,8 @@ pub mod join_dangling_close_bracket {
         while index < line_count {
             let line = &lines[index];
             let dangles_close_bracket = lines.get(index + 1).is_some_and(|next| {
-                trim(next) == b">" && RawPreg::r#match("/<\\/[A-Za-z][A-Za-z0-9:_.\\-]*$/", rtrim(line))
+                trim(next) == b">"
+                    && RawPreg::r#match("/<\\/[A-Za-z][A-Za-z0-9:_.\\-]*$/", rtrim(line))
             });
             if dangles_close_bracket {
                 result.push([rtrim(line), b">"].concat());
@@ -131,12 +136,16 @@ pub mod join_dangling_open_bracket {
         let mut index = 0;
         while index < line_count {
             let line = &lines[index];
-            if let Some(m) = RawPreg::match_groups("/^<([A-Za-z][A-Za-z0-9:_.\\-]*)$/", trim(line)) {
+            if let Some(m) = RawPreg::match_groups("/^<([A-Za-z][A-Za-z0-9:_.\\-]*)$/", trim(line))
+            {
                 if index + 1 < line_count {
                     let tag = m.str(1);
                     let next_line = ltrim(&lines[index + 1]);
                     let closing = [&b"</"[..], tag, b">"].concat();
-                    if !next_line.is_empty() && next_line[0] == b'>' && next_line.ends_with(&closing) {
+                    if !next_line.is_empty()
+                        && next_line[0] == b'>'
+                        && next_line.ends_with(&closing)
+                    {
                         result.push([rtrim(line), next_line].concat());
                         index += 2;
                         continue;
@@ -179,7 +188,12 @@ pub mod dedent_hugged_terminator {
         join_lines(&result)
     }
 
-    fn find_hugged_terminator(lines: &[Vec<u8>], line_count: usize, start: usize, tag: &[u8]) -> Option<usize> {
+    fn find_hugged_terminator(
+        lines: &[Vec<u8>],
+        line_count: usize,
+        start: usize,
+        tag: &[u8],
+    ) -> Option<usize> {
         let closing_tag = [&b"</"[..], tag, b">"].concat();
         for index in start..line_count {
             let trimmed = trim(&lines[index]);
@@ -217,7 +231,11 @@ pub mod collapse_short_slots {
         join_lines(&result)
     }
 
-    fn try_collapse(lines: &[Vec<u8>], line_count: usize, index: usize) -> Option<(Vec<u8>, usize)> {
+    fn try_collapse(
+        lines: &[Vec<u8>],
+        line_count: usize,
+        index: usize,
+    ) -> Option<(Vec<u8>, usize)> {
         let line = &lines[index];
         let trimmed = ltrim(line);
         if !opens_slot(trimmed) {
@@ -250,7 +268,9 @@ pub mod collapse_short_slots {
     }
 
     fn opens_slot(trimmed: &[u8]) -> bool {
-        let Some(rest) = trimmed.strip_prefix(b"<x-slot") else { return false };
+        let Some(rest) = trimmed.strip_prefix(b"<x-slot") else {
+            return false;
+        };
         rest.is_empty() || matches!(rest[0], b'>' | b':' | b' ' | b'\t')
     }
 

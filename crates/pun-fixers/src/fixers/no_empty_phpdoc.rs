@@ -23,7 +23,9 @@ impl Fixer for NoEmptyPhpdocFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let mut index = 0;
         while index < tokens.count() {
-            if !tokens[index].is_kind(Kind::T_DOC_COMMENT) || !Preg::r#match(r"#^/\*\*[\s\*]*\*/$#", &tokens[index].content) {
+            if !tokens[index].is_kind(Kind::T_DOC_COMMENT)
+                || !Preg::r#match(r"#^/\*\*[\s\*]*\*/$#", &tokens[index].content)
+            {
                 index += 1;
                 continue;
             }
@@ -33,7 +35,10 @@ impl Fixer for NoEmptyPhpdocFixer {
                 && Preg::r#match(r"/^\R/", &tokens[index + 1].content)
             {
                 let prev = &tokens[index - 1];
-                let t = Token::new(prev.id.unwrap(), Preg::replace(r"/\h*$/", "", &prev.content));
+                let t = Token::new(
+                    prev.id.unwrap(),
+                    Preg::replace(r"/\h*$/", "", &prev.content),
+                );
                 tokens.set(index - 1, t);
                 let new_content = Preg::replace(r"/^\R/", "", &tokens[index + 1].content);
                 if new_content.is_empty() {

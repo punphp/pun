@@ -1,7 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\Whitespace\TypesSpacesFixer`.
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use pun_format::Fixer;
 use pun_tokens::{Kind::*, Token, Tokens};
 use serde_json::Value;
@@ -14,7 +14,10 @@ struct TypesSpacesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(TypesSpacesFixer { space_single: false, space_multiple_catch_single: false })
+    Box::new(TypesSpacesFixer {
+        space_single: false,
+        space_multiple_catch_single: false,
+    })
 }
 
 impl Fixer for TypesSpacesFixer {
@@ -33,7 +36,9 @@ impl Fixer for TypesSpacesFixer {
         let catch = match o.get("space_multiple_catch") {
             None | Some(Value::Null) => space.clone(),
             Some(Value::String(s)) if s == "none" || s == "single" => s.clone(),
-            Some(v) => bail!("[types_spaces] Invalid configuration: The option \"space_multiple_catch\" with value {v} is invalid. Accepted values are: \"none\", \"single\", null."),
+            Some(v) => bail!(
+                "[types_spaces] Invalid configuration: The option \"space_multiple_catch\" with value {v} is invalid. Accepted values are: \"none\", \"single\", null."
+            ),
         };
         self.space_single = space == "single";
         self.space_multiple_catch_single = catch == "single";
@@ -50,7 +55,13 @@ impl Fixer for TypesSpacesFixer {
             }
             if tokens[index].is_kind(T_CATCH) {
                 loop {
-                    index = tokens.get_next_token_of_kind(index, &[")".into(), CT_TYPE_ALTERNATION.into()], true).unwrap();
+                    index = tokens
+                        .get_next_token_of_kind(
+                            index,
+                            &[")".into(), CT_TYPE_ALTERNATION.into()],
+                            true,
+                        )
+                        .unwrap();
                     if tokens[index].equals(")", true) {
                         break;
                     }
@@ -77,7 +88,10 @@ fn fix_spacing(tokens: &mut Tokens, index: usize, single_space: bool) -> usize {
 
 fn ensure_single_space(tokens: &mut Tokens, index: usize, offset: usize) -> usize {
     if !tokens[index].is_whitespace(None) {
-        tokens.insert_slices(BTreeMap::from([(index + offset, vec![Token::new(T_WHITESPACE, " ")])]));
+        tokens.insert_slices(BTreeMap::from([(
+            index + offset,
+            vec![Token::new(T_WHITESPACE, " ")],
+        )]));
         return 1;
     }
     if tokens[index].content != b" " && !Preg::r#match("/\\R/", &tokens[index].content) {

@@ -3,8 +3,8 @@
 //! by fixers. Not ported: the static code-hash cache (pure optimization) and JSON helpers.
 
 use std::any::Any;
-use std::collections::{BTreeMap, HashMap};
 use std::cell::RefCell;
+use std::collections::{BTreeMap, HashMap};
 use std::ops::Index;
 use std::sync::Arc;
 
@@ -39,7 +39,6 @@ impl Index<usize> for Tokens {
     }
 }
 
-
 #[allow(non_upper_case_globals)]
 impl Tokens {
     pub const BLOCK_TYPE_PARENTHESIS: BlockType = BlockType(1);
@@ -63,8 +62,10 @@ impl Tokens {
     pub const BLOCK_TYPE_INDEX_SQUARE_BRACE: BlockType = Self::BLOCK_TYPE_INDEX_BRACKET;
     pub const BLOCK_TYPE_ARRAY_SQUARE_BRACE: BlockType = Self::BLOCK_TYPE_ARRAY_BRACKET;
     pub const BLOCK_TYPE_ARRAY_INDEX_CURLY_BRACE: BlockType = Self::BLOCK_TYPE_INDEX_BRACE;
-    pub const BLOCK_TYPE_DESTRUCTURING_SQUARE_BRACE: BlockType = Self::BLOCK_TYPE_DESTRUCTURING_BRACKET;
-    pub const BLOCK_TYPE_BRACE_CLASS_INSTANTIATION: BlockType = Self::BLOCK_TYPE_CLASS_INSTANTIATION_PARENTHESIS;
+    pub const BLOCK_TYPE_DESTRUCTURING_SQUARE_BRACE: BlockType =
+        Self::BLOCK_TYPE_DESTRUCTURING_BRACKET;
+    pub const BLOCK_TYPE_BRACE_CLASS_INSTANTIATION: BlockType =
+        Self::BLOCK_TYPE_CLASS_INSTANTIATION_PARENTHESIS;
     pub const BLOCK_TYPE_DYNAMIC_CLASS_CONSTANT_FETCH_CURLY_BRACE: BlockType =
         Self::BLOCK_TYPE_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE;
 
@@ -75,13 +76,34 @@ impl Tokens {
             1 => (C(b"("), C(b")")),
             2 => (C(b"{"), C(b"}")),
             3 => (C(b"["), C(b"]")),
-            4 => (K(CT_ARRAY_BRACKET_OPEN, b"["), K(CT_ARRAY_BRACKET_CLOSE, b"]")),
-            5 => (K(CT_DYNAMIC_PROP_BRACE_OPEN, b"{"), K(CT_DYNAMIC_PROP_BRACE_CLOSE, b"}")),
-            6 => (K(CT_DYNAMIC_VAR_BRACE_OPEN, b"{"), K(CT_DYNAMIC_VAR_BRACE_CLOSE, b"}")),
-            7 => (K(CT_ARRAY_INDEX_BRACE_OPEN, b"{"), K(CT_ARRAY_INDEX_BRACE_CLOSE, b"}")),
-            8 => (K(CT_GROUP_IMPORT_BRACE_OPEN, b"{"), K(CT_GROUP_IMPORT_BRACE_CLOSE, b"}")),
-            9 => (K(CT_DESTRUCTURING_BRACKET_OPEN, b"["), K(CT_DESTRUCTURING_BRACKET_CLOSE, b"]")),
-            10 => (K(CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN, b"("), K(CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE, b")")),
+            4 => (
+                K(CT_ARRAY_BRACKET_OPEN, b"["),
+                K(CT_ARRAY_BRACKET_CLOSE, b"]"),
+            ),
+            5 => (
+                K(CT_DYNAMIC_PROP_BRACE_OPEN, b"{"),
+                K(CT_DYNAMIC_PROP_BRACE_CLOSE, b"}"),
+            ),
+            6 => (
+                K(CT_DYNAMIC_VAR_BRACE_OPEN, b"{"),
+                K(CT_DYNAMIC_VAR_BRACE_CLOSE, b"}"),
+            ),
+            7 => (
+                K(CT_ARRAY_INDEX_BRACE_OPEN, b"{"),
+                K(CT_ARRAY_INDEX_BRACE_CLOSE, b"}"),
+            ),
+            8 => (
+                K(CT_GROUP_IMPORT_BRACE_OPEN, b"{"),
+                K(CT_GROUP_IMPORT_BRACE_CLOSE, b"}"),
+            ),
+            9 => (
+                K(CT_DESTRUCTURING_BRACKET_OPEN, b"["),
+                K(CT_DESTRUCTURING_BRACKET_CLOSE, b"]"),
+            ),
+            10 => (
+                K(CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN, b"("),
+                K(CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE, b")"),
+            ),
             11 => (K(T_ATTRIBUTE, b"#["), K(CT_ATTRIBUTE_CLOSE, b"]")),
             12 => (
                 K(CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN, b"("),
@@ -91,8 +113,14 @@ impl Tokens {
                 K(CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN, b"{"),
                 K(CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE, b"}"),
             ),
-            14 => (K(T_DOLLAR_OPEN_CURLY_BRACES, b"${"), K(CT_DOLLAR_CLOSE_CURLY_BRACES, b"}")),
-            15 => (K(CT_PROPERTY_HOOK_BRACE_OPEN, b"{"), K(CT_PROPERTY_HOOK_BRACE_CLOSE, b"}")),
+            14 => (
+                K(T_DOLLAR_OPEN_CURLY_BRACES, b"${"),
+                K(CT_DOLLAR_CLOSE_CURLY_BRACES, b"}"),
+            ),
+            15 => (
+                K(CT_PROPERTY_HOOK_BRACE_OPEN, b"{"),
+                K(CT_PROPERTY_HOOK_BRACE_CLOSE, b"}"),
+            ),
             _ => panic!("Invalid param type: \"{}\".", t.0),
         }
     }
@@ -117,7 +145,10 @@ impl Tokens {
     }
 
     pub fn from_array(tokens: Vec<Token>) -> Tokens {
-        let mut t = Tokens { found_kinds: vec![0; Kind::ALL.len()], ..Default::default() };
+        let mut t = Tokens {
+            found_kinds: vec![0; Kind::ALL.len()],
+            ..Default::default()
+        };
         for tok in &tokens {
             t.register_found_token(tok);
         }
@@ -128,7 +159,10 @@ impl Tokens {
 
     /// `Tokens::fromCode`: `token_get_all($code, TOKEN_PARSE)` + transformers.
     pub fn from_code(code: &[u8]) -> Tokens {
-        let mut t = Tokens { found_kinds: vec![0; Kind::ALL.len()], ..Default::default() };
+        let mut t = Tokens {
+            found_kinds: vec![0; Kind::ALL.len()],
+            ..Default::default()
+        };
         t.set_code(code);
         t.clear_changed();
         t
@@ -144,7 +178,10 @@ impl Tokens {
         self.found_kinds = vec![0; Kind::ALL.len()];
         self.found_contents.clear();
         for r in &raw {
-            let tok = Token { id: r.kind, content: r.text.to_vec() };
+            let tok = Token {
+                id: r.kind,
+                content: r.text.to_vec(),
+            };
             self.register_found_token(&tok);
             self.tokens.push(tok);
         }
@@ -206,8 +243,16 @@ impl Tokens {
 
     /// `getNamespaceDeclarations()`: `compute` (NamespacesAnalyzer::getDeclarations) runs once per token-list version;
     /// every edit (set to a different token, insert, clear_empty_tokens, set_code) drops the cached value.
-    pub fn namespace_declarations<T: Any + Send + Sync>(&self, compute: impl FnOnce(&Tokens) -> T) -> Arc<T> {
-        if let Some(v) = self.namespace_declarations.borrow().as_ref().and_then(|v| v.clone().downcast::<T>().ok()) {
+    pub fn namespace_declarations<T: Any + Send + Sync>(
+        &self,
+        compute: impl FnOnce(&Tokens) -> T,
+    ) -> Arc<T> {
+        if let Some(v) = self
+            .namespace_declarations
+            .borrow()
+            .as_ref()
+            .and_then(|v| v.clone().downcast::<T>().ok())
+        {
             return v;
         }
         let v = Arc::new(compute(self));
@@ -242,25 +287,41 @@ impl Tokens {
         *self.namespace_declarations.get_mut() = None;
         self.found_contents.insert(Vec::new(), 0);
         // updateSizeByTrimmingTrailingEmptyTokens
-        while self.tokens.last().is_some_and(|t| t.id.is_none() && t.content.is_empty()) {
+        while self
+            .tokens
+            .last()
+            .is_some_and(|t| t.id.is_none() && t.content.is_empty())
+        {
             self.tokens.pop();
         }
     }
 
-    pub fn ensure_whitespace_at_index(&mut self, index: usize, index_offset: usize, whitespace: &[u8]) -> bool {
-        let remove_last_comment_line = |tokens: &mut Tokens, index: usize, whitespace: &[u8]| -> Vec<u8> {
-            let token = &tokens[index];
-            if index_offset == 1 && token.is_kind(T_OPEN_TAG) {
-                let trimmed = crate::php_compat::rtrim(&token.content).to_vec();
-                if whitespace.starts_with(b"\r\n") {
-                    tokens.set(index, Token::new(T_OPEN_TAG, [&trimmed[..], b"\r\n"].concat()));
-                    return whitespace[2..].to_vec();
+    pub fn ensure_whitespace_at_index(
+        &mut self,
+        index: usize,
+        index_offset: usize,
+        whitespace: &[u8],
+    ) -> bool {
+        let remove_last_comment_line =
+            |tokens: &mut Tokens, index: usize, whitespace: &[u8]| -> Vec<u8> {
+                let token = &tokens[index];
+                if index_offset == 1 && token.is_kind(T_OPEN_TAG) {
+                    let trimmed = crate::php_compat::rtrim(&token.content).to_vec();
+                    if whitespace.starts_with(b"\r\n") {
+                        tokens.set(
+                            index,
+                            Token::new(T_OPEN_TAG, [&trimmed[..], b"\r\n"].concat()),
+                        );
+                        return whitespace[2..].to_vec();
+                    }
+                    tokens.set(
+                        index,
+                        Token::new(T_OPEN_TAG, [&trimmed[..], &whitespace[..1]].concat()),
+                    );
+                    return whitespace[1..].to_vec();
                 }
-                tokens.set(index, Token::new(T_OPEN_TAG, [&trimmed[..], &whitespace[..1]].concat()));
-                return whitespace[1..].to_vec();
-            }
-            whitespace.to_vec()
-        };
+                whitespace.to_vec()
+            };
 
         if self.tokens[index].is_whitespace(None) {
             let whitespace = remove_last_comment_line(self, index - 1, whitespace);
@@ -276,7 +337,10 @@ impl Tokens {
         if whitespace.is_empty() {
             return false;
         }
-        self.insert_at(index + index_offset, vec![Token::new(T_WHITESPACE, whitespace)]);
+        self.insert_at(
+            index + index_offset,
+            vec![Token::new(T_WHITESPACE, whitespace)],
+        );
         true
     }
 
@@ -290,14 +354,25 @@ impl Tokens {
 
     /// `findGivenKind($kind, $start, $end)` for one kind: indices in order.
     pub fn find_given_kind(&self, kind: Kind, start: usize, end: Option<usize>) -> Vec<usize> {
-        self.find_given_kinds(&[kind], start, end).remove(&kind).unwrap_or_default()
+        self.find_given_kinds(&[kind], start, end)
+            .remove(&kind)
+            .unwrap_or_default()
     }
 
     /// `findGivenKind([...], $start, $end)`: kind => indices.
-    pub fn find_given_kinds(&self, kinds: &[Kind], start: usize, end: Option<usize>) -> BTreeMap<Kind, Vec<usize>> {
+    pub fn find_given_kinds(
+        &self,
+        kinds: &[Kind],
+        start: usize,
+        end: Option<usize>,
+    ) -> BTreeMap<Kind, Vec<usize>> {
         let end = end.unwrap_or(self.tokens.len());
         let mut out: BTreeMap<Kind, Vec<usize>> = kinds.iter().map(|&k| (k, Vec::new())).collect();
-        let found: Vec<Kind> = kinds.iter().copied().filter(|&k| self.is_token_kind_found(k)).collect();
+        let found: Vec<Kind> = kinds
+            .iter()
+            .copied()
+            .filter(|&k| self.is_token_kind_found(k))
+            .collect();
         if !found.is_empty() {
             for i in start..end {
                 if let Some(id) = self.tokens[i].id {
@@ -331,15 +406,28 @@ impl Tokens {
         self.offset_exists(i).then_some(i as usize)
     }
 
-    pub fn get_next_non_whitespace(&self, index: usize, whitespaces: Option<&[u8]>) -> Option<usize> {
+    pub fn get_next_non_whitespace(
+        &self,
+        index: usize,
+        whitespaces: Option<&[u8]>,
+    ) -> Option<usize> {
         self.get_non_whitespace_sibling(index, 1, whitespaces)
     }
 
-    pub fn get_prev_non_whitespace(&self, index: usize, whitespaces: Option<&[u8]>) -> Option<usize> {
+    pub fn get_prev_non_whitespace(
+        &self,
+        index: usize,
+        whitespaces: Option<&[u8]>,
+    ) -> Option<usize> {
         self.get_non_whitespace_sibling(index, -1, whitespaces)
     }
 
-    pub fn get_non_whitespace_sibling(&self, mut index: usize, direction: isize, whitespaces: Option<&[u8]>) -> Option<usize> {
+    pub fn get_non_whitespace_sibling(
+        &self,
+        mut index: usize,
+        direction: isize,
+        whitespaces: Option<&[u8]>,
+    ) -> Option<usize> {
         loop {
             index = self.step(index, direction)?;
             if !self.tokens[index].is_whitespace(whitespaces) {
@@ -348,11 +436,21 @@ impl Tokens {
         }
     }
 
-    pub fn get_next_token_of_kind(&self, index: usize, tokens: &[Proto<'_>], case_sensitive: bool) -> Option<usize> {
+    pub fn get_next_token_of_kind(
+        &self,
+        index: usize,
+        tokens: &[Proto<'_>],
+        case_sensitive: bool,
+    ) -> Option<usize> {
         self.get_token_of_kind_sibling(index, 1, tokens, case_sensitive)
     }
 
-    pub fn get_prev_token_of_kind(&self, index: usize, tokens: &[Proto<'_>], case_sensitive: bool) -> Option<usize> {
+    pub fn get_prev_token_of_kind(
+        &self,
+        index: usize,
+        tokens: &[Proto<'_>],
+        case_sensitive: bool,
+    ) -> Option<usize> {
         self.get_token_of_kind_sibling(index, -1, tokens, case_sensitive)
     }
 
@@ -365,10 +463,17 @@ impl Tokens {
     ) -> Option<usize> {
         // Upstream drops the prototypes whose kind is not in the collection; skip the copy when all of them are.
         let filtered: Vec<Proto<'_>>;
-        let tokens = if tokens.iter().all(|t| self.is_token_kind_found(t.found_key())) {
+        let tokens = if tokens
+            .iter()
+            .all(|t| self.is_token_kind_found(t.found_key()))
+        {
             tokens
         } else {
-            filtered = tokens.iter().copied().filter(|t| self.is_token_kind_found(t.found_key())).collect();
+            filtered = tokens
+                .iter()
+                .copied()
+                .filter(|t| self.is_token_kind_found(t.found_key()))
+                .collect();
             &filtered
         };
         if tokens.is_empty() {
@@ -382,11 +487,21 @@ impl Tokens {
         }
     }
 
-    pub fn get_token_not_of_kind_sibling(&self, index: usize, direction: isize, tokens: &[Proto<'_>]) -> Option<usize> {
+    pub fn get_token_not_of_kind_sibling(
+        &self,
+        index: usize,
+        direction: isize,
+        tokens: &[Proto<'_>],
+    ) -> Option<usize> {
         self.get_token_not_of_kind(index, direction, |t| t.equals_any(tokens, true))
     }
 
-    pub fn get_token_not_of_kinds_sibling(&self, index: usize, direction: isize, kinds: &[Kind]) -> Option<usize> {
+    pub fn get_token_not_of_kinds_sibling(
+        &self,
+        index: usize,
+        direction: isize,
+        kinds: &[Kind],
+    ) -> Option<usize> {
         self.get_token_not_of_kind(index, direction, |t| t.is_given_kind(kinds))
     }
 
@@ -434,7 +549,10 @@ impl Tokens {
             let k = match p {
                 Proto::Kind(k) | Proto::KindContent(k, _) => Some(*k),
                 Proto::Char(c) => {
-                    assert!(!c.is_empty(), "Non-meaningful (empty) token at position: \"{key}\".");
+                    assert!(
+                        !c.is_empty(),
+                        "Non-meaningful (empty) token at position: \"{key}\"."
+                    );
                     None
                 }
             };
@@ -443,10 +561,16 @@ impl Tokens {
                 "Non-meaningful token at position: \"{key}\"."
             );
             if let Proto::KindContent(_, c) = p {
-                assert!(!c.is_empty(), "Non-meaningful (empty) token at position: \"{key}\".");
+                assert!(
+                    !c.is_empty(),
+                    "Non-meaningful (empty) token at position: \"{key}\"."
+                );
             }
         }
-        if !sequence.iter().all(|t| self.is_token_kind_found(t.found_key())) {
+        if !sequence
+            .iter()
+            .all(|t| self.is_token_kind_found(t.found_key()))
+        {
             return None;
         }
         'outer: for index in start..=end {
@@ -487,9 +611,15 @@ impl Tokens {
         *self.namespace_declarations.get_mut() = None;
         let old_size = self.tokens.len();
         let far = *slices.keys().next_back().unwrap();
-        assert!(far <= old_size, "Cannot insert index \"{far}\" outside of collection.");
+        assert!(
+            far <= old_size,
+            "Cannot insert index \"{far}\" outside of collection."
+        );
         for t in slices.values().flatten() {
-            assert!(!t.content.is_empty(), "Must not add empty token to collection.");
+            assert!(
+                !t.content.is_empty(),
+                "Must not add empty token to collection."
+            );
             self.register_found_token(t);
         }
         // Back to front so earlier indices stay valid.
@@ -574,11 +704,20 @@ impl Tokens {
     }
 
     pub fn is_partial_code_multiline(&self, start: usize, end: usize) -> bool {
-        self.tokens[start..=end].iter().any(|t| t.content.contains(&b'\n'))
+        self.tokens[start..=end]
+            .iter()
+            .any(|t| t.content.contains(&b'\n'))
     }
 
     pub fn has_alternative_syntax(&self) -> bool {
-        self.is_any_token_kinds_found(&[T_ENDDECLARE, T_ENDFOR, T_ENDFOREACH, T_ENDIF, T_ENDSWITCH, T_ENDWHILE])
+        self.is_any_token_kinds_found(&[
+            T_ENDDECLARE,
+            T_ENDFOR,
+            T_ENDFOREACH,
+            T_ENDIF,
+            T_ENDSWITCH,
+            T_ENDWHILE,
+        ])
     }
 
     pub fn clear_token_and_merge_surrounding_whitespace(&mut self, index: usize) {
@@ -587,13 +726,19 @@ impl Tokens {
         if index == count - 1 {
             return;
         }
-        let Some(next) = self.get_non_empty_sibling(index, 1) else { return };
+        let Some(next) = self.get_non_empty_sibling(index, 1) else {
+            return;
+        };
         if !self.tokens[next].is_whitespace(None) {
             return;
         }
         let prev = self.get_non_empty_sibling(index, -1).expect("prev index");
         if self.tokens[prev].is_whitespace(None) {
-            let merged = [&self.tokens[prev].content[..], &self.tokens[next].content[..]].concat();
+            let merged = [
+                &self.tokens[prev].content[..],
+                &self.tokens[next].content[..],
+            ]
+            .concat();
             self.set(prev, Token::new(T_WHITESPACE, merged));
         } else if self.is_empty_at(prev + 1) {
             let c = self.tokens[next].content.clone();
@@ -602,15 +747,25 @@ impl Tokens {
         self.clear_at(next);
     }
 
-    fn remove_whitespace_safely(&mut self, index: usize, direction: isize, whitespaces: Option<&[u8]>) {
+    fn remove_whitespace_safely(
+        &mut self,
+        index: usize,
+        direction: isize,
+        whitespaces: Option<&[u8]>,
+    ) {
         // isset($this[null]) throws upstream when there is no sibling.
-        let wi = self.get_non_empty_sibling(index, direction).expect("Cannot access offset of type null on SplFixedArray");
+        let wi = self
+            .get_non_empty_sibling(index, direction)
+            .expect("Cannot access offset of type null on SplFixedArray");
         if !self.tokens[wi].is_whitespace(None) {
             return;
         }
         let mut new_content: Vec<u8> = Vec::new();
         let mut to_check = self.tokens[wi].clone();
-        if wi > 0 && self.tokens[wi - 1].is_comment() && !self.tokens[wi - 1].content.starts_with(b"/*") {
+        if wi > 0
+            && self.tokens[wi - 1].is_comment()
+            && !self.tokens[wi - 1].content.starts_with(b"/*")
+        {
             // Preg::split('/^(\R)/', ...): first line break vs the rest.
             let c = &self.tokens[wi].content;
             let nl = if c.starts_with(b"\r\n") {
@@ -648,8 +803,11 @@ impl Tokens {
             return s;
         }
         let start_index = search_index;
-        let (end_index, offset): (isize, isize) =
-            if find_end { (self.tokens.len() as isize - 1, 1) } else { (0, -1) };
+        let (end_index, offset): (isize, isize) = if find_end {
+            (self.tokens.len() as isize - 1, 1)
+        } else {
+            (0, -1)
+        };
         if !find_end {
             std::mem::swap(&mut start_edge, &mut end_edge);
         }
@@ -678,7 +836,11 @@ impl Tokens {
             "Missing block \"{}\".",
             if find_end { "end" } else { "start" }
         );
-        let (a, b) = if start_index < index { (start_index, index) } else { (index, start_index) };
+        let (a, b) = if start_index < index {
+            (start_index, index)
+        } else {
+            (index, start_index)
+        };
         let mut c = self.blocks.borrow_mut();
         c.start.insert(a, b);
         c.end.insert(b, a);
@@ -705,7 +867,12 @@ impl Tokens {
         }
     }
 
-    fn get_token_not_of_kind(&self, mut index: usize, direction: isize, filter: impl Fn(&Token) -> bool) -> Option<usize> {
+    fn get_token_not_of_kind(
+        &self,
+        mut index: usize,
+        direction: isize,
+        filter: impl Fn(&Token) -> bool,
+    ) -> Option<usize> {
         loop {
             index = self.step(index, direction)?;
             if self.is_empty_at(index) || filter(&self.tokens[index]) {
@@ -735,7 +902,10 @@ mod tests {
         let open = t.get_next_token_of_kind(0, &["(".into()], true).unwrap();
         let close = t.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
         assert!(t[close].equals(")", true));
-        assert_eq!(t.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, close), open);
+        assert_eq!(
+            t.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, close),
+            open
+        );
         let comma = t.get_next_token_of_kind(open, &[",".into()], true).unwrap();
         t.ensure_whitespace_at_index(comma + 1, 0, b"  ");
         t.clear_at(open + 1);
@@ -747,7 +917,10 @@ mod tests {
         t.clear_empty_tokens();
         assert_eq!(t.generate_code(), b"<?php foo(7,[2]);");
         assert!(t.is_token_kind_found(CT_ARRAY_BRACKET_OPEN));
-        assert_eq!(t.find_sequence(&[T_STRING.into(), "(".into()], 0, None, |_| true), Some(vec![1, 2]));
+        assert_eq!(
+            t.find_sequence(&[T_STRING.into(), "(".into()], 0, None, |_| true),
+            Some(vec![1, 2])
+        );
     }
 
     #[test]

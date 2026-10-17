@@ -17,12 +17,20 @@ impl Fixer for TrimArraySpacesFixer {
         0
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_any_token_kinds_found(&[T_ARRAY, CT_ARRAY_BRACKET_OPEN, CT_DESTRUCTURING_BRACKET_OPEN])
+        tokens.is_any_token_kinds_found(&[
+            T_ARRAY,
+            CT_ARRAY_BRACKET_OPEN,
+            CT_DESTRUCTURING_BRACKET_OPEN,
+        ])
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let c = tokens.count();
         for index in 0..c {
-            if tokens[index].is_given_kind(&[T_ARRAY, CT_ARRAY_BRACKET_OPEN, CT_DESTRUCTURING_BRACKET_OPEN]) {
+            if tokens[index].is_given_kind(&[
+                T_ARRAY,
+                CT_ARRAY_BRACKET_OPEN,
+                CT_DESTRUCTURING_BRACKET_OPEN,
+            ]) {
                 fix_array(tokens, index);
             }
         }
@@ -56,7 +64,9 @@ fn fix_array(tokens: &mut Tokens, index: usize) {
         tokens.clear_at(next_index);
     }
 
-    if tokens[prev_index].is_whitespace(Some(b" \t")) && !tokens[prev_non_whitespace_index].equals(",", true) {
+    if tokens[prev_index].is_whitespace(Some(b" \t"))
+        && !tokens[prev_non_whitespace_index].equals(",", true)
+    {
         tokens.clear_at(prev_index);
     }
 }

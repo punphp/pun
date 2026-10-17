@@ -23,25 +23,65 @@ impl Fixer for PreferDedicatedStatusAssertion {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for i in (1..tokens.count()).rev() {
-            if !tokens[i].is_kind(T_STRING) || !tokens[i].get_content().eq_ignore_ascii_case(b"assertStatus") {
+            if !tokens[i].is_kind(T_STRING)
+                || !tokens[i]
+                    .get_content()
+                    .eq_ignore_ascii_case(b"assertStatus")
+            {
                 continue;
             }
-            if !tokens.get_prev_meaningful_token(i).is_some_and(|p| tokens[p].is_kind(T_OBJECT_OPERATOR)) {
+            if !tokens
+                .get_prev_meaningful_token(i)
+                .is_some_and(|p| tokens[p].is_kind(T_OBJECT_OPERATOR))
+            {
                 continue;
             }
-            let Some(open) = tokens.get_next_meaningful_token(i).filter(|&o| tokens[o].equals("(", true)) else { continue };
-            let Some(num) = tokens.get_next_meaningful_token(open).filter(|&n| tokens[n].is_kind(T_LNUMBER)) else { continue };
-            let Some(mut close) = tokens.get_next_meaningful_token(num) else { continue };
+            let Some(open) = tokens
+                .get_next_meaningful_token(i)
+                .filter(|&o| tokens[o].equals("(", true))
+            else {
+                continue;
+            };
+            let Some(num) = tokens
+                .get_next_meaningful_token(open)
+                .filter(|&n| tokens[n].is_kind(T_LNUMBER))
+            else {
+                continue;
+            };
+            let Some(mut close) = tokens.get_next_meaningful_token(num) else {
+                continue;
+            };
             if tokens[close].equals(",", true) {
-                let Some(c) = tokens.get_next_meaningful_token(close) else { continue };
+                let Some(c) = tokens.get_next_meaningful_token(close) else {
+                    continue;
+                };
                 close = c;
             }
             if !tokens[close].equals(")", true) || (i..close).any(|k| tokens[k].is_comment()) {
                 continue;
             }
-            let digits: Vec<u8> = tokens[num].get_content().iter().copied().filter(|&b| b != b'_').collect();
-            let Some(method) = std::str::from_utf8(&digits).ok().and_then(|s| s.parse().ok()).and_then(dedicated_status_method) else { continue };
-            tokens.override_range(i, close, vec![Token::new(T_STRING, method), Token::char("("), Token::char(")")]);
+            let digits: Vec<u8> = tokens[num]
+                .get_content()
+                .iter()
+                .copied()
+                .filter(|&b| b != b'_')
+                .collect();
+            let Some(method) = std::str::from_utf8(&digits)
+                .ok()
+                .and_then(|s| s.parse().ok())
+                .and_then(dedicated_status_method)
+            else {
+                continue;
+            };
+            tokens.override_range(
+                i,
+                close,
+                vec![
+                    Token::new(T_STRING, method),
+                    Token::char("("),
+                    Token::char(")"),
+                ],
+            );
         }
     }
 }
@@ -93,11 +133,24 @@ mod tests {
     #[test]
     fn mago_cases() {
         // fix_assert_status_to_not_found, assert_status_ok, assert_status_not_found
-        assert_eq!(fix("<?php\n\n$response->assertStatus(404);\n"), "<?php\n\n$response->assertNotFound();\n");
-        assert_eq!(fix("<?php\n\n$response->assertStatus(200);\n"), "<?php\n\n$response->assertOk();\n");
-        assert_eq!(fix("<?php\n\n$this->get('/missing')->assertStatus(404);\n"), "<?php\n\n$this->get('/missing')->assertNotFound();\n");
+        assert_eq!(
+            fix("<?php\n\n$response->assertStatus(404);\n"),
+            "<?php\n\n$response->assertNotFound();\n"
+        );
+        assert_eq!(
+            fix("<?php\n\n$response->assertStatus(200);\n"),
+            "<?php\n\n$response->assertOk();\n"
+        );
+        assert_eq!(
+            fix("<?php\n\n$this->get('/missing')->assertStatus(404);\n"),
+            "<?php\n\n$this->get('/missing')->assertNotFound();\n"
+        );
         // dedicated_method_used, unknown_status_code, non_literal_status_code
-        for same in ["<?php\n\n$response->assertOk();\n", "<?php\n\n$response->assertStatus(599);\n", "<?php\n\n$response->assertStatus($code);\n"] {
+        for same in [
+            "<?php\n\n$response->assertOk();\n",
+            "<?php\n\n$response->assertStatus(599);\n",
+            "<?php\n\n$response->assertStatus($code);\n",
+        ] {
             assert_eq!(fix(same), same);
         }
     }
@@ -108,25 +161,51 @@ mod tests {
     #[test]
     fn laravel_status_methods() {
         let laravel = [
-            (200, "assertOk"), (201, "assertCreated"), (202, "assertAccepted"), (204, "assertNoContent"),
-            (301, "assertMovedPermanently"), (302, "assertFound"), (304, "assertNotModified"),
-            (307, "assertTemporaryRedirect"), (308, "assertPermanentRedirect"), (400, "assertBadRequest"),
-            (401, "assertUnauthorized"), (402, "assertPaymentRequired"), (403, "assertForbidden"),
-            (404, "assertNotFound"), (405, "assertMethodNotAllowed"), (406, "assertNotAcceptable"),
-            (408, "assertRequestTimeout"), (409, "assertConflict"), (410, "assertGone"),
-            (415, "assertUnsupportedMediaType"), (422, "assertUnprocessable"), (424, "assertFailedDependency"),
-            (429, "assertTooManyRequests"), (500, "assertInternalServerError"), (503, "assertServiceUnavailable"),
+            (200, "assertOk"),
+            (201, "assertCreated"),
+            (202, "assertAccepted"),
+            (204, "assertNoContent"),
+            (301, "assertMovedPermanently"),
+            (302, "assertFound"),
+            (304, "assertNotModified"),
+            (307, "assertTemporaryRedirect"),
+            (308, "assertPermanentRedirect"),
+            (400, "assertBadRequest"),
+            (401, "assertUnauthorized"),
+            (402, "assertPaymentRequired"),
+            (403, "assertForbidden"),
+            (404, "assertNotFound"),
+            (405, "assertMethodNotAllowed"),
+            (406, "assertNotAcceptable"),
+            (408, "assertRequestTimeout"),
+            (409, "assertConflict"),
+            (410, "assertGone"),
+            (415, "assertUnsupportedMediaType"),
+            (422, "assertUnprocessable"),
+            (424, "assertFailedDependency"),
+            (429, "assertTooManyRequests"),
+            (500, "assertInternalServerError"),
+            (503, "assertServiceUnavailable"),
         ];
         for (code, method) in laravel {
-            assert_eq!(fix(&format!("<?php $r->assertStatus({code});")), format!("<?php $r->{method}();"));
+            assert_eq!(
+                fix(&format!("<?php $r->assertStatus({code});")),
+                format!("<?php $r->{method}();")
+            );
         }
         // Underscore separators are part of the literal's value.
-        assert_eq!(fix("<?php $r->assertStatus(4_04);"), "<?php $r->assertNotFound();");
+        assert_eq!(
+            fix("<?php $r->assertStatus(4_04);"),
+            "<?php $r->assertNotFound();"
+        );
     }
 
     #[test]
     fn edge_cases() {
-        assert_eq!(fix("<?php $r\n    ->ASSERTSTATUS( 201, );"), "<?php $r\n    ->assertCreated();");
+        assert_eq!(
+            fix("<?php $r\n    ->ASSERTSTATUS( 201, );"),
+            "<?php $r\n    ->assertCreated();"
+        );
         for same in [
             "<?php $r->assertStatus(200, 'msg');",
             "<?php $r->assertStatus(200 + 1);",

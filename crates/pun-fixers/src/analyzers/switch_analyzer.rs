@@ -30,7 +30,10 @@ impl SwitchAnalyzer {
         CACHE.with(|c| {
             let mut c = c.borrow_mut();
             if !c.as_ref().is_some_and(|(code, _)| same_code(tokens, code)) {
-                *c = Some((tokens.generate_code(), Self::get_colon_indices_for_switch(tokens)));
+                *c = Some((
+                    tokens.generate_code(),
+                    Self::get_colon_indices_for_switch(tokens),
+                ));
             }
             c.as_ref().unwrap().1.contains(&index)
         })

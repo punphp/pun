@@ -48,7 +48,9 @@ impl Fixer for LambdaNotUsedImportFixer {
 }
 
 fn fix_lambda(tokens: &mut Tokens, lambda_use_index: usize) {
-    let open = tokens.get_next_token_of_kind(lambda_use_index, &["(".into()], true).unwrap();
+    let open = tokens
+        .get_next_token_of_kind(lambda_use_index, &["(".into()], true)
+        .unwrap();
     let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
     let arguments = ArgumentsAnalyzer.get_arguments(tokens, open, close);
     let imports = filter_arguments(tokens, &arguments);
@@ -66,9 +68,15 @@ fn fix_lambda(tokens: &mut Tokens, lambda_use_index: usize) {
     clear_imports(tokens, not_used.iter().rev().map(|(_, i)| *i));
 }
 
-fn find_not_used_lambda_imports(tokens: &Tokens, mut imports: Imports, lambda_use_close_brace_index: usize) -> Imports {
+fn find_not_used_lambda_imports(
+    tokens: &Tokens,
+    mut imports: Imports,
+    lambda_use_close_brace_index: usize,
+) -> Imports {
     let functions = FunctionsAnalyzer::new();
-    let mut index = tokens.get_next_token_of_kind(lambda_use_close_brace_index, &["{".into()], true).unwrap();
+    let mut index = tokens
+        .get_next_token_of_kind(lambda_use_close_brace_index, &["{".into()], true)
+        .unwrap();
     let mut level = 0;
     loop {
         let token = &tokens[index];
@@ -85,44 +93,74 @@ fn find_not_used_lambda_imports(tokens: &Tokens, mut imports: Imports, lambda_us
             index += 1;
             continue;
         }
-        if token.is_kind(Kind::T_STRING) && strtolower(&token.content) == b"compact" && functions.is_global_function_call(tokens, index) {
+        if token.is_kind(Kind::T_STRING)
+            && strtolower(&token.content) == b"compact"
+            && functions.is_global_function_call(tokens, index)
+        {
             return vec![];
         }
-        if token.is_given_kind(&[Kind::CT_DYNAMIC_VAR_BRACE_OPEN, Kind::T_EVAL, Kind::T_INCLUDE, Kind::T_INCLUDE_ONCE, Kind::T_REQUIRE, Kind::T_REQUIRE_ONCE]) {
+        if token.is_given_kind(&[
+            Kind::CT_DYNAMIC_VAR_BRACE_OPEN,
+            Kind::T_EVAL,
+            Kind::T_INCLUDE,
+            Kind::T_INCLUDE_ONCE,
+            Kind::T_REQUIRE,
+            Kind::T_REQUIRE_ONCE,
+        ]) {
             return vec![];
         }
-        if token.equals("$", true) && tokens[tokens.get_next_meaningful_token(index).unwrap()].is_kind(Kind::T_VARIABLE) {
+        if token.equals("$", true)
+            && tokens[tokens.get_next_meaningful_token(index).unwrap()].is_kind(Kind::T_VARIABLE)
+        {
             return vec![];
         }
-        if token.is_kind(Kind::T_VARIABLE) && unset(&mut imports, &token.content) && imports.is_empty() {
+        if token.is_kind(Kind::T_VARIABLE)
+            && unset(&mut imports, &token.content)
+            && imports.is_empty()
+        {
             return imports;
         }
-        if token.is_kind(Kind::T_STRING_VARNAME) && unset(&mut imports, &[b"$", &token.content[..]].concat()) && imports.is_empty() {
+        if token.is_kind(Kind::T_STRING_VARNAME)
+            && unset(&mut imports, &[b"$", &token.content[..]].concat())
+            && imports.is_empty()
+        {
             return imports;
         }
         if token.is_classy() {
-            index = tokens.get_next_token_of_kind(index, &["(".into(), "{".into()], true).unwrap();
+            index = tokens
+                .get_next_token_of_kind(index, &["(".into(), "{".into()], true)
+                .unwrap();
             if tokens[index].equals("(", true) {
                 let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
                 let arguments = ArgumentsAnalyzer.get_arguments(tokens, index, close);
                 imports = count_imports_used_as_argument(tokens, imports, &arguments);
-                index = tokens.get_next_token_of_kind(close, &["{".into()], true).unwrap();
+                index = tokens
+                    .get_next_token_of_kind(close, &["{".into()], true)
+                    .unwrap();
             }
             index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index) + 1;
             continue;
         }
         if token.is_kind(Kind::T_FUNCTION) {
-            let open = tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap();
+            let open = tokens
+                .get_next_token_of_kind(index, &["(".into()], true)
+                .unwrap();
             let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
             let arguments = ArgumentsAnalyzer.get_arguments(tokens, open, close);
             imports = count_imports_used_as_argument(tokens, imports, &arguments);
-            index = tokens.get_next_token_of_kind(index, &[Kind::CT_USE_LAMBDA.into(), "{".into()], true).unwrap();
+            index = tokens
+                .get_next_token_of_kind(index, &[Kind::CT_USE_LAMBDA.into(), "{".into()], true)
+                .unwrap();
             if tokens[index].is_kind(Kind::CT_USE_LAMBDA) {
-                let open = tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap();
+                let open = tokens
+                    .get_next_token_of_kind(index, &["(".into()], true)
+                    .unwrap();
                 let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
                 let arguments = ArgumentsAnalyzer.get_arguments(tokens, open, close);
                 imports = count_imports_used_as_argument(tokens, imports, &arguments);
-                index = tokens.get_next_token_of_kind(close, &["{".into()], true).unwrap();
+                index = tokens
+                    .get_next_token_of_kind(close, &["{".into()], true)
+                    .unwrap();
             }
             index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index) + 1;
             continue;
@@ -132,7 +170,11 @@ fn find_not_used_lambda_imports(tokens: &Tokens, mut imports: Imports, lambda_us
     imports
 }
 
-fn count_imports_used_as_argument(tokens: &Tokens, mut imports: Imports, arguments: &BTreeMap<usize, usize>) -> Imports {
+fn count_imports_used_as_argument(
+    tokens: &Tokens,
+    mut imports: Imports,
+    arguments: &BTreeMap<usize, usize>,
+) -> Imports {
     for (&start, &end) in arguments {
         let info = ArgumentsAnalyzer.get_argument_info(tokens, start, end);
         if let Some(name) = info.name {
@@ -196,7 +238,8 @@ fn clear_imports_and_use(tokens: &mut Tokens, lambda_use_index: usize, close: us
     let mut i = close;
     while i >= lambda_use_index {
         let skip = tokens[i].is_comment()
-            || (tokens[i].is_whitespace(None) && tokens[tokens.get_prev_non_whitespace(i, None).unwrap()].is_comment());
+            || (tokens[i].is_whitespace(None)
+                && tokens[tokens.get_prev_non_whitespace(i, None).unwrap()].is_comment());
         if !skip {
             tokens.clear_token_and_merge_surrounding_whitespace(i);
         }

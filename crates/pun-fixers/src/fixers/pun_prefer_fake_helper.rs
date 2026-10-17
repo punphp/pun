@@ -27,9 +27,9 @@ impl Fixer for PreferFakeHelper {
         let mut i = 0;
         while i < tokens.count() {
             if let Some(open) = class_body(tokens, i) {
-                let named_factory = tokens
-                    .get_next_meaningful_token(i)
-                    .is_some_and(|n| tokens[n].is_kind(T_STRING) && tokens[n].get_content().ends_with(b"Factory"));
+                let named_factory = tokens.get_next_meaningful_token(i).is_some_and(|n| {
+                    tokens[n].is_kind(T_STRING) && tokens[n].get_content().ends_with(b"Factory")
+                });
                 let end = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, open);
                 if named_factory {
                     fix_body(tokens, open, end);
@@ -63,29 +63,72 @@ fn fix_body(tokens: &mut Tokens, open: usize, end: usize) {
 }
 
 fn try_fix(tokens: &mut Tokens, this: usize) {
-    let Some(arrow) = tokens.get_next_meaningful_token(this).filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR)) else { return };
-    let Some(prop) = tokens.get_next_meaningful_token(arrow).filter(|&p| tokens[p].is_kind(T_STRING) && tokens[p].get_content() == b"faker") else { return };
+    let Some(arrow) = tokens
+        .get_next_meaningful_token(this)
+        .filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR))
+    else {
+        return;
+    };
+    let Some(prop) = tokens
+        .get_next_meaningful_token(arrow)
+        .filter(|&p| tokens[p].is_kind(T_STRING) && tokens[p].get_content() == b"faker")
+    else {
+        return;
+    };
     let next = tokens.get_next_meaningful_token(prop);
     if next.is_some_and(|n| {
         let t = &tokens[n];
         t.equals_any(&["(".into(), "[".into(), "=".into()], true)
-            || t.is_given_kind(&[T_INC, T_DEC, T_COALESCE_EQUAL, T_PLUS_EQUAL, T_MINUS_EQUAL, T_MUL_EQUAL, T_DIV_EQUAL, T_CONCAT_EQUAL, T_MOD_EQUAL, T_POW_EQUAL, T_AND_EQUAL, T_OR_EQUAL, T_XOR_EQUAL, T_SL_EQUAL, T_SR_EQUAL])
+            || t.is_given_kind(&[
+                T_INC,
+                T_DEC,
+                T_COALESCE_EQUAL,
+                T_PLUS_EQUAL,
+                T_MINUS_EQUAL,
+                T_MUL_EQUAL,
+                T_DIV_EQUAL,
+                T_CONCAT_EQUAL,
+                T_MOD_EQUAL,
+                T_POW_EQUAL,
+                T_AND_EQUAL,
+                T_OR_EQUAL,
+                T_XOR_EQUAL,
+                T_SL_EQUAL,
+                T_SR_EQUAL,
+            ])
     }) {
         return;
     }
-    let p = tokens.get_prev_meaningful_token(this).expect("inside a class body");
-    if tokens[p].equals("&", true) || tokens[p].is_given_kind(&[T_INC, T_DEC]) || inside_isset_or_unset(tokens, this) {
+    let p = tokens
+        .get_prev_meaningful_token(this)
+        .expect("inside a class body");
+    if tokens[p].equals("&", true)
+        || tokens[p].is_given_kind(&[T_INC, T_DEC])
+        || inside_isset_or_unset(tokens, this)
+    {
         return;
     }
     if (this..prop).any(|k| tokens[k].is_comment()) {
         return;
     }
-    tokens.override_range(this, prop, vec![Token::new(T_STRING, "fake"), Token::char("("), Token::char(")")]);
+    tokens.override_range(
+        this,
+        prop,
+        vec![
+            Token::new(T_STRING, "fake"),
+            Token::char("("),
+            Token::char(")"),
+        ],
+    );
 }
 
 /// The `{` of a class declaration or anonymous class at `i`; `None` for anything else, including `Foo::class`.
 fn class_body(tokens: &Tokens, i: usize) -> Option<usize> {
-    if !tokens[i].is_kind(T_CLASS) || tokens.get_prev_meaningful_token(i).is_some_and(|p| tokens[p].is_kind(T_DOUBLE_COLON)) {
+    if !tokens[i].is_kind(T_CLASS)
+        || tokens
+            .get_prev_meaningful_token(i)
+            .is_some_and(|p| tokens[p].is_kind(T_DOUBLE_COLON))
+    {
         return None;
     }
     tokens.get_next_token_of_kind(i, &["{".into()], true)
@@ -96,13 +139,17 @@ fn inside_isset_or_unset(tokens: &Tokens, index: usize) -> bool {
     let mut depth = 0;
     let mut i = index;
     loop {
-        let p = tokens.get_prev_meaningful_token(i).expect("inside a class body");
+        let p = tokens
+            .get_prev_meaningful_token(i)
+            .expect("inside a class body");
         let t = &tokens[p];
         if t.equals(")", true) {
             depth += 1;
         } else if t.equals("(", true) {
             if depth == 0 {
-                return tokens.get_prev_meaningful_token(p).is_some_and(|k| tokens[k].is_given_kind(&[T_ISSET, T_UNSET]));
+                return tokens
+                    .get_prev_meaningful_token(p)
+                    .is_some_and(|k| tokens[k].is_given_kind(&[T_ISSET, T_UNSET]));
             }
             depth -= 1;
         } else if depth == 0 && t.equals_any(&[";".into(), "{".into(), "}".into()], true) {
@@ -125,14 +172,18 @@ mod tests {
     }
 
     fn factory(body: &str) -> String {
-        format!("<?php\n\nclass UserFactory\n{{\n    public function definition(): array\n    {{\n        {body}\n    }}\n}}\n")
+        format!(
+            "<?php\n\nclass UserFactory\n{{\n    public function definition(): array\n    {{\n        {body}\n    }}\n}}\n"
+        )
     }
 
     #[test]
     fn mago_cases() {
         // fix_faker_property
         assert_eq!(
-            fix(&factory("return ['name' => $this->faker->unique()->word()];")),
+            fix(&factory(
+                "return ['name' => $this->faker->unique()->word()];"
+            )),
             factory("return ['name' => fake()->unique()->word()];")
         );
         // fake_helper_used, faker_property_outside_factory, interpolation is reported but not fixed
@@ -149,7 +200,9 @@ mod tests {
     #[test]
     fn edge_cases() {
         assert_eq!(
-            fix(&factory("return ['a' => fn () => $this->faker->name(), 'b' => \"x\", 'c' => $this->faker->email];")),
+            fix(&factory(
+                "return ['a' => fn () => $this->faker->name(), 'b' => \"x\", 'c' => $this->faker->email];"
+            )),
             factory("return ['a' => fn () => fake()->name(), 'b' => \"x\", 'c' => fake()->email];")
         );
         for same in [

@@ -30,7 +30,9 @@ impl BlankLineBetweenImportGroupsFixer {
         for i in (0..uses_count).rev() {
             let index = uses[i];
             let start_index = tokens.get_next_meaningful_token(index + 1).unwrap();
-            let end_index = tokens.get_next_token_of_kind(start_index, &[";".into(), T_CLOSE_TAG.into()], true).unwrap();
+            let end_index = tokens
+                .get_next_token_of_kind(start_index, &[";".into(), T_CLOSE_TAG.into()], true)
+                .unwrap();
             let ty = if tokens[start_index].is_kind(CT_CONST_IMPORT) {
                 ImportType::Const
             } else if tokens[start_index].is_kind(CT_FUNCTION_IMPORT) {

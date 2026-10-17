@@ -11,7 +11,9 @@ struct NoWhitespaceBeforeCommaInArrayFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoWhitespaceBeforeCommaInArrayFixer { after_heredoc: false })
+    Box::new(NoWhitespaceBeforeCommaInArrayFixer {
+        after_heredoc: false,
+    })
 }
 
 impl Fixer for NoWhitespaceBeforeCommaInArrayFixer {
@@ -42,9 +44,14 @@ impl Fixer for NoWhitespaceBeforeCommaInArrayFixer {
 impl NoWhitespaceBeforeCommaInArrayFixer {
     fn fix_spacing(&self, index: usize, tokens: &mut Tokens) {
         let (start_index, end_index) = if tokens[index].is_kind(CT_ARRAY_BRACKET_OPEN) {
-            (index, tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, index))
+            (
+                index,
+                tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, index),
+            )
         } else {
-            let s = tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap();
+            let s = tokens
+                .get_next_token_of_kind(index, &["(".into()], true)
+                .unwrap();
             (s, tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, s))
         };
 

@@ -21,7 +21,10 @@ struct PhpdocSeparationFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = PhpdocSeparationFixer { groups: vec![], skip_unlisted_annotations: false };
+    let mut f = PhpdocSeparationFixer {
+        groups: vec![],
+        skip_unlisted_annotations: false,
+    };
     f.configure(&Value::Null).unwrap();
     Box::new(f)
 }
@@ -42,20 +45,39 @@ impl Fixer for PhpdocSeparationFixer {
         -3
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let r = resolve(self.name(), options, &["groups", "skip_unlisted_annotations"])?;
+        let r = resolve(
+            self.name(),
+            options,
+            &["groups", "skip_unlisted_annotations"],
+        )?;
         r.check_types("groups", &["string[][]"])?;
         let groups: Vec<Vec<String>> = match r.get("groups") {
-            None => OPTION_GROUPS_DEFAULT.iter().map(|g| g.iter().map(|s| s.to_string()).collect()).collect(),
-            Some(v) => php_list(v).into_iter().map(|g| php_list(g).into_iter().map(|s| s.as_str().unwrap().to_string()).collect()).collect(),
+            None => OPTION_GROUPS_DEFAULT
+                .iter()
+                .map(|g| g.iter().map(|s| s.to_string()).collect())
+                .collect(),
+            Some(v) => php_list(v)
+                .into_iter()
+                .map(|g| {
+                    php_list(g)
+                        .into_iter()
+                        .map(|s| s.as_str().unwrap().to_string())
+                        .collect()
+                })
+                .collect(),
         };
         let mut tags: Vec<(&str, usize)> = vec![];
         for (gi, group) in groups.iter().enumerate() {
             for member in group {
                 if let Some(&(_, g)) = tags.iter().find(|(m, _)| *m == member) {
                     if g == gi {
-                        bail!("[phpdoc_separation] Invalid configuration: The option \"groups\" value is invalid. The \"{member}\" tag is specified more than once.");
+                        bail!(
+                            "[phpdoc_separation] Invalid configuration: The option \"groups\" value is invalid. The \"{member}\" tag is specified more than once."
+                        );
                     }
-                    bail!("[phpdoc_separation] Invalid configuration: The option \"groups\" value is invalid. The \"{member}\" tag belongs to more than one group.");
+                    bail!(
+                        "[phpdoc_separation] Invalid configuration: The option \"groups\" value is invalid. The \"{member}\" tag belongs to more than one group."
+                    );
                 }
                 tags.push((member, gi));
             }
@@ -100,10 +122,14 @@ impl PhpdocSeparationFixer {
     fn fix_annotations(&self, doc: &DocBlock) {
         let annotations = doc.get_annotations();
         for (index, annotation) in annotations.iter().enumerate() {
-            let Some(next) = doc.get_annotation(index + 1) else { break };
+            let Some(next) = doc.get_annotation(index + 1) else {
+                break;
+            };
             match self.should_be_together(annotation, next) {
                 Some(true) => ensure_are_together(doc, annotation, next),
-                s if s == Some(false) || !self.skip_unlisted_annotations => ensure_are_separate(doc, annotation, next),
+                s if s == Some(false) || !self.skip_unlisted_annotations => {
+                    ensure_are_separate(doc, annotation, next)
+                }
                 _ => {}
             }
         }
@@ -149,7 +175,8 @@ fn ensure_are_separate(doc: &DocBlock, first: &Annotation, second: &Annotation) 
 
 fn tag_name(a: &Annotation) -> Option<Vec<u8>> {
     let content = a.get_content();
-    Preg::match_groups(r"/@([a-zA-Z0-9_\\\-]+(?=\s|$|\())/", &content, 0).and_then(|m| m.get(1).map(<[u8]>::to_vec))
+    Preg::match_groups(r"/@([a-zA-Z0-9_\\\-]+(?=\s|$|\())/", &content, 0)
+        .and_then(|m| m.get(1).map(<[u8]>::to_vec))
 }
 
 fn is_in_group(tag: &[u8], group: &[String]) -> bool {

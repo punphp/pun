@@ -13,8 +13,15 @@ struct QualifiedName {
 }
 
 impl NamespaceUsesAnalyzer {
-    pub fn get_declarations_from_tokens(&self, tokens: &Tokens, allow_multi_uses: bool) -> Vec<NamespaceUseAnalysis> {
-        let use_indices = TokensAnalyzer::new(tokens).get_import_use_indexes(false).remove(&0).unwrap_or_default();
+    pub fn get_declarations_from_tokens(
+        &self,
+        tokens: &Tokens,
+        allow_multi_uses: bool,
+    ) -> Vec<NamespaceUseAnalysis> {
+        let use_indices = TokensAnalyzer::new(tokens)
+            .get_import_use_indexes(false)
+            .remove(&0)
+            .unwrap_or_default();
         self.get_declarations(tokens, &use_indices, allow_multi_uses)
     }
 
@@ -26,14 +33,24 @@ impl NamespaceUsesAnalyzer {
     ) -> Vec<NamespaceUseAnalysis> {
         self.get_declarations_from_tokens(tokens, allow_multi_uses)
             .into_iter()
-            .filter(|u| u.start_index >= namespace.scope_start_index && u.start_index <= namespace.scope_end_index)
+            .filter(|u| {
+                u.start_index >= namespace.scope_start_index
+                    && u.start_index <= namespace.scope_end_index
+            })
             .collect()
     }
 
-    fn get_declarations(&self, tokens: &Tokens, use_indices: &[usize], allow_multi_uses: bool) -> Vec<NamespaceUseAnalysis> {
+    fn get_declarations(
+        &self,
+        tokens: &Tokens,
+        use_indices: &[usize],
+        allow_multi_uses: bool,
+    ) -> Vec<NamespaceUseAnalysis> {
         let mut uses = Vec::new();
         for &index in use_indices {
-            let end_index = tokens.get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true).unwrap();
+            let end_index = tokens
+                .get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true)
+                .unwrap();
             let mut declarations = self.parse_declarations(index, end_index, tokens);
             if !allow_multi_uses {
                 declarations.retain(|d| !d.is_in_multi);
@@ -43,11 +60,24 @@ impl NamespaceUsesAnalyzer {
         uses
     }
 
-    fn parse_declarations(&self, start_index: usize, end_index: usize, tokens: &Tokens) -> Vec<NamespaceUseAnalysis> {
+    fn parse_declarations(
+        &self,
+        start_index: usize,
+        end_index: usize,
+        tokens: &Tokens,
+    ) -> Vec<NamespaceUseAnalysis> {
         let type_ = self.determine_import_type(tokens, start_index);
-        let potential_multi = tokens.get_next_token_of_kind(start_index, &[",".into(), CT_GROUP_IMPORT_BRACE_OPEN.into()], true);
+        let potential_multi = tokens.get_next_token_of_kind(
+            start_index,
+            &[",".into(), CT_GROUP_IMPORT_BRACE_OPEN.into()],
+            true,
+        );
         let multi = potential_multi.is_some_and(|p| p < end_index);
-        let mut index = tokens.get_next_token_of_kind(start_index, &[T_STRING.into(), T_NS_SEPARATOR.into()], true);
+        let mut index = tokens.get_next_token_of_kind(
+            start_index,
+            &[T_STRING.into(), T_NS_SEPARATOR.into()],
+            true,
+        );
         let mut imports = Vec::new();
         while let Some(i) = index.filter(|&i| i <= end_index) {
             let mut i = i;
@@ -57,7 +87,8 @@ impl NamespaceUsesAnalyzer {
             if token.is_kind(CT_GROUP_IMPORT_BRACE_OPEN) {
                 let group_start = after;
                 let mut group_index = after;
-                let group_end = tokens.find_block_end(Tokens::BLOCK_TYPE_GROUP_IMPORT_BRACE, group_start);
+                let group_end =
+                    tokens.find_block_end(Tokens::BLOCK_TYPE_GROUP_IMPORT_BRACE, group_start);
                 while group_index < group_end {
                     let chunk_start = tokens.get_next_meaningful_token(group_index).unwrap();
                     // Finish parsing on trailing comma (no more chunks there)
@@ -68,7 +99,11 @@ impl NamespaceUsesAnalyzer {
                     let group_after = group_qualified_name.after_index.unwrap();
                     imports.push(NamespaceUseAnalysis {
                         type_,
-                        full_name: [&qualified_name.full_name[..], &group_qualified_name.full_name[..]].concat(),
+                        full_name: [
+                            &qualified_name.full_name[..],
+                            &group_qualified_name.full_name[..],
+                        ]
+                        .concat(),
                         short_name: group_qualified_name.short_name,
                         is_aliased: group_qualified_name.aliased,
                         is_in_multi: true,
@@ -117,7 +152,13 @@ impl NamespaceUsesAnalyzer {
         let (mut full_name, mut short_name) = (Vec::new(), Vec::new());
         let mut aliased = false;
         // Upstream breaks out of the loop on these; testing them first is equivalent (none is a T_STRING/`\`/`as`).
-        let ends: [Proto; 5] = [",".into(), ";".into(), CT_GROUP_IMPORT_BRACE_OPEN.into(), CT_GROUP_IMPORT_BRACE_CLOSE.into(), T_CLOSE_TAG.into()];
+        let ends: [Proto; 5] = [
+            ",".into(),
+            ";".into(),
+            CT_GROUP_IMPORT_BRACE_OPEN.into(),
+            CT_GROUP_IMPORT_BRACE_CLOSE.into(),
+            T_CLOSE_TAG.into(),
+        ];
         let mut index = Some(index);
         while let Some(i) = index.filter(|&i| !tokens[i].equals_any(&ends, true)) {
             let token = &tokens[i];
@@ -133,7 +174,12 @@ impl NamespaceUsesAnalyzer {
             }
             index = tokens.get_next_meaningful_token(i);
         }
-        QualifiedName { full_name, short_name, aliased, after_index: index }
+        QualifiedName {
+            full_name,
+            short_name,
+            aliased,
+            after_index: index,
+        }
     }
 }
 
@@ -152,7 +198,13 @@ mod tests {
         let all = NamespaceUsesAnalyzer.get_declarations_from_tokens(&t, true);
         let names: Vec<(String, String, bool)> = all
             .iter()
-            .map(|u| (String::from_utf8_lossy(&u.full_name).into(), String::from_utf8_lossy(&u.short_name).into(), u.is_aliased))
+            .map(|u| {
+                (
+                    String::from_utf8_lossy(&u.full_name).into(),
+                    String::from_utf8_lossy(&u.short_name).into(),
+                    u.is_aliased,
+                )
+            })
             .collect();
         assert_eq!(
             names,
@@ -164,6 +216,10 @@ mod tests {
             ]
         );
         assert!(all[2].is_function());
-        assert!(NamespaceUsesAnalyzer.get_declarations_from_tokens(&t, false).is_empty());
+        assert!(
+            NamespaceUsesAnalyzer
+                .get_declarations_from_tokens(&t, false)
+                .is_empty()
+        );
     }
 }

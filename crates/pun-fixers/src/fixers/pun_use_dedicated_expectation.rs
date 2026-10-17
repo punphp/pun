@@ -28,7 +28,11 @@ const SINGLE_ARG: &[(&str, &str)] = &[
     ("is_dir", "toBeDirectory"),
     ("file_exists", "toBeFile"),
 ];
-const TWO_ARGS: &[(&str, &str)] = &[("str_starts_with", "toStartWith"), ("str_ends_with", "toEndWith"), ("property_exists", "toHaveProperty")];
+const TWO_ARGS: &[(&str, &str)] = &[
+    ("str_starts_with", "toStartWith"),
+    ("str_ends_with", "toEndWith"),
+    ("property_exists", "toHaveProperty"),
+];
 
 struct UseDedicatedExpectation;
 
@@ -51,12 +55,18 @@ impl Fixer for UseDedicatedExpectation {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for i in (1..tokens.count()).rev() {
-            if !tokens[i].is_kind(T_STRING) || !tokens[i].get_content().eq_ignore_ascii_case(b"toBeTrue") {
+            if !tokens[i].is_kind(T_STRING)
+                || !tokens[i].get_content().eq_ignore_ascii_case(b"toBeTrue")
+            {
                 continue;
             }
-            let Some(m) = match_expect_matcher(tokens, i, true) else { continue };
+            let Some(m) = match_expect_matcher(tokens, i, true) else {
+                continue;
+            };
             // The expect argument must be exactly one global call `f(...)`.
-            let Some(mut fname) = tokens.get_next_meaningful_token(m.expect_open) else { continue };
+            let Some(mut fname) = tokens.get_next_meaningful_token(m.expect_open) else {
+                continue;
+            };
             let fstart = fname;
             if tokens[fname].is_kind(T_NS_SEPARATOR) {
                 fname = tokens.get_next_meaningful_token(fname).unwrap();
@@ -64,7 +74,12 @@ impl Fixer for UseDedicatedExpectation {
             if !tokens[fname].is_kind(T_STRING) {
                 continue;
             }
-            let Some(fopen) = tokens.get_next_meaningful_token(fname).filter(|&o| tokens[o].equals("(", true)) else { continue };
+            let Some(fopen) = tokens
+                .get_next_meaningful_token(fname)
+                .filter(|&o| tokens[o].equals("(", true))
+            else {
+                continue;
+            };
             let fclose = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, fopen);
             let mut after = tokens.get_next_meaningful_token(fclose).unwrap();
             if tokens[after].equals(",", true) {
@@ -73,25 +88,54 @@ impl Fixer for UseDedicatedExpectation {
             if after != m.expect_close || (fstart..=m.close).any(|k| tokens[k].is_comment()) {
                 continue;
             }
-            let Some(args) = plain_arguments(tokens, fopen, fclose) else { continue };
+            let Some(args) = plain_arguments(tokens, fopen, fclose) else {
+                continue;
+            };
             let name = tokens[fname].get_content().to_ascii_lowercase();
-            let lookup = |table: &[(&str, &'static str)]| table.iter().find(|(f, _)| f.as_bytes() == name).map(|(_, m)| *m);
+            let lookup = |table: &[(&str, &'static str)]| {
+                table
+                    .iter()
+                    .find(|(f, _)| f.as_bytes() == name)
+                    .map(|(_, m)| *m)
+            };
             let mut not_tokens = vec![];
             if m.has_not {
-                not_tokens = vec![Token::new(T_OBJECT_OPERATOR, "->"), Token::new(T_STRING, "not")];
+                not_tokens = vec![
+                    Token::new(T_OBJECT_OPERATOR, "->"),
+                    Token::new(T_STRING, "not"),
+                ];
             }
             if let (Some(matcher), 1) = (lookup(SINGLE_ARG), args.len()) {
-                tokens.override_range(i, m.close, vec![Token::new(T_STRING, matcher), Token::char("("), Token::char(")")]);
+                tokens.override_range(
+                    i,
+                    m.close,
+                    vec![
+                        Token::new(T_STRING, matcher),
+                        Token::char("("),
+                        Token::char(")"),
+                    ],
+                );
                 tokens.clear_at(fclose);
                 tokens.clear_range(fstart, fopen);
             } else if let (Some(matcher), 2) = (lookup(TWO_ARGS), args.len()) {
-                if matcher == "toHaveProperty" && tokens[args[0].0].is_given_kind(&[T_CONSTANT_ENCAPSED_STRING, T_STRING, T_NS_SEPARATOR]) {
+                if matcher == "toHaveProperty"
+                    && tokens[args[0].0].is_given_kind(&[
+                        T_CONSTANT_ENCAPSED_STRING,
+                        T_STRING,
+                        T_NS_SEPARATOR,
+                    ])
+                {
                     continue; // `property_exists(Foo::class, ...)`: toHaveProperty() needs an object
                 }
-                let mut out: Vec<Token> = (args[0].0..=args[0].1).map(|k| tokens[k].clone()).collect();
+                let mut out: Vec<Token> =
+                    (args[0].0..=args[0].1).map(|k| tokens[k].clone()).collect();
                 out.push(Token::char(")"));
                 out.extend(not_tokens);
-                out.extend([Token::new(T_OBJECT_OPERATOR, "->"), Token::new(T_STRING, matcher), Token::char("(")]);
+                out.extend([
+                    Token::new(T_OBJECT_OPERATOR, "->"),
+                    Token::new(T_STRING, matcher),
+                    Token::char("("),
+                ]);
                 out.extend((args[1].0..=args[1].1).map(|k| tokens[k].clone()));
                 out.push(Token::char(")"));
                 tokens.override_range(fstart, m.close, out);
@@ -110,13 +154,21 @@ struct ExpectMatcher {
 /// Matches `expect(<arg>)[->not]-><method>()` with `method` at `i`: the matcher must apply directly to `expect()`
 /// (no `->and()` in between, where Mago would rewrite the wrong expectation).
 fn match_expect_matcher(tokens: &Tokens, i: usize, allow_not: bool) -> Option<ExpectMatcher> {
-    let arrow = tokens.get_prev_meaningful_token(i).filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR))?;
-    let open = tokens.get_next_meaningful_token(i).filter(|&o| tokens[o].equals("(", true))?;
-    let close = tokens.get_next_meaningful_token(open).filter(|&c| tokens[c].equals(")", true))?;
+    let arrow = tokens
+        .get_prev_meaningful_token(i)
+        .filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR))?;
+    let open = tokens
+        .get_next_meaningful_token(i)
+        .filter(|&o| tokens[o].equals("(", true))?;
+    let close = tokens
+        .get_next_meaningful_token(open)
+        .filter(|&c| tokens[c].equals(")", true))?;
     let mut p = tokens.get_prev_meaningful_token(arrow)?;
     let mut has_not = false;
     if allow_not && tokens[p].is_kind(T_STRING) && tokens[p].get_content() == b"not" {
-        let a = tokens.get_prev_meaningful_token(p).filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR))?;
+        let a = tokens
+            .get_prev_meaningful_token(p)
+            .filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR))?;
         p = tokens.get_prev_meaningful_token(a)?;
         has_not = true;
     }
@@ -124,16 +176,30 @@ fn match_expect_matcher(tokens: &Tokens, i: usize, allow_not: bool) -> Option<Ex
         return None;
     }
     let expect_open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, p);
-    let name = tokens.get_prev_meaningful_token(expect_open).filter(|&n| tokens[n].is_kind(T_STRING))?;
+    let name = tokens
+        .get_prev_meaningful_token(expect_open)
+        .filter(|&n| tokens[n].is_kind(T_STRING))?;
     if !tokens[name].get_content().eq_ignore_ascii_case(b"expect") {
         return None;
     }
     let is_function_call = tokens.get_prev_meaningful_token(name).is_none_or(|b| {
-        !tokens[b].is_given_kind(&[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_FUNCTION, T_NEW])
-            && !(tokens[b].is_kind(T_NS_SEPARATOR)
-                && tokens.get_prev_meaningful_token(b).is_some_and(|q| tokens[q].is_given_kind(&[T_STRING, T_NAMESPACE])))
+        !tokens[b].is_given_kind(&[
+            T_OBJECT_OPERATOR,
+            T_NULLSAFE_OBJECT_OPERATOR,
+            T_DOUBLE_COLON,
+            T_FUNCTION,
+            T_NEW,
+        ]) && !(tokens[b].is_kind(T_NS_SEPARATOR)
+            && tokens
+                .get_prev_meaningful_token(b)
+                .is_some_and(|q| tokens[q].is_given_kind(&[T_STRING, T_NAMESPACE])))
     });
-    is_function_call.then_some(ExpectMatcher { expect_open, expect_close: p, has_not, close })
+    is_function_call.then_some(ExpectMatcher {
+        expect_open,
+        expect_close: p,
+        has_not,
+        close,
+    })
 }
 
 /// (first, last) meaningful token of each argument; `None` for spread or named arguments.
@@ -176,23 +242,61 @@ mod tests {
     #[test]
     fn mago_cases() {
         for (from, to) in [
-            ("expect(is_array($value))->toBeTrue();", "expect($value)->toBeArray();"),
-            ("expect(is_string($value))->toBeTrue();", "expect($value)->toBeString();"),
-            ("expect(is_int($value))->toBeTrue();", "expect($value)->toBeInt();"),
-            ("expect(is_integer($value))->toBeTrue();", "expect($value)->toBeInt();"),
-            ("expect(is_null($value))->toBeTrue();", "expect($value)->toBeNull();"),
-            ("expect(str_starts_with($string, 'prefix'))->toBeTrue();", "expect($string)->toStartWith('prefix');"),
-            ("expect(str_ends_with($string, 'suffix'))->toBeTrue();", "expect($string)->toEndWith('suffix');"),
-            ("expect(is_dir($path))->toBeTrue();", "expect($path)->toBeDirectory();"),
-            ("expect(file_exists($path))->toBeTrue();", "expect($path)->toBeFile();"),
-            ("expect(property_exists($obj, 'name'))->toBeTrue();", "expect($obj)->toHaveProperty('name');"),
-            ("expect(is_array($value))->TOBETRUE();", "expect($value)->toBeArray();"),
+            (
+                "expect(is_array($value))->toBeTrue();",
+                "expect($value)->toBeArray();",
+            ),
+            (
+                "expect(is_string($value))->toBeTrue();",
+                "expect($value)->toBeString();",
+            ),
+            (
+                "expect(is_int($value))->toBeTrue();",
+                "expect($value)->toBeInt();",
+            ),
+            (
+                "expect(is_integer($value))->toBeTrue();",
+                "expect($value)->toBeInt();",
+            ),
+            (
+                "expect(is_null($value))->toBeTrue();",
+                "expect($value)->toBeNull();",
+            ),
+            (
+                "expect(str_starts_with($string, 'prefix'))->toBeTrue();",
+                "expect($string)->toStartWith('prefix');",
+            ),
+            (
+                "expect(str_ends_with($string, 'suffix'))->toBeTrue();",
+                "expect($string)->toEndWith('suffix');",
+            ),
+            (
+                "expect(is_dir($path))->toBeTrue();",
+                "expect($path)->toBeDirectory();",
+            ),
+            (
+                "expect(file_exists($path))->toBeTrue();",
+                "expect($path)->toBeFile();",
+            ),
+            (
+                "expect(property_exists($obj, 'name'))->toBeTrue();",
+                "expect($obj)->toHaveProperty('name');",
+            ),
+            (
+                "expect(is_array($value))->TOBETRUE();",
+                "expect($value)->toBeArray();",
+            ),
         ] {
-            assert_eq!(fix(&format!("<?php\n\n{from}\n")), format!("<?php\n\n{to}\n"));
+            assert_eq!(
+                fix(&format!("<?php\n\n{from}\n")),
+                format!("<?php\n\n{to}\n")
+            );
         }
         // multiple_violations: in_array and is_file are reported by Mago but have no exact matcher.
         assert_eq!(
-            fix("<?php\n\nexpect(is_array($a))->toBeTrue();\nexpect(is_string($b))->toBeTrue();\nexpect(str_starts_with($c, 'x'))->toBeTrue();\nexpect(in_array($d, $arr))->toBeTrue();\nexpect(is_file($e))->toBeTrue();\n"),
+            fix(
+                "<?php\n\nexpect(is_array($a))->toBeTrue();\nexpect(is_string($b))->toBeTrue();\nexpect(str_starts_with($c, 'x'))->toBeTrue();\nexpect(in_array($d, $arr))->toBeTrue();\nexpect(is_file($e))->toBeTrue();\n"
+            ),
             "<?php\n\nexpect($a)->toBeArray();\nexpect($b)->toBeString();\nexpect($c)->toStartWith('x');\nexpect(in_array($d, $arr))->toBeTrue();\nexpect(is_file($e))->toBeTrue();\n"
         );
         // dedicated_matchers, non_matching_function_calls, and the unported Mago fixes
@@ -207,13 +311,22 @@ mod tests {
 
     #[test]
     fn edge_cases() {
-        assert_eq!(fix("<?php expect(\\is_array( $x ))->not->toBeTrue();"), "<?php expect( $x )->not->toBeArray();");
+        assert_eq!(
+            fix("<?php expect(\\is_array( $x ))->not->toBeTrue();"),
+            "<?php expect( $x )->not->toBeArray();"
+        );
         assert_eq!(
             fix("<?php expect(str_ends_with($user->name, \"son\"),)->not->toBeTrue();"),
             "<?php expect($user->name)->not->toEndWith(\"son\");"
         );
-        assert_eq!(fix("<?php expect(is_callable([$a, 'b']))->toBeTrue();"), "<?php expect([$a, 'b'])->toBeCallable();");
-        assert_eq!(fix("<?php \\expect(is_array($x))->toBeTrue();"), "<?php \\expect($x)->toBeArray();");
+        assert_eq!(
+            fix("<?php expect(is_callable([$a, 'b']))->toBeTrue();"),
+            "<?php expect([$a, 'b'])->toBeCallable();"
+        );
+        assert_eq!(
+            fix("<?php \\expect(is_array($x))->toBeTrue();"),
+            "<?php \\expect($x)->toBeArray();"
+        );
         for same in [
             "<?php expect(is_callable($x, true))->toBeTrue();",
             "<?php expect(is_array($x), 'msg')->toBeTrue();",

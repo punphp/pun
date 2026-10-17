@@ -75,7 +75,10 @@ fn modifier_flag(target: Target, k: Kind) -> Result<u32, String> {
                 Cpp => "parameter",
                 _ => "property hook",
             };
-            return Err(format!("Cannot use the {} modifier on a {member}", modifier_name(k)));
+            return Err(format!(
+                "Cannot use the {} modifier on a {member}",
+                modifier_name(k)
+            ));
         }
     };
     Ok(flag)
@@ -94,11 +97,20 @@ fn member_modifiers(target: Target, list: &[Kind]) -> Result<(), String> {
         flags |= new;
         // Only methods and properties accept `abstract`.
         if flags & ABSTRACT != 0 && flags & FINAL != 0 {
-            let member = if target == Target::Method { "method" } else { "property" };
-            return Err(format!("Cannot use the final modifier on an abstract {member}"));
+            let member = if target == Target::Method {
+                "method"
+            } else {
+                "property"
+            };
+            return Err(format!(
+                "Cannot use the final modifier on an abstract {member}"
+            ));
         }
         if duplicate {
-            return Err(format!("Multiple {} modifiers are not allowed", modifier_name(k)));
+            return Err(format!(
+                "Multiple {} modifiers are not allowed",
+                modifier_name(k)
+            ));
         }
     }
     Ok(())
@@ -118,7 +130,10 @@ fn class_modifiers(list: &[Kind]) -> Result<(), String> {
     for &k in list {
         let new = class_flag(k);
         if flags & new != 0 {
-            return Err(format!("Multiple {} modifiers are not allowed", modifier_name(k)));
+            return Err(format!(
+                "Multiple {} modifiers are not allowed",
+                modifier_name(k)
+            ));
         }
         flags |= new;
         if flags & ABSTRACT != 0 && flags & FINAL != 0 {
@@ -134,7 +149,10 @@ fn anonymous_class_modifiers(list: &[Kind]) -> Result<(), String> {
     for &k in list {
         let new = class_flag(k);
         if new == ABSTRACT || new == FINAL {
-            return Err(format!("Cannot use the {} modifier on an anonymous class", modifier_name(k)));
+            return Err(format!(
+                "Cannot use the {} modifier on an anonymous class",
+                modifier_name(k)
+            ));
         }
         if flags & new != 0 {
             return Err("Multiple readonly modifiers are not allowed".into());
@@ -176,11 +194,20 @@ impl Parser<'_> {
         }
         if parts.len() > 1 {
             parts.push(toks.len() + 1);
-            return parts.windows(2).all(|w| self.is_zval(&toks[w[0]..w[1] - 1]));
+            return parts
+                .windows(2)
+                .all(|w| self.is_zval(&toks[w[0]..w[1] - 1]));
         }
         match toks {
-            [t] => matches!(t.kind, Some(Kind::T_LNUMBER | Kind::T_DNUMBER | Kind::T_CONSTANT_ENCAPSED_STRING)),
-            [s, .., e] if s.kind == Some(Kind::T_START_HEREDOC) && e.kind == Some(Kind::T_END_HEREDOC) => toks.len() <= 3,
+            [t] => matches!(
+                t.kind,
+                Some(Kind::T_LNUMBER | Kind::T_DNUMBER | Kind::T_CONSTANT_ENCAPSED_STRING)
+            ),
+            [s, .., e]
+                if s.kind == Some(Kind::T_START_HEREDOC) && e.kind == Some(Kind::T_END_HEREDOC) =>
+            {
+                toks.len() <= 3
+            }
             [o, inner @ .., c] if is(o, b'(') && is(c, b')') => self.is_zval(inner),
             _ => false,
         }
@@ -204,34 +231,63 @@ impl Parser<'_> {
             }
         }
         elems.push(&toks[start..]);
-        if elems.iter().any(|e| self.text(&e[0]).eq_ignore_ascii_case(b"encoding") && !self.is_zval(&e[2..])) {
+        if elems
+            .iter()
+            .any(|e| self.text(&e[0]).eq_ignore_ascii_case(b"encoding") && !self.is_zval(&e[2..]))
+        {
             return Err("Encoding must be a literal".into());
         }
         Ok(())
     }
 
     /// The semantic checks of grammar actions, run when `rule` reduces `rhs` (ranges of its right-hand side).
-    fn action(&mut self, rule: usize, rhs: &[(usize, usize)], below: Option<(usize, usize)>) -> Result<(), SyntaxError> {
-        let fatal = |message: String| SyntaxError { message, line: 0, fatal: true };
+    fn action(
+        &mut self,
+        rule: usize,
+        rhs: &[(usize, usize)],
+        below: Option<(usize, usize)>,
+    ) -> Result<(), SyntaxError> {
+        let fatal = |message: String| SyntaxError {
+            message,
+            line: 0,
+            fatal: true,
+        };
         let all = rhs.first().map_or((0, 0), |f| (f.0, rhs.last().unwrap().1));
         let r = match rule {
             RULE_HALT_TOP => {
                 self.lx.stop();
                 Ok(())
             }
-            RULE_HALT_INNER => Err(fatal("__HALT_COMPILER() can only be used from the outermost scope".into())),
+            RULE_HALT_INNER => Err(fatal(
+                "__HALT_COMPILER() can only be used from the outermost scope".into(),
+            )),
             RULE_DECLARE => self.encoding_declaration(below.unwrap()).map_err(fatal),
             RULE_CLASS_MODIFIERS => class_modifiers(&self.kinds(all)).map_err(fatal),
-            RULE_ANON_MODIFIER_FIRST | RULE_ANON_MODIFIERS => anonymous_class_modifiers(&self.kinds(all)).map_err(fatal),
+            RULE_ANON_MODIFIER_FIRST | RULE_ANON_MODIFIERS => {
+                anonymous_class_modifiers(&self.kinds(all)).map_err(fatal)
+            }
             RULE_CPP_MODIFIERS => member_modifiers(Target::Cpp, &self.kinds(all)).map_err(fatal),
-            RULE_PROPERTY_MODIFIERS => member_modifiers(Target::Property, &self.kinds(all)).map_err(fatal),
-            RULE_METHOD_MODIFIERS => member_modifiers(Target::Method, &self.kinds(all)).map_err(fatal),
-            RULE_CONST_MODIFIERS => member_modifiers(Target::Constant, &self.kinds(all)).map_err(fatal),
+            RULE_PROPERTY_MODIFIERS => {
+                member_modifiers(Target::Property, &self.kinds(all)).map_err(fatal)
+            }
+            RULE_METHOD_MODIFIERS => {
+                member_modifiers(Target::Method, &self.kinds(all)).map_err(fatal)
+            }
+            RULE_CONST_MODIFIERS => {
+                member_modifiers(Target::Constant, &self.kinds(all)).map_err(fatal)
+            }
             RULE_HOOK_MODIFIERS => member_modifiers(Target::Hook, &self.kinds(all)).map_err(fatal),
-            RULE_ALIAS_MODIFIER_NAME | RULE_ALIAS_MODIFIER => modifier_flag(Target::Method, self.kinds(rhs[2])[0]).map(|_| ()).map_err(fatal),
+            RULE_ALIAS_MODIFIER_NAME | RULE_ALIAS_MODIFIER => {
+                modifier_flag(Target::Method, self.kinds(rhs[2])[0])
+                    .map(|_| ())
+                    .map_err(fatal)
+            }
             _ => Ok(()),
         };
-        r.map_err(|e| SyntaxError { line: self.lx.lineno(), ..e })
+        r.map_err(|e| SyntaxError {
+            line: self.lx.lineno(),
+            ..e
+        })
     }
 
     /// `zend_yytnamerr` for the unexpected token.
@@ -246,7 +302,10 @@ impl Parser<'_> {
             "'\"'" => return "double-quote mark".into(),
             _ => {}
         }
-        let mut toktype = name.strip_prefix('"').and_then(|n| n.strip_suffix('"')).unwrap_or(name);
+        let mut toktype = name
+            .strip_prefix('"')
+            .and_then(|n| n.strip_suffix('"'))
+            .unwrap_or(name);
         if toktype.starts_with('\'') {
             return format!("token \"{}\"", &toktype[1..toktype.len() - 1]);
         }
@@ -271,7 +330,10 @@ impl Parser<'_> {
             content = &content[..content.len() - 1];
         }
         if content.len() > 33 {
-            return format!("{toktype} \"{}...\"", String::from_utf8_lossy(&content[..30]));
+            return format!(
+                "{toktype} \"{}...\"",
+                String::from_utf8_lossy(&content[..30])
+            );
         }
         format!("{toktype} \"{}\"", String::from_utf8_lossy(content))
     }
@@ -284,7 +346,10 @@ impl Parser<'_> {
         // The state read a lookahead, so its yypact entry is not the default.
         let yyn = YYPACT[state as usize] as i32;
         for x in yyn.max(0) - yyn..(YYLAST - yyn + 1).min(YYNTOKENS) {
-            if YYCHECK[(x + yyn) as usize] as i32 == x && x != 1 && YYTABLE[(x + yyn) as usize] as i32 != YYTABLE_NINF {
+            if YYCHECK[(x + yyn) as usize] as i32 == x
+                && x != 1
+                && YYTABLE[(x + yyn) as usize] as i32 != YYTABLE_NINF
+            {
                 expected.push(x);
             }
         }
@@ -294,13 +359,21 @@ impl Parser<'_> {
                 let shown = match name {
                     "\"'\\\\'\"" => "\"\\\"".to_string(),
                     "\"amp\"" => "token \"&\"".to_string(),
-                    _ => name.strip_prefix('"').and_then(|n| n.strip_suffix('"')).unwrap_or(name).replace('\'', "\""),
+                    _ => name
+                        .strip_prefix('"')
+                        .and_then(|n| n.strip_suffix('"'))
+                        .unwrap_or(name)
+                        .replace('\'', "\""),
                 };
                 msg += if i == 0 { ", expecting " } else { " or " };
                 msg += &shown;
             }
         }
-        SyntaxError { message: msg, line, fatal: false }
+        SyntaxError {
+            message: msg,
+            line,
+            fatal: false,
+        }
     }
 
     fn symbol(t: &ParseToken) -> i32 {
@@ -311,7 +384,11 @@ impl Parser<'_> {
     }
 
     fn run(&mut self) -> Result<(), SyntaxError> {
-        let lex_error = |e: pun_tokens::LexError| SyntaxError { message: e.message, line: e.line, fatal: false };
+        let lex_error = |e: pun_tokens::LexError| SyntaxError {
+            message: e.message,
+            line: e.line,
+            fatal: false,
+        };
         let mut states: Vec<i32> = vec![0];
         let mut values: Vec<(usize, usize)> = vec![(0, 0)];
         // Lookahead: (symbol, token or None at the end of file).
@@ -365,13 +442,21 @@ impl Parser<'_> {
             let below = values.len().checked_sub(2).map(|i| values[i]);
             self.action(rule, &rhs, below)?;
             let n = self.toks.len();
-            let range = if len == 0 { (n, n) } else { (rhs[0].0, rhs[len - 1].1) };
+            let range = if len == 0 {
+                (n, n)
+            } else {
+                (rhs[0].0, rhs[len - 1].1)
+            };
             states.truncate(states.len() - len);
             values.truncate(values.len() - len);
             let top = *states.last().unwrap();
             let lhs = YYR1[rule] as i32 - YYNTOKENS;
             let i = YYPGOTO[lhs as usize] as i32 + top;
-            let next = if (0..=YYLAST).contains(&i) && YYCHECK[i as usize] as i32 == top { YYTABLE[i as usize] as i32 } else { YYDEFGOTO[lhs as usize] as i32 };
+            let next = if (0..=YYLAST).contains(&i) && YYCHECK[i as usize] as i32 == top {
+                YYTABLE[i as usize] as i32
+            } else {
+                YYDEFGOTO[lhs as usize] as i32
+            };
             states.push(next);
             values.push(range);
         }
@@ -380,5 +465,10 @@ impl Parser<'_> {
 
 /// Parse like `token_get_all($code, TOKEN_PARSE)`.
 pub(crate) fn parse(src: &[u8]) -> Result<(), SyntaxError> {
-    Parser { src, lx: ParseLexer::new(src), toks: Vec::new() }.run()
+    Parser {
+        src,
+        lx: ParseLexer::new(src),
+        toks: Vec::new(),
+    }
+    .run()
 }

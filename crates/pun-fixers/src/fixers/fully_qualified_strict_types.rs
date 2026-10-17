@@ -4,7 +4,9 @@
 //! per-kind dimension of `$uses`, `$discoveredSymbols`, `$symbolsForImport` and the uses caches is dropped.
 use crate::analyzers::analysis::TypeAnalysis;
 use crate::analyzers::attribute_analyzer::AttributeAnalyzer;
-use crate::analyzers::docblock::{Context, TypeExpression, type_expression::REGEX_IDENTIFIER, type_expression::REGEX_TYPES};
+use crate::analyzers::docblock::{
+    Context, TypeExpression, type_expression::REGEX_IDENTIFIER, type_expression::REGEX_TYPES,
+};
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use crate::analyzers::import_processor::ImportProcessor;
@@ -19,8 +21,8 @@ use serde_json::Value;
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::Path;
-use std::sync::LazyLock;
 use std::rc::Rc;
+use std::sync::LazyLock;
 
 const CLASSY_KINDS: &[Kind] = &[T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM];
 const PHPDOC_TAGS: &[&str] = &[
@@ -127,8 +129,17 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
         ])
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let r = resolve(self.name(), options, &["leading_backslash_in_global_namespace", "import_symbols", "phpdoc_tags"])?;
-        self.leading_backslash_in_global_namespace = r.bool("leading_backslash_in_global_namespace", false)?;
+        let r = resolve(
+            self.name(),
+            options,
+            &[
+                "leading_backslash_in_global_namespace",
+                "import_symbols",
+                "phpdoc_tags",
+            ],
+        )?;
+        self.leading_backslash_in_global_namespace =
+            r.bool("leading_backslash_in_global_namespace", false)?;
         self.import_symbols = r.bool("import_symbols", false)?;
         self.phpdoc_tags = r.strings("phpdoc_tags", PHPDOC_TAGS, &[])?;
         Ok(())
@@ -147,7 +158,9 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
         let namespace_count = NamespacesAnalyzer.get_declarations(tokens).len();
         for namespace_index in 0..namespace_count {
             // `$tokens->getNamespaceDeclarations()` is recomputed after every change.
-            let namespace = NamespacesAnalyzer.get_declarations(tokens).swap_remove(namespace_index);
+            let namespace = NamespacesAnalyzer
+                .get_declarations(tokens)
+                .swap_remove(namespace_index);
             let namespace_name = namespace.full_name.clone();
 
             let mut uses = OMap::default();
@@ -162,7 +175,11 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
             }
 
             let mut index_diff: isize = 0;
-            let phases: &[bool] = if self.import_symbols { &[true, false] } else { &[false] };
+            let phases: &[bool] = if self.import_symbols {
+                &[true, false]
+            } else {
+                &[false]
+            };
             for &discover_symbols_phase in phases {
                 *st.discovered_symbols.borrow_mut() = discover_symbols_phase.then(Vec::new);
                 let mut opened_curly_brackets: i64 = 0;
@@ -174,21 +191,39 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                     // Only comment branches read the content after edits; other tokens need just their kind.
                     let t = &tokens[index];
                     let (open, close) = (t.equals("{", true), t.equals("}", true));
-                    let token = if t.is_comment() { t.clone() } else { Token { id: t.id, content: Vec::new() } };
+                    let token = if t.is_comment() {
+                        t.clone()
+                    } else {
+                        Token {
+                            id: t.id,
+                            content: Vec::new(),
+                        }
+                    };
                     if open {
                         opened_curly_brackets += 1;
                     } else if close {
-                        st.reserved_identifiers_by_level.remove(&opened_curly_brackets);
+                        st.reserved_identifiers_by_level
+                            .remove(&opened_curly_brackets);
                         opened_curly_brackets -= 1;
                         assert!(opened_curly_brackets >= 0);
                     } else if token.is_kind(T_VARIABLE) {
-                        if tokens.get_prev_meaningful_token(index).is_some_and(|p| tokens[p].is_kind(T_STRING)) {
+                        if tokens
+                            .get_prev_meaningful_token(index)
+                            .is_some_and(|p| tokens[p].is_kind(T_STRING))
+                        {
                             self.fix_prev_name(&st, tokens, index, &uses, &namespace_name);
                         }
                     } else if token.is_kind(T_DOUBLE_COLON) {
                         self.fix_prev_name(&st, tokens, index, &uses, &namespace_name);
                     } else if token.is_kind(T_FUNCTION) {
-                        self.fix_function(&st, &functions_analyzer, tokens, index, &uses, &namespace_name);
+                        self.fix_function(
+                            &st,
+                            &functions_analyzer,
+                            tokens,
+                            index,
+                            &uses,
+                            &namespace_name,
+                        );
                     } else if token.is_kind(T_ATTRIBUTE) {
                         self.fix_attribute(&st, tokens, index, &uses, &namespace_name);
                     } else if token.is_kind(T_CATCH) {
@@ -197,7 +232,12 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                         self.fix_next_name(&st, tokens, index, &uses, &namespace_name);
                     } else if token.is_given_kind(&[T_EXTENDS, T_IMPLEMENTS]) {
                         self.fix_extends_implements(&st, tokens, index, &uses, &namespace_name);
-                    } else if token.is_given_kind(&[T_INSTANCEOF, T_NEW, CT_USE_TRAIT, CT_TYPE_COLON]) {
+                    } else if token.is_given_kind(&[
+                        T_INSTANCEOF,
+                        T_NEW,
+                        CT_USE_TRAIT,
+                        CT_TYPE_COLON,
+                    ]) {
                         self.fix_next_name(&st, tokens, index, &uses, &namespace_name);
                     } else if let Some(m) = (discover_symbols_phase && token.is_kind(T_COMMENT))
                         .then(|| Preg::match_groups(&regex_comment_attribute, &token.content, 0))
@@ -207,7 +247,10 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                         self.determine_short_type(&st, m.str(1), &uses, &namespace_name);
                     } else if token.is_kind(T_DOC_COMMENT) {
                         for m in Preg::match_all(&regex_reserved, &token.content, 0) {
-                            st.reserved_identifiers_by_level.entry(opened_curly_brackets + 1).or_default().insert(m.str(1).to_vec());
+                            st.reserved_identifiers_by_level
+                                .entry(opened_curly_brackets + 1)
+                                .or_default()
+                                .insert(m.str(1).to_vec());
                         }
                         self.fix_php_doc(&st, tokens, index, &uses, &namespace_name);
                     }
@@ -229,14 +272,26 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                 } else {
                     match tokens.get_next_meaningful_token(namespace.scope_start_index) {
                         Some(first) if tokens[first].is_kind(T_DECLARE) => {
-                            tokens.get_next_token_of_kind(first, &[";".into()], true).unwrap() + 1
+                            tokens
+                                .get_next_token_of_kind(first, &[";".into()], true)
+                                .unwrap()
+                                + 1
                         }
                         _ => namespace.scope_start_index + 1,
                     }
                 };
                 // Insert all registered FQCNs
-                let names = st.symbols_for_import.0.iter().map(|(_, fqcn)| fqcn.clone()).collect();
-                ImportProcessor::new(self.whitespaces_config.clone()).insert_imports(tokens, &[("class", names)], at_index);
+                let names = st
+                    .symbols_for_import
+                    .0
+                    .iter()
+                    .map(|(_, fqcn)| fqcn.clone())
+                    .collect();
+                ImportProcessor::new(self.whitespaces_config.clone()).insert_imports(
+                    tokens,
+                    &[("class", names)],
+                    at_index,
+                );
                 st.symbols_for_import = OMap::default();
             }
         }
@@ -261,9 +316,12 @@ fn build_uses_cache(uses: &OMap) -> UsesCache {
         use_short_name_by_normalized_name: HashMap::new(),
     };
     for (use_long_name, use_short_name) in &uses.0 {
-        c.use_name_by_short_name_lower.insert(strtolower(use_short_name), use_long_name.clone());
-        c.use_short_name_by_name.insert(use_long_name.clone(), use_short_name.clone());
-        c.use_short_name_by_normalized_name.insert(normalize_fqcn(use_long_name), use_short_name.clone());
+        c.use_name_by_short_name_lower
+            .insert(strtolower(use_short_name), use_long_name.clone());
+        c.use_short_name_by_name
+            .insert(use_long_name.clone(), use_short_name.clone());
+        c.use_short_name_by_normalized_name
+            .insert(normalize_fqcn(use_long_name), use_short_name.clone());
     }
     c
 }
@@ -310,10 +368,18 @@ impl FullyQualifiedStrictTypesFixer {
         if TypeAnalysis::new(symbol, None, None).is_reserved_type() {
             return true;
         }
-        st.reserved_identifiers_by_level.values().any(|r| r.contains(symbol))
+        st.reserved_identifiers_by_level
+            .values()
+            .any(|r| r.contains(symbol))
     }
 
-    fn resolve_symbol(&self, st: &State, symbol: &[u8], uses: &OMap, namespace_name: &[u8]) -> Vec<u8> {
+    fn resolve_symbol(
+        &self,
+        st: &State,
+        symbol: &[u8],
+        uses: &OMap,
+        namespace_name: &[u8],
+    ) -> Vec<u8> {
         if let Some(rest) = symbol.strip_prefix(b"\\") {
             return rest.to_vec();
         }
@@ -323,16 +389,29 @@ impl FullyQualifiedStrictTypesFixer {
         let cache = refresh_uses_cache(st, uses);
         let mut symbol_arr = symbol.splitn(2, |&c| c == b'\\');
         let short_start_name_lower = strtolower(symbol_arr.next().unwrap());
-        if let Some(long) = cache.use_name_by_short_name_lower.get(&short_start_name_lower) {
+        if let Some(long) = cache
+            .use_name_by_short_name_lower
+            .get(&short_start_name_lower)
+        {
             return match symbol_arr.next() {
                 Some(rest) => [&long[..], b"\\", rest].concat(),
                 None => long.clone(),
             };
         }
-        if namespace_name.is_empty() { symbol.to_vec() } else { [namespace_name, b"\\", symbol].concat() }
+        if namespace_name.is_empty() {
+            symbol.to_vec()
+        } else {
+            [namespace_name, b"\\", symbol].concat()
+        }
     }
 
-    fn shorten_symbol(&self, st: &State, fqcn: &[u8], uses: &OMap, namespace_name: &[u8]) -> Vec<u8> {
+    fn shorten_symbol(
+        &self,
+        st: &State,
+        fqcn: &[u8],
+        uses: &OMap,
+        namespace_name: &[u8],
+    ) -> Vec<u8> {
         if self.is_reserved_identifier(st, fqcn) {
             return fqcn.to_vec();
         }
@@ -343,7 +422,9 @@ impl FullyQualifiedStrictTypesFixer {
         let mut i_min = 0;
         let ns_prefix = [namespace_name, b"\\"].concat();
         if let Some(tmp_res) = fqcn.strip_prefix(&ns_prefix[..]) {
-            if !cache.use_name_by_short_name_lower.contains_key(&strtolower(first_part(tmp_res)))
+            if !cache
+                .use_name_by_short_name_lower
+                .contains_key(&strtolower(first_part(tmp_res)))
                 && !self.is_reserved_identifier(st, tmp_res)
             {
                 res = Some(tmp_res.to_vec());
@@ -369,7 +450,10 @@ impl FullyQualifiedStrictTypesFixer {
         }
 
         if res.is_none() {
-            if let Some(tmp_res) = cache.use_short_name_by_normalized_name.get(&normalize_fqcn(fqcn)) {
+            if let Some(tmp_res) = cache
+                .use_short_name_by_normalized_name
+                .get(&normalize_fqcn(fqcn))
+            {
                 if !self.is_reserved_identifier(st, tmp_res) {
                     res = Some(tmp_res.clone());
                 }
@@ -380,7 +464,9 @@ impl FullyQualifiedStrictTypesFixer {
         res.unwrap_or_else(|| {
             if !namespace_name.is_empty()
                 || self.leading_backslash_in_global_namespace
-                || cache.use_name_by_short_name_lower.contains_key(&strtolower(first_part(fqcn)))
+                || cache
+                    .use_name_by_short_name_lower
+                    .contains_key(&strtolower(first_part(fqcn)))
             {
                 [b"\\", fqcn].concat()
             } else {
@@ -389,8 +475,15 @@ impl FullyQualifiedStrictTypesFixer {
         })
     }
 
-    fn setup_uses_from_discovered_symbols(&self, st: &mut State, uses: &mut OMap, namespace_name: &[u8]) {
-        let Some(mut discovered_symbols) = st.discovered_symbols.borrow_mut().take() else { return };
+    fn setup_uses_from_discovered_symbols(
+        &self,
+        st: &mut State,
+        uses: &mut OMap,
+        namespace_name: &[u8],
+    ) {
+        let Some(mut discovered_symbols) = st.discovered_symbols.borrow_mut().take() else {
+            return;
+        };
         // upstream iterates `$this->discoveredSymbols` per kind; no kind = nothing discovered
         if discovered_symbols.is_empty() {
             return;
@@ -408,13 +501,19 @@ impl FullyQualifiedStrictTypesFixer {
         }
 
         for (use_long_name, use_short_name) in &uses.0 {
-            discovered_fqcn_by_short_name_lower.set(strtolower(use_short_name), use_long_name.clone());
+            discovered_fqcn_by_short_name_lower
+                .set(strtolower(use_short_name), use_long_name.clone());
         }
 
-        let use_by_short_name_lower: HashSet<Vec<u8>> = uses.0.iter().map(|(_, short)| strtolower(short)).collect();
+        let use_by_short_name_lower: HashSet<Vec<u8>> =
+            uses.0.iter().map(|(_, short)| strtolower(short)).collect();
 
         let count = |s: &[u8]| s.iter().filter(|&&c| c == b'\\').count();
-        discovered_symbols.sort_by(|a, b| a.starts_with(b"\\").cmp(&b.starts_with(b"\\")).then(count(a).cmp(&count(b))));
+        discovered_symbols.sort_by(|a, b| {
+            a.starts_with(b"\\")
+                .cmp(&b.starts_with(b"\\"))
+                .then(count(a).cmp(&count(b)))
+        });
         for symbol in &discovered_symbols {
             let mut symbol = &symbol[..];
             loop {
@@ -422,10 +521,14 @@ impl FullyQualifiedStrictTypesFixer {
                     Some(p) => &symbol[p + 1..],
                     None => symbol,
                 });
-                if discovered_fqcn_by_short_name_lower.get(&short_end_name_lower).is_none() {
+                if discovered_fqcn_by_short_name_lower
+                    .get(&short_end_name_lower)
+                    .is_none()
+                {
                     let short_start_name_lower = strtolower(first_part(ltrim_chars(symbol, b"\\")));
                     if symbol.starts_with(b"\\")
-                        || (namespace_name.is_empty() && !use_by_short_name_lower.contains(&short_start_name_lower))
+                        || (namespace_name.is_empty()
+                            && !use_by_short_name_lower.contains(&short_start_name_lower))
                         || !symbol.contains(&b'\\')
                     {
                         let resolved = self.resolve_symbol(st, symbol, uses, namespace_name);
@@ -435,7 +538,10 @@ impl FullyQualifiedStrictTypesFixer {
                 }
                 // else short name collision - keep unimported
 
-                if symbol.starts_with(b"\\") || namespace_name.is_empty() || !symbol.contains(&b'\\') {
+                if symbol.starts_with(b"\\")
+                    || namespace_name.is_empty()
+                    || !symbol.contains(&b'\\')
+                {
                     break;
                 }
                 symbol = &symbol[..last_backslash(symbol).unwrap()];
@@ -444,7 +550,10 @@ impl FullyQualifiedStrictTypesFixer {
 
         for (use_long_name, use_short_name) in &uses.0 {
             let key = strtolower(use_short_name);
-            let discovered_long_name = discovered_fqcn_by_short_name_lower.get(&key).cloned().unwrap_or_default();
+            let discovered_long_name = discovered_fqcn_by_short_name_lower
+                .get(&key)
+                .cloned()
+                .unwrap_or_default();
             if strtolower(&discovered_long_name) == strtolower(use_long_name) {
                 discovered_fqcn_by_short_name_lower.remove(&key);
             }
@@ -463,18 +572,39 @@ impl FullyQualifiedStrictTypesFixer {
         }
 
         // ksort(SORT_NATURAL), stable like PHP's sort
-        st.symbols_for_import.0.sort_by(|a, b| strnatcmp(&a.0, &b.0).cmp(&0));
+        st.symbols_for_import
+            .0
+            .sort_by(|a, b| strnatcmp(&a.0, &b.0).cmp(&0));
     }
 
-    fn fix_function(&self, st: &State, functions_analyzer: &FunctionsAnalyzer, tokens: &mut Tokens, index: usize, uses: &OMap, ns: &[u8]) {
-        let names: Vec<Vec<u8>> = functions_analyzer.get_function_arguments(tokens, index).into_iter().map(|(n, _)| n).collect();
+    fn fix_function(
+        &self,
+        st: &State,
+        functions_analyzer: &FunctionsAnalyzer,
+        tokens: &mut Tokens,
+        index: usize,
+        uses: &OMap,
+        ns: &[u8],
+    ) {
+        let names: Vec<Vec<u8>> = functions_analyzer
+            .get_function_arguments(tokens, index)
+            .into_iter()
+            .map(|(n, _)| n)
+            .collect();
         for name in names {
-            let argument = functions_analyzer.get_function_arguments(tokens, index).into_iter().find(|(n, _)| *n == name).unwrap().1;
+            let argument = functions_analyzer
+                .get_function_arguments(tokens, index)
+                .into_iter()
+                .find(|(n, _)| *n == name)
+                .unwrap()
+                .1;
             if let Some(type_analysis) = &argument.type_analysis {
                 self.replace_by_short_type(st, tokens, type_analysis, uses, ns);
             }
         }
-        if let Some(return_type_analysis) = functions_analyzer.get_function_return_type(tokens, index) {
+        if let Some(return_type_analysis) =
+            functions_analyzer.get_function_return_type(tokens, index)
+        {
             self.replace_by_short_type(st, tokens, &return_type_analysis, uses, ns);
         }
     }
@@ -485,23 +615,43 @@ impl FullyQualifiedStrictTypesFixer {
             return;
         }
         let php_doc_content = tokens[index].content.clone();
-        static DOC_TAG: LazyLock<String> = LazyLock::new(|| format!(r"/([*{{]\h*@)(\S+)(\h+)({REGEX_TYPES})(?!(?!\}})\S)/"));
-        static SEE_TAG: LazyLock<String> =
-            LazyLock::new(|| format!(r"/([*{{]\h*)@see(\h+)({})(::(?:\$\w+|\w+\(\)))(?!(?!\}})\S)/", regex_class()));
+        static DOC_TAG: LazyLock<String> =
+            LazyLock::new(|| format!(r"/([*{{]\h*@)(\S+)(\h+)({REGEX_TYPES})(?!(?!\}})\S)/"));
+        static SEE_TAG: LazyLock<String> = LazyLock::new(|| {
+            format!(
+                r"/([*{{]\h*)@see(\h+)({})(::(?:\$\w+|\w+\(\)))(?!(?!\}})\S)/",
+                regex_class()
+            )
+        });
         let mut php_doc_content_new = Preg::replace_callback(
             &*DOC_TAG,
             |m| {
                 if !allowed_tags.iter().any(|t| t.as_bytes() == m.str(2)) {
                     return m.str(0).to_vec();
                 }
-                [m.str(1), m.str(2), m.str(3), &self.fix_php_doc_type(st, m.str(4), uses, ns)].concat()
+                [
+                    m.str(1),
+                    m.str(2),
+                    m.str(3),
+                    &self.fix_php_doc_type(st, m.str(4), uses, ns),
+                ]
+                .concat()
             },
             &php_doc_content,
         );
         if allowed_tags.iter().any(|t| t == "see") {
             php_doc_content_new = Preg::replace_callback(
                 &*SEE_TAG,
-                |m| [m.str(1), b"@see", m.str(2), &self.fix_php_doc_type(st, m.str(3), uses, ns), m.str(5)].concat(),
+                |m| {
+                    [
+                        m.str(1),
+                        b"@see",
+                        m.str(2),
+                        &self.fix_php_doc_type(st, m.str(3), uses, ns),
+                        m.str(5),
+                    ]
+                    .concat()
+                },
                 &php_doc_content_new,
             );
         }
@@ -523,14 +673,31 @@ impl FullyQualifiedStrictTypesFixer {
             {
                 return type_;
             }
-            let Some(short_tokens) = self.determine_short_type(st, &current_type_value, uses, ns) else { return type_ };
-            let new_type_value: Vec<u8> = short_tokens.iter().flat_map(|t| t.content.iter().copied()).collect();
-            if current_type_value == new_type_value { type_ } else { TypeExpression::new(&new_type_value, ctx.clone()) }
+            let Some(short_tokens) = self.determine_short_type(st, &current_type_value, uses, ns)
+            else {
+                return type_;
+            };
+            let new_type_value: Vec<u8> = short_tokens
+                .iter()
+                .flat_map(|t| t.content.iter().copied())
+                .collect();
+            if current_type_value == new_type_value {
+                type_
+            } else {
+                TypeExpression::new(&new_type_value, ctx.clone())
+            }
         });
         type_expression.to_string().to_vec()
     }
 
-    fn fix_extends_implements(&self, st: &State, tokens: &mut Tokens, index: usize, uses: &OMap, ns: &[u8]) {
+    fn fix_extends_implements(
+        &self,
+        st: &State,
+        tokens: &mut Tokens,
+        index: usize,
+        uses: &OMap,
+        ns: &[u8],
+    ) {
         // We handle `extends` and `implements` with similar logic, but we need to exit the loop under different conditions.
         let is_extends = tokens[index].is_kind(T_EXTENDS);
         let mut index = tokens.get_next_meaningful_token(index).unwrap();
@@ -539,10 +706,21 @@ impl FullyQualifiedStrictTypesFixer {
         loop {
             if tokens[index].equals_any(&[",".into(), "{".into(), T_IMPLEMENTS.into()], true) {
                 if let Some(start) = type_start_index {
-                    index = index.wrapping_add_signed(self.shorten_class_if_possible(st, tokens, start, type_end_index, uses, ns));
+                    index = index.wrapping_add_signed(self.shorten_class_if_possible(
+                        st,
+                        tokens,
+                        start,
+                        type_end_index,
+                        uses,
+                        ns,
+                    ));
                 }
                 type_start_index = None;
-                let stop: &[pun_tokens::Proto] = if is_extends { &[T_IMPLEMENTS.into(), "{".into()] } else { &["{".into()] };
+                let stop: &[pun_tokens::Proto] = if is_extends {
+                    &[T_IMPLEMENTS.into(), "{".into()]
+                } else {
+                    &["{".into()]
+                };
                 if tokens[index].equals_any(stop, true) {
                     break;
                 }
@@ -560,9 +738,19 @@ impl FullyQualifiedStrictTypesFixer {
         let mut type_start_index = None;
         let mut type_end_index = 0;
         loop {
-            if tokens[index].equals_any(&[")".into(), T_VARIABLE.into(), CT_TYPE_ALTERNATION.into()], true) {
+            if tokens[index].equals_any(
+                &[")".into(), T_VARIABLE.into(), CT_TYPE_ALTERNATION.into()],
+                true,
+            ) {
                 let Some(start) = type_start_index else { break };
-                index = index.wrapping_add_signed(self.shorten_class_if_possible(st, tokens, start, type_end_index, uses, ns));
+                index = index.wrapping_add_signed(self.shorten_class_if_possible(
+                    st,
+                    tokens,
+                    start,
+                    type_end_index,
+                    uses,
+                    ns,
+                ));
                 type_start_index = None;
                 if tokens[index].equals(")", true) {
                     break;
@@ -586,7 +774,14 @@ impl FullyQualifiedStrictTypesFixer {
         }
     }
 
-    fn fix_prev_name(&self, st: &State, tokens: &mut Tokens, mut index: usize, uses: &OMap, ns: &[u8]) {
+    fn fix_prev_name(
+        &self,
+        st: &State,
+        tokens: &mut Tokens,
+        mut index: usize,
+        uses: &OMap,
+        ns: &[u8],
+    ) {
         let mut type_start_index = 0;
         let mut type_end_index = None;
         loop {
@@ -606,7 +801,14 @@ impl FullyQualifiedStrictTypesFixer {
         }
     }
 
-    fn fix_next_name(&self, st: &State, tokens: &mut Tokens, mut index: usize, uses: &OMap, ns: &[u8]) {
+    fn fix_next_name(
+        &self,
+        st: &State,
+        tokens: &mut Tokens,
+        mut index: usize,
+        uses: &OMap,
+        ns: &[u8],
+    ) {
         let mut type_start_index = None;
         let mut type_end_index = 0;
         loop {
@@ -623,15 +825,32 @@ impl FullyQualifiedStrictTypesFixer {
         }
     }
 
-    fn shorten_class_if_possible(&self, st: &State, tokens: &mut Tokens, start: usize, end: usize, uses: &OMap, ns: &[u8]) -> isize {
+    fn shorten_class_if_possible(
+        &self,
+        st: &State,
+        tokens: &mut Tokens,
+        start: usize,
+        end: usize,
+        uses: &OMap,
+        ns: &[u8],
+    ) -> isize {
         let content = tokens.generate_partial_code(start, end);
-        let Some(new_tokens) = self.determine_short_type(st, &content, uses, ns) else { return 0 };
+        let Some(new_tokens) = self.determine_short_type(st, &content, uses, ns) else {
+            return 0;
+        };
         let n = new_tokens.len() as isize;
         tokens.override_range(start, end, new_tokens);
         n - (end - start) as isize - 1
     }
 
-    fn replace_by_short_type(&self, st: &State, tokens: &mut Tokens, type_: &TypeAnalysis, uses: &OMap, ns: &[u8]) {
+    fn replace_by_short_type(
+        &self,
+        st: &State,
+        tokens: &mut Tokens,
+        type_: &TypeAnalysis,
+        uses: &OMap,
+        ns: &[u8],
+    ) {
         let mut index = type_.get_start_index();
         if tokens[index].is_kind(CT_NULLABLE_TYPE) {
             index = tokens.get_next_meaningful_token(index).unwrap();
@@ -647,14 +866,18 @@ impl FullyQualifiedStrictTypesFixer {
                 type_start_index = None;
                 continue;
             }
-            if tokens[index].is_given_kind(&[CT_TYPE_ALTERNATION, CT_TYPE_INTERSECTION, CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE])
-                || index > end_index
+            if tokens[index].is_given_kind(&[
+                CT_TYPE_ALTERNATION,
+                CT_TYPE_INTERSECTION,
+                CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE,
+            ]) || index > end_index
             {
                 match type_start_index.filter(|_| !skip_next_yield) {
                     Some(start) => {
                         let orig_count = tokens.count();
                         let content = tokens.generate_partial_code(start, type_end_index);
-                        if let Some(new_tokens) = self.determine_short_type(st, &content, uses, ns) {
+                        if let Some(new_tokens) = self.determine_short_type(st, &content, uses, ns)
+                        {
                             tokens.override_range(start, type_end_index, new_tokens);
                         }
                         end_index += tokens.count() - orig_count;
@@ -680,10 +903,20 @@ impl FullyQualifiedStrictTypesFixer {
         }
     }
 
-    fn determine_short_type(&self, st: &State, type_name: &[u8], uses: &OMap, ns: &[u8]) -> Option<Vec<Token>> {
+    fn determine_short_type(
+        &self,
+        st: &State,
+        type_name: &[u8],
+        uses: &OMap,
+        ns: &[u8],
+    ) -> Option<Vec<Token>> {
         if st.discovered_symbols.borrow().is_some() {
             if !self.is_reserved_identifier(st, type_name) {
-                st.discovered_symbols.borrow_mut().as_mut().unwrap().push(type_name.to_vec());
+                st.discovered_symbols
+                    .borrow_mut()
+                    .as_mut()
+                    .unwrap()
+                    .push(type_name.to_vec());
             }
             return None;
         }

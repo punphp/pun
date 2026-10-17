@@ -32,7 +32,9 @@ impl Fixer for HeredocToNowdocFixer {
                 tokens.set(index, t);
                 continue;
             }
-            if !tokens[index + 1].is_kind(Kind::T_ENCAPSED_AND_WHITESPACE) || !tokens[index + 2].is_kind(Kind::T_END_HEREDOC) {
+            if !tokens[index + 1].is_kind(Kind::T_ENCAPSED_AND_WHITESPACE)
+                || !tokens[index + 2].is_kind(Kind::T_END_HEREDOC)
+            {
                 continue;
             }
             let content = tokens[index + 1].content.clone();
@@ -49,5 +51,12 @@ impl Fixer for HeredocToNowdocFixer {
 }
 
 fn convert_to_nowdoc(token: &Token) -> Token {
-    Token::new(token.id.unwrap(), Preg::replace(r#"/^([Bb]?<<<)(\h*)"?([^\s"]+)"?/"#, "$1$2'$3'", &token.content))
+    Token::new(
+        token.id.unwrap(),
+        Preg::replace(
+            r#"/^([Bb]?<<<)(\h*)"?([^\s"]+)"?/"#,
+            "$1$2'$3'",
+            &token.content,
+        ),
+    )
 }

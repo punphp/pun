@@ -11,7 +11,11 @@ use crate::analyzers::namespaces_analyzer::NamespacesAnalyzer;
 use crate::analyzers::preg::{PREG_OFFSET_CAPTURE, Preg};
 use anyhow::Result;
 use pun_format::{Fixer, WhitespacesFixerConfig};
-use pun_tokens::{Kind::*, Token, Tokens, php_compat::{ltrim_chars, strtolower}};
+use pun_tokens::{
+    Kind::*,
+    Token, Tokens,
+    php_compat::{ltrim_chars, strtolower},
+};
 use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -24,7 +28,12 @@ struct GlobalNamespaceImportFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(GlobalNamespaceImportFixer { import_constants: None, import_functions: None, import_classes: Some(true), whitespaces_config: Default::default() })
+    Box::new(GlobalNamespaceImportFixer {
+        import_constants: None,
+        import_functions: None,
+        import_classes: Some(true),
+        whitespaces_config: Default::default(),
+    })
 }
 
 /// `array<string, string|true>`: `None` = `true` (not aliased), `Some(alias)`.
@@ -54,19 +63,29 @@ impl Imports {
 }
 
 fn lower(s: &[u8], case_sensitive: bool) -> Vec<u8> {
-    if case_sensitive { s.to_vec() } else { strtolower(s) }
+    if case_sensitive {
+        s.to_vec()
+    } else {
+        strtolower(s)
+    }
 }
 
 impl GlobalNamespaceImportFixer {
-    fn import_constants(tokens: &mut Tokens, use_declarations: &[NamespaceUseAnalysis]) -> Vec<Vec<u8>> {
-        let (global, mut other) = Self::filter_use_declarations(use_declarations, |d| d.is_constant(), true);
+    fn import_constants(
+        tokens: &mut Tokens,
+        use_declarations: &[NamespaceUseAnalysis],
+    ) -> Vec<Vec<u8>> {
+        let (global, mut other) =
+            Self::filter_use_declarations(use_declarations, |d| d.is_constant(), true);
         // find namespaced const declarations (`const FOO = 1`) and add them to the not importable names (already used)
         let count = tokens.count();
         let mut index = 0;
         while index < count {
             let token = &tokens[index];
             if token.is_classy() {
-                index = tokens.get_next_token_of_kind(index, &["{".into()], true).unwrap();
+                index = tokens
+                    .get_next_token_of_kind(index, &["{".into()], true)
+                    .unwrap();
                 index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index) + 1;
                 continue;
             }
@@ -99,7 +118,9 @@ impl GlobalNamespaceImportFixer {
                 }
                 continue;
             }
-            let prev_index = tokens.get_prev_meaningful_token(ns_separator_index).unwrap();
+            let prev_index = tokens
+                .get_prev_meaningful_token(ns_separator_index)
+                .unwrap();
             if tokens[prev_index].is_given_kind(&[CT_NAMESPACE_OPERATOR, T_STRING]) {
                 continue;
             }
@@ -108,8 +129,12 @@ impl GlobalNamespaceImportFixer {
         Self::prepare_imports(tokens, &indices, &global, &other, true).values()
     }
 
-    fn import_functions(tokens: &mut Tokens, use_declarations: &[NamespaceUseAnalysis]) -> Vec<Vec<u8>> {
-        let (global, mut other) = Self::filter_use_declarations(use_declarations, |d| d.is_function(), false);
+    fn import_functions(
+        tokens: &mut Tokens,
+        use_declarations: &[NamespaceUseAnalysis],
+    ) -> Vec<Vec<u8>> {
+        let (global, mut other) =
+            Self::filter_use_declarations(use_declarations, |d| d.is_function(), false);
         // find function declarations and add them to the not importable names (already used)
         let mut declared = Vec::new();
         Self::find_function_declarations(tokens, 0, tokens.count() - 1, &mut declared);
@@ -142,8 +167,12 @@ impl GlobalNamespaceImportFixer {
         Self::prepare_imports(tokens, &indices, &global, &other, false).values()
     }
 
-    fn import_classes(tokens: &mut Tokens, use_declarations: &[NamespaceUseAnalysis]) -> Vec<Vec<u8>> {
-        let (global, mut other) = Self::filter_use_declarations(use_declarations, |d| d.is_class(), false);
+    fn import_classes(
+        tokens: &mut Tokens,
+        use_declarations: &[NamespaceUseAnalysis],
+    ) -> Vec<Vec<u8>> {
+        let (global, mut other) =
+            Self::filter_use_declarations(use_declarations, |d| d.is_class(), false);
         let mut doc_blocks: Vec<(usize, DocBlock)> = Vec::new();
         // find class declarations and class usages in docblocks and add them to the not importable names (already used)
         let count = tokens.count();
@@ -195,7 +224,11 @@ impl GlobalNamespaceImportFixer {
                 }
                 continue;
             }
-            if tokens[tokens.get_prev_meaningful_token(ns_separator_index).unwrap()].is_given_kind(&[CT_NAMESPACE_OPERATOR, T_STRING]) {
+            if tokens[tokens
+                .get_prev_meaningful_token(ns_separator_index)
+                .unwrap()]
+            .is_given_kind(&[CT_NAMESPACE_OPERATOR, T_STRING])
+            {
                 continue;
             }
             indices.push(index);
@@ -221,11 +254,21 @@ impl GlobalNamespaceImportFixer {
                 tokens.set(*index, Token::new(T_DOC_COMMENT, doc_block.get_content()));
             }
         }
-        imports.merge(Self::prepare_imports(tokens, &indices, &global, &other, false)).values()
+        imports
+            .merge(Self::prepare_imports(
+                tokens, &indices, &global, &other, false,
+            ))
+            .values()
     }
 
     /// Removes the leading slash at the given indices (when the name is not already used).
-    fn prepare_imports(tokens: &mut Tokens, indices: &[usize], global: &Global, other: &Other, case_sensitive: bool) -> Imports {
+    fn prepare_imports(
+        tokens: &mut Tokens,
+        indices: &[usize],
+        global: &Global,
+        other: &Other,
+        case_sensitive: bool,
+    ) -> Imports {
         let mut imports = Imports::default();
         for &index in indices {
             let name = tokens[index].get_content().to_vec();
@@ -248,7 +291,11 @@ impl GlobalNamespaceImportFixer {
         if !tokens.is_token_kind_found(CT_CONST_IMPORT) {
             return;
         }
-        let (global, _) = Self::filter_use_declarations(use_declarations, |d| d.is_constant() && !d.is_aliased, true);
+        let (global, _) = Self::filter_use_declarations(
+            use_declarations,
+            |d| d.is_constant() && !d.is_aliased,
+            true,
+        );
         if global.is_empty() {
             return;
         }
@@ -274,7 +321,11 @@ impl GlobalNamespaceImportFixer {
         if !tokens.is_token_kind_found(CT_FUNCTION_IMPORT) {
             return;
         }
-        let (global, _) = Self::filter_use_declarations(use_declarations, |d| d.is_function() && !d.is_aliased, false);
+        let (global, _) = Self::filter_use_declarations(
+            use_declarations,
+            |d| d.is_function() && !d.is_aliased,
+            false,
+        );
         if global.is_empty() {
             return;
         }
@@ -301,7 +352,11 @@ impl GlobalNamespaceImportFixer {
         if !tokens.is_token_kind_found(T_USE) {
             return;
         }
-        let (global, _) = Self::filter_use_declarations(use_declarations, |d| d.is_class() && !d.is_aliased, false);
+        let (global, _) = Self::filter_use_declarations(
+            use_declarations,
+            |d| d.is_class() && !d.is_aliased,
+            false,
+        );
         if global.is_empty() {
             return;
         }
@@ -337,7 +392,11 @@ impl GlobalNamespaceImportFixer {
         }
     }
 
-    fn filter_use_declarations(declarations: &[NamespaceUseAnalysis], callback: impl Fn(&NamespaceUseAnalysis) -> bool, case_sensitive: bool) -> (Global, Other) {
+    fn filter_use_declarations(
+        declarations: &[NamespaceUseAnalysis],
+        callback: impl Fn(&NamespaceUseAnalysis) -> bool,
+        case_sensitive: bool,
+    ) -> (Global, Other) {
         let mut global = Global::new();
         let mut other = Other::new();
         for declaration in declarations {
@@ -351,19 +410,33 @@ impl GlobalNamespaceImportFixer {
             }
             let check_name = lower(full_name, case_sensitive);
             let alias = &declaration.short_name;
-            global.insert(check_name, if alias.as_slice() == full_name { None } else { Some(alias.clone()) });
+            global.insert(
+                check_name,
+                if alias.as_slice() == full_name {
+                    None
+                } else {
+                    Some(alias.clone())
+                },
+            );
         }
         (global, other)
     }
 
     /// Generator `findFunctionDeclarations`, collecting into `out`. Upstream's inner class loop reuses
     /// the outer `$index`, so the token right after a class body is skipped.
-    fn find_function_declarations(tokens: &Tokens, start: usize, end: usize, out: &mut Vec<Vec<u8>>) {
+    fn find_function_declarations(
+        tokens: &Tokens,
+        start: usize,
+        end: usize,
+        out: &mut Vec<Vec<u8>>,
+    ) {
         let mut index = start;
         while index <= end {
             let token = &tokens[index];
             if token.is_classy() {
-                let class_start = tokens.get_next_token_of_kind(index, &["{".into()], true).unwrap();
+                let class_start = tokens
+                    .get_next_token_of_kind(index, &["{".into()], true)
+                    .unwrap();
                 let class_end = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, class_start);
                 index = class_start;
                 while index <= class_end {
@@ -371,7 +444,9 @@ impl GlobalNamespaceImportFixer {
                         index += 1;
                         continue;
                     }
-                    let method_start = tokens.get_next_token_of_kind(index, &["{".into(), ";".into()], true).unwrap();
+                    let method_start = tokens
+                        .get_next_token_of_kind(index, &["{".into(), ";".into()], true)
+                        .unwrap();
                     if tokens[method_start].equals(";", true) {
                         index = method_start + 1;
                         continue;
@@ -398,7 +473,10 @@ impl GlobalNamespaceImportFixer {
         }
     }
 
-    fn traverse_doc_block_types(doc: &DocBlock, mut callback: impl FnMut(&[u8]) -> Option<Vec<u8>>) -> bool {
+    fn traverse_doc_block_types(
+        doc: &DocBlock,
+        mut callback: impl FnMut(&[u8]) -> Option<Vec<u8>>,
+    ) -> bool {
         let annotations = doc.get_annotations_of_type(TAGS_WITH_TYPES);
         if annotations.is_empty() {
             return false;
@@ -411,10 +489,11 @@ impl GlobalNamespaceImportFixer {
                 .map(|full_type| {
                     let mut full_type = full_type.clone();
                     let source = full_type.clone();
-                    let matches: Vec<(Vec<u8>, usize)> = Preg::match_all("/[\\\\\\w]+(?![\\\\\\w:])/", &source, PREG_OFFSET_CAPTURE)
-                        .iter()
-                        .map(|m| (m.str(0).to_vec(), m.offset(0) as usize))
-                        .collect();
+                    let matches: Vec<(Vec<u8>, usize)> =
+                        Preg::match_all("/[\\\\\\w]+(?![\\\\\\w:])/", &source, PREG_OFFSET_CAPTURE)
+                            .iter()
+                            .map(|m| (m.str(0).to_vec(), m.offset(0) as usize))
+                            .collect();
                     for (ty, offset) in matches.into_iter().rev() {
                         if let Some(new_type) = callback(&ty) {
                             if ty != new_type {
@@ -444,7 +523,11 @@ impl Fixer for GlobalNamespaceImportFixer {
         0
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
-        let r = resolve(self.name(), options, &["import_constants", "import_functions", "import_classes"])?;
+        let r = resolve(
+            self.name(),
+            options,
+            &["import_constants", "import_functions", "import_classes"],
+        )?;
         self.import_constants = r.opt_bool("import_constants", None)?;
         self.import_functions = r.opt_bool("import_functions", None)?;
         self.import_classes = r.opt_bool("import_classes", Some(true))?;
@@ -467,17 +550,24 @@ impl Fixer for GlobalNamespaceImportFixer {
         let use_declarations = NamespaceUsesAnalyzer.get_declarations_from_tokens(tokens, false);
         let mut new_imports: Vec<(ImportType, Vec<Vec<u8>>)> = Vec::new();
         match self.import_constants {
-            Some(true) => new_imports.push(("const", Self::import_constants(tokens, &use_declarations))),
+            Some(true) => {
+                new_imports.push(("const", Self::import_constants(tokens, &use_declarations)))
+            }
             Some(false) => Self::fully_qualify_constants(tokens, &use_declarations),
             None => {}
         }
         match self.import_functions {
-            Some(true) => new_imports.push(("function", Self::import_functions(tokens, &use_declarations))),
+            Some(true) => new_imports.push((
+                "function",
+                Self::import_functions(tokens, &use_declarations),
+            )),
             Some(false) => Self::fully_qualify_functions(tokens, &use_declarations),
             None => {}
         }
         match self.import_classes {
-            Some(true) => new_imports.push(("class", Self::import_classes(tokens, &use_declarations))),
+            Some(true) => {
+                new_imports.push(("class", Self::import_classes(tokens, &use_declarations)))
+            }
             Some(false) => Self::fully_qualify_classes(tokens, &use_declarations),
             None => {}
         }
@@ -486,7 +576,11 @@ impl Fixer for GlobalNamespaceImportFixer {
                 Some(u) => u.end_index + 1,
                 None => NamespacesAnalyzer.get_declarations(tokens)[0].end_index + 1,
             };
-            ImportProcessor::new(self.whitespaces_config.clone()).insert_imports(tokens, &new_imports, at_index);
+            ImportProcessor::new(self.whitespaces_config.clone()).insert_imports(
+                tokens,
+                &new_imports,
+                at_index,
+            );
         }
     }
 }

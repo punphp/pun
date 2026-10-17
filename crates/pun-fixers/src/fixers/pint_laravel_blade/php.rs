@@ -2,12 +2,18 @@
 
 /// `strpos($haystack, $needle, $offset)` (callers pass a non-empty needle and `offset <= len`).
 pub fn strpos(haystack: &[u8], needle: &[u8], offset: usize) -> Option<usize> {
-    haystack[offset..].windows(needle.len()).position(|w| w == needle).map(|p| p + offset)
+    haystack[offset..]
+        .windows(needle.len())
+        .position(|w| w == needle)
+        .map(|p| p + offset)
 }
 
 /// `stripos($haystack, $needle, $offset)` (ASCII case folding).
 pub fn stripos(haystack: &[u8], needle: &[u8], offset: usize) -> Option<usize> {
-    haystack[offset..].windows(needle.len()).position(|w| w.eq_ignore_ascii_case(needle)).map(|p| p + offset)
+    haystack[offset..]
+        .windows(needle.len())
+        .position(|w| w.eq_ignore_ascii_case(needle))
+        .map(|p| p + offset)
 }
 
 /// `strrpos($haystack, $needle)`.
@@ -15,7 +21,9 @@ pub fn strrpos(haystack: &[u8], needle: &[u8]) -> Option<usize> {
     if needle.len() > haystack.len() {
         return None;
     }
-    (0..=haystack.len() - needle.len()).rev().find(|&i| &haystack[i..i + needle.len()] == needle)
+    (0..=haystack.len() - needle.len())
+        .rev()
+        .find(|&i| &haystack[i..i + needle.len()] == needle)
 }
 
 /// `substr($s, $start, $length)` for `start < len` (callers guarantee it).

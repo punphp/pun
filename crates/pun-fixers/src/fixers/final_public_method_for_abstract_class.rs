@@ -5,8 +5,21 @@ use pun_tokens::{Kind, Token, Tokens};
 use std::path::Path;
 
 const MAGIC_METHODS: &[&[u8]] = &[
-    b"__construct", b"__destruct", b"__call", b"__callstatic", b"__get", b"__set", b"__isset", b"__unset", b"__sleep", b"__wakeup",
-    b"__tostring", b"__invoke", b"__set_state", b"__clone", b"__debuginfo",
+    b"__construct",
+    b"__destruct",
+    b"__call",
+    b"__callstatic",
+    b"__get",
+    b"__set",
+    b"__isset",
+    b"__unset",
+    b"__sleep",
+    b"__wakeup",
+    b"__tostring",
+    b"__invoke",
+    b"__set_state",
+    b"__clone",
+    b"__debuginfo",
 ];
 
 struct FinalPublicMethodForAbstractClassFixer;
@@ -31,11 +44,19 @@ impl Fixer for FinalPublicMethodForAbstractClassFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let abstracts = tokens.find_given_kind(Kind::T_ABSTRACT, 0, None);
         for &abstract_index in abstracts.iter().rev() {
-            let class_index = tokens.get_next_token_of_kind(abstract_index, &[Kind::T_CLASS.into(), Kind::T_FUNCTION.into()], true).unwrap();
+            let class_index = tokens
+                .get_next_token_of_kind(
+                    abstract_index,
+                    &[Kind::T_CLASS.into(), Kind::T_FUNCTION.into()],
+                    true,
+                )
+                .unwrap();
             if !tokens[class_index].is_kind(Kind::T_CLASS) {
                 continue;
             }
-            let class_open = tokens.get_next_token_of_kind(class_index, &["{".into()], true).unwrap();
+            let class_open = tokens
+                .get_next_token_of_kind(class_index, &["{".into()], true)
+                .unwrap();
             let class_close = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, class_open);
             fix_class(tokens, class_open, class_close);
         }
@@ -75,7 +96,13 @@ fn fix_class(tokens: &mut Tokens, class_open_index: usize, class_close_index: us
             index = prev_index - 1;
             continue;
         }
-        tokens.insert_at(index, vec![Token::new(Kind::T_FINAL, b"final".to_vec()), Token::new(Kind::T_WHITESPACE, b" ".to_vec())]);
+        tokens.insert_at(
+            index,
+            vec![
+                Token::new(Kind::T_FINAL, b"final".to_vec()),
+                Token::new(Kind::T_WHITESPACE, b" ".to_vec()),
+            ],
+        );
         index -= 1;
     }
 }

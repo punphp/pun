@@ -1,7 +1,7 @@
 //! Port of `PhpCsFixer\Fixer\Comment\NoTrailingWhitespaceInCommentFixer`.
 use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
-use pun_tokens::{php_compat::ltrim_chars, Kind::*, Token, Tokens};
+use pun_tokens::{Kind::*, Token, Tokens, php_compat::ltrim_chars};
 use std::path::Path;
 
 struct NoTrailingWhitespaceInCommentFixer;
@@ -33,14 +33,26 @@ impl Fixer for NoTrailingWhitespaceInCommentFixer {
                     index += 1;
                     continue;
                 }
-                tokens.set(index, Token::new(T_DOC_COMMENT, Preg::replace("/(*ANY)[\\h]+$/m", "", &token.content)));
+                tokens.set(
+                    index,
+                    Token::new(
+                        T_DOC_COMMENT,
+                        Preg::replace("/(*ANY)[\\h]+$/m", "", &token.content),
+                    ),
+                );
             } else {
                 if token.content.starts_with(b"/*") {
                     if !may_have_trailing_h(&token.content) {
                         index += 1;
                         continue;
                     }
-                    tokens.set(index, Token::new(T_COMMENT, Preg::replace("/(*ANY)[\\h]+$/m", "", &token.content)));
+                    tokens.set(
+                        index,
+                        Token::new(
+                            T_COMMENT,
+                            Preg::replace("/(*ANY)[\\h]+$/m", "", &token.content),
+                        ),
+                    );
                 } else if index + 1 < tokens.count() && tokens[index + 1].is_whitespace(None) {
                     let trimmed_content = ltrim_chars(&tokens[index + 1].content, b" \t").to_vec();
                     tokens.ensure_whitespace_at_index(index + 1, 0, &trimmed_content);
@@ -55,5 +67,8 @@ impl Fixer for NoTrailingWhitespaceInCommentFixer {
 /// followed by CR, LF, VT, FF or the end. Non-ASCII text (Unicode `\h` and line breaks) always takes the regex.
 fn may_have_trailing_h(c: &[u8]) -> bool {
     let h = |b: &u8| matches!(b, b' ' | b'\t');
-    !c.is_ascii() || c.last().is_some_and(h) || c.windows(2).any(|w| h(&w[0]) && matches!(w[1], b'\n' | b'\r' | 0x0b | 0x0c))
+    !c.is_ascii()
+        || c.last().is_some_and(h)
+        || c.windows(2)
+            .any(|w| h(&w[0]) && matches!(w[1], b'\n' | b'\r' | 0x0b | 0x0c))
 }

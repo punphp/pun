@@ -16,11 +16,24 @@ struct NullableTypeDeclarationFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NullableTypeDeclarationFixer { question_mark: true })
+    Box::new(NullableTypeDeclarationFixer {
+        question_mark: true,
+    })
 }
 
-const PROPERTY_MODIFIERS: &[Kind] =
-    &[T_PRIVATE, T_PROTECTED, T_PUBLIC, T_STATIC, T_ABSTRACT, T_FINAL, T_VAR, T_READONLY, T_PRIVATE_SET, T_PROTECTED_SET, T_PUBLIC_SET];
+const PROPERTY_MODIFIERS: &[Kind] = &[
+    T_PRIVATE,
+    T_PROTECTED,
+    T_PUBLIC,
+    T_STATIC,
+    T_ABSTRACT,
+    T_FINAL,
+    T_VAR,
+    T_READONLY,
+    T_PRIVATE_SET,
+    T_PROTECTED_SET,
+    T_PUBLIC_SET,
+];
 
 impl Fixer for NullableTypeDeclarationFixer {
     fn name(&self) -> &'static str {
@@ -31,12 +44,17 @@ impl Fixer for NullableTypeDeclarationFixer {
     }
     fn configure(&mut self, options: &Value) -> anyhow::Result<()> {
         let c = resolve(self.name(), options, &["syntax"])?;
-        self.question_mark = c.string("syntax", "question_mark", &["union", "question_mark"])? == "question_mark";
+        self.question_mark =
+            c.string("syntax", "question_mark", &["union", "question_mark"])? == "question_mark";
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         // `|` -> `?` or `?` -> `|`
-        tokens.is_token_kind_found(if self.question_mark { CT_TYPE_ALTERNATION } else { CT_NULLABLE_TYPE })
+        tokens.is_token_kind_found(if self.question_mark {
+            CT_TYPE_ALTERNATION
+        } else {
+            CT_NULLABLE_TYPE
+        })
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let functions_analyzer = FunctionsAnalyzer::new();
@@ -70,7 +88,11 @@ fn get_elements(tokens: &Tokens) -> BTreeMap<usize, bool> {
     elements
 }
 
-fn collect_type_analysis(tokens: &Tokens, start_index: usize, end_index: usize) -> Option<TypeAnalysis> {
+fn collect_type_analysis(
+    tokens: &Tokens,
+    start_index: usize,
+    end_index: usize,
+) -> Option<TypeAnalysis> {
     let mut type_ = Vec::new();
     let type_start_index = tokens.get_next_meaningful_token(start_index).unwrap();
     let mut type_end_index = type_start_index;
@@ -81,7 +103,8 @@ fn collect_type_analysis(tokens: &Tokens, start_index: usize, end_index: usize) 
         type_.extend_from_slice(&tokens[i].content);
         type_end_index = i;
     }
-    (!type_.is_empty()).then(|| TypeAnalysis::new(&type_, Some(type_start_index), Some(type_end_index)))
+    (!type_.is_empty())
+        .then(|| TypeAnalysis::new(&type_, Some(type_start_index), Some(type_end_index)))
 }
 
 fn is_type_normalizable(type_analysis: &TypeAnalysis) -> bool {
@@ -95,7 +118,8 @@ fn is_type_normalizable(type_analysis: &TypeAnalysis) -> bool {
     if !type_.contains(&b'|') {
         return true;
     }
-    type_.iter().filter(|&&c| c == b'|').count() == 1 && Preg::r#match("/(?:\\|null$|^null\\|)/i", type_)
+    type_.iter().filter(|&&c| c == b'|').count() == 1
+        && Preg::r#match("/(?:\\|null$|^null\\|)/i", type_)
 }
 
 impl NullableTypeDeclarationFixer {
@@ -107,16 +131,25 @@ impl NullableTypeDeclarationFixer {
                 break;
             }
         }
-        let Some(property_type) = collect_type_analysis(tokens, index, property_end_index) else { return };
+        let Some(property_type) = collect_type_analysis(tokens, index, property_end_index) else {
+            return;
+        };
         if !is_type_normalizable(&property_type) {
             return;
         }
         self.normalize_nullable_type(tokens, &property_type);
     }
 
-    fn normalize_method_argument_type(&self, fa: &FunctionsAnalyzer, tokens: &mut Tokens, index: usize) {
+    fn normalize_method_argument_type(
+        &self,
+        fa: &FunctionsAnalyzer,
+        tokens: &mut Tokens,
+        index: usize,
+    ) {
         for (_, argument_info) in fa.get_function_arguments(tokens, index).into_iter().rev() {
-            let Some(argument_type) = argument_info.type_analysis else { continue };
+            let Some(argument_type) = argument_info.type_analysis else {
+                continue;
+            };
             if !is_type_normalizable(&argument_type) {
                 continue;
             }
@@ -124,8 +157,15 @@ impl NullableTypeDeclarationFixer {
         }
     }
 
-    fn normalize_method_return_type(&self, fa: &FunctionsAnalyzer, tokens: &mut Tokens, index: usize) {
-        let Some(return_type) = fa.get_function_return_type(tokens, index) else { return };
+    fn normalize_method_return_type(
+        &self,
+        fa: &FunctionsAnalyzer,
+        tokens: &mut Tokens,
+        index: usize,
+    ) {
+        let Some(return_type) = fa.get_function_return_type(tokens, index) else {
+            return;
+        };
         if !is_type_normalizable(&return_type) {
             return;
         }
@@ -157,7 +197,9 @@ impl NullableTypeDeclarationFixer {
             create_type_declaration_tokens(&normalized_type, self.question_mark),
         );
         let prev_start_index = type_analysis.get_start_index() - 1;
-        if !tokens[prev_start_index].is_whitespace(None) && !tokens[prev_start_index].equals("(", true) {
+        if !tokens[prev_start_index].is_whitespace(None)
+            && !tokens[prev_start_index].equals("(", true)
+        {
             tokens.ensure_whitespace_at_index(prev_start_index, 1, b" ");
         }
     }
@@ -167,7 +209,10 @@ fn convert_to_nullable_type(type_: &[u8]) -> Vec<Vec<u8>> {
     if type_.starts_with(b"?") {
         return vec![type_.to_vec()]; // no need to convert; already fixed
     }
-    vec![b"?".to_vec(), Preg::replace("/(?:\\|null$|^null\\|)/i", "", type_)]
+    vec![
+        b"?".to_vec(),
+        Preg::replace("/(?:\\|null$|^null\\|)/i", "", type_),
+    ]
 }
 
 fn convert_to_explicit_union_type(type_: &[u8]) -> Vec<Vec<u8>> {

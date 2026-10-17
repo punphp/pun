@@ -38,37 +38,59 @@ impl Fixer for PreferArraySpread {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let analyzer = FunctionsAnalyzer::new();
         for i in (0..tokens.count()).rev() {
-            if !tokens[i].is_kind(T_STRING) || !tokens[i].get_content().eq_ignore_ascii_case(b"array_merge") || !analyzer.is_global_function_call(tokens, i) {
+            if !tokens[i].is_kind(T_STRING)
+                || !tokens[i].get_content().eq_ignore_ascii_case(b"array_merge")
+                || !analyzer.is_global_function_call(tokens, i)
+            {
                 continue;
             }
             let open = tokens.get_next_meaningful_token(i).unwrap();
             let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open);
-            let start = tokens.get_prev_meaningful_token(i).filter(|&p| tokens[p].is_kind(T_NS_SEPARATOR)).unwrap_or(i);
+            let start = tokens
+                .get_prev_meaningful_token(i)
+                .filter(|&p| tokens[p].is_kind(T_NS_SEPARATOR))
+                .unwrap_or(i);
             if (start..=close).any(|k| tokens[k].is_comment()) {
                 continue;
             }
             let args = split_list(tokens, open, close);
-            if args.iter().any(|&(s, _)| tokens[s].is_given_kind(&[T_ELLIPSIS, CT_NAMED_ARGUMENT_NAME, CT_FIRST_CLASS_CALLABLE])) {
+            if args.iter().any(|&(s, _)| {
+                tokens[s].is_given_kind(&[
+                    T_ELLIPSIS,
+                    CT_NAMED_ARGUMENT_NAME,
+                    CT_FIRST_CLASS_CALLABLE,
+                ])
+            }) {
                 continue;
             }
             let kinds: Vec<Arg> = args.iter().map(|&(s, e)| classify(tokens, s, e)).collect();
-            let kept: Vec<usize> = (0..args.len()).filter(|&a| !matches!(kinds[a], Arg::Drop)).collect();
+            let kept: Vec<usize> = (0..args.len())
+                .filter(|&a| !matches!(kinds[a], Arg::Drop))
+                .collect();
             let mut out = vec![Token::new(CT_ARRAY_BRACKET_OPEN, "[")];
             if !kept.is_empty() {
                 let mut removed = BTreeSet::new();
                 for a in (0..args.len()).filter(|&a| matches!(kinds[a], Arg::Drop)) {
                     match kept.iter().find(|&&j| j > a) {
                         Some(&j) => removed.extend(args[a].0..args[j].0),
-                        None => removed.extend(args[*kept.iter().rev().find(|&&h| h < a).unwrap()].1 + 1..=args[a].1),
+                        None => removed.extend(
+                            args[*kept.iter().rev().find(|&&h| h < a).unwrap()].1 + 1..=args[a].1,
+                        ),
                     }
                 }
                 // The last argument keeps its own layout (`[...$a, \n    'k' => 1,\n]`): only its brackets go.
                 let last_kept = kept[kept.len() - 1];
                 for (a, kind) in kinds.iter().enumerate() {
-                    let Arg::Inline(first, last) = *kind else { continue };
+                    let Arg::Inline(first, last) = *kind else {
+                        continue;
+                    };
                     let (s, e) = args[a];
                     if a == last_kept {
-                        let open_d = if tokens[s].is_kind(T_ARRAY) { tokens.get_next_meaningful_token(s).unwrap() } else { s };
+                        let open_d = if tokens[s].is_kind(T_ARRAY) {
+                            tokens.get_next_meaningful_token(s).unwrap()
+                        } else {
+                            s
+                        };
                         removed.extend(s..=open_d);
                         removed.extend(e..close);
                         let multiline = |w: usize| tokens[w].get_content().contains(&b'\n');
@@ -93,7 +115,9 @@ impl Fixer for PreferArraySpread {
                     }
                     if let Some(a) = args.iter().position(|&(s, e)| s <= k && k <= e) {
                         match kinds[a] {
-                            Arg::Spread if k == args[a].0 => out.push(Token::new(T_ELLIPSIS, "...")),
+                            Arg::Spread if k == args[a].0 => {
+                                out.push(Token::new(T_ELLIPSIS, "..."))
+                            }
                             _ => {}
                         }
                     }
@@ -116,7 +140,11 @@ fn classify(tokens: &Tokens, s: usize, e: usize) -> Arg {
     } else {
         return Arg::Spread;
     };
-    let block = if tokens[open].is_kind(CT_ARRAY_BRACKET_OPEN) { Tokens::BLOCK_TYPE_ARRAY_BRACKET } else { Tokens::BLOCK_TYPE_PARENTHESIS };
+    let block = if tokens[open].is_kind(CT_ARRAY_BRACKET_OPEN) {
+        Tokens::BLOCK_TYPE_ARRAY_BRACKET
+    } else {
+        Tokens::BLOCK_TYPE_PARENTHESIS
+    };
     if tokens.find_block_end(block, open) != e {
         return Arg::Spread;
     }
@@ -125,12 +153,21 @@ fn classify(tokens: &Tokens, s: usize, e: usize) -> Arg {
         return Arg::Drop;
     }
     let inlinable = elements.iter().all(|&(es, ee)| {
-        match (es..=ee).find(|&k| tokens[k].is_kind(T_DOUBLE_ARROW) && !inside_block(tokens, es, k)) {
+        match (es..=ee).find(|&k| tokens[k].is_kind(T_DOUBLE_ARROW) && !inside_block(tokens, es, k))
+        {
             None => true,
-            Some(arrow) => tokens.get_next_meaningful_token(es) == Some(arrow) && tokens[es].is_kind(T_CONSTANT_ENCAPSED_STRING) && is_string_array_key(tokens[es].get_content()),
+            Some(arrow) => {
+                tokens.get_next_meaningful_token(es) == Some(arrow)
+                    && tokens[es].is_kind(T_CONSTANT_ENCAPSED_STRING)
+                    && is_string_array_key(tokens[es].get_content())
+            }
         }
     });
-    if inlinable { Arg::Inline(elements[0].0, elements[elements.len() - 1].1) } else { Arg::Spread }
+    if inlinable {
+        Arg::Inline(elements[0].0, elements[elements.len() - 1].1)
+    } else {
+        Arg::Spread
+    }
 }
 
 fn inside_block(tokens: &Tokens, from: usize, k: usize) -> bool {
@@ -211,17 +248,44 @@ mod tests {
     #[test]
     fn mago_cases() {
         for (from, to) in [
-            ("$merged = array_merge($a, $b, $c);", "$merged = [...$a, ...$b, ...$c];"),
+            (
+                "$merged = array_merge($a, $b, $c);",
+                "$merged = [...$a, ...$b, ...$c];",
+            ),
             ("$copied = array_merge($a);", "$copied = [...$a];"),
             ("$empty = array_merge();", "$empty = [];"),
-            ("$merged = array_merge($a, [1, 2, 3]);", "$merged = [...$a, 1, 2, 3];"),
-            ("$merged = array_merge($a, array(1, 2, 3));", "$merged = [...$a, 1, 2, 3];"),
-            ("$merged = array_merge($a, ['x' => 1, 'y' => 2]);", "$merged = [...$a, 'x' => 1, 'y' => 2];"),
-            ("$single = array_merge([5 => 'x']);", "$single = [...[5 => 'x']];"),
-            ("$twoLiterals = array_merge([5 => 'x'], [7 => 'y']);", "$twoLiterals = [...[5 => 'x'], ...[7 => 'y']];"),
-            ("$variableThenLiteral = array_merge($y, [5 => 'x']);", "$variableThenLiteral = [...$y, ...[5 => 'x']];"),
-            ("$mixedKeys = array_merge(['k' => 'v', 5 => 'x'], [5 => 'y']);", "$mixedKeys = [...['k' => 'v', 5 => 'x'], ...[5 => 'y']];"),
-            ("$legacy = array_merge(array(5 => 'x'));", "$legacy = [...array(5 => 'x')];"),
+            (
+                "$merged = array_merge($a, [1, 2, 3]);",
+                "$merged = [...$a, 1, 2, 3];",
+            ),
+            (
+                "$merged = array_merge($a, array(1, 2, 3));",
+                "$merged = [...$a, 1, 2, 3];",
+            ),
+            (
+                "$merged = array_merge($a, ['x' => 1, 'y' => 2]);",
+                "$merged = [...$a, 'x' => 1, 'y' => 2];",
+            ),
+            (
+                "$single = array_merge([5 => 'x']);",
+                "$single = [...[5 => 'x']];",
+            ),
+            (
+                "$twoLiterals = array_merge([5 => 'x'], [7 => 'y']);",
+                "$twoLiterals = [...[5 => 'x'], ...[7 => 'y']];",
+            ),
+            (
+                "$variableThenLiteral = array_merge($y, [5 => 'x']);",
+                "$variableThenLiteral = [...$y, ...[5 => 'x']];",
+            ),
+            (
+                "$mixedKeys = array_merge(['k' => 'v', 5 => 'x'], [5 => 'y']);",
+                "$mixedKeys = [...['k' => 'v', 5 => 'x'], ...[5 => 'y']];",
+            ),
+            (
+                "$legacy = array_merge(array(5 => 'x'));",
+                "$legacy = [...array(5 => 'x')];",
+            ),
             (
                 "$merged = array_merge(['5' => 1], [KEY => 2], [$key => 3], [1.5 => 4], [true => 5], [null => 6]);",
                 "$merged = [...['5' => 1], ...[KEY => 2], ...[$key => 3], ...[1.5 => 4], ...[true => 5], ...[null => 6]];",
@@ -230,22 +294,46 @@ mod tests {
                 "$merged = array_merge(['' => 0, '01' => 1, '-0' => 2, '+5' => 3, ' 5' => 4, '9223372036854775808' => 5]);",
                 "$merged = ['' => 0, '01' => 1, '-0' => 2, '+5' => 3, ' 5' => 4, '9223372036854775808' => 5];",
             ),
-            ("$merged = array_merge([1, 2], $b, [3, 4]);", "$merged = [1, 2, ...$b, 3, 4];"),
-            ("$merged = array_merge([1, 2,], $b);", "$merged = [1, 2, ...$b];"),
+            (
+                "$merged = array_merge([1, 2], $b, [3, 4]);",
+                "$merged = [1, 2, ...$b, 3, 4];",
+            ),
+            (
+                "$merged = array_merge([1, 2,], $b);",
+                "$merged = [1, 2, ...$b];",
+            ),
             ("$merged = array_merge($a, []);", "$merged = [...$a];"),
             ("$merged = array_merge([], $a);", "$merged = [...$a];"),
-            ("$merged = array_merge($a, [], $b);", "$merged = [...$a, ...$b];"),
-            ("$merged = array_merge($a, [], [], $b);", "$merged = [...$a, ...$b];"),
+            (
+                "$merged = array_merge($a, [], $b);",
+                "$merged = [...$a, ...$b];",
+            ),
+            (
+                "$merged = array_merge($a, [], [], $b);",
+                "$merged = [...$a, ...$b];",
+            ),
             ("$merged = array_merge([]);", "$merged = [];"),
             ("$merged = array_merge([], []);", "$merged = [];"),
             ("$merged = array_merge($a, array());", "$merged = [...$a];"),
-            ("$merged = array_merge($a, get_extras());", "$merged = [...$a, ...get_extras()];"),
-            ("namespace App;\n$merged = \\array_merge($a, $b);", "namespace App;\n$merged = [...$a, ...$b];"),
+            (
+                "$merged = array_merge($a, get_extras());",
+                "$merged = [...$a, ...get_extras()];",
+            ),
+            (
+                "namespace App;\n$merged = \\array_merge($a, $b);",
+                "namespace App;\n$merged = [...$a, ...$b];",
+            ),
         ] {
-            assert_eq!(fix(&format!("<?php\n\n{from}\n")), format!("<?php\n\n{to}\n"));
+            assert_eq!(
+                fix(&format!("<?php\n\n{from}\n")),
+                format!("<?php\n\n{to}\n")
+            );
         }
         // spread_operator_is_fine, call_with_unpacked_argument_is_not_reported
-        for same in ["<?php\n\n$merged = [...$first, ...$second];\n", "<?php\n\n$merged = array_merge(...$arrays);\n"] {
+        for same in [
+            "<?php\n\n$merged = [...$first, ...$second];\n",
+            "<?php\n\n$merged = array_merge(...$arrays);\n",
+        ] {
             assert_eq!(fix(same), same);
         }
     }
@@ -260,16 +348,43 @@ mod tests {
             fix("<?php $x = array_merge($a, [\n    'k' => 1,\n    'l' => 2,\n]);"),
             "<?php $x = [...$a,\n    'k' => 1,\n    'l' => 2,\n];"
         );
-        assert_eq!(fix("<?php $x = array_merge(['k' => 1,], ['l' => 2,],);"), "<?php $x = ['k' => 1, 'l' => 2,];");
-        assert_eq!(fix("<?php $x = array_merge($a, array ( 1 ));"), "<?php $x = [...$a, 1];");
-        assert_eq!(fix("<?php $x = array_merge($a, array_merge($b, $c));"), "<?php $x = [...$a, ...$b, ...$c];");
-        assert_eq!(fix("<?php $x = array_merge($a, ['k' => fn ($v) => [1 => $v]]);"), "<?php $x = [...$a, 'k' => fn ($v) => [1 => $v]];");
-        assert_eq!(fix("<?php $x = array_merge($a, [\"b\\n\" => 1]);"), "<?php $x = [...$a, ...[\"b\\n\" => 1]];");
+        assert_eq!(
+            fix("<?php $x = array_merge(['k' => 1,], ['l' => 2,],);"),
+            "<?php $x = ['k' => 1, 'l' => 2,];"
+        );
+        assert_eq!(
+            fix("<?php $x = array_merge($a, array ( 1 ));"),
+            "<?php $x = [...$a, 1];"
+        );
+        assert_eq!(
+            fix("<?php $x = array_merge($a, array_merge($b, $c));"),
+            "<?php $x = [...$a, ...$b, ...$c];"
+        );
+        assert_eq!(
+            fix("<?php $x = array_merge($a, ['k' => fn ($v) => [1 => $v]]);"),
+            "<?php $x = [...$a, 'k' => fn ($v) => [1 => $v]];"
+        );
+        assert_eq!(
+            fix("<?php $x = array_merge($a, [\"b\\n\" => 1]);"),
+            "<?php $x = [...$a, ...[\"b\\n\" => 1]];"
+        );
         // A nested array's keys don't count; a computed key or a literal inside a larger expression is spread.
-        assert_eq!(fix("<?php $x = array_merge($a, [[1 => 2]]);"), "<?php $x = [...$a, [1 => 2]];");
-        assert_eq!(fix("<?php $x = array_merge($a, [f(1) => 2]);"), "<?php $x = [...$a, ...[f(1) => 2]];");
-        assert_eq!(fix("<?php $x = array_merge($a, [1] + $b);"), "<?php $x = [...$a, ...[1] + $b];");
-        assert_eq!(fix("<?php $x = array_merge($a, ['a\\'b' => 1]);"), "<?php $x = [...$a, 'a\\'b' => 1];");
+        assert_eq!(
+            fix("<?php $x = array_merge($a, [[1 => 2]]);"),
+            "<?php $x = [...$a, [1 => 2]];"
+        );
+        assert_eq!(
+            fix("<?php $x = array_merge($a, [f(1) => 2]);"),
+            "<?php $x = [...$a, ...[f(1) => 2]];"
+        );
+        assert_eq!(
+            fix("<?php $x = array_merge($a, [1] + $b);"),
+            "<?php $x = [...$a, ...[1] + $b];"
+        );
+        assert_eq!(
+            fix("<?php $x = array_merge($a, ['a\\'b' => 1]);"),
+            "<?php $x = [...$a, 'a\\'b' => 1];"
+        );
         for same in [
             "<?php $x = array_merge(array: $a);",
             "<?php $f = array_merge(...);",

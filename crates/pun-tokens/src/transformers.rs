@@ -31,7 +31,10 @@ const TRANSFORMERS: &[(&str, Process)] = &[
     ("type_alternation", type_alternation),
     ("named_argument", named_argument),
     ("type_intersection", type_intersection),
-    ("disjunctive_normal_form_type_parenthesis", dnf_type_parenthesis),
+    (
+        "disjunctive_normal_form_type_parenthesis",
+        dnf_type_parenthesis,
+    ),
     ("nullable_type", nullable_type),
 ];
 
@@ -94,7 +97,10 @@ pub fn tokenize_name(name: &[u8]) -> Vec<Token> {
         parts.remove(0);
     }
     for part in parts {
-        out.push(Token { id: Some(T_STRING), content: part.to_vec() });
+        out.push(Token {
+            id: Some(T_STRING),
+            content: part.to_vec(),
+        });
         out.push(Token::new(T_NS_SEPARATOR, "\\"));
     }
     out.pop();
@@ -124,7 +130,11 @@ fn first_class_callable(tokens: &mut Tokens, index: usize) {
 
 fn class_constant(tokens: &mut Tokens, index: usize) {
     if !matches!(tokens[index].id, Some(T_CLASS | T_STRING))
-        || !tokens[index].equals_any(&[(T_CLASS, "class").into(), (T_STRING, "class").into()], false) {
+        || !tokens[index].equals_any(
+            &[(T_CLASS, "class").into(), (T_STRING, "class").into()],
+            false,
+        )
+    {
         return;
     }
     if tokens[prev(tokens, index)].is_kind(T_DOUBLE_COLON) {
@@ -134,7 +144,9 @@ fn class_constant(tokens: &mut Tokens, index: usize) {
 }
 
 fn return_ref(tokens: &mut Tokens, index: usize) {
-    if tokens[index].equals("&", true) && tokens[prev(tokens, index)].is_given_kind(&[T_FUNCTION, T_FN]) {
+    if tokens[index].equals("&", true)
+        && tokens[prev(tokens, index)].is_given_kind(&[T_FUNCTION, T_FN])
+    {
         set(tokens, index, CT_RETURN_REF, b"&");
     }
 }
@@ -159,7 +171,10 @@ fn whitespacy_comment(tokens: &mut Tokens, index: usize) {
         return;
     }
     let whitespaces = token.content[trimmed.len()..].to_vec();
-    let new = Token { id: token.id, content: trimmed.to_vec() };
+    let new = Token {
+        id: token.id,
+        content: trimmed.to_vec(),
+    };
     tokens.set(index, new);
     if index + 1 < tokens.len() && tokens[index + 1].is_whitespace(None) {
         let merged = [&whitespaces[..], &tokens[index + 1].content[..]].concat();
@@ -223,7 +238,9 @@ fn transform_into_dynamic_var_braces(tokens: &mut Tokens, index: usize) {
     if !tokens[index].equals("$", true) {
         return;
     }
-    let Some(open) = tokens.get_next_meaningful_token(index) else { return };
+    let Some(open) = tokens.get_next_meaningful_token(index) else {
+        return;
+    };
     if !tokens[open].equals("{", true) {
         return;
     }
@@ -291,12 +308,25 @@ fn transform_into_dynamic_class_constant_fetch_braces(tokens: &mut Tokens, index
     if !tokens[after].equals_any(&[c(";"), k(T_CLOSE_TAG), k(T_DOUBLE_COLON)], true) {
         return;
     }
-    set(tokens, index, CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN, b"{");
-    set(tokens, close, CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE, b"}");
+    set(
+        tokens,
+        index,
+        CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_OPEN,
+        b"{",
+    );
+    set(
+        tokens,
+        close,
+        CT_DYNAMIC_CLASS_CONSTANT_FETCH_BRACE_CLOSE,
+        b"}",
+    );
 }
 
 fn naively_find_curly_block_end(tokens: &Tokens, start: usize) -> usize {
-    assert!(tokens[start].content == b"{", "Wrong start index: \"{start}\".");
+    assert!(
+        tokens[start].content == b"{",
+        "Wrong start index: \"{start}\"."
+    );
     let mut level = 1;
     let end = tokens.len() - 1;
     let mut index = start + 1;
@@ -307,7 +337,10 @@ fn naively_find_curly_block_end(tokens: &Tokens, start: usize) -> usize {
         } else if t.content == b"}" {
             level -= 1;
             if level == 0 {
-                assert!(t.equals("}", true), "Detected block end for index: \"{start}\" was already transformed");
+                assert!(
+                    t.equals("}", true),
+                    "Detected block end for index: \"{start}\" was already transformed"
+                );
                 return index;
             }
         }
@@ -331,7 +364,8 @@ fn constructor_promotion(tokens: &mut Tokens, index: usize) {
         return;
     }
     let name = next(tokens, index);
-    if !tokens[name].is_kind(T_STRING) || !tokens[name].content.eq_ignore_ascii_case(b"__construct") {
+    if !tokens[name].is_kind(T_STRING) || !tokens[name].content.eq_ignore_ascii_case(b"__construct")
+    {
         return;
     }
     let open = next(tokens, name);
@@ -369,7 +403,9 @@ fn transform_into_destructuring_square_brace(tokens: &mut Tokens, index: usize) 
     let mut previous = index;
     let mut i = next(tokens, index);
     while i < end {
-        if tokens[i].equals("[", true) && tokens[previous].equals_any(&[k(CT_DESTRUCTURING_BRACKET_OPEN), c(",")], true) {
+        if tokens[i].equals("[", true)
+            && tokens[previous].equals_any(&[k(CT_DESTRUCTURING_BRACKET_OPEN), c(",")], true)
+        {
             let e = tokens.find_block_end(Tokens::BLOCK_TYPE_INDEX_BRACKET, i);
             set(tokens, e, CT_DESTRUCTURING_BRACKET_CLOSE, b"]");
             set(tokens, i, CT_DESTRUCTURING_BRACKET_OPEN, b"[");
@@ -413,7 +449,9 @@ fn is_array_destructing(tokens: &mut Tokens, index: usize) -> bool {
     }
     let p = prev(tokens, index);
     // Same list as is_short_array minus '}'.
-    if tokens[p].equals_any(&NOT_ARRAY_PREV[..2], true) || tokens[p].equals_any(&NOT_ARRAY_PREV[3..], true) {
+    if tokens[p].equals_any(&NOT_ARRAY_PREV[..2], true)
+        || tokens[p].equals_any(&NOT_ARRAY_PREV[3..], true)
+    {
         return false;
     }
     if tokens[p].is_kind(T_AS) {
@@ -434,11 +472,18 @@ fn is_array_destructing(tokens: &mut Tokens, index: usize) -> bool {
 }
 
 fn import(tokens: &mut Tokens, index: usize) {
-    let Some(id @ (T_CONST | T_FUNCTION)) = tokens[index].id else { return };
+    let Some(id @ (T_CONST | T_FUNCTION)) = tokens[index].id else {
+        return;
+    };
     if !tokens[prev(tokens, index)].is_kind(T_USE) {
         let n = idx(tokens.get_next_token_of_kind(
             index,
-            &[c("="), c("("), k(CT_RETURN_REF), k(CT_GROUP_IMPORT_BRACE_CLOSE)],
+            &[
+                c("="),
+                c("("),
+                k(CT_RETURN_REF),
+                k(CT_GROUP_IMPORT_BRACE_CLOSE),
+            ],
             true,
         ));
         if !tokens[n].is_kind(CT_GROUP_IMPORT_BRACE_CLOSE) {
@@ -446,7 +491,16 @@ fn import(tokens: &mut Tokens, index: usize) {
         }
     }
     let content = tokens[index].content.clone();
-    set(tokens, index, if id == T_FUNCTION { CT_FUNCTION_IMPORT } else { CT_CONST_IMPORT }, &content);
+    set(
+        tokens,
+        index,
+        if id == T_FUNCTION {
+            CT_FUNCTION_IMPORT
+        } else {
+            CT_CONST_IMPORT
+        },
+        &content,
+    );
 }
 
 fn brace_class_instantiation(tokens: &mut Tokens, index: usize) {
@@ -478,7 +532,12 @@ fn brace_class_instantiation(tokens: &mut Tokens, index: usize) {
     }
     let close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
     set(tokens, index, CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN, b"(");
-    set(tokens, close, CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE, b")");
+    set(
+        tokens,
+        close,
+        CT_CLASS_INSTANTIATION_PARENTHESIS_CLOSE,
+        b")",
+    );
 }
 
 fn use_(tokens: &mut Tokens, index: usize) {
@@ -499,7 +558,11 @@ fn use_(tokens: &mut Tokens, index: usize) {
         if !tokens[index].is_kind(T_USE) {
             continue;
         }
-        let kind = if is_use_for_lambda(tokens, index) { CT_USE_LAMBDA } else { CT_USE_TRAIT };
+        let kind = if is_use_for_lambda(tokens, index) {
+            CT_USE_LAMBDA
+        } else {
+            CT_USE_TRAIT
+        };
         let content = tokens[index].content.clone();
         set(tokens, index, kind, &content);
     }
@@ -529,8 +592,14 @@ fn type_colon(tokens: &mut Tokens, index: usize) {
 
 // --- AbstractTypeTransformer ---
 
-const TYPE_END_TOKENS: &[Proto<'static>] =
-    &[c(")"), k(T_CALLABLE), k(T_NS_SEPARATOR), k(T_STATIC), k(T_STRING), k(CT_ARRAY_TYPEHINT)];
+const TYPE_END_TOKENS: &[Proto<'static>] = &[
+    c(")"),
+    k(T_CALLABLE),
+    k(T_NS_SEPARATOR),
+    k(T_STATIC),
+    k(T_STRING),
+    k(CT_ARRAY_TYPEHINT),
+];
 
 const TYPE_TOKENS: &[Proto<'static>] = &[
     c("|"),
@@ -549,7 +618,13 @@ const TYPE_TOKENS: &[Proto<'static>] = &[
     k(T_DOC_COMMENT),
 ];
 
-fn do_process(tokens: &mut Tokens, index: usize, original: Proto<'_>, replacement: Kind, content: &[u8]) {
+fn do_process(
+    tokens: &mut Tokens,
+    index: usize,
+    original: Proto<'_>,
+    replacement: Kind,
+    content: &[u8],
+) {
     if !tokens[index].equals(original, true) || !is_part_of_type(tokens, index) {
         return;
     }
@@ -572,7 +647,14 @@ fn is_part_of_type(tokens: &Tokens, index: usize) -> bool {
     if tokens[before_var].equals("&", true) {
         let p = tokens.get_prev_token_of_kind(
             index,
-            &[c("{"), c("}"), c(";"), k(T_CLOSE_TAG), k(T_FN), k(T_FUNCTION)],
+            &[
+                c("{"),
+                c("}"),
+                c(";"),
+                k(T_CLOSE_TAG),
+                k(T_FN),
+                k(T_FUNCTION),
+            ],
             true,
         );
         return p.is_some_and(|p| tokens[p].is_given_kind(&[T_FN, T_FUNCTION]));
@@ -616,14 +698,26 @@ fn dnf_type_parenthesis(tokens: &mut Tokens, index: usize) {
     if tokens[index].equals("(", true) && tokens[prev(tokens, index)].is_kind(CT_TYPE_ALTERNATION) {
         open = index;
         close = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
-    } else if tokens[index].equals(")", true) && tokens[next(tokens, index)].is_kind(CT_TYPE_ALTERNATION) {
+    } else if tokens[index].equals(")", true)
+        && tokens[next(tokens, index)].is_kind(CT_TYPE_ALTERNATION)
+    {
         open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, index);
         close = index;
     } else {
         return;
     }
-    set(tokens, open, CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN, b"(");
-    set(tokens, close, CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE, b")");
+    set(
+        tokens,
+        open,
+        CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_OPEN,
+        b"(",
+    );
+    set(
+        tokens,
+        close,
+        CT_DISJUNCTIVE_NORMAL_FORM_TYPE_PARENTHESIS_CLOSE,
+        b")",
+    );
 }
 
 fn nullable_type(tokens: &mut Tokens, index: usize) {

@@ -79,10 +79,16 @@ impl MethodChainingIndentationFixer {
     fn current_line_requires_extra_indent_level(tokens: &Tokens, start: usize, end: usize) -> bool {
         let first_meaningful = tokens.get_next_meaningful_token(start).unwrap();
         if tokens[first_meaningful].is_object_operator() {
-            let third_meaningful = tokens.get_next_meaningful_token(tokens.get_next_meaningful_token(first_meaningful).unwrap()).unwrap();
-            return tokens[third_meaningful].equals("(", true) && tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, third_meaningful) > end;
+            let third_meaningful = tokens
+                .get_next_meaningful_token(
+                    tokens.get_next_meaningful_token(first_meaningful).unwrap(),
+                )
+                .unwrap();
+            return tokens[third_meaningful].equals("(", true)
+                && tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, third_meaningful) > end;
         }
-        !tokens[end].equals(")", true) || tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, end) >= start
+        !tokens[end].equals(")", true)
+            || tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, end) >= start
     }
 }
 
@@ -109,13 +115,20 @@ impl Fixer for MethodChainingIndentationFixer {
                 index += 1;
                 continue;
             }
-            let end_parenthesis_index = tokens.get_next_token_of_kind(index, &["(".into(), ";".into(), ",".into(), T_CLOSE_TAG.into()], true);
-            let previous_end_parenthesis_index = tokens.get_prev_token_of_kind(index, &[")".into()], true);
+            let end_parenthesis_index = tokens.get_next_token_of_kind(
+                index,
+                &["(".into(), ";".into(), ",".into(), T_CLOSE_TAG.into()],
+                true,
+            );
+            let previous_end_parenthesis_index =
+                tokens.get_prev_token_of_kind(index, &[")".into()], true);
             let Some(mut end_parenthesis_index) = end_parenthesis_index else {
                 index += 1;
                 continue;
             };
-            if !tokens[end_parenthesis_index].equals("(", true) && previous_end_parenthesis_index.is_none() {
+            if !tokens[end_parenthesis_index].equals("(", true)
+                && previous_end_parenthesis_index.is_none()
+            {
                 index += 1;
                 continue;
             }
@@ -135,13 +148,17 @@ impl Fixer for MethodChainingIndentationFixer {
             };
             let expected_indent = self.get_expected_indent_at(tokens, index);
             if current_indent != expected_indent {
-                tokens.set(index - 1, Token::new(T_WHITESPACE, [line_ending, &expected_indent].concat()));
+                tokens.set(
+                    index - 1,
+                    Token::new(T_WHITESPACE, [line_ending, &expected_indent].concat()),
+                );
             }
             if !tokens[end_parenthesis_index].equals("(", true) {
                 index += 1;
                 continue;
             }
-            let end_parenthesis_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, end_parenthesis_index);
+            let end_parenthesis_index =
+                tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, end_parenthesis_index);
             let pattern = [b"/(\\R)".as_slice(), &current_indent, b"(\\h*)$/D"].concat();
             let replacement = [b"$1".as_slice(), &expected_indent, b"$2"].concat();
             for search_index in index + 1..end_parenthesis_index {
@@ -154,7 +171,10 @@ impl Fixer for MethodChainingIndentationFixer {
                     continue;
                 }
                 let content = Preg::replace(&pattern, &replacement, content);
-                let t = Token { id: search_token.get_id(), content };
+                let t = Token {
+                    id: search_token.get_id(),
+                    content,
+                };
                 tokens.set(search_index, t);
             }
             index += 1;

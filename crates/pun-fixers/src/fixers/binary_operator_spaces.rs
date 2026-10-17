@@ -4,7 +4,11 @@ use crate::analyzers::preg::Preg;
 use crate::analyzers::utils::mb_strwidth;
 use anyhow::{Result, bail};
 use pun_format::Fixer;
-use pun_tokens::{Kind::*, Token, Tokens, TokensAnalyzer, php_compat::{rtrim, strtolower}};
+use pun_tokens::{
+    Kind::*,
+    Token, Tokens, TokensAnalyzer,
+    php_compat::{rtrim, strtolower},
+};
 use serde_json::Value;
 use std::cell::Cell;
 use std::path::Path;
@@ -26,14 +30,21 @@ fn align_placeholder(level: usize) -> Vec<u8> {
 }
 
 const SUPPORTED_OPERATORS: &[&str] = &[
-    "=", "*", "/", "%", "<", ">", "|", "^", "+", "-", "&", "&=", "&&", "||", ".=", "/=", "=>", "==", ">=", "===", "!=",
-    "<>", "!==", "<=", "and", "or", "xor", "-=", "%=", "*=", "|=", "+=", "<<", "<<=", ">>", ">>=", "^=", "**", "**=",
-    "<=>", "??", "??=",
+    "=", "*", "/", "%", "<", ">", "|", "^", "+", "-", "&", "&=", "&&", "||", ".=", "/=", "=>",
+    "==", ">=", "===", "!=", "<>", "!==", "<=", "and", "or", "xor", "-=", "%=", "*=", "|=", "+=",
+    "<<", "<<=", ">>", ">>=", "^=", "**", "**=", "<=>", "??", "??=",
 ];
 
 const ALLOWED_VALUES: &[&str] = &[
-    ALIGN, ALIGN_BY_SCOPE, ALIGN_SINGLE_SPACE, ALIGN_SINGLE_SPACE_MINIMAL, ALIGN_SINGLE_SPACE_BY_SCOPE,
-    ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE, SINGLE_SPACE, NO_SPACE, AT_LEAST_SINGLE_SPACE,
+    ALIGN,
+    ALIGN_BY_SCOPE,
+    ALIGN_SINGLE_SPACE,
+    ALIGN_SINGLE_SPACE_MINIMAL,
+    ALIGN_SINGLE_SPACE_BY_SCOPE,
+    ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE,
+    SINGLE_SPACE,
+    NO_SPACE,
+    AT_LEAST_SINGLE_SPACE,
 ];
 
 struct BinaryOperatorSpacesFixer {
@@ -46,7 +57,10 @@ struct BinaryOperatorSpacesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    let mut f = BinaryOperatorSpacesFixer { operators: Vec::new(), align_operator_tokens: Mutex::new(Vec::new()) };
+    let mut f = BinaryOperatorSpacesFixer {
+        operators: Vec::new(),
+        align_operator_tokens: Mutex::new(Vec::new()),
+    };
     f.configure(&Value::Null).unwrap();
     Box::new(f)
 }
@@ -87,7 +101,10 @@ fn strpos(haystack: &[u8], needle: &[u8]) -> Option<usize> {
 
 impl BinaryOperatorSpacesFixer {
     fn operator(&self, content: &[u8]) -> Option<&'static str> {
-        self.operators.iter().find(|(o, _)| o == content).map(|&(_, s)| s)
+        self.operators
+            .iter()
+            .find(|(o, _)| o == content)
+            .map(|&(_, s)| s)
     }
 
     fn fix_white_space_around_operator(&self, tokens: &mut Tokens, index: usize) {
@@ -132,7 +149,10 @@ impl BinaryOperatorSpacesFixer {
         // fix white space after operator
         if tokens[index + 1].is_whitespace(None) {
             let content = tokens[index + 1].get_content();
-            if content != b" " && !content.contains(&b'\n') && !tokens[tokens.get_next_non_whitespace(index + 1, None).unwrap()].is_comment() {
+            if content != b" "
+                && !content.contains(&b'\n')
+                && !tokens[tokens.get_next_non_whitespace(index + 1, None).unwrap()].is_comment()
+            {
                 tokens.set(index + 1, Token::new(T_WHITESPACE, " "));
             }
         } else {
@@ -141,7 +161,10 @@ impl BinaryOperatorSpacesFixer {
         // fix white space before operator
         if tokens[index - 1].is_whitespace(None) {
             let content = tokens[index - 1].get_content();
-            if content != b" " && !content.contains(&b'\n') && !tokens[tokens.get_prev_non_whitespace(index - 1, None).unwrap()].is_comment() {
+            if content != b" "
+                && !content.contains(&b'\n')
+                && !tokens[tokens.get_prev_non_whitespace(index - 1, None).unwrap()].is_comment()
+            {
                 tokens.set(index - 1, Token::new(T_WHITESPACE, " "));
             }
         } else {
@@ -164,14 +187,18 @@ impl BinaryOperatorSpacesFixer {
         // fix white space after operator
         if tokens[index + 1].is_whitespace(None) {
             let content = tokens[index + 1].get_content();
-            if !content.contains(&b'\n') && !tokens[tokens.get_next_non_whitespace(index + 1, None).unwrap()].is_comment() {
+            if !content.contains(&b'\n')
+                && !tokens[tokens.get_next_non_whitespace(index + 1, None).unwrap()].is_comment()
+            {
                 tokens.clear_at(index + 1);
             }
         }
         // fix white space before operator
         if tokens[index - 1].is_whitespace(None) {
             let content = tokens[index - 1].get_content();
-            if !content.contains(&b'\n') && !tokens[tokens.get_prev_non_whitespace(index - 1, None).unwrap()].is_comment() {
+            if !content.contains(&b'\n')
+                && !tokens[tokens.get_prev_non_whitespace(index - 1, None).unwrap()].is_comment()
+            {
                 tokens.clear_at(index - 1);
             }
         }
@@ -181,11 +208,17 @@ impl BinaryOperatorSpacesFixer {
     fn is_equal_part_of_declare_statement(tokens: &Tokens, index: usize) -> Option<usize> {
         let mut prev_meaningful_index = tokens.get_prev_meaningful_token(index).unwrap();
         if tokens[prev_meaningful_index].is_kind(T_STRING) {
-            prev_meaningful_index = tokens.get_prev_meaningful_token(prev_meaningful_index).unwrap();
+            prev_meaningful_index = tokens
+                .get_prev_meaningful_token(prev_meaningful_index)
+                .unwrap();
             if tokens[prev_meaningful_index].equals("(", true) {
-                prev_meaningful_index = tokens.get_prev_meaningful_token(prev_meaningful_index).unwrap();
+                prev_meaningful_index = tokens
+                    .get_prev_meaningful_token(prev_meaningful_index)
+                    .unwrap();
                 // `( T_STRING =` only parses as `declare(...)`
-                return tokens[prev_meaningful_index].is_kind(T_DECLARE).then_some(prev_meaningful_index);
+                return tokens[prev_meaningful_index]
+                    .is_kind(T_DECLARE)
+                    .then_some(prev_meaningful_index);
             }
         }
         None
@@ -194,19 +227,42 @@ impl BinaryOperatorSpacesFixer {
     // Alignment logic related methods
 
     fn fix_alignment(&self, tokens: &mut Tokens, to_align: &[(Vec<u8>, &'static str)]) {
-        let levels = Levels { deepest_level: Cell::new(0), current_level: Cell::new(0) };
+        let levels = Levels {
+            deepest_level: Cell::new(0),
+            current_level: Cell::new(0),
+        };
         for (token_content, align_strategy) in to_align {
             let align_strategy = *align_strategy;
             // Work on a clone, then override the original collection with the fixed code.
             let mut tokens_clone = tokens.clone();
             let count = tokens.count();
             if token_content == b"=>" {
-                Self::inject_alignment_placeholders_for_arrow(&levels, tokens, &mut tokens_clone, 0, count);
+                Self::inject_alignment_placeholders_for_arrow(
+                    &levels,
+                    tokens,
+                    &mut tokens_clone,
+                    0,
+                    count,
+                );
             } else {
-                Self::inject_alignment_placeholders_default(&levels, tokens, &mut tokens_clone, 0, count, token_content);
+                Self::inject_alignment_placeholders_default(
+                    &levels,
+                    tokens,
+                    &mut tokens_clone,
+                    0,
+                    count,
+                    token_content,
+                );
             }
             // for all tokens that should be aligned but do not have anything to align with, fix spacing if needed
-            if [ALIGN_SINGLE_SPACE, ALIGN_SINGLE_SPACE_MINIMAL, ALIGN_SINGLE_SPACE_BY_SCOPE, ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE].contains(&align_strategy) {
+            if [
+                ALIGN_SINGLE_SPACE,
+                ALIGN_SINGLE_SPACE_MINIMAL,
+                ALIGN_SINGLE_SPACE_BY_SCOPE,
+                ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE,
+            ]
+            .contains(&align_strategy)
+            {
                 let mut index = tokens.count() as isize - 2;
                 while index > 0 {
                     let i = index as usize;
@@ -214,10 +270,13 @@ impl BinaryOperatorSpacesFixer {
                         // always binary operator, never part of declare statement
                         tokens[i].is_kind(T_DOUBLE_ARROW)
                     } else if token_content == b"=" {
-                        tokens[i].get_content() == b"=" && Self::is_equal_part_of_declare_statement(tokens, i).is_none() && is_binary(tokens, i)
+                        tokens[i].get_content() == b"="
+                            && Self::is_equal_part_of_declare_statement(tokens, i).is_none()
+                            && is_binary(tokens, i)
                     } else {
                         // never part of declare statement
-                        strtolower(tokens[i].get_content()) == *token_content && is_binary(tokens, i)
+                        strtolower(tokens[i].get_content()) == *token_content
+                            && is_binary(tokens, i)
                     };
                     if hit {
                         Self::fix_white_space_before_operator(&mut tokens_clone, i, align_strategy);
@@ -231,7 +290,14 @@ impl BinaryOperatorSpacesFixer {
     }
 
     /// `analyzed` is the collection the upstream TokensAnalyzer wraps (the original, not the clone).
-    fn inject_alignment_placeholders_default(levels: &Levels, analyzed: &Tokens, tokens: &mut Tokens, start_at: usize, end_at: usize, token_content: &[u8]) {
+    fn inject_alignment_placeholders_default(
+        levels: &Levels,
+        analyzed: &Tokens,
+        tokens: &mut Tokens,
+        start_at: usize,
+        end_at: usize,
+        token_content: &[u8],
+    ) {
         let mut new_line_found_since_last_placeholder = true;
         let mut index = start_at;
         while index < end_at {
@@ -242,23 +308,37 @@ impl BinaryOperatorSpacesFixer {
             }
             if strtolower(&content) == token_content
                 && is_binary(analyzed, index)
-                && (content != b"=" || Self::is_equal_part_of_declare_statement(tokens, index).is_none())
+                && (content != b"="
+                    || Self::is_equal_part_of_declare_statement(tokens, index).is_none())
                 && new_line_found_since_last_placeholder
             {
-                tokens.set(index, Token::char([align_placeholder(levels.current_level.get()), content].concat()));
+                tokens.set(
+                    index,
+                    Token::char([align_placeholder(levels.current_level.get()), content].concat()),
+                );
                 new_line_found_since_last_placeholder = false;
                 index += 1;
                 continue;
             }
             if token.is_kind(T_FN) {
                 let from = tokens.get_next_meaningful_token(index).unwrap();
-                let until = TokensAnalyzer::new(analyzed).get_last_token_index_of_arrow_function(index);
-                Self::inject_alignment_placeholders(levels, analyzed, tokens, from + 1, until - 1, token_content);
+                let until =
+                    TokensAnalyzer::new(analyzed).get_last_token_index_of_arrow_function(index);
+                Self::inject_alignment_placeholders(
+                    levels,
+                    analyzed,
+                    tokens,
+                    from + 1,
+                    until - 1,
+                    token_content,
+                );
                 index = until + 1;
                 continue;
             }
             if token.is_given_kind(&[T_FUNCTION, T_CLASS]) {
-                index = tokens.get_next_token_of_kind(index, &["{".into(), ";".into(), "(".into()], true).unwrap();
+                index = tokens
+                    .get_next_token_of_kind(index, &["{".into(), ";".into(), "(".into()], true)
+                    .unwrap();
                 // We don't align `=` on multi-line definition of function parameters with default values
                 if tokens[index].equals("(", true) {
                     index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index) + 1;
@@ -271,13 +351,27 @@ impl BinaryOperatorSpacesFixer {
             }
             if token.equals("{", true) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
-                Self::inject_alignment_placeholders(levels, analyzed, tokens, index + 1, until - 1, token_content);
+                Self::inject_alignment_placeholders(
+                    levels,
+                    analyzed,
+                    tokens,
+                    index + 1,
+                    until - 1,
+                    token_content,
+                );
                 index = until + 1;
                 continue;
             }
             if token.equals("(", true) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
-                Self::inject_alignment_placeholders(levels, analyzed, tokens, index + 1, until - 1, token_content);
+                Self::inject_alignment_placeholders(
+                    levels,
+                    analyzed,
+                    tokens,
+                    index + 1,
+                    until - 1,
+                    token_content,
+                );
                 index = until + 1;
                 continue;
             }
@@ -287,7 +381,14 @@ impl BinaryOperatorSpacesFixer {
             }
             if token.is_kind(CT_ARRAY_BRACKET_OPEN) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, index);
-                Self::inject_alignment_placeholders(levels, analyzed, tokens, index + 1, until - 1, token_content);
+                Self::inject_alignment_placeholders(
+                    levels,
+                    analyzed,
+                    tokens,
+                    index + 1,
+                    until - 1,
+                    token_content,
+                );
                 index = until + 1;
                 continue;
             }
@@ -295,18 +396,38 @@ impl BinaryOperatorSpacesFixer {
         }
     }
 
-    fn inject_alignment_placeholders(levels: &Levels, analyzed: &Tokens, tokens: &mut Tokens, from: usize, until: usize, token_content: &[u8]) {
+    fn inject_alignment_placeholders(
+        levels: &Levels,
+        analyzed: &Tokens,
+        tokens: &mut Tokens,
+        from: usize,
+        until: usize,
+        token_content: &[u8],
+    ) {
         // Only inject placeholders for multi-line code
         if tokens.is_partial_code_multiline(from, until) {
             levels.deepest_level.set(levels.deepest_level.get() + 1);
             let current_level = levels.current_level.get();
             levels.current_level.set(levels.deepest_level.get());
-            Self::inject_alignment_placeholders_default(levels, analyzed, tokens, from, until, token_content);
+            Self::inject_alignment_placeholders_default(
+                levels,
+                analyzed,
+                tokens,
+                from,
+                until,
+                token_content,
+            );
             levels.current_level.set(current_level);
         }
     }
 
-    fn inject_alignment_placeholders_for_arrow(levels: &Levels, analyzed: &Tokens, tokens: &mut Tokens, start_at: usize, end_at: usize) {
+    fn inject_alignment_placeholders_for_arrow(
+        levels: &Levels,
+        analyzed: &Tokens,
+        tokens: &mut Tokens,
+        start_at: usize,
+        end_at: usize,
+    ) {
         let mut new_line_found_since_last_placeholder = true;
         let mut yield_found_since_last_placeholder = false;
         let mut index = start_at;
@@ -322,8 +443,15 @@ impl BinaryOperatorSpacesFixer {
             if token.is_kind(T_FN) {
                 yield_found_since_last_placeholder = false;
                 let from = tokens.get_next_meaningful_token(index).unwrap();
-                let until = TokensAnalyzer::new(analyzed).get_last_token_index_of_arrow_function(index);
-                Self::inject_array_alignment_placeholders(levels, analyzed, tokens, from + 1, until - 1);
+                let until =
+                    TokensAnalyzer::new(analyzed).get_last_token_index_of_arrow_function(index);
+                Self::inject_array_alignment_placeholders(
+                    levels,
+                    analyzed,
+                    tokens,
+                    from + 1,
+                    until - 1,
+                );
                 index = until + 1;
                 continue;
             }
@@ -333,7 +461,13 @@ impl BinaryOperatorSpacesFixer {
                 let from = tokens.get_next_meaningful_token(index).unwrap();
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, from);
                 index = until;
-                Self::inject_array_alignment_placeholders(levels, analyzed, tokens, from + 1, until - 1);
+                Self::inject_array_alignment_placeholders(
+                    levels,
+                    analyzed,
+                    tokens,
+                    from + 1,
+                    until - 1,
+                );
                 index += 1;
                 continue;
             }
@@ -342,7 +476,13 @@ impl BinaryOperatorSpacesFixer {
                 let from = index;
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, from);
                 index = until;
-                Self::inject_array_alignment_placeholders(levels, analyzed, tokens, from + 1, until - 1);
+                Self::inject_array_alignment_placeholders(
+                    levels,
+                    analyzed,
+                    tokens,
+                    from + 1,
+                    until - 1,
+                );
                 index += 1;
                 continue;
             }
@@ -353,7 +493,11 @@ impl BinaryOperatorSpacesFixer {
                     levels.deepest_level.set(levels.deepest_level.get() + 1);
                     levels.current_level.set(levels.deepest_level.get());
                 }
-                let mut token_content = [align_placeholder(levels.current_level.get()), token.get_content().to_vec()].concat();
+                let mut token_content = [
+                    align_placeholder(levels.current_level.get()),
+                    token.get_content().to_vec(),
+                ]
+                .concat();
                 let next_token = &tokens[index + 1];
                 if !next_token.is_whitespace(None) {
                     token_content.push(b' ');
@@ -383,8 +527,13 @@ impl BinaryOperatorSpacesFixer {
                         break;
                     }
                     if tokens[i + 1].is_given_kind(&[T_ARRAY, CT_ARRAY_BRACKET_OPEN]) {
-                        let array_start_index = if tokens[i + 1].is_kind(T_ARRAY) { tokens.get_next_meaningful_token(i + 1).unwrap() } else { i + 1 };
-                        let (block_type, _) = Tokens::detect_block_type(&tokens[array_start_index]).unwrap();
+                        let array_start_index = if tokens[i + 1].is_kind(T_ARRAY) {
+                            tokens.get_next_meaningful_token(i + 1).unwrap()
+                        } else {
+                            i + 1
+                        };
+                        let (block_type, _) =
+                            Tokens::detect_block_type(&tokens[array_start_index]).unwrap();
                         let array_end_index = tokens.find_block_end(block_type, array_start_index);
                         if tokens.is_partial_code_multiline(array_start_index, array_end_index) {
                             break;
@@ -396,13 +545,25 @@ impl BinaryOperatorSpacesFixer {
             }
             if token.equals("{", true) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
-                Self::inject_array_alignment_placeholders(levels, analyzed, tokens, index + 1, until - 1);
+                Self::inject_array_alignment_placeholders(
+                    levels,
+                    analyzed,
+                    tokens,
+                    index + 1,
+                    until - 1,
+                );
                 index = until + 1;
                 continue;
             }
             if token.equals("(", true) {
                 let until = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
-                Self::inject_array_alignment_placeholders(levels, analyzed, tokens, index + 1, until - 1);
+                Self::inject_array_alignment_placeholders(
+                    levels,
+                    analyzed,
+                    tokens,
+                    index + 1,
+                    until - 1,
+                );
                 index = until + 1;
                 continue;
             }
@@ -410,7 +571,13 @@ impl BinaryOperatorSpacesFixer {
         }
     }
 
-    fn inject_array_alignment_placeholders(levels: &Levels, analyzed: &Tokens, tokens: &mut Tokens, from: usize, until: usize) {
+    fn inject_array_alignment_placeholders(
+        levels: &Levels,
+        analyzed: &Tokens,
+        tokens: &mut Tokens,
+        from: usize,
+        until: usize,
+    ) {
         // Only inject placeholders for multi-line arrays
         if tokens.is_partial_code_multiline(from, until) {
             levels.deepest_level.set(levels.deepest_level.get() + 1);
@@ -427,7 +594,8 @@ impl BinaryOperatorSpacesFixer {
             tokens.insert_at(index, vec![Token::new(T_WHITESPACE, " ")]);
             return;
         }
-        if (align_strategy != ALIGN_SINGLE_SPACE_MINIMAL && align_strategy != ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE)
+        if (align_strategy != ALIGN_SINGLE_SPACE_MINIMAL
+            && align_strategy != ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE)
             || tokens[tokens.get_prev_non_whitespace(index - 1, None).unwrap()].is_comment()
         {
             return;
@@ -446,9 +614,17 @@ impl BinaryOperatorSpacesFixer {
             if strpos(&tmp_code, &placeholder).is_none() {
                 continue;
             }
-            let mut lines: Vec<Vec<u8>> = tmp_code.split(|&b| b == b'\n').map(|l| l.to_vec()).collect();
+            let mut lines: Vec<Vec<u8>> = tmp_code
+                .split(|&b| b == b'\n')
+                .map(|l| l.to_vec())
+                .collect();
             let mut groups: Vec<Vec<usize>> = vec![Vec::new()];
-            let by_scope = [ALIGN_BY_SCOPE, ALIGN_SINGLE_SPACE_BY_SCOPE, ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE].contains(&align_strategy);
+            let by_scope = [
+                ALIGN_BY_SCOPE,
+                ALIGN_SINGLE_SPACE_BY_SCOPE,
+                ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE,
+            ]
+            .contains(&align_strategy);
             for (index, line) in lines.iter().enumerate() {
                 if strpos(line, &placeholder).is_some() {
                     groups.last_mut().unwrap().push(index);
@@ -465,12 +641,15 @@ impl BinaryOperatorSpacesFixer {
                     for &index in group {
                         let current_position = strpos(&lines[index], &placeholder).unwrap();
                         let mut before = lines[index][..current_position].to_vec();
-                        if align_strategy == ALIGN_SINGLE_SPACE || align_strategy == ALIGN_SINGLE_SPACE_BY_SCOPE {
+                        if align_strategy == ALIGN_SINGLE_SPACE
+                            || align_strategy == ALIGN_SINGLE_SPACE_BY_SCOPE
+                        {
                             if !before.ends_with(b" ") {
                                 // if last char of before-content is not ' '; add it
                                 before.push(b' ');
                             }
-                        } else if (align_strategy == ALIGN_SINGLE_SPACE_MINIMAL || align_strategy == ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE)
+                        } else if (align_strategy == ALIGN_SINGLE_SPACE_MINIMAL
+                            || align_strategy == ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE)
                             && !Preg::r#match("/^\\h+$/", &before)
                         {
                             // if indent; do not move, leave to other fixer
@@ -512,7 +691,9 @@ impl Fixer for BinaryOperatorSpacesFixer {
             None => Some(SINGLE_SPACE),
             Some(Value::Null) => None,
             Some(Value::String(s)) if ALLOWED_VALUES.contains(&s.as_str()) => Some(strategy(s)),
-            Some(v) => bail!("[binary_operator_spaces] Invalid configuration: The option \"default\" with value {v} is invalid."),
+            Some(v) => bail!(
+                "[binary_operator_spaces] Invalid configuration: The option \"default\" with value {v} is invalid."
+            ),
         };
         let configured: Vec<(String, Option<&'static str>)> = match r.get("operators") {
             None => Vec::new(),
@@ -521,24 +702,39 @@ impl Fixer for BinaryOperatorSpacesFixer {
                 let mut out = Vec::new();
                 for (operator, value) in o {
                     if !SUPPORTED_OPERATORS.contains(&operator.as_str()) {
-                        let quoted: Vec<String> = SUPPORTED_OPERATORS.iter().map(|o| format!("\"{o}\"")).collect();
+                        let quoted: Vec<String> = SUPPORTED_OPERATORS
+                            .iter()
+                            .map(|o| format!("\"{o}\""))
+                            .collect();
                         let (last, rest) = quoted.split_last().unwrap();
-                        bail!("[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of {} and {last}, got \"string#{operator}\".", rest.join(", "));
+                        bail!(
+                            "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of {} and {last}, got \"string#{operator}\".",
+                            rest.join(", ")
+                        );
                     }
                     match value {
                         Value::Null => out.push((operator.clone(), None)),
-                        Value::String(s) if ALLOWED_VALUES.contains(&s.as_str()) => out.push((operator.clone(), Some(strategy(s)))),
-                        v => bail!("[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"{operator}\", got {v}."),
+                        Value::String(s) if ALLOWED_VALUES.contains(&s.as_str()) => {
+                            out.push((operator.clone(), Some(strategy(s))))
+                        }
+                        v => bail!(
+                            "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"{operator}\", got {v}."
+                        ),
                     }
                 }
                 out
             }
-            Some(v) => bail!("[binary_operator_spaces] Invalid configuration: The option \"operators\" with value {v} is expected to be of type \"array<string, ?string>\"."),
+            Some(v) => bail!(
+                "[binary_operator_spaces] Invalid configuration: The option \"operators\" with value {v} is expected to be of type \"array<string, ?string>\"."
+            ),
         };
         // resolveOperatorsFromConfig
         let mut operators: Vec<(Vec<u8>, &'static str)> = Vec::new();
         if let Some(d) = default {
-            operators = SUPPORTED_OPERATORS.iter().map(|o| (o.as_bytes().to_vec(), d)).collect();
+            operators = SUPPORTED_OPERATORS
+                .iter()
+                .map(|o| (o.as_bytes().to_vec(), d))
+                .collect();
         }
         for (operator, value) in configured {
             let key = operator.into_bytes();
@@ -592,13 +788,24 @@ mod tests {
     #[test]
     fn configure_validation() {
         assert!(fixer().configure(&json!({"default": "foo"})).is_err());
-        assert!(fixer().configure(&json!({"operators": {"=": "foo"}})).is_err());
+        assert!(
+            fixer()
+                .configure(&json!({"operators": {"=": "foo"}}))
+                .is_err()
+        );
         assert!(fixer().configure(&json!({"operators": "x"})).is_err());
         assert_eq!(
-            fixer().configure(&json!({"operators": {"~~": "align"}})).unwrap_err().to_string(),
+            fixer()
+                .configure(&json!({"operators": {"~~": "align"}}))
+                .unwrap_err()
+                .to_string(),
             "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of \"=\", \"*\", \"/\", \"%\", \"<\", \">\", \"|\", \"^\", \"+\", \"-\", \"&\", \"&=\", \"&&\", \"||\", \".=\", \"/=\", \"=>\", \"==\", \">=\", \"===\", \"!=\", \"<>\", \"!==\", \"<=\", \"and\", \"or\", \"xor\", \"-=\", \"%=\", \"*=\", \"|=\", \"+=\", \"<<\", \"<<=\", \">>\", \">>=\", \"^=\", \"**\", \"**=\", \"<=>\", \"??\" and \"??=\", got \"string#~~\"."
         );
         assert!(fixer().configure(&json!({"operators": []})).is_ok());
-        assert!(fixer().configure(&json!({"default": null, "operators": {"=": null}})).is_ok());
+        assert!(
+            fixer()
+                .configure(&json!({"default": null, "operators": {"=": null}}))
+                .is_ok()
+        );
     }
 }

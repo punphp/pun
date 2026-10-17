@@ -6,7 +6,13 @@ use pun_tokens::{Kind::*, Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::path::Path;
 
-const ELEMENTS: &[&str] = &["array_destructuring", "arguments", "arrays", "parameters", "match"];
+const ELEMENTS: &[&str] = &[
+    "array_destructuring",
+    "arguments",
+    "arrays",
+    "parameters",
+    "match",
+];
 
 struct TrailingCommaInMultilineFixer {
     after_heredoc: bool,
@@ -14,7 +20,10 @@ struct TrailingCommaInMultilineFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(TrailingCommaInMultilineFixer { after_heredoc: false, elements: vec!["arrays".into()] })
+    Box::new(TrailingCommaInMultilineFixer {
+        after_heredoc: false,
+        elements: vec!["arrays".into()],
+    })
 }
 
 impl Fixer for TrailingCommaInMultilineFixer {
@@ -25,8 +34,11 @@ impl Fixer for TrailingCommaInMultilineFixer {
         0
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_any_token_kinds_found(&[T_ARRAY, CT_ARRAY_BRACKET_OPEN, CT_DESTRUCTURING_BRACKET_OPEN])
-            || tokens.is_token_kind_found("(")
+        tokens.is_any_token_kinds_found(&[
+            T_ARRAY,
+            CT_ARRAY_BRACKET_OPEN,
+            CT_DESTRUCTURING_BRACKET_OPEN,
+        ]) || tokens.is_token_kind_found("(")
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let o = resolve(self.name(), options, &["after_heredoc", "elements"])?;
@@ -77,15 +89,27 @@ impl Fixer for TrailingCommaInMultilineFixer {
                 continue;
             }
             if fix_match && tokens[prev_index].is_kind(T_MATCH) {
-                let brace = tokens.get_next_token_of_kind(index, &["{".into()], true).unwrap();
+                let brace = tokens
+                    .get_next_token_of_kind(index, &["{".into()], true)
+                    .unwrap();
                 self.fix_block(tokens, brace);
                 continue;
             }
             let prev_prev_index = tokens.get_prev_meaningful_token(prev_index);
-            let prev_prev_is_function = prev_prev_index.is_some_and(|p| tokens[p].is_kind(T_FUNCTION));
+            let prev_prev_is_function =
+                prev_prev_index.is_some_and(|p| tokens[p].is_kind(T_FUNCTION));
             if fix_arguments
                 && tokens[prev_index].equals_any(
-                    &["]".into(), T_CLASS.into(), T_STRING.into(), T_VARIABLE.into(), T_STATIC.into(), T_ISSET.into(), T_UNSET.into(), T_LIST.into()],
+                    &[
+                        "]".into(),
+                        T_CLASS.into(),
+                        T_STRING.into(),
+                        T_VARIABLE.into(),
+                        T_STATIC.into(),
+                        T_ISSET.into(),
+                        T_UNSET.into(),
+                        T_LIST.into(),
+                    ],
                     true,
                 )
                 && !prev_prev_is_function

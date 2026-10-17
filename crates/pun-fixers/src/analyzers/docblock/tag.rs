@@ -5,8 +5,30 @@ use super::preg;
 use std::cell::RefCell;
 
 pub const PSR_STANDARD_TAGS: &[&str] = &[
-    "api", "author", "category", "copyright", "deprecated", "example", "global", "internal", "license", "link", "method", "package",
-    "param", "property", "property-read", "property-write", "return", "see", "since", "subpackage", "throws", "todo", "uses", "var",
+    "api",
+    "author",
+    "category",
+    "copyright",
+    "deprecated",
+    "example",
+    "global",
+    "internal",
+    "license",
+    "link",
+    "method",
+    "package",
+    "param",
+    "property",
+    "property-read",
+    "property-write",
+    "return",
+    "see",
+    "since",
+    "subpackage",
+    "throws",
+    "todo",
+    "uses",
+    "var",
     "version",
 ];
 
@@ -18,7 +40,10 @@ pub struct Tag {
 
 impl Tag {
     pub fn new(line: LineRef) -> Self {
-        Tag { line, name: RefCell::new(None) }
+        Tag {
+            line,
+            name: RefCell::new(None),
+        }
     }
 
     pub fn get_name(&self) -> Vec<u8> {
@@ -43,13 +68,20 @@ impl Tag {
             panic!("Cannot set name on unknown tag.");
         }
         let pattern = [&b"/@"[..], &current, b"/"].concat();
-        let new = preg::replace(&pattern, &[b"@", name].concat(), self.line.borrow().get_content(), 1);
+        let new = preg::replace(
+            &pattern,
+            &[b"@", name].concat(),
+            self.line.borrow().get_content(),
+            1,
+        );
         self.line.borrow_mut().set_content(new);
         *self.name.borrow_mut() = Some(name.to_vec());
     }
 
     pub fn valid(&self) -> bool {
-        PSR_STANDARD_TAGS.iter().any(|t| t.as_bytes() == self.get_name())
+        PSR_STANDARD_TAGS
+            .iter()
+            .any(|t| t.as_bytes() == self.get_name())
     }
 }
 
@@ -61,7 +93,10 @@ pub(super) fn tag_name_ascii(content: &[u8]) -> Option<Vec<u8>> {
     }
     let name_byte = |b: &u8| b.is_ascii_alphanumeric() || matches!(b, b'_' | b'-');
     for (at, _) in content.iter().enumerate().filter(|(_, b)| **b == b'@') {
-        let len = content[at + 1..].iter().take_while(|b| name_byte(b)).count();
+        let len = content[at + 1..]
+            .iter()
+            .take_while(|b| name_byte(b))
+            .count();
         let next = content.get(at + 1 + len);
         if len > 0 && next.is_none_or(|b| matches!(b, b' ' | b'\t' | b'\n' | 0x0b | 0x0c | b'\r')) {
             return Some(content[at + 1..at + 1 + len].to_vec());

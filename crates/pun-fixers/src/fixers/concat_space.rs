@@ -11,16 +11,25 @@ struct ConcatSpaceFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(ConcatSpaceFixer { spacing: "none".into() })
+    Box::new(ConcatSpaceFixer {
+        spacing: "none".into(),
+    })
 }
 
 impl ConcatSpaceFixer {
     fn fix_concatenation_to_no_space(tokens: &mut Tokens, index: usize) {
-        let prev_non_whitespace_token = &tokens[tokens.get_prev_non_whitespace(index, None).unwrap()];
-        if !prev_non_whitespace_token.is_given_kind(&[T_LNUMBER, T_COMMENT, T_DOC_COMMENT]) || prev_non_whitespace_token.get_content().starts_with(b"/*") {
+        let prev_non_whitespace_token =
+            &tokens[tokens.get_prev_non_whitespace(index, None).unwrap()];
+        if !prev_non_whitespace_token.is_given_kind(&[T_LNUMBER, T_COMMENT, T_DOC_COMMENT])
+            || prev_non_whitespace_token.get_content().starts_with(b"/*")
+        {
             tokens.remove_leading_whitespace(index, Some(b" \t"));
         }
-        if !tokens[tokens.get_next_non_whitespace(index, None).unwrap()].is_given_kind(&[T_LNUMBER, T_COMMENT, T_DOC_COMMENT]) {
+        if !tokens[tokens.get_next_non_whitespace(index, None).unwrap()].is_given_kind(&[
+            T_LNUMBER,
+            T_COMMENT,
+            T_DOC_COMMENT,
+        ]) {
             tokens.remove_trailing_whitespace(index, Some(b" \t"));
         }
     }
@@ -33,7 +42,10 @@ impl ConcatSpaceFixer {
     fn fix_white_space_around_concat_token(tokens: &mut Tokens, index: usize, offset: isize) {
         let offset_index = index.wrapping_add_signed(offset);
         if !tokens[offset_index].is_whitespace(None) {
-            tokens.insert_at(index + if offset == 1 { 1 } else { 0 }, vec![Token::new(T_WHITESPACE, " ")]);
+            tokens.insert_at(
+                index + if offset == 1 { 1 } else { 0 },
+                vec![Token::new(T_WHITESPACE, " ")],
+            );
             return;
         }
         if tokens[offset_index].get_content().contains(&b'\n') {

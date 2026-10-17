@@ -11,7 +11,9 @@ struct NoMixedEchoPrintFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoMixedEchoPrintFixer { candidate_token_type: T_PRINT })
+    Box::new(NoMixedEchoPrintFixer {
+        candidate_token_type: T_PRINT,
+    })
 }
 
 impl Fixer for NoMixedEchoPrintFixer {
@@ -23,7 +25,11 @@ impl Fixer for NoMixedEchoPrintFixer {
     }
     fn configure(&mut self, options: &Value) -> anyhow::Result<()> {
         let c = resolve(self.name(), options, &["use"])?;
-        self.candidate_token_type = if c.string("use", "echo", &["print", "echo"])? == "echo" { T_PRINT } else { T_ECHO };
+        self.candidate_token_type = if c.string("use", "echo", &["print", "echo"])? == "echo" {
+            T_PRINT
+        } else {
+            T_ECHO
+        };
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
@@ -44,7 +50,9 @@ impl Fixer for NoMixedEchoPrintFixer {
 
 fn fix_echo_to_print(tokens: &mut Tokens, index: usize) {
     let next_token_index = tokens.get_next_meaningful_token(index).unwrap();
-    let end_token_index = tokens.get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true).unwrap();
+    let end_token_index = tokens
+        .get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true)
+        .unwrap();
     let mut i = next_token_index;
     while i < end_token_index {
         if tokens[i].equals_any(&["(".into(), CT_ARRAY_BRACKET_OPEN.into()], true) {
@@ -61,7 +69,17 @@ fn fix_echo_to_print(tokens: &mut Tokens, index: usize) {
 
 fn fix_print_to_echo(tokens: &mut Tokens, index: usize) {
     let prev = tokens.get_prev_meaningful_token(index).unwrap();
-    if !tokens[prev].equals_any(&[";".into(), "{".into(), "}".into(), ")".into(), T_OPEN_TAG.into(), T_ELSE.into()], true) {
+    if !tokens[prev].equals_any(
+        &[
+            ";".into(),
+            "{".into(),
+            "}".into(),
+            ")".into(),
+            T_OPEN_TAG.into(),
+            T_ELSE.into(),
+        ],
+        true,
+    ) {
         return;
     }
     tokens.set(index, Token::new(T_ECHO, "echo"));

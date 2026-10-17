@@ -14,7 +14,9 @@ struct NoTrailingCommaInSinglelineFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NoTrailingCommaInSinglelineFixer { elements: ELEMENTS.iter().map(|s| s.to_string()).collect() })
+    Box::new(NoTrailingCommaInSinglelineFixer {
+        elements: ELEMENTS.iter().map(|s| s.to_string()).collect(),
+    })
 }
 
 impl Fixer for NoTrailingCommaInSinglelineFixer {
@@ -27,7 +29,11 @@ impl Fixer for NoTrailingCommaInSinglelineFixer {
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         tokens.is_token_kind_found(",")
             && (tokens.is_token_kind_found(")")
-                || tokens.is_any_token_kinds_found(&[CT_ARRAY_BRACKET_CLOSE, CT_DESTRUCTURING_BRACKET_CLOSE, CT_GROUP_IMPORT_BRACE_CLOSE]))
+                || tokens.is_any_token_kinds_found(&[
+                    CT_ARRAY_BRACKET_CLOSE,
+                    CT_DESTRUCTURING_BRACKET_CLOSE,
+                    CT_GROUP_IMPORT_BRACE_CLOSE,
+                ]))
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let o = resolve(self.name(), options, &["elements"])?;
@@ -37,7 +43,11 @@ impl Fixer for NoTrailingCommaInSinglelineFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in (0..tokens.count()).rev() {
             if !tokens[index].equals(")", true)
-                && !tokens[index].is_given_kind(&[CT_ARRAY_BRACKET_CLOSE, CT_DESTRUCTURING_BRACKET_CLOSE, CT_GROUP_IMPORT_BRACE_CLOSE])
+                && !tokens[index].is_given_kind(&[
+                    CT_ARRAY_BRACKET_CLOSE,
+                    CT_DESTRUCTURING_BRACKET_CLOSE,
+                    CT_GROUP_IMPORT_BRACE_CLOSE,
+                ])
             {
                 continue;
             }
@@ -93,7 +103,15 @@ impl NoTrailingCommaInSinglelineFixer {
         if tokens[before_open].is_kind(T_STRING) {
             return !AttributeAnalyzer::is_attribute(tokens, before_open) && self.has("arguments");
         }
-        if tokens[before_open].equals_any(&[")".into(), "]".into(), CT_DYNAMIC_VAR_BRACE_CLOSE.into(), CT_ARRAY_INDEX_BRACE_CLOSE.into()], true) {
+        if tokens[before_open].equals_any(
+            &[
+                ")".into(),
+                "]".into(),
+                CT_DYNAMIC_VAR_BRACE_CLOSE.into(),
+                CT_ARRAY_INDEX_BRACE_CLOSE.into(),
+            ],
+            true,
+        ) {
             let (block_type, _) = Tokens::detect_block_type(&tokens[before_open]).unwrap();
             return (block_type == Tokens::BLOCK_TYPE_INDEX_BRACE
                 || block_type == Tokens::BLOCK_TYPE_DYNAMIC_VAR_BRACE

@@ -4,7 +4,8 @@ use pun_tokens::{Kind, Proto, Token, Tokens, TokensAnalyzer};
 use std::path::Path;
 
 const CLASSY_TYPES: &[Kind] = &[Kind::T_CLASS, Kind::T_ENUM];
-const CLASSY_TOKENS_OF_INTEREST: &[Proto<'static>] = &[Proto::Kind(Kind::T_CLASS), Proto::Kind(Kind::T_ENUM)];
+const CLASSY_TOKENS_OF_INTEREST: &[Proto<'static>] =
+    &[Proto::Kind(Kind::T_CLASS), Proto::Kind(Kind::T_ENUM)];
 
 struct SelfStaticAccessorFixer;
 
@@ -22,7 +23,11 @@ impl Fixer for SelfStaticAccessorFixer {
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         tokens.is_token_kind_found(Kind::T_STATIC)
             && tokens.is_any_token_kinds_found(CLASSY_TYPES)
-            && tokens.is_any_token_kinds_found(&[Kind::T_DOUBLE_COLON, Kind::T_NEW, Kind::T_INSTANCEOF])
+            && tokens.is_any_token_kinds_found(&[
+                Kind::T_DOUBLE_COLON,
+                Kind::T_NEW,
+                Kind::T_INSTANCEOF,
+            ])
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let mut classy_index = tokens.get_next_token_of_kind(0, CLASSY_TOKENS_OF_INTEREST, true);
@@ -41,7 +46,9 @@ impl Fixer for SelfStaticAccessorFixer {
 }
 
 fn fix_classy(tokens: &mut Tokens, index: usize) -> usize {
-    let mut index = tokens.get_next_token_of_kind(index, &["{".into()], true).unwrap();
+    let mut index = tokens
+        .get_next_token_of_kind(index, &["{".into()], true)
+        .unwrap();
     let mut class_open_count = 1;
     while class_open_count > 0 {
         index += 1;
@@ -55,10 +62,18 @@ fn fix_classy(tokens: &mut Tokens, index: usize) -> usize {
         }
         if tokens[index].is_kind(Kind::T_FUNCTION) {
             if TokensAnalyzer::new(tokens).is_lambda(index) {
-                index = tokens.get_next_token_of_kind(index, &["{".into()], true).unwrap();
+                index = tokens
+                    .get_next_token_of_kind(index, &["{".into()], true)
+                    .unwrap();
                 let mut open_count = 1;
                 loop {
-                    index = tokens.get_next_token_of_kind(index, &["}".into(), "{".into(), Kind::T_CLASS.into()], true).unwrap();
+                    index = tokens
+                        .get_next_token_of_kind(
+                            index,
+                            &["}".into(), "{".into(), Kind::T_CLASS.into()],
+                            true,
+                        )
+                        .unwrap();
                     if tokens[index].equals("}", true) {
                         open_count -= 1;
                     } else if tokens[index].equals("{", true) {

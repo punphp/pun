@@ -11,7 +11,10 @@ pub fn fixer() -> Box<dyn Fixer> {
     Box::new(ControlStructureBracesFixer)
 }
 
-const CONTROL_TOKENS: &[Kind] = &[T_DECLARE, T_DO, T_ELSE, T_ELSEIF, T_FINALLY, T_FOR, T_FOREACH, T_IF, T_WHILE, T_TRY, T_CATCH, T_SWITCH];
+const CONTROL_TOKENS: &[Kind] = &[
+    T_DECLARE, T_DO, T_ELSE, T_ELSEIF, T_FINALLY, T_FOR, T_FOREACH, T_IF, T_WHILE, T_TRY, T_CATCH,
+    T_SWITCH,
+];
 
 fn control_continuation_tokens(k: Kind) -> &'static [Kind] {
     match k {
@@ -31,7 +34,9 @@ fn final_control_continuation_tokens(k: Kind) -> &'static [Kind] {
 
 impl ControlStructureBracesFixer {
     fn find_parenthesis_end(tokens: &Tokens, structure_token_index: usize) -> usize {
-        let next_index = tokens.get_next_meaningful_token(structure_token_index).unwrap();
+        let next_index = tokens
+            .get_next_meaningful_token(structure_token_index)
+            .unwrap();
         if !tokens[next_index].equals("(", true) {
             return structure_token_index;
         }
@@ -39,7 +44,9 @@ impl ControlStructureBracesFixer {
     }
 
     fn find_statement_end(tokens: &Tokens, parenthesis_end_index: usize) -> usize {
-        let next_index = tokens.get_next_meaningful_token(parenthesis_end_index).unwrap();
+        let next_index = tokens
+            .get_next_meaningful_token(parenthesis_end_index)
+            .unwrap();
         let next_token = &tokens[next_index];
         if next_token.equals("{", true) {
             return tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, next_index);
@@ -49,11 +56,18 @@ impl ControlStructureBracesFixer {
             let mut end_index = Self::find_statement_end(tokens, parenthesis_end_index);
             if next_token.is_given_kind(&[T_IF, T_TRY, T_DO]) {
                 let opening_token_kind = next_token.get_id().unwrap();
-                let is_continuation = |n: &usize| tokens[*n].is_given_kind(control_continuation_tokens(opening_token_kind));
-                while let Some(n) = tokens.get_next_meaningful_token(end_index).filter(is_continuation) {
+                let is_continuation = |n: &usize| {
+                    tokens[*n].is_given_kind(control_continuation_tokens(opening_token_kind))
+                };
+                while let Some(n) = tokens
+                    .get_next_meaningful_token(end_index)
+                    .filter(is_continuation)
+                {
                     let parenthesis_end_index = Self::find_parenthesis_end(tokens, n);
                     end_index = Self::find_statement_end(tokens, parenthesis_end_index);
-                    if tokens[n].is_given_kind(final_control_continuation_tokens(opening_token_kind)) {
+                    if tokens[n]
+                        .is_given_kind(final_control_continuation_tokens(opening_token_kind))
+                    {
                         return end_index;
                     }
                 }
@@ -98,38 +112,63 @@ impl Fixer for ControlStructureBracesFixer {
             if !token.is_given_kind(CONTROL_TOKENS) {
                 continue;
             }
-            if token.is_kind(T_ELSE) && tokens[tokens.get_next_meaningful_token(index).unwrap()].is_kind(T_IF) {
+            if token.is_kind(T_ELSE)
+                && tokens[tokens.get_next_meaningful_token(index).unwrap()].is_kind(T_IF)
+            {
                 continue;
             }
             let parenthesis_end_index = Self::find_parenthesis_end(tokens, index);
-            let next_after_parenthesis_end_index = tokens.get_next_meaningful_token(parenthesis_end_index).unwrap();
+            let next_after_parenthesis_end_index = tokens
+                .get_next_meaningful_token(parenthesis_end_index)
+                .unwrap();
             let token_after_parenthesis = &tokens[next_after_parenthesis_end_index];
-            if token_after_parenthesis.equals_any(&[";".into(), "{".into(), ":".into(), T_CLOSE_TAG.into()], true) {
+            if token_after_parenthesis.equals_any(
+                &[";".into(), "{".into(), ":".into(), T_CLOSE_TAG.into()],
+                true,
+            ) {
                 continue;
             }
             let mut statement_end_index = None;
             if token_after_parenthesis.is_given_kind(&[T_IF, T_FOR, T_FOREACH, T_SWITCH, T_WHILE]) {
                 let token_after_parenthesis_block_end = tokens.find_block_end(
                     Tokens::BLOCK_TYPE_PARENTHESIS,
-                    tokens.get_next_meaningful_token(next_after_parenthesis_end_index).unwrap(),
+                    tokens
+                        .get_next_meaningful_token(next_after_parenthesis_end_index)
+                        .unwrap(),
                 );
-                if tokens[tokens.get_next_meaningful_token(token_after_parenthesis_block_end).unwrap()].equals(":", true) {
-                    let mut end = alternative_syntax_analyzer.find_alternative_syntax_block_end(tokens, next_after_parenthesis_end_index);
-                    let token_after_statement_end_index = tokens.get_next_meaningful_token(end).unwrap();
+                if tokens[tokens
+                    .get_next_meaningful_token(token_after_parenthesis_block_end)
+                    .unwrap()]
+                .equals(":", true)
+                {
+                    let mut end = alternative_syntax_analyzer.find_alternative_syntax_block_end(
+                        tokens,
+                        next_after_parenthesis_end_index,
+                    );
+                    let token_after_statement_end_index =
+                        tokens.get_next_meaningful_token(end).unwrap();
                     if tokens[token_after_statement_end_index].equals(";", true) {
                         end = token_after_statement_end_index;
                     }
                     statement_end_index = Some(end);
                 }
             }
-            let statement_end_index = statement_end_index.unwrap_or_else(|| Self::find_statement_end(tokens, parenthesis_end_index));
-            let mut tokens_to_insert_after_statement = vec![Token::new(T_WHITESPACE, " "), Token::char("}")];
+            let statement_end_index = statement_end_index
+                .unwrap_or_else(|| Self::find_statement_end(tokens, parenthesis_end_index));
+            let mut tokens_to_insert_after_statement =
+                vec![Token::new(T_WHITESPACE, " "), Token::char("}")];
             if !tokens[statement_end_index].equals_any(&[";".into(), "}".into()], true) {
                 tokens_to_insert_after_statement.insert(0, Token::char(";"));
             }
-            tokens.insert_slices(BTreeMap::from([(statement_end_index + 1, tokens_to_insert_after_statement)]));
+            tokens.insert_slices(BTreeMap::from([(
+                statement_end_index + 1,
+                tokens_to_insert_after_statement,
+            )]));
             // insert opening brace
-            tokens.insert_slices(BTreeMap::from([(parenthesis_end_index + 1, vec![Token::new(T_WHITESPACE, " "), Token::char("{")])]));
+            tokens.insert_slices(BTreeMap::from([(
+                parenthesis_end_index + 1,
+                vec![Token::new(T_WHITESPACE, " "), Token::char("{")],
+            )]));
         }
     }
 }

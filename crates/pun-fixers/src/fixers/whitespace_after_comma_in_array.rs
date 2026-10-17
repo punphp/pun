@@ -13,7 +13,9 @@ struct WhitespaceAfterCommaInArrayFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(WhitespaceAfterCommaInArrayFixer { ensure_single_space: false })
+    Box::new(WhitespaceAfterCommaInArrayFixer {
+        ensure_single_space: false,
+    })
 }
 
 impl Fixer for WhitespaceAfterCommaInArrayFixer {
@@ -38,9 +40,14 @@ impl Fixer for WhitespaceAfterCommaInArrayFixer {
                 continue;
             }
             let (start_index, end_index) = if tokens[index].is_kind(CT_ARRAY_BRACKET_OPEN) {
-                (index, tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, index))
+                (
+                    index,
+                    tokens.find_block_end(Tokens::BLOCK_TYPE_ARRAY_BRACKET, index),
+                )
             } else {
-                let s = tokens.get_next_token_of_kind(index, &["(".into()], true).unwrap();
+                let s = tokens
+                    .get_next_token_of_kind(index, &["(".into()], true)
+                    .unwrap();
                 (s, tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, s))
             };
             let mut i = end_index - 1;
@@ -52,7 +59,8 @@ impl Fixer for WhitespaceAfterCommaInArrayFixer {
                     } else if self.ensure_single_space
                         && tokens[i + 1].content != b" "
                         && Preg::r#match("/^\\h+$/", &tokens[i + 1].content)
-                        && (!tokens[i + 2].is_comment() || Preg::r#match("/^\\h+$/", &tokens[i + 3].content))
+                        && (!tokens[i + 2].is_comment()
+                            || Preg::r#match("/^\\h+$/", &tokens[i + 3].content))
                     {
                         tokens.set(i + 1, Token::new(T_WHITESPACE, " "));
                     }

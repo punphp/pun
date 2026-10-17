@@ -7,11 +7,17 @@ pub struct PhpUnitTestCaseAnalyzer;
 
 impl PhpUnitTestCaseAnalyzer {
     /// Generator step: the next PHPUnit class at or below `index` (its T_CLASS index and body range).
-    pub fn next_php_unit_class(&self, tokens: &Tokens, mut index: isize) -> Option<(usize, (usize, usize))> {
+    pub fn next_php_unit_class(
+        &self,
+        tokens: &Tokens,
+        mut index: isize,
+    ) -> Option<(usize, (usize, usize))> {
         while index > 0 {
             let i = index as usize;
             if self.is_php_unit_class(tokens, i) {
-                let start_index = tokens.get_next_token_of_kind(i, &["{".into()], true).unwrap();
+                let start_index = tokens
+                    .get_next_token_of_kind(i, &["{".into()], true)
+                    .unwrap();
                 let end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, start_index);
                 return Some((i, (start_index, end_index)));
             }
@@ -24,7 +30,9 @@ impl PhpUnitTestCaseAnalyzer {
         if !tokens[index].is_kind(T_CLASS) {
             return false;
         }
-        let extends_index = tokens.get_next_token_of_kind(index, &["{".into(), T_EXTENDS.into()], true).unwrap();
+        let extends_index = tokens
+            .get_next_token_of_kind(index, &["{".into(), T_EXTENDS.into()], true)
+            .unwrap();
         if !tokens[extends_index].is_kind(T_EXTENDS) {
             return false;
         }

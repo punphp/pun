@@ -39,11 +39,21 @@ impl Fixer for NoLeadingNamespaceWhitespaceFixer {
             let before_namespace = tokens[before_namespace_index].clone();
             if !before_namespace.is_whitespace(None) {
                 if !ends_with_whitespace(before_namespace.get_content()) {
-                    tokens.insert_at(index, vec![Token::new(T_WHITESPACE, self.whitespaces_config.get_line_ending())]);
+                    tokens.insert_at(
+                        index,
+                        vec![Token::new(
+                            T_WHITESPACE,
+                            self.whitespaces_config.get_line_ending(),
+                        )],
+                    );
                 }
                 continue;
             }
-            match before_namespace.get_content().iter().rposition(|&b| b == b'\n') {
+            match before_namespace
+                .get_content()
+                .iter()
+                .rposition(|&b| b == b'\n')
+            {
                 None => {
                     if ends_with_whitespace(tokens[index - 2].get_content()) {
                         tokens.clear_at(before_namespace_index);
@@ -52,7 +62,13 @@ impl Fixer for NoLeadingNamespaceWhitespaceFixer {
                     }
                 }
                 Some(last_newline) => {
-                    tokens.set(before_namespace_index, Token::new(T_WHITESPACE, &before_namespace.get_content()[..last_newline + 1]));
+                    tokens.set(
+                        before_namespace_index,
+                        Token::new(
+                            T_WHITESPACE,
+                            &before_namespace.get_content()[..last_newline + 1],
+                        ),
+                    );
                 }
             }
         }

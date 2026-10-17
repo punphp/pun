@@ -22,7 +22,8 @@ impl Fixer for SpacesInsideParenthesesFixer {
         3
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        tokens.is_token_kind_found("(") || tokens.is_token_kind_found(CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN)
+        tokens.is_token_kind_found("(")
+            || tokens.is_token_kind_found(CT_CLASS_INSTANTIATION_PARENTHESIS_OPEN)
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let o = resolve(self.name(), options, &["space"])?;
@@ -76,9 +77,14 @@ impl Fixer for SpacesInsideParenthesesFixer {
                     continue;
                 }
 
-                let after_parenthesis_index = tokens.get_next_non_whitespace(end_parenthesis_index, None);
-                if let Some(after) = after_parenthesis_index.filter(|&a| tokens[a].is_kind(CT_USE_LAMBDA)) {
-                    let use_start = tokens.get_next_token_of_kind(after, &["(".into()], true).unwrap();
+                let after_parenthesis_index =
+                    tokens.get_next_non_whitespace(end_parenthesis_index, None);
+                if let Some(after) =
+                    after_parenthesis_index.filter(|&a| tokens[a].is_kind(CT_USE_LAMBDA))
+                {
+                    let use_start = tokens
+                        .get_next_token_of_kind(after, &["(".into()], true)
+                        .unwrap();
                     let use_end = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, use_start);
                     // add single-line edge whitespaces inside use parentheses
                     fix_parenthesis_inner_edge(tokens, use_start, use_end);

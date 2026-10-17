@@ -15,16 +15,30 @@ pub fn resolve(fixer: &'static str, options: &Value, defined: &[&str]) -> Result
     let map = match options {
         Value::Null => Map::new(),
         Value::Object(o) if !o.is_empty() => o.clone(),
-        Value::Array(a) if !a.is_empty() => a.iter().enumerate().map(|(i, v)| (i.to_string(), v.clone())).collect(),
-        Value::Array(_) | Value::Object(_) => bail!("[{fixer}] Configuration must be an array and may not be empty."),
+        Value::Array(a) if !a.is_empty() => a
+            .iter()
+            .enumerate()
+            .map(|(i, v)| (i.to_string(), v.clone()))
+            .collect(),
+        Value::Array(_) | Value::Object(_) => {
+            bail!("[{fixer}] Configuration must be an array and may not be empty.")
+        }
         _ => bail!(
             "[{fixer}] Rule must be enabled (true), disabled (false) or configured (non-empty, assoc array). Other values are not allowed."
         ),
     };
-    let mut unknown: Vec<&String> = map.keys().filter(|k| !defined.contains(&k.as_str())).collect();
+    let mut unknown: Vec<&String> = map
+        .keys()
+        .filter(|k| !defined.contains(&k.as_str()))
+        .collect();
     if !unknown.is_empty() {
         unknown.sort();
-        let names = |v: Vec<&str>| v.iter().map(|s| format!("\"{s}\"")).collect::<Vec<_>>().join(", ");
+        let names = |v: Vec<&str>| {
+            v.iter()
+                .map(|s| format!("\"{s}\""))
+                .collect::<Vec<_>>()
+                .join(", ")
+        };
         let mut def = defined.to_vec();
         def.sort();
         bail!(
@@ -61,12 +75,23 @@ fn debug_type(v: &Value) -> &'static str {
 
 impl Resolved {
     fn error(&self, key: &str, v: &Value, problem: &str) -> anyhow::Error {
-        anyhow::anyhow!("[{}] Invalid configuration: The option \"{key}\" with value {} {problem}.", self.fixer, format_value(v))
+        anyhow::anyhow!(
+            "[{}] Invalid configuration: The option \"{key}\" with value {} {problem}.",
+            self.fixer,
+            format_value(v)
+        )
     }
 
     /// `setAllowedTypes` failure, e.g. `"bool" or "null"`.
     fn type_error(&self, key: &str, v: &Value, expected: &str) -> anyhow::Error {
-        self.error(key, v, &format!("is expected to be of type {expected}, but is of type \"{}\"", debug_type(v)))
+        self.error(
+            key,
+            v,
+            &format!(
+                "is expected to be of type {expected}, but is of type \"{}\"",
+                debug_type(v)
+            ),
+        )
     }
 
     /// `setAllowedValues` failure: the accepted values are listed unless the check is a closure (`allowed` empty).
@@ -74,7 +99,11 @@ impl Resolved {
         if allowed.is_empty() {
             return self.error(key, v, "is invalid");
         }
-        let list = allowed.iter().map(|a| format!("\"{a}\"")).collect::<Vec<_>>().join(", ");
+        let list = allowed
+            .iter()
+            .map(|a| format!("\"{a}\""))
+            .collect::<Vec<_>>()
+            .join(", ");
         self.error(key, v, &format!("is invalid. Accepted values are: {list}"))
     }
 
@@ -94,7 +123,9 @@ impl Resolved {
     pub fn string(&self, key: &str, default: &str, allowed: &[&str]) -> Result<String> {
         match self.map.get(key) {
             None => Ok(default.to_string()),
-            Some(Value::String(s)) if allowed.is_empty() || allowed.contains(&s.as_str()) => Ok(s.clone()),
+            Some(Value::String(s)) if allowed.is_empty() || allowed.contains(&s.as_str()) => {
+                Ok(s.clone())
+            }
             Some(v) if allowed.is_empty() => Err(self.type_error(key, v, "\"string\"")),
             Some(v) => Err(self.invalid(key, v, allowed)),
         }
@@ -124,7 +155,10 @@ impl Resolved {
         if let Some(bad) = items.iter().find(|i| !i.is_string()) {
             return Err(self.error(key, v, &format!("is expected to be of type \"string[]\", but one of the elements is of type \"{}\"", debug_type(bad))));
         }
-        let items: Vec<String> = items.iter().map(|i| i.as_str().unwrap().to_string()).collect();
+        let items: Vec<String> = items
+            .iter()
+            .map(|i| i.as_str().unwrap().to_string())
+            .collect();
         if !allowed.is_empty() && items.iter().any(|i| !allowed.contains(&i.as_str())) {
             return Err(self.invalid(key, v, &[]));
         }
@@ -134,15 +168,26 @@ impl Resolved {
     /// Symfony OptionsResolver's `setAllowedTypes` check (`verifyTypes`) for scalar/array types such as
     /// `["int", "int[]"]` or `["string[][]"]`; Ok when the option is absent or matches one of `types`.
     pub fn check_types(&self, key: &str, types: &[&str]) -> Result<()> {
-        let Some(v) = self.map.get(key) else { return Ok(()) };
+        let Some(v) = self.map.get(key) else {
+            return Ok(());
+        };
         let mut invalid = vec![];
         if types.iter().any(|t| verify_types(t, v, &mut invalid, 0)) {
             return Ok(());
         }
         let (expected, provided) = (types.join("\" or \""), invalid.join("|"));
-        let element = if (v.is_array() || v.is_object()) && types.iter().any(|t| t.ends_with("[]")) { "one of the elements" } else { "" };
+        let element = if (v.is_array() || v.is_object()) && types.iter().any(|t| t.ends_with("[]"))
+        {
+            "one of the elements"
+        } else {
+            ""
+        };
         Err(if element.is_empty() {
-            self.error(key, v, &format!("is expected to be of type \"{expected}\", but is of type \"{provided}\""))
+            self.error(
+                key,
+                v,
+                &format!("is expected to be of type \"{expected}\", but is of type \"{provided}\""),
+            )
         } else {
             self.error(key, v, &format!("is expected to be of type \"{expected}\", but {element} is of type \"{provided}\""))
         })
@@ -157,7 +202,9 @@ fn verify_types(type_: &str, v: &Value, invalid: &mut Vec<&'static str>, level: 
     };
     if let (Some(inner), Some(items)) = (type_.strip_suffix("[]"), items) {
         // no short-circuit: every element records its invalid type
-        return items.into_iter().fold(true, |valid, item| verify_types(inner, item, invalid, level + 1) && valid);
+        return items.into_iter().fold(true, |valid, item| {
+            verify_types(inner, item, invalid, level + 1) && valid
+        });
     }
     let ok = match type_ {
         "int" => v.is_i64() || v.is_u64(),

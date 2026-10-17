@@ -28,24 +28,37 @@ impl Fixer for CombineConsecutiveUnsetsFixer {
             if !tokens[i].is_kind(T_UNSET) {
                 continue;
             }
-            let (previous_unset, previous_unset_brace_end) = match get_previous_unset_call(tokens, i) {
-                Err(skip_to) => {
-                    index = skip_to as isize - 1;
-                    continue;
-                }
-                Ok(call) => call,
-            };
+            let (previous_unset, previous_unset_brace_end) =
+                match get_previous_unset_call(tokens, i) {
+                    Err(skip_to) => {
+                        index = skip_to as isize - 1;
+                        continue;
+                    }
+                    Ok(call) => call,
+                };
             // Merge the tokens inside the 'unset' call into the previous one 'unset' call.
-            let next_unset_content_start = tokens.get_next_token_of_kind(i, &["(".into()], true).unwrap();
-            let next_unset_content_end = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, next_unset_content_start);
-            let mut tokens_add_count =
-                move_tokens(tokens, next_unset_content_start, next_unset_content_end, previous_unset_brace_end - 1);
+            let next_unset_content_start = tokens
+                .get_next_token_of_kind(i, &["(".into()], true)
+                .unwrap();
+            let next_unset_content_end =
+                tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, next_unset_content_start);
+            let mut tokens_add_count = move_tokens(
+                tokens,
+                next_unset_content_start,
+                next_unset_content_end,
+                previous_unset_brace_end - 1,
+            );
 
             if !tokens[previous_unset_brace_end].is_whitespace(None) {
-                tokens.insert_at(previous_unset_brace_end, vec![Token::new(T_WHITESPACE, " ")]);
+                tokens.insert_at(
+                    previous_unset_brace_end,
+                    vec![Token::new(T_WHITESPACE, " ")],
+                );
                 tokens_add_count += 1;
             }
-            let before_brace_end = tokens.get_prev_meaningful_token(previous_unset_brace_end).unwrap();
+            let before_brace_end = tokens
+                .get_prev_meaningful_token(previous_unset_brace_end)
+                .unwrap();
             if !tokens[before_brace_end].equals(",", true) {
                 tokens.insert_at(previous_unset_brace_end, vec![Token::char(",")]);
                 tokens_add_count += 1;

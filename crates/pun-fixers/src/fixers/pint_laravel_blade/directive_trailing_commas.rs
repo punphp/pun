@@ -2,10 +2,13 @@
 //! call/array arguments inside Blade directive arguments.
 use super::php::{ctype_alnum, stripos, strpos};
 
-const CONTROL_DIRECTIVES: &[&[u8]] = &[b"if", b"elseif", b"unless", b"while", b"for", b"foreach", b"forelse", b"switch", b"case"];
+const CONTROL_DIRECTIVES: &[&[u8]] = &[
+    b"if", b"elseif", b"unless", b"while", b"for", b"foreach", b"forelse", b"switch", b"case",
+];
 
 const NON_CALL_KEYWORDS: &[&[u8]] = &[
-    b"if", b"elseif", b"else", b"while", b"for", b"foreach", b"switch", b"catch", b"declare", b"do", b"match", b"empty",
+    b"if", b"elseif", b"else", b"while", b"for", b"foreach", b"switch", b"catch", b"declare",
+    b"do", b"match", b"empty",
 ];
 
 struct Frame {
@@ -17,7 +20,13 @@ struct Frame {
 }
 
 fn new_frame(open_index: usize, is_call: bool) -> Frame {
-    Frame { is_call, multiline: false, has_content: false, last_content_end: open_index + 1, last_content_char: 0 }
+    Frame {
+        is_call,
+        multiline: false,
+        has_content: false,
+        last_content_end: open_index + 1,
+        last_content_char: 0,
+    }
 }
 
 fn is_word(c: Option<u8>) -> bool {
@@ -70,7 +79,11 @@ pub fn post_format(content: &[u8]) -> Vec<u8> {
 }
 
 fn handle_at(content: &[u8], length: usize, offset: usize, inserts: &mut Vec<usize>) -> usize {
-    let prev = if offset > 0 { Some(content[offset - 1]) } else { None };
+    let prev = if offset > 0 {
+        Some(content[offset - 1])
+    } else {
+        None
+    };
     if prev == Some(b'@') || is_word(prev) {
         return offset + 1;
     }
@@ -119,7 +132,13 @@ fn mark_newlines(stack: &mut [Frame], content: &[u8], from: usize, to: usize) {
     }
 }
 
-fn scan_directive_args(content: &[u8], length: usize, start: usize, directive: &[u8], inserts: &mut Vec<usize>) -> usize {
+fn scan_directive_args(
+    content: &[u8],
+    length: usize,
+    start: usize,
+    directive: &[u8],
+    inserts: &mut Vec<usize>,
+) -> usize {
     let mut stack = vec![new_frame(start, !CONTROL_DIRECTIVES.contains(&directive))];
     let mut offset = start + 1;
 
@@ -210,7 +229,11 @@ fn decide_insert(content: &[u8], frame: &Frame, close: u8, close_index: usize) -
 
 fn close_on_own_line(content: &[u8], index: usize) -> bool {
     // the first character before the close that is not a space, tab or CR is a newline (or there is none)
-    content[..index].iter().rev().find(|&&c| c != b' ' && c != b'\t' && c != b'\r').is_none_or(|&c| c == b'\n')
+    content[..index]
+        .iter()
+        .rev()
+        .find(|&&c| c != b' ' && c != b'\t' && c != b'\r')
+        .is_none_or(|&c| c == b'\n')
 }
 
 fn paren_is_call(content: &[u8], paren_index: usize) -> bool {
@@ -268,7 +291,9 @@ fn skip_heredoc(content: &[u8], length: usize, offset: usize) -> usize {
     }
     let mut search = cursor;
     loop {
-        let Some(newline) = strpos(content, b"\n", search) else { return length };
+        let Some(newline) = strpos(content, b"\n", search) else {
+            return length;
+        };
         let line_start = newline + 1;
         let mut probe = line_start;
         while probe < length && (content[probe] == b' ' || content[probe] == b'\t') {
@@ -276,7 +301,11 @@ fn skip_heredoc(content: &[u8], length: usize, offset: usize) -> usize {
         }
         if content[probe.min(length)..].starts_with(label) {
             let after = probe + label.len();
-            let next = if after < length { content[after] } else { b'\n' };
+            let next = if after < length {
+                content[after]
+            } else {
+                b'\n'
+            };
             if !is_word(Some(next)) {
                 return after;
             }

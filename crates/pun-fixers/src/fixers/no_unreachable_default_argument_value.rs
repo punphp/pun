@@ -51,7 +51,12 @@ fn fix_function_definition(tokens: &mut Tokens, start_index: usize) {
         if !remove_default_argument {
             continue;
         }
-        if default.eq_ignore_ascii_case(b"null") && argument_analysis.type_analysis.as_ref().is_some_and(|t| !t.is_nullable()) {
+        if default.eq_ignore_ascii_case(b"null")
+            && argument_analysis
+                .type_analysis
+                .as_ref()
+                .is_some_and(|t| !t.is_nullable())
+        {
             continue;
         }
         let end = get_default_value_end(tokens, name_index);
@@ -65,7 +70,6 @@ fn remove_default_value(tokens: &mut Tokens, start_index: usize, end_index: usiz
         clear_whitespaces_before_index(tokens, i);
         tokens.clear_token_and_merge_surrounding_whitespace(i);
         i = tokens.get_next_meaningful_token(i).unwrap(); // the argument list's `,` or `)` follows
-
     }
 }
 

@@ -91,13 +91,22 @@ fn handle_tag(content: &[u8], length: usize, offset: usize, inserts: &mut Vec<us
     if !is_closing && RAW_TEXT_ELEMENTS.contains(&&name.to_ascii_lowercase()[..]) {
         // Guard the offset: a malformed tag can leave the cursor past the content end.
         let needle = [&b"</"[..], name].concat();
-        let close = if cursor < length { stripos(content, &needle, cursor) } else { None };
+        let close = if cursor < length {
+            stripos(content, &needle, cursor)
+        } else {
+            None
+        };
         return close.unwrap_or(length);
     }
     cursor
 }
 
-fn handle_attribute(content: &[u8], length: usize, mut cursor: usize, inserts: &mut Vec<usize>) -> usize {
+fn handle_attribute(
+    content: &[u8],
+    length: usize,
+    mut cursor: usize,
+    inserts: &mut Vec<usize>,
+) -> usize {
     let name_start = cursor;
     while cursor < length && is_name_char(content[cursor]) {
         cursor += 1;
@@ -136,7 +145,12 @@ fn handle_attribute(content: &[u8], length: usize, mut cursor: usize, inserts: &
     (value_end + 1).min(length)
 }
 
-fn handle_in_tag_directive(content: &[u8], length: usize, cursor: usize, inserts: &mut Vec<usize>) -> usize {
+fn handle_in_tag_directive(
+    content: &[u8],
+    length: usize,
+    cursor: usize,
+    inserts: &mut Vec<usize>,
+) -> usize {
     let mut probe = cursor + 1;
     while probe < length && is_name_char(content[probe]) {
         probe += 1;

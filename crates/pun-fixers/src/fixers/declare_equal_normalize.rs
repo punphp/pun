@@ -35,7 +35,8 @@ impl Fixer for DeclareEqualNormalizeFixer {
         while index + 6 < count {
             if tokens[index].is_kind(T_DECLARE) {
                 let open_parenthesis_index = tokens.get_next_meaningful_token(index).unwrap();
-                let close_parenthesis_index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_parenthesis_index);
+                let close_parenthesis_index =
+                    tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_parenthesis_index);
                 let mut i = close_parenthesis_index;
                 while i > open_parenthesis_index {
                     if tokens[i].equals("=", true) {

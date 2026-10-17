@@ -12,7 +12,9 @@ struct SingleQuoteFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(SingleQuoteFixer { strings_containing_single_quote_chars: false })
+    Box::new(SingleQuoteFixer {
+        strings_containing_single_quote_chars: false,
+    })
 }
 
 // regex: odd number of backslashes, not followed by double quote or dollar
@@ -27,8 +29,13 @@ impl Fixer for SingleQuoteFixer {
         10
     }
     fn configure(&mut self, options: &Value) -> anyhow::Result<()> {
-        let c = resolve(self.name(), options, &["strings_containing_single_quote_chars"])?;
-        self.strings_containing_single_quote_chars = c.bool("strings_containing_single_quote_chars", false)?;
+        let c = resolve(
+            self.name(),
+            options,
+            &["strings_containing_single_quote_chars"],
+        )?;
+        self.strings_containing_single_quote_chars =
+            c.bool("strings_containing_single_quote_chars", false)?;
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {

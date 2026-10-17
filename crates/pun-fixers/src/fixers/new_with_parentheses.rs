@@ -12,7 +12,10 @@ struct NewWithParenthesesFixer {
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(NewWithParenthesesFixer { named_class: true, anonymous_class: true })
+    Box::new(NewWithParenthesesFixer {
+        named_class: true,
+        anonymous_class: true,
+    })
 }
 
 const NEXT_TOKEN_KINDS: [Proto<'static>; 44] = [
@@ -83,13 +86,17 @@ impl Fixer for NewWithParenthesesFixer {
             if !tokens[index].is_kind(T_NEW) {
                 continue;
             }
-            let mut next_index = tokens.get_next_token_of_kind(index, &NEXT_TOKEN_KINDS, true).unwrap();
+            let mut next_index = tokens
+                .get_next_token_of_kind(index, &NEXT_TOKEN_KINDS, true)
+                .unwrap();
             if tokens[next_index].is_kind(T_CLASS) {
                 next_index = tokens.get_next_meaningful_token(next_index).unwrap();
                 ensure(tokens, next_index, self.anonymous_class);
                 continue;
             }
-            while tokens[next_index].equals("[", true) || tokens[next_index].is_kind(CT_ARRAY_INDEX_BRACE_OPEN) {
+            while tokens[next_index].equals("[", true)
+                || tokens[next_index].is_kind(CT_ARRAY_INDEX_BRACE_OPEN)
+            {
                 let (block, _) = Tokens::detect_block_type(&tokens[next_index]).unwrap();
                 next_index = tokens.find_block_end(block, next_index);
                 next_index = tokens.get_next_meaningful_token(next_index).unwrap();

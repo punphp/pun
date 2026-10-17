@@ -29,14 +29,29 @@ impl Fixer for NoRedundantNullsafe {
             if !tokens[i].is_kind(T_NULLSAFE_OBJECT_OPERATOR) {
                 continue;
             }
-            let Some(name) = tokens.get_next_meaningful_token(i).filter(|&n| tokens[n].is_kind(T_STRING)) else { continue };
-            let Some(after) = tokens.get_next_meaningful_token(name) else { continue };
-            let Some(start) = chain_start(tokens, i) else { continue };
-            let Some(before) = tokens.get_prev_meaningful_token(start) else { continue };
+            let Some(name) = tokens
+                .get_next_meaningful_token(i)
+                .filter(|&n| tokens[n].is_kind(T_STRING))
+            else {
+                continue;
+            };
+            let Some(after) = tokens.get_next_meaningful_token(name) else {
+                continue;
+            };
+            let Some(start) = chain_start(tokens, i) else {
+                continue;
+            };
+            let Some(before) = tokens.get_prev_meaningful_token(start) else {
+                continue;
+            };
             let redundant = if tokens[after].is_kind(T_COALESCE) {
                 is_coalesce_boundary(&tokens[before])
-            } else if tokens[after].equals_any(&[",".into(), ")".into()], true) && tokens[before].equals_any(&["(".into(), ",".into()], true) {
-                enclosing_paren(tokens, start).and_then(|o| tokens.get_prev_meaningful_token(o)).is_some_and(|p| tokens[p].is_kind(T_ISSET))
+            } else if tokens[after].equals_any(&[",".into(), ")".into()], true)
+                && tokens[before].equals_any(&["(".into(), ",".into()], true)
+            {
+                enclosing_paren(tokens, start)
+                    .and_then(|o| tokens.get_prev_meaningful_token(o))
+                    .is_some_and(|p| tokens[p].is_kind(T_ISSET))
             } else {
                 false
             };
@@ -55,13 +70,17 @@ fn chain_start(tokens: &Tokens, op: usize) -> Option<usize> {
         let first = if t.equals(")", true) {
             let open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, p);
             let callee = tokens.get_prev_meaningful_token(open)?;
-            if tokens[callee].is_given_kind(&[T_STRING, T_VARIABLE]) || tokens[callee].equals_any(&[")".into(), "]".into()], true) {
+            if tokens[callee].is_given_kind(&[T_STRING, T_VARIABLE])
+                || tokens[callee].equals_any(&[")".into(), "]".into()], true)
+            {
                 p = callee;
                 continue;
             }
             open
         } else if t.equals("]", true) {
-            p = tokens.get_prev_meaningful_token(tokens.find_block_start(Tokens::BLOCK_TYPE_INDEX_BRACKET, p))?;
+            p = tokens.get_prev_meaningful_token(
+                tokens.find_block_start(Tokens::BLOCK_TYPE_INDEX_BRACKET, p),
+            )?;
             continue;
         } else if t.is_given_kind(&[T_STRING, T_VARIABLE]) {
             p
@@ -69,7 +88,14 @@ fn chain_start(tokens: &Tokens, op: usize) -> Option<usize> {
             return None;
         };
         match tokens.get_prev_meaningful_token(first) {
-            Some(q) if tokens[q].is_given_kind(&[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR, T_DOUBLE_COLON, T_NS_SEPARATOR]) => {
+            Some(q)
+                if tokens[q].is_given_kind(&[
+                    T_OBJECT_OPERATOR,
+                    T_NULLSAFE_OBJECT_OPERATOR,
+                    T_DOUBLE_COLON,
+                    T_NS_SEPARATOR,
+                ]) =>
+            {
                 p = tokens.get_prev_meaningful_token(q)?;
                 if tokens[q].is_kind(T_NS_SEPARATOR) && !tokens[p].is_kind(T_STRING) {
                     return Some(q); // leading `\`
@@ -83,13 +109,50 @@ fn chain_start(tokens: &Tokens, op: usize) -> Option<usize> {
 
 /// Tokens after which an operand is the whole left side of `??` (everything of lower precedence).
 fn is_coalesce_boundary(t: &Token) -> bool {
-    t.equals_any(&["(".into(), ",".into(), "[".into(), "{".into(), "}".into(), ";".into(), "=".into(), "?".into(), ":".into()], true)
-        || t.is_given_kind(&[
-            T_COALESCE, T_COALESCE_EQUAL, T_PLUS_EQUAL, T_MINUS_EQUAL, T_MUL_EQUAL, T_DIV_EQUAL, T_CONCAT_EQUAL, T_MOD_EQUAL,
-            T_AND_EQUAL, T_OR_EQUAL, T_XOR_EQUAL, T_SL_EQUAL, T_SR_EQUAL, T_POW_EQUAL, T_DOUBLE_ARROW, T_RETURN, T_ECHO, T_PRINT,
-            T_YIELD, T_THROW, T_BOOLEAN_AND, T_BOOLEAN_OR, T_LOGICAL_AND, T_LOGICAL_OR, T_LOGICAL_XOR, T_OPEN_TAG,
-            T_OPEN_TAG_WITH_ECHO, CT_ARRAY_BRACKET_OPEN, CT_NAMED_ARGUMENT_COLON,
-        ])
+    t.equals_any(
+        &[
+            "(".into(),
+            ",".into(),
+            "[".into(),
+            "{".into(),
+            "}".into(),
+            ";".into(),
+            "=".into(),
+            "?".into(),
+            ":".into(),
+        ],
+        true,
+    ) || t.is_given_kind(&[
+        T_COALESCE,
+        T_COALESCE_EQUAL,
+        T_PLUS_EQUAL,
+        T_MINUS_EQUAL,
+        T_MUL_EQUAL,
+        T_DIV_EQUAL,
+        T_CONCAT_EQUAL,
+        T_MOD_EQUAL,
+        T_AND_EQUAL,
+        T_OR_EQUAL,
+        T_XOR_EQUAL,
+        T_SL_EQUAL,
+        T_SR_EQUAL,
+        T_POW_EQUAL,
+        T_DOUBLE_ARROW,
+        T_RETURN,
+        T_ECHO,
+        T_PRINT,
+        T_YIELD,
+        T_THROW,
+        T_BOOLEAN_AND,
+        T_BOOLEAN_OR,
+        T_LOGICAL_AND,
+        T_LOGICAL_OR,
+        T_LOGICAL_XOR,
+        T_OPEN_TAG,
+        T_OPEN_TAG_WITH_ECHO,
+        CT_ARRAY_BRACKET_OPEN,
+        CT_NAMED_ARGUMENT_COLON,
+    ])
 }
 
 /// The unmatched `(` around `k`, if no other bracket is in between.
@@ -121,7 +184,9 @@ mod tests {
     fn mago_cases() {
         // bad_example / good_example
         assert_eq!(
-            fix("<?php\n\n$name = $user?->name ?? 'Guest';\n\nif (isset($user?->profile)) {\n    // Do something with $user->profile\n}\n"),
+            fix(
+                "<?php\n\n$name = $user?->name ?? 'Guest';\n\nif (isset($user?->profile)) {\n    // Do something with $user->profile\n}\n"
+            ),
             "<?php\n\n$name = $user->name ?? 'Guest';\n\nif (isset($user->profile)) {\n    // Do something with $user->profile\n}\n"
         );
         let same = "<?php\n\n$name = $user->name ?? 'Guest';\n\nif (isset($user->profile)) {\n}\n";
@@ -131,14 +196,35 @@ mod tests {
     #[test]
     fn edge_cases() {
         for (from, to) in [
-            ("<?php return $a?->b?->c ?? null;", "<?php return $a?->b->c ?? null;"),
-            ("<?php foo($this->repo()['x']?->name ?? '', 1);", "<?php foo($this->repo()['x']->name ?? '', 1);"),
-            ("<?php $x = \\App\\user()?->id ?? 0;", "<?php $x = \\App\\user()->id ?? 0;"),
-            ("<?php $x = ['k' => $u?->id ?? 0];", "<?php $x = ['k' => $u->id ?? 0];"),
-            ("<?php $x = $c ? $u?->id ?? 0 : 1;", "<?php $x = $c ? $u->id ?? 0 : 1;"),
+            (
+                "<?php return $a?->b?->c ?? null;",
+                "<?php return $a?->b->c ?? null;",
+            ),
+            (
+                "<?php foo($this->repo()['x']?->name ?? '', 1);",
+                "<?php foo($this->repo()['x']->name ?? '', 1);",
+            ),
+            (
+                "<?php $x = \\App\\user()?->id ?? 0;",
+                "<?php $x = \\App\\user()->id ?? 0;",
+            ),
+            (
+                "<?php $x = ['k' => $u?->id ?? 0];",
+                "<?php $x = ['k' => $u->id ?? 0];",
+            ),
+            (
+                "<?php $x = $c ? $u?->id ?? 0 : 1;",
+                "<?php $x = $c ? $u->id ?? 0 : 1;",
+            ),
             ("<?php isset($a, $u?->id);", "<?php isset($a, $u->id);"),
-            ("<?php $x = ($a ?: $b)?->id ?? 0;", "<?php $x = ($a ?: $b)->id ?? 0;"),
-            ("<?php isset($a[0], $u?->id);", "<?php isset($a[0], $u->id);"),
+            (
+                "<?php $x = ($a ?: $b)?->id ?? 0;",
+                "<?php $x = ($a ?: $b)->id ?? 0;",
+            ),
+            (
+                "<?php isset($a[0], $u?->id);",
+                "<?php isset($a[0], $u->id);",
+            ),
         ] {
             assert_eq!(fix(from), to);
         }

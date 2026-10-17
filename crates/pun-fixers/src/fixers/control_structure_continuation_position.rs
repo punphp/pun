@@ -31,7 +31,8 @@ impl Fixer for ControlStructureContinuationPositionFixer {
     }
     fn configure(&mut self, options: &Value) -> Result<()> {
         let o = resolve(self.name(), options, &["position"])?;
-        self.next_line = o.string("position", "same_line", &["next_line", "same_line"])? == "next_line";
+        self.next_line =
+            o.string("position", "same_line", &["next_line", "same_line"])? == "next_line";
         Ok(())
     }
     fn set_whitespaces_config(&mut self, config: &WhitespacesFixerConfig) {
@@ -47,13 +48,18 @@ impl Fixer for ControlStructureContinuationPositionFixer {
                 if tokens[prev_index].equals("}", true)
                     && (!is_while
                         || tokens[tokens
-                            .get_prev_meaningful_token(tokens.find_block_start(Tokens::BLOCK_TYPE_BRACE, prev_index))
+                            .get_prev_meaningful_token(
+                                tokens.find_block_start(Tokens::BLOCK_TYPE_BRACE, prev_index),
+                            )
                             .unwrap()]
                         .is_kind(T_DO))
                 {
                     let ws = if self.next_line {
-                        [self.whitespaces_config.get_line_ending().as_bytes(), &WhitespacesAnalyzer::detect_indent(tokens, index)]
-                            .concat()
+                        [
+                            self.whitespaces_config.get_line_ending().as_bytes(),
+                            &WhitespacesAnalyzer::detect_indent(tokens, index),
+                        ]
+                        .concat()
                     } else {
                         b" ".to_vec()
                     };

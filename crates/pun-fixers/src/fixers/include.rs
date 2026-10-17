@@ -60,7 +60,13 @@ fn clear_includies(tokens: &mut Tokens, includies: Vec<Includy>) {
         let next_index = tokens.get_non_empty_sibling(includy.begin, 1).unwrap();
         if tokens[next_index].is_whitespace(None) {
             tokens.set(next_index, Token::new(T_WHITESPACE, " "));
-        } else if braces.is_some() || tokens[next_index].is_given_kind(&[T_VARIABLE, T_CONSTANT_ENCAPSED_STRING, T_COMMENT]) {
+        } else if braces.is_some()
+            || tokens[next_index].is_given_kind(&[
+                T_VARIABLE,
+                T_CONSTANT_ENCAPSED_STRING,
+                T_COMMENT,
+            ])
+        {
             tokens.insert_at(includy.begin + 1, vec![Token::new(T_WHITESPACE, " ")]);
         }
     }
@@ -68,14 +74,27 @@ fn clear_includies(tokens: &mut Tokens, includies: Vec<Includy>) {
 
 fn find_includies(tokens: &Tokens) -> Vec<Includy> {
     let mut includies = Vec::new();
-    for (_, indices) in tokens.find_given_kinds(&[T_REQUIRE, T_REQUIRE_ONCE, T_INCLUDE, T_INCLUDE_ONCE], 0, None) {
+    for (_, indices) in tokens.find_given_kinds(
+        &[T_REQUIRE, T_REQUIRE_ONCE, T_INCLUDE, T_INCLUDE_ONCE],
+        0,
+        None,
+    ) {
         for index in indices {
-            let end = tokens.get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true).unwrap();
+            let end = tokens
+                .get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true)
+                .unwrap();
             let brace_open_index = tokens.get_next_meaningful_token(index).unwrap();
-            let braces = tokens[brace_open_index]
-                .equals("(", true)
-                .then(|| (brace_open_index, tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, brace_open_index)));
-            includies.push(Includy { begin: index, braces, end });
+            let braces = tokens[brace_open_index].equals("(", true).then(|| {
+                (
+                    brace_open_index,
+                    tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, brace_open_index),
+                )
+            });
+            includies.push(Includy {
+                begin: index,
+                braces,
+                end,
+            });
         }
     }
     // krsort

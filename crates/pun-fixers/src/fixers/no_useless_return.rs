@@ -24,7 +24,9 @@ impl Fixer for NoUselessReturnFixer {
             if !tokens[i].is_kind(Kind::T_FUNCTION) {
                 continue;
             }
-            let index = tokens.get_next_token_of_kind(i, &[";".into(), "{".into()], true).unwrap();
+            let index = tokens
+                .get_next_token_of_kind(i, &[";".into(), "{".into()], true)
+                .unwrap();
             if tokens[index].equals("{", true) {
                 let end = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
                 fix_function(tokens, index, end);
@@ -40,7 +42,8 @@ fn fix_function(tokens: &mut Tokens, start: usize, end: usize) {
             let next_at = tokens.get_next_meaningful_token(index).unwrap();
             if tokens[next_at].equals(";", true)
                 && tokens.get_next_meaningful_token(next_at) == Some(end)
-                && !tokens[tokens.get_prev_meaningful_token(index).unwrap()].equals_any(&[Kind::T_ELSE.into(), ")".into()], true)
+                && !tokens[tokens.get_prev_meaningful_token(index).unwrap()]
+                    .equals_any(&[Kind::T_ELSE.into(), ")".into()], true)
             {
                 tokens.clear_token_and_merge_surrounding_whitespace(index);
                 tokens.clear_token_and_merge_surrounding_whitespace(next_at);

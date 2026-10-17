@@ -32,10 +32,16 @@ impl Fixer for NoUnsetCastFixer {
 }
 
 fn fix_unset_cast(tokens: &mut Tokens, index: usize) {
-    let Some(mut assignment_index) = tokens.get_prev_meaningful_token(index).filter(|&i| tokens[i].equals("=", true)) else {
+    let Some(mut assignment_index) = tokens
+        .get_prev_meaningful_token(index)
+        .filter(|&i| tokens[i].equals("=", true))
+    else {
         return;
     };
-    let Some(var_index) = tokens.get_next_meaningful_token(index).filter(|&i| tokens[i].is_kind(T_VARIABLE)) else {
+    let Some(var_index) = tokens
+        .get_next_meaningful_token(index)
+        .filter(|&i| tokens[i].is_kind(T_VARIABLE))
+    else {
         return;
     };
     let after_var = tokens.get_next_meaningful_token(var_index);

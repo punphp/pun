@@ -1,20 +1,32 @@
 //! Port of `PhpCsFixer\Fixer\Phpdoc\PhpdocInlineTagNormalizerFixer`.
 use crate::analyzers::fixer_configuration_resolver::resolve;
-use crate::analyzers::preg::{preg_quote, Preg};
+use crate::analyzers::preg::{Preg, preg_quote};
 use anyhow::Result;
 use pun_format::Fixer;
-use pun_tokens::{php_compat, Kind::*, Token, Tokens};
+use pun_tokens::{Kind::*, Token, Tokens, php_compat};
 use serde_json::Value;
 use std::path::Path;
 
-const DEFAULT_TAGS: &[&str] = &["example", "id", "internal", "inheritdoc", "inheritdocs", "link", "source", "toc", "tutorial"];
+const DEFAULT_TAGS: &[&str] = &[
+    "example",
+    "id",
+    "internal",
+    "inheritdoc",
+    "inheritdocs",
+    "link",
+    "source",
+    "toc",
+    "tutorial",
+];
 
 struct PhpdocInlineTagNormalizerFixer {
     tags: Vec<String>,
 }
 
 pub fn fixer() -> Box<dyn Fixer> {
-    Box::new(PhpdocInlineTagNormalizerFixer { tags: DEFAULT_TAGS.iter().map(|s| s.to_string()).collect() })
+    Box::new(PhpdocInlineTagNormalizerFixer {
+        tags: DEFAULT_TAGS.iter().map(|s| s.to_string()).collect(),
+    })
 }
 
 impl Fixer for PhpdocInlineTagNormalizerFixer {
@@ -38,7 +50,13 @@ impl Fixer for PhpdocInlineTagNormalizerFixer {
         }
         let pattern = format!(
             "#(?:@{{+|{{+\\h*@)\\h*({})\\b([^}}]*)(?:}}+)#i",
-            self.tags.iter().map(|t| String::from_utf8_lossy(&preg_quote(t.as_bytes(), Some(b'/'))).into_owned()).collect::<Vec<_>>().join("|")
+            self.tags
+                .iter()
+                .map(
+                    |t| String::from_utf8_lossy(&preg_quote(t.as_bytes(), Some(b'/'))).into_owned()
+                )
+                .collect::<Vec<_>>()
+                .join("|")
         );
         for index in 0..tokens.count() {
             if !tokens[index].is_kind(T_DOC_COMMENT) {
