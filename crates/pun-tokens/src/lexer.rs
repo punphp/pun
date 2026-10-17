@@ -1,7 +1,7 @@
 //! A port of PHP 8.5's `Zend/zend_language_scanner.l` as driven by `token_get_all()`
 //! (ext/tokenizer, no `TOKEN_PARSE`): same states, same longest-match rules, same
 //! `__halt_compiler` handling. `short_open_tag` is assumed off (PHP's php.ini default).
-//! See docs/tokens.md for why this is not built on mago-syntax's lexer.
+//! See context/reference/tokens.md for why this is not built on mago-syntax's lexer.
 
 use crate::kind::Kind::{self, *};
 

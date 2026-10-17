@@ -79,7 +79,7 @@ jobs:
       - run: scripts/corpus.sh pinkary laravel-framework larastan laravel-pint
       - run: scripts/coverage.sh
       - if: always()
-        run: cat docs/COVERAGE.md >> "$GITHUB_STEP_SUMMARY"
+        run: cat context/reports/COVERAGE.md >> "$GITHUB_STEP_SUMMARY"
 
   parity:
     runs-on: ubuntu-latest

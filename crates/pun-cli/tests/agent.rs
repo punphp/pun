@@ -1,4 +1,4 @@
-//! Agent mode (docs/PLAN.md "Agent-optimised output"): detection priority and the exact lines of every command.
+//! Agent mode (context/PLAN.md "Agent-optimised output"): detection priority and the exact lines of every command.
 //! Expected rule IDs and summaries come from rules/mapping.toml, the fixers each input triggers from Pint
 //! (`php .oracle/pint/builds/pint --format=agent` on the same files), the env list from the agent-detector crate
 //! 0.2.1's src/agents.rs plus laravel/agent-detector's AgentDetector::AGENT_ENV_VARS (380e6e4). The run time in the summary line is replaced by `T`.

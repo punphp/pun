@@ -127,7 +127,10 @@ fn corpus_configs() {
         .canonicalize()
         .unwrap();
     let vendor = root.join(".oracle/phpstan/vendor");
-    assert!(vendor.is_dir(), "needs .oracle/phpstan (docs/oracle.md)");
+    assert!(
+        vendor.is_dir(),
+        "needs .oracle/phpstan (context/reference/oracle.md)"
+    );
     let mut failures = Vec::new();
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/config-corpus");
     let mut names: Vec<String> = std::fs::read_dir(&dir)

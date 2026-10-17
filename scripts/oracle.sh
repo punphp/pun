@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reproduce the pinned formatting oracle in .oracle/ from scratch (versions: docs/oracle.md).
+# Reproduce the pinned formatting oracle in .oracle/ from scratch (versions: context/reference/oracle.md).
 #   .oracle/pint          laravel/pint at the ref Pinkary's composer.lock pins (dev-feat/blade-support),
 #                         with dev deps installed (bundled PHP-CS-Fixer lives in its vendor/).
 #                         Oracle binary: php .oracle/pint/builds/pint (the committed PHAR Pinkary runs).

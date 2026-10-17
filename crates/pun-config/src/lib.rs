@@ -29,7 +29,7 @@ pub const PRESETS: [(&str, &str); 5] = [
 /// Other sets stay unexpanded and are reported as not ported.
 const SETS: &str = include_str!("../presets/sets.json");
 
-/// Upstream rule -> Pun rule mapping (docs/RULES.md).
+/// Upstream rule -> Pun rule mapping (context/RULES.md).
 const MAPPING: &str = include_str!("../rules/mapping.toml");
 
 /// What every command prints when the project has no pun.toml.
@@ -93,7 +93,7 @@ struct PunToml {
     /// `[analyse]` is `pun analyse`'s.
     #[serde(default, rename = "analyse")]
     _analyse: Option<toml::Table>,
-    /// The lint + analyse tier (docs/RULES.md §5). Checked here; nothing applies tiers yet.
+    /// The lint + analyse tier (context/RULES.md §5). Checked here; nothing applies tiers yet.
     #[serde(default, rename = "preset")]
     _tier: Option<Tier>,
 }

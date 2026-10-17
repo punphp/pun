@@ -61,7 +61,7 @@ Removed or rewritten:
   - `report::tests::summary_matches_pint` deleted: a private-helper test with an expectation captured once. It is superseded by `tests/cli.rs`, which runs real Pint and pun on the same tree for each flag set (formats, `-v`, narrow terminals, `--parallel`, stdin, git selections, errors, read-only / unreadable files) and compares stdout, exit code and resulting files.
 - **pun-harness**: no tests before. `tests/harness.rs` runs the binary end to end against real Pint on a throwaway root (`PUN_HARNESS_ROOT`) with hand-derived counts, diffs and scoreboard rows.
 - **Pun/\* fixers**: kept the Mago-derived cases. Test helpers now gate on `is_candidate` like `Pipeline::run`. Added:
-  - `tests/pun_rules.rs` (run order at priority 0 and the risky set, both from docs/MAGO-EXTRAS.md);
+  - `tests/pun_rules.rs` (run order at priority 0 and the risky set, both from context/reference/mago-extras.md);
   - the full status table of `prefer_dedicated_status_assertion`, checked against laravel/framework's `AssertsStatusCodes`.
 
 Bugs found by the new oracle tests and fixed:

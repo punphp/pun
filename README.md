@@ -39,7 +39,7 @@ pun lint [--fix]        # the [lint] rules (today: PHP-CS-Fixer's risky fixers)
 Pint). Rule names in `pun.toml` are Pun IDs; earlier Pun names still work, and a PHP-CS-Fixer name gets an error naming
 its Pun ID. `pun migrate` reads pint.json the way Pint does (`extend`, `--config`,
 `--preset`) or, without one, a `.php-cs-fixer(.dist).php` through PHP-CS-Fixer itself, and writes a `pun.toml` with
-Pun rule IDs ([docs/RULES.md](docs/RULES.md)): the preset plus what differs from it under `[format.rules]`, and the
+Pun rule IDs ([context/RULES.md](context/RULES.md)): the preset plus what differs from it under `[format.rules]`, and the
 risky fixers under `[lint.rules]` with `fix = "apply"`, since they changed behaviour unattended. It rewrites
 `// @php-cs-fixer-ignore rule` comments to `// @pun-ignore-file format.rule`, lists any rule Pun can't run before
 writing anything (and then writes nothing), and is idempotent. On a terminal it first lists the configs it found
@@ -91,10 +91,10 @@ A clean run prints only the summary line (`pun format: pass (412 checked, 0.21s)
 **Rules Pun hasn't ported.** If an enabled rule has no native port, Pun runs every file through the real PHP-CS-Fixer in
 long-lived `php` workers, using the project's `vendor/laravel/pint` (or `vendor/friendsofphp/php-cs-fixer`, or a Pint
 PHAR in `$PUN_PINT`), so output stays identical to Pint while discovery, caching and reporting stay Pun's. `--explain`
-(or `-v`) says why; `--native-only` skips those rules and lists them. Details: [docs/oracle.md](docs/oracle.md#delegate-mode).
+(or `-v`) says why; `--native-only` skips those rules and lists them. Details: [context/reference/oracle.md](context/reference/oracle.md#delegate-mode).
 
 **Extra rules.** Opt-in `Pun/` rules ported from Mago (Laravel and Pest idioms, redundant code, ...) are
-listed in [docs/MAGO-EXTRAS.md](docs/MAGO-EXTRAS.md). They are lint rules (`no-only`, `prefer-fake-helper`, ...)
+listed in [context/reference/mago-extras.md](context/reference/mago-extras.md). They are lint rules (`no-only`, `prefer-fake-helper`, ...)
 in no preset, so default output stays identical to Pint; enable them under `[lint.rules]`.
 `pun lint --mago [paths...]` reports Mago's lint-only Laravel rules (no auto-fix, never edits).
 
@@ -118,4 +118,4 @@ startup; restart the server after editing it).
 
 ## Parity
 
-Per-project parity with the pinned Pint (benchmarks to follow): [docs/scoreboard.md](docs/scoreboard.md).
+Per-project parity with the pinned Pint (benchmarks to follow): [context/reports/scoreboard.md](context/reports/scoreboard.md).

@@ -45,4 +45,4 @@ Rules marked **risky** can change behaviour; review their diff.
 | `prefer-first-class-callable` (risky) | `fn ($x) => $this->m($x)` → `$this->m(...)` |
 | `add-sensitive-parameter` | adds `#[\SensitiveParameter]` to `$password`, `$token`, `$secret` and API-key parameters |
 
-Each rule ports only the rewrites that keep the code's meaning; the edge cases each one skips are listed in the repository's `docs/MAGO-EXTRAS.md`.
+Each rule ports only the rewrites that keep the code's meaning; the edge cases each one skips are listed in the repository's `context/reference/mago-extras.md`.

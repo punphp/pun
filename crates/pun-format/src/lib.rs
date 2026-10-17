@@ -596,7 +596,7 @@ mod tests {
         let e = p
             .run(Path::new("a.php"), b"<?php\nfunction (\n")
             .unwrap_err();
-        // (The line is mago's error position; PHP reports this one on line 3, mago on line 2 — see docs/COVERAGE.md.)
+        // (The line is mago's error position; PHP reports this one on line 3, mago on line 2 — see context/reports/COVERAGE.md.)
         assert!(
             !e.after_fix && e.message.starts_with("Parse error: "),
             "{}",
@@ -697,7 +697,7 @@ mod tests {
             dup("\"a\"")
         );
 
-        // Pun's `@pun-ignore-file` (docs/RULES.md §7): rule IDs, bare names or lint IDs, mapped to their fixers via
+        // Pun's `@pun-ignore-file` (context/RULES.md §7): rule IDs, bare names or lint IDs, mapped to their fixers via
         // rules/mapping.toml; an unknown ID skips nothing. Exactly one space after the name, like upstream's split.
         let a = found(b"<?php\n// @pun-ignore-file format.single-quote,no-alias-function,nope\n// @php-cs-fixer-ignore x\n").unwrap();
         assert_eq!(
