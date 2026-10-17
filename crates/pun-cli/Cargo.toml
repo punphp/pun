@@ -20,6 +20,7 @@ path = "src/main.rs"
 
 [dependencies]
 pprof = { version = "0.15", optional = true, default-features = false }
+agent-detector.workspace = true
 anyhow.workspace = true
 clap.workspace = true
 rayon.workspace = true

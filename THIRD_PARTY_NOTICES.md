@@ -10,3 +10,4 @@ Pun ports behaviour, test fixtures and data from these projects. Their licences 
 | PHPStan, nette/neon, nette/schema, nette/di | Config, NEON, schema and baseline behaviour (pun-phpstan) | MIT / BSD-3-Clause |
 | sebastian/diff | Diff algorithm (pun-cli php_diff) | BSD-3-Clause |
 | Mago | Parser, formatter, linter crates (dependencies) | MIT / Apache-2.0 |
+| agent-detector (crates.io) | Coding-agent detection for agent output (pun-cli, dependency) | MIT |

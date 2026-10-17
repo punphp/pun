@@ -54,34 +54,6 @@ pub struct Ctx<'a> {
 pub const ABOUT: &str =
     "PHP CS Fixer 3.95.17 Adalbertus by Fabien Potencier, Dariusz Ruminski and contributors.";
 
-/// laravel/agent-detector: Pint switches to its agent reporter under coding agents.
-pub fn running_in_agent() -> bool {
-    const VARS: [&str; 19] = [
-        "CURSOR_AGENT",
-        "GEMINI_CLI",
-        "CODEX_SANDBOX",
-        "CODEX_CI",
-        "CODEX_THREAD_ID",
-        "AUGMENT_AGENT",
-        "OPENCODE_CLIENT",
-        "OPENCODE",
-        "AMP_CURRENT_THREAD_ID",
-        "CLAUDECODE",
-        "CLAUDE_CODE",
-        "REPL_ID",
-        "COPILOT_MODEL",
-        "COPILOT_ALLOW_ALL",
-        "COPILOT_GITHUB_TOKEN",
-        "COPILOT_CLI",
-        "ANTIGRAVITY_AGENT",
-        "PI_CODING_AGENT",
-        "KIRO_AGENT_PATH",
-    ];
-    std::env::var("AI_AGENT").is_ok_and(|v| !v.trim().is_empty())
-        || VARS.iter().any(|v| std::env::var_os(v).is_some())
-        || Path::new("/opt/.devin").exists()
-}
-
 /// Symfony's doRenderThrowable box (without the blank line before it), on stdout; `title` is `-v`'s exception class line.
 pub fn abort_box(title: Option<&str>, message: &str, decorated: bool) -> String {
     let width = match console::width() {
@@ -192,11 +164,15 @@ process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
         }
     }
     if !missing.is_empty() {
-        let warning = format!(
-            "\n\x1b[33m The rules enabled in your pint configuration require the following prettier dependencies to be installed using [{}]: {}.\x1b[39m\n\n",
-            manager.0,
-            missing.join(", ")
-        );
+        let warning = if crate::agent::enabled() {
+            String::new()
+        } else {
+            format!(
+                "\n\x1b[33m The rules enabled in your pint configuration require the following prettier dependencies to be installed using [{}]: {}.\x1b[39m\n\n",
+                manager.0,
+                missing.join(", ")
+            )
+        };
         let msg = format!(
             "The rules enabled in your pint configuration require the following prettier dependencies to be installed: {}.",
             missing.join(", ")
@@ -279,8 +255,8 @@ fn emit_inner(
 ) -> Result<u8> {
     let err_dec = console::decorated(2, ctx.ansi, ctx.no_ansi);
     let mut out = String::new();
-    if running_in_agent() {
-        out = reporter(ctx, results, "agent", out_dec)?;
+    if crate::agent::enabled() && format.is_none() {
+        out = agent(ctx, results);
     } else if let Some(f) = format {
         out = reporter(ctx, results, f, out_dec)?;
     } else if quiet {
@@ -328,6 +304,100 @@ fn emit_inner(
         }
     }
     Ok(0)
+}
+
+/// Agent mode: the summary line, then per file its format rule IDs on one line and each lint rule on its own line
+/// (`[fix:safe|unsafe]`, the rule's summary), errors as `path:line rule message`; `-v` adds each file's diff.
+fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
+    use crate::agent::count;
+    let mut sorted: Vec<&FileResult> = results.iter().collect();
+    sorted.sort_by(|a, b| a.rel.cmp(&b.rel));
+    let mut items = vec![];
+    let (mut fixed, mut errors) = (0, 0);
+    for r in sorted {
+        if r.is_error() {
+            errors += 1;
+            // A fixer's exception or broken output is TYPE_LINT / TYPE_EXCEPTION, bad input TYPE_INVALID.
+            let rule = if r.status == Status::Invalid {
+                "syntax-error"
+            } else {
+                "fixer-error"
+            };
+            let at = match error_line(&r.message) {
+                0 => String::new(),
+                n => format!(":{n}"),
+            };
+            items.push(format!("{}{at} {rule} {}", r.rel, r.message));
+        } else if r.status == Status::Fixed {
+            fixed += 1;
+            let ids: Vec<&str> = (r.applied.iter())
+                .map(|f| pun_config::rule_of(f).unwrap_or(f))
+                .collect();
+            let (format, lint): (Vec<&str>, Vec<&str>) =
+                ids.into_iter().partition(|id| id.starts_with("format."));
+            let mut item = String::new();
+            if !format.is_empty() {
+                let _ = writeln!(item, "{} {}", r.rel, format.join(", "));
+            }
+            for id in lint {
+                let (fix, summary) = lint_rule(id);
+                let _ = writeln!(item, "{} {id} [fix:{fix}]{summary}", r.rel);
+            }
+            item.pop();
+            if ctx.verbose {
+                item.push('\n');
+                item.push_str(r.diff.trim_end_matches('\n'));
+            }
+            items.push(item);
+        }
+    }
+    let cmd = crate::agent::cmd();
+    let mut detail = vec![];
+    if errors > 0 {
+        detail.push(count(errors, "error"));
+    }
+    if fixed > 0 {
+        let files = count(fixed, "file");
+        detail.push(match (cmd, ctx.dry_run) {
+            ("format", true) => format!(
+                "{files} need{} formatting",
+                if fixed == 1 { "s" } else { "" }
+            ),
+            ("format", false) => format!("{files} formatted"),
+            (_, true) => format!("{files} with fixes"),
+            (_, false) => format!("{files} fixed"),
+        });
+    }
+    let result = if errors > 0 || (fixed > 0 && ctx.dry_run) {
+        "fail"
+    } else if fixed > 0 {
+        "fixed"
+    } else {
+        "pass"
+    };
+    let checked = format!("{} checked", ctx.total);
+    crate::agent::render(result, &detail, &checked, &items, ctx.verbose)
+}
+
+/// A lint rule's fix safety (`mixed` counts as unsafe) and ` summary` (empty without one), from rules/mapping.toml
+/// `[rules.lint]`.
+fn lint_rule(id: &str) -> (&'static str, String) {
+    static LINT: std::sync::LazyLock<toml::Table> = std::sync::LazyLock::new(|| {
+        let mapping = include_str!("../../pun-config/rules/mapping.toml");
+        let body = mapping.split_once("\n[rules.lint]\n").unwrap().1;
+        toml::from_str(body.split("\n[").next().unwrap()).unwrap()
+    });
+    let e = id.strip_prefix("lint.").and_then(|n| LINT.get(n));
+    let get = |k| e.and_then(|e| e.get(k)).and_then(toml::Value::as_str);
+    let fix = if get("fix") == Some("safe") {
+        "safe"
+    } else {
+        "unsafe"
+    };
+    (
+        fix,
+        get("summary").map_or(String::new(), |s| format!(" {s}")),
+    )
 }
 
 /// InteractsWithSymbols::getSymbol: markup when stdout is decorated, the bare symbol otherwise.

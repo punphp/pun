@@ -3,12 +3,15 @@
 
 use crate::{console, report};
 
-/// The box for `message`, coloured like Symfony's configureIO decides (raw `--ansi`/`--no-ansi` in argv, else TTY).
+/// The box for `message` (one line in agent mode), coloured like Symfony's configureIO decides (raw `--ansi`/`--no-ansi` in argv, else TTY).
 /// `-v` (also from raw argv) adds the exception class above the message and the trace below the box. Of the trace,
 /// Pun prints only its first line, the throw site, as a path inside the PHAR (`phar://pint/vendor/...`, where Pint
 /// has its absolute PHAR path); the PHP call frames under it are left out, as is the requirements check the PHAR's
 /// stub prints on stderr at `-vv`.
 pub fn render(message: &str) -> String {
+    if crate::agent::enabled() {
+        return crate::agent::error(message);
+    }
     let args: Vec<String> = std::env::args().skip(1).take_while(|a| a != "--").collect();
     let has = |flag: &str| args.iter().any(|a| a == flag);
     let decorated = console::decorated(1, has("--ansi"), has("--no-ansi"));
@@ -126,7 +129,7 @@ pub fn progress_before_abort<T>(
     let Some(i) = results.iter().position(Result::is_err) else {
         return;
     };
-    if report::running_in_agent() {
+    if crate::agent::enabled() {
         return;
     }
     let decorated = console::decorated(1, ansi, no_ansi);
