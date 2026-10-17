@@ -104,6 +104,16 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 - **No PHP fallback.** Pun never runs PHP-CS-Fixer, Pint, Rector or PHPStan for a rule it lacks. Delegate mode
   (pun-delegate) is removed and no PHP is embedded (pun-php is not built). System PHP is only the test oracle.
 
+- **One-to-one with upstream** (2026-10-17): every Pun lint rule maps to exactly one non-deprecated Rector (or risky
+  PHP-CS-Fixer) rule and every analyse rule to one non-deprecated PHPStan, Larastan, strict-rules or deprecation-rules
+  rule, checked against the pinned source and the tools' websites. A rule upstream deprecates, or registers wrongly, is
+  not supported.
+- **Rector scope for now** (2026-10-17): only the rules in the eight sets (dead-code, modernize, code-quality, types,
+  early-return, privatization, naming, coding-style) plus the rector-laravel, PHPUnit and Pest sets. Rules in no set
+  are left out for now.
+- **No upgrades below the floor** (2026-10-17): Rector's php-5.3 to php-8.3 upgrade sets and Laravel upgrade sets
+  before 12 are not supported; php-8.4/8.5 and laravel-12/13 are. Pun targets PHP 8.4+ projects.
+
 ### Engines
 
 - **Format:** the PHP-CS-Fixer token-fixer port on Pun's own lexer (not mago-syntax tokens; reference/tokens.md). The
