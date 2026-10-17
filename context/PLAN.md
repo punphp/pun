@@ -236,8 +236,10 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 1-2 follow-up (from config 7): `pun analyse` discovers files with `pun_workspace::files(cfg, Some(Command::Analyse), ..)` | todo |
 | analyse (needs Pushpak): decide how Mago issues map to Pun rules; forwarding mapped codes gives 226 false errors on Pinkary at level 0, reports/analyse-spike.md proposes Pun checks that read Mago's types, using a Mago issue directly only where its table says yes | todo |
 | analyse 1-2 follow-up (from bench): switch the `pun` row of `BENCH=analyse` in scripts/bench.py from crates/pun-analyse/examples/analyse.rs to `pun analyse` once it exists | todo |
+| analyse 1-2 follow-up (from perf analyse 1): `pun analyse` in pun-cli calls `pun_analyse::analyse` so it gets the parallel pipeline; its global rayon pool is shared with format/lint and capped by `--max-processes` | todo |
 | analyse 3: finish level 0: ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | todo; analyse agent stopped at 43d9857, trait-method and facade-alias WIP uncommitted |
 | analyse 3 follow-up: fix the 5 gaps.txt cases that regressed with 138dab1's trait-context change (new.static and arguments.count reported per using class, shadowed trait method, variadic @method arity) | todo |
+| analyse 3 follow-up (from perf analyse 1, also on HEAD before it): a class in an analysed file using a trait declared only in a scanned file (scanDirectories) gets the trait's errors as 'lib/T.php (in context of class C)'; PHPStan 2.2.7 reports nothing | todo |
 | analyse 4-5: type inference; levels 1-10 as the five presets; strict-rules, deprecation rules | todo |
 | analyse 6-7: Larastan with the seven improvements; Pest | todo |
 | analyse 6 follow-up: Larastan knowledge Pinkary needs first: auth() return types (53 Mago issues), Http/facade responses (7), container/Storage (6), plus model accessors and relations | todo |
@@ -289,6 +291,8 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf lint 1 follow-up: if the pun-lint tree walk grows with more rules, skip leaf node kinds no rule targets (about 28% of nodes: DirectVariable, Keyword, LocalIdentifier, Terminator, LiteralString); under 3% today | todo |
 | perf lint 2 follow-up: peak memory is Mago's parse arena (about 41x source size; a 462 KB file takes a 26 MB arena, 39k allocations of 376 bytes); cutting it needs an upstream change in Mago, not pun-lint | todo |
 | perf lint 2 follow-up: opening files is the largest system cost (about 25% of samples) and does not scale past 4 threads on macOS; openat through a held directory handle did not help | todo |
+| perf analyse 1 follow-up: discover vendor symbols on demand (PSR-4/classmap lookup from referenced names, as PHPStan does) instead of scanning every Composer-autoloadable file; cuts the 8-18k opens and Mago's metadata for them; needs its own parity plan because the visible symbol set changes | todo |
+| perf analyse 1 follow-up: scripts/bench.py polls `ps -A` every 20 ms, which slows the measured process (pinkary 0.53-0.86 s in the bench vs 0.48-0.60 s under /usr/bin/time); a waiter thread with wait4's ru_maxrss would be cheaper and exact | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 
 ## 4. Open questions
