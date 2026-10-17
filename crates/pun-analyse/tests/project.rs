@@ -10,7 +10,13 @@ use pun_phpstan::config::{Options, resolve};
 use serde_json::Value;
 
 fn check(neon: &str) {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/project");
+    check_in("project", neon);
+}
+
+fn check_in(fixture: &str, neon: &str) {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures")
+        .join(fixture);
     let dir = root.to_string_lossy().into_owned();
     let options = Options {
         config: Some(format!("{dir}/{neon}.neon")),
@@ -55,4 +61,11 @@ fn project_from_phpstan_neon() {
 #[test]
 fn php_version_range_and_ignore_flags() {
     check("phpstan-min");
+}
+
+/// A symlinked directory and a symlinked file under `paths` are walked and analysed, as PHPStan's finder follows
+/// links (expected: its run on tests/fixtures/symlinks).
+#[test]
+fn symlinks_are_followed() {
+    check_in("symlinks", "phpstan");
 }

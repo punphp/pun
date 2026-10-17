@@ -27,7 +27,8 @@ Uncovered lines:
 - `crates/pun-fixers/src/fixers/method_argument_space.rs:347` ensureSingleLineForParentheses' `//` comment check: argumentContentIsMultiline already returns for any comment outside a nested block, and nested blocks are skipped by both loops, so a comment never precedes the whitespace (upstream has the same dead check).
 - `crates/pun-fixers/src/fixers/pint_laravel_blade/php_block_formatting.rs:208` formatDirectiveArg's fallback when the formatted host has no balanced `(...)`: the argument was cut out of the template by the same matchParen, so it is balanced, and the formatter either returns the host unchanged (a CompileError) or keeps it balanced (no fixer adds quotes or comments).
 - `crates/pun-cli/src/run.rs:407` the panic hook's pass-through for panics outside per-file fixing: reaching it means the binary crashes, which no test can assert in-process.
-- `crates/pun-analyse/src/laravel/mod.rs:469-476` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
+- `crates/pun-analyse/src/laravel/mod.rs:464-471` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
+- `crates/pun-phpstan/src/symbols.rs:96-98` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 
 ## Not measured
 

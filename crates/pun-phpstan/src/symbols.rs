@@ -5,7 +5,11 @@
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
-use serde_json::Value;
+use std::fmt;
+use std::marker::PhantomData;
+
+use serde::Deserialize;
+use serde::de::{Deserializer, IgnoredAny, MapAccess, SeqAccess, Visitor};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PhpVersion {
@@ -81,142 +85,195 @@ pub struct Symbols {
     pub constants: HashMap<String, String>,
 }
 
-fn entries(v: &Value) -> Vec<(&String, &Value)> {
-    // PHP writes an empty map as `[]`.
-    v.as_object()
-        .map(|o| o.iter().collect())
-        .unwrap_or_default()
+/// A JSON object read in order; PHP writes an empty map as `[]`.
+struct Entries<T>(Vec<(String, T)>);
+
+impl<'de, T: Deserialize<'de>> Deserialize<'de> for Entries<T> {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        struct V<T>(PhantomData<T>);
+        impl<'de, T: Deserialize<'de>> Visitor<'de> for V<T> {
+            type Value = Entries<T>;
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                f.write_str("a map, or [] for an empty one")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, mut m: A) -> Result<Entries<T>, A::Error> {
+                let mut out = Vec::new();
+                while let Some(e) = m.next_entry()? {
+                    out.push(e);
+                }
+                Ok(Entries(out))
+            }
+            fn visit_seq<A: SeqAccess<'de>>(self, mut s: A) -> Result<Entries<T>, A::Error> {
+                // as `Value::as_object()` read it: a list is no map
+                while s.next_element::<IgnoredAny>()?.is_some() {}
+                Ok(Entries(Vec::new()))
+            }
+        }
+        d.deserialize_any(V(PhantomData))
+    }
 }
 
-fn string(v: &Value) -> String {
-    v.as_str().expect("string").to_string()
+/// symbols.json as scripts/export-phpstan-symbols.php writes it, read straight into these types (a `serde_json::Value`
+/// of the 6 MB file costs as much again).
+#[derive(Deserialize)]
+struct RawParam {
+    name: String,
+    #[serde(rename = "type")]
+    ty: String,
+    optional: bool,
+    variadic: bool,
+    #[serde(rename = "byRef")]
+    by_ref: String,
+    default: Option<String>,
 }
 
-fn variants(v: &Value) -> Vec<Variant> {
-    v.as_array()
-        .expect("variants")
-        .iter()
+#[derive(Deserialize)]
+struct RawVariant {
+    params: Vec<RawParam>,
+    #[serde(rename = "return")]
+    ret: String,
+}
+
+#[derive(Deserialize)]
+struct RawFunction {
+    name: String,
+    #[serde(rename = "sideEffects")]
+    side_effects: String,
+    deprecated: bool,
+    variants: Vec<RawVariant>,
+    named: Option<Vec<RawVariant>>,
+    #[serde(rename = "static", default)]
+    is_static: bool,
+}
+
+#[derive(Deserialize)]
+struct RawClass {
+    name: String,
+    ancestors: Vec<String>,
+    templates: Entries<(String, Option<String>)>,
+    cases: Vec<String>,
+    interface: bool,
+    #[serde(rename = "final")]
+    is_final: bool,
+    properties: Vec<String>,
+    constants: Entries<String>,
+    methods: Entries<RawFunction>,
+    iterable: Option<(String, String)>,
+    generics: Option<Entries<Vec<String>>>,
+}
+
+/// `null`: gone in 8.5.
+#[derive(Deserialize)]
+struct RawPhp85 {
+    functions: Entries<Option<RawFunction>>,
+    classes: Entries<Option<RawClass>>,
+}
+
+#[derive(Deserialize)]
+struct RawSymbols {
+    functions: Entries<RawFunction>,
+    classes: Entries<RawClass>,
+    constants: Entries<String>,
+    php85: RawPhp85,
+}
+
+fn variants(v: Vec<RawVariant>) -> Vec<Variant> {
+    v.into_iter()
         .map(|v| Variant {
-            params: v["params"]
-                .as_array()
-                .expect("params")
-                .iter()
+            params: v
+                .params
+                .into_iter()
                 .map(|p| Param {
-                    name: string(&p["name"]),
-                    ty: string(&p["type"]),
-                    optional: p["optional"] == true,
-                    variadic: p["variadic"] == true,
-                    by_ref: match p["byRef"].as_str() {
-                        Some("no") => ByRef::No,
-                        Some("createsNewVariable") => ByRef::CreatesNewVariable,
+                    name: p.name,
+                    ty: p.ty,
+                    optional: p.optional,
+                    variadic: p.variadic,
+                    by_ref: match p.by_ref.as_str() {
+                        "no" => ByRef::No,
+                        "createsNewVariable" => ByRef::CreatesNewVariable,
                         _ => ByRef::ReadsArgument,
                     },
-                    default: p.get("default").map(string),
+                    default: p.default,
                 })
                 .collect(),
-            ret: string(&v["return"]),
+            ret: v.ret,
         })
         .collect()
 }
 
-fn read_function(v: &Value) -> Function {
+fn read_function(v: RawFunction) -> Function {
     Function {
-        name: string(&v["name"]),
-        side_effects: string(&v["sideEffects"]),
-        deprecated: v["deprecated"] == true,
-        variants: variants(&v["variants"]),
-        named: v.get("named").map(variants),
-        is_static: v.get("static") == Some(&Value::Bool(true)),
+        name: v.name,
+        side_effects: v.side_effects,
+        deprecated: v.deprecated,
+        variants: variants(v.variants),
+        named: v.named.map(variants),
+        is_static: v.is_static,
     }
 }
 
-fn read_class(v: &Value) -> Class {
+fn read_class(v: RawClass) -> Class {
     Class {
-        name: string(&v["name"]),
-        ancestors: v["ancestors"]
-            .as_array()
-            .expect("ancestors")
-            .iter()
-            .map(string)
-            .collect(),
-        templates: entries(&v["templates"])
+        name: v.name,
+        ancestors: v.ancestors,
+        templates: v
+            .templates
+            .0
             .into_iter()
-            .map(|(k, t)| Template {
-                name: k.clone(),
-                bound: string(&t[0]),
-                default: t[1].as_str().map(str::to_string),
+            .map(|(name, (bound, default))| Template {
+                name,
+                bound,
+                default,
             })
             .collect(),
-        cases: v["cases"]
-            .as_array()
-            .expect("cases")
-            .iter()
-            .map(string)
-            .collect(),
-        is_interface: v["interface"] == true,
-        is_final: v["final"] == true,
-        properties: v["properties"]
-            .as_array()
-            .expect("properties")
-            .iter()
-            .map(string)
-            .collect(),
-        constants: entries(&v["constants"])
+        cases: v.cases,
+        is_interface: v.interface,
+        is_final: v.is_final,
+        properties: v.properties,
+        constants: v.constants.0,
+        methods: v
+            .methods
+            .0
             .into_iter()
-            .map(|(k, t)| (k.clone(), string(t)))
+            .map(|(k, m)| (k, read_function(m)))
             .collect(),
-        methods: entries(&v["methods"])
-            .into_iter()
-            .map(|(k, m)| (k.clone(), read_function(m)))
-            .collect(),
-        iterable: v.get("iterable").map(|i| (string(&i[0]), string(&i[1]))),
+        iterable: v.iterable,
         generics: v
-            .get("generics")
-            .map(|g| {
-                entries(g)
-                    .into_iter()
-                    .map(|(k, args)| {
-                        (
-                            k.clone(),
-                            args.as_array().expect("args").iter().map(string).collect(),
-                        )
-                    })
-                    .collect()
-            })
+            .generics
+            .map(|g| g.0.into_iter().collect())
             .unwrap_or_default(),
     }
 }
 
 fn load(version: PhpVersion) -> Symbols {
-    let data: Value =
+    let data: RawSymbols =
         serde_json::from_str(include_str!("../data/symbols.json")).expect("symbols.json");
     let mut symbols = Symbols {
-        functions: entries(&data["functions"])
+        functions: data
+            .functions
+            .0
             .into_iter()
-            .map(|(k, v)| (k.clone(), read_function(v)))
+            .map(|(k, v)| (k, read_function(v)))
             .collect(),
-        classes: entries(&data["classes"])
+        classes: data
+            .classes
+            .0
             .into_iter()
-            .map(|(k, v)| (k.clone(), read_class(v)))
+            .map(|(k, v)| (k, read_class(v)))
             .collect(),
-        constants: entries(&data["constants"])
-            .into_iter()
-            .map(|(k, v)| (k.clone(), string(v)))
-            .collect(),
+        constants: data.constants.0.into_iter().collect(),
     };
     if version == PhpVersion::Php85 {
-        for (name, f) in entries(&data["php85"]["functions"]) {
-            // null: gone in 8.5
-            symbols.functions.remove(name);
-            if !f.is_null() {
-                symbols.functions.insert(name.clone(), read_function(f));
+        for (name, f) in data.php85.functions.0 {
+            symbols.functions.remove(&name);
+            if let Some(f) = f {
+                symbols.functions.insert(name, read_function(f));
             }
         }
-        for (name, c) in entries(&data["php85"]["classes"]) {
-            // null: gone in 8.5
-            symbols.classes.remove(name);
-            if !c.is_null() {
-                symbols.classes.insert(name.clone(), read_class(c));
+        for (name, c) in data.php85.classes.0 {
+            symbols.classes.remove(&name);
+            if let Some(c) = c {
+                symbols.classes.insert(name, read_class(c));
             }
         }
     }

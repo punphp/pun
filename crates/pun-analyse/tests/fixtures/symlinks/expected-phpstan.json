@@ -1,0 +1,26 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "src/c.php",
+   "line": 3,
+   "identifier": "function.notFound",
+   "message": "Function missing_in_file not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/link/a.php",
+   "line": 3,
+   "identifier": "function.notFound",
+   "message": "Function missing_in_real not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/real/a.php",
+   "line": 3,
+   "identifier": "function.notFound",
+   "message": "Function missing_in_real not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}

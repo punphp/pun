@@ -8,6 +8,7 @@ use pun_phpstan::Array;
 use pun_phpstan::Value;
 use pun_phpstan::ignore::IgnoredErrors;
 use pun_phpstan::php::FileExcluder;
+use rayon::prelude::*;
 use serde_json::Value as Json;
 
 use crate::{display, php_files};
@@ -57,13 +58,12 @@ impl Project {
         let mut analysed = Vec::new();
         let mut scanned = Vec::new();
         for path in strings(params, "paths") {
-            let mut found = Vec::new();
             let p = Path::new(path);
-            if p.is_file() {
-                found.push(p.to_path_buf());
+            let found = if p.is_file() {
+                vec![p.to_path_buf()]
             } else {
-                php_files(p, &extensions, &mut found);
-            }
+                php_files(p, &extensions)
+            };
             for f in found {
                 let name = display(&f);
                 if both.is_excluded(&name) {
@@ -78,7 +78,7 @@ impl Project {
         }
         scanned.extend(strings(params, "scanFiles").into_iter().map(PathBuf::from));
         for dir in strings(params, "scanDirectories") {
-            php_files(Path::new(dir), &extensions, &mut scanned);
+            scanned.extend(php_files(Path::new(dir), &extensions));
         }
         scanned.extend(composer_files(root, &extensions));
         scanned.retain(|f| !both.is_excluded(&display(f)));
@@ -123,12 +123,22 @@ impl Project {
     }
 }
 
+/// Where Composer's autoloader finds files, in its order.
+enum Source {
+    /// A psr-4 or psr-0 directory.
+    Dir(PathBuf),
+    /// A classmap entry: a directory or a file.
+    Classmap(PathBuf),
+    /// A `files` entry.
+    File(PathBuf),
+}
+
 /// Files Composer can autoload: psr-4 and psr-0 directories, classmap entries and `files`, of the root package
 /// (with autoload-dev) and every installed package.
 fn composer_files(root: &Path, extensions: &[String]) -> Vec<PathBuf> {
     let read =
         |p: PathBuf| -> Option<Json> { serde_json::from_slice(&std::fs::read(p).ok()?).ok() };
-    let mut out = Vec::new();
+    let mut sources = Vec::new();
     let mut add = |base: &Path, autoload: &Json| {
         for kind in ["psr-4", "psr-0"] {
             for dirs in autoload[kind]
@@ -141,7 +151,7 @@ fn composer_files(root: &Path, extensions: &[String]) -> Vec<PathBuf> {
                     d => d.as_str().into_iter().collect::<Vec<_>>(),
                 };
                 for d in dirs {
-                    php_files(&base.join(d), extensions, &mut out);
+                    sources.push(Source::Dir(base.join(d)));
                 }
             }
         }
@@ -151,12 +161,7 @@ fn composer_files(root: &Path, extensions: &[String]) -> Vec<PathBuf> {
             .flatten()
             .filter_map(Json::as_str)
         {
-            let p = base.join(entry);
-            if p.is_dir() {
-                php_files(&p, extensions, &mut out);
-            } else {
-                out.push(p);
-            }
+            sources.push(Source::Classmap(base.join(entry)));
         }
         for f in autoload["files"]
             .as_array()
@@ -164,7 +169,7 @@ fn composer_files(root: &Path, extensions: &[String]) -> Vec<PathBuf> {
             .flatten()
             .filter_map(Json::as_str)
         {
-            out.push(base.join(f));
+            sources.push(Source::File(base.join(f)));
         }
     };
     if let Some(composer) = read(root.join("composer.json")) {
@@ -180,6 +185,15 @@ fn composer_files(root: &Path, extensions: &[String]) -> Vec<PathBuf> {
             }
         }
     }
+    // every package's directories are walked at once
+    let mut out: Vec<PathBuf> = sources
+        .into_par_iter()
+        .flat_map_iter(|source| match source {
+            Source::Dir(d) => php_files(&d, extensions),
+            Source::Classmap(p) if p.is_dir() => php_files(&p, extensions),
+            Source::Classmap(p) | Source::File(p) => vec![p],
+        })
+        .collect();
     // Composer's own classes, in every generated classmap (PHPStan finds it through the project's autoloader)
     // ponytail: other classes only the runtime autoloader knows (autoload_classmap.php) aren't scanned
     for class in ["InstalledVersions.php", "ClassLoader.php"] {

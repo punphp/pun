@@ -12,7 +12,7 @@ mod schema;
 mod strings;
 
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use mago_allocator::LocalArena;
 use mago_analyzer::plugin::{
@@ -295,12 +295,7 @@ fn models(
     let model_key = |class: &str| model(&scan, codebase, class).map(|m| (m.table, m.key));
     let mut schema = SchemaAggregator::new(codebase, &model_key);
     // MigrationHelper: database/migrations, recursively, in file name order
-    let mut migrations: Vec<PathBuf> = Vec::new();
-    php_files(
-        &app.root.join("database/migrations"),
-        &["php".to_string()],
-        &mut migrations,
-    );
+    let mut migrations = php_files(&app.root.join("database/migrations"), &["php".to_string()]);
     migrations.sort_by(|a, b| a.file_name().cmp(&b.file_name()));
     for file in migrations.iter().filter_map(|p| read(p, FileType::Host)) {
         let arena = LocalArena::new();

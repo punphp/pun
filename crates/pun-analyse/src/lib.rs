@@ -10,6 +10,7 @@ mod rules;
 use std::path::{Path, PathBuf};
 
 use pun_phpstan::config::Resolved;
+use rayon::prelude::*;
 
 pub use laravel::Laravel;
 pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
@@ -36,7 +37,7 @@ pub fn analyse(project_root: &Path, config: &Resolved) -> Vec<Error> {
 /// Analyses `project.analysed`, knowing the symbols of `project.scanned` too, then drops what
 /// `@phpstan-ignore*` comments and `ignoreErrors` ignore, as `phpstan analyse` reports it.
 pub fn run(project: &Project) -> Vec<Error> {
-    let codebase = codebase::build(project);
+    let (codebase, sources) = codebase::build_with_sources(project);
     let files: std::collections::HashMap<_, _> = project
         .analysed
         .iter()
@@ -48,11 +49,14 @@ pub fn run(project: &Project) -> Vec<Error> {
             )
         })
         .collect();
+    let settings = rules::Checks::of(project);
     let errors: Vec<_> = project
         .analysed
-        .iter()
-        .flat_map(|f| rules::check_file(f, &codebase, project, &files))
+        .par_iter()
+        .flat_map_iter(|f| rules::check_file(f, &codebase, &settings, &files, &sources))
         .collect();
+    // the codebase is large: freed off the critical path
+    std::thread::spawn(move || drop((codebase, sources)));
     let analysed: Vec<String> = project.analysed.iter().map(|p| display(p)).collect();
     let processed = project
         .ignore_errors
@@ -76,21 +80,37 @@ fn display(p: &Path) -> String {
     p.to_string_lossy().into_owned()
 }
 
-/// Files below `dir` with one of `extensions`, sorted.
-fn php_files(dir: &Path, extensions: &[String], out: &mut Vec<PathBuf>) {
+/// Files below `dir` with one of `extensions`, sorted. Subdirectories are walked in parallel.
+fn php_files(dir: &Path, extensions: &[String]) -> Vec<PathBuf> {
     let Ok(entries) = std::fs::read_dir(dir) else {
-        return;
+        return Vec::new();
     };
-    let mut entries: Vec<_> = entries.flatten().map(|e| e.path()).collect();
+    // the entry's own type (readdir's d_type) saves a stat per entry; a symlink is followed as before
+    let mut entries: Vec<_> = entries
+        .flatten()
+        .map(|e| {
+            let p = e.path();
+            let dir = match e.file_type() {
+                Ok(t) if !t.is_symlink() => t.is_dir(),
+                _ => p.is_dir(),
+            };
+            (p, dir)
+        })
+        .collect();
     entries.sort();
-    for p in entries {
-        if p.is_dir() {
-            php_files(&p, extensions, out);
-        } else if p
-            .extension()
-            .is_some_and(|e| extensions.iter().any(|x| e == x.as_str()))
-        {
-            out.push(p);
-        }
-    }
+    entries
+        .into_par_iter()
+        .flat_map_iter(|(p, dir)| {
+            if dir {
+                php_files(&p, extensions)
+            } else if p
+                .extension()
+                .is_some_and(|e| extensions.iter().any(|x| e == x.as_str()))
+            {
+                vec![p]
+            } else {
+                Vec::new()
+            }
+        })
+        .collect()
 }

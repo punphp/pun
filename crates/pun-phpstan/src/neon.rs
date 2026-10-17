@@ -42,11 +42,13 @@ fn build(pattern: &str, caseless: bool, multi_line: bool, extended: bool, utf: b
         .expect("static regex")
 }
 
-/// `~(String)|(Literal)|(Char)|(Comment)|(Newline)|(Whitespace)~Amixu`, anchored with `\G`.
+/// `~(String)|(Literal)|(Char)|(Comment)|(Newline)|(Whitespace)~Amixu`, anchored with `\G`. Matched on bytes, without
+/// `u`: every character the patterns name is ASCII, so a multi-byte character's bytes fall in the same negated
+/// classes and the tokens are the same, while PCRE2's UTF mode would re-validate the whole input at each token.
 static TOKENS: LazyLock<Regex> = LazyLock::new(|| {
     let p =
         format!(r"\G(?:({STRING})|({LITERAL})|({CHAR})|({COMMENT})|({NEWLINE})|({WHITESPACE}))");
-    build(&p, true, true, true, true)
+    build(&p, true, true, true, false)
 });
 static REQUIRES_DELIMITERS: LazyLock<Regex> = LazyLock::new(|| {
     build(

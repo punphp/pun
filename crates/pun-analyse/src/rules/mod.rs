@@ -34,11 +34,30 @@ use pun_phpstan::ignore::{
 };
 
 use crate::Project;
-use crate::codebase::read;
+use crate::codebase::{Sources, read};
 use mago_codex::symbol::SymbolKind;
 use mago_database::file::FileId;
 use scope::{Guard, falsy, statements_terminate, terminates, truthy};
 use std::path::PathBuf;
+use std::sync::Arc;
+
+/// What the rules read of the project (its `ignoreErrors` stay on the calling thread).
+#[derive(Clone, Copy)]
+pub struct Checks {
+    php_version: u32,
+    report_ignores_without_comments: bool,
+    report_unmatched_ignores: bool,
+}
+
+impl Checks {
+    pub fn of(project: &Project) -> Checks {
+        Checks {
+            php_version: project.php_version,
+            report_ignores_without_comments: project.report_ignores_without_comments,
+            report_unmatched_ignores: project.report_unmatched_ignores,
+        }
+    }
+}
 
 pub const IDENTIFIERS: &[&str] = &[
     "function.notFound",
@@ -198,23 +217,18 @@ fn checker<'a, 'arena>(
 pub fn check_file(
     path: &Path,
     codebase: &CodebaseMetadata,
-    project: &Project,
+    project: &Checks,
     files: &HashMap<FileId, PathBuf>,
+    sources: &Sources,
 ) -> Vec<Error> {
-    let Some(file) = read(path, FileType::Host) else {
+    // the scan read every analysed file it could
+    let Some(file) = sources.get(path) else {
         return Vec::new();
     };
     let arena = LocalArena::new();
-    let program = parse_file(&arena, &file);
+    let program = parse_file(&arena, file);
     let names = NameResolver::new(&arena).resolve(program);
-    let mut checker = checker(
-        &arena,
-        &file,
-        program,
-        &names,
-        codebase,
-        project.php_version,
-    );
+    let mut checker = checker(&arena, file, program, &names, codebase, project.php_version);
     checker.walk_program(program, &mut ());
     let name = checker.file_name();
     let (mut lines, parse) = lines_to_ignore(&file.contents);
@@ -242,7 +256,15 @@ pub fn check_file(
         if !seen.insert((class.to_ascii_lowercase(), trait_name.to_ascii_lowercase())) {
             continue;
         }
-        let (errors, uses) = in_trait_context(&name, &class, &trait_name, codebase, project, files);
+        let (errors, uses) = in_trait_context(
+            &name,
+            &class,
+            &trait_name,
+            codebase,
+            project,
+            files,
+            sources,
+        );
         out.extend(errors);
         pending.extend(uses);
     }
@@ -257,8 +279,9 @@ fn in_trait_context(
     class: &str,
     trait_name: &str,
     codebase: &CodebaseMetadata,
-    project: &Project,
+    project: &Checks,
     files: &HashMap<FileId, PathBuf>,
+    sources: &Sources,
 ) -> (Vec<Error>, Vec<(String, String)>) {
     let Some(t) = codebase
         .get_class_like(trait_name.as_bytes())
@@ -266,10 +289,13 @@ fn in_trait_context(
     else {
         return (Vec::new(), Vec::new());
     };
-    let Some(file) = files
-        .get(&t.span.file_id)
-        .and_then(|p| read(p, FileType::Host))
-    else {
+    // an analysed trait as the scan read it, a scanned one from disk
+    let Some(file) = files.get(&t.span.file_id).and_then(|p| {
+        sources
+            .get(p)
+            .cloned()
+            .or_else(|| read(p, FileType::Host).map(Arc::new))
+    }) else {
         return (Vec::new(), Vec::new());
     };
     let arena = LocalArena::new();
