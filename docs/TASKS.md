@@ -47,7 +47,17 @@ Embedded static libphp (pun-php): deferred, system `php` stands in.
 
 ### Decisions
 
-- PHPStan-compatible analysis is `pun analyse` (alias `analyze`), matching `phpstan analyse`. `pun lint` is Mago's lint rules plus syntax checking. The plan's "pun lint" Phase 2 means `pun analyse`.
+Command layout (user-approved direction, 2026-10-17):
+
+| Command | Does | Parity target |
+| --- | --- | --- |
+| `pun format` | Fixes layout (Pint / PHP-CS-Fixer rules) | `pint` bytes, output, exit codes |
+| `pun lint` / `pun lint --fix` | Reports / applies code rules from `rector.php` (sets, rules, skip). Mago lint rules opt-in under `[lint.mago]`, reported as `mago.*` | `rector process --dry-run` / `rector process` |
+| `pun analyse` (alias `analyze`) | Reports type errors, never edits | `phpstan analyse` (+ Larastan) |
+
+- Plan Phase 2 ("pun lint" in docs/PLAN.md) is now `pun analyse`; Phase 3 ("pun refactor") is now `pun lint` with `--fix`.
+- `pun lint --fix` does not format afterwards (Rector doesn't); `--format` opt-in flag may run both.
+- `pun lint --mago` stays as is.
 
 ### Open questions for the user
 
