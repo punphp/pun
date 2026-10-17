@@ -16,7 +16,7 @@ PHPStan identifier, Mago rule code) and how options carry over. That one file dr
 `scripts/check-rule-mapping.py` checks it (names, prefixes, references, upstream sources; §8).
 
 > **Revised 2026-10-17 (walkthrough with Pushpak).** Where this page and the decisions below disagree, the decisions win;
-> the sections are kept for their reasoning and data. Summary: PLAN.md "The decided design"; detail in components/.
+> the sections are kept for their reasoning and data. Summary: PLAN.md "The decided design"; detail in plan/.
 > - **IDs (§3):** `<command>/<group>/<name>` (`format/imports/ordered`, `lint/laravel/no-request-all`), with one topic
 >   and ecosystem group list shared by all commands. There are **no aliases**; renames are breaking until 1.0. Format
 >   names are in format.md §9. The verb prefixes for lint (`no-`, `prefer-`, `add-`, `require-`) and the vocabulary stay.

@@ -5,7 +5,7 @@ Pun is one Rust binary for the PHP toolchain. `pun format` produces the same byt
 Read these for more:
 
 - `context/TASKS.md`: status and open work. It is the source of truth.
-- `context/PLAN.md`: the plan, split into components C0-C14. Start at `context/README.md`.
+- `context/PLAN.md`: the global plan and build order; one plan per command in `context/plan/`. Start at `context/README.md`.
 - `context/RULES.md`: rule names and their upstream mapping.
 - `README.md`: the behavior users see.
 

@@ -1,9 +1,9 @@
-# Who does what: format, lint, analyse
+# Plan: who does what (format, lint, analyse) and `pun check`
 
-Status: **under review with Pushpak** (opened 2026-10-17). He asked for this: today's PHP tools each promise one job and
-then do several, and Pun should make each command do exactly the job its name promises. This file explains what each
-upstream tool is for, where it oversteps, and the simple split Pun uses. It sits above format.md, lint.md and the
-future analyse.md: those plan each command, and this file decides which rule belongs to which command.
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Pushpak asked for this: today's PHP tools each
+promise one job and then do several, and Pun makes each command do exactly the job its name promises. This file
+explains what each upstream tool is for, where it oversteps, the split Pun uses, and how `pun check` runs (build
+list: §6).
 
 ## 1. What each tool is for, and what it also does
 
@@ -180,6 +180,19 @@ What changes for users:
 - Moving `simplified-null-return` to lint also settles its conflict with `require-consistent-return` inside one
   command.
 - These rules then take lint names and groups, so the §9 format table in format.md loses these 40 rows.
+
+## 6. Build (`pun check`)
+
+`pun check` grows as the commands land; each step keeps `pun check --fix` equal to Pint on pint.json projects.
+
+1. **The 40 rules move** (config.md Build 2): format stops running them, lint does.
+2. **Grouped output** (output.md Build 5) over today's format and lint steps.
+3. **One parse per file:** Mago's tree shared by lint and analyse, tokens for format, an index pass before checking.
+4. **Analyse joins** when `pun analyse` exists (analyse.md Build 1): report-only after lint fixes and format; the 18
+   linked analyse and lint pairs print once, as the lint problem.
+5. **`--fix` loop:** lint fixes until stable, format, write each file once, re-index changed files, analyse.
+   *Done when* `pun check --fix` equals running `pun lint --fix`, `pun format` and `pun analyse` in order on every
+   corpus project.
 
 ## Decisions
 

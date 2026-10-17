@@ -1,9 +1,9 @@
-# Component: terminal output for every command
+# Plan: terminal output for every command
 
-Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Pushpak wants one consistent output for format,
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Nothing is built. Pushpak wants one consistent output for format,
 lint, analyse, check, migrate and init. The approved starting point is format.md §10 (✔/✖ per file, a summary line
 with counts and time, colour, rustc-style code frames). This file extends it to every command. Nothing is built.
-Answers go into "Decisions" and DECISIONS.md. Part of PLAN.md C4.
+Answers go into "Decisions" and DECISIONS.md. Build list: §5.
 
 ## 1. The shared parts
 
@@ -72,7 +72,7 @@ Exit code 2 means Pun itself couldn't run: a bad config, an unreadable file, or 
 command.
 
 **Not changed:** the machine formats (`--format=json|checkstyle|junit|gitlab|github|sarif`, Pint's and PHPStan's
-shapes), and agent mode (compact `path:line:col rule message` lines, PLAN.md C4).
+shapes), and agent mode (compact `path:line:col rule message` lines, §4).
 
 ## 3. Questions
 
@@ -94,6 +94,37 @@ shapes), and agent mode (compact `path:line:col rule message` lines, PLAN.md C4)
 6. **Brand colours.** Use the terminal's standard red, yellow, green and cyan (they follow the user's theme), or
    Pun's brand colours from design/tokens.json?
    *Recommend: standard terminal colours. They are readable on every theme; brand colours go in the docs and site.*
+
+## 4. Agent mode (unchanged)
+
+Under a coding agent (laravel/agent-detector v2 env list and `/opt/.devin`, then the agent-detector crate; Cursor's
+`CURSOR_TRACE_ID` alone doesn't count; `PUN_AGENT=1|0`, `--agent` / `--no-agent`, `PAO_FORCE` / `PAO_DISABLE`) every
+command prints compiler-style lines, not JSON:
+
+```
+pun analyse: fail, 3 errors in 2 files (412 files checked, 0.21s)
+app/Models/User.php:42:9 analyse/undefined/method Call to undefined method App\Models\User::foo().
+app/Http/Kernel.php:12:1 lint/style/prefer-early-return [fix:safe] Use an early return.
++2 more; run with -v for all
+```
+
+Summary line first (a passing run prints only that line); `path:line:col rule message` with an optional
+`[fix:safe|unsafe]`; bare diff hunks; no ANSI, progress or boxes; lists capped with `+N more`; errors are one line
+(`pun format: error: <message>`); `--format=json` stays available; exit codes don't change. Implemented once in
+`crates/pun-cli/src/agent.rs`, pinned per command in `crates/pun-cli/tests/agent.rs`. Rule IDs switch to the new
+names with config.md Build 1.
+
+## 5. Build
+
+1. **The renderer** in pun-cli: file lines, problem blocks (rustc-style frames from a span), the summary line, run
+   errors with hints, `--concise`. One module that every command calls.
+2. **The look:** brand colours from design/tokens.json at truecolor, 256 and 16 colours, light and dark variants,
+   `NO_COLOR`, `--color`, ASCII fallbacks, clickable paths and rule links (OSC 8), the spinner after one second.
+3. **`pun format` on it,** and Pint's human screen removed (format.md Build 2).
+4. **GitHub annotations** when `GITHUB_ACTIONS` is set; `--format=github` forces them.
+5. **`pun check`'s grouped view:** one status line per step with its count and time, problems under it, one summary.
+6. **Exit code 2** for run errors in every command.
+   *Done when* each sample in §1, §2 and the Q2 decision is pinned by a test, with and without colour.
 
 ## Decisions
 

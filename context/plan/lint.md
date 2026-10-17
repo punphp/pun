@@ -1,8 +1,7 @@
-# Component: lint (`pun lint`)
+# Plan: lint (`pun lint`)
 
-Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". This file is the plan for the linter: what it is, how it
-works today, what is left, and the questions we still have to settle. Answers go into "Decisions" below and into
-DECISIONS.md. PLAN.md C8 points here. Same shape as format.md.
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". This file is the plan for the linter:
+how it works today, the decided design, and the build list (§7). Shared schema: config.md; output: output.md.
 
 ## 1. What it is
 
@@ -41,6 +40,8 @@ There are two separate paths, and neither is the final design.
 - Tiers, add-ons, severities and `--unsafe` are accepted by the config but don't do anything.
 
 ## 3. The config
+
+*The new schema is in config.md; this section describes today's.*
 
 ```toml
 preset = "recommended"          # the lint + analyse tier: essential | recommended | strict | pedantic
@@ -124,24 +125,28 @@ Rector's own fixtures and the corpus.
 The same Mago syntax tree is what `pun analyse` uses, so `pun check` can parse each file once for lint and analyse.
 Type-aware rules (`add-return-type` and others) ask pun-analyse for types, as Rector asks PHPStan.
 
-## 7. Updated plan
+## 7. Build
 
-Done: the rule catalogue (542 rules: names, groups, tiers, safety, upstream mapping), `[lint.rules]` with `fix`, the
-31 token-path rules, `pun check --fix` equal to Pint, and migrate from pint.json for the risky rules.
+Done: the rule catalogue (542 rules with names, groups, safety and upstream mapping), the 31 token-path rules, and
+`pun check --fix` equal to Pint. The steps, after config.md Build 1-6 (names, sets, levels and overrides in pun.toml):
 
-Left, in order (pending the answers below):
-
-1. **Lint engine** on Mago's syntax tree with range edits (§6, Q1). It must report per line, with rustc-style frames
-   (format.md §10), and apply fixes in a loop until stable.
-2. **Diagnostics for the token path** too, so CS-Fixer's risky rules also report a line, not just a file.
-3. **Config that does something:** tiers, add-ons (detected from composer.json, Q5), severities and `--unsafe`.
-4. **Ignore comments** `@pun-ignore` on a line, the next line or a region (RULES.md §7), and `no-unused-ignore`.
-5. **Rules in usage order:** Pinkary's rector.php first, then the rules the `recommended` tier plus the `laravel`
-   add-on turn on, then rector-laravel, Pest, PHPUnit, and the PHP 8.4+ sets. Each must pass Rector's own fixtures.
-6. **Mago's rules join normal lint rules** under their Pun names, and the `--mago` flag and feature go away (Q6).
-7. **`pun migrate` for rector.php:** paths, skip, rules, sets, prepared sets and PHP sets (C9).
-8. **Speed and memory** from the start: one parse per file shared with analyse, files in parallel, and a cache, as in
-   format.
+1. **The engine on Mago's syntax tree.** A rule visits the tree and returns problems (span, message, help) and text
+   edits on byte ranges. Fixes apply in a loop until no rule has more, with overlapping edits deferred to the next
+   round. One parse per file, files in parallel, a cache keyed like format's.
+   *Done when* two sample rules (one safe, one unsafe) pass Rector's fixtures through `format(pun lint --fix)`.
+2. **Levels, sets and overrides at run time:** `off`/`warn`/`error`, group levels, `[[lint.overrides]]`,
+   `--deny-warnings`, `--max-warnings`, `-A`/`-W`/`-D`, `fix = "off"`, and the exit code (1 only for `error`).
+   *Done when* each flag and key has a test with a hand-derived expected result.
+3. **Per-line problems for the token path,** so CS-Fixer's risky rules report a line and a frame, not just a file.
+4. **Ignore comments:** `@pun-ignore` on a line, the next line or a region (RULES.md §7), and `no-unused-ignore`.
+5. **Output** (output.md Build 1-3): problem blocks, `fixable` labels, `[fix:unsafe]`, the summary, `--concise`.
+6. **Mago's rules as normal lint rules** under their Pun names; the `--mago` flag and the `mago-lint` feature removed.
+7. **Rules in usage order,** each passing Rector's own fixtures: Pinkary's rector.php, then dead-code and modernize
+   (init's default sets), then code-quality, types, early-return, privatization, naming, coding-style, then
+   rector-laravel, Pest's Rector plugin, PHPUnit, and the PHP and Laravel upgrade groups.
+   *Done when* all 542 are native (the 1.0 bar).
+8. **Type-aware rules** query analyse's index (analyse.md Build 3) instead of PHPStan.
+9. **`pun migrate` for rector.php** (migrate.md Build 4).
 
 ## 8. Questions
 

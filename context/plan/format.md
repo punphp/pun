@@ -1,8 +1,7 @@
-# Component: format (`pun format`)
+# Plan: format (`pun format`)
 
-Status: **under review with Pushpak** (2026-10-17; first answers in "Decisions"). This file is the plan for the formatter: how it works today, what
-is left, and the questions we still have to settle. Answers go into "Decisions" below and into DECISIONS.md. PLAN.md C1,
-C2, C5 and C6 point here.
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". This file is the plan for the formatter:
+how it works today, the decided design, and the build list (§7). Shared schema: config.md; output: output.md.
 
 ## 1. What it is
 
@@ -48,6 +47,8 @@ exactly as Pint does it (one long-lived Node worker per thread). It needs Node. 
 cold run.
 
 ## 3. The config
+
+*The new schema is in config.md; this section describes today's.*
 
 Pun reads only `pun.toml`. `pun migrate` writes it from pint.json (or `.php-cs-fixer.php`); without one, every command
 stops with "No pun.toml found. Run `pun migrate`." unless you pass `--preset` or `--no-config`.
@@ -116,26 +117,29 @@ Every Pint flag works the same and prints the same output (summary, `-v` diffs, 
 checkstyle, JUnit, XML and GitLab reporters, exit codes): `--test`, `--bail`, `--repair`, `--dirty`, `--diff=<branch>`,
 `--config`, `--preset`, `--format`, `--output-to-file`, `--stdin-filename`, `--cache-file`, `-v`, `-q`, `--parallel`.
 Pun adds `--staged`, `--since=<ref>`, `--watch`, `--stdin`, `--no-cache`, `--explain` and `--native-only`. Under a coding
-agent it prints compact `path rule, rule` lines instead (PLAN.md C4).
+agent it prints compact `path rule, rule` lines instead (output.md §4).
 
-## 7. Updated plan
+## 7. Build
 
-Done, nothing to do: lexer, transformers, all laravel and psr12 fixers, CLI parity, cache, watch, delegate mode
-(including `@pun-ignore-file`), migrate from pint.json, harness and fuzzer.
+Done for the old design: lexer, transformers, every laravel and psr12 fixer, CLI flags, cache, watch, migrate from
+pint.json, harness and fuzzer. Speed and memory come first (Q10). The steps after config.md Build 1-6 (new names, the
+40 rules moved to lint, TOML options, no delegate mode):
 
-Left, reordered after the first answers:
+1. **Presets cut to three:** remove `per` and `symfony` from `--preset` and pun.toml (migrate expands them).
+   *Done when* `--preset per` is an error naming the replacement, and psr12/laravel corpus runs still match.
+2. **The new output** (output.md Build 1-3): file lines, the summary, run errors; Pint's human screen removed; machine
+   formats (`--format=json|checkstyle|junit|gitlab|github`) unchanged.
+   *Done when* `scripts/cli-parity.sh` passes on exit codes and machine formats, and the human samples in §10 are pinned.
+3. **Fewer allocations per token:** the inline `Content` type (24 bytes, 22 inline, else boxed) plus the three clone
+   fixes (braces_position and array_indentation token clones, `rhs.to_vec()` in php_parser.rs, per-token lowercasing in
+   native_type_declaration_casing). *Done when* cold laravel-framework improves by 5% or more; otherwise drop it.
+4. **Memory target** next to the speed one: peak RSS per corpus project in reports/scoreboard.md via `scripts/bench.py`.
+5. **8-core benchmark in CI:** laravel-framework under 1 s cold.
+6. **Pinkary's CI swap:** `vendor/bin/pint` replaced by Pun. *Done when* Pinkary's CI is green on Pun.
+7. **Port the rest of the 208 format rules** that aren't native yet, in usage order, each with upstream fixtures.
+   Until a rule is ported, migrate names it as unsupported.
 
-0. **Speed and memory first** (Q10): items 2 and 3 below come before everything else.
-1. **Prove it on Pinkary's CI.** Swap `vendor/bin/pint` for Pun in Pinkary's CI. This was the old v0.1 exit gate and
-   is still open.
-2. **Speed: fewer allocations per token.** A cold laravel-framework run makes 45M allocations. The plan is an inline
-   token content type (98% of tokens are 22 bytes or less) plus three small clone/copy fixes. Land only if cold time
-   improves by 5% or more. A first attempt was stopped and lost (it lived outside git).
-3. **8-core benchmark in CI** to show laravel-framework under 1 s cold (about 1 s by extrapolation today).
-4. ~~Port the per preset's 3 rules~~ Not needed: only laravel, psr12 and empty stay as presets (Q4).
-5. **Native Blade formatter** (Blade parser plus Prettier-identical HTML printing), so Blade needs no Node. Large;
-   after the first release unless you say otherwise (Q6).
-6. ~~Embedded PHP~~ Not needed: no PHP fallback (Q7).
+After 1.0: the native Blade formatter (Blade stays on Node + Prettier until then) and a Pun reprinting preset (Q8).
 
 ## 8. Questions
 

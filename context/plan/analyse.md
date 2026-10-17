@@ -1,8 +1,7 @@
-# Component: analyse (`pun analyse`)
+# Plan: analyse (`pun analyse`)
 
-Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". This file is the plan for the analyser: what it is, how it
-works today, what is left, and the questions we still have to settle. Answers go into "Decisions" below and into
-DECISIONS.md. PLAN.md C7 points here. Same shape as format.md and lint.md.
+Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". This file is the plan for the analyser:
+how it works today, the decided design, and the build list (§6). Shared schema: config.md; output: output.md.
 
 ## 1. What it is
 
@@ -94,24 +93,29 @@ These groups still follow the old intent-style list. With topic groups (lint Q3)
 | `clear-result-cache` | `--no-cache` / `pun cache clear` |
 | `--pro`, `--watch` | `--watch` like `pun format` |
 
-## 6. Updated plan
+## 6. Build
 
-Done: config, ignores and baselines; the built-in symbols; the type model and descriptions; level-0 symbol rules
-(54 identifiers); parallel scanning.
+Done: config, ignores and baselines read and written in PHPStan's format; the built-in symbols; the type model and
+descriptions; 54 level-0 identifiers; parallel scanning. The steps, after config.md Build 1-3:
 
-Left, in order (pending the answers below):
-
-1. **Wire it up.** Add the `pun analyse` command, `[analyse]` in pun.toml, the reporters (format.md §10, agent output
-   and PHPStan's machine formats), and its place in `pun check` (commands.md §4).
-2. **Finish level 0.** Port the remaining level-0 rules, empty gaps.txt, and bring the corpus differences to 0.
-3. **Type inference** (Q1). This is the big piece: expression types, narrowing and PHPDoc generics. Levels 2 to 10
-   depend on it.
-4. **Larastan, built in** (§9): the Laravel knowledge (models, relations, builder, collections, facades, container,
-   helpers, macros), Larastan's 20 rules, then the improvements Pushpak picks from §9.3.
-5. **Levels 1 to 10** as rules plus the four switches, then strict-rules and deprecation-rules.
-6. **`pun migrate` for phpstan.neon**: level to rules, parameters to options, ignoreErrors and baseline to Pun IDs,
-   and every unsupported extension named.
-7. **Speed and memory**: a result cache, so a warm run re-checks only changed files and the files that depend on them.
+1. **Wire it up.** The `pun analyse` command, `[analyse]` from pun.toml, the five presets selecting rules, the output
+   (output.md: problem blocks, always errors), PHPStan's machine formats, agent output.
+   *Done when* `pun analyse` on Pinkary prints the level-0 errors with PHPStan's exit codes.
+2. **Pun's own baseline:** `pun analyse --generate-baseline` writes `pun-baseline.toml` (mago-reporting baseline,
+   loose by default); a run reads it and reports fixed entries.
+3. **Finish level 0.** The remaining ~100 level-0 rules, an empty `tests/fixtures/rules/gaps.txt`, and corpus diffs at
+   0 (pinkary 1, larastan 6, pest 5, laravel-framework 15 today). Commit or redo the uncommitted trait-method and
+   facade-alias work first.
+4. **Type inference on Mago's analyser** (§8): expression types, narrowing, PHPDoc generics, mapped to PHPStan's type
+   descriptions. Everything from `essential` up depends on it.
+5. **Levels 1 to 10 as rules,** with the four switches, grouped into the presets basic, essential, recommended, strict,
+   max. Then strict-rules and deprecation rules as plain rules.
+   *Done when* each preset reports the same errors as its PHPStan level band on the corpus.
+6. **Larastan built in** (§9): the Laravel knowledge (models, casts, relations, builder, collections, facades,
+   container, helpers, macros), its 20 rules, then the seven improvements.
+7. **Pest built in** (§10), with the PHPUnit typing it needs.
+8. **Result cache:** a warm run re-checks only changed files and the files that depend on them.
+9. **`pun migrate` for phpstan.neon** (migrate.md Build 5). Coverage back to 100% throughout.
 
 ## 7. Questions
 

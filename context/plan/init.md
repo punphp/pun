@@ -1,8 +1,8 @@
-# Component: `pun init`
+# Plan: `pun init`
 
 Status: **walked through with Pushpak** (2026-10-17); answers in "Decisions". Nothing is built. The journey comes from
 Pushpak (lint.md §9); the details below are proposals with questions. Answers go into "Decisions" and DECISIONS.md.
-Part of PLAN.md C3/C4.
+Build list: §4.
 
 ## 1. What it is
 
@@ -62,6 +62,19 @@ Non-interactive (agents, CI, no terminal, `--yes`): the defaults, or flags `--st
 5. **Format preset `empty`.** It's one of the three presets, but init only offers laravel and psr12. Hide `empty` from
    init?
    *Recommend: hide it; `empty` is for people writing their own rules by hand.*
+
+## 4. Build
+
+After config.md Build 3 and 5 (the schema and composer.lock detection) and output.md Build 1:
+
+1. **Detection and the three questions** with their defaults: `laravel` for a Laravel app, else `psr12`; dead-code +
+   modernize; `recommended`. `empty` is not offered.
+2. **Old configs found:** offer `pun migrate` ("Found phpstan.neon. Migrate it instead? › yes").
+3. **Write pun.toml** with only the three choices. Refuse to overwrite an existing pun.toml.
+4. **One `pun check`** with the new settings, then offer `--fix` and a baseline (interactive only).
+5. **Non-interactive** (`--yes`, agents, CI, no terminal): defaults or `--style`, `--lint-sets`, `--analyse`; next
+   steps printed, not run.
+   *Done when* the flow in §2 is pinned by a test on a scratch Laravel project, interactive and not.
 
 ## Decisions
 
