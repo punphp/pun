@@ -1,0 +1,29 @@
+{
+    "test": "Api/GetTemplateTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Api/data/get-template-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/get-template-type.php",
+                    "line": 15,
+                    "identifier": "phpstanApi.getTemplateType",
+                    "message": "Call to PHPStan\\Type\\Type::getTemplateType() references unknown template type TSendd on class Generator.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/get-template-type.php",
+                    "line": 21,
+                    "identifier": "phpstanApi.getTemplateType",
+                    "message": "Call to PHPStan\\Type\\ObjectType::getTemplateType() references unknown template type TSendd on class Generator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

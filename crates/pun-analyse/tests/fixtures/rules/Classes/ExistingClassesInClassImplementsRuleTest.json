@@ -1,0 +1,138 @@
+{
+    "test": "Classes/ExistingClassesInClassImplementsRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/extends-implements.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 15,
+                    "identifier": "class.nameCase",
+                    "message": "Class ExtendsImplements\\Foo referenced with incorrect case: ExtendsImplements\\FOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 15,
+                    "identifier": "interface.nameCase",
+                    "message": "Interface ExtendsImplements\\FooInterface referenced with incorrect case: ExtendsImplements\\FOOInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 30,
+                    "identifier": "interface.nameCase",
+                    "message": "Interface ExtendsImplements\\FooInterface referenced with incorrect case: ExtendsImplements\\FOOInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/extends-implements.php",
+                    "line": 43,
+                    "identifier": "class.extendsFinalByPhpDoc",
+                    "message": "Class ExtendsImplements\\ExtendsFinalWithAnnotation extends @final class ExtendsImplements\\FinalWithAnnotation.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleImplementsError",
+            "files": [
+                "Classes/data/implements-error.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/implements-error.php",
+                    "line": 5,
+                    "identifier": "interface.notFound",
+                    "message": "Class ImplementsError\\Foo implements unknown interface ImplementsError\\Bar.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/implements-error.php",
+                    "line": 10,
+                    "identifier": "classImplements.class",
+                    "message": "Class ImplementsError\\Lorem implements class ImplementsError\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/implements-error.php",
+                    "line": 20,
+                    "identifier": "classImplements.trait",
+                    "message": "Class ImplementsError\\Ipsum implements trait ImplementsError\\DolorTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/implements-error.php",
+                    "line": 25,
+                    "identifier": "classImplements.trait",
+                    "message": "Anonymous class implements trait ImplementsError\\DolorTrait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Classes/data/class-implements-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-implements-enum.php",
+                    "line": 10,
+                    "identifier": "classImplements.enum",
+                    "message": "Class ClassImplementsEnum\\Foo implements enum ClassImplementsEnum\\FooEnum.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/class-implements-enum.php",
+                    "line": 16,
+                    "identifier": "classImplements.enum",
+                    "message": "Anonymous class implements enum ClassImplementsEnum\\FooEnum.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8889",
+            "files": [
+                "Classes/data/bug-8889.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-8889.php",
+                    "line": 5,
+                    "identifier": "interface.notFound",
+                    "message": "Class Bug8889\\HelloWorld implements unknown interface iterable.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/bug-8889.php",
+                    "line": 8,
+                    "identifier": "interface.notFound",
+                    "message": "Class Bug8889\\HelloWorld2 implements unknown interface Iterable.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14617",
+            "files": [
+                "Classes/data/bug-14617.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

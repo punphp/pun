@@ -1,0 +1,447 @@
+{
+    "test": "Classes/EnumSanityRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/enum-sanity.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 5,
+                    "identifier": "method.abstract",
+                    "message": "Enum EnumSanity\\EnumWithAbstractMethod contains abstract method foo() from class EnumSanity\\EnumWithAbstractMethod.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 7,
+                    "identifier": "method.abstract",
+                    "message": "Enum EnumSanity\\EnumWithAbstractMethod contains abstract method foo().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 12,
+                    "identifier": "enum.constructor",
+                    "message": "Enum EnumSanity\\EnumWithConstructorAndDestructor contains constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 15,
+                    "identifier": "enum.destructor",
+                    "message": "Enum EnumSanity\\EnumWithConstructorAndDestructor contains destructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 21,
+                    "identifier": "enum.magicMethod",
+                    "message": "Enum EnumSanity\\EnumWithMagicMethods contains magic method __get().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 30,
+                    "identifier": "enum.magicMethod",
+                    "message": "Enum EnumSanity\\EnumWithMagicMethods contains magic method __set().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 39,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum EnumSanity\\PureEnumCannotRedeclareMethods cannot redeclare native method cases().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 39,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method EnumSanity\\PureEnumCannotRedeclareMethods::cases() is not covariant with return type array of method UnitEnum::cases().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 39,
+                    "identifier": "return.missing",
+                    "message": "Method EnumSanity\\PureEnumCannotRedeclareMethods::cases() should return array<EnumSanity\\PureEnumCannotRedeclareMethods> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 54,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum EnumSanity\\BackedEnumCannotRedeclareMethods cannot redeclare native method cases().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 54,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method EnumSanity\\BackedEnumCannotRedeclareMethods::cases() is not covariant with return type array of method UnitEnum::cases().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 54,
+                    "identifier": "return.missing",
+                    "message": "Method EnumSanity\\BackedEnumCannotRedeclareMethods::cases() should return array<EnumSanity\\BackedEnumCannotRedeclareMethods> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 58,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum EnumSanity\\BackedEnumCannotRedeclareMethods cannot redeclare native method tryFrom().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 58,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method EnumSanity\\BackedEnumCannotRedeclareMethods::tryFrom() is not covariant with return type static(BackedEnum)|null of method BackedEnum::tryFrom().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 58,
+                    "identifier": "parameter.missing",
+                    "message": "Method EnumSanity\\BackedEnumCannotRedeclareMethods::tryFrom() overrides method BackedEnum::tryFrom() but misses parameter #1 $value.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 62,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum EnumSanity\\BackedEnumCannotRedeclareMethods cannot redeclare native method from().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 62,
+                    "identifier": "method.childReturnType",
+                    "message": "Return type mixed of method EnumSanity\\BackedEnumCannotRedeclareMethods::from() is not covariant with return type static(BackedEnum) of method BackedEnum::from().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 62,
+                    "identifier": "parameter.missing",
+                    "message": "Method EnumSanity\\BackedEnumCannotRedeclareMethods::from() overrides method BackedEnum::from() but misses parameter #1 $value.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 62,
+                    "identifier": "return.missing",
+                    "message": "Method EnumSanity\\BackedEnumCannotRedeclareMethods::from() should return EnumSanity\\BackedEnumCannotRedeclareMethods but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 67,
+                    "identifier": "enum.backingType",
+                    "message": "Backed enum EnumSanity\\BackedEnumWithFloatType can have only \"int\" or \"string\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 71,
+                    "identifier": "enum.backingType",
+                    "message": "Backed enum EnumSanity\\BackedEnumWithBoolType can have only \"int\" or \"string\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 78,
+                    "identifier": "enum.magicMethod",
+                    "message": "Enum EnumSanity\\EnumWithSerialize contains magic method __serialize().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 78,
+                    "identifier": "return.missing",
+                    "message": "Method EnumSanity\\EnumWithSerialize::__serialize() should return array<mixed, mixed> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 81,
+                    "identifier": "enum.magicMethod",
+                    "message": "Enum EnumSanity\\EnumWithSerialize contains magic method __unserialize().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 86,
+                    "identifier": "enum.duplicateValue",
+                    "message": "Enum EnumSanity\\EnumDuplicateValue has duplicate value 1 for cases A, E.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 86,
+                    "identifier": "enum.duplicateValue",
+                    "message": "Enum EnumSanity\\EnumDuplicateValue has duplicate value 2 for cases B, C.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 105,
+                    "identifier": "enum.caseType",
+                    "message": "Enum case EnumSanity\\EnumInconsistentCaseType::FOO value 'foo' does not match the \"int\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 106,
+                    "identifier": "enum.missingCase",
+                    "message": "Enum case EnumSanity\\EnumInconsistentCaseType::BAR does not have a value but the enum is backed with the \"int\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 110,
+                    "identifier": "enum.missingCase",
+                    "message": "Enum case EnumSanity\\EnumInconsistentStringCaseType::BAR does not have a value but the enum is backed with the \"string\" type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 114,
+                    "identifier": "enum.caseWithValue",
+                    "message": "Enum EnumSanity\\EnumWithValueButNotBacked is not backed, but case FOO has value 1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-sanity.php",
+                    "line": 117,
+                    "identifier": "enum.serializable",
+                    "message": "Enum EnumSanity\\EnumMayNotSerializable cannot implement the Serializable interface.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9402",
+            "files": [
+                "Classes/data/bug-9402.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-9402.php",
+                    "line": 13,
+                    "identifier": "enum.caseType",
+                    "message": "Enum case Bug9402\\Foo::Two value 'foo' does not match the \"int\" type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11592",
+            "files": [
+                "Classes/data/bug-11592.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 14,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test contains abstract method from() from class Bug11592\\Test.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 14,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test contains abstract method tryFrom() from class Bug11592\\Test.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 19,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test2 contains abstract method from() from class Bug11592\\Test2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 19,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test2 contains abstract method tryFrom() from class Bug11592\\Test2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 22,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum Bug11592\\Test2 cannot redeclare native method cases().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 24,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test2 contains abstract method from().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 26,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test2 contains abstract method tryFrom().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 37,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum Bug11592\\BackedTest2 cannot redeclare native method cases().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 39,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum Bug11592\\BackedTest2 cannot redeclare native method from().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 39,
+                    "identifier": "parameter.missing",
+                    "message": "Method Bug11592\\BackedTest2::from() overrides method BackedEnum::from() but misses parameter #1 $value.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 41,
+                    "identifier": "enum.methodRedeclaration",
+                    "message": "Enum Bug11592\\BackedTest2 cannot redeclare native method tryFrom().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 41,
+                    "identifier": "parameter.missing",
+                    "message": "Method Bug11592\\BackedTest2::tryFrom() overrides method BackedEnum::tryFrom() but misses parameter #1 $value.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 44,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\EnumWithAbstractMethod contains abstract method foo() from class Bug11592\\EnumWithAbstractMethod.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php",
+                    "line": 46,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\EnumWithAbstractMethod contains abstract method foo().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php (in context of class Bug11592\\Test)",
+                    "line": 9,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test contains abstract method from().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-11592.php (in context of class Bug11592\\Test)",
+                    "line": 11,
+                    "identifier": "method.abstract",
+                    "message": "Enum Bug11592\\Test contains abstract method tryFrom().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13768",
+            "files": [
+                "Classes/data/bug-13768.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-13768.php",
+                    "line": 7,
+                    "identifier": "enum.caseWithValue",
+                    "message": "Enum Bug13768\\Order is not backed, but case A has value 1.5.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-13768.php",
+                    "line": 8,
+                    "identifier": "enum.caseWithValue",
+                    "message": "Enum Bug13768\\Order is not backed, but case B has value 2.5.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-13768.php",
+                    "line": 9,
+                    "identifier": "enum.caseWithValue",
+                    "message": "Enum Bug13768\\Order is not backed, but case C has value 3.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-13768.php",
+                    "line": 10,
+                    "identifier": "enum.caseWithValue",
+                    "message": "Enum Bug13768\\Order is not backed, but case D has value '3'.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-13768.php",
+                    "line": 11,
+                    "identifier": "enum.caseWithValue",
+                    "message": "Enum Bug13768\\Order is not backed, but case E has value false.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-13768.php",
+                    "line": 12,
+                    "identifier": "enum.caseWithValue",
+                    "message": "Enum Bug13768\\Order is not backed, but case F has value 1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-13768.php",
+                    "line": 20,
+                    "identifier": "enum.duplicateValue",
+                    "message": "Enum Bug13768\\Backed has duplicate value 1 for cases One, Two.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11891",
+            "files": [
+                "Classes/data/bug-11891.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-11891.php",
+                    "line": 5,
+                    "identifier": "enum.duplicateValue",
+                    "message": "Enum Bug11891\\test has duplicate value 42 for cases A, B.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

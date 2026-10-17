@@ -1,0 +1,54 @@
+{
+    "test": "Classes/AllowedSubTypesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/allowed-sub-types.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testSealed",
+            "files": [
+                "Classes/data/sealed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/sealed.php",
+                    "line": 11,
+                    "identifier": "class.disallowedSubtype",
+                    "message": "Type Sealed\\BazClass is not allowed to be a subtype of Sealed\\BaseClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/sealed.php",
+                    "line": 19,
+                    "identifier": "class.disallowedSubtype",
+                    "message": "Type Sealed\\BazClass2 is not allowed to be a subtype of Sealed\\BaseInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/sealed.php",
+                    "line": 27,
+                    "identifier": "interface.disallowedSubtype",
+                    "message": "Type Sealed\\BazInterface is not allowed to be a subtype of Sealed\\BaseInterface2.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testSealedOnConcreteClass",
+            "files": [
+                "Classes/data/sealed_concrete.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

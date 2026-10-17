@@ -1,0 +1,119 @@
+{
+    "test": "Classes/DuplicateDeclarationRuleTest",
+    "cases": [
+        {
+            "method": "testDuplicateDeclarations",
+            "files": [
+                "Classes/data/duplicate-declarations.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/duplicate-declarations.php",
+                    "line": 8,
+                    "identifier": "class.duplicateConstant",
+                    "message": "Cannot redeclare constant DuplicateDeclarations\\Foo::CONST1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/duplicate-declarations.php",
+                    "line": 10,
+                    "identifier": "class.duplicateConstant",
+                    "message": "Cannot redeclare constant DuplicateDeclarations\\Foo::CONST2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/duplicate-declarations.php",
+                    "line": 17,
+                    "identifier": "class.duplicateProperty",
+                    "message": "Cannot redeclare property DuplicateDeclarations\\Foo::$prop1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/duplicate-declarations.php",
+                    "line": 20,
+                    "identifier": "class.duplicateProperty",
+                    "message": "Cannot redeclare property DuplicateDeclarations\\Foo::$prop2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/duplicate-declarations.php",
+                    "line": 27,
+                    "identifier": "class.duplicateMethod",
+                    "message": "Cannot redeclare method DuplicateDeclarations\\Foo::func1().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/duplicate-declarations.php",
+                    "line": 35,
+                    "identifier": "class.duplicateMethod",
+                    "message": "Cannot redeclare method DuplicateDeclarations\\Foo::Func1().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDuplicatePromotedProperty",
+            "files": [
+                "Classes/data/duplicate-promoted-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/duplicate-promoted-property.php",
+                    "line": 10,
+                    "identifier": "parameter.duplicate",
+                    "message": "Redefinition of parameter $bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/duplicate-promoted-property.php",
+                    "line": 11,
+                    "identifier": "class.duplicateProperty",
+                    "message": "Cannot redeclare property DuplicatedPromotedProperty\\Foo::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/duplicate-promoted-property.php",
+                    "line": 13,
+                    "identifier": "class.duplicateProperty",
+                    "message": "Cannot redeclare property DuplicatedPromotedProperty\\Foo::$bar.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDuplicateEnumCase",
+            "files": [
+                "Classes/data/duplicate-enum-cases.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/duplicate-enum-cases.php",
+                    "line": 10,
+                    "identifier": "enum.duplicateEnumCase",
+                    "message": "Cannot redeclare enum case DuplicatedEnumCase\\Foo::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/duplicate-enum-cases.php",
+                    "line": 17,
+                    "identifier": "enum.duplicateEnumCase",
+                    "message": "Cannot redeclare enum case DuplicatedEnumCase\\Boo::BAR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/duplicate-enum-cases.php",
+                    "line": 23,
+                    "identifier": "enum.duplicateConstant",
+                    "message": "Cannot redeclare constant DuplicatedEnumCase\\Hoo::BAR.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

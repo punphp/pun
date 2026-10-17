@@ -1,0 +1,95 @@
+{
+    "test": "Api/ApiStaticCallRuleTest",
+    "cases": [
+        {
+            "method": "testRuleInPhpStan",
+            "files": [
+                "Api/data/static-call-in-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/static-call-in-phpstan.php",
+                    "line": 12,
+                    "identifier": "arguments.count",
+                    "message": "Static method PHPStan\\Command\\CommandHelper::begin() invoked with 0 parameters, 14 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/static-call-in-phpstan.php",
+                    "line": 12,
+                    "identifier": "phpstanApi.method",
+                    "message": "Calling PHPStan\\Command\\CommandHelper::begin() is not covered by backward compatibility promise. The method might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleOutOfPhpStan",
+            "files": [
+                "Api/data/static-call-out-of-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/static-call-out-of-phpstan.php",
+                    "line": 17,
+                    "identifier": "arguments.count",
+                    "message": "Static method PHPStan\\Command\\CommandHelper::begin() invoked with 0 parameters, 14 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/static-call-out-of-phpstan.php",
+                    "line": 17,
+                    "identifier": "phpstanApi.method",
+                    "message": "Calling PHPStan\\Command\\CommandHelper::begin() is not covered by backward compatibility promise. The method might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/static-call-out-of-phpstan.php",
+                    "line": 22,
+                    "identifier": "arguments.count",
+                    "message": "Static method PHPStan\\Reflection\\ParametersAcceptorSelector::selectFromArgs() invoked with 1 parameter, 3-4 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/static-call-out-of-phpstan.php",
+                    "line": 28,
+                    "identifier": "class.extendsFinal",
+                    "message": "Class App\\StaticCall\\Bar extends final class PHPStan\\Node\\InClassNode.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/static-call-out-of-phpstan.php",
+                    "line": 33,
+                    "identifier": "arguments.count",
+                    "message": "Method PHPStan\\Node\\InClassNode::__construct() invoked with 0 parameters, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/static-call-out-of-phpstan.php",
+                    "line": 33,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method PHPStan\\Node\\InClassNode::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/static-call-out-of-phpstan.php",
+                    "line": 33,
+                    "identifier": "phpstanApi.method",
+                    "message": "Calling PHPStan\\Node\\InClassNode::__construct() is not covered by backward compatibility promise. The method might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/static-call-out-of-phpstan.php",
+                    "line": 43,
+                    "identifier": "arguments.count",
+                    "message": "Method PHPStan\\Type\\ObjectType::__construct() invoked with 0 parameters, 1-3 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

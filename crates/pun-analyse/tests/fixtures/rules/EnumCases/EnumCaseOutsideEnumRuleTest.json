@@ -1,0 +1,36 @@
+{
+    "test": "EnumCases/EnumCaseOutsideEnumRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "EnumCases/data/bug-14252.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "EnumCases/data/bug-14252.php",
+                    "line": 9,
+                    "identifier": "enum.caseOutsideOfEnum",
+                    "message": "Enum case can only be used in enums.",
+                    "tip": null
+                },
+                {
+                    "file": "EnumCases/data/bug-14252.php",
+                    "line": 14,
+                    "identifier": "enum.caseOutsideOfEnum",
+                    "message": "Enum case can only be used in enums.",
+                    "tip": null
+                },
+                {
+                    "file": "EnumCases/data/bug-14252.php (in context of class Bug14252\\BazConsumer)",
+                    "line": 19,
+                    "identifier": "enum.caseOutsideOfEnum",
+                    "message": "Enum case can only be used in enums.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

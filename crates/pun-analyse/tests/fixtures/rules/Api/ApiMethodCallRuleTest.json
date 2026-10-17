@@ -1,0 +1,46 @@
+{
+    "test": "Api/ApiMethodCallRuleTest",
+    "cases": [
+        {
+            "method": "testRuleInPhpStan",
+            "files": [
+                "Api/data/method-call-in-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/method-call-in-phpstan.php",
+                    "line": 12,
+                    "identifier": "phpstanApi.method",
+                    "message": "Calling PHPStan\\Rules\\Debug\\DumpTypeRule::getNodeType() is not covered by backward compatibility promise. The method might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleOutOfPhpStan",
+            "files": [
+                "Api/data/method-call-out-of-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/method-call-out-of-phpstan.php",
+                    "line": 17,
+                    "identifier": "phpstanApi.method",
+                    "message": "Calling PHPStan\\Rules\\Debug\\DumpTypeRule::getNodeType() is not covered by backward compatibility promise. The method might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/method-call-out-of-phpstan.php",
+                    "line": 27,
+                    "identifier": "phpstanApi.method",
+                    "message": "Calling PHPStan\\Type\\Php\\ArrayKeyDynamicReturnTypeExtension::isFunctionSupported() is not covered by backward compatibility promise. The method might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

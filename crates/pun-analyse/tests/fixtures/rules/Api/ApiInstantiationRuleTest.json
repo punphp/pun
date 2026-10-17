@@ -1,0 +1,102 @@
+{
+    "test": "Api/ApiInstantiationRuleTest",
+    "cases": [
+        {
+            "method": "testRuleInPhpStan",
+            "files": [
+                "Api/data/new-in-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/new-in-phpstan.php",
+                    "line": 14,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class PHPStan\\NewIn\\Nonexistent not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Api/data/new-in-phpstan.php",
+                    "line": 17,
+                    "identifier": "arguments.count",
+                    "message": "Class PHPStan\\Type\\FileTypeMapper constructor invoked with 0 parameters, 10 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/new-in-phpstan.php",
+                    "line": 17,
+                    "identifier": "phpstanApi.constructor",
+                    "message": "Creating new PHPStan\\Type\\FileTypeMapper is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/new-in-phpstan.php",
+                    "line": 18,
+                    "identifier": "arguments.count",
+                    "message": "Class PHPStan\\DependencyInjection\\NeonAdapter constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/new-in-phpstan.php",
+                    "line": 18,
+                    "identifier": "phpstanApi.constructor",
+                    "message": "Creating new PHPStan\\DependencyInjection\\NeonAdapter is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleOutOfPhpStan",
+            "files": [
+                "Api/data/new-out-of-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/new-out-of-phpstan.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class AppNew\\Nonexistent not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Api/data/new-out-of-phpstan.php",
+                    "line": 18,
+                    "identifier": "arguments.count",
+                    "message": "Class PHPStan\\Type\\FileTypeMapper constructor invoked with 0 parameters, 10 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/new-out-of-phpstan.php",
+                    "line": 18,
+                    "identifier": "phpstanApi.constructor",
+                    "message": "Creating new PHPStan\\Type\\FileTypeMapper is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/new-out-of-phpstan.php",
+                    "line": 19,
+                    "identifier": "arguments.count",
+                    "message": "Class PHPStan\\DependencyInjection\\NeonAdapter constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/new-out-of-phpstan.php",
+                    "line": 19,
+                    "identifier": "phpstanApi.constructor",
+                    "message": "Creating new PHPStan\\DependencyInjection\\NeonAdapter is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                },
+                {
+                    "file": "Api/data/new-out-of-phpstan.php",
+                    "line": 20,
+                    "identifier": "phpstanApi.constructor",
+                    "message": "Creating new PHPStan\\Type\\StringAlwaysAcceptingObjectWithToStringType is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

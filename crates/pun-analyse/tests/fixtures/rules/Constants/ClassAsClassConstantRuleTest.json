@@ -1,0 +1,29 @@
+{
+    "test": "Constants/ClassAsClassConstantRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Constants/data/class-as-class-constant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/class-as-class-constant.php",
+                    "line": 9,
+                    "identifier": "classConstant.class",
+                    "message": "A class constant must not be called 'class'; it is reserved for class name fetching.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/class-as-class-constant.php",
+                    "line": 16,
+                    "identifier": "classConstant.class",
+                    "message": "A class constant must not be called 'class'; it is reserved for class name fetching.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

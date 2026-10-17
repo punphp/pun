@@ -1,0 +1,22 @@
+{
+    "test": "Functions/ArrowFunctionAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/arrow-function-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/arrow-function-attributes.php",
+                    "line": 28,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ArrowFunctionAttributes\\Foo does not have the function target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

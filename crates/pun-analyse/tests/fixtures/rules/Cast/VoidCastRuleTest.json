@@ -1,0 +1,45 @@
+{
+    "test": "Cast/VoidCastRuleTest",
+    "cases": [
+        {
+            "method": "testPrintRule",
+            "files": [
+                "Cast/data/void-cast.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Cast/data/void-cast.php",
+                    "line": 5,
+                    "identifier": "cast.void",
+                    "message": "The (void) cast cannot be used within an expression.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/void-cast.php",
+                    "line": 6,
+                    "identifier": "cast.void",
+                    "message": "The (void) cast cannot be used within an expression.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/void-cast.php",
+                    "line": 7,
+                    "identifier": "cast.void",
+                    "message": "The (void) cast cannot be used within an expression.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testSupport",
+            "files": [
+                "Cast/data/void-cast-support.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

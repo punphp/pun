@@ -1,0 +1,43 @@
+{
+    "test": "Classes/TraitAttributeClassRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/non-class-attribute-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/non-class-attribute-class.php",
+                    "line": 5,
+                    "identifier": "attribute.interface",
+                    "message": "Interface cannot be an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/non-class-attribute-class.php",
+                    "line": 11,
+                    "identifier": "attribute.trait",
+                    "message": "Trait cannot be an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/non-class-attribute-class.php",
+                    "line": 23,
+                    "identifier": "attribute.abstract",
+                    "message": "Abstract class NonClassAttributeClass\\Lorem cannot be an Attribute class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/non-class-attribute-class.php",
+                    "line": 29,
+                    "identifier": "attribute.constructorNotPublic",
+                    "message": "Attribute class NonClassAttributeClass\\Ipsum constructor must be public.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

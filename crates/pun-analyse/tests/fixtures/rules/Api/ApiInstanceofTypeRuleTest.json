@@ -1,0 +1,43 @@
+{
+    "test": "Api/ApiInstanceofTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Api/data/instanceof-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/instanceof-type.php",
+                    "line": 20,
+                    "identifier": "phpstanApi.instanceofType",
+                    "message": "Doing instanceof PHPStan\\Type\\TypeWithClassName is error-prone and deprecated. Use Type::getObjectClassNames() or Type::getObjectClassReflections() instead.",
+                    "tip": "Learn more: https://phpstan.org/blog/why-is-instanceof-type-wrong-and-getting-deprecated"
+                },
+                {
+                    "file": "Api/data/instanceof-type.php",
+                    "line": 24,
+                    "identifier": "phpstanApi.instanceofType",
+                    "message": "Doing instanceof phpstan\\type\\typewithclassname is error-prone and deprecated. Use Type::getObjectClassNames() or Type::getObjectClassReflections() instead.",
+                    "tip": "Learn more: https://phpstan.org/blog/why-is-instanceof-type-wrong-and-getting-deprecated"
+                },
+                {
+                    "file": "Api/data/instanceof-type.php",
+                    "line": 36,
+                    "identifier": "phpstanApi.instanceofType",
+                    "message": "Doing instanceof PHPStan\\Type\\TypeWithClassName is error-prone and deprecated. Use Type::getObjectClassNames() or Type::getObjectClassReflections() instead.",
+                    "tip": "Learn more: https://phpstan.org/blog/why-is-instanceof-type-wrong-and-getting-deprecated"
+                },
+                {
+                    "file": "Api/data/instanceof-type.php",
+                    "line": 40,
+                    "identifier": "phpstanApi.instanceofType",
+                    "message": "Doing instanceof PHPStan\\Type\\Generic\\GenericObjectType is error-prone and deprecated.",
+                    "tip": "Learn more: https://phpstan.org/blog/why-is-instanceof-type-wrong-and-getting-deprecated"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,896 @@
+{
+    "test": "Classes/InstantiationRuleTest",
+    "cases": [
+        {
+            "method": "testInstantiation",
+            "files": [
+                "Classes/data/instantiation.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 15,
+                    "identifier": "arguments.count",
+                    "message": "Class TestInstantiation\\InstantiatingClass constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 17,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 18,
+                    "identifier": "class.noParent",
+                    "message": "TestInstantiation\\InstantiatingClass::doFoo() calls new parent but TestInstantiation\\InstantiatingClass does not extend any class.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 24,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\FooInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 25,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\FooInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 26,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\FooInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 27,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\FooBarInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 28,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\BarInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 29,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\LoremInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 30,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\IpsumInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 33,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Test not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 35,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\ClassWithVariadicConstructor not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 36,
+                    "identifier": "arguments.count",
+                    "message": "Class DatePeriod constructor invoked with 0 parameters, 1-4 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 39,
+                    "identifier": "outOfClass.self",
+                    "message": "Using self outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 40,
+                    "identifier": "outOfClass.static",
+                    "message": "Using static outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 41,
+                    "identifier": "outOfClass.parent",
+                    "message": "Using parent outside of class scope.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 43,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\BarInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 44,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\BarInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 57,
+                    "identifier": "arguments.count",
+                    "message": "Class TestInstantiation\\InstantiatingClass constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 64,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\FOOInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 65,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\BARInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 66,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestInstantiation\\BARInstantiation not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 94,
+                    "identifier": "arguments.count",
+                    "message": "Class TestInstantiation\\ClassExtendsProtectedConstructorClass constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 104,
+                    "identifier": "arguments.count",
+                    "message": "Class TestInstantiation\\ExtendsPrivateConstructorClass constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 104,
+                    "identifier": "new.privateConstructor",
+                    "message": "Cannot instantiate class TestInstantiation\\ExtendsPrivateConstructorClass via private constructor TestInstantiation\\PrivateConstructorClass::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 110,
+                    "identifier": "new.privateConstructor",
+                    "message": "Cannot instantiate class TestInstantiation\\PrivateConstructorClass via private constructor TestInstantiation\\PrivateConstructorClass::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 111,
+                    "identifier": "new.protectedConstructor",
+                    "message": "Cannot instantiate class TestInstantiation\\ProtectedConstructorClass via protected constructor TestInstantiation\\ProtectedConstructorClass::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 112,
+                    "identifier": "new.protectedConstructor",
+                    "message": "Cannot instantiate class TestInstantiation\\ClassExtendsProtectedConstructorClass via protected constructor TestInstantiation\\ProtectedConstructorClass::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 113,
+                    "identifier": "new.privateConstructor",
+                    "message": "Cannot instantiate class TestInstantiation\\ExtendsPrivateConstructorClass via private constructor TestInstantiation\\PrivateConstructorClass::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 127,
+                    "identifier": "class.nameCase",
+                    "message": "Class TestInstantiation\\NoConstructor referenced with incorrect case: TestInstantiation\\NOCONSTRUCTOR.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 169,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class UndefinedClass1 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 172,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class UndefinedClass2 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 179,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class UndefinedClass3 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 190,
+                    "identifier": "new.noConstructor",
+                    "message": "Class TestInstantiation\\FinalClass does not have a constructor and must be instantiated without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 206,
+                    "identifier": "arguments.count",
+                    "message": "Class TestInstantiation\\ClassWithFinalConstructor constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 229,
+                    "identifier": "arguments.count",
+                    "message": "Class TestInstantiation\\ConstructorComingFromAnInterface constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 257,
+                    "identifier": "arguments.count",
+                    "message": "Class TestInstantiation\\AbstractConstructor constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation.php",
+                    "line": 273,
+                    "identifier": "arguments.count",
+                    "message": "Class TestInstantiation\\ClassExtendingAbstractConstructor constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testSoap",
+            "files": [
+                "Classes/data/instantiation-soap.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClassExists",
+            "files": [
+                "Classes/data/instantiation-class-exists.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3404",
+            "files": [
+                "Classes/data/bug-3404.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testOldStyleConstructorOnPhp8",
+            "files": [
+                "Classes/data/php80-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/php80-constructor.php",
+                    "line": 13,
+                    "identifier": "new.noConstructor",
+                    "message": "Class OldStyleConstructorOnPhp8 does not have a constructor and must be instantiated without any parameters.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/php80-constructor.php",
+                    "line": 20,
+                    "identifier": "new.noConstructor",
+                    "message": "Class OldStyleConstructorOnPhp8 does not have a constructor and must be instantiated without any parameters.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4030",
+            "files": [
+                "Classes/data/bug-4030.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPromotedProperties",
+            "files": [
+                "Classes/data/instantiation-promoted-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/instantiation-promoted-properties.php",
+                    "line": 40,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $intProp (int) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4056",
+            "files": [
+                "Classes/data/bug-4056.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNamedArguments",
+            "files": [
+                "Classes/data/instantiation-named-arguments.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/instantiation-named-arguments.php",
+                    "line": 15,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $j (int) in call to InstantiationNamedArguments\\Foo constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/instantiation-named-arguments.php",
+                    "line": 16,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $z in call to InstantiationNamedArguments\\Foo constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4471",
+            "files": [
+                "Classes/data/bug-4471.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-4471.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $baz of anonymous function has invalid type Bug4471\\Baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-4471.php",
+                    "line": 19,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug4471\\Baz not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/bug-4471.php",
+                    "line": 24,
+                    "identifier": "new.abstract",
+                    "message": "Instantiated class Bug4471\\Foo is abstract.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-4471.php",
+                    "line": 27,
+                    "identifier": "new.interface",
+                    "message": "Cannot instantiate interface Bug4471\\Bar.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug1711",
+            "files": [
+                "Classes/data/bug-1711.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3425",
+            "files": [
+                "Classes/data/bug-3425.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5002",
+            "files": [
+                "Classes/data/bug-5002.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-5002.php",
+                    "line": 12,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class \\Test\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/bug-5002.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class \\Test\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4681",
+            "files": [
+                "Classes/data/bug-4681.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallable",
+            "files": [
+                "Classes/data/first-class-instantiation-callable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/first-class-instantiation-callable.php",
+                    "line": 10,
+                    "identifier": "callable.notSupported",
+                    "message": "Cannot create callable from the new operator.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnumInstantiation",
+            "files": [
+                "Classes/data/enum-instantiation.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/enum-instantiation.php",
+                    "line": 9,
+                    "identifier": "new.enum",
+                    "message": "Cannot instantiate enum EnumInstantiation\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-instantiation.php",
+                    "line": 14,
+                    "identifier": "new.enum",
+                    "message": "Cannot instantiate enum EnumInstantiation\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/enum-instantiation.php",
+                    "line": 21,
+                    "identifier": "new.enum",
+                    "message": "Cannot instantiate enum EnumInstantiation\\Foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6370",
+            "files": [
+                "Classes/data/bug-6370.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5553",
+            "files": [
+                "Classes/data/bug-5553.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7048",
+            "files": [
+                "Classes/data/bug-7048.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-7048.php",
+                    "line": 18,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $end (int|TEnd of DateTimeInterface) in call to DatePeriod constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-7048.php",
+                    "line": 21,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $recurrences in call to DatePeriod constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-7048.php",
+                    "line": 24,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $start (string) in call to DatePeriod constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-7048.php",
+                    "line": 25,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $isostr in call to DatePeriod constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7594",
+            "files": [
+                "Classes/data/bug-7594.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3311a",
+            "files": [
+                "Classes/data/bug-3311a.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7574",
+            "files": [
+                "Classes/data/bug-7574.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9946",
+            "files": [
+                "Classes/data/bug-9946.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10324On80",
+            "files": [
+                "Classes/data/bug-10324.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPhpstanInternalClass",
+            "files": [
+                "Classes/data/phpstan-internal-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 14,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 16,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 19,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 25,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 28,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 30,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 34,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 56,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Rector class: RectorPrefix202302\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 59,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHP-Scoper class: _PhpScoper19ae93be897e\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 62,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPUnit class: PHPUnitPHAR\\SebastianBergmann\\Diff\\Exception.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\SebastianBergmann\\Diff\\Exception?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 73,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Box class: _HumbugBox02f3b3909847\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9659",
+            "files": [
+                "Classes/data/bug-9659.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10248",
+            "files": [
+                "Classes/data/bug-10248.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-10248.php",
+                    "line": 6,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $value of method Bug10248\\A::__construct() has invalid type Bug10248\\DateTimeInterface.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11815",
+            "files": [
+                "Classes/data/bug-11815.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClassString",
+            "files": [
+                "Classes/data/class-string.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInternalConstructor",
+            "files": [
+                "Classes/data/internal-constructor.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12951",
+            "files": [
+                "InternalTag/data/bug-12951-constructor.php"
+            ],
+            "scan": [
+                "InternalTag/data/bug-12951-define.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNamedArgumentsPhpversion",
+            "files": [
+                "Classes/data/named-arguments-phpversion.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14097",
+            "files": [
+                "Classes/data/bug-14097.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13440",
+            "files": [
+                "Classes/data/bug-13440.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12363",
+            "files": [
+                "Methods/data/bug-12363.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNewStaticWithConsistentConstructor",
+            "files": [
+                "Classes/data/instantiation-new-static-consistent-constructor.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14251",
+            "files": [
+                "Classes/data/bug-14251.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-14251.php",
+                    "line": 9,
+                    "identifier": "new.trait",
+                    "message": "Cannot instantiate trait Bug14251\\InternalTrait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11006",
+            "files": [
+                "Classes/data/bug-11006.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConstantParameterCheckInstantiation",
+            "files": [
+                "Classes/data/constant-parameter-check-instantiation.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14138",
+            "files": [
+                "Classes/data/bug-14138.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14499",
+            "files": [
+                "Classes/data/bug-14499.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14887",
+            "files": [
+                "Classes/data/bug-14887.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInstantiationWithNonObjectType",
+            "files": [
+                "Classes/data/instantiation-non-object.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

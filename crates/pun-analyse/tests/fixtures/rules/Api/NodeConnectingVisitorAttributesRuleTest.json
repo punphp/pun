@@ -1,0 +1,29 @@
+{
+    "test": "Api/NodeConnectingVisitorAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Api/data/node-connecting-visitor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/node-connecting-visitor.php",
+                    "line": 22,
+                    "identifier": "phpParser.nodeConnectingAttribute",
+                    "message": "Node attribute 'parent' is no longer available.",
+                    "tip": "See: https://phpstan.org/blog/preprocessing-ast-for-custom-rules"
+                },
+                {
+                    "file": "Api/data/node-connecting-visitor.php",
+                    "line": 24,
+                    "identifier": "phpParser.nodeConnectingAttribute",
+                    "message": "Node attribute 'parent' is no longer available.",
+                    "tip": "See: https://phpstan.org/blog/preprocessing-ast-for-custom-rules"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

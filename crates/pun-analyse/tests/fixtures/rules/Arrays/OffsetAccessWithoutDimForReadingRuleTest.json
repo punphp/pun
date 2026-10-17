@@ -1,0 +1,136 @@
+{
+    "test": "Arrays/OffsetAccessWithoutDimForReadingRuleTest",
+    "cases": [
+        {
+            "method": "testBug5290",
+            "files": [
+                "Arrays/data/bug-5290.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testOffsetAccessWithoutDimForReading",
+            "files": [
+                "Arrays/data/offset-access-without-dim-for-reading.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 7,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 8,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 9,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 12,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 13,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 14,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 14,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 17,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 21,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 22,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 23,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 24,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 27,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 28,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 29,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/offset-access-without-dim-for-reading.php",
+                    "line": 30,
+                    "identifier": "offsetAccess.noDim",
+                    "message": "Cannot use [] for reading.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

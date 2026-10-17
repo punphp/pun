@@ -1,0 +1,53 @@
+{
+    "test": "Api/ApiClassExtendsRuleTest",
+    "cases": [
+        {
+            "method": "testRuleInPhpStan",
+            "files": [
+                "Api/data/class-extends-in-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/class-extends-in-phpstan.php",
+                    "line": 8,
+                    "identifier": "class.extendsFinal",
+                    "message": "Class PHPStan\\ClassExtends\\Foo extends final class PHPStan\\Type\\FileTypeMapper.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-extends-in-phpstan.php",
+                    "line": 8,
+                    "identifier": "phpstanApi.class",
+                    "message": "Extending PHPStan\\Type\\FileTypeMapper is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleOutOfPhpStan",
+            "files": [
+                "Api/data/class-extends-out-of-phpstan.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/class-extends-out-of-phpstan.php",
+                    "line": 9,
+                    "identifier": "class.extendsFinal",
+                    "message": "Class AppClassExtends\\Foo extends final class PHPStan\\Type\\FileTypeMapper.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/class-extends-out-of-phpstan.php",
+                    "line": 9,
+                    "identifier": "phpstanApi.class",
+                    "message": "Extending PHPStan\\Type\\FileTypeMapper is not covered by backward compatibility promise. The class might change in a minor PHPStan version.",
+                    "tip": "If you think it should be covered by backward compatibility promise, open a discussion:\n   https://github.com/phpstan/phpstan/discussions\n\n   See also:\n   https://phpstan.org/developing-extensions/backward-compatibility-promise"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

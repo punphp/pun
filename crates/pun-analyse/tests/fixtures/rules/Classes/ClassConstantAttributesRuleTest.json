@@ -1,0 +1,22 @@
+{
+    "test": "Classes/ClassConstantAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/class-constant-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/class-constant-attributes.php",
+                    "line": 26,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ClassConstantAttributes\\Foo does not have the class constant target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

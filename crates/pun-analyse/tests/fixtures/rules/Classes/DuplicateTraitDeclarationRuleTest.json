@@ -1,0 +1,109 @@
+{
+    "test": "Classes/DuplicateTraitDeclarationRuleTest",
+    "cases": [
+        {
+            "method": "testBug14250",
+            "files": [
+                "Classes/data/bug-14250.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-14250.php (in context of class Bug14250\\Bar)",
+                    "line": 23,
+                    "identifier": "classConstant.value",
+                    "message": "Constant Bug14250\\Bar::CONST1 with value 1 overriding constant Bug14250\\TraitWithDuplicateConstants::CONST1 with different value 2 should have the same value.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250.php (in context of class Bug14250\\Bar)",
+                    "line": 24,
+                    "identifier": "trait.duplicateConstant",
+                    "message": "Cannot redeclare constant Bug14250\\TraitWithDuplicateConstants::CONST1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250.php (in context of class Bug14250\\Bar)",
+                    "line": 26,
+                    "identifier": "classConstant.value",
+                    "message": "Constant Bug14250\\Bar::CONST2 with value 2 overriding constant Bug14250\\TraitWithDuplicateConstants::CONST2 with different value 1 should have the same value.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250.php (in context of class Bug14250\\Bar)",
+                    "line": 26,
+                    "identifier": "trait.duplicateConstant",
+                    "message": "Cannot redeclare constant Bug14250\\TraitWithDuplicateConstants::CONST2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250.php (in context of class Bug14250\\Baz)",
+                    "line": 41,
+                    "identifier": "trait.duplicateProperty",
+                    "message": "Cannot redeclare property Bug14250\\TraitWithDuplicateProperties::$prop1.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250.php (in context of class Bug14250\\Baz)",
+                    "line": 44,
+                    "identifier": "trait.duplicateProperty",
+                    "message": "Cannot redeclare property Bug14250\\TraitWithDuplicateProperties::$prop2.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250.php (in context of class Bug14250\\Foo)",
+                    "line": 11,
+                    "identifier": "trait.duplicateMethod",
+                    "message": "Cannot redeclare method Bug14250\\MyTrait::doSomething().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250.php (in context of class Bug14250\\Qux)",
+                    "line": 59,
+                    "identifier": "trait.duplicateMethod",
+                    "message": "Cannot redeclare method Bug14250\\TraitWithDuplicateMethods::func1().",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250.php (in context of class Bug14250\\Qux)",
+                    "line": 69,
+                    "identifier": "trait.duplicateMethod",
+                    "message": "Cannot redeclare method Bug14250\\TraitWithDuplicateMethods::Func1().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDuplicatePromotedProperty",
+            "files": [
+                "Classes/data/bug-14250-promoted-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-14250-promoted-properties.php (in context of class Bug14250PromotedProperties\\Foo)",
+                    "line": 9,
+                    "identifier": "parameter.duplicate",
+                    "message": "Redefinition of parameter $bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250-promoted-properties.php (in context of class Bug14250PromotedProperties\\Foo)",
+                    "line": 10,
+                    "identifier": "trait.duplicateProperty",
+                    "message": "Cannot redeclare property Bug14250PromotedProperties\\TraitWithDuplicatePromotedProperties::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/bug-14250-promoted-properties.php (in context of class Bug14250PromotedProperties\\Foo)",
+                    "line": 12,
+                    "identifier": "trait.duplicateProperty",
+                    "message": "Cannot redeclare property Bug14250PromotedProperties\\TraitWithDuplicatePromotedProperties::$bar.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

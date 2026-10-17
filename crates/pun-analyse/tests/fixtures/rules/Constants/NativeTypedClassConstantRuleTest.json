@@ -1,0 +1,14 @@
+{
+    "test": "Constants/NativeTypedClassConstantRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Constants/data/native-typed-class-constant.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

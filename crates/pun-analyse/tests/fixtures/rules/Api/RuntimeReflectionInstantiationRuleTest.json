@@ -1,0 +1,127 @@
+{
+    "test": "Api/RuntimeReflectionInstantiationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Api/data/runtime-reflection-instantiation.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 27,
+                    "identifier": "return.missing",
+                    "message": "Method RuntimeReflectionInstantiation\\Bar::getClass() should return class-string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 32,
+                    "identifier": "return.missing",
+                    "message": "Method RuntimeReflectionInstantiation\\Bar::isMethodSupported() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 37,
+                    "identifier": "return.missing",
+                    "message": "Method RuntimeReflectionInstantiation\\Bar::getTypeFromMethodCall() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 43,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionMethod is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 44,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionClass is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 45,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionClassConstant is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 48,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionZendExtension is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 49,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionExtension is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 50,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionFunction is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 51,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionObject is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 52,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionParameter is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 53,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionProperty is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 54,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionGenerator is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 55,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionFiber is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 56,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionEnum is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                },
+                {
+                    "file": "Api/data/runtime-reflection-instantiation.php",
+                    "line": 57,
+                    "identifier": "phpstanApi.runtimeReflection",
+                    "message": "Creating new ReflectionEnumBackedCase is a runtime reflection concept that might not work in PHPStan because it uses fully static reflection engine. Use objects retrieved from ReflectionProvider instead.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,2612 @@
+{
+    "test": "Functions/CallToFunctionParametersRuleTest",
+    "cases": [
+        {
+            "method": "testCallToFunctionWithoutParameters",
+            "files": [
+                "Functions/data/existing-function.php"
+            ],
+            "scan": [
+                "Functions/data/existing-function-definition.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToFunctionWithIncorrectParameters",
+            "files": [
+                "Functions/data/incorrect-call-to-function.php"
+            ],
+            "scan": [
+                "Functions/data/incorrect-call-to-function-definition.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/incorrect-call-to-function.php",
+                    "line": 5,
+                    "identifier": "arguments.count",
+                    "message": "Function IncorrectCallToFunction\\foo invoked with 1 parameter, 2 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testcallToFunctionWithCorrectParameters",
+            "files": [
+                "Functions/data/call-functions.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToFunctionWithOptionalParameters",
+            "files": [
+                "Functions/data/call-to-function-with-optional-parameters.php"
+            ],
+            "scan": [
+                "Functions/data/call-to-function-with-optional-parameters-definition.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/call-to-function-with-optional-parameters.php",
+                    "line": 15,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallToFunctionWithDynamicParameters",
+            "files": [
+                "Functions/data/function-with-variadic-parameters.php"
+            ],
+            "scan": [
+                "Functions/data/function-with-variadic-parameters-definition.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/function-with-variadic-parameters.php",
+                    "line": 6,
+                    "identifier": "arguments.count",
+                    "message": "Function FunctionWithVariadicParameters\\foo invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-with-variadic-parameters.php",
+                    "line": 18,
+                    "identifier": "arguments.count",
+                    "message": "Function FunctionWithVariadicParameters\\bar invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallToFunctionWithNullableDynamicParameters",
+            "files": [
+                "Functions/data/function-with-nullable-variadic-parameters.php"
+            ],
+            "scan": [
+                "Functions/data/function-with-nullable-variadic-parameters-definition.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/function-with-nullable-variadic-parameters.php",
+                    "line": 6,
+                    "identifier": "arguments.count",
+                    "message": "Function FunctionWithNullableVariadicParameters\\foo invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallToFunctionWithDynamicIterableParameters",
+            "files": [
+                "Functions/data/function-with-variadic-parameters-7.1.php"
+            ],
+            "scan": [
+                "Functions/data/function-with-variadic-parameters-definition.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToArrayUnique",
+            "files": [
+                "Functions/data/call-to-array-unique.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToArrayMapVariadic",
+            "files": [
+                "Functions/data/call-to-array-map-unique.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToWeirdFunctions",
+            "files": [
+                "Functions/data/call-to-weird-functions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/call-to-weird-functions.php",
+                    "line": 3,
+                    "identifier": "arguments.count",
+                    "message": "Function implode invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-to-weird-functions.php",
+                    "line": 8,
+                    "identifier": "arguments.count",
+                    "message": "Function strtok invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-to-weird-functions.php",
+                    "line": 12,
+                    "identifier": "arguments.count",
+                    "message": "Function fputcsv invoked with 1 parameter, 2-6 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-to-weird-functions.php",
+                    "line": 16,
+                    "identifier": "arguments.count",
+                    "message": "Function imagepng invoked with 0 parameters, 1-4 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-to-weird-functions.php",
+                    "line": 32,
+                    "identifier": "arguments.count",
+                    "message": "Function mysqli_fetch_all invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-to-weird-functions.php",
+                    "line": 33,
+                    "identifier": "arguments.count",
+                    "message": "Class mysqli_result constructor invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-to-weird-functions.php",
+                    "line": 34,
+                    "identifier": "arguments.count",
+                    "message": "Class mysqli_result constructor invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-to-weird-functions.php",
+                    "line": 35,
+                    "identifier": "arguments.count",
+                    "message": "Class mysqli_result constructor invoked with 0 parameters, 1-2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-to-weird-functions.php",
+                    "line": 38,
+                    "identifier": "arguments.count",
+                    "message": "Function openssl_open invoked with 4 parameters, 5-6 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnpackOnAfter711",
+            "files": [
+                "Functions/data/unpack.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/unpack.php",
+                    "line": 3,
+                    "identifier": "arguments.count",
+                    "message": "Function unpack invoked with 0 parameters, 2-3 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPassingNonVariableToParameterPassedByReference",
+            "files": [
+                "Functions/data/passed-by-reference.php"
+            ],
+            "scan": [
+                "Functions/data/passed-by-reference.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/passed-by-reference.php",
+                    "line": 36,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: a",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug757",
+            "files": [
+                "Functions/data/bug-757.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13711",
+            "files": [
+                "Functions/data/bug-13711.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testImplodeOnPhp74",
+            "files": [
+                "Functions/data/implode-74.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testImplodeOnLessThanPhp74",
+            "files": [
+                "Functions/data/implode-74.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testImplodeNamedParameters",
+            "files": [
+                "Functions/data/implode-named-parameters.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/implode-named-parameters.php",
+                    "line": 6,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $separator (string) in call to function implode.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/implode-named-parameters.php",
+                    "line": 7,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $separator (string) in call to function join.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testVariableIsNotNullAfterSeriesOfConditions",
+            "files": [
+                "Functions/data/variable-is-not-null-after-conditions.php"
+            ],
+            "scan": [
+                "Functions/data/variable-is-not-null-after-conditions.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/variable-is-not-null-after-conditions.php",
+                    "line": 19,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $bar",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/variable-is-not-null-after-conditions.php",
+                    "line": 21,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $baz",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnionIterableTypeShouldAcceptTypeFromOtherTypes",
+            "files": [
+                "Functions/data/union-iterable-type-issue.php"
+            ],
+            "scan": [
+                "Functions/data/union-iterable-type-issue.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToFunctionInForeachCondition",
+            "files": [
+                "Functions/data/foreach-condition.php"
+            ],
+            "scan": [
+                "Functions/data/foreach-condition.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToFunctionInDoWhileLoop",
+            "files": [
+                "Functions/data/do-while-loop.php"
+            ],
+            "scan": [
+                "Functions/data/do-while-loop.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRemoveArrayFromIterable",
+            "files": [
+                "Functions/data/remove-array-from-iterable.php"
+            ],
+            "scan": [
+                "Functions/data/remove-array-from-iterable.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/remove-array-from-iterable.php",
+                    "line": 6,
+                    "identifier": "return.missing",
+                    "message": "Function RemoveArrayFromIterable\\test() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/remove-array-from-iterable.php",
+                    "line": 12,
+                    "identifier": "return.missing",
+                    "message": "Function RemoveArrayFromIterable\\test2() should return array but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnpackOperator",
+            "files": [
+                "Functions/data/unpack-operator.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/unpack-operator.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method UnpackOperator\\Bar::__toString() should return string but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFputCsv",
+            "files": [
+                "Functions/data/fputcsv-fields-parameter.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPutCsvWithStringable",
+            "files": [
+                "Functions/data/fputcsv-fields-parameter-php8.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFunctionWithNumericParameterThatCreatedByAddition",
+            "files": [
+                "Functions/data/function-with-int-parameter-that-created-by-addition.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/function-with-int-parameter-that-created-by-addition.php",
+                    "line": 13,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/function-with-int-parameter-that-created-by-addition.php",
+                    "line": 33,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testWhileLoopLookForAssignsInBranchesVariableExistence",
+            "files": [
+                "Functions/data/while-loop-look-for-assigns.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallableOrClosureProblem",
+            "files": [
+                "Functions/data/callable-or-closure-problem.php"
+            ],
+            "scan": [
+                "Functions/data/callable-or-closure-problem.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericFunction",
+            "files": [
+                "Functions/data/call-generic-function.php"
+            ],
+            "scan": [
+                "Functions/data/call-generic-function.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/call-generic-function.php",
+                    "line": 12,
+                    "identifier": "return.missing",
+                    "message": "Function CallGenericFunction\\f() should return array<A> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/call-generic-function.php",
+                    "line": 23,
+                    "identifier": "return.missing",
+                    "message": "Function CallGenericFunction\\g() should return A of DateTime but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNamedArguments",
+            "files": [
+                "Functions/data/named-arguments.php"
+            ],
+            "scan": [
+                "Functions/data/named-arguments-define.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/named-arguments.php",
+                    "line": 7,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $j (int) in call to function FunctionNamedArguments\\foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/named-arguments.php",
+                    "line": 8,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $z in call to function FunctionNamedArguments\\foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/named-arguments.php",
+                    "line": 14,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $a in call to function array_merge.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/named-arguments.php",
+                    "line": 19,
+                    "identifier": "argument.duplicate",
+                    "message": "Named parameter $var overwrites previous argument.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNamedArgumentsAfterUnpacking",
+            "files": [
+                "Functions/data/named-arguments-after-unpacking.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/named-arguments-after-unpacking.php",
+                    "line": 14,
+                    "identifier": "argument.duplicate",
+                    "message": "Argument for parameter $b has already been passed.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4514",
+            "files": [
+                "Functions/data/bug-4514.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13719",
+            "files": [
+                "Functions/data/bug-13719.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-13719.php",
+                    "line": 20,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $greetings in call to function Bug13719\\non_variadic.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-13719.php",
+                    "line": 27,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $greetings in call to function Bug13719\\implicit_variadic.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4530",
+            "files": [
+                "Functions/data/bug-4530.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2268",
+            "files": [
+                "Functions/data/bug-2268.php"
+            ],
+            "scan": [
+                "Functions/data/bug-2268.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2434",
+            "files": [
+                "Functions/data/bug-2434.php"
+            ],
+            "scan": [
+                "Functions/data/bug-2434.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2846",
+            "files": [
+                "Functions/data/bug-2846.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3608",
+            "files": [
+                "Functions/data/bug-3608.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3631",
+            "files": [
+                "Functions/data/bug-3631.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3920",
+            "files": [
+                "Functions/data/bug-3920.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugNumberFormatNamedArguments",
+            "files": [
+                "Functions/data/number-format-named-arguments.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayReduceCallback",
+            "files": [
+                "Functions/data/array_reduce.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayReduceArrowFunctionCallback",
+            "files": [
+                "Functions/data/array_reduce_arrow.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayWalkCallback",
+            "files": [
+                "Functions/data/array_walk.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayWalkArrowFunctionCallback",
+            "files": [
+                "Functions/data/array_walk_arrow.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayUdiffCallback",
+            "files": [
+                "Functions/data/array_udiff.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPregReplaceCallback",
+            "files": [
+                "Functions/data/preg_replace_callback.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMbEregReplaceCallback",
+            "files": [
+                "Functions/data/mb_ereg_replace_callback.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUasortCallback",
+            "files": [
+                "Functions/data/uasort.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUasortArrowFunctionCallback",
+            "files": [
+                "Functions/data/uasort_arrow.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUsortCallback",
+            "files": [
+                "Functions/data/usort.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUsortArrowFunctionCallback",
+            "files": [
+                "Functions/data/usort_arrow.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUksortCallback",
+            "files": [
+                "Functions/data/uksort.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUksortArrowFunctionCallback",
+            "files": [
+                "Functions/data/uksort_arrow.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testVaryingAcceptor",
+            "files": [
+                "Functions/data/varying-acceptor.php"
+            ],
+            "scan": [
+                "Functions/data/varying-acceptor.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3660",
+            "files": [
+                "Functions/data/bug-3660.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testExplode",
+            "files": [
+                "Functions/data/explode-80.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testProcOpen",
+            "files": [
+                "Functions/data/proc_open.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5609",
+            "files": [
+                "Functions/data/bug-5609.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayMapMultiple#0",
+            "files": [
+                "Functions/data/array_map_multiple.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayMapMultiple#1",
+            "files": [
+                "Functions/data/array_map_multiple.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayFilterCallback#0",
+            "files": [
+                "Functions/data/array_filter_callback.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayFilterCallback#1",
+            "files": [
+                "Functions/data/array_filter_callback.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayAllCallback",
+            "files": [
+                "Functions/data/array_all.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayAnyCallback",
+            "files": [
+                "Functions/data/array_any.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayFindCallback",
+            "files": [
+                "Functions/data/array_find.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/array_find.php",
+                    "line": 49,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $key",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testArrayFindKeyCallback",
+            "files": [
+                "Functions/data/array_find_key.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5356",
+            "files": [
+                "Functions/data/bug-5356.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1954",
+            "files": [
+                "Functions/data/bug-1954.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2782",
+            "files": [
+                "Functions/data/bug-2782.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5661",
+            "files": [
+                "Functions/data/bug-5661.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5872",
+            "files": [
+                "Functions/data/bug-5872.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5834",
+            "files": [
+                "Functions/data/bug-5834.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5881",
+            "files": [
+                "Functions/data/bug-5881.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5861",
+            "files": [
+                "Functions/data/bug-5861.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallUserFuncArray",
+            "files": [
+                "Functions/data/call-user-func-array-named-args.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallables",
+            "files": [
+                "Functions/data/first-class-callables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4413",
+            "files": [
+                "Functions/data/bug-4413.php"
+            ],
+            "scan": [
+                "Functions/data/bug-4413.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6383",
+            "files": [
+                "Functions/data/bug-6383.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6448",
+            "files": [
+                "Functions/data/bug-6448.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7017",
+            "files": [
+                "Functions/data/bug-7017.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4371",
+            "files": [
+                "Functions/data/bug-4371.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testIsSubclassAllowString",
+            "files": [
+                "Functions/data/is-subclass-allow-string.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6987",
+            "files": [
+                "Functions/data/bug-6987.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDiscussion7450WithoutCheckExplicitMixed",
+            "files": [
+                "Functions/data/discussion-7450.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDiscussion7450WithCheckExplicitMixed",
+            "files": [
+                "Functions/data/discussion-7450.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7211",
+            "files": [
+                "Functions/data/bug-7211.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5474",
+            "files": [
+                "Comparison/data/bug-5474.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6261",
+            "files": [
+                "Functions/data/bug-6261.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6781",
+            "files": [
+                "Functions/data/bug-6781.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2343",
+            "files": [
+                "Functions/data/bug-2343.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7676",
+            "files": [
+                "Functions/data/bug-7676.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7138",
+            "files": [
+                "Functions/data/bug-7138.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2911",
+            "files": [
+                "Functions/data/bug-2911.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7156",
+            "files": [
+                "Functions/data/bug-7156.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7973",
+            "files": [
+                "Functions/data/bug-7973.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7562",
+            "files": [
+                "Functions/data/bug-7562.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7823",
+            "files": [
+                "Functions/data/bug-7823.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCurlSetOpt",
+            "files": [
+                "Functions/data/curl_setopt.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCurlSetOptCallback",
+            "files": [
+                "Functions/data/curl_setopt_callback.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCurlSetOptPrereqCallback",
+            "files": [
+                "Functions/data/curl_setopt_prereq.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCurlSetOptInvalidShare",
+            "files": [
+                "Functions/data/curl_setopt_share.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCurlSetOptArray",
+            "files": [
+                "Functions/data/curl-setopt-array.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8280",
+            "files": [
+                "Functions/data/bug-8280.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8389",
+            "files": [
+                "Functions/data/bug-8389.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8449",
+            "files": [
+                "Functions/data/bug-8449.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5288",
+            "files": [
+                "Functions/data/bug-5288.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-5288.php",
+                    "line": 10,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug5288\\FooIterator::current() is not covariant with tentative return type mixed of method Iterator<mixed,mixed>::current().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Functions/data/bug-5288.php",
+                    "line": 15,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug5288\\FooIterator::next() is not covariant with tentative return type void of method Iterator<mixed,mixed>::next().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Functions/data/bug-5288.php",
+                    "line": 22,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug5288\\FooIterator::key() is not covariant with tentative return type mixed of method Iterator<mixed,mixed>::key().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Functions/data/bug-5288.php",
+                    "line": 30,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug5288\\FooIterator::valid() is not covariant with tentative return type bool of method Iterator<mixed,mixed>::valid().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Functions/data/bug-5288.php",
+                    "line": 35,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug5288\\FooIterator::rewind() is not covariant with tentative return type void of method Iterator<mixed,mixed>::rewind().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5986",
+            "files": [
+                "Functions/data/bug-5986.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFilterInputType",
+            "files": [
+                "Functions/data/filter-input-type.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9283",
+            "files": [
+                "Functions/data/bug-9283.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9380",
+            "files": [
+                "Functions/data/bug-9380.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBenevolentSuperglobalKeys",
+            "files": [
+                "Functions/data/benevolent-superglobal-keys.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFileParams",
+            "files": [
+                "Functions/data/file.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFlockParams",
+            "files": [
+                "Functions/data/flock.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testJsonValidate",
+            "files": [
+                "Functions/data/json_validate.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4612",
+            "files": [
+                "Functions/data/bug-4612.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2508",
+            "files": [
+                "Functions/data/bug-2508.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6175",
+            "files": [
+                "Functions/data/bug-6175.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9699",
+            "files": [
+                "Functions/data/bug-9699.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9133",
+            "files": [
+                "Functions/data/bug-9133.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9803",
+            "files": [
+                "Functions/data/bug-9803.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9018",
+            "files": [
+                "Functions/data/bug-9018.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-9018.php",
+                    "line": 13,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $string1 (string) in call to function levenshtein.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-9018.php",
+                    "line": 13,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $string2 (string) in call to function levenshtein.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-9018.php",
+                    "line": 13,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $str1 in call to function levenshtein.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-9018.php",
+                    "line": 13,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $str2 in call to function levenshtein.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9399",
+            "files": [
+                "Functions/data/bug-9399.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9559",
+            "files": [
+                "Functions/data/bug-9559.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9923",
+            "files": [
+                "Functions/data/bug-9923.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9823",
+            "files": [
+                "Functions/data/bug-9823.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNamedParametersForMultiVariantFunctions",
+            "files": [
+                "Functions/data/call-to-function-named-params-multivariant.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9793",
+            "files": [
+                "Functions/data/bug-9793.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallToArrayFilterWithNullCallback",
+            "files": [
+                "Functions/data/array_filter_null_callback.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10171",
+            "files": [
+                "Functions/data/bug-10171.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-10171.php",
+                    "line": 12,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $samesite in call to function setcookie.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-10171.php",
+                    "line": 25,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $samesite in call to function setrawcookie.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6720",
+            "files": [
+                "Functions/data/bug-6720.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6720b",
+            "files": [
+                "Functions/data/bug-6720b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8659",
+            "files": [
+                "Functions/data/bug-8659.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9580",
+            "files": [
+                "Functions/data/bug-9580.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7283",
+            "files": [
+                "Functions/data/bug-7283.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9697",
+            "files": [
+                "Functions/data/bug-9697.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDiscussion10454",
+            "files": [
+                "Functions/data/discussion-10454.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10527",
+            "files": [
+                "Functions/data/bug-10527.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10626",
+            "files": [
+                "Functions/data/bug-10626.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArgon2PasswordHash",
+            "files": [
+                "Functions/data/argon2id-password-hash.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4960",
+            "files": [
+                "Functions/data/bug-4960.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testParamClosureThis",
+            "files": [
+                "Functions/data/function-call-param-closure-this.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10297",
+            "files": [
+                "Functions/data/bug-10297.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-10297.php",
+                    "line": 74,
+                    "identifier": "class.notFound",
+                    "message": "Class Bug10297\\stdClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/bug-10297.php",
+                    "line": 74,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug10297\\stdClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10974",
+            "files": [
+                "Functions/data/bug-10974.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCountArrayShift",
+            "files": [
+                "Functions/data/count-array-shift.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayDiffUassoc",
+            "files": [
+                "Functions/data/array_diff_uassoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayDiffUkey",
+            "files": [
+                "Functions/data/array_diff_ukey.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayIntersectUassoc",
+            "files": [
+                "Functions/data/array_intersect_uassoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayIntersectUkey",
+            "files": [
+                "Functions/data/array_intersect_ukey.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayUdiffAssoc",
+            "files": [
+                "Functions/data/array_udiff_assoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayUdiffUasssoc",
+            "files": [
+                "Functions/data/array_udiff_uassoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayUintersectAssoc",
+            "files": [
+                "Functions/data/array_uintersect_assoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayUintersectUassoc",
+            "files": [
+                "Functions/data/array_uintersect_uassoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayUintersect",
+            "files": [
+                "Functions/data/array_uintersect.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7707",
+            "files": [
+                "Functions/data/bug-7707.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNoNamedArguments",
+            "files": [
+                "Functions/data/no-named-arguments.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11056",
+            "files": [
+                "Functions/data/bug-11056.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11506",
+            "files": [
+                "Functions/data/bug-11506.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11559",
+            "files": [
+                "Functions/data/bug-11559.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10499",
+            "files": [
+                "Functions/data/bug-10499.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11559b",
+            "files": [
+                "Functions/data/bug-11559b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9224",
+            "files": [
+                "Functions/data/bug-9224.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7082",
+            "files": [
+                "Functions/data/bug-7082.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11759",
+            "files": [
+                "Functions/data/bug-11759.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12051",
+            "files": [
+                "Functions/data/bug-12051.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8046",
+            "files": [
+                "Functions/data/bug-8046.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11942",
+            "files": [
+                "Functions/data/bug-11942.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11418",
+            "files": [
+                "Functions/data/bug-11418.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9167",
+            "files": [
+                "Functions/data/bug-9167.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3107",
+            "files": [
+                "Functions/data/bug-3107.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12676",
+            "files": [
+                "Functions/data/bug-12676.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-12676.php",
+                    "line": 15,
+                    "identifier": "assign.readOnlyPropertyByPhpDoc",
+                    "message": "@readonly property Bug12676\\A::$a is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-12676.php",
+                    "line": 25,
+                    "identifier": "assign.readOnlyPropertyByPhpDoc",
+                    "message": "@readonly property Bug12676\\B::$readonlyArr is already assigned.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12499",
+            "files": [
+                "Functions/data/bug-12499.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7522",
+            "files": [
+                "Functions/data/bug-7522.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12847",
+            "files": [
+                "Functions/data/bug-12847.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10020",
+            "files": [
+                "Functions/data/bug-10020.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8506",
+            "files": [
+                "Functions/data/bug-8506.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7772",
+            "files": [
+                "Functions/data/bug-7772.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13065",
+            "files": [
+                "Functions/data/bug-13065.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3506",
+            "files": [
+                "Functions/data/bug-3506.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5760",
+            "files": [
+                "Functions/data/bug-5760.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9970",
+            "files": [
+                "Functions/data/bug-9970.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-9970.php",
+                    "line": 33,
+                    "identifier": "class.nameCase",
+                    "message": "Class Bug9970\\XML_Parser referenced with incorrect case: Bug9970\\Xml_Parser.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12317",
+            "files": [
+                "Functions/data/bug-12317.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13434",
+            "files": [
+                "Functions/data/bug-13434.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11863",
+            "files": [
+                "Functions/data/bug-11863.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13784",
+            "files": [
+                "Functions/data/bug-13784.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8094",
+            "files": [
+                "Functions/data/bug-8094.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13556",
+            "files": [
+                "Functions/data/bug-13556.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayRand",
+            "files": [
+                "Functions/data/array_rand.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6560#0",
+            "files": [
+                "Functions/data/bug-6560.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6560#1",
+            "files": [
+                "Functions/data/bug-6560-strict.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "Functions/data/func-call-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/func-call-pipe.php",
+                    "line": 20,
+                    "identifier": "arguments.count",
+                    "message": "Function FuncCallPipe\\doFoo invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/func-call-pipe.php",
+                    "line": 26,
+                    "identifier": "arguments.count",
+                    "message": "Function FuncCallPipe\\doFoo invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/func-call-pipe.php",
+                    "line": 26,
+                    "identifier": "function.void",
+                    "message": "Result of function FuncCallPipe\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/func-call-pipe.php",
+                    "line": 28,
+                    "identifier": "function.void",
+                    "message": "Result of function FuncCallPipe\\doBar (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClone",
+            "files": [
+                "Functions/data/clone-function.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/clone-function.php",
+                    "line": 11,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/clone-function.php",
+                    "line": 12,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/clone-function.php",
+                    "line": 13,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13930",
+            "files": [
+                "Functions/data/bug-13930.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13862",
+            "files": [
+                "Functions/data/bug-13862.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13862b",
+            "files": [
+                "Functions/data/bug-13862b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13862c",
+            "files": [
+                "Functions/data/bug-13862c.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12234",
+            "files": [
+                "Functions/data/bug-12234.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11982",
+            "files": [
+                "Functions/data/bug-11982.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11386",
+            "files": [
+                "Functions/data/bug-11386.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-11386.php",
+                    "line": 43,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array<array{id: string, bool: bool}>",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-11386.php",
+                    "line": 48,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array{id: string, bool: bool}",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11079",
+            "files": [
+                "Functions/data/bug-11079.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10612",
+            "files": [
+                "Functions/data/bug-10612.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-10612.php",
+                    "line": 31,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array{1}|array{2}|array{3}",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-10612.php",
+                    "line": 34,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: 1|2|3",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-10612.php",
+                    "line": 39,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array<mixed>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10704",
+            "files": [
+                "Functions/data/bug-10704.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9652",
+            "files": [
+                "Functions/data/bug-9652.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14136",
+            "files": [
+                "Functions/data/bug-14136.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8936",
+            "files": [
+                "Functions/data/bug-8936.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDumpFunctions",
+            "files": [
+                "Functions/data/dump-functions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 13,
+                    "identifier": "arguments.count",
+                    "message": "Function PHPStan\\dumpType invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 14,
+                    "identifier": "arguments.count",
+                    "message": "Function PHPStan\\dumpNativeType invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 15,
+                    "identifier": "arguments.count",
+                    "message": "Function PHPStan\\dumpPhpDocType invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 17,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type #1: 1",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 17,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type #2: 2",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 17,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type #3: 3",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 18,
+                    "identifier": "phpstan.dumpNativeType",
+                    "message": "Dumped type #1: 1",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 18,
+                    "identifier": "phpstan.dumpNativeType",
+                    "message": "Dumped type #2: 2",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 18,
+                    "identifier": "phpstan.dumpNativeType",
+                    "message": "Dumped type #3: 3",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 19,
+                    "identifier": "phpstan.dumpPhpDocType",
+                    "message": "Dumped type #1: 1",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 19,
+                    "identifier": "phpstan.dumpPhpDocType",
+                    "message": "Dumped type #2: 2",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/dump-functions.php",
+                    "line": 19,
+                    "identifier": "phpstan.dumpPhpDocType",
+                    "message": "Dumped type #3: 3",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14012",
+            "files": [
+                "Properties/data/bug-14012.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11534",
+            "files": [
+                "Functions/data/bug-11534.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10559",
+            "files": [
+                "Functions/data/bug-10559.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12363",
+            "files": [
+                "Functions/data/bug-12363.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11619",
+            "files": [
+                "Functions/data/bug-11619.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11619Strict",
+            "files": [
+                "Functions/data/bug-11619-strict.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13247",
+            "files": [
+                "Functions/data/bug-13247.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14312",
+            "files": [
+                "Functions/data/bug-14312.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14312b",
+            "files": [
+                "Functions/data/bug-14312b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConstantParameterCheck",
+            "files": [
+                "Functions/data/constant-parameter-check.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14716",
+            "files": [
+                "Functions/data/bug-14716.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12850",
+            "files": [
+                "Functions/data/bug-12850.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4608",
+            "files": [
+                "Functions/data/bug-4608-call-user-func.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2940",
+            "files": [
+                "Functions/data/bug-2940.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11533",
+            "files": [
+                "Functions/data/bug-11533.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13643",
+            "files": [
+                "Functions/data/bug-13643.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11894",
+            "files": [
+                "Functions/data/bug-11894.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11494",
+            "files": [
+                "Functions/data/bug-11494.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

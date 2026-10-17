@@ -1,0 +1,168 @@
+{
+    "test": "Arrays/DuplicateKeysInLiteralArraysRuleTest",
+    "cases": [
+        {
+            "method": "testDuplicateKeys",
+            "files": [
+                "Arrays/data/duplicate-keys.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 15,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value '' (null, NULL).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 17,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 4 duplicate keys with value 1 (1, 1, 1.0, true).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 23,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 0 (false, 0).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 32,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value '=' (self::EQ, self::IS).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 55,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 2 ($idx, $idx).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 63,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 0 (0, 0).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 67,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 101 (101, 101).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 69,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 102 (102, 102).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 76,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value -41 (-41, -41).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 102,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'foo' ('foo', $key).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 103,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'bar' ('bar', $key).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 105,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'key' ('key', $key2).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 128,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'bar' ($key, 'bar').",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 139,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'bar' ($key, 'bar').",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 151,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'foo' ('foo', $key).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 152,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'bar' ('bar', $key).",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 171,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 2 duplicate keys with value 'baz' ($key, 'baz').",
+                    "tip": null
+                },
+                {
+                    "file": "Arrays/data/duplicate-keys.php",
+                    "line": 179,
+                    "identifier": "array.duplicateKey",
+                    "message": "Array has 5 duplicate keys with value 1 (1, '1', true, 1.0, 1.1).",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13013",
+            "files": [
+                "Arrays/data/bug-13013.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13022",
+            "files": [
+                "Arrays/data/bug-13022.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14041",
+            "files": [
+                "Arrays/data/bug-14041.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

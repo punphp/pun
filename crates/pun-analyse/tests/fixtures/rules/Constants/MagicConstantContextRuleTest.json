@@ -1,0 +1,263 @@
+{
+    "test": "Constants/MagicConstantContextRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Constants/data/magic-constant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 5,
+                    "identifier": "magicConstant.outOfClass",
+                    "message": "Magic constant __CLASS__ is always empty outside a class.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 6,
+                    "identifier": "magicConstant.outOfFunction",
+                    "message": "Magic constant __FUNCTION__ is always empty outside a function.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 7,
+                    "identifier": "magicConstant.outOfFunction",
+                    "message": "Magic constant __METHOD__ is always empty outside a function.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 9,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 17,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 22,
+                    "identifier": "magicConstant.outOfClass",
+                    "message": "Magic constant __CLASS__ is always empty outside a class.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 26,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 59,
+                    "identifier": "magicConstant.outOfClass",
+                    "message": "Magic constant __CLASS__ is always empty outside a class.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 64,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 78,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 91,
+                    "identifier": "magicConstant.outOfFunction",
+                    "message": "Magic constant __METHOD__ is always empty outside a function.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 92,
+                    "identifier": "magicConstant.outOfFunction",
+                    "message": "Magic constant __FUNCTION__ is always empty outside a function.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 93,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 97,
+                    "identifier": "magicConstant.outOfClass",
+                    "message": "Magic constant __CLASS__ is always empty outside a class.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 101,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 105,
+                    "identifier": "magicConstant.outOfClass",
+                    "message": "Magic constant __CLASS__ is always empty outside a class.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 109,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 115,
+                    "identifier": "magicConstant.outOfClass",
+                    "message": "Magic constant __CLASS__ is always empty outside a class.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 120,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant.php",
+                    "line": 133,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGlobalNamespace",
+            "files": [
+                "Constants/data/magic-constant-global-ns.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 5,
+                    "identifier": "magicConstant.outOfClass",
+                    "message": "Magic constant __CLASS__ is always empty outside a class.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 6,
+                    "identifier": "magicConstant.outOfFunction",
+                    "message": "Magic constant __FUNCTION__ is always empty outside a function.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 7,
+                    "identifier": "magicConstant.outOfFunction",
+                    "message": "Magic constant __METHOD__ is always empty outside a function.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 8,
+                    "identifier": "magicConstant.outOfNamespace",
+                    "message": "Magic constant __NAMESPACE__ is always empty in global namespace.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 9,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 16,
+                    "identifier": "magicConstant.outOfNamespace",
+                    "message": "Magic constant __NAMESPACE__ is always empty in global namespace.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 17,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 22,
+                    "identifier": "magicConstant.outOfClass",
+                    "message": "Magic constant __CLASS__ is always empty outside a class.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 25,
+                    "identifier": "magicConstant.outOfNamespace",
+                    "message": "Magic constant __NAMESPACE__ is always empty in global namespace.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 26,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 46,
+                    "identifier": "magicConstant.outOfClass",
+                    "message": "Magic constant __CLASS__ is always empty outside a class.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 48,
+                    "identifier": "magicConstant.outOfNamespace",
+                    "message": "Magic constant __NAMESPACE__ is always empty in global namespace.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php",
+                    "line": 51,
+                    "identifier": "magicConstant.outOfTrait",
+                    "message": "Magic constant __TRAIT__ is always empty outside a trait.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/magic-constant-global-ns.php (in context of class MagicTraitUsingClass)",
+                    "line": 34,
+                    "identifier": "magicConstant.outOfNamespace",
+                    "message": "Magic constant __NAMESPACE__ is always empty in global namespace.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
