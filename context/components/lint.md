@@ -275,8 +275,15 @@ Answered 2026-10-17 (Pushpak):
   only report takes `fix = "off"`. `fix = "apply"` and `"safe-only"` go away, and migrate no longer needs to promote
   rules.
 - **Q8: only `error` fails the run; `warn` is printed and never fails.** Every enabled rule is `error` unless set to
-  `warn`; `pun migrate` sets everything to `error`, because PHPStan and Rector fail on anything they report. The
-  syntax is still open (ESLint/oxlint/Biome per-rule values vs level lists, see the thread).
+  `warn`; `pun migrate` sets everything to `error`, because PHPStan and Rector fail on anything they report.
+- **Severity syntax and behaviour follow oxlint** (Pushpak, 2026-10-17):
+  - Each rule takes `"off"`, `"warn"` or `"error"`. Options go in a table with `level`:
+    `"imports/ordered" = { level = "warn", sort = "alphabetical" }`. `"info"` is dropped.
+  - A whole group takes a level too, as oxlint does with categories: `[lint.groups] style = "warn"`. A rule's own line
+    wins over its group's.
+  - `--deny-warnings` makes warnings fail the run, and `--max-warnings <n>` fails above n warnings.
+  - `-A` / `-W` / `-D <rule or group>` (allow / warn / deny) set a level for one run from the command line.
+  - `[[lint.overrides]]` with `files = ["tests/**"]` changes levels for some paths, like oxlint's `overrides`.
 - **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
 - **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
   support yet (commands.md decisions).

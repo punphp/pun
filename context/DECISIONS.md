@@ -80,7 +80,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
   `fix = "apply"`. Safe/unsafe stays a label in the output; `fix = "off"` makes a rule report-only. This replaces
   RULES.md §4's fix-safety gating.
 - **Severity** (2026-10-17): only `error` fails a run; `warn` prints and never fails. Rules are `error` by default, and
-  `pun migrate` writes everything as `error`.
+  `pun migrate` writes everything as `error`. Syntax and flags follow oxlint: `"off" | "warn" | "error"` per rule or
+  group, `--deny-warnings`, `--max-warnings`, `-A/-W/-D`, and per-path `[[lint.overrides]]`.
 - **Lint edits code with text edits** on Mago's syntax tree, not a port of php-parser's printer; format tidies the
   layout afterwards (2026-10-17, components/lint.md).
 - **The Mago-based formatter is removed** (`--engine=pun`, `format_pun`): one formatter engine, the PHP-CS-Fixer port.
