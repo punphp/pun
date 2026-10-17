@@ -19,6 +19,18 @@ fn init_writes_pun_toml_once() {
     )
     .unwrap();
 
+    // `--init` only writes pun.toml: options for showing the config are rejected, not ignored.
+    for flag in [
+        "--format=json",
+        "--preset=psr12",
+        "--config=pint.json",
+        "--show",
+    ] {
+        let conflict = pun(&d, &["config", "--init", flag]);
+        assert_eq!(conflict.status.code(), Some(2), "{flag}");
+        assert!(!d.join("pun.toml").exists());
+    }
+
     let first = pun(&d, &["config", "--init"]);
     assert!(first.status.success(), "{first:?}");
     let toml = std::fs::read_to_string(d.join("pun.toml")).unwrap();

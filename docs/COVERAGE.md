@@ -26,7 +26,7 @@ Uncovered lines:
 - `crates/pun-fixers/src/fixers/yoda_style.rs:427` the same `$a{0}` block type.
 - `crates/pun-fixers/src/fixers/method_argument_space.rs:350` ensureSingleLineForParentheses' `//` comment check: argumentContentIsMultiline already returns for any comment outside a nested block, and nested blocks are skipped by both loops, so a comment never precedes the whitespace (upstream has the same dead check).
 - `crates/pun-fixers/src/fixers/pint_laravel_blade/php_block_formatting.rs:208` formatDirectiveArg's fallback when the formatted host has no balanced `(...)`: the argument was cut out of the template by the same matchParen, so it is balanced, and the formatter either returns the host unchanged (a CompileError) or keeps it balanced (no fixer adds quotes or comments).
-- `crates/pun-cli/src/main.rs:666` the panic hook's pass-through for panics outside per-file fixing: reaching it means the binary crashes, which no test can assert in-process.
+- `crates/pun-cli/src/main.rs:671` the panic hook's pass-through for panics outside per-file fixing: reaching it means the binary crashes, which no test can assert in-process.
 
 ## Not measured
 
