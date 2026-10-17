@@ -22,7 +22,17 @@ fn describe(input: &str, ctx: Option<&str>) -> [String; 3] {
     [Level::Precise, Level::Value, Level::TypeOnly].map(|l| ty.describe(l))
 }
 
-fn rows(name: &str) -> Vec<(Option<String>, String, [String; 3])> {
+/// (context class, type string, its three descriptions, the type string in Pun's syntax when it differs: a
+/// probe's function templates as `__template<...>`; a probe's iterable key and value types when it is iterable)
+type Row = (
+    Option<String>,
+    String,
+    [String; 3],
+    Option<String>,
+    Option<[String; 2]>,
+);
+
+fn rows(name: &str) -> Vec<Row> {
     let f = fixture(name);
     f.as_array()
         .unwrap()
@@ -33,6 +43,10 @@ fn rows(name: &str) -> Vec<(Option<String>, String, [String; 3])> {
                 row[0].as_str().map(str::to_string),
                 s(1),
                 [s(2), s(3), s(4)],
+                row.get(5).and_then(|v| v.as_str()).map(str::to_string),
+                row.get(6)
+                    .and_then(|v| v.as_array())
+                    .map(|_| [0, 1].map(|i| row[6][i].as_str().unwrap().to_string())),
             )
         })
         .collect()
@@ -41,13 +55,22 @@ fn rows(name: &str) -> Vec<(Option<String>, String, [String; 3])> {
 fn check(name: &str, skip: &[&str]) {
     let rows = rows(name);
     let mut failures = Vec::new();
-    for (ctx, input, want) in &rows {
+    for (ctx, input, want, pun, iterable) in &rows {
         if skip.contains(&input.as_str()) {
             continue;
         }
-        let got = describe(input, ctx.as_deref());
+        let ty = resolve_str(pun.as_deref().unwrap_or(input), ctx.as_deref());
+        let got = [Level::Precise, Level::Value, Level::TypeOnly].map(|l| ty.describe(l));
         if got != *want {
             failures.push(format!("{ctx:?} {input}\n  want {want:?}\n  got  {got:?}"));
+        } else if let Some(want) = iterable {
+            let got = [ty.iterable_key_type(), ty.iterable_value_type()]
+                .map(|t| t.describe(Level::Precise));
+            if got != *want {
+                failures.push(format!(
+                    "{ctx:?} {input} (iterable key, value)\n  want {want:?}\n  got  {got:?}"
+                ));
+            }
         }
     }
     eprintln!(
@@ -85,7 +108,7 @@ fn signature_strings(f: &Function) -> Vec<&str> {
 fn built_in_signatures() {
     let reflected: HashMap<(Option<String>, String), [String; 3]> = rows("reflected-types.json")
         .into_iter()
-        .map(|(ctx, s, d)| ((ctx, s), d))
+        .map(|(ctx, s, d, ..)| ((ctx, s), d))
         .collect();
     for version in [PhpVersion::Php84, PhpVersion::Php85] {
         let symbols = symbols::symbols(version);
@@ -127,7 +150,7 @@ fn constants() {
     let reflected: HashMap<String, [String; 3]> = rows("reflected-types.json")
         .into_iter()
         .filter(|(ctx, ..)| ctx.is_none())
-        .map(|(_, s, d)| (s, d))
+        .map(|(_, s, d, ..)| (s, d))
         .collect();
     let symbols = symbols::symbols(PhpVersion::Php84);
     let mut failures = Vec::new();
@@ -152,13 +175,16 @@ fn constants() {
 }
 
 /// Probes Pun does not model yet (open for M2.3): a constant-key array type against `list`, subtracted mixed,
-/// object-shape and conditional intersections, callable arrays checked against the class's methods.
+/// object-shape and conditional intersections, callable arrays checked against the class's methods, generic
+/// arguments on a non-generic class.
 const PROBE_GAPS: &[&str] = &[
     "array{'Countable', 'count'}&callable",
     "array<1|2, int>&list",
     "non-empty-mixed",
     "object{a: int}&object{b: int}",
     "(T is int ? string : bool)&int",
+    // its iterable value is `static`, which symbols.json has as the bare class
+    "SimpleXMLElement<int, string, bool>",
 ];
 
 #[test]

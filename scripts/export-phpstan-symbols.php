@@ -373,21 +373,47 @@ const PROBES = [
     'int-mask<1>', 'int-mask-of<1|string>', 'string<int>', 'SimpleXMLElement<int, string>', 'SimpleXMLElement<string>', 'SimpleXMLElement<int, string, bool>',
     '__template<int>', 'non-empty-list<int>&list<int>',
     "array{a?: int}&array{}", "array{}&array{a?: int}", 'callable-array|null', 'callable-array|array{a: 1}', 'iterable<int>|callable-array',
+    'callable((Countable&Traversable)|int): void', 'callable(): ((Countable&Traversable)|int)', "array{'\\\\Foo\\\\Bar': int, '\\\\': int, '\\\\1': int}",
+    'array{a: int, ...<__benevolent<int|string>, int>}', 'never&never', 'never|never', 'never-return|never', 'never&never-return',
     // stars and bad input
     'SplObjectStorage<*, *>', 'int|', '<', '(int', 'array{', 'callable(',
 ];
 
-/** @return list<array{?string, string, string, string, string}> */
+/** Function templates the `templates` probes resolve with (Pun reads them as `__template<...>`). */
+const PROBE_TEMPLATES = ['T' => null, 'U' => 'int|string', 'V' => 'Countable'];
+
+function probe_templates(TypeStringResolver $resolver): PHPStan\Type\Generic\TemplateTypeMap
+{
+    $scope = PHPStan\Type\Generic\TemplateTypeScope::createWithFunction('probe');
+    $types = [];
+    foreach (PROBE_TEMPLATES as $name => $bound) {
+        $types[$name] = PHPStan\Type\Generic\TemplateTypeFactory::create($scope, $name, $bound === null ? null : $resolver->resolve($bound, new NameScope(null, [])), PHPStan\Type\Generic\TemplateTypeVariance::createInvariant());
+    }
+
+    return new PHPStan\Type\Generic\TemplateTypeMap($types);
+}
+
+/** @return list<array{?string, string, string, string, string, ?string, ?array{string, string}}> */
 function describe_all(TypeStringResolver $resolver, array $strings): array
 {
     $described = [];
+    $templates = probe_templates($resolver);
     foreach ($strings as [$ctx, $s]) {
+        $withTemplates = $ctx === 'templates';
+        if ($withTemplates) {
+            $ctx = null;
+        }
         try {
-            $type = $resolver->resolve($s, new NameScope(null, [], $ctx));
+            $type = $resolver->resolve($s, new NameScope(null, [], $ctx, null, $withTemplates ? $templates : null));
         } catch (Throwable $e) {
             $type = new PHPStan\Type\ErrorType(); // phpdoc-parser rejects it; PHPDoc tags with a parse error resolve to *ERROR*
         }
-        $described[] = [$ctx, $s, $type->describe(VerbosityLevel::precise()), $type->describe(VerbosityLevel::value()), $type->describe(VerbosityLevel::typeOnly())];
+        $row = [$ctx, $s, $type->describe(VerbosityLevel::precise()), $type->describe(VerbosityLevel::value()), $type->describe(VerbosityLevel::typeOnly())];
+        // the same type in Pun's syntax
+        $row[] = $withTemplates ? preg_replace_callback('~\\b[TUV]\\b~', fn ($m) => sprintf("__template<%s, 'function probe()', %s>", $m[0], PROBE_TEMPLATES[$m[0]] ?? 'mixed'), $s) : null;
+        // what foreach gives
+        $row[] = $type->isIterable()->yes() ? [$type->getIterableKeyType()->describe(VerbosityLevel::precise()), $type->getIterableValueType()->describe(VerbosityLevel::precise())] : null;
+        $described[] = $row;
     }
 
     return $described;
@@ -419,6 +445,17 @@ if (($argv[1] ?? '') === 'probes') {
                     array_push($probes, [$ctx, "$a|$b"], [$ctx, "$a&$b"]);
                 }
             }
+        }
+    }
+    foreach (['T', 'U', 'V', 'T|never', 'never&T', 'T|null', 'T|U', 'U|T', 'T&U', 'array<U, T>', 'U[]', 'list<T>', 'iterable<T>|array<T>',
+        'T&array', '(T is int ? string : bool)', '(T is int ? string : bool)&int', '(U is int ? string : bool)|string', 'class-string<V>',
+        'callable(T): U', 'array{a: T}|array{a: U}', 'U|string|float', '(U&int)|string', 'V|stdClass', 'U&(int|bool)', 'array<int|iterable<int>>|array<iterable<int>>',
+        'array<int|string>|array<int<1, 3>>', 'array<1|2|3>|array<int<1, 3>>', 'array<int<1, 3>>|array<1|2|3>', 'array<int<1, 3>>|array<1|2>'] as $s) {
+        $probes[] = ['templates', $s];
+    }
+    foreach (['T', 'U', 'V', '(U&int)'] as $a) {
+        foreach ($atoms as $b) {
+            array_push($probes, ['templates', "$a|$b"], ['templates', "$a&$b"], ['templates', "$b|$a"], ['templates', "$b&$a"]);
         }
     }
     // sortTypes() leaves more than 1024 types unsorted
