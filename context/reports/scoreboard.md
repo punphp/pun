@@ -317,6 +317,11 @@ also timed with 30 plain spawn-and-wait runs (median; "precise" below).
   medians of two 10-run calls each), rss -7%; pinkary wall -11% precise, flat in bench.py (its 8 ms run sits under
   bench.py's 44 ms floor), rss -4%. Output byte-identical: `examples/dump` on all 3,376 corpus files, and
   `fix_dir` against `rector process` with the ported rules (`diff -r` empty on both projects).
+- round 4, verifier rerun (HEAVY_EXCLUSIVE, before and after alternated): bench.py RUNS=10, two calls each,
+  laravel-framework 94.4 to 86.5 ms (-8%), 89.8 to 82.1 MB (-9%); the after runs are bimodal (46-56 ms or 85-99 ms),
+  so bench.py's median swings with the split and the -26% above is the favourable end. Precise, machine in its slow
+  state: laravel-framework about 71-75 to 64-66 ms (-9 to -12%), rss -5%; pinkary 10.2-10.7 to 9.8-9.9 ms. Output
+  identical (dump on 3,376 files; `fix_dir` against `rector process` on laravel-framework, 9 files).
 - round 4, what is left: in a laravel-framework profile the checkers now wait for sources (`__psynch_cvwait`) in
   42% of the samples and `open` is 15%, so the readers are the critical path again and each of them spends 82% of
   its time in `open`. Mago's parser is 18% and the walk 6%. More readers make `open` slower, not faster.
