@@ -214,7 +214,7 @@ Rector has no ladder. Its config is a set of independent toggles, `withPreparedS
 Rector also has gradual levels for adoption (`withDeadCodeLevel(n)`, `withTypeCoverageLevel(n)`), which turn on the
 first n rules of one set.
 
-### Proposal: lint presets are sets you tick, not a ladder
+### Lint presets are sets you tick, not a ladder (approved)
 
 `pun init` question 3 is a checklist, with a default ticked:
 
@@ -268,6 +268,8 @@ Answered 2026-10-17 (Pushpak):
   switched off in pun.toml.
 - **`pun init` asks three things:** the format preset (laravel / psr12), the analyse preset, and the lint preset (§9).
   Lint gets its own preset choice, separate from analyse.
+- **Lint presets are a checklist of sets** (§9): `[lint] sets = ["dead-code", "modernize", ...]`, with dead-code and
+  modernize ticked by default in `pun init`; Rector's prepared sets migrate 1:1.
 - **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
 - **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
   support yet (commands.md decisions).
