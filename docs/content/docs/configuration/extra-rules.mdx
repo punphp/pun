@@ -1,14 +1,14 @@
 ---
 title: Extra rules
-description: Opt-in Pun/ rules ported from Mago for Laravel and Pest idioms and redundant code. None is in a preset.
+description: Opt-in lint rules ported from Mago for Laravel and Pest idioms and redundant code. None is in a preset.
 ---
 
-Pun adds opt-in `Pun/` rules ported from [Mago](https://github.com/carthage-software/mago) for things PHP-CS-Fixer and Pint don't cover. **None is in any preset**, so default output stays identical to Pint. Enable them in `pun.toml`:
+Pun adds opt-in lint rules ported from [Mago](https://github.com/carthage-software/mago) for things PHP-CS-Fixer and Pint don't cover. **None is in any preset**, so default output stays identical to Pint. Enable them under `[lint.rules]`, with `fix = "apply"` for `--fix` to apply them:
 
 ```toml pun.toml
-[format.rules]
-"Pun/prefer_dedicated_status_assertion" = true
-"Pun/prefer_fake_helper" = true
+[lint.rules]
+prefer-dedicated-status-assertion = { fix = "apply" }
+prefer-fake-helper = { fix = "apply" }
 ```
 
 Rules marked **risky** can change behaviour; review their diff.
@@ -17,32 +17,32 @@ Rules marked **risky** can change behaviour; review their diff.
 
 | Rule | Rewrites |
 | --- | --- |
-| `Pun/prefer_dedicated_status_assertion` | `->assertStatus(404)` → `->assertNotFound()` (25 codes) |
-| `Pun/prefer_fake_helper` | `$this->faker` → `fake()` in `*Factory` classes |
-| `Pun/prefer_array_validation_rules` | `'required\|string'` → `['required', 'string']` in `rules()` |
-| `Pun/no_implicit_model_query` (risky) | `User::where(...)` → `User::query()->where(...)` |
-| `Pun/final_controller` (risky) | `class UserController` → `final class UserController` |
+| `prefer-dedicated-status-assertion` | `->assertStatus(404)` → `->assertNotFound()` (25 codes) |
+| `prefer-fake-helper` | `$this->faker` → `fake()` in `*Factory` classes |
+| `prefer-array-validation-rules` | `'required\|string'` → `['required', 'string']` in `rules()` |
+| `no-implicit-model-query` (risky) | `User::where(...)` → `User::query()->where(...)` |
+| `require-final-controller` (risky) | `class UserController` → `final class UserController` |
 
 ## Pest
 
 | Rule | Rewrites |
 | --- | --- |
-| `Pun/use_specific_expectations` | `->toBe(true)` → `->toBeTrue()`, likewise `false` and `null` |
-| `Pun/use_dedicated_expectation` (risky) | `expect(is_array($x))->toBeTrue()` → `expect($x)->toBeArray()` |
-| `Pun/use_simpler_expectation` | `expect($a > $b)->toBeTrue()` → `expect($a)->toBeGreaterThan($b)` |
-| `Pun/no_only` | removes `->only()` from tests |
+| `prefer-specific-expectations` | `->toBe(true)` → `->toBeTrue()`, likewise `false` and `null` |
+| `prefer-dedicated-expectation` (risky) | `expect(is_array($x))->toBeTrue()` → `expect($x)->toBeArray()` |
+| `prefer-simpler-expectation` | `expect($a > $b)->toBeTrue()` → `expect($a)->toBeGreaterThan($b)` |
+| `no-only` | removes `->only()` from tests |
 
 ## Redundant code and modern PHP
 
 | Rule | Rewrites |
 | --- | --- |
-| `Pun/no_redundant_isset` | `isset($a, $a['b'])` → `isset($a['b'])` |
-| `Pun/no_redundant_literal_return` | `if ($x === null) { return null; } return $x;` → `return $x;` |
-| `Pun/no_redundant_nullsafe` | `$user?->name ?? 'Guest'` → `$user->name ?? 'Guest'` |
-| `Pun/no_self_assignment` | deletes `$a = $a;` |
-| `Pun/prefer_array_spread` (risky) | `array_merge($a, [1], $b)` → `[...$a, 1, ...$b]` |
-| `Pun/prefer_explode_over_preg_split` | `preg_split('/, /', $s)` → `explode(', ', $s)` |
-| `Pun/prefer_first_class_callable` (risky) | `fn ($x) => $this->m($x)` → `$this->m(...)` |
-| `Pun/sensitive_parameter` | adds `#[\SensitiveParameter]` to `$password`, `$token`, `$secret` and API-key parameters |
+| `no-redundant-isset` | `isset($a, $a['b'])` → `isset($a['b'])` |
+| `no-redundant-literal-return` | `if ($x === null) { return null; } return $x;` → `return $x;` |
+| `no-redundant-nullsafe` | `$user?->name ?? 'Guest'` → `$user->name ?? 'Guest'` |
+| `no-self-assignment` | deletes `$a = $a;` |
+| `prefer-array-spread` (risky) | `array_merge($a, [1], $b)` → `[...$a, 1, ...$b]` |
+| `prefer-explode-over-preg-split` | `preg_split('/, /', $s)` → `explode(', ', $s)` |
+| `prefer-first-class-callable` (risky) | `fn ($x) => $this->m($x)` → `$this->m(...)` |
+| `add-sensitive-parameter` | adds `#[\SensitiveParameter]` to `$password`, `$token`, `$secret` and API-key parameters |
 
 Each rule ports only the rewrites that keep the code's meaning; the edge cases each one skips are listed in the repository's `docs/MAGO-EXTRAS.md`.

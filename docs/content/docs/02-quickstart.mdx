@@ -1,18 +1,28 @@
 ---
 title: Quickstart
-description: Run Pun on an existing Laravel project. It reads your current configs, so there is nothing to set up.
+description: Move a Laravel project onto Pun in four commands, with zero changed bytes.
 ---
 
-Pun reads `pint.json`, `phpstan.neon` and `rector.php` as they are. Install it, then:
+Pun reads one config file, `pun.toml`. `pun migrate` writes it from what you have today.
 
 <Steps>
+  <Step title="Migrate your config">
+
+```bash
+pun migrate --dry-run   # show the pun.toml it would write
+pun migrate
+```
+
+Reads `pint.json` (or `.php-cs-fixer.php`), `phpstan.neon` and `rector.php`, and writes `pun.toml` with Pun's rule names. If a rule can't run, it says so and writes nothing.
+
+  </Step>
   <Step title="Check everything">
 
 ```bash
 pun check
 ```
 
-Format, lint and analyse in one pass, sharing one parse. Exits non-zero on any format diff, lint error or analyse error.
+Format, lint and analyse in one pass. Exits non-zero on any format diff, lint error or analyse error.
 
   </Step>
   <Step title="Fix what can be fixed">
@@ -21,7 +31,7 @@ Format, lint and analyse in one pass, sharing one parse. Exits non-zero on any f
 pun check --fix
 ```
 
-Applies safe lint fixes, then formats. It never edits based on analysis.
+Formats and applies the lint fixes marked `fix = "apply"`. On a migrated project this writes exactly what `pint` wrote.
 
   </Step>
   <Step title="Only what you touched">
@@ -31,16 +41,6 @@ pun check --dirty        # uncommitted changes
 pun check --staged       # staged changes, for a pre-commit hook
 pun format --diff=main   # changed since branching off main
 ```
-
-  </Step>
-  <Step title="Move to one config">
-
-```bash
-pun migrate --dry-run
-pun migrate
-```
-
-Writes `pun.toml` from your current configs, with zero behaviour change.
 
   </Step>
 </Steps>

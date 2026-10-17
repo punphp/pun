@@ -1,14 +1,12 @@
 ---
 title: pun config
-description: Print the resolved configuration, or turn pint.json into a standalone pun.toml.
+description: Print the configuration Pun will actually use.
 ---
 
 ```bash
-pun config --show              # resolved config after imports, as TOML
-pun config --show --format json
-pun config --init              # write pun.toml from pint.json
+pun config                  # resolved config, as TOML
+pun config --format json
+pun config --preset psr12   # what a built-in preset resolves to
 ```
 
-`--show` prints the configuration Pun will actually use: the preset, then `pint.json`, then `pun.toml`, merged key by key. Add `--config` or `--preset` to see what a different file or preset would resolve to.
-
-`--init` writes a `pun.toml` with the same preset, rule overrides and finder keys as your `pint.json`, so `pun.toml` can be your only config file. The generated file resolves to exactly what `pint.json` resolved to. See [pun.toml](/docs/configuration/pun-toml).
+Prints the resolved configuration: the preset's rules plus your `[format.rules]` and `[lint.rules]`, under Pun rule IDs. Use it to check what a change to `pun.toml` did, or to see what a preset contains.

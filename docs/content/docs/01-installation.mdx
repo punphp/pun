@@ -53,12 +53,12 @@ Check it works:
 pun --version
 ```
 
-## The pint alias
+## Next
 
-Invoked as `pint`, Pun behaves exactly like Pint: same flags, same output, and it ignores `pun.toml`. Opt in with a symlink:
+Pun reads one file, `pun.toml`. In a project that uses Pint today, write it with:
 
 ```bash
-ln -s "$(command -v pun)" ~/.local/bin/pint
+pun migrate
 ```
 
-Scripts, CI steps and editor plugins that call `pint` then run Pun without any other change.
+See the [Quickstart](/docs/quickstart).

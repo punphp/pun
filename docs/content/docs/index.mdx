@@ -11,7 +11,7 @@ Pun is to PHP what Bun is to JavaScript: one install that replaces the pile of t
 
 A Laravel project runs four or five PHP tools on every commit. Each one is slow (Pint takes 190 s on laravel/framework), has its own config format, rule names and ignore comments, overlaps with the others, and prints for humans while coding agents pay for every token.
 
-Pun goes for **exact parity first**, so switching changes nothing. Every command is checked against pinned versions of the real tools, their own test suites, real projects and a fuzzer. Then it gives you a better model: one config, one set of rule names, no levels.
+Pun goes for **exact parity first**, so switching changes nothing: `pun migrate` writes your config once, and `pun check --fix` writes exactly what Pint wrote. Every command is checked against pinned versions of the real tools, their own test suites, real projects and a fuzzer. Then it gives you a better model: one config, one set of rule names, no levels.
 
 ## Commands
 

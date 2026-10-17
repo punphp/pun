@@ -1,30 +1,52 @@
 ---
 title: pun lint
-description: Report and fix code rules, with the same diff and written files as Rector, plus Mago's lint rules.
+description: Report and fix code rules that change behaviour, from PHP-CS-Fixer's risky fixers, Rector and Mago.
 ---
 
 ```bash
-pun lint                 # report, like rector process --dry-run
-pun lint --fix           # apply fixes, like rector process
-pun lint --fix --format  # fix, then format, in one pass
+pun lint          # report what the [lint] rules would change
+pun lint --fix    # apply the rules marked fix = "apply"
 ```
 
-`pun lint` runs Rector's rules natively and matches Rector's diff and written files. Like Rector, `pun lint --fix` doesn't format afterwards; add `--format`, or use [`pun check --fix`](/docs/commands/check).
+Lint rules are the ones that can change what code does, so Pun never applies them unless you say so. They include PHP-CS-Fixer's risky fixers (`final_class`, `strict_comparison`, `declare_strict_types` and the rest), Rector's rules, and the extra rules ported from Mago.
 
-## Rules
+## Configure rules
 
-Rules come from Rector and its Laravel, PHPUnit and Pest sets, plus Mago's linter, under Pun's own kebab-case names: `lint.prefer-early-return`, `lint.no-loose-comparison`, `lint.no-unused-ignore`. Which rules run is set by your [preset](/docs/configuration/presets) and add-ons, with per-rule overrides in `pun.toml`:
+Each rule under `[lint.rules]` takes a severity, or a table with a `fix` mode and options:
 
 ```toml pun.toml
-[lint]
-rules.prefer-early-return = "error"
-rules.no-loose-comparison = "off"
+[lint.rules]
+require-final-class = { fix = "apply" }   # applied by --fix
+no-loose-comparison = "warn"              # reported, never applied
+prefer-early-return = "error"
+no-short-ternary = "off"
 ```
 
-Mago's lint rules are opt-in under `[lint.mago]` and reported as `mago.*`.
+| Value | Meaning |
+| --- | --- |
+| `"error"`, `"warn"`, `"info"` | Report at that severity |
+| `"off"` | Disable |
+| `{ fix = "apply" }` | Report, and apply with `--fix` |
+| `{ fix = "safe-only" }` | Report; apply only fixes marked safe |
+| `{ fix = "off" }` | Report, never apply |
 
-## Reading rector.php
+Options for a rule go in the same table. Rule names are Pun IDs; a PHP-CS-Fixer name gets an error that names its Pun ID.
 
-Without `pun.toml`, Pun reads `rector.php` directly, so trying Pun needs no changes. [`pun migrate`](/docs/commands/migrate) turns it into `pun.toml`.
+Which rules run by default comes from your [preset](/docs/configuration/presets). `pun migrate` moves the risky rules your `pint.json` enabled here with `fix = "apply"`, since Pint applied them unattended.
 
-Rules with no auto-fix only report. Fixes are marked safe or unsafe, and `--fix` applies safe ones.
+## Mago's report-only rules
+
+```bash
+pun lint --mago            # the whole project
+pun lint --mago app routes # specific paths
+```
+
+Reports Mago's lint-only Laravel rules as `path:line:col: level [rule] message`. These have no auto-fix, so this never edits files. It exits 1 when it finds something.
+
+| Rule | Flags |
+| --- | --- |
+| `no-request-all` | `$request->all()` |
+| `prefer-casts-method` | a `$casts` property instead of a `casts()` method |
+| `prefer-anonymous-migration` | named migration classes |
+| `prefer-view-array` | `view()->with()` chains instead of an array |
+| `middleware-in-routes` | middleware set in controllers instead of routes |

@@ -1,43 +1,41 @@
 ---
 title: pun migrate
-description: Move a project onto one pun.toml, from pint.json, .php-cs-fixer.php, phpstan.neon and rector.php, with zero behaviour change.
+description: Move a project onto one pun.toml from pint.json, .php-cs-fixer.php, phpstan.neon and rector.php, with zero behaviour change.
 ---
 
 ```bash
-pun migrate --dry-run   # show what would change, change nothing
-pun migrate             # do it
+pun migrate --dry-run   # show the pun.toml it would write, change nothing
+pun migrate             # write it
 ```
 
-`pun migrate` is a one-time move onto `pun.toml`. Migration day changes no behaviour: the same files get formatted the same way, and the same errors are reported.
+Pun reads only `pun.toml`, so `pun migrate` is the one place the old configs are read. Migration day changes no behaviour: `pun check --fix` writes the same bytes Pint did, and `pun analyse` reports the same errors PHPStan did.
 
 <Steps>
   <Step title="Read and report">
 
-`--dry-run` reads `pint.json`, `.php-cs-fixer.php`, `phpstan.neon` and its baseline, and `rector.php`. It prints the `pun.toml` it would write and lists every rule, extension and Rector rule it can't run natively, before anything changes.
+Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or without one a `.php-cs-fixer.php` through PHP-CS-Fixer itself, plus `phpstan.neon` with its baseline and `rector.php`. Every rule Pun can't run is listed before anything is written, and then nothing is written.
 
   </Step>
   <Step title="Write pun.toml">
 
-PHPStan levels (plus strict-rules, deprecation-rules and Larastan) are expanded into the explicit list of rules they ran. `--preset` writes the closest [tier](/docs/configuration/presets) plus overrides instead, resolving to the same rules.
+`[format]` gets the preset plus only what differs from it. The risky fixers your config enabled go under `[lint.rules]` with `fix = "apply"`, since Pint applied them unattended. PHPStan levels are expanded into the exact rules they ran; `--preset` writes the closest [tier](/docs/configuration/presets) plus overrides instead. Every rule gets its Pun ID.
 
   </Step>
   <Step title="Convert the baseline">
 
-`phpstan-baseline.neon` becomes `pun-baseline.toml`, under Pun rule names.
+`phpstan-baseline.neon` becomes `pun-baseline.toml`, under Pun rule IDs.
 
   </Step>
   <Step title="Rewrite ignore comments">
 
-`@phpstan-ignore <id>` becomes `@pun-ignore <rule>`, `@phpstan-ignore-next-line` becomes `@pun-ignore-next-line` with the rules PHPStan reported there, and `@php-cs-fixer-ignore <rule>` becomes `@pun-ignore-file format.<rule>`.
+`// @php-cs-fixer-ignore rule` becomes `// @pun-ignore-file format.rule`, and `@phpstan-ignore` comments become `@pun-ignore` with Pun rule IDs. See [Ignore comments](/docs/configuration/ignore-comments).
 
   </Step>
   <Step title="Switch the workflow">
 
-Composer scripts, GitHub Actions and GitLab CI steps, editor settings and pre-commit hooks move to `pun check`. If Laravel Boost is installed, a Pun guideline is added so coding agents call `pun`.
+Composer scripts, CI steps, editor settings and pre-commit hooks move to `pun check`. If Laravel Boost is installed, a Pun guideline is added so coding agents call `pun`.
 
   </Step>
 </Steps>
 
-PHPDoc type tags (`@phpstan-param`, `@psalm-var` and the rest) stay as they are, since editors and library users rely on them. `--phpdoc` rewrites them to `@pun-*` for applications.
-
-Replaced dev dependencies stay installed unless you pass `--remove-tools`, so rolling back is reverting one commit.
+Running it twice changes nothing the second time. Replaced dev dependencies and the old config files stay unless you pass `--remove-tools`, so rolling back is reverting one commit.

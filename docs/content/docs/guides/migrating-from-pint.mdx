@@ -3,16 +3,25 @@ title: Migrating from Pint
 description: Switch a project from Pint to Pun without a single changed byte, then move scripts, CI and editors over.
 ---
 
-Pun reads `pint.json` and produces Pint's exact output, so switching is a workflow change, not a reformat.
-
 <Steps>
+  <Step title="Write pun.toml">
+
+```bash
+pun migrate --dry-run
+pun migrate
+```
+
+Reads `pint.json` and writes `pun.toml`. Risky rules your `pint.json` enabled move to `[lint.rules]` with `fix = "apply"`.
+
+  </Step>
   <Step title="Prove nothing changes">
 
 ```bash
-pun format --test
+pun check --fix
+git diff --stat
 ```
 
-On a project Pint already formatted, this reports nothing and exits 0.
+On a project Pint already formatted, the diff is empty: `pun check --fix` writes exactly what `pint` wrote.
 
   </Step>
   <Step title="Switch your scripts">
@@ -20,36 +29,24 @@ On a project Pint already formatted, this reports nothing and exits 0.
 ```json composer.json
 {
   "scripts": {
-    "lint": "pun format",
-    "test:lint": "pun format --test"
+    "lint": "pun check --fix",
+    "test:lint": "pun check"
   }
 }
 ```
 
-Or keep calling `pint` and point it at Pun with the [pint alias](/docs/installation#the-pint-alias).
-
   </Step>
-  <Step title="Switch CI">
+  <Step title="Switch CI and editors">
 
-Replace the PHP setup and `vendor/bin/pint --test` with the Pun binary and `pun format --test`. See [CI](/docs/guides/ci).
-
-  </Step>
-  <Step title="Switch your editor">
-
-Point format-on-save at `pun lsp`. See [Editors](/docs/guides/editors).
-
-  </Step>
-  <Step title="Optional: one config file">
-
-```bash
-pun config --init
-```
-
-Writes `pun.toml` from `pint.json`. Keep `pint.json` while anyone still runs Pint.
+Replace `vendor/bin/pint --test` with `pun check` ([CI](/docs/guides/ci)), and point format-on-save at `pun lsp` ([Editors](/docs/guides/editors)).
 
   </Step>
 </Steps>
 
+## What moved where
+
+`pint` did two kinds of thing in one run: layout, and risky rewrites like making classes `final` or comparisons strict. Pun splits them. `pun format` runs layout only, which is what format-on-save should do. `pun check --fix` runs both, like `pint` did.
+
 :::tip[Rolling back]
-Nothing about your code or `pint.json` changes, so switching back is reverting the script and CI lines.
+Your code doesn't change, and `pint.json` stays unless you pass `--remove-tools`. Switching back is reverting the script and CI lines.
 :::

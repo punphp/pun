@@ -57,8 +57,8 @@
 .pun-home .streaks i:nth-child(4) { top: 62%; width: 120px; animation-delay: -.8s; background: #fbf6ec; }
 .pun-home .streaks i:nth-child(5) { top: 74%; width: 80px; animation-delay: -.45s; }
 .pun-home .streaks i:nth-child(6) { top: 86%; width: 110px; animation-delay: -.95s; }
-.pun-home .burst { position: absolute; right: -18px; top: -22px; width: 112px; height: 112px; display: grid; place-content: center; text-align: center; border: var(--pun-stroke) solid var(--pun-outline); border-radius: 50%; background: var(--pun-gum); color: var(--pun-on-fill); box-shadow: var(--pun-pop); transform: rotate(10deg); font: 800 30px/1 var(--blume-font-display); letter-spacing: -.03em; animation: pun-throb 2.4s ease-in-out infinite; }
-.pun-home .burst small, .pun-home .eq small { display: block; margin-top: 4px; font: 600 10px/1.2 var(--blume-font-mono); letter-spacing: 0; }
+.pun-home .burst { position: absolute; right: -22px; top: -26px; width: 132px; height: 132px; padding: 18px; display: grid; place-content: center; text-align: center; border: var(--pun-stroke) solid var(--pun-outline); border-radius: 50%; background: var(--pun-gum); color: var(--pun-on-fill); box-shadow: var(--pun-pop); transform: rotate(10deg); font: 800 30px/1 var(--blume-font-display); letter-spacing: -.03em; animation: pun-throb 2.4s ease-in-out infinite; }
+.pun-home .burst small, .pun-home .eq small { display: block; margin-top: 6px; font: 600 10.5px/1.3 var(--blume-font-mono); letter-spacing: 0; }
 .pun-home .loose { position: absolute; left: -18px; bottom: 44px; padding: 10px 14px; background: var(--pun-card); border: var(--pun-stroke) solid var(--pun-outline); border-radius: 10px; box-shadow: var(--pun-pop); transform: rotate(-4deg); font: 600 13px/1 var(--blume-font-mono); }
 
 /* entrance */

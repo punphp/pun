@@ -1,37 +1,39 @@
 ---
 title: pun format
-description: Fix or check the coding style of a project, byte for byte like Laravel Pint, only much faster.
+description: Fix layout with Pint's behaviour-safe rules. What format-on-save runs.
 ---
 
-`pun format` is Pint, rewritten in Rust. It reads `pint.json`, runs the same fixers in the same order and writes the same bytes. On laravel/framework it takes 3.7 s cold and 0.07 s warm, where Pint takes 190 s.
+`pun format` runs the `[format]` rules from `pun.toml`: Pint's preset and your overrides, minus the risky fixers, which are [lint rules](/docs/commands/lint). Everything it changes is layout, so it's safe to run on save. [`pun check --fix`](/docs/commands/check) runs format and lint together and writes exactly what `pint` wrote.
+
+On laravel/framework it takes 3.7 s cold and 0.07 s warm, where Pint takes 190 s.
 
 ```bash
-pun format              # fix the project, like `pint`
+pun format              # fix the project
 pun format --test       # check only; exits 1 if anything would change
 pun format app/Models   # specific paths
 ```
 
 ## Pint's flags
 
-Every Pint flag works the same way.
+Pint's flags work the same way.
 
 | Flag | What it does |
 | --- | --- |
-| `--test` (`--check`) | Test for code style errors without fixing them. Exits 1 on any. |
+| `--test` (`--check`) | Test for style errors without fixing them. Exits 1 on any. |
 | `--bail` | Like `--test`, stopping at the first error. |
 | `--repair` | Fix errors, but exit 1 if anything changed. |
 | `--dirty` | Only files with uncommitted changes. |
 | `--diff=<branch>` | Only files changed since branching off `<branch>`. |
-| `--blade` | Enable the `Pint/laravel_blade` rule to format Blade files. |
-| `--config=<path>` | Use this configuration file. |
-| `--no-config` | Load no configuration file. |
-| `--preset=<name>` | Use this preset (`laravel`, `psr12`, `per`, `symfony`, `empty`). |
+| `--blade` | Also format Blade files. |
+| `--config=<path>` | Use this `pun.toml`. |
+| `--preset=<name>` | Use a built-in preset (`laravel`, `per`, `psr12`, `symfony`, `empty`) instead of `pun.toml`. |
+| `--no-config` | Use the `laravel` preset and no config file. |
 | `--format=<fmt>` | Output format: `json`, `txt`, `agent`, and the rest Pint supports. |
 | `--output-to-file=<path>` | Also write results to a file, in `--output-format`. |
 | `--stdin-filename=<path>` | Path context for code read from stdin (`-` as the path). |
 | `--cache-file=<path>` | Cache location (default: a per-project file under `~/.cache/pun`). |
 | `-v`, `-q` | More or less output. |
-| `--parallel`, `--max-processes` | Accepted for compatibility. Pun always runs in parallel. |
+| `--parallel`, `--max-processes` | Accepted. Pun always runs in parallel. |
 
 ## Pun's own flags
 
@@ -46,11 +48,13 @@ Every Pint flag works the same way.
 | `--native-only` | Run only native fixers, skipping and listing delegated rules. |
 
 :::warning[--native-only is not Pint-identical]
-It skips rules Pun hasn't ported, so output can differ from Pint. The exit code is unaffected. See [delegate mode](/docs/configuration/delegate-mode).
+It skips rules Pun hasn't ported, so output can differ from Pint. See [delegate mode](/docs/configuration/delegate-mode).
 :::
 
 ## Output
 
-Pun prints exactly what Pint prints: the summary, `-v` diffs, syntax-error snippets, colours, terminal width and the JSON, txt, checkstyle, JUnit, XML and GitLab reporters. Syntax-error messages are PHP's own when a local `php` is available.
+Pun prints what Pint prints: the summary, `-v` diffs, syntax-error snippets, colours, terminal width and the JSON, txt, checkstyle, JUnit, XML and GitLab reporters.
 
-Under a coding agent (Claude Code, Cursor, Codex and others, detected from the environment), Pun switches to the compact `agent` format automatically, like Pint does. See [Coding agents](/docs/guides/coding-agents).
+Without a `pun.toml`, every command stops with `No pun.toml found. Run pun migrate.`, unless you pass `--preset` or `--no-config`.
+
+Under a coding agent, Pun switches to the compact `agent` format automatically. See [Coding agents](/docs/guides/coding-agents).
