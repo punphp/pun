@@ -206,7 +206,11 @@ impl Renderer {
             .map(|t| columns(&t[..t.len() - t.trim_start_matches([' ', '\t']).len()]))
             .min()
             .unwrap_or(0)
-            .saturating_sub(INDENT);
+            .saturating_sub(INDENT)
+            .min({
+                let (start, code) = text(first);
+                columns(&code[..(span.start - start).min(code.len())])
+            });
         let width = last.to_string().len();
         let bar = self.look.paint(Role::Dim, self.look.glyph("│", "|"));
         let mut out = format!(
@@ -229,7 +233,7 @@ impl Renderer {
             let number = self.look.paint(Role::Dim, &format!("{line:>width$}"));
             out.push_str(format!(" {number}{bar} {shown}").trim_end());
             out.push('\n');
-            if (first..=last).contains(&line) {
+            if (first..=last).contains(&line) && (first == last || !code.trim().is_empty()) {
                 let indent = code.len() - code.trim_start().len();
                 let from = if line == first {
                     (span.start - start).min(code.len())

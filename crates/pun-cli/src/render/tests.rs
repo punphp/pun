@@ -362,6 +362,43 @@ fn empty_span_and_span_past_the_line_end_mark_one_column() {
 }
 
 #[test]
+fn span_inside_deep_indentation_keeps_the_indentation() {
+    // The span starts at column 1 of a line indented 12 spaces, so nothing is cut.
+    let source = "            foo();\n";
+    let p = problem("lint/x/y", "a.php", (0, 18), "m", None, Level::Error);
+    assert_eq!(
+        plain().problem(&p, source, &LineIndex::new(source)),
+        concat!(
+            " ✖ lint/x/y  m\n",
+            "  ╭─ a.php:1:1\n",
+            " 1│             foo();\n",
+            "  │ ━━━━━━━━━━━━━━━━━━\n",
+            "  ╰─\n",
+        )
+    );
+}
+
+#[test]
+fn blank_line_inside_a_span_gets_no_marker() {
+    // Indented 8, cut to 4; line 2 is empty.
+    let source = "        foo(\n\n        );\n";
+    let p = problem("lint/x/y", "a.php", (8, 24), "m", None, Level::Error);
+    assert_eq!(
+        plain().problem(&p, source, &LineIndex::new(source)),
+        concat!(
+            " ✖ lint/x/y  m\n",
+            "  ╭─ a.php:1:9\n",
+            " 1│     foo(\n",
+            "  │     ━━━━\n",
+            " 2│\n",
+            " 3│     );\n",
+            "  │     ━━\n",
+            "  ╰─\n",
+        )
+    );
+}
+
+#[test]
 fn summary_samples() {
     let failing = Summary {
         errors: 3,

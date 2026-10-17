@@ -145,7 +145,8 @@ silent:
   spaces after a longer message). An unsafe fix reads `fixable (unsafe)`.
 - **Code frames:** one line of context before the span unless that line is blank; no context after. A tab shows as 4
   spaces, and indentation deeper than 4 columns is cut to 4 (the §1 samples: 8 spaces at `:42:9` show as 4; one tab at
-  `:23:16` shows as 4). A span over more than 3 lines shows its first two lines, `…`, and its last. An empty span, or
+  `:23:16` shows as 4). The cut never passes the span's start column, and a blank line inside a multi-line span gets no
+  marker. A span over more than 3 lines shows its first two lines, `…`, and its last. An empty span, or
   one at the line end, gets a one-column marker. No help closes the frame with a bare `╰─`. Columns count bytes, as
   `pun_problem::LineIndex` does.
 - **`--concise`:** ` ✖ path:line:col  rule  message  fixable`.
