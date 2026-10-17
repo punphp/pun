@@ -724,13 +724,14 @@ fn pun_only_behaviour() {
         out.ends_with("\napp/Clean.php lint/statements/require-strict-types [fix:unsafe] Force a strict types mode in all files.\n"),
         "{out}"
     );
-    // Without pun.toml, `--preset` names the preset: per's @PER-CS set has no expansion in Pun.
+    // Without pun.toml, `--preset` names the preset; per's @PER-CS expands (PHP-CS-Fixer's set definitions), and
+    // its rules without a Pun fixer are named under their Pun IDs (mapping.toml), in the order the set lists them.
     std::fs::remove_file(dir.join("pun.toml")).unwrap();
     let (_, err, code) = pun(&dir, &["format", "--test", "--preset=per"]);
     assert_eq!(
         (err.as_str(), code),
         (
-            "pun: preset per: rule not supported by Pun yet: `@PER-CS`\n",
+            "pun: preset per: rules not supported by Pun yet: `format/operators/linebreak`, `format/types/ordered`, `format/attributes/no-block-spaces`\n",
             Some(2)
         )
     );
@@ -768,8 +769,8 @@ fn pun_only_behaviour() {
     assert_eq!((err.as_str(), code), ("pun: Preset not found.\n", Some(1)));
 }
 
-/// `pun migrate` reads a .php-cs-fixer.php through PHP-CS-Fixer itself (a project fixer class, which Pun can't run,
-/// so nothing is written), then one without custom fixers.
+/// `pun migrate` reads a .php-cs-fixer.php and its Finder through PHP-CS-Fixer itself: a project fixer class, which
+/// Pun can't run, is named and skipped, then one without custom fixers.
 #[test]
 fn migrates_php_cs_fixer_config() {
     let Some(oracle) = oracle() else { return };
@@ -816,46 +817,57 @@ fn migrates_php_cs_fixer_config() {
             Some(1)
         )
     );
+    // The custom fixer is named and skipped; the rest migrates, the Finder's `in` to [files] paths.
     reset(&dir, &tree);
-    let finder = "pun migrate: .php-cs-fixer.php configures its own Finder, which is not migrated: check [files] paths and [format] exclude.\n";
+    let skipped = "pun migrate: .php-cs-fixer.php: Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set); skipped\n";
     let (out, err, code) = pun(&dir, &["migrate"]);
     assert_eq!(
-        (out.as_str(), err, code),
+        (out.as_str(), err.as_str(), code),
         (
-            "pun migrate: migrating everything detected (pick with --from): .php-cs-fixer.php\n",
-            format!(
-                "{finder}pun migrate: .php-cs-fixer.php uses rules Pun can't run, so nothing was written:\n  Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n"
-            ),
-            Some(1)
+            "pun migrate: migrating everything detected (pick with --from): .php-cs-fixer.php\npun migrate: pun.toml written from .php-cs-fixer.php, ignore comments rewritten in 0 file(s).\n  .php-cs-fixer.php  migrated\n",
+            skipped,
+            Some(0)
         )
     );
-    assert!(!dir.join("pun.toml").exists());
-    // Agent mode: the Finder note and the unsupported rule as findings under one line.
+    let toml = std::fs::read_to_string(dir.join("pun.toml")).unwrap();
+    assert!(
+        toml.starts_with("# Written by `pun migrate` from .php-cs-fixer.php.\n[files]\npaths = [\"app\"]\n\n[format]\npreset = \"empty\"\n\n[format.rules]\n")
+            && toml.contains("\n\"strings/single-quote\" = true\n"),
+        "{toml}"
+    );
+    // Agent mode: the skipped rule as a finding under one line.
+    reset(&dir, &tree);
     let (out, _, code) = pun_env(&dir, &["migrate"], &[("PUN_AGENT", "1")]);
     let (first, rest) = out.split_once('\n').unwrap();
-    let out = format!("{}, Ts)\n{rest}", &first[..first.rfind(", ").unwrap()]);
-    assert_eq!(
-        (out.as_str(), code),
-        (
-            "pun migrate: fail, 1 unsupported rule, nothing written (from .php-cs-fixer.php, Ts)\n.php-cs-fixer.php finder-not-migrated configures its own Finder, which is not migrated: check [files] paths and [format] exclude.\n.php-cs-fixer.php unsupported-rule Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n",
-            Some(1)
-        )
+    assert_eq!(code, Some(0));
+    assert!(
+        first.starts_with("pun migrate: ok, pun.toml written (preset empty, "),
+        "{first}"
     );
+    assert_eq!(
+        rest,
+        ".php-cs-fixer.php migrated\n.php-cs-fixer.php unsupported Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n"
+    );
+    // A Finder over the project root: no [files] paths; exclude and notName go to [format]; depth() has no key.
+    reset(&dir, &tree);
     std::fs::write(
         dir.join(".php-cs-fixer.php"),
-        "<?php\nreturn (new PhpCsFixer\\Config())->setRiskyAllowed(true)->setRules(['single_quote' => true, 'no_alias_functions' => true]);\n",
+        "<?php\nreturn (new PhpCsFixer\\Config())->setRiskyAllowed(true)->setRules(['single_quote' => true, 'no_alias_functions' => true])\n    ->setFinder(PhpCsFixer\\Finder::create()->in(__DIR__)->exclude('legacy')->notName('*.inc')->depth('< 3'));\n",
     )
     .unwrap();
     let (out, err, code) = pun(&dir, &["migrate"]);
     assert_eq!(code, Some(0), "{err}");
-    assert_eq!(err, finder);
+    assert_eq!(
+        err,
+        "pun migrate: .php-cs-fixer.php: Finder depth(): no pun.toml key for it; skipped\n"
+    );
     assert_eq!(
         out,
         "pun migrate: migrating everything detected (pick with --from): .php-cs-fixer.php\npun migrate: pun.toml written from .php-cs-fixer.php, ignore comments rewritten in 0 file(s).\n  .php-cs-fixer.php  migrated\n"
     );
     assert_eq!(
         std::fs::read_to_string(dir.join("pun.toml")).unwrap(),
-        "# Written by `pun migrate` from .php-cs-fixer.php.\n[format]\npreset = \"empty\"\n\n[format.rules]\n\"strings/single-quote\" = true\n\n[lint.rules]\n\"style/no-alias-function\" = \"error\"\n"
+        "# Written by `pun migrate` from .php-cs-fixer.php.\n[format]\npreset = \"empty\"\nexclude = [\"legacy\"]\nnot-name = [\"*.inc\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\n[lint.rules]\n\"style/no-alias-function\" = \"error\"\n"
     );
     // single_quote is format; no_alias_functions (risky) only runs under lint / check.
     pun(&dir, &["format"]);

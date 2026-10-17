@@ -68,3 +68,24 @@ From 2026-10-17 (Pushpak): migrate is complete and explicit about what it can't 
 skipped, with a request to send a PR to punphp/pun, never sent to PHP; baselines are never copied; everything
 migrates at `error`; the closest preset is offered interactively; no workflow wiring. Open: `--remove-tools`
 (../PLAN.md §4).
+
+Build 1 (wf/migrate-format, 2026-10-17), assistant's calls where the plan is silent:
+
+- **Rule sets expand from PHP-CS-Fixer's own definitions.** crates/pun-config/presets/sets.json now holds every set of
+  the pinned PHP-CS-Fixer (`RuleSets::getSetDefinitions()`, exported by scripts/export-rule-sets.php), not only the
+  three PSR sets, so `per`, `symfony` and any set in a pint.json (`@PER-CS`, `@PHP84Migration`, `@Symfony:risky`)
+  expand into explicit rules. The `@auto` sets read the project's composer.json, so they stay unexpanded and are
+  named. Side effect: `pun format --preset per` (no pun.toml) names per's unported rules under their Pun IDs instead
+  of `@PER-CS`.
+- **"Can run" means a native fixer** (`pun_fixers::all`), the same test config 6 uses at run time. A rule without one
+  (no Pun ID, deprecated, not ported, or an option TOML can't hold) is named and left out; a preset rule Pun can't run
+  is written as `false`, so the migrated pun.toml always runs. The rest is written and migrate exits 0.
+- **Interim output until migrate 2-3:** one stderr line per item, `pun migrate: <source>: <name>: <reason>; skipped`
+  (`<source>` is the config file, or `preset <name>` without one); in agent mode one `<source> unsupported <name>:
+  <reason>` finding under an `ok` summary. The PR request and the baseline note are migrate 2.
+- **The `.php-cs-fixer.php` Finder** is read in the same `php -r` run, through reflection on Symfony's Finder:
+  `in()` folders become `[files] paths` (relative to the project; the project root itself is left out), `exclude()`
+  (without PhpCsFixer\Finder's own `vendor`), `notName()` and `notPath()` become `[format]` keys, as for pint.json.
+  `name()` other than `*.php`, `path()`, `depth()`, `contains()`, `notContains()`, `size()`, `date()`, `filter()`,
+  `append()` and a Finder that is not a Symfony Finder are named as `Finder <call>: no pun.toml key for it`.
+  An empty Finder list is left out of pun.toml.

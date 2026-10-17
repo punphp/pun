@@ -55,12 +55,12 @@ Pun reads only `pun.toml`, so `pun migrate` is the one place the old configs are
 <Steps>
   <Step title="Read and report">
 
-Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.php-cs-fixer.php` through PHP-CS-Fixer itself. Every rule Pun can't run is listed before anything is written, and then nothing is written. Rule options are written under their [Pun names](/docs/configuration/pun-toml#format-rule-options); an option PHP-CS-Fixer would reject stops the migration with PHP-CS-Fixer's own message, as it stops Pint. Planned: `phpstan.neon` with its baseline, and `rector.php`.
+Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.php-cs-fixer.php` through PHP-CS-Fixer itself. Every rule Pun can't run yet (a custom fixer, a deprecated rule, a rule not ported) and every Finder setting pun.toml has no key for is named on its own line and skipped; the rest is written, and migrate exits 0. Rule options are written under their [Pun names](/docs/configuration/pun-toml#format-rule-options); an option PHP-CS-Fixer would reject stops the migration with PHP-CS-Fixer's own message, as it stops Pint. Planned: `phpstan.neon` with its baseline, and `rector.php`.
 
   </Step>
   <Step title="Write pun.toml">
 
-`[format]` gets the preset plus only what differs from it. The risky fixers and the fixers that delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) go under `[lint.rules]` at `"error"`, so `pun check --fix` applies them as Pint did. Pint's `in` becomes `[files] paths`; a `per` or `symfony` preset is written as `empty` plus its rules. Every rule gets its Pun ID (`"imports/ordered"`, `"imports/no-unused"`). Planned: PHPStan levels expanded into the exact rules they ran.
+`[format]` gets the preset plus only what differs from it. The risky fixers and the fixers that delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) go under `[lint.rules]` at `"error"`, so `pun check --fix` applies them as Pint did. The Finder moves too: Pint's `in`, or the `in()` folders of a `.php-cs-fixer.php` Finder, become `[files] paths`, and `exclude`, `notName` and `notPath` become `[format] exclude`, `not-name` and `not-path`. A `per` or `symfony` preset, and any PHP-CS-Fixer rule set such as `@PER-CS` or `@PHP84Migration`, is expanded into explicit rules over `empty`. Every rule gets its Pun ID (`"imports/ordered"`, `"imports/no-unused"`). Planned: PHPStan levels expanded into the exact rules they ran.
 
   </Step>
   <Step title="Convert the baseline (planned)">

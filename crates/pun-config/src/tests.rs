@@ -699,9 +699,12 @@ fn show() {
         load(&d, &Options::default()).unwrap().show()["analyse"]["baseline"],
         "b.toml"
     );
-    // A rule Pun can't run (a set it can't expand) shows under its upstream name.
+    // `--preset per` expands @PER-CS: @PER-CS2x0's concat_space shows under its Pun ID, as its one option's value.
     let c = load(&dir(&[]), &preset("per")).unwrap();
-    assert_eq!(c.show()["format"]["rules"]["@PER-CS"], true);
+    assert_eq!(
+        c.show()["format"]["rules"]["operators/concat-spacing"],
+        "one"
+    );
 }
 
 /// The text after `docs      ` is mapping.toml's URL with the line of the rule's own row.
@@ -1082,11 +1085,12 @@ fn rule_sets_like_php_cs_fixer() {
         let rules = case["rules"].as_object().unwrap().clone();
         assert_eq!(resolved(rule_set(rules).unwrap()), expected(case));
     }
-    // Sets pun has no definition for stay as one rule, so they are reported as not ported.
-    let rules = json!({"@PER-CS": true}).as_object().unwrap().clone();
+    // The @auto sets read the project's composer.json, so Pun has no definition: they stay as one rule, reported as
+    // not ported.
+    let rules = json!({"@auto": true}).as_object().unwrap().clone();
     assert_eq!(
         resolved(rule_set(rules).unwrap()),
-        [("@PER-CS".to_string(), Value::Null)]
+        [("@auto".to_string(), Value::Null)]
     );
     let rules = json!({"@PSR12": {}}).as_object().unwrap().clone();
     assert_eq!(
@@ -1100,7 +1104,12 @@ mod migrate {
     use crate::migrate::{from_pint, from_rules};
 
     fn pint(json: &str) -> crate::migrate::Migration {
-        from_pint(&dir(&[("pint.json", json)]).join("pint.json"), None).unwrap()
+        from_pint(
+            &dir(&[("pint.json", json)]).join("pint.json"),
+            None,
+            &|_| true,
+        )
+        .unwrap()
     }
 
     /// Hand-derived from Pint's laravel preset (docs/presets/laravel.json, in its order) and the mapping: its 4 risky
@@ -1229,7 +1238,7 @@ not-path = ["y"]
     #[test]
     fn lists_unsupported_rules() {
         let m = pint(
-            r#"{"preset":"empty","rules":{"braces":true,"Custom/fixer":true,"header_comment":{"header":"h","validator":null},"final_internal_class":{"include":null},"@PER-CS":true}}"#,
+            r#"{"preset":"empty","rules":{"braces":true,"Custom/fixer":true,"header_comment":{"header":"h","validator":null},"final_internal_class":{"include":null},"@auto":true}}"#,
         );
         assert_eq!(m.unsupported.len(), 4);
         assert!(
@@ -1242,27 +1251,85 @@ not-path = ["y"]
             [
                 "Custom/fixer: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
                 "final_internal_class: an option is null, which TOML can't hold",
-                "@PER-CS: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
+                "@auto: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
             ]
         );
-        // pun.toml has no per or symfony preset: their rules are written over `empty`, and the sets in them Pun
-        // can't expand are named.
-        let m = pint(r#"{"preset":"per"}"#);
-        assert_eq!(
-            m.unsupported,
-            ["@PER-CS: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)"]
-        );
+        // The rest still migrates.
         assert_eq!(
             m.toml,
-            "[format]\npreset = \"empty\"\n\n[lint.rules]\n\"imports/no-unused\" = \"error\"\n"
+            "[format]\npreset = \"empty\"\n\n[format.rules]\n\"comments/header\" = { header = \"h\" }\n"
         );
+    }
+
+    /// pun.toml has no per or symfony preset: their sets expand (sets.json, PHP-CS-Fixer's definitions) and every rule
+    /// is written over `empty`. Hand-derived from @PER-CS3x0 and @PSR12 in sets.json, with per's no_unused_imports.
+    #[test]
+    fn expands_per_and_symfony() {
+        let m = pint(r#"{"preset":"per"}"#);
+        assert!(m.unsupported.is_empty());
+        let c = from_toml(&dir(&[]), &m.toml).unwrap();
+        assert_eq!(c.preset, "empty");
+        let rules = names(&c.rules);
+        // From @PER-CS3x0 itself, from @PER-CS2x0 under it, and from @PSR12 under that.
+        for r in [
+            "types_spaces",
+            "attribute_block_no_spaces",
+            "concat_space",
+            "lowercase_cast",
+        ] {
+            assert!(rules.contains(&r), "{r}");
+        }
+        let lint: Vec<_> = c.lint.rules.iter().map(|l| l.fixer.unwrap()).collect();
+        // @PSR12's ordered_class_elements and per's no_unused_imports delete code, so they are lint rules.
+        assert_eq!(lint, ["ordered_class_elements", "no_unused_imports"]);
+        let m = pint(r#"{"preset":"symfony","rules":{"no_empty_comment":false}}"#);
+        let c = from_toml(&dir(&[]), &m.toml).unwrap();
+        assert!(
+            names(&c.rules).contains(&"phpdoc_align")
+                && !names(&c.rules).contains(&"no_empty_comment")
+        );
+    }
+
+    /// A rule Pun has no fixer for is named and skipped; one the preset brings is switched off, so pun.toml runs.
+    /// Hand-derived from the laravel preset: single_quote (format) and final_class (lint, pint.json's) left out.
+    #[test]
+    fn skips_rules_pun_cant_run() {
+        let runs = |n: &str| n != "single_quote" && n != "final_class";
+        let d = dir(&[("pint.json", r#"{"rules":{"final_class":true}}"#)]);
+        let m = from_pint(&d.join("pint.json"), None, &runs).unwrap();
+        assert_eq!(
+            m.unsupported,
+            [
+                "single_quote: not supported by Pun yet",
+                "final_class: not supported by Pun yet"
+            ]
+        );
+        assert!(
+            m.toml
+                .contains("\n[format.rules]\n\"strings/single-quote\" = false\n"),
+            "{}",
+            m.toml
+        );
+        assert!(!m.toml.contains("require-final-class"));
     }
 
     #[test]
     fn php_cs_fixer_rules() {
         let rules =
             json!({"@PSR12": true, "strict_param": true, "concat_space": {"spacing": "one"}});
-        let m = from_rules(rules.as_object().unwrap().clone()).unwrap();
+        let finder = json!({"in": ["src", "/elsewhere"], "exclude": [], "notName": ["*.inc"], "notPath": "x/y.php", "unsupported": ["depth()"]});
+        let m = from_rules(
+            rules.as_object().unwrap().clone(),
+            finder.as_object().unwrap(),
+            &|_| true,
+        )
+        .unwrap();
+        assert_eq!(m.unsupported, ["Finder depth(): no pun.toml key for it"]);
+        assert!(
+            m.toml.starts_with("[files]\npaths = [\"src\", \"/elsewhere\"]\n\n[format]\npreset = \"empty\"\nnot-name = [\"*.inc\"]\nnot-path = [\"x/y.php\"]\n\n[format.rules]\n"),
+            "{}",
+            m.toml
+        );
         let c = from_toml(&dir(&[]), &m.toml).unwrap();
         assert_eq!(c.preset, "empty");
         assert!(
@@ -1277,7 +1344,7 @@ not-path = ["y"]
     #[test]
     fn pint_errors() {
         let e = |files: &[(&str, &str)]| {
-            from_pint(&dir(files).join("pint.json"), None)
+            from_pint(&dir(files).join("pint.json"), None, &|_| true)
                 .err()
                 .unwrap()
                 .to_string()
@@ -1289,7 +1356,7 @@ not-path = ["y"]
         // A top-level JSON list is an empty config (laravel preset), not invalid JSON; no file is too.
         assert_eq!(pint("[1]").toml, pint("{}").toml);
         assert_eq!(
-            from_pint(&dir(&[]).join("pint.json"), Some("psr12"))
+            from_pint(&dir(&[]).join("pint.json"), Some("psr12"), &|_| true)
                 .unwrap()
                 .toml,
             "[format]\npreset = \"psr12\"\n\n[lint.rules]\n\"classes/require-member-order\" = { order = [\"use_trait\"] }\n\"imports/no-unused\" = \"error\"\n"
@@ -1348,7 +1415,7 @@ not-path = ["y"]
                 r#"{"extend":"base.json","exclude":["x"],"notName":["n","m"],"in":"src","rules":{"concat_space":{"spacing":"one"}}}"#,
             ),
         ]);
-        let m = from_pint(&d.join("custom.json"), None).unwrap();
+        let m = from_pint(&d.join("custom.json"), None, &|_| true).unwrap();
         assert_eq!(
             m.toml,
             "[files]\npaths = [\"src\"]\n\n[format]\npreset = \"empty\"\nexclude = [\"x\", \"b\"]\nnot-name = [\"n\", \"m\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\"operators/concat-spacing\" = \"one\"\n"

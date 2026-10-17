@@ -257,50 +257,37 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
         }
         return Ok(0);
     }
+    // Pun runs a rule only with a native fixer; migrate names and skips the rest.
+    let fixers: std::collections::HashSet<&str> =
+        pun_fixers::all().iter().map(|f| f.name()).collect();
+    let runs = |name: &str| fixers.contains(name);
     let (from, m) = match format_source {
         Some((Source::PhpCsFixer, f)) => {
-            let rules = php_cs_fixer_rules(&root, &f)?;
-            let note = "configures its own Finder, which is not migrated: check [files] paths and [format] exclude.";
-            if human {
-                eprintln!("pun migrate: {} {note}", rel(&root, &f));
-            } else {
-                notes.push(format!("{} finder-not-migrated {note}", rel(&root, &f)));
-            }
-            (Some(f), migrate::from_rules(rules)?)
+            let (rules, finder) = php_cs_fixer_config(&root, &f)?;
+            (Some(f), migrate::from_rules(rules, &finder, &runs)?)
         }
         Some((_, f)) => {
-            let m = migrate::from_pint(&f, a.preset.as_deref())?;
+            let m = migrate::from_pint(&f, a.preset.as_deref(), &runs)?;
             (Some(f), m)
         }
         // No pint.json: Pint's defaults (its laravel preset, or --preset).
         None => (
             None,
-            migrate::from_pint(&root.join(pint), a.preset.as_deref())?,
+            migrate::from_pint(&root.join(pint), a.preset.as_deref(), &runs)?,
         ),
     };
     if !m.unsupported.is_empty() {
-        let from = rel(&root, from.as_deref().unwrap());
-        if !human {
-            notes.extend(
-                m.unsupported
-                    .iter()
-                    .map(|u| format!("{from} unsupported-rule {u}")),
-            );
-            let detail = [
-                agent::count(m.unsupported.len(), "unsupported rule"),
-                "nothing written".into(),
-            ];
-            print!(
-                "{}",
-                agent::render("fail", &detail, &format!("from {from}"), &notes, false)
-            );
-            return Ok(1);
-        }
-        eprintln!("pun migrate: {from} uses rules Pun can't run, so nothing was written:");
+        let from = match &from {
+            Some(f) => rel(&root, f),
+            None => format!("preset {}", a.preset.as_deref().unwrap_or("laravel")),
+        };
         for u in &m.unsupported {
-            eprintln!("  {u}");
+            if human {
+                eprintln!("pun migrate: {from}: {u}; skipped");
+            } else {
+                notes.push(format!("{from} unsupported {u}"));
+            }
         }
-        return Ok(1);
     }
     let header = match &from {
         Some(f) => format!("from {}.", rel(&root, f)),
@@ -443,12 +430,10 @@ fn rel(root: &Path, p: &Path) -> String {
     p.strip_prefix(root).unwrap_or(p).display().to_string()
 }
 
-/// A `.php-cs-fixer.php`'s rules, read through the project's own PHP-CS-Fixer (the config is PHP code and may register
-/// custom fixers). Migrate is the only place Pun runs PHP, and only to read the old config.
-fn php_cs_fixer_rules(
-    root: &Path,
-    config: &Path,
-) -> Result<serde_json::Map<String, serde_json::Value>> {
+/// A `.php-cs-fixer.php`'s rules and Finder, read through the project's own PHP-CS-Fixer (the config is PHP code and
+/// may register custom fixers). Migrate is the only place Pun runs PHP, and only to read the old config.
+type Object = serde_json::Map<String, serde_json::Value>;
+fn php_cs_fixer_config(root: &Path, config: &Path) -> Result<(Object, Object)> {
     if !root.join("vendor/friendsofphp/php-cs-fixer").is_dir() {
         bail!(
             "no vendor/friendsofphp/php-cs-fixer: run `composer install` so Pun can read the config"
@@ -471,7 +456,9 @@ fn php_cs_fixer_rules(
     if !out.status.success() {
         bail!("{}", String::from_utf8_lossy(&out.stdout));
     }
-    Ok(serde_json::from_slice(&out.stdout)?)
+    let mut v: Object = serde_json::from_slice(&out.stdout)?;
+    let mut take = |k: &str| serde_json::from_value(v.remove(k).unwrap_or_default());
+    Ok((take("rules")?, take("finder")?))
 }
 
 #[cfg(test)]

@@ -132,22 +132,36 @@ fn writes_pun_toml_and_rewrites_ignores() {
     assert_eq!(read(&d, "pun.toml"), "# mine\n");
 }
 
+/// A rule Pun can't run is named on stderr and skipped; the rest is written and migrate exits 0
+/// (context/plan/migrate.md §3).
 #[test]
-fn stops_on_unsupported_rules() {
+fn skips_unsupported_rules() {
     let d = project(
         "unsupported",
         &[(
             "pint.json",
-            r#"{"rules":{"braces":true,"array_syntax":true}}"#,
+            r#"{"preset":"empty","rules":{"braces":true,"array_syntax":true}}"#,
         )],
     );
     let (out, err, code) = pun(&d, &["migrate"]);
-    assert_eq!((out.as_str(), code), (PICKED, Some(1)));
-    assert!(
-        err.starts_with("pun migrate: pint.json uses rules Pun can't run, so nothing was written:\n  braces: deprecated upstream;"),
-        "{err}"
+    assert_eq!(
+        (out, code),
+        (
+            format!(
+                "{PICKED}pun migrate: pun.toml written from pint.json, ignore comments rewritten in 0 file(s).\n  pint.json  migrated\n"
+            ),
+            Some(0)
+        )
     );
-    assert!(!d.join("pun.toml").exists());
+    // The reason is mapping.toml's `drop` for braces.
+    assert_eq!(
+        err,
+        "pun migrate: pint.json: braces: deprecated upstream; successor: single_space_around_construct, control_structure_braces, control_structure_continuation_position, declare_parentheses, no_multiple_statements_per_line, braces_position, statement_indentation, no_extra_blank_lines; skipped\n"
+    );
+    assert_eq!(
+        read(&d, "pun.toml"),
+        "# Written by `pun migrate` from pint.json.\n[format]\npreset = \"empty\"\n\n[format.rules]\n\"arrays/syntax\" = true\n"
+    );
     // Pint's own config errors stop it too.
     let d = project("broken", &[("pint.json", "{")]);
     let (_, err, code) = pun(&d, &["migrate"]);
@@ -198,6 +212,16 @@ fn config_and_preset_flags() {
         "{out}"
     );
     assert!(out.contains("+\"strings/single-quote\" = true\n"), "{out}");
+    // No pint.json and `--preset per`: the preset is named as the source of the rules Pun can't run. Their order is
+    // @PER-CS3x0's own rules, then @PER-CS2x0's (sets.json; RuleSet appends a nested set's rules).
+    let (_, err, code) = pun(&d, &["migrate", "--dry-run", "--preset=per"]);
+    assert_eq!(
+        (err.as_str(), code),
+        (
+            "pun migrate: preset per: operator_linebreak: not supported by Pun yet; skipped\npun migrate: preset per: ordered_types: not supported by Pun yet; skipped\npun migrate: preset per: attribute_block_no_spaces: not supported by Pun yet; skipped\n",
+            Some(0)
+        )
+    );
     let (out, _, _) = pun(&d, &["migrate"]);
     assert_eq!(
         out,

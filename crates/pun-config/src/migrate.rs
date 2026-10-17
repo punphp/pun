@@ -1,8 +1,9 @@
 //! `pun migrate`, format part: pint.json (read like Pint: `extend`, preset, RuleSet checks) or the rules of a
 //! `.php-cs-fixer.php` become a pun.toml under Pun rule IDs. Risky fixers go to `[lint.rules]` at `"error"`, so
 //! `pun check --fix` applies them as the project's old tool did; the rest is written as a delta to the preset, with
-//! options under their Pun names (`options::to_pun`). Pint's `in` becomes `[files] paths`; its other finder keys stay
-//! format-only under `[format]`.
+//! options under their Pun names (`options::to_pun`). Rule sets, and the `per` and `symfony` presets pun.toml doesn't
+//! take, expand into explicit rules. The Finder's `in` becomes `[files] paths`; its other keys stay format-only under
+//! `[format]`. What pun.toml can't hold is named in `Migration::unsupported` and skipped (context/plan/migrate.md §3).
 
 use crate::{Rule, fixer_entries, preset_rules, rule_of, rule_set};
 use anyhow::{Context, Result, bail};
@@ -12,12 +13,16 @@ use std::path::Path;
 
 pub struct Migration {
     pub toml: String,
-    /// Rules Pun can't run, with the reason: the migration must not go ahead with these.
+    /// What pun.toml can't hold, as `name: reason`: rules Pun can't run and Finder settings without a pun.toml key.
+    /// They are left out of `toml` (a preset rule Pun can't run is written as `false`); the rest still migrates.
     pub unsupported: Vec<String>,
 }
 
+/// Whether Pun has a fixer for an upstream rule name (pun-cli asks `pun_fixers::all`).
+pub type Runs<'a> = &'a dyn Fn(&str) -> bool;
+
 /// pint.json at `path` (a missing file is an empty config, as in Pint), with `--preset` winning over its preset.
-pub fn from_pint(path: &Path, preset: Option<&str>) -> Result<Migration> {
+pub fn from_pint(path: &Path, preset: Option<&str>, runs: Runs) -> Result<Migration> {
     let pint = read_pint_json(path)?;
     let preset = preset
         .or_else(|| pint.get("preset").and_then(Value::as_str))
@@ -46,6 +51,39 @@ pub fn from_pint(path: &Path, preset: Option<&str>) -> Result<Migration> {
             bail!("[{name}] {what} Other values are not allowed.{null}");
         }
     }
+    let (paths, finder) = finder(&pint);
+    write(preset, rule_set(rules)?, &paths, &finder, vec![], runs)
+}
+
+/// A `.php-cs-fixer.php`'s rules as its ConfigurationResolver resolves them, over preset `empty`, and its Finder in
+/// pint.json's keys (`in`, `exclude`, `notName`, `notPath`) plus `unsupported`, the settings pun.toml has no key for.
+pub fn from_rules(
+    rules: Map<String, Value>,
+    finder_of: &Map<String, Value>,
+    runs: Runs,
+) -> Result<Migration> {
+    let (paths, finder) = finder(finder_of);
+    let unsupported = (finder_of
+        .get("unsupported")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten())
+    .filter_map(Value::as_str)
+    .map(|s| format!("Finder {s}: no pun.toml key for it"))
+    .collect();
+    write(
+        "empty",
+        rule_set(rules)?,
+        &paths,
+        &finder,
+        unsupported,
+        runs,
+    )
+}
+
+/// The Finder keys as pun.toml lines: `in` for `[files] paths`, the rest for `[format]`. A key holds one string or a
+/// list, as in pint.json; an empty list is left out.
+fn finder(config: &Map<String, Value>) -> (String, String) {
     let (mut paths, mut finder) = (String::new(), String::new());
     for (json, key) in [
         ("in", "paths"),
@@ -53,9 +91,9 @@ pub fn from_pint(path: &Path, preset: Option<&str>) -> Result<Migration> {
         ("notName", "not-name"),
         ("notPath", "not-path"),
     ] {
-        let list: Vec<&str> = match pint.get(json) {
+        let list: Vec<&str> = match config.get(json) {
             Some(Value::String(s)) => vec![s],
-            Some(Value::Array(a)) => a.iter().filter_map(Value::as_str).collect(),
+            Some(Value::Array(a)) if !a.is_empty() => a.iter().filter_map(Value::as_str).collect(),
             _ => continue,
         };
         let out = if json == "in" {
@@ -65,12 +103,7 @@ pub fn from_pint(path: &Path, preset: Option<&str>) -> Result<Migration> {
         };
         writeln!(out, "{key} = {}", toml::Value::try_from(list).unwrap()).unwrap();
     }
-    write(preset, rule_set(rules)?, &paths, &finder)
-}
-
-/// A `.php-cs-fixer.php`'s rules as its ConfigurationResolver resolves them, over preset `empty`.
-pub fn from_rules(rules: Map<String, Value>) -> Result<Migration> {
-    write("empty", rule_set(rules)?, "", "")
+    (paths, finder)
 }
 
 /// Pint's ConfigurationJsonRepository::get(): a missing file means "no config"; `extend` is one level deep.
@@ -147,9 +180,17 @@ fn replace_recursive(base: &mut Value, over: Value) {
 }
 
 /// pun.toml for `rules` (what the old config ran, resolved) over `preset`: `[format.rules]` holds what differs from
-/// the preset, `[lint.rules]` every risky fixer. A preset pun.toml doesn't take (`per`, `symfony`) is written as
-/// `empty` plus every rule it ran.
-fn write(preset: &str, mut rules: Vec<Rule>, paths: &str, finder: &str) -> Result<Migration> {
+/// the preset, `[lint.rules]` every risky or code-deleting fixer. A preset pun.toml doesn't take (`per`, `symfony`) is
+/// written as `empty` plus every rule it ran. A rule Pun can't run is named in `unsupported` and left out; one the
+/// preset brings is switched off, so the pun.toml runs.
+fn write(
+    preset: &str,
+    mut rules: Vec<Rule>,
+    paths: &str,
+    finder: &str,
+    mut unsupported: Vec<String>,
+    runs: Runs,
+) -> Result<Migration> {
     let preset = if crate::FORMAT_PRESETS.contains(&preset) {
         preset
     } else {
@@ -180,11 +221,25 @@ fn write(preset: &str, mut rules: Vec<Rule>, paths: &str, finder: &str) -> Resul
         }
     }
     let base = rule_set(preset_rules(preset).unwrap())?;
-    let (mut format, mut lints, mut unsupported) = (String::new(), String::new(), vec![]);
+    let (mut format, mut lints) = (String::new(), String::new());
     for r in &rules {
         let id = rule_of(&r.name);
         let lint = id.is_some_and(|id| id.starts_with("lint/"));
-        // The preset brings it (rules Pun can't run, such as sets it can't expand, included).
+        let Some(id) = id.filter(|_| runs(&r.name)) else {
+            let entry = fixer_entries().get(&r.name);
+            let why = entry
+                .and_then(|e| e.get("drop").or(e.get("unsupported")))
+                .and_then(toml::Value::as_str)
+                .unwrap_or(match id {
+                    Some(_) => "not supported by Pun yet",
+                    None => {
+                        "not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)"
+                    }
+                });
+            unsupported.push(format!("{}: {why}", r.name));
+            continue;
+        };
+        // The preset brings it.
         if !lint
             && base
                 .iter()
@@ -192,17 +247,6 @@ fn write(preset: &str, mut rules: Vec<Rule>, paths: &str, finder: &str) -> Resul
         {
             continue;
         }
-        let Some(id) = id else {
-            let entry = fixer_entries().get(&r.name);
-            let why = entry
-                .and_then(|e| e.get("drop").or(e.get("unsupported")))
-                .and_then(toml::Value::as_str)
-                .unwrap_or(
-                    "not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
-                );
-            unsupported.push(format!("{}: {why}", r.name));
-            continue;
-        };
         let name = &id[id.find('/').unwrap() + 1..];
         let v = match (lint, value(&r.options)) {
             (true, Value::Bool(true)) => Value::from("error"),
@@ -225,8 +269,9 @@ fn write(preset: &str, mut rules: Vec<Rule>, paths: &str, finder: &str) -> Resul
         .unwrap();
     }
     for b in &base {
+        let off = !rules.iter().any(|r| r.name == b.name) || !runs(&b.name);
         if let Some(name) = rule_of(&b.name).and_then(|id| id.strip_prefix("format/"))
-            && !rules.iter().any(|r| r.name == b.name)
+            && off
         {
             writeln!(format, "\"{name}\" = false").unwrap();
         }

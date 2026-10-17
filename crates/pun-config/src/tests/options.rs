@@ -591,6 +591,7 @@ fn migrate_errors() {
         )])
         .join("pint.json"),
         None,
+        &|_| true,
     );
     assert_eq!(
         e.err().unwrap().to_string(),

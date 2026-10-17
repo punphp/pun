@@ -508,7 +508,7 @@ fn migrate() {
             Some(1)
         )
     );
-    // Unsupported rules: each one a line, nothing written.
+    // Unsupported rules: each one a line, skipped; the rest is written.
     std::fs::remove_file(d.join("pun.toml")).unwrap();
     std::fs::write(
         d.join("pint.json"),
@@ -518,11 +518,14 @@ fn migrate() {
     assert_eq!(
         agent(&d, &["migrate"]),
         (
-            "pun migrate: fail, 1 unsupported rule, nothing written (from pint.json, Ts)\npint.json unsupported-rule Acme/x: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n".into(),
-            Some(1)
+            "pun migrate: ok, pun.toml written (preset empty, 0 format rules, 0 lint rules), ignore comments rewritten in 0 files (from pint.json, Ts)\npint.json migrated\npint.json unsupported Acme/x: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n".into(),
+            Some(0)
         )
     );
-    assert!(!d.join("pun.toml").exists());
+    assert_eq!(
+        std::fs::read_to_string(d.join("pun.toml")).unwrap(),
+        "# Written by `pun migrate` from pint.json.\n[format]\npreset = \"empty\"\n"
+    );
 }
 
 /// No config at all: pun.toml's comment, the human lines and the agent summary say so (a starter, not "from pint.json").

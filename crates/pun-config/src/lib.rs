@@ -36,8 +36,9 @@ pub const PRESETS: [(&str, &str); 5] = [
     ("empty", include_str!("../presets/empty.json")),
 ];
 
-/// PHP-CS-Fixer rule sets pun can expand (`RuleSets::getSetDefinition($name)->getRules()` of the pinned version).
-/// Other sets stay unexpanded and are reported as not ported.
+/// PHP-CS-Fixer's rule sets (`RuleSets::getSetDefinition($name)->getRules()` of the pinned version, exported by
+/// scripts/export-rule-sets.php). The `@auto` sets read the project, so they stay unexpanded and are reported as not
+/// ported.
 const SETS: &str = include_str!("../presets/sets.json");
 
 /// Upstream rule -> Pun rule mapping (context/plan/rules.md).
