@@ -582,17 +582,30 @@ fn prettier_preflight_like_pint() {
     let mut flag = tree();
     flag.push(("bun.lock", ""));
     cx.same(&flag, &["--blade", "--test"], PLAIN);
-    // Options instead of `true` don't trigger the check.
+    // Options instead of `true` don't trigger the check: the rule is not configurable, so Pint stops on the options
+    // before it, and `pun migrate` stops with the same message.
     let mut opts = tree();
     opts[1] = (
         "pint.json",
         r#"{"preset":"laravel","rules":{"Pint/laravel_blade":{}}}"#,
     );
-    let (want, got) = cx.pair(&opts, &["--test", "app/Clean.php"], PLAIN);
+    reset(&cx.dir, &opts);
+    let php = which("php");
+    let pint = [php.as_str(), cx.oracle.to_str().unwrap(), "--test", "app/Clean.php"];
+    let want = run(&pint, &cx.dir, PLAIN);
+    let message = "[Pint/laravel_blade] Is not configurable.";
     assert!(
-        !want.stdout.contains("prettier") && !got.stdout.contains("prettier"),
-        "{want:?} / {got:?}"
+        want.stdout.contains(message) && !want.stdout.contains("prettier") && want.code == Some(1),
+        "{want:?}"
     );
+    let got = Command::new(PUN[0])
+        .arg("migrate")
+        .env("PUN_AGENT", "0")
+        .current_dir(&cx.dir)
+        .output()
+        .unwrap();
+    let stderr = String::from_utf8_lossy(&got.stderr);
+    assert!(!got.status.success() && stderr.contains(message), "{stderr}");
     // Installed but too old / too new.
     let mut old = t.clone();
     let manifests: Vec<(String, String)> = [

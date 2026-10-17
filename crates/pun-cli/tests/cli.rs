@@ -867,7 +867,8 @@ fn migrates_php_cs_fixer_config() {
 
 /// `pun config` on a hand-written pun.toml. Expected text derived by hand from config.md §3 and mapping.toml: each
 /// command's exclude adds `[files] exclude`; `tags = "warn"` turns on the one lint rule of `tags`; the analyse groups
-/// switched off are every group with a `basic` rule, so only the rule named after them runs.
+/// switched off are every group with a `basic` rule, so only the rule named after them runs; `concat-spacing` has one
+/// option, so it prints as that option's value (format.md Decisions, "Option names").
 #[test]
 fn config_prints_resolved_schema() {
     let dir = tmp("config");
@@ -942,9 +943,7 @@ not-path = ["app/Legacy.php"]
 
 [format.rules]
 "arrays/syntax" = true
-
-[format.rules."operators/concat-spacing"]
-spacing = "one"
+"operators/concat-spacing" = "one"
 
 [lint]
 sets = []
