@@ -11,3 +11,4 @@ Pun ports behaviour, test fixtures and data from these projects. Their licences 
 | sebastian/diff | Diff algorithm (pun-cli php_diff) | BSD-3-Clause |
 | Mago | Parser, formatter, linter crates (dependencies) | MIT / Apache-2.0 |
 | agent-detector (crates.io) | Coding-agent detection for agent output (pun-cli, dependency) | MIT |
+| dialoguer, console (crates.io) | `pun migrate` checklist (pun-cli, dependency) | MIT |

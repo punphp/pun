@@ -364,6 +364,17 @@ impl Pipeline {
 }
 
 /// Cheap guard: FixerAnnotationAnalyzer can only find something when the marker is in the file.
+/// The fixers `code`'s `@pun-ignore-file` comments opt out of, for engines that only know `@php-cs-fixer-ignore`
+/// (PHP-CS-Fixer in delegate mode). A malformed annotation skips nothing; `check_annotations` reports it.
+pub fn pun_ignored(code: &[u8]) -> Vec<&'static str> {
+    if !code.windows(15).any(|w| w == b"pun-ignore-file") {
+        return vec![];
+    }
+    fixer_annotation::find(&Tokens::from_code(code))
+        .map(|a| fixer_annotation::pun_skipped(&a))
+        .unwrap_or_default()
+}
+
 fn has_annotation(code: &[u8]) -> bool {
     code.windows(13)
         .any(|w| w == b"php-cs-fixer-" || w == b"pun-ignore-fi")
@@ -697,6 +708,13 @@ mod tests {
             found(b"<?php\n// @pun-ignore-file\tformat.x\n").unwrap(),
             vec![]
         );
+        // The same, from code, without `@php-cs-fixer-ignore` names (delegate mode); values sort by ID.
+        assert_eq!(
+            pun_ignored(b"<?php\n// @pun-ignore-file single-quote,lint.no-alias-function\n// @php-cs-fixer-ignore x\n"),
+            ["no_alias_functions", "single_quote"]
+        );
+        assert!(pun_ignored(b"<?php\n// @php-cs-fixer-ignore x\n").is_empty());
+        assert!(pun_ignored(b"<?php\n// @pun-ignore-file a,a\n").is_empty());
 
         // Runner::fixFile skips the annotated rules; the others still run.
         let p =

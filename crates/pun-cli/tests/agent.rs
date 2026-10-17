@@ -1,7 +1,7 @@
 //! Agent mode (context/PLAN.md "Agent-optimised output"): detection priority and the exact lines of every command.
 //! Expected rule IDs and summaries come from rules/mapping.toml, the fixers each input triggers from Pint
 //! (`php .oracle/pint/builds/pint --format=agent` on the same files), the env list from the agent-detector crate
-//! 0.2.1's src/agents.rs. The run time in the summary line is replaced by `T`.
+//! 0.2.1's src/agents.rs plus laravel/agent-detector's AgentDetector::AGENT_ENV_VARS (380e6e4). The run time in the summary line is replaced by `T`.
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -70,7 +70,6 @@ fn detection_priority() {
     };
     // The agent-detector crate (0.2.1, env only): each variable of its agents.rs, set to a non-empty value.
     for var in [
-        "CURSOR_TRACE_ID",
         "CURSOR_AGENT",
         "GEMINI_CLI",
         "CODEX_SANDBOX",
@@ -97,6 +96,20 @@ fn detection_priority() {
         "CLAWHUB_WORKDIR",
         "AI_AGENT",
         "AGENT",
+        // laravel/agent-detector's AGENT_ENV_VARS entries the crate lacks.
+        "GROK_PLUGIN_ROOT",
+        "GROK_PLUGIN_DATA",
+        "CODEX_SANDBOX_NETWORK_DISABLED",
+        "OPENCODE",
+        "AMP_CURRENT_THREAD_ID",
+        "COPILOT_CLI",
+        "ANTIGRAVITY_CLI_ALIAS",
+        "MATTERHORN_SESSION_ID",
+        "JUNIE_DATA",
+        "JUNIE_SHIM_PATH",
+        "KIRO_AGENT_PATH",
+        "KIMI_PLUGIN_ROOT",
+        "ZCODE_ENV",
     ] {
         assert!(is_agent(&[], &[(var, "1")]), "{var}");
         // Empty or blank values don't count.
@@ -104,6 +117,18 @@ fn detection_priority() {
     }
     // No agent; no TTY (the test's pipes) is not an agent.
     assert!(!is_agent(&[], &[]));
+    // Cursor sets CURSOR_TRACE_ID in human terminals too (upstream dropped it for CURSOR_AGENT); it alone is no agent,
+    // but Cursor's agent terminals (CURSOR_AGENT) and other agents run inside Cursor still count.
+    assert!(!is_agent(&[], &[("CURSOR_TRACE_ID", "1")]));
+    assert!(is_agent(
+        &[],
+        &[("CURSOR_TRACE_ID", "1"), ("CURSOR_AGENT", "1")]
+    ));
+    assert!(is_agent(
+        &[],
+        &[("CURSOR_TRACE_ID", "1"), ("CLINE_ACTIVE", "1")]
+    ));
+    assert!(is_agent(&[], &[("AI_AGENT", "cursor")]));
     assert!(is_agent(
         &[],
         &[("CURSOR_EXTENSION_HOST_ROLE", "agent-exec")]
@@ -254,18 +279,71 @@ fn lint_and_check() {
             Some(1)
         )
     );
-    // --fix applies only `fix = "apply"` rules.
+    // --fix applies only `fix = "apply"` rules; the others are reported as remaining, like `--test` reports them,
+    // and fail the run.
+    let remaining = "app/S.php lint.no-self-assignment [fix:safe] [remaining]\n";
     assert_eq!(
         agent(&d, &["lint", "--fix"]),
         (
-            format!("pun lint: fixed, 1 file fixed (3 checked, Ts)\n{ALIAS_LINE}\n"),
-            Some(0)
+            format!(
+                "pun lint: fail, 1 file fixed, 1 file with remaining fixes (3 checked, Ts)\n{ALIAS_LINE}\n{remaining}"
+            ),
+            Some(1)
         )
     );
     assert_eq!(
         std::fs::read_to_string(d.join("app/B.php")).unwrap(),
         "<?php\n$n = count(array());\n"
     );
+    assert_eq!(
+        read(&d, "app/S.php"),
+        SELF,
+        "remaining fixes are not written"
+    );
+    // Again (the cache must not hide them): nothing left to fix, the same rule remains.
+    assert_eq!(
+        agent(&d, &["lint", "--fix"]),
+        (
+            format!("pun lint: fail, 1 file with remaining fixes (3 checked, Ts)\n{remaining}"),
+            Some(1)
+        )
+    );
+    // `pun check --fix` too, after the format rules ran.
+    assert_eq!(
+        agent(&d, &["check", "--fix"]),
+        (
+            format!(
+                "pun check: fail, 2 files fixed, 1 file with remaining fixes (3 checked, Ts)\napp/A.php format.array-syntax\napp/B.php format.array-syntax\n{remaining}"
+            ),
+            Some(1)
+        )
+    );
+    // Humans get Pint's summary: FAIL, the fixed files (✓), then the remaining ones (⨯), as `--test` lists them.
+    let (out, code) = run(&d, &["lint", "--fix"], &[]);
+    let lines: Vec<&str> = out.lines().map(str::trim).collect();
+    assert_eq!(code, Some(1), "{out}");
+    assert!(
+        lines
+            .iter()
+            .any(|l| l.starts_with("FAIL") && l.ends_with(" 3 files, 1 style issue remaining")),
+        "{out}"
+    );
+    assert!(
+        lines
+            .iter()
+            .any(|l| l.starts_with("⨯ app/S.php ") && l.ends_with(" Pun/no_self_assignment")),
+        "{out}"
+    );
+    // Without remaining rules --fix passes as before.
+    std::fs::write(d.join("app/S.php"), CLEAN).unwrap();
+    assert_eq!(
+        agent(&d, &["lint", "--fix"]),
+        ("pun lint: pass (3 checked, Ts)\n".to_string(), Some(0))
+    );
+}
+
+fn read(d: &Path, f: &str) -> String {
+    std::fs::read_to_string(d.join(f)).unwrap()
 }
 
 #[test]
@@ -398,7 +476,7 @@ fn migrate() {
     assert_eq!(code, Some(0));
     assert!(
         out.starts_with(&format!(
-            "pun migrate: dry-run, {} to rewrite in 1 file (from pint.json, Ts)\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n--- pun.toml\n+++ pun.toml\n",
+            "pun migrate: dry-run, {} to rewrite in 1 file (from pint.json, Ts)\npint.json migrate\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n--- pun.toml\n+++ pun.toml\n",
             summary.replacen("pun.toml", "pun.toml to write", 1)
         )),
         "{out}"
@@ -408,7 +486,7 @@ fn migrate() {
         agent(&d, &["migrate"]),
         (
             format!(
-                "pun migrate: ok, {} rewritten in 1 file (from pint.json, Ts)\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n",
+                "pun migrate: ok, {} rewritten in 1 file (from pint.json, Ts)\npint.json migrated\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n",
                 summary.replacen("pun.toml", "pun.toml written", 1)
             ),
             Some(0)
@@ -417,7 +495,7 @@ fn migrate() {
     assert_eq!(
         agent(&d, &["migrate"]).0,
         format!(
-            "pun migrate: ok, {} rewritten in 0 files (from pint.json, Ts)\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n",
+            "pun migrate: ok, {} rewritten in 0 files (from pint.json, Ts)\npint.json migrated\napp/U.php ignore-not-migrated `@php-cs-fixer-ignore Acme/rule` left as is (no Pun rule for it)\n",
             summary.replacen("pun.toml", "pun.toml up to date", 1)
         )
     );
@@ -447,48 +525,42 @@ fn migrate() {
     assert!(!d.join("pun.toml").exists());
 }
 
-/// No pint.json or .php-cs-fixer.php: pun.toml's comment, the human line and the agent summary say so.
+/// No config at all: pun.toml's comment, the human lines and the agent summary say so (a starter, not "from pint.json").
 #[test]
 fn migrate_without_a_config() {
     let d = project(&[("app/A.php", CLEAN)]);
-    let why = "no pint.json or .php-cs-fixer.php found; wrote pun.toml with the laravel preset";
+    let nothing = "no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found";
     assert_eq!(
         agent(&d, &["migrate"]),
         (
             format!(
-                "pun migrate: ok, {why} (preset laravel, 126 format rules, 4 lint rules), ignore comments rewritten in 0 files (Ts)\n"
+                "pun migrate: ok, starter pun.toml written (preset laravel, 126 format rules, 4 lint rules), ignore comments rewritten in 0 files ({nothing}, Ts)\n"
             ),
             Some(0)
         )
     );
     let toml = std::fs::read_to_string(d.join("pun.toml")).unwrap();
     assert!(
-        toml.starts_with(&format!("# Written by `pun migrate`: {why}.\n[format]\n")),
+        toml.starts_with(&format!(
+            "# Written by `pun migrate`: {nothing}; starter config.\npreset = \"recommended\"\n\n[format]\n"
+        )),
         "{toml}"
     );
     assert_eq!(
         run(&d, &["migrate"], &[]),
         (
-            "pun migrate: no pint.json or .php-cs-fixer.php found; pun.toml already up to date, ignore comments rewritten in 0 file(s).\n".into(),
+            format!(
+                "pun migrate: {nothing}.\npun migrate: starter pun.toml already up to date, ignore comments rewritten in 0 file(s).\n"
+            ),
             Some(0)
         )
     );
     std::fs::remove_file(d.join("pun.toml")).unwrap();
     assert_eq!(
         run(&d, &["migrate"], &[]).0,
-        format!("pun migrate: {why}, ignore comments rewritten in 0 file(s).\n")
-    );
-    // --config names the file that is missing, and --preset the preset written.
-    std::fs::remove_file(d.join("pun.toml")).unwrap();
-    run(
-        &d,
-        &["migrate", "--config=ci/pint.json", "--preset=psr12"],
-        &[],
-    );
-    let toml = std::fs::read_to_string(d.join("pun.toml")).unwrap();
-    assert!(
-        toml.starts_with("# Written by `pun migrate`: no ci/pint.json found; wrote pun.toml with the psr12 preset.\n"),
-        "{toml}"
+        format!(
+            "pun migrate: {nothing}.\npun migrate: starter pun.toml written, ignore comments rewritten in 0 file(s).\n"
+        )
     );
 }
 

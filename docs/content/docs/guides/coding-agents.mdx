@@ -18,7 +18,7 @@ app/D.php:2 syntax-error Parse error: syntax error, unexpected token ";" on line
 - Exit codes are the same as without an agent.
 - `pun migrate` prints the written config (preset and rule counts), with each unsupported rule or unmigrated ignore comment as a finding. `pun config` prints a summary line, then the TOML.
 
-Pun detects agents from their environment variables with the [agent-detector](https://crates.io/crates/agent-detector) crate: Claude Code, Cursor, Codex, Gemini CLI, Copilot, OpenCode, Augment, Cline, Goose, Roo, Replit and others, plus any agent that sets `AI_AGENT` or `AGENT`. A missing TTY doesn't count as an agent. You can override detection, highest priority first:
+Pun detects agents from their environment variables, using [laravel/agent-detector](https://github.com/laravel/agent-detector)'s list (plus its `/opt/.devin` check for Devin) and then the [agent-detector](https://crates.io/crates/agent-detector) crate: Claude Code, Cursor, Codex, Gemini CLI, Copilot, Amp, OpenCode, Junie, Kiro, Grok, Kimi, Augment, Cline, Goose, Roo, Replit and others, plus any agent that sets `AI_AGENT` or `AGENT`. A missing TTY doesn't count as an agent. `CURSOR_TRACE_ID` alone doesn't count either: Cursor sets it in your own terminal too, while its agent sets `CURSOR_AGENT`. You can override detection, highest priority first:
 
 | Override | Effect |
 | --- | --- |

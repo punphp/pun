@@ -175,6 +175,14 @@ paths = ["app"]
 #[test]
 fn pun_toml_errors() {
     let e = |toml: &str| err(&dir(&[("pun.toml", toml)]), Options::default());
+    // The four tiers of context/RULES.md §5, nothing else.
+    for tier in ["essential", "recommended", "strict", "pedantic"] {
+        let toml = format!("preset = \"{tier}\"\n");
+        assert!(load(&dir(&[("pun.toml", &toml)]), &Options::default()).is_ok());
+    }
+    assert!(e("preset = \"laravel\"\n").contains(
+        "unknown variant `laravel`, expected one of `essential`, `recommended`, `strict`, `pedantic`"
+    ));
     assert!(e("[format]\nexlude = [\"typo\"]\n").contains("unknown field `exlude`"));
     assert!(e("[format.rules]\nnope = true\n").ends_with(
         "`nope` is not a format rule Pun can run (see crates/pun-config/rules/mapping.toml)"
@@ -250,6 +258,38 @@ fn mapping_lookups() {
         Some("ordered_imports")
     );
     assert_eq!(fixer_of("lint", "ordered-imports"), None);
+}
+
+#[test]
+fn rule_metadata() {
+    // Hand-read from rules/mapping.toml.
+    let m = rule("lint.no-self-assignment").unwrap();
+    assert_eq!(
+        (m.fix, m.tier, m.summary, m.aliases.as_slice()),
+        (
+            "safe",
+            Some("recommended"),
+            None,
+            &["simplify-mirror-assign"][..]
+        )
+    );
+    let m = rule("lint.require-strict-param").unwrap();
+    assert_eq!((m.fix, m.tier), ("mixed", Some("strict")));
+    let m = rule("format.array-syntax").unwrap();
+    assert_eq!(
+        (m.fix, m.tier, m.summary, m.aliases.len()),
+        (
+            "safe",
+            None,
+            Some("PHP arrays should be declared using the configured syntax."),
+            0
+        )
+    );
+    // Analyse rules have no fix.
+    let m = rule("analyse.argument-count").unwrap();
+    assert_eq!((m.fix, m.tier), ("none", Some("essential")));
+    assert!(rule("no-self-assignment").is_none());
+    assert!(rule("lint.array-syntax").is_none());
 }
 
 #[test]

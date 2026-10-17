@@ -113,6 +113,7 @@ fn run(
     std::fs::create_dir_all(&tmp).unwrap();
     c.env("COLUMNS", "80")
         .env("TMPDIR", &tmp)
+        .env("PUN_AGENT", "0")
         .envs(env.iter().copied())
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -138,6 +139,7 @@ const PUN: &str = env!("CARGO_BIN_EXE_pun");
 fn migrate(dir: &Path) {
     let out = Command::new(PUN)
         .arg("migrate")
+        .env("PUN_AGENT", "0")
         .current_dir(dir)
         .output()
         .unwrap();
@@ -483,6 +485,7 @@ fn pun_env(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, String, 
         .env_clear()
         .envs(std::env::vars().filter(|(k, _)| k == "PATH" || k == "LLVM_PROFILE_FILE"))
         .env("COLUMNS", "80")
+        .env("PUN_AGENT", "0")
         .envs(env.iter().copied())
         .output()
         .unwrap();
@@ -679,6 +682,27 @@ fn delegated_rules_match_pint() {
         b"<?php\n$s = \"a $b\";\n",
     );
     assert_eq!(r.stdout, "<?php\n\n$s = \"a {$b}\";\n");
+    // `@pun-ignore-file` skips its rules in PHP-CS-Fixer too (Pint's output for the same `@php-cs-fixer-ignore`
+    // comment): a delegated rule and a native one.
+    for (id, expected) in [
+        (
+            "format.explicit-string-variable",
+            "$s = \"a $b\";\n$c = ['x'];\n",
+        ),
+        ("single-quote", "$s = \"a {$b}\";\n$c = [\"x\"];\n"),
+    ] {
+        let head = format!("<?php\n\n// @pun-ignore-file {id}\n");
+        std::fs::write(
+            dir.join("app/Ignored.php"),
+            format!("{head}$s = \"a $b\";\n$c = array(\"x\");\n"),
+        )
+        .unwrap();
+        pun_env(&dir, &["format", "app/Ignored.php"], &env);
+        assert_eq!(
+            std::fs::read_to_string(dir.join("app/Ignored.php")).unwrap(),
+            format!("{head}{expected}")
+        );
+    }
     // PHP startup warnings (here an ini loading a missing extension) must not reach the worker protocol on stdout.
     let ini = tmp("delegate-ini");
     std::fs::write(
@@ -767,7 +791,7 @@ fn migrates_php_cs_fixer_config() {
     assert_eq!(
         (out.as_str(), err, code),
         (
-            "",
+            "pun migrate: migrating everything detected (pick with --from): .php-cs-fixer.php\n",
             format!(
                 "{finder}pun migrate: .php-cs-fixer.php uses rules Pun can't run, so nothing was written:\n  Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n"
             ),
@@ -796,7 +820,7 @@ fn migrates_php_cs_fixer_config() {
     assert_eq!(err, finder);
     assert_eq!(
         out,
-        "pun migrate: pun.toml written from .php-cs-fixer.php, ignore comments rewritten in 0 file(s).\n"
+        "pun migrate: migrating everything detected (pick with --from): .php-cs-fixer.php\npun migrate: pun.toml written from .php-cs-fixer.php, ignore comments rewritten in 0 file(s).\n  .php-cs-fixer.php  migrated\n"
     );
     assert_eq!(
         std::fs::read_to_string(dir.join("pun.toml")).unwrap(),

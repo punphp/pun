@@ -46,6 +46,8 @@ pub struct Ctx<'a> {
     pub preset: &'a str,
     pub total: usize,
     pub dry_run: bool,
+    /// `--fix`: the fixes of the lint rules it doesn't apply, one result per file (status Fixed).
+    pub remaining: &'a [FileResult],
     pub verbose: bool,
     pub ansi: bool,
     pub no_ansi: bool,
@@ -310,11 +312,14 @@ fn emit_inner(
 /// (`[fix:safe|unsafe]`, the rule's summary), errors as `path:line rule message`; `-v` adds each file's diff.
 fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
     use crate::agent::count;
-    let mut sorted: Vec<&FileResult> = results.iter().collect();
-    sorted.sort_by(|a, b| a.rel.cmp(&b.rel));
+    // `--fix`'s remaining fixes after each file's own lines, tagged `[remaining]`.
+    let mut sorted: Vec<(&FileResult, bool)> = (results.iter().map(|r| (r, false)))
+        .chain(ctx.remaining.iter().map(|r| (r, true)))
+        .collect();
+    sorted.sort_by(|a, b| (&a.0.rel, a.1).cmp(&(&b.0.rel, b.1)));
     let mut items = vec![];
-    let (mut fixed, mut errors) = (0, 0);
-    for r in sorted {
+    let (mut fixed, mut errors, mut left) = (0, 0, 0);
+    for (r, remaining) in sorted {
         if r.is_error() {
             errors += 1;
             // A fixer's exception or broken output is TYPE_LINT / TYPE_EXCEPTION, bad input TYPE_INVALID.
@@ -329,7 +334,12 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
             };
             items.push(format!("{}{at} {rule} {}", r.rel, r.message));
         } else if r.status == Status::Fixed {
-            fixed += 1;
+            if remaining {
+                left += 1;
+            } else {
+                fixed += 1;
+            }
+            let tag = if remaining { " [remaining]" } else { "" };
             let ids: Vec<&str> = (r.applied.iter())
                 .map(|f| pun_config::rule_of(f).unwrap_or(f))
                 .collect();
@@ -341,7 +351,7 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
             }
             for id in lint {
                 let (fix, summary) = lint_rule(id);
-                let _ = writeln!(item, "{} {id} [fix:{fix}]{summary}", r.rel);
+                let _ = writeln!(item, "{} {id} [fix:{fix}]{tag}{summary}", r.rel);
             }
             item.pop();
             if ctx.verbose {
@@ -368,7 +378,10 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
             (_, false) => format!("{files} fixed"),
         });
     }
-    let result = if errors > 0 || (fixed > 0 && ctx.dry_run) {
+    if left > 0 {
+        detail.push(format!("{} with remaining fixes", count(left, "file")));
+    }
+    let result = if errors > 0 || left > 0 || (fixed > 0 && ctx.dry_run) {
         "fail"
     } else if fixed > 0 {
         "fixed"
@@ -379,25 +392,16 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
     crate::agent::render(result, &detail, &checked, &items, ctx.verbose)
 }
 
-/// A lint rule's fix safety (`mixed` counts as unsafe) and ` summary` (empty without one), from rules/mapping.toml
-/// `[rules.lint]`.
+/// A lint rule's fix safety (`mixed` counts as unsafe) and ` summary` (empty without one).
 fn lint_rule(id: &str) -> (&'static str, String) {
-    static LINT: std::sync::LazyLock<toml::Table> = std::sync::LazyLock::new(|| {
-        let mapping = include_str!("../../pun-config/rules/mapping.toml");
-        let body = mapping.split_once("\n[rules.lint]\n").unwrap().1;
-        toml::from_str(body.split("\n[").next().unwrap()).unwrap()
-    });
-    let e = id.strip_prefix("lint.").and_then(|n| LINT.get(n));
-    let get = |k| e.and_then(|e| e.get(k)).and_then(toml::Value::as_str);
-    let fix = if get("fix") == Some("safe") {
+    let m = pun_config::rule(id);
+    let fix = if m.as_ref().is_some_and(|m| m.fix == "safe") {
         "safe"
     } else {
         "unsafe"
     };
-    (
-        fix,
-        get("summary").map_or(String::new(), |s| format!(" {s}")),
-    )
+    let summary = m.and_then(|m| m.summary);
+    (fix, summary.map_or(String::new(), |s| format!(" {s}")))
 }
 
 /// InteractsWithSymbols::getSymbol: markup when stdout is decorated, the bare symbol otherwise.
@@ -494,9 +498,10 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
         "─".repeat(inner.saturating_sub(1 + label.chars().count()))
     );
 
-    let (status, style) = if issues.is_empty() {
+    let left = ctx.remaining.len();
+    let (status, style) = if issues.is_empty() && left == 0 {
         ("  PASS  ", "bg=green;fg=gray")
-    } else if errors == 0 && !ctx.dry_run {
+    } else if errors == 0 && left == 0 && !ctx.dry_run {
         ("  FIXED  ", "bg=green;fg=gray")
     } else {
         ("  FAIL  ", "bg=red;fg=white")
@@ -520,6 +525,9 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
             if ctx.dry_run { "" } else { " fixed" }
         );
     }
+    if left > 0 {
+        let _ = write!(right, ", {left} style {} remaining", plural(left, "issue"));
+    }
     let dots = inner.saturating_sub(status.len() + 2 + right.chars().count());
     let _ = writeln!(
         o,
@@ -528,8 +536,13 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
     );
 
     let colors = console::collision_colors();
-    for i in &issues {
-        let left = format!("{} {}", symbol(i.status, ctx.dry_run, decorated), i.rel);
+    // `--fix`'s remaining fixes are listed after the rest, as `--test` lists them.
+    let mut remaining: Vec<&FileResult> = ctx.remaining.iter().collect();
+    remaining.sort_by(|a, b| a.rel.cmp(&b.rel));
+    let listed =
+        (issues.iter().map(|i| (*i, ctx.dry_run))).chain(remaining.into_iter().map(|i| (i, true)));
+    for (i, testing) in listed {
+        let left = format!("{} {}", symbol(i.status, testing, decorated), i.rel);
         let left_len = 2 + tw_len(&i.rel);
         let room = inner.saturating_sub(left_len + 1);
         let mut desc = description(i);

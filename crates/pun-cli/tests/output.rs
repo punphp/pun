@@ -100,7 +100,7 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
             c.env(k, v);
         }
     }
-    c.env(
+    c.env("PUN_AGENT", "0").env(
         "PATH",
         o.path
             .map_or_else(|| std::env::var("PATH").unwrap(), str::to_string),
@@ -132,6 +132,7 @@ const PUN: [&str; 2] = [env!("CARGO_BIN_EXE_pun"), "format"];
 fn migrate(dir: &Path) {
     let out = Command::new(PUN[0])
         .arg("migrate")
+        .env("PUN_AGENT", "0")
         .current_dir(dir)
         .output()
         .unwrap();

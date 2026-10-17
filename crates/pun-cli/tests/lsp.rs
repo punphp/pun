@@ -27,6 +27,7 @@ fn migrate(dir: &Path) {
     let _ = std::fs::remove_file(dir.join("pun.toml"));
     let out = Command::new(env!("CARGO_BIN_EXE_pun"))
         .arg("migrate")
+        .env("PUN_AGENT", "0")
         .current_dir(dir)
         .output()
         .unwrap();
@@ -75,7 +76,8 @@ impl Server {
             .current_dir(cwd)
             .env_clear()
             .env("PATH", std::env::var("PATH").unwrap())
-            .env("HOME", cwd);
+            .env("HOME", cwd)
+            .env("PUN_AGENT", "0");
         if let Ok(v) = std::env::var("LLVM_PROFILE_FILE") {
             c.env("LLVM_PROFILE_FILE", v);
         }

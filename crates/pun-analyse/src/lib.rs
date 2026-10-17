@@ -33,10 +33,21 @@ pub fn analyse(project_root: &Path, config: &Resolved) -> Vec<Error> {
 /// `@phpstan-ignore*` comments and `ignoreErrors` ignore, as `phpstan analyse` reports it.
 pub fn run(project: &Project) -> Vec<Error> {
     let codebase = codebase::build(project);
+    let files: std::collections::HashMap<_, _> = project
+        .analysed
+        .iter()
+        .chain(&project.scanned)
+        .map(|p| {
+            (
+                mago_database::file::FileId::new(display(p).as_bytes()),
+                p.clone(),
+            )
+        })
+        .collect();
     let errors: Vec<_> = project
         .analysed
         .iter()
-        .flat_map(|f| rules::check_file(f, &codebase, project))
+        .flat_map(|f| rules::check_file(f, &codebase, project, &files))
         .collect();
     let analysed: Vec<String> = project.analysed.iter().map(|p| display(p)).collect();
     let processed = project

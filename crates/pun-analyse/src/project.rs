@@ -180,5 +180,13 @@ fn composer_files(root: &Path, extensions: &[String]) -> Vec<PathBuf> {
             }
         }
     }
+    // Composer's own classes, in every generated classmap (PHPStan finds it through the project's autoloader)
+    // ponytail: other classes only the runtime autoloader knows (autoload_classmap.php) aren't scanned
+    for class in ["InstalledVersions.php", "ClassLoader.php"] {
+        let path = installed_dir.join(class);
+        if path.is_file() {
+            out.push(path);
+        }
+    }
     out
 }

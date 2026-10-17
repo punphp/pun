@@ -173,12 +173,14 @@ impl Delegate {
         r
     }
 
-    /// Runner::fixFile on `code`. `Err` aborts the run, as the same failure aborts PHP-CS-Fixer's (a crashed worker,
+    /// Runner::fixFile on `code`, skipping the `skip` fixers too (the file's `@pun-ignore-file` rules, which
+    /// PHP-CS-Fixer doesn't read). `Err` aborts the run, as the same failure aborts PHP-CS-Fixer's (a crashed worker,
     /// an `@php-cs-fixer-ignore` for a rule that isn't enabled).
-    pub fn fix(&self, file: &Path, code: &[u8]) -> Result<Outcome> {
+    pub fn fix(&self, file: &Path, code: &[u8], skip: &[&str]) -> Result<Outcome> {
         let path = file.as_os_str().as_encoded_bytes();
-        let head = format!("F {} {}\n", path.len(), code.len());
-        let (kind, applied, body) = self.call(&[head.as_bytes(), path, code])?;
+        let skip = skip.join(",");
+        let head = format!("F {} {} {}\n", path.len(), code.len(), skip.len());
+        let (kind, applied, body) = self.call(&[head.as_bytes(), path, code, skip.as_bytes()])?;
         Ok(match kind.as_str() {
             "S" => Outcome::Unchanged,
             "E" => Outcome::Failed(String::from_utf8_lossy(&body).into_owned()),
