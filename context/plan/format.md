@@ -53,8 +53,7 @@ The schema is config.md §3: `[format] preset` (`laravel`, `psr12`, `empty`), `n
 levels: a diff is a diff. They can only be ignored per file, with `// @pun-ignore-file format/<group>/<name>` before
 the first statement (rules.md §4); `pun migrate` rewrites `// @php-cs-fixer-ignore` to this form.
 
-*Today* the code still reads the old schema: `format.<name>` IDs, PHP-CS-Fixer option names in kebab-case, and the
-`per` and `symfony` presets.
+Options use Pun's TOML names (Decisions, "Option names"); `pun migrate` translates PHP-CS-Fixer's.
 
 ## 4. Risky rules are not format rules
 
@@ -472,3 +471,28 @@ Answered 2026-10-17 (Pushpak), over three rounds:
   Pint-compatible; scripts/cli-parity.sh and tests/output.rs then cover only those.
 - **Speed and memory are a priority now**, with a memory target next to the speed one.
 - **Big runs stay parallel** (one worker per core), measured by the 8-core benchmark (§7).
+
+**Option names** (config 4, wf/options, 2026-10-17), assistant's calls where "redesigned for TOML" is silent. The data
+is `[options."format/<group>/<name>"]` in crates/pun-config/rules/mapping.toml (all 156 options of the 82 fixers
+behind format rules, checked against the pinned PHP-CS-Fixer's definitions in crates/pun-config/tests/fixer_options.json,
+exported by scripts/export-fixer-options.php); the reader and writer are crates/pun-config/src/options.rs.
+
+- **Kebab-case names and values**, like every other pun.toml key: PHP-CS-Fixer's `snake_case` option names and enum
+  values have `_` written as `-`. Values that are PHP keywords (`include_once`, `require_once`) and free values (tag
+  names, type names, operators, text) keep their spelling.
+- **Few renames, one vocabulary:** `sort_algorithm` and `ordered_interfaces`' `order` become `sort`, with `alpha` as
+  `alphabetical` (format.md §8's example); `imports_order` becomes `order`; `null_adjustment` becomes `null-position`
+  with `first` / `last`; `ascend` / `descend` become `ascending` / `descending`; header_comment's `PHPDoc` becomes
+  `phpdoc`. Everything else keeps PHP-CS-Fixer's word, so its docs still explain the option.
+- **`null`, which TOML lacks:** where upstream's `null` means "leave it alone" (binary_operator_spaces, yoda_style,
+  global_namespace_import, phpdoc_line_span, doctrine_annotation_spaces), Pun writes `"ignore"`; types_spaces'
+  `space_multiple_catch = null` (follow `space`) is `"same-as-space"`. `imports_order` and header_comment's
+  `validator`, whose default is `null`, write it by leaving the option out. No other option takes `null`.
+- **Shorthand** (format.md §8's `arrays.syntax = "short"`): a rule with exactly one option takes that option's value
+  directly, unless the option is a bool (ambiguous with on/off) or a table (ambiguous with the options table).
+  `pun migrate` and `pun config` write the shorthand whenever it applies.
+- **Errors:** pun.toml errors are Pun's, and name the Pun option when an upstream name is used. `pun migrate` stops on
+  options PHP-CS-Fixer itself rejects, with PHP-CS-Fixer's message (`[array_syntax] Invalid configuration: ...`),
+  because Pint would stop on them too. PHP's `[]` is read as an empty table for table-valued options.
+- Lint rules that are fixers (risky and code-deleting) keep PHP-CS-Fixer's option names, kebab-cased; giving them Pun
+  names is a follow-up in lint's plan.

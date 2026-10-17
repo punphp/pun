@@ -1,7 +1,8 @@
 //! `pun migrate`, format part: pint.json (read like Pint: `extend`, preset, RuleSet checks) or the rules of a
 //! `.php-cs-fixer.php` become a pun.toml under Pun rule IDs. Risky fixers go to `[lint.rules]` at `"error"`, so
-//! `pun check --fix` applies them as the project's old tool did; the rest is written as a delta to the preset. Pint's
-//! `in` becomes `[files] paths`; its other finder keys stay format-only under `[format]`.
+//! `pun check --fix` applies them as the project's old tool did; the rest is written as a delta to the preset, with
+//! options under their Pun names (`options::to_pun`). Pint's `in` becomes `[files] paths`; its other finder keys stay
+//! format-only under `[format]`.
 
 use crate::{Rule, fixer_entries, preset_rules, rule_of, rule_set};
 use anyhow::{Context, Result, bail};
@@ -205,7 +206,10 @@ fn write(preset: &str, mut rules: Vec<Rule>, paths: &str, finder: &str) -> Resul
         let name = &id[id.find('/').unwrap() + 1..];
         let v = match (lint, value(&r.options)) {
             (true, Value::Bool(true)) => Value::from("error"),
-            (_, v) => v,
+            (true, v) => v,
+            (false, _) => {
+                crate::options::to_pun(&r.name, id, &r.options).map_err(anyhow::Error::msg)?
+            }
         };
         let Some(v) = toml_value(&v) else {
             unsupported.push(format!(

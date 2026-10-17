@@ -7,6 +7,7 @@ pub mod composer;
 mod constraint;
 mod explain;
 pub mod migrate;
+pub mod options;
 mod schema;
 
 pub use explain::{MAPPING_URL, explain};
@@ -265,7 +266,8 @@ fn parse(
         let id = schema::rule_id(path, "format", &name)?;
         // Every format rule is a PHP-CS-Fixer or Pint fixer (rules/mapping.toml).
         let fixer = fixer_of("format", &id).unwrap();
-        rules.insert(fixer.into(), options(path, &name, v)?);
+        let v = options::to_fixer(&name, &id, v).map_err(|e| anyhow::anyhow!("{at}: {e}"))?;
+        rules.insert(fixer.into(), v);
     }
     if opts.blade {
         rules.insert("Pint/laravel_blade".into(), Value::Bool(true));
@@ -390,7 +392,7 @@ pub fn rule(id: &str) -> Option<RuleMeta> {
     })
 }
 
-/// A rule's value in pun.toml as PHP-CS-Fixer takes it: `true`/`false`, or options with snake_case keys.
+/// A lint or analyse rule's options as PHP-CS-Fixer takes them: `true`/`false`, or options with snake_case keys.
 fn options(path: &Path, rule: &str, v: toml::Value) -> Result<Value> {
     Ok(match v {
         toml::Value::Boolean(b) => Value::Bool(b),
@@ -508,8 +510,10 @@ impl Config {
         let short = |id: &str| id.split_once('/').unwrap().1.to_string();
         let format: Map<String, Value> = (self.rules.iter())
             .map(|r| {
-                let id = rule_of(&r.name).map_or(r.name.clone(), short);
-                (id, migrate::value(&r.options))
+                let full = rule_of(&r.name).unwrap_or(&r.name);
+                // Options came through `to_fixer` or from a preset, so they translate back.
+                let v = options::to_pun(&r.name, full, &r.options).unwrap();
+                (rule_of(&r.name).map_or(r.name.clone(), short), v)
             })
             .collect();
         let lint: Map<String, Value> = (self.lint.rules.iter())

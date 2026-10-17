@@ -228,10 +228,11 @@ not-path = ["p"]
     assert_eq!(c.lint.exclude, ["build"]);
     assert_eq!(c.php, "8.5");
     assert_eq!(c.sources, [d.join("composer.json"), d.join("pun.toml")]);
-    // Options keep their values; only top-level keys go back to PHP-CS-Fixer's snake_case.
+    // Options take their Pun names and values (rules/mapping.toml [options]) and reach the fixer under
+    // PHP-CS-Fixer's.
     let d = dir(&[(
         "pun.toml",
-        "[format]\npreset = \"empty\"\n[format.rules]\n\"imports/ordered\" = { sort-algorithm = \"alpha\", imports-order = [\"class\", \"const\"] }\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"imports/ordered\" = { sort = \"alphabetical\", order = [\"class\", \"const\"] }\n",
     )]);
     let c = load(
         &d,
@@ -675,7 +676,7 @@ fn show() {
         v["format"],
         json!({
             "preset": "empty", "exclude": ["build", "gen"], "not-name": [], "not-path": [],
-            "rules": {"operators/concat-spacing": {"spacing": "one"}, "strings/single-quote": true},
+            "rules": {"operators/concat-spacing": "one", "strings/single-quote": true},
         })
     );
     assert_eq!(
@@ -1118,7 +1119,7 @@ exclude = ["a"]
 not-path = ["y"]
 
 [format.rules]
-"operators/concat-spacing" = { spacing = "one" }
+"operators/concat-spacing" = "one"
 "laravel/blade" = true
 "arrays/syntax" = false
 
@@ -1228,7 +1229,7 @@ not-path = ["y"]
     #[test]
     fn lists_unsupported_rules() {
         let m = pint(
-            r#"{"preset":"empty","rules":{"braces":true,"Custom/fixer":true,"header_comment":{"header":null},"@PER-CS":true}}"#,
+            r#"{"preset":"empty","rules":{"braces":true,"Custom/fixer":true,"header_comment":{"header":"h","validator":null},"final_internal_class":{"include":null},"@PER-CS":true}}"#,
         );
         assert_eq!(m.unsupported.len(), 4);
         assert!(
@@ -1240,7 +1241,7 @@ not-path = ["y"]
             m.unsupported[1..],
             [
                 "Custom/fixer: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
-                "header_comment: an option is null, which TOML can't hold",
+                "final_internal_class: an option is null, which TOML can't hold",
                 "@PER-CS: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
             ]
         );
@@ -1350,7 +1351,9 @@ not-path = ["y"]
         let m = from_pint(&d.join("custom.json"), None).unwrap();
         assert_eq!(
             m.toml,
-            "[files]\npaths = [\"src\"]\n\n[format]\npreset = \"empty\"\nexclude = [\"x\", \"b\"]\nnot-name = [\"n\", \"m\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\"operators/concat-spacing\" = { spacing = \"one\" }\n"
+            "[files]\npaths = [\"src\"]\n\n[format]\npreset = \"empty\"\nexclude = [\"x\", \"b\"]\nnot-name = [\"n\", \"m\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\"operators/concat-spacing\" = \"one\"\n"
         );
     }
 }
+
+mod options;

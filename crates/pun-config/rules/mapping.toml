@@ -21,6 +21,8 @@
 #   status    decided
 #   merged    every upstream source of a rule built by merging several rules ("tool:id")
 #   pun_only  the rule has no upstream source (Pun's own rule)
+# [options."<rule ID>"]  every option of a format rule under its Pun name, with its PHP-CS-Fixer name and type
+#                    (the fields are described above the first table).
 # [upstream.<tool>]  every upstream rule -> pun (rule ID), or drop / unsupported with a reason. The key is the exact
 #   upstream ID: CS-Fixer rule name, Rector class short name (FQCN in `class`), PHPStan identifier, Mago rule code.
 #   class     (Rector, Pest) fully qualified class name
@@ -1107,26 +1109,359 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "undefined/type-alias" = { preset = "basic", status = "decided" }
 "undefined/variable" = { preset = "basic", status = "decided" }
 
+# Format rule options, as pun.toml takes them (context/plan/format.md Decisions, "Option names"). One table per
+# format rule that has options, keyed by its Pun option name (kebab-case); every option of the PHP-CS-Fixer fixer
+# behind the rule is listed. `pun format` translates them to the fixer's options and `pun migrate` translates back.
+#   upstream  the PHP-CS-Fixer option name
+#   type      bool | int | string | enum (one of `values`) | list (of strings; only `values` when set) |
+#             list-of-lists (of strings) | map (string keys; `keys` and `values` limit them when set) |
+#             int-or-map (an int, or a map of strings to ints)
+#   values    Pun value = upstream value, for the values Pun spells differently or that are a closed list
+#   keys      Pun key = upstream key, for a map with a closed key list
+#   null      the string that stands for upstream's `null` (TOML has no null)
+#   nullable  upstream also takes `null`, which pun.toml writes by leaving the option out
+[options."format/arrays/list-syntax"]
+syntax = { upstream = "syntax", type = "enum", values = { long = "long", short = "short" } }
+
+[options."format/arrays/no-space-around-offset"]
+positions = { upstream = "positions", type = "list", values = { inside = "inside", outside = "outside" } }
+
+[options."format/arrays/no-space-before-comma"]
+after-heredoc = { upstream = "after_heredoc", type = "bool" }
+
+[options."format/arrays/no-trailing-comma-single-line"]
+elements = { upstream = "elements", type = "list", values = { arguments = "arguments", array = "array", array-destructuring = "array_destructuring", group-import = "group_import" } }
+
+[options."format/arrays/space-after-comma"]
+ensure-single-space = { upstream = "ensure_single_space", type = "bool" }
+
+[options."format/arrays/syntax"]
+syntax = { upstream = "syntax", type = "enum", values = { long = "long", short = "short" } }
+
+[options."format/arrays/trailing-comma-multiline"]
+after-heredoc = { upstream = "after_heredoc", type = "bool" }
+elements = { upstream = "elements", type = "list", values = { arguments = "arguments", array-destructuring = "array_destructuring", arrays = "arrays", match = "match", parameters = "parameters" } }
+
+[options."format/attributes/empty-parentheses"]
+use-parentheses = { upstream = "use_parentheses", type = "bool" }
+
+[options."format/attributes/ordered"]
+order = { upstream = "order", type = "list" }
+sort = { upstream = "sort_algorithm", type = "enum", values = { alphabetical = "alpha", custom = "custom" } }
+
+[options."format/casing/constants"]
+case = { upstream = "case", type = "enum", values = { upper = "upper", lower = "lower" } }
+
+[options."format/casts/spacing"]
+space = { upstream = "space", type = "enum", values = { none = "none", single = "single" } }
+
+[options."format/classes/definition"]
+inline-constructor-arguments = { upstream = "inline_constructor_arguments", type = "bool" }
+multi-line-extends-each-single-line = { upstream = "multi_line_extends_each_single_line", type = "bool" }
+single-item-single-line = { upstream = "single_item_single_line", type = "bool" }
+single-line = { upstream = "single_line", type = "bool" }
+space-before-parenthesis = { upstream = "space_before_parenthesis", type = "bool" }
+
+[options."format/classes/member-separation"]
+elements = { upstream = "elements", type = "map", keys = { const = "const", method = "method", property = "property", trait-import = "trait_import", case = "case" }, values = { none = "none", one = "one", only-if-meta = "only_if_meta" } }
+
+[options."format/classes/modifier-keywords"]
+elements = { upstream = "elements", type = "list", values = { const = "const", method = "method", property = "property" } }
+
+[options."format/classes/multiline-promoted-properties"]
+keep-blank-lines = { upstream = "keep_blank_lines", type = "bool" }
+minimum-number-of-parameters = { upstream = "minimum_number_of_parameters", type = "int" }
+
+[options."format/classes/ordered-interfaces"]
+case-sensitive = { upstream = "case_sensitive", type = "bool" }
+direction = { upstream = "direction", type = "enum", values = { ascending = "ascend", descending = "descend" } }
+sort = { upstream = "order", type = "enum", values = { alphabetical = "alpha", length = "length" } }
+
+[options."format/classes/single-member-per-statement"]
+elements = { upstream = "elements", type = "list", values = { const = "const", property = "property" } }
+
+[options."format/comments/align-multiline"]
+comment-type = { upstream = "comment_type", type = "enum", values = { phpdocs-only = "phpdocs_only", phpdocs-like = "phpdocs_like", all-multiline = "all_multiline" } }
+
+[options."format/comments/header"]
+comment-type = { upstream = "comment_type", type = "enum", values = { phpdoc = "PHPDoc", comment = "comment" } }
+header = { upstream = "header", type = "string" }
+location = { upstream = "location", type = "enum", values = { after-open = "after_open", after-declare-strict = "after_declare_strict" } }
+separate = { upstream = "separate", type = "enum", values = { both = "both", top = "top", bottom = "bottom", none = "none" } }
+validator = { upstream = "validator", type = "string", nullable = true }
+
+[options."format/comments/single-line-style"]
+comment-types = { upstream = "comment_types", type = "list", values = { asterisk = "asterisk", hash = "hash" } }
+
+[options."format/control-flow/continuation-position"]
+position = { upstream = "position", type = "enum", values = { next-line = "next_line", same-line = "same_line" } }
+
+[options."format/control-flow/empty-loop-body"]
+style = { upstream = "style", type = "enum", values = { braces = "braces", semicolon = "semicolon" } }
+
+[options."format/control-flow/empty-loop-condition"]
+style = { upstream = "style", type = "enum", values = { while = "while", for = "for" } }
+
+[options."format/control-flow/no-alternative-syntax"]
+fix-non-monolithic-code = { upstream = "fix_non_monolithic_code", type = "bool" }
+
+[options."format/control-flow/no-break-comment"]
+comment-text = { upstream = "comment_text", type = "string" }
+
+[options."format/control-flow/no-unneeded-braces"]
+namespaces = { upstream = "namespaces", type = "bool" }
+
+[options."format/control-flow/no-unneeded-parentheses"]
+statements = { upstream = "statements", type = "list", values = { break = "break", clone = "clone", continue = "continue", echo-print = "echo_print", negative-instanceof = "negative_instanceof", others = "others", return = "return", switch-case = "switch_case", yield = "yield", yield-from = "yield_from" } }
+
+[options."format/control-flow/yoda"]
+always-move-variable = { upstream = "always_move_variable", type = "bool" }
+equal = { upstream = "equal", type = "bool", null = "ignore" }
+identical = { upstream = "identical", type = "bool", null = "ignore" }
+less-and-greater = { upstream = "less_and_greater", type = "bool", null = "ignore" }
+
+[options."format/doctrine/annotation-array-assignment"]
+ignored-tags = { upstream = "ignored_tags", type = "list" }
+operator = { upstream = "operator", type = "enum", values = { "=" = "=", ":" = ":" } }
+
+[options."format/doctrine/annotation-braces"]
+ignored-tags = { upstream = "ignored_tags", type = "list" }
+syntax = { upstream = "syntax", type = "enum", values = { with-braces = "with_braces", without-braces = "without_braces" } }
+
+[options."format/doctrine/annotation-indentation"]
+ignored-tags = { upstream = "ignored_tags", type = "list" }
+indent-mixed-lines = { upstream = "indent_mixed_lines", type = "bool" }
+
+[options."format/doctrine/annotation-spaces"]
+after-argument-assignments = { upstream = "after_argument_assignments", type = "bool", null = "ignore" }
+after-array-assignments-colon = { upstream = "after_array_assignments_colon", type = "bool", null = "ignore" }
+after-array-assignments-equals = { upstream = "after_array_assignments_equals", type = "bool", null = "ignore" }
+around-commas = { upstream = "around_commas", type = "bool" }
+around-parentheses = { upstream = "around_parentheses", type = "bool" }
+before-argument-assignments = { upstream = "before_argument_assignments", type = "bool", null = "ignore" }
+before-array-assignments-colon = { upstream = "before_array_assignments_colon", type = "bool", null = "ignore" }
+before-array-assignments-equals = { upstream = "before_array_assignments_equals", type = "bool", null = "ignore" }
+ignored-tags = { upstream = "ignored_tags", type = "list" }
+
+[options."format/functions/argument-spacing"]
+after-heredoc = { upstream = "after_heredoc", type = "bool" }
+attribute-placement = { upstream = "attribute_placement", type = "enum", values = { ignore = "ignore", same-line = "same_line", standalone = "standalone" } }
+keep-multiple-spaces-after-comma = { upstream = "keep_multiple_spaces_after_comma", type = "bool" }
+on-multiline = { upstream = "on_multiline", type = "enum", values = { ignore = "ignore", ensure-single-line = "ensure_single_line", ensure-fully-multiline = "ensure_fully_multiline", ensure-single-line-for-single-argument = "ensure_single_line_for_single_argument" } }
+
+[options."format/functions/declaration"]
+closure-fn-spacing = { upstream = "closure_fn_spacing", type = "enum", values = { none = "none", one = "one" } }
+closure-function-spacing = { upstream = "closure_function_spacing", type = "enum", values = { none = "none", one = "one" } }
+trailing-comma-single-line = { upstream = "trailing_comma_single_line", type = "bool" }
+
+[options."format/functions/return-type-spacing"]
+space-before = { upstream = "space_before", type = "enum", values = { one = "one", none = "none" } }
+
+[options."format/imports/blank-lines-before-namespace"]
+max-line-breaks = { upstream = "max_line_breaks", type = "int" }
+min-line-breaks = { upstream = "min_line_breaks", type = "int" }
+
+[options."format/imports/fully-qualified-strict-types"]
+import-symbols = { upstream = "import_symbols", type = "bool" }
+leading-backslash-in-global-namespace = { upstream = "leading_backslash_in_global_namespace", type = "bool" }
+phpdoc-tags = { upstream = "phpdoc_tags", type = "list" }
+
+[options."format/imports/global-namespace"]
+import-classes = { upstream = "import_classes", type = "bool", null = "ignore" }
+import-constants = { upstream = "import_constants", type = "bool", null = "ignore" }
+import-functions = { upstream = "import_functions", type = "bool", null = "ignore" }
+
+[options."format/imports/group"]
+group-types = { upstream = "group_types", type = "list", values = { classy = "classy", functions = "functions", constants = "constants" } }
+
+[options."format/imports/ordered"]
+case-sensitive = { upstream = "case_sensitive", type = "bool" }
+order = { upstream = "imports_order", type = "list", values = { class = "class", function = "function", const = "const" }, nullable = true }
+sort = { upstream = "sort_algorithm", type = "enum", values = { alphabetical = "alpha", length = "length", none = "none" } }
+
+[options."format/imports/single-per-statement"]
+group-to-single-imports = { upstream = "group_to_single_imports", type = "bool" }
+
+[options."format/operators/binary-spacing"]
+default = { upstream = "default", type = "enum", values = { align = "align", align-by-scope = "align_by_scope", align-single-space = "align_single_space", align-single-space-minimal = "align_single_space_minimal", align-single-space-by-scope = "align_single_space_by_scope", align-single-space-minimal-by-scope = "align_single_space_minimal_by_scope", single-space = "single_space", no-space = "no_space", at-least-single-space = "at_least_single_space" }, null = "ignore" }
+operators = { upstream = "operators", type = "map", values = { align = "align", align-by-scope = "align_by_scope", align-single-space = "align_single_space", align-single-space-minimal = "align_single_space_minimal", align-single-space-by-scope = "align_single_space_by_scope", align-single-space-minimal-by-scope = "align_single_space_minimal_by_scope", single-space = "single_space", no-space = "no_space", at-least-single-space = "at_least_single_space" }, null = "ignore" }
+
+[options."format/operators/concat-spacing"]
+spacing = { upstream = "spacing", type = "enum", values = { one = "one", none = "none" } }
+
+[options."format/operators/increment-style"]
+style = { upstream = "style", type = "enum", values = { pre = "pre", post = "post" } }
+
+[options."format/operators/linebreak"]
+only-booleans = { upstream = "only_booleans", type = "bool" }
+position = { upstream = "position", type = "enum", values = { beginning = "beginning", end = "end" } }
+
+[options."format/operators/new-expression-parentheses"]
+use-parentheses = { upstream = "use_parentheses", type = "bool" }
+
+[options."format/operators/new-parentheses"]
+anonymous-class = { upstream = "anonymous_class", type = "bool" }
+named-class = { upstream = "named_class", type = "bool" }
+
+[options."format/operators/no-useless-concat"]
+juggle-simple-strings = { upstream = "juggle_simple_strings", type = "bool" }
+
+[options."format/operators/unary-spacing"]
+only-dec-inc = { upstream = "only_dec_inc", type = "bool" }
+
+[options."format/phpdoc/align"]
+align = { upstream = "align", type = "enum", values = { left = "left", vertical = "vertical" } }
+spacing = { upstream = "spacing", type = "int-or-map" }
+tags = { upstream = "tags", type = "list" }
+
+[options."format/phpdoc/inline-tag"]
+tags = { upstream = "tags", type = "list" }
+
+[options."format/phpdoc/line-span"]
+case = { upstream = "case", type = "enum", values = { single = "single", multi = "multi" }, null = "ignore" }
+class = { upstream = "class", type = "enum", values = { single = "single", multi = "multi" }, null = "ignore" }
+const = { upstream = "const", type = "enum", values = { single = "single", multi = "multi" }, null = "ignore" }
+function = { upstream = "function", type = "enum", values = { single = "single", multi = "multi" }, null = "ignore" }
+method = { upstream = "method", type = "enum", values = { single = "single", multi = "multi" }, null = "ignore" }
+other = { upstream = "other", type = "enum", values = { single = "single", multi = "multi" }, null = "ignore" }
+property = { upstream = "property", type = "enum", values = { single = "single", multi = "multi" }, null = "ignore" }
+trait-import = { upstream = "trait_import", type = "enum", values = { single = "single", multi = "multi" }, null = "ignore" }
+
+[options."format/phpdoc/no-alias-tag"]
+replacements = { upstream = "replacements", type = "map" }
+
+[options."format/phpdoc/order"]
+order = { upstream = "order", type = "list" }
+
+[options."format/phpdoc/order-by-value"]
+annotations = { upstream = "annotations", type = "list", values = { author = "author", covers = "covers", coversNothing = "coversNothing", dataProvider = "dataProvider", depends = "depends", group = "group", internal = "internal", method = "method", mixin = "mixin", property = "property", property-read = "property-read", property-write = "property-write", requires = "requires", throws = "throws", uses = "uses" } }
+
+[options."format/phpdoc/return-self-reference"]
+replacements = { upstream = "replacements", type = "map" }
+
+[options."format/phpdoc/scalar"]
+types = { upstream = "types", type = "list", values = { boolean = "boolean", callback = "callback", double = "double", integer = "integer", never-return = "never-return", never-returns = "never-returns", no-return = "no-return", real = "real", str = "str" } }
+
+[options."format/phpdoc/separation"]
+groups = { upstream = "groups", type = "list-of-lists" }
+skip-unlisted-annotations = { upstream = "skip_unlisted_annotations", type = "bool" }
+
+[options."format/phpdoc/tag-casing"]
+tags = { upstream = "tags", type = "list" }
+
+[options."format/phpdoc/tag-type"]
+tags = { upstream = "tags", type = "map", values = { annotation = "annotation", inline = "inline" } }
+
+[options."format/phpdoc/types"]
+exclude = { upstream = "exclude", type = "list", values = { "$this" = "$this", array = "array", bool = "bool", boolean = "boolean", callable = "callable", double = "double", false = "false", float = "float", int = "int", integer = "integer", iterable = "iterable", mixed = "mixed", null = "null", object = "object", parent = "parent", resource = "resource", scalar = "scalar", self = "self", static = "static", string = "string", true = "true", void = "void" } }
+groups = { upstream = "groups", type = "list", values = { alias = "alias", meta = "meta", simple = "simple" } }
+
+[options."format/phpdoc/types-order"]
+case-sensitive = { upstream = "case_sensitive", type = "bool" }
+null-position = { upstream = "null_adjustment", type = "enum", values = { first = "always_first", last = "always_last", none = "none" } }
+sort = { upstream = "sort_algorithm", type = "enum", values = { alphabetical = "alpha", none = "none" } }
+
+[options."format/statements/blank-line-before"]
+statements = { upstream = "statements", type = "list", values = { break = "break", case = "case", continue = "continue", declare = "declare", default = "default", do = "do", exit = "exit", for = "for", foreach = "foreach", goto = "goto", if = "if", include = "include", include_once = "include_once", phpdoc = "phpdoc", require = "require", require_once = "require_once", return = "return", switch = "switch", throw = "throw", try = "try", while = "while", yield = "yield", yield-from = "yield_from" } }
+
+[options."format/statements/braces-position"]
+allow-single-line-anonymous-functions = { upstream = "allow_single_line_anonymous_functions", type = "bool" }
+allow-single-line-empty-anonymous-classes = { upstream = "allow_single_line_empty_anonymous_classes", type = "bool" }
+anonymous-classes-opening-brace = { upstream = "anonymous_classes_opening_brace", type = "enum", values = { next-line-unless-newline-at-signature-end = "next_line_unless_newline_at_signature_end", same-line = "same_line" } }
+anonymous-functions-opening-brace = { upstream = "anonymous_functions_opening_brace", type = "enum", values = { next-line-unless-newline-at-signature-end = "next_line_unless_newline_at_signature_end", same-line = "same_line" } }
+classes-opening-brace = { upstream = "classes_opening_brace", type = "enum", values = { next-line-unless-newline-at-signature-end = "next_line_unless_newline_at_signature_end", same-line = "same_line" } }
+control-structures-opening-brace = { upstream = "control_structures_opening_brace", type = "enum", values = { next-line-unless-newline-at-signature-end = "next_line_unless_newline_at_signature_end", same-line = "same_line" } }
+functions-opening-brace = { upstream = "functions_opening_brace", type = "enum", values = { next-line-unless-newline-at-signature-end = "next_line_unless_newline_at_signature_end", same-line = "same_line" } }
+
+[options."format/statements/declare-equal"]
+space = { upstream = "space", type = "enum", values = { single = "single", none = "none" } }
+
+[options."format/statements/multiline-semicolon"]
+strategy = { upstream = "strategy", type = "enum", values = { no-multi-line = "no_multi_line", new-line-for-chained-calls = "new_line_for_chained_calls" } }
+
+[options."format/statements/no-mixed-echo-print"]
+use = { upstream = "use", type = "enum", values = { print = "print", echo = "echo" } }
+
+[options."format/statements/numeric-literal-separator"]
+override-existing = { upstream = "override_existing", type = "bool" }
+strategy = { upstream = "strategy", type = "enum", values = { use-separator = "use_separator", no-separator = "no_separator" } }
+
+[options."format/statements/space-after-semicolon"]
+remove-in-empty-for-expressions = { upstream = "remove_in_empty_for_expressions", type = "bool" }
+
+[options."format/statements/space-around-construct"]
+constructs-contain-a-single-space = { upstream = "constructs_contain_a_single_space", type = "list", values = { yield-from = "yield_from" } }
+constructs-followed-by-a-single-space = { upstream = "constructs_followed_by_a_single_space", type = "list", values = { abstract = "abstract", as = "as", attribute = "attribute", break = "break", case = "case", catch = "catch", class = "class", clone = "clone", comment = "comment", const = "const", const-import = "const_import", continue = "continue", do = "do", echo = "echo", else = "else", elseif = "elseif", enum = "enum", extends = "extends", final = "final", finally = "finally", for = "for", foreach = "foreach", function = "function", function-import = "function_import", global = "global", goto = "goto", if = "if", implements = "implements", include = "include", include_once = "include_once", instanceof = "instanceof", insteadof = "insteadof", interface = "interface", match = "match", named-argument = "named_argument", namespace = "namespace", new = "new", open-tag-with-echo = "open_tag_with_echo", php-doc = "php_doc", php-open = "php_open", print = "print", private = "private", private-set = "private_set", protected = "protected", protected-set = "protected_set", public = "public", public-set = "public_set", readonly = "readonly", require = "require", require_once = "require_once", return = "return", static = "static", switch = "switch", throw = "throw", trait = "trait", try = "try", type-colon = "type_colon", use = "use", use-lambda = "use_lambda", use-trait = "use_trait", var = "var", while = "while", yield = "yield", yield-from = "yield_from" } }
+constructs-preceded-by-a-single-space = { upstream = "constructs_preceded_by_a_single_space", type = "list", values = { as = "as", else = "else", elseif = "elseif", use-lambda = "use_lambda" } }
+
+[options."format/strings/heredoc-closing-marker"]
+closing-marker = { upstream = "closing_marker", type = "string" }
+explicit-heredoc-style = { upstream = "explicit_heredoc_style", type = "bool" }
+reserved-closing-markers = { upstream = "reserved_closing_markers", type = "list" }
+
+[options."format/strings/heredoc-indentation"]
+indentation = { upstream = "indentation", type = "enum", values = { start-plus-one = "start_plus_one", same-as-start = "same_as_start" } }
+
+[options."format/strings/implicit-backslashes"]
+double-quoted = { upstream = "double_quoted", type = "enum", values = { escape = "escape", unescape = "unescape", ignore = "ignore" } }
+heredoc = { upstream = "heredoc", type = "enum", values = { escape = "escape", unescape = "unescape", ignore = "ignore" } }
+single-quoted = { upstream = "single_quoted", type = "enum", values = { escape = "escape", unescape = "unescape", ignore = "ignore" } }
+
+[options."format/strings/single-quote"]
+strings-containing-single-quote-chars = { upstream = "strings_containing_single_quote_chars", type = "bool" }
+
+[options."format/tags/echo-syntax"]
+format = { upstream = "format", type = "enum", values = { long = "long", short = "short" } }
+long-function = { upstream = "long_function", type = "enum", values = { echo = "echo", print = "print" } }
+shorten-simple-statements-only = { upstream = "shorten_simple_statements_only", type = "bool" }
+
+[options."format/types/declaration-spacing"]
+elements = { upstream = "elements", type = "list", values = { constant = "constant", function = "function", property = "property" } }
+
+[options."format/types/nullable-for-null-default"]
+use-nullable-type-declaration = { upstream = "use_nullable_type_declaration", type = "bool" }
+
+[options."format/types/nullable-syntax"]
+syntax = { upstream = "syntax", type = "enum", values = { union = "union", question-mark = "question_mark" } }
+
+[options."format/types/ordered"]
+case-sensitive = { upstream = "case_sensitive", type = "bool" }
+null-position = { upstream = "null_adjustment", type = "enum", values = { first = "always_first", last = "always_last", none = "none" } }
+sort = { upstream = "sort_algorithm", type = "enum", values = { alphabetical = "alpha", none = "none" } }
+
+[options."format/types/union-spacing"]
+space = { upstream = "space", type = "enum", values = { none = "none", single = "single" } }
+space-multiple-catch = { upstream = "space_multiple_catch", type = "enum", values = { none = "none", single = "single" }, null = "same-as-space" }
+
+[options."format/whitespace/inside-parentheses"]
+space = { upstream = "space", type = "enum", values = { none = "none", single = "single" } }
+
+[options."format/whitespace/no-extra-blank-lines"]
+tokens = { upstream = "tokens", type = "list", values = { attribute = "attribute", break = "break", case = "case", comma = "comma", continue = "continue", curly-brace-block = "curly_brace_block", default = "default", extra = "extra", parenthesis-brace-block = "parenthesis_brace_block", return = "return", square-brace-block = "square_brace_block", switch = "switch", throw = "throw", use = "use", use-trait = "use_trait" } }
+
+[options."format/whitespace/statement-indentation"]
+stick-comment-to-next-continuous-control-statement = { upstream = "stick_comment_to_next_continuous_control_statement", type = "bool" }
+
 [upstream.php-cs-fixer]
-align_multiline_comment = { pun = "format/comments/align-multiline", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+align_multiline_comment = { pun = "format/comments/align-multiline", risky = false, pint_presets = ["symfony"], options = "renamed for TOML: [options.\"format/comments/align-multiline\"]", status = "decided" }
 array_indentation = { pun = "format/arrays/indentation", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "none", status = "decided" }
 array_push = { pun = "lint/style/no-array-push", risky = true, options = "none", status = "decided" }
-array_syntax = { pun = "format/arrays/syntax", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+array_syntax = { pun = "format/arrays/syntax", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "renamed for TOML: [options.\"format/arrays/syntax\"]", status = "decided" }
 assign_null_coalescing_to_coalesce_equal = { pun = "lint/operators/prefer-coalesce-assign", risky = false, options = "none", status = "decided" }
 attribute_block_no_spaces = { pun = "format/attributes/no-block-spaces", risky = false, pint_presets = ["per", "symfony"], options = "none", status = "decided" }
-attribute_empty_parentheses = { pun = "format/attributes/empty-parentheses", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+attribute_empty_parentheses = { pun = "format/attributes/empty-parentheses", risky = false, options = "renamed for TOML: [options.\"format/attributes/empty-parentheses\"]", status = "decided" }
 backtick_to_shell_exec = { pun = "format/functions/backtick-to-shell-exec", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
-binary_operator_spaces = { pun = "format/operators/binary-spacing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+binary_operator_spaces = { pun = "format/operators/binary-spacing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/operators/binary-spacing\"]", status = "decided" }
 blank_line_after_namespace = { pun = "format/imports/blank-line-after-namespace", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 blank_line_after_opening_tag = { pun = "format/tags/blank-line-after-opening", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
-blank_line_before_statement = { pun = "format/statements/blank-line-before", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+blank_line_before_statement = { pun = "format/statements/blank-line-before", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/statements/blank-line-before\"]", status = "decided" }
 blank_line_between_import_groups = { pun = "format/imports/blank-line-between-groups", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
-blank_lines_before_namespace = { pun = "format/imports/blank-lines-before-namespace", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+blank_lines_before_namespace = { pun = "format/imports/blank-lines-before-namespace", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/imports/blank-lines-before-namespace\"]", status = "decided" }
 braces = { drop = "deprecated upstream; successor: single_space_around_construct, control_structure_braces, control_structure_continuation_position, declare_parentheses, no_multiple_statements_per_line, braces_position, statement_indentation, no_extra_blank_lines", successors = ["single_space_around_construct", "control_structure_braces", "control_structure_continuation_position", "declare_parentheses", "no_multiple_statements_per_line", "braces_position", "statement_indentation", "no_extra_blank_lines"], status = "decided" }
-braces_position = { pun = "format/statements/braces-position", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-cast_spaces = { pun = "format/casts/spacing", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-class_attributes_separation = { pun = "format/classes/member-separation", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-class_definition = { pun = "format/classes/definition", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+braces_position = { pun = "format/statements/braces-position", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/statements/braces-position\"]", status = "decided" }
+cast_spaces = { pun = "format/casts/spacing", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "renamed for TOML: [options.\"format/casts/spacing\"]", status = "decided" }
+class_attributes_separation = { pun = "format/classes/member-separation", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/classes/member-separation\"]", status = "decided" }
+class_definition = { pun = "format/classes/definition", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/classes/definition\"]", status = "decided" }
 class_keyword = { pun = "lint/style/prefer-class-constant", risky = true, options = "none", status = "decided" }
 class_keyword_remove = { drop = "deprecated upstream; successor: none (removed)", status = "decided" }
 class_reference_name_casing = { pun = "format/casing/class-reference", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
@@ -1137,25 +1472,25 @@ combine_nested_dirname = { pun = "lint/style/prefer-dirname-levels", risky = tru
 comment_to_phpdoc = { pun = "lint/style/prefer-phpdoc-comment", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 compact_nullable_type_declaration = { pun = "format/types/compact-nullable", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 compact_nullable_typehint = { drop = "deprecated upstream; successor: compact_nullable_type_declaration", successors = ["compact_nullable_type_declaration"], status = "decided" }
-concat_space = { pun = "format/operators/concat-spacing", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-constant_case = { pun = "format/casing/constants", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+concat_space = { pun = "format/operators/concat-spacing", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "renamed for TOML: [options.\"format/operators/concat-spacing\"]", status = "decided" }
+constant_case = { pun = "format/casing/constants", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/casing/constants\"]", status = "decided" }
 control_structure_braces = { pun = "format/control-flow/braces", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
-control_structure_continuation_position = { pun = "format/control-flow/continuation-position", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+control_structure_continuation_position = { pun = "format/control-flow/continuation-position", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/control-flow/continuation-position\"]", status = "decided" }
 curly_braces_position = { drop = "deprecated upstream; successor: braces_position", successors = ["braces_position"], status = "decided" }
 date_time_create_from_format_call = { pun = "lint/style/require-create-from-format-bang", risky = true, options = "none", status = "decided" }
 date_time_immutable = { pun = "lint/style/prefer-date-time-immutable", risky = true, options = "none", status = "decided" }
-declare_equal_normalize = { pun = "format/statements/declare-equal", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+declare_equal_normalize = { pun = "format/statements/declare-equal", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/statements/declare-equal\"]", status = "decided" }
 declare_parentheses = { pun = "format/statements/declare-parentheses", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 declare_strict_types = { pun = "lint/statements/require-strict-types", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 dir_constant = { pun = "lint/style/prefer-dir-constant", risky = true, options = "none", status = "decided" }
-doctrine_annotation_array_assignment = { pun = "format/doctrine/annotation-array-assignment", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
-doctrine_annotation_braces = { pun = "format/doctrine/annotation-braces", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
-doctrine_annotation_indentation = { pun = "format/doctrine/annotation-indentation", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
-doctrine_annotation_spaces = { pun = "format/doctrine/annotation-spaces", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
-echo_tag_syntax = { pun = "format/tags/echo-syntax", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+doctrine_annotation_array_assignment = { pun = "format/doctrine/annotation-array-assignment", risky = false, options = "renamed for TOML: [options.\"format/doctrine/annotation-array-assignment\"]", status = "decided" }
+doctrine_annotation_braces = { pun = "format/doctrine/annotation-braces", risky = false, options = "renamed for TOML: [options.\"format/doctrine/annotation-braces\"]", status = "decided" }
+doctrine_annotation_indentation = { pun = "format/doctrine/annotation-indentation", risky = false, options = "renamed for TOML: [options.\"format/doctrine/annotation-indentation\"]", status = "decided" }
+doctrine_annotation_spaces = { pun = "format/doctrine/annotation-spaces", risky = false, options = "renamed for TOML: [options.\"format/doctrine/annotation-spaces\"]", status = "decided" }
+echo_tag_syntax = { pun = "format/tags/echo-syntax", risky = false, pint_presets = ["symfony"], options = "renamed for TOML: [options.\"format/tags/echo-syntax\"]", status = "decided" }
 elseif = { pun = "format/control-flow/elseif", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
-empty_loop_body = { pun = "format/control-flow/empty-loop-body", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-empty_loop_condition = { pun = "format/control-flow/empty-loop-condition", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+empty_loop_body = { pun = "format/control-flow/empty-loop-body", risky = false, pint_presets = ["symfony"], options = "renamed for TOML: [options.\"format/control-flow/empty-loop-body\"]", status = "decided" }
+empty_loop_condition = { pun = "format/control-flow/empty-loop-condition", risky = false, pint_presets = ["symfony"], options = "renamed for TOML: [options.\"format/control-flow/empty-loop-condition\"]", status = "decided" }
 encoding = { pun = "format/whitespace/encoding", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 ereg_to_preg = { pun = "lint/style/no-ereg", risky = true, options = "none", status = "decided" }
 error_suppression = { pun = "lint/operators/no-error-suppression", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
@@ -1168,30 +1503,30 @@ final_public_method_for_abstract_class = { pun = "lint/style/require-final-publi
 fopen_flag_order = { pun = "lint/style/require-fopen-flag-order", risky = true, options = "none", status = "decided" }
 fopen_flags = { pun = "lint/style/require-fopen-binary-flag", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 full_opening_tag = { pun = "format/tags/full-opening", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
-fully_qualified_strict_types = { pun = "format/imports/fully-qualified-strict-types", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-function_declaration = { pun = "format/functions/declaration", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+fully_qualified_strict_types = { pun = "format/imports/fully-qualified-strict-types", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/imports/fully-qualified-strict-types\"]", status = "decided" }
+function_declaration = { pun = "format/functions/declaration", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/functions/declaration\"]", status = "decided" }
 function_to_constant = { pun = "lint/refactor/prefer-constant", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 function_typehint_space = { drop = "deprecated upstream; successor: type_declaration_spaces", successors = ["type_declaration_spaces"], status = "decided" }
 general_attribute_remove = { pun = "lint/refactor/remove-attribute", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
 general_phpdoc_annotation_remove = { pun = "lint/refactor/remove-phpdoc-annotation", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
 general_phpdoc_tag_rename = { pun = "lint/refactor/rename-phpdoc-tag", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
 get_class_to_class_keyword = { pun = "lint/style/prefer-class-keyword-on-object", risky = true, options = "none", status = "decided" }
-global_namespace_import = { pun = "format/imports/global-namespace", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-group_import = { pun = "format/imports/group", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
-header_comment = { pun = "format/comments/header", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
-heredoc_closing_marker = { pun = "format/strings/heredoc-closing-marker", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
-heredoc_indentation = { pun = "format/strings/heredoc-indentation", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+global_namespace_import = { pun = "format/imports/global-namespace", risky = false, pint_presets = ["symfony"], options = "renamed for TOML: [options.\"format/imports/global-namespace\"]", status = "decided" }
+group_import = { pun = "format/imports/group", risky = false, options = "renamed for TOML: [options.\"format/imports/group\"]", status = "decided" }
+header_comment = { pun = "format/comments/header", risky = false, options = "renamed for TOML: [options.\"format/comments/header\"]", status = "decided" }
+heredoc_closing_marker = { pun = "format/strings/heredoc-closing-marker", risky = false, options = "renamed for TOML: [options.\"format/strings/heredoc-closing-marker\"]", status = "decided" }
+heredoc_indentation = { pun = "format/strings/heredoc-indentation", risky = false, options = "renamed for TOML: [options.\"format/strings/heredoc-indentation\"]", status = "decided" }
 heredoc_to_nowdoc = { pun = "format/strings/heredoc-to-nowdoc", risky = false, pint_presets = ["laravel"], options = "none", status = "decided" }
 implode_call = { pun = "lint/style/require-implode-separator", risky = true, options = "none", status = "decided" }
 include = { pun = "format/control-flow/include", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-increment_style = { pun = "format/operators/increment-style", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+increment_style = { pun = "format/operators/increment-style", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/operators/increment-style\"]", status = "decided" }
 indentation_type = { pun = "format/whitespace/indentation-type", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 integer_literal_case = { pun = "format/casing/integer-literals", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 is_null = { pun = "lint/style/no-is-null", risky = true, options = "none", status = "decided" }
 lambda_not_used_import = { pun = "lint/functions/no-unused-closure-use", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 line_ending = { pun = "format/whitespace/line-ending", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 linebreak_after_opening_tag = { pun = "format/tags/linebreak-after-opening", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-list_syntax = { pun = "format/arrays/list-syntax", risky = false, pint_presets = ["laravel"], options = "same (option keys kebab-cased)", status = "decided" }
+list_syntax = { pun = "format/arrays/list-syntax", risky = false, pint_presets = ["laravel"], options = "renamed for TOML: [options.\"format/arrays/list-syntax\"]", status = "decided" }
 logical_operators = { pun = "lint/operators/no-and-or-keywords", risky = true, options = "none", status = "decided" }
 long_to_shorthand_operator = { pun = "lint/style/prefer-compound-assignment", risky = true, options = "none", status = "decided" }
 lowercase_cast = { pun = "format/casts/lowercase", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
@@ -1200,41 +1535,41 @@ lowercase_static_reference = { pun = "format/casing/static-reference", risky = f
 magic_constant_casing = { pun = "format/casing/magic-constants", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 magic_method_casing = { pun = "format/casing/magic-methods", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 mb_str_functions = { pun = "lint/strings/prefer-mb-functions", risky = true, options = "none", status = "decided" }
-method_argument_space = { pun = "format/functions/argument-spacing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+method_argument_space = { pun = "format/functions/argument-spacing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/functions/argument-spacing\"]", status = "decided" }
 method_chaining_indentation = { pun = "format/functions/chain-indentation", risky = false, pint_presets = ["laravel"], options = "none", status = "decided" }
 modern_serialization_methods = { pun = "lint/style/no-sleep-wakeup", risky = true, options = "none", status = "decided" }
 modernize_strpos = { pun = "lint/style/prefer-str-contains", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 modernize_types_casting = { pun = "lint/style/prefer-cast-over-intval", risky = true, options = "none", status = "decided" }
-modifier_keywords = { pun = "format/classes/modifier-keywords", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+modifier_keywords = { pun = "format/classes/modifier-keywords", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/classes/modifier-keywords\"]", status = "decided" }
 multiline_comment_opening_closing = { pun = "format/comments/multiline-delimiters", risky = false, options = "none", status = "decided" }
-multiline_promoted_properties = { pun = "format/classes/multiline-promoted-properties", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+multiline_promoted_properties = { pun = "format/classes/multiline-promoted-properties", risky = false, options = "renamed for TOML: [options.\"format/classes/multiline-promoted-properties\"]", status = "decided" }
 multiline_string_to_heredoc = { pun = "format/strings/multiline-to-heredoc", risky = false, options = "none", status = "decided" }
-multiline_whitespace_before_semicolons = { pun = "format/statements/multiline-semicolon", risky = false, pint_presets = ["laravel"], options = "same (option keys kebab-cased)", status = "decided" }
+multiline_whitespace_before_semicolons = { pun = "format/statements/multiline-semicolon", risky = false, pint_presets = ["laravel"], options = "renamed for TOML: [options.\"format/statements/multiline-semicolon\"]", status = "decided" }
 native_constant_invocation = { pun = "lint/performance/require-qualified-native-constant", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 native_function_casing = { pun = "format/casing/native-functions", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 native_function_invocation = { pun = "lint/performance/require-qualified-native-function", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 native_function_type_declaration_casing = { drop = "deprecated upstream; successor: native_type_declaration_casing", successors = ["native_type_declaration_casing"], status = "decided" }
 native_type_declaration_casing = { pun = "format/casing/native-types", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-new_expression_parentheses = { pun = "format/operators/new-expression-parentheses", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+new_expression_parentheses = { pun = "format/operators/new-expression-parentheses", risky = false, options = "renamed for TOML: [options.\"format/operators/new-expression-parentheses\"]", status = "decided" }
 new_with_braces = { drop = "deprecated upstream; successor: new_with_parentheses", successors = ["new_with_parentheses"], status = "decided" }
-new_with_parentheses = { pun = "format/operators/new-parentheses", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+new_with_parentheses = { pun = "format/operators/new-parentheses", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/operators/new-parentheses\"]", status = "decided" }
 no_alias_functions = { pun = "lint/style/no-alias-function", risky = true, pint_presets = ["laravel"], options = "same (option keys kebab-cased)", status = "decided" }
 no_alias_language_construct_call = { pun = "format/functions/no-alias-construct-call", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-no_alternative_syntax = { pun = "format/control-flow/no-alternative-syntax", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+no_alternative_syntax = { pun = "format/control-flow/no-alternative-syntax", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/control-flow/no-alternative-syntax\"]", status = "decided" }
 no_binary_string = { pun = "format/strings/no-binary", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 no_blank_lines_after_class_opening = { pun = "format/classes/no-blank-line-after-opening", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 no_blank_lines_after_phpdoc = { pun = "format/phpdoc/no-blank-line-after", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 no_blank_lines_before_namespace = { drop = "deprecated upstream; successor: blank_lines_before_namespace", successors = ["blank_lines_before_namespace"], status = "decided" }
-no_break_comment = { pun = "format/control-flow/no-break-comment", risky = false, pint_presets = ["psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+no_break_comment = { pun = "format/control-flow/no-break-comment", risky = false, pint_presets = ["psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/control-flow/no-break-comment\"]", status = "decided" }
 no_closing_tag = { pun = "format/tags/no-closing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 no_empty_comment = { pun = "format/comments/no-empty", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
 no_empty_phpdoc = { pun = "format/phpdoc/no-empty", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 no_empty_statement = { pun = "lint/statements/no-empty", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-no_extra_blank_lines = { pun = "format/whitespace/no-extra-blank-lines", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+no_extra_blank_lines = { pun = "format/whitespace/no-extra-blank-lines", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/whitespace/no-extra-blank-lines\"]", status = "decided" }
 no_homoglyph_names = { pun = "lint/security/no-homoglyph-names", risky = true, options = "none", status = "decided" }
 no_leading_import_slash = { pun = "format/imports/no-leading-slash", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 no_leading_namespace_whitespace = { pun = "format/imports/no-leading-namespace-whitespace", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-no_mixed_echo_print = { pun = "format/statements/no-mixed-echo-print", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+no_mixed_echo_print = { pun = "format/statements/no-mixed-echo-print", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/statements/no-mixed-echo-print\"]", status = "decided" }
 no_multiline_whitespace_around_double_arrow = { pun = "format/arrays/no-multiline-double-arrow", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 no_multiple_statements_per_line = { pun = "format/statements/one-per-line", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 no_null_property_initialization = { pun = "lint/classes/no-null-property-default", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
@@ -1244,19 +1579,19 @@ no_short_bool_cast = { pun = "format/casts/no-short-bool", risky = false, pint_p
 no_singleline_whitespace_before_semicolons = { pun = "format/statements/no-space-before-semicolon", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 no_space_around_double_colon = { pun = "format/operators/no-space-around-double-colon", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 no_spaces_after_function_name = { pun = "format/functions/no-space-after-name", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
-no_spaces_around_offset = { pun = "format/arrays/no-space-around-offset", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+no_spaces_around_offset = { pun = "format/arrays/no-space-around-offset", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/arrays/no-space-around-offset\"]", status = "decided" }
 no_spaces_inside_parenthesis = { drop = "deprecated upstream; successor: spaces_inside_parentheses", successors = ["spaces_inside_parentheses"], status = "decided" }
 no_superfluous_elseif = { pun = "lint/control-flow/no-superfluous-elseif", risky = false, options = "none", status = "decided" }
 no_superfluous_phpdoc_tags = { pun = "lint/phpdoc/no-superfluous-tags", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
 no_trailing_comma_in_list_call = { drop = "deprecated upstream; successor: no_trailing_comma_in_singleline", successors = ["no_trailing_comma_in_singleline"], status = "decided" }
-no_trailing_comma_in_singleline = { pun = "format/arrays/no-trailing-comma-single-line", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+no_trailing_comma_in_singleline = { pun = "format/arrays/no-trailing-comma-single-line", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/arrays/no-trailing-comma-single-line\"]", status = "decided" }
 no_trailing_comma_in_singleline_array = { drop = "deprecated upstream; successor: no_trailing_comma_in_singleline", successors = ["no_trailing_comma_in_singleline"], status = "decided" }
 no_trailing_comma_in_singleline_function_call = { drop = "deprecated upstream; successor: no_trailing_comma_in_singleline", successors = ["no_trailing_comma_in_singleline"], status = "decided" }
 no_trailing_whitespace = { pun = "format/whitespace/no-trailing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 no_trailing_whitespace_in_comment = { pun = "format/comments/no-trailing-whitespace", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 no_trailing_whitespace_in_string = { pun = "lint/strings/no-trailing-whitespace-in-string", risky = true, options = "none", status = "decided" }
-no_unneeded_braces = { pun = "format/control-flow/no-unneeded-braces", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-no_unneeded_control_parentheses = { pun = "format/control-flow/no-unneeded-parentheses", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+no_unneeded_braces = { pun = "format/control-flow/no-unneeded-braces", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/control-flow/no-unneeded-braces\"]", status = "decided" }
+no_unneeded_control_parentheses = { pun = "format/control-flow/no-unneeded-parentheses", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/control-flow/no-unneeded-parentheses\"]", status = "decided" }
 no_unneeded_curly_braces = { drop = "deprecated upstream; successor: no_unneeded_braces", successors = ["no_unneeded_braces"], status = "decided" }
 no_unneeded_final_method = { pun = "lint/style/no-redundant-final", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 no_unneeded_import_alias = { pun = "format/imports/no-unneeded-alias", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
@@ -1264,31 +1599,31 @@ no_unreachable_default_argument_value = { pun = "lint/functions/no-unreachable-d
 no_unset_cast = { pun = "format/casts/no-unset", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 no_unset_on_property = { pun = "lint/classes/no-unset-on-property", risky = true, options = "none", status = "decided" }
 no_unused_imports = { pun = "lint/imports/no-unused", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
-no_useless_concat_operator = { pun = "format/operators/no-useless-concat", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+no_useless_concat_operator = { pun = "format/operators/no-useless-concat", risky = false, pint_presets = ["symfony"], options = "renamed for TOML: [options.\"format/operators/no-useless-concat\"]", status = "decided" }
 no_useless_else = { pun = "lint/control-flow/no-useless-else", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
 no_useless_nullsafe_operator = { pun = "lint/operators/no-useless-nullsafe", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
 no_useless_printf = { pun = "lint/style/no-useless-printf", risky = true, options = "none", status = "decided" }
 no_useless_return = { pun = "lint/control-flow/no-useless-return", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 no_useless_sprintf = { pun = "lint/style/no-useless-sprintf", risky = true, options = "none", status = "decided" }
-no_whitespace_before_comma_in_array = { pun = "format/arrays/no-space-before-comma", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+no_whitespace_before_comma_in_array = { pun = "format/arrays/no-space-before-comma", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/arrays/no-space-before-comma\"]", status = "decided" }
 no_whitespace_in_blank_line = { pun = "format/whitespace/no-blank-line-whitespace", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 no_whitespace_in_empty_array = { pun = "format/arrays/no-space-in-empty", risky = false, options = "none", status = "decided" }
 non_printable_character = { pun = "lint/strings/no-non-printable-character", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 normalize_index_brace = { pun = "format/arrays/index-brace", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 not_operator_with_space = { pun = "format/operators/not-with-space", risky = false, options = "none", status = "decided" }
 not_operator_with_successor_space = { pun = "format/operators/not-with-successor-space", risky = false, pint_presets = ["laravel"], options = "none", status = "decided" }
-nullable_type_declaration = { pun = "format/types/nullable-syntax", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-nullable_type_declaration_for_default_null_value = { pun = "format/types/nullable-for-null-default", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-numeric_literal_separator = { pun = "format/statements/numeric-literal-separator", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+nullable_type_declaration = { pun = "format/types/nullable-syntax", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "renamed for TOML: [options.\"format/types/nullable-syntax\"]", status = "decided" }
+nullable_type_declaration_for_default_null_value = { pun = "format/types/nullable-for-null-default", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/types/nullable-for-null-default\"]", status = "decided" }
+numeric_literal_separator = { pun = "format/statements/numeric-literal-separator", risky = false, options = "renamed for TOML: [options.\"format/statements/numeric-literal-separator\"]", status = "decided" }
 object_operator_without_whitespace = { pun = "format/operators/no-space-around-arrow", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 octal_notation = { pun = "format/statements/octal-notation", risky = false, options = "none", status = "decided" }
-operator_linebreak = { pun = "format/operators/linebreak", risky = false, pint_presets = ["per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-ordered_attributes = { pun = "format/attributes/ordered", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+operator_linebreak = { pun = "format/operators/linebreak", risky = false, pint_presets = ["per", "symfony"], options = "renamed for TOML: [options.\"format/operators/linebreak\"]", status = "decided" }
+ordered_attributes = { pun = "format/attributes/ordered", risky = false, options = "renamed for TOML: [options.\"format/attributes/ordered\"]", status = "decided" }
 ordered_class_elements = { pun = "lint/classes/require-member-order", risky = false, pint_presets = ["psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-ordered_imports = { pun = "format/imports/ordered", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-ordered_interfaces = { pun = "format/classes/ordered-interfaces", risky = false, pint_presets = ["laravel"], options = "same (option keys kebab-cased)", status = "decided" }
+ordered_imports = { pun = "format/imports/ordered", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/imports/ordered\"]", status = "decided" }
+ordered_interfaces = { pun = "format/classes/ordered-interfaces", risky = false, pint_presets = ["laravel"], options = "renamed for TOML: [options.\"format/classes/ordered-interfaces\"]", status = "decided" }
 ordered_traits = { pun = "lint/style/require-ordered-traits", risky = true, pint_presets = ["laravel"], options = "same (option keys kebab-cased)", status = "decided" }
-ordered_types = { pun = "format/types/ordered", risky = false, pint_presets = ["per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+ordered_types = { pun = "format/types/ordered", risky = false, pint_presets = ["per", "symfony"], options = "renamed for TOML: [options.\"format/types/ordered\"]", status = "decided" }
 php_unit_assert_new_names = { pun = "lint/phpunit/prefer-new-assertion-names", risky = true, options = "none", status = "decided" }
 php_unit_attributes = { pun = "lint/phpunit/prefer-attributes", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
 php_unit_construct = { pun = "lint/phpunit/prefer-specific-assertions", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
@@ -1313,40 +1648,40 @@ php_unit_test_annotation = { pun = "lint/phpunit/require-test-annotation-style",
 php_unit_test_case_static_method_calls = { pun = "lint/phpunit/require-assertion-style", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 php_unit_test_class_requires_covers = { pun = "lint/phpunit/require-covers", risky = false, options = "none", status = "decided" }
 phpdoc_add_missing_param_annotation = { pun = "lint/phpdoc/add-missing-param", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
-phpdoc_align = { pun = "format/phpdoc/align", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+phpdoc_align = { pun = "format/phpdoc/align", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/phpdoc/align\"]", status = "decided" }
 phpdoc_annotation_without_dot = { pun = "format/phpdoc/annotation-without-dot", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
 phpdoc_array_type = { pun = "lint/style/prefer-generic-array-phpdoc", risky = true, options = "none", status = "decided" }
 phpdoc_indent = { pun = "format/phpdoc/indent", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-phpdoc_inline_tag_normalizer = { pun = "format/phpdoc/inline-tag", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-phpdoc_line_span = { pun = "format/phpdoc/line-span", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+phpdoc_inline_tag_normalizer = { pun = "format/phpdoc/inline-tag", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/phpdoc/inline-tag\"]", status = "decided" }
+phpdoc_line_span = { pun = "format/phpdoc/line-span", risky = false, options = "renamed for TOML: [options.\"format/phpdoc/line-span\"]", status = "decided" }
 phpdoc_list_type = { pun = "lint/style/prefer-list-phpdoc", risky = true, options = "none", status = "decided" }
 phpdoc_no_access = { pun = "lint/phpdoc/no-access", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-phpdoc_no_alias_tag = { pun = "format/phpdoc/no-alias-tag", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+phpdoc_no_alias_tag = { pun = "format/phpdoc/no-alias-tag", risky = false, pint_presets = ["symfony"], options = "renamed for TOML: [options.\"format/phpdoc/no-alias-tag\"]", status = "decided" }
 phpdoc_no_duplicate_types = { pun = "format/phpdoc/no-duplicate-types", risky = false, options = "none", status = "decided" }
 phpdoc_no_empty_return = { pun = "lint/phpdoc/no-empty-return", risky = false, options = "none", status = "decided" }
 phpdoc_no_package = { pun = "lint/phpdoc/no-package", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 phpdoc_no_useless_inheritdoc = { pun = "lint/phpdoc/no-useless-inheritdoc", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-phpdoc_order = { pun = "format/phpdoc/order", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-phpdoc_order_by_value = { pun = "format/phpdoc/order-by-value", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+phpdoc_order = { pun = "format/phpdoc/order", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/phpdoc/order\"]", status = "decided" }
+phpdoc_order_by_value = { pun = "format/phpdoc/order-by-value", risky = false, options = "renamed for TOML: [options.\"format/phpdoc/order-by-value\"]", status = "decided" }
 phpdoc_param_order = { pun = "format/phpdoc/param-order", risky = false, options = "none", status = "decided" }
 phpdoc_readonly_class_comment_to_keyword = { pun = "lint/style/prefer-readonly-keyword", risky = true, options = "none", status = "decided" }
-phpdoc_return_self_reference = { pun = "format/phpdoc/return-self-reference", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-phpdoc_scalar = { pun = "format/phpdoc/scalar", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-phpdoc_separation = { pun = "format/phpdoc/separation", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+phpdoc_return_self_reference = { pun = "format/phpdoc/return-self-reference", risky = false, pint_presets = ["symfony"], options = "renamed for TOML: [options.\"format/phpdoc/return-self-reference\"]", status = "decided" }
+phpdoc_scalar = { pun = "format/phpdoc/scalar", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/phpdoc/scalar\"]", status = "decided" }
+phpdoc_separation = { pun = "format/phpdoc/separation", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/phpdoc/separation\"]", status = "decided" }
 phpdoc_single_line_var_spacing = { pun = "format/phpdoc/single-line-var-spacing", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 phpdoc_summary = { pun = "format/phpdoc/summary", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
-phpdoc_tag_casing = { pun = "format/phpdoc/tag-casing", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+phpdoc_tag_casing = { pun = "format/phpdoc/tag-casing", risky = false, options = "renamed for TOML: [options.\"format/phpdoc/tag-casing\"]", status = "decided" }
 phpdoc_tag_no_named_arguments = { pun = "lint/phpdoc/require-no-named-arguments", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
-phpdoc_tag_type = { pun = "format/phpdoc/tag-type", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+phpdoc_tag_type = { pun = "format/phpdoc/tag-type", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/phpdoc/tag-type\"]", status = "decided" }
 phpdoc_to_comment = { pun = "lint/phpdoc/no-misplaced", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
 phpdoc_to_param_type = { pun = "lint/style/add-param-type-from-phpdoc", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 phpdoc_to_property_type = { pun = "lint/style/add-property-type-from-phpdoc", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 phpdoc_to_return_type = { pun = "lint/style/add-return-type-from-phpdoc", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
 phpdoc_trim = { pun = "format/phpdoc/trim", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 phpdoc_trim_consecutive_blank_line_separation = { pun = "format/phpdoc/trim-blank-lines", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
-phpdoc_types = { pun = "format/phpdoc/types", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+phpdoc_types = { pun = "format/phpdoc/types", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/phpdoc/types\"]", status = "decided" }
 phpdoc_types_no_duplicates = { drop = "deprecated upstream; successor: phpdoc_no_duplicate_types", successors = ["phpdoc_no_duplicate_types"], status = "decided" }
-phpdoc_types_order = { pun = "format/phpdoc/types-order", risky = false, pint_presets = ["symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+phpdoc_types_order = { pun = "format/phpdoc/types-order", risky = false, pint_presets = ["symfony"], options = "renamed for TOML: [options.\"format/phpdoc/types-order\"]", status = "decided" }
 phpdoc_var_annotation_correct_order = { pun = "format/phpdoc/var-order", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
 phpdoc_var_without_name = { pun = "format/phpdoc/var-without-name", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
 pow_to_exponentiation = { pun = "lint/style/prefer-pow-operator", risky = true, options = "none", status = "decided" }
@@ -1356,7 +1691,7 @@ random_api_migration = { pun = "lint/style/prefer-random-int", risky = true, opt
 regular_callable_call = { pun = "lint/style/no-call-user-func", risky = true, options = "none", status = "decided" }
 return_assignment = { pun = "lint/control-flow/no-return-assignment", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
 return_to_yield_from = { pun = "lint/control-flow/prefer-yield-from", risky = false, options = "none", status = "decided" }
-return_type_declaration = { pun = "format/functions/return-type-spacing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+return_type_declaration = { pun = "format/functions/return-type-spacing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/functions/return-type-spacing\"]", status = "decided" }
 self_accessor = { pun = "lint/style/prefer-self-reference", risky = true, options = "none", status = "decided" }
 self_static_accessor = { pun = "lint/classes/prefer-self-in-final", risky = false, pint_presets = ["laravel"], options = "none", status = "decided" }
 semicolon_after_instruction = { pun = "format/statements/semicolon-after-instruction", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
@@ -1367,27 +1702,27 @@ simplified_if_return = { pun = "lint/control-flow/prefer-bool-return", risky = f
 simplified_null_return = { pun = "lint/control-flow/prefer-bare-return", risky = false, options = "none", status = "decided" }
 single_blank_line_at_eof = { pun = "format/whitespace/final-newline", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 single_blank_line_before_namespace = { drop = "deprecated upstream; successor: blank_lines_before_namespace", successors = ["blank_lines_before_namespace"], status = "decided" }
-single_class_element_per_statement = { pun = "format/classes/single-member-per-statement", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-single_import_per_statement = { pun = "format/imports/single-per-statement", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+single_class_element_per_statement = { pun = "format/classes/single-member-per-statement", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/classes/single-member-per-statement\"]", status = "decided" }
+single_import_per_statement = { pun = "format/imports/single-per-statement", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/imports/single-per-statement\"]", status = "decided" }
 single_line_after_imports = { pun = "format/imports/blank-line-after", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 single_line_comment_spacing = { pun = "format/comments/single-line-spacing", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-single_line_comment_style = { pun = "format/comments/single-line-style", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+single_line_comment_style = { pun = "format/comments/single-line-style", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/comments/single-line-style\"]", status = "decided" }
 single_line_empty_body = { pun = "format/statements/single-line-empty-body", risky = false, pint_presets = ["laravel", "per"], options = "none", status = "decided" }
 single_line_throw = { pun = "format/functions/single-line-throw", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
-single_quote = { pun = "format/strings/single-quote", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+single_quote = { pun = "format/strings/single-quote", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/strings/single-quote\"]", status = "decided" }
 single_space_after_construct = { drop = "deprecated upstream; successor: single_space_around_construct", successors = ["single_space_around_construct"], status = "decided" }
-single_space_around_construct = { pun = "format/statements/space-around-construct", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+single_space_around_construct = { pun = "format/statements/space-around-construct", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/statements/space-around-construct\"]", status = "decided" }
 single_trait_insert_per_statement = { pun = "format/classes/single-trait-per-statement", risky = false, pint_presets = ["psr12", "per", "symfony"], options = "none", status = "decided" }
-space_after_semicolon = { pun = "format/statements/space-after-semicolon", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-spaces_inside_parentheses = { pun = "format/whitespace/inside-parentheses", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+space_after_semicolon = { pun = "format/statements/space-after-semicolon", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/statements/space-after-semicolon\"]", status = "decided" }
+spaces_inside_parentheses = { pun = "format/whitespace/inside-parentheses", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/whitespace/inside-parentheses\"]", status = "decided" }
 standardize_increment = { pun = "format/operators/standardize-increment", risky = false, pint_presets = ["symfony"], options = "none", status = "decided" }
 standardize_not_equals = { pun = "format/operators/standardize-not-equals", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-statement_indentation = { pun = "format/whitespace/statement-indentation", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+statement_indentation = { pun = "format/whitespace/statement-indentation", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/whitespace/statement-indentation\"]", status = "decided" }
 static_lambda = { pun = "lint/performance/prefer-static-closure", risky = true, options = "none", status = "decided" }
 static_private_method = { pun = "lint/style/prefer-static-private-method", risky = true, options = "none", status = "decided" }
 strict_comparison = { pun = "lint/types/no-loose-comparison", risky = true, options = "none", status = "decided" }
 strict_param = { pun = "lint/types/require-strict-param", risky = true, options = "none", status = "decided" }
-string_implicit_backslashes = { pun = "format/strings/implicit-backslashes", risky = false, options = "same (option keys kebab-cased)", status = "decided" }
+string_implicit_backslashes = { pun = "format/strings/implicit-backslashes", risky = false, options = "renamed for TOML: [options.\"format/strings/implicit-backslashes\"]", status = "decided" }
 string_length_to_empty = { pun = "lint/style/prefer-empty-string-compare", risky = true, options = "none", status = "decided" }
 string_line_ending = { pun = "lint/strings/require-string-line-ending", risky = true, options = "none", status = "decided" }
 stringable_for_to_string = { pun = "lint/classes/add-stringable", risky = false, options = "none", status = "decided" }
@@ -1397,17 +1732,17 @@ switch_continue_to_break = { pun = "lint/control-flow/no-switch-continue", risky
 ternary_operator_spaces = { pun = "format/operators/ternary-spacing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "none", status = "decided" }
 ternary_to_elvis_operator = { pun = "lint/style/prefer-short-ternary", risky = true, options = "none", status = "decided" }
 ternary_to_null_coalescing = { pun = "lint/operators/prefer-coalesce", risky = false, options = "none", status = "decided" }
-trailing_comma_in_multiline = { pun = "format/arrays/trailing-comma-multiline", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+trailing_comma_in_multiline = { pun = "format/arrays/trailing-comma-multiline", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "renamed for TOML: [options.\"format/arrays/trailing-comma-multiline\"]", status = "decided" }
 trim_array_spaces = { pun = "format/arrays/trim-spaces", risky = false, pint_presets = ["laravel", "symfony"], options = "none", status = "decided" }
-type_declaration_spaces = { pun = "format/types/declaration-spacing", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-types_spaces = { pun = "format/types/union-spacing", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
-unary_operator_spaces = { pun = "format/operators/unary-spacing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+type_declaration_spaces = { pun = "format/types/declaration-spacing", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/types/declaration-spacing\"]", status = "decided" }
+types_spaces = { pun = "format/types/union-spacing", risky = false, pint_presets = ["laravel", "per", "symfony"], options = "renamed for TOML: [options.\"format/types/union-spacing\"]", status = "decided" }
+unary_operator_spaces = { pun = "format/operators/unary-spacing", risky = false, pint_presets = ["laravel", "psr12", "per", "symfony"], options = "renamed for TOML: [options.\"format/operators/unary-spacing\"]", status = "decided" }
 use_arrow_functions = { pun = "lint/style/prefer-arrow-function", risky = true, options = "none", status = "decided" }
 visibility_required = { drop = "deprecated upstream; successor: modifier_keywords", successors = ["modifier_keywords"], status = "decided" }
 void_return = { pun = "lint/types/add-void-return-type", risky = true, options = "same (option keys kebab-cased)", status = "decided" }
-whitespace_after_comma_in_array = { pun = "format/arrays/space-after-comma", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+whitespace_after_comma_in_array = { pun = "format/arrays/space-after-comma", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/arrays/space-after-comma\"]", status = "decided" }
 yield_from_array_to_yields = { pun = "lint/style/no-redundant-yield-from", risky = true, options = "none", status = "decided" }
-yoda_style = { pun = "format/control-flow/yoda", risky = false, pint_presets = ["laravel", "symfony"], options = "same (option keys kebab-cased)", status = "decided" }
+yoda_style = { pun = "format/control-flow/yoda", risky = false, pint_presets = ["laravel", "symfony"], options = "renamed for TOML: [options.\"format/control-flow/yoda\"]", status = "decided" }
 
 [upstream.pint]
 "Pint/laravel_blade" = { pun = "format/laravel/blade", options = "same", status = "decided" }

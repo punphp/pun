@@ -1,0 +1,3805 @@
+{
+    "align_multiline_comment": [
+        {
+            "name": "comment_type",
+            "types": null,
+            "values": [
+                "phpdocs_only",
+                "phpdocs_like",
+                "all_multiline"
+            ],
+            "default": "phpdocs_only",
+            "deprecated": false
+        }
+    ],
+    "array_syntax": [
+        {
+            "name": "syntax",
+            "types": null,
+            "values": [
+                "long",
+                "short"
+            ],
+            "default": "short",
+            "deprecated": false
+        }
+    ],
+    "attribute_empty_parentheses": [
+        {
+            "name": "use_parentheses",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "binary_operator_spaces": [
+        {
+            "name": "default",
+            "types": null,
+            "values": [
+                "align",
+                "align_by_scope",
+                "align_single_space",
+                "align_single_space_minimal",
+                "align_single_space_by_scope",
+                "align_single_space_minimal_by_scope",
+                "single_space",
+                "no_space",
+                "at_least_single_space",
+                null
+            ],
+            "default": "single_space",
+            "deprecated": false
+        },
+        {
+            "name": "operators",
+            "types": [
+                "array<string, ?string>"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        }
+    ],
+    "blank_line_before_statement": [
+        {
+            "name": "statements",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "break",
+                "case",
+                "continue",
+                "declare",
+                "default",
+                "do",
+                "exit",
+                "for",
+                "foreach",
+                "goto",
+                "if",
+                "include",
+                "include_once",
+                "phpdoc",
+                "require",
+                "require_once",
+                "return",
+                "switch",
+                "throw",
+                "try",
+                "while",
+                "yield",
+                "yield_from"
+            ],
+            "default": [
+                "break",
+                "continue",
+                "declare",
+                "return",
+                "throw",
+                "try"
+            ],
+            "deprecated": false
+        }
+    ],
+    "blank_lines_before_namespace": [
+        {
+            "name": "max_line_breaks",
+            "types": [
+                "int"
+            ],
+            "values": null,
+            "default": 2,
+            "deprecated": false
+        },
+        {
+            "name": "min_line_breaks",
+            "types": [
+                "int"
+            ],
+            "values": null,
+            "default": 2,
+            "deprecated": false
+        }
+    ],
+    "braces": [
+        {
+            "name": "allow_single_line_anonymous_class_with_empty_body",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "allow_single_line_closure",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "position_after_anonymous_constructs",
+            "types": null,
+            "values": [
+                "next",
+                "same"
+            ],
+            "default": "same",
+            "deprecated": false
+        },
+        {
+            "name": "position_after_control_structures",
+            "types": null,
+            "values": [
+                "next",
+                "same"
+            ],
+            "default": "same",
+            "deprecated": false
+        },
+        {
+            "name": "position_after_functions_and_oop_constructs",
+            "types": null,
+            "values": [
+                "next",
+                "same"
+            ],
+            "default": "next",
+            "deprecated": false
+        }
+    ],
+    "braces_position": [
+        {
+            "name": "allow_single_line_anonymous_functions",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "allow_single_line_empty_anonymous_classes",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "anonymous_classes_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "same_line",
+            "deprecated": false
+        },
+        {
+            "name": "anonymous_functions_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "same_line",
+            "deprecated": false
+        },
+        {
+            "name": "classes_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "next_line_unless_newline_at_signature_end",
+            "deprecated": false
+        },
+        {
+            "name": "control_structures_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "same_line",
+            "deprecated": false
+        },
+        {
+            "name": "functions_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "next_line_unless_newline_at_signature_end",
+            "deprecated": false
+        }
+    ],
+    "cast_spaces": [
+        {
+            "name": "space",
+            "types": null,
+            "values": [
+                "none",
+                "single"
+            ],
+            "default": "single",
+            "deprecated": false
+        }
+    ],
+    "class_attributes_separation": [
+        {
+            "name": "elements",
+            "types": [
+                "array<string, string>"
+            ],
+            "values": null,
+            "default": {
+                "const": "one",
+                "method": "one",
+                "property": "one",
+                "trait_import": "none",
+                "case": "none"
+            },
+            "deprecated": false
+        }
+    ],
+    "class_definition": [
+        {
+            "name": "inline_constructor_arguments",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "multi_line_extends_each_single_line",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "single_item_single_line",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "single_line",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "space_before_parenthesis",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "comment_to_phpdoc": [
+        {
+            "name": "ignored_tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        }
+    ],
+    "concat_space": [
+        {
+            "name": "spacing",
+            "types": null,
+            "values": [
+                "one",
+                "none"
+            ],
+            "default": "none",
+            "deprecated": false
+        }
+    ],
+    "constant_case": [
+        {
+            "name": "case",
+            "types": null,
+            "values": [
+                "upper",
+                "lower"
+            ],
+            "default": "lower",
+            "deprecated": false
+        }
+    ],
+    "control_structure_continuation_position": [
+        {
+            "name": "position",
+            "types": null,
+            "values": [
+                "next_line",
+                "same_line"
+            ],
+            "default": "same_line",
+            "deprecated": false
+        }
+    ],
+    "curly_braces_position": [
+        {
+            "name": "allow_single_line_anonymous_functions",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "allow_single_line_empty_anonymous_classes",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "anonymous_classes_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "same_line",
+            "deprecated": false
+        },
+        {
+            "name": "anonymous_functions_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "same_line",
+            "deprecated": false
+        },
+        {
+            "name": "classes_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "next_line_unless_newline_at_signature_end",
+            "deprecated": false
+        },
+        {
+            "name": "control_structures_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "same_line",
+            "deprecated": false
+        },
+        {
+            "name": "functions_opening_brace",
+            "types": null,
+            "values": [
+                "next_line_unless_newline_at_signature_end",
+                "same_line"
+            ],
+            "default": "next_line_unless_newline_at_signature_end",
+            "deprecated": false
+        }
+    ],
+    "declare_equal_normalize": [
+        {
+            "name": "space",
+            "types": null,
+            "values": [
+                "single",
+                "none"
+            ],
+            "default": "none",
+            "deprecated": false
+        }
+    ],
+    "declare_strict_types": [
+        {
+            "name": "preserve_existing_declaration",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": true
+        },
+        {
+            "name": "strategy",
+            "types": null,
+            "values": [
+                "remove",
+                "add_when_missing",
+                "enforce"
+            ],
+            "default": "enforce",
+            "deprecated": false
+        }
+    ],
+    "doctrine_annotation_array_assignment": [
+        {
+            "name": "ignored_tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "abstract",
+                "access",
+                "code",
+                "deprec",
+                "encode",
+                "exception",
+                "final",
+                "ingroup",
+                "inheritdoc",
+                "inheritDoc",
+                "magic",
+                "name",
+                "toc",
+                "tutorial",
+                "private",
+                "static",
+                "staticvar",
+                "staticVar",
+                "throw",
+                "api",
+                "author",
+                "category",
+                "copyright",
+                "deprecated",
+                "example",
+                "filesource",
+                "global",
+                "ignore",
+                "internal",
+                "license",
+                "link",
+                "method",
+                "package",
+                "param",
+                "property",
+                "property-read",
+                "property-write",
+                "return",
+                "see",
+                "since",
+                "source",
+                "subpackage",
+                "throws",
+                "todo",
+                "TODO",
+                "usedBy",
+                "uses",
+                "var",
+                "version",
+                "after",
+                "afterClass",
+                "backupGlobals",
+                "backupStaticAttributes",
+                "before",
+                "beforeClass",
+                "codeCoverageIgnore",
+                "codeCoverageIgnoreStart",
+                "codeCoverageIgnoreEnd",
+                "covers",
+                "coversDefaultClass",
+                "coversNothing",
+                "dataProvider",
+                "depends",
+                "expectedException",
+                "expectedExceptionCode",
+                "expectedExceptionMessage",
+                "expectedExceptionMessageRegExp",
+                "group",
+                "large",
+                "medium",
+                "preserveGlobalState",
+                "requires",
+                "runTestsInSeparateProcesses",
+                "runInSeparateProcess",
+                "small",
+                "test",
+                "testdox",
+                "ticket",
+                "uses",
+                "SuppressWarnings",
+                "noinspection",
+                "package_version",
+                "enduml",
+                "startuml",
+                "psalm",
+                "phpstan",
+                "template",
+                "fix",
+                "FIXME",
+                "fixme",
+                "override"
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "operator",
+            "types": null,
+            "values": [
+                "=",
+                ":"
+            ],
+            "default": "=",
+            "deprecated": false
+        }
+    ],
+    "doctrine_annotation_braces": [
+        {
+            "name": "ignored_tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "abstract",
+                "access",
+                "code",
+                "deprec",
+                "encode",
+                "exception",
+                "final",
+                "ingroup",
+                "inheritdoc",
+                "inheritDoc",
+                "magic",
+                "name",
+                "toc",
+                "tutorial",
+                "private",
+                "static",
+                "staticvar",
+                "staticVar",
+                "throw",
+                "api",
+                "author",
+                "category",
+                "copyright",
+                "deprecated",
+                "example",
+                "filesource",
+                "global",
+                "ignore",
+                "internal",
+                "license",
+                "link",
+                "method",
+                "package",
+                "param",
+                "property",
+                "property-read",
+                "property-write",
+                "return",
+                "see",
+                "since",
+                "source",
+                "subpackage",
+                "throws",
+                "todo",
+                "TODO",
+                "usedBy",
+                "uses",
+                "var",
+                "version",
+                "after",
+                "afterClass",
+                "backupGlobals",
+                "backupStaticAttributes",
+                "before",
+                "beforeClass",
+                "codeCoverageIgnore",
+                "codeCoverageIgnoreStart",
+                "codeCoverageIgnoreEnd",
+                "covers",
+                "coversDefaultClass",
+                "coversNothing",
+                "dataProvider",
+                "depends",
+                "expectedException",
+                "expectedExceptionCode",
+                "expectedExceptionMessage",
+                "expectedExceptionMessageRegExp",
+                "group",
+                "large",
+                "medium",
+                "preserveGlobalState",
+                "requires",
+                "runTestsInSeparateProcesses",
+                "runInSeparateProcess",
+                "small",
+                "test",
+                "testdox",
+                "ticket",
+                "uses",
+                "SuppressWarnings",
+                "noinspection",
+                "package_version",
+                "enduml",
+                "startuml",
+                "psalm",
+                "phpstan",
+                "template",
+                "fix",
+                "FIXME",
+                "fixme",
+                "override"
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "syntax",
+            "types": null,
+            "values": [
+                "with_braces",
+                "without_braces"
+            ],
+            "default": "without_braces",
+            "deprecated": false
+        }
+    ],
+    "doctrine_annotation_indentation": [
+        {
+            "name": "ignored_tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "abstract",
+                "access",
+                "code",
+                "deprec",
+                "encode",
+                "exception",
+                "final",
+                "ingroup",
+                "inheritdoc",
+                "inheritDoc",
+                "magic",
+                "name",
+                "toc",
+                "tutorial",
+                "private",
+                "static",
+                "staticvar",
+                "staticVar",
+                "throw",
+                "api",
+                "author",
+                "category",
+                "copyright",
+                "deprecated",
+                "example",
+                "filesource",
+                "global",
+                "ignore",
+                "internal",
+                "license",
+                "link",
+                "method",
+                "package",
+                "param",
+                "property",
+                "property-read",
+                "property-write",
+                "return",
+                "see",
+                "since",
+                "source",
+                "subpackage",
+                "throws",
+                "todo",
+                "TODO",
+                "usedBy",
+                "uses",
+                "var",
+                "version",
+                "after",
+                "afterClass",
+                "backupGlobals",
+                "backupStaticAttributes",
+                "before",
+                "beforeClass",
+                "codeCoverageIgnore",
+                "codeCoverageIgnoreStart",
+                "codeCoverageIgnoreEnd",
+                "covers",
+                "coversDefaultClass",
+                "coversNothing",
+                "dataProvider",
+                "depends",
+                "expectedException",
+                "expectedExceptionCode",
+                "expectedExceptionMessage",
+                "expectedExceptionMessageRegExp",
+                "group",
+                "large",
+                "medium",
+                "preserveGlobalState",
+                "requires",
+                "runTestsInSeparateProcesses",
+                "runInSeparateProcess",
+                "small",
+                "test",
+                "testdox",
+                "ticket",
+                "uses",
+                "SuppressWarnings",
+                "noinspection",
+                "package_version",
+                "enduml",
+                "startuml",
+                "psalm",
+                "phpstan",
+                "template",
+                "fix",
+                "FIXME",
+                "fixme",
+                "override"
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "indent_mixed_lines",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "doctrine_annotation_spaces": [
+        {
+            "name": "after_argument_assignments",
+            "types": [
+                "null",
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "after_array_assignments_colon",
+            "types": [
+                "null",
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "after_array_assignments_equals",
+            "types": [
+                "null",
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "around_commas",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "around_parentheses",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "before_argument_assignments",
+            "types": [
+                "null",
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "before_array_assignments_colon",
+            "types": [
+                "null",
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "before_array_assignments_equals",
+            "types": [
+                "null",
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "ignored_tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "abstract",
+                "access",
+                "code",
+                "deprec",
+                "encode",
+                "exception",
+                "final",
+                "ingroup",
+                "inheritdoc",
+                "inheritDoc",
+                "magic",
+                "name",
+                "toc",
+                "tutorial",
+                "private",
+                "static",
+                "staticvar",
+                "staticVar",
+                "throw",
+                "api",
+                "author",
+                "category",
+                "copyright",
+                "deprecated",
+                "example",
+                "filesource",
+                "global",
+                "ignore",
+                "internal",
+                "license",
+                "link",
+                "method",
+                "package",
+                "param",
+                "property",
+                "property-read",
+                "property-write",
+                "return",
+                "see",
+                "since",
+                "source",
+                "subpackage",
+                "throws",
+                "todo",
+                "TODO",
+                "usedBy",
+                "uses",
+                "var",
+                "version",
+                "after",
+                "afterClass",
+                "backupGlobals",
+                "backupStaticAttributes",
+                "before",
+                "beforeClass",
+                "codeCoverageIgnore",
+                "codeCoverageIgnoreStart",
+                "codeCoverageIgnoreEnd",
+                "covers",
+                "coversDefaultClass",
+                "coversNothing",
+                "dataProvider",
+                "depends",
+                "expectedException",
+                "expectedExceptionCode",
+                "expectedExceptionMessage",
+                "expectedExceptionMessageRegExp",
+                "group",
+                "large",
+                "medium",
+                "preserveGlobalState",
+                "requires",
+                "runTestsInSeparateProcesses",
+                "runInSeparateProcess",
+                "small",
+                "test",
+                "testdox",
+                "ticket",
+                "uses",
+                "SuppressWarnings",
+                "noinspection",
+                "package_version",
+                "enduml",
+                "startuml",
+                "psalm",
+                "phpstan",
+                "template",
+                "fix",
+                "FIXME",
+                "fixme",
+                "override"
+            ],
+            "deprecated": false
+        }
+    ],
+    "echo_tag_syntax": [
+        {
+            "name": "format",
+            "types": null,
+            "values": [
+                "long",
+                "short"
+            ],
+            "default": "long",
+            "deprecated": false
+        },
+        {
+            "name": "long_function",
+            "types": null,
+            "values": [
+                "echo",
+                "print"
+            ],
+            "default": "echo",
+            "deprecated": false
+        },
+        {
+            "name": "shorten_simple_statements_only",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "empty_loop_body": [
+        {
+            "name": "style",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "braces",
+                "semicolon"
+            ],
+            "default": "semicolon",
+            "deprecated": false
+        }
+    ],
+    "empty_loop_condition": [
+        {
+            "name": "style",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "while",
+                "for"
+            ],
+            "default": "while",
+            "deprecated": false
+        }
+    ],
+    "error_suppression": [
+        {
+            "name": "mute_deprecation_error",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "noise_remaining_usages",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "noise_remaining_usages_exclude",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        }
+    ],
+    "escape_implicit_backslashes": [
+        {
+            "name": "double_quoted",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "heredoc_syntax",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "single_quoted",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "final_internal_class": [
+        {
+            "name": "annotation_exclude",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "@final",
+                "@Entity",
+                "@ORM\\Entity",
+                "@ORM\\Mapping\\Entity",
+                "@Mapping\\Entity",
+                "@Document",
+                "@ODM\\Document"
+            ],
+            "deprecated": true
+        },
+        {
+            "name": "annotation_include",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "@internal"
+            ],
+            "deprecated": true
+        },
+        {
+            "name": "consider_absent_docblock_as_internal_class",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "exclude",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "final",
+                "Entity",
+                "ORM\\Entity",
+                "ORM\\Mapping\\Entity",
+                "Mapping\\Entity",
+                "Document",
+                "ODM\\Document"
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "include",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "internal"
+            ],
+            "deprecated": false
+        }
+    ],
+    "fopen_flags": [
+        {
+            "name": "b_mode",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "fully_qualified_strict_types": [
+        {
+            "name": "import_symbols",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "leading_backslash_in_global_namespace",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "phpdoc_tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "param",
+                "phpstan-param",
+                "phpstan-property",
+                "phpstan-property-read",
+                "phpstan-property-write",
+                "phpstan-return",
+                "phpstan-var",
+                "property",
+                "property-read",
+                "property-write",
+                "psalm-param",
+                "psalm-property",
+                "psalm-property-read",
+                "psalm-property-write",
+                "psalm-return",
+                "psalm-var",
+                "return",
+                "see",
+                "throws",
+                "var"
+            ],
+            "deprecated": false
+        }
+    ],
+    "function_declaration": [
+        {
+            "name": "closure_fn_spacing",
+            "types": null,
+            "values": [
+                "none",
+                "one"
+            ],
+            "default": "one",
+            "deprecated": false
+        },
+        {
+            "name": "closure_function_spacing",
+            "types": null,
+            "values": [
+                "none",
+                "one"
+            ],
+            "default": "one",
+            "deprecated": false
+        },
+        {
+            "name": "trailing_comma_single_line",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "function_to_constant": [
+        {
+            "name": "functions",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "get_called_class",
+                "get_class",
+                "get_class_this",
+                "php_sapi_name",
+                "phpversion",
+                "pi"
+            ],
+            "default": [
+                "get_called_class",
+                "get_class",
+                "get_class_this",
+                "php_sapi_name",
+                "phpversion",
+                "pi"
+            ],
+            "deprecated": false
+        }
+    ],
+    "general_attribute_remove": [
+        {
+            "name": "attributes",
+            "types": [
+                "class-string[]"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        }
+    ],
+    "general_phpdoc_annotation_remove": [
+        {
+            "name": "annotations",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        },
+        {
+            "name": "case_sensitive",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "general_phpdoc_tag_rename": [
+        {
+            "name": "case_sensitive",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "fix_annotation",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "fix_inline",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "replacements",
+            "types": [
+                "array<string, string>"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        }
+    ],
+    "global_namespace_import": [
+        {
+            "name": "import_classes",
+            "types": [
+                "null",
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "import_constants",
+            "types": [
+                "null",
+                "bool"
+            ],
+            "values": null,
+            "default": null,
+            "deprecated": false
+        },
+        {
+            "name": "import_functions",
+            "types": [
+                "null",
+                "bool"
+            ],
+            "values": null,
+            "default": null,
+            "deprecated": false
+        }
+    ],
+    "group_import": [
+        {
+            "name": "group_types",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "classy",
+                "functions",
+                "constants"
+            ],
+            "deprecated": false
+        }
+    ],
+    "header_comment": [
+        {
+            "name": "comment_type",
+            "types": null,
+            "values": [
+                "PHPDoc",
+                "comment"
+            ],
+            "default": "comment",
+            "deprecated": false
+        },
+        {
+            "name": "header",
+            "types": [
+                "string"
+            ],
+            "values": null,
+            "default": null,
+            "deprecated": false
+        },
+        {
+            "name": "location",
+            "types": null,
+            "values": [
+                "after_open",
+                "after_declare_strict"
+            ],
+            "default": "after_declare_strict",
+            "deprecated": false
+        },
+        {
+            "name": "separate",
+            "types": null,
+            "values": [
+                "both",
+                "top",
+                "bottom",
+                "none"
+            ],
+            "default": "both",
+            "deprecated": false
+        },
+        {
+            "name": "validator",
+            "types": [
+                "string",
+                "null"
+            ],
+            "values": null,
+            "default": null,
+            "deprecated": false
+        }
+    ],
+    "heredoc_closing_marker": [
+        {
+            "name": "closing_marker",
+            "types": [
+                "string"
+            ],
+            "values": null,
+            "default": "EOD",
+            "deprecated": false
+        },
+        {
+            "name": "explicit_heredoc_style",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "reserved_closing_markers",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "CSS",
+                "DIFF",
+                "HTML",
+                "JS",
+                "JSON",
+                "MD",
+                "PHP",
+                "PYTHON",
+                "RST",
+                "TS",
+                "SQL",
+                "XML",
+                "YAML"
+            ],
+            "deprecated": false
+        }
+    ],
+    "heredoc_indentation": [
+        {
+            "name": "indentation",
+            "types": null,
+            "values": [
+                "start_plus_one",
+                "same_as_start"
+            ],
+            "default": "start_plus_one",
+            "deprecated": false
+        }
+    ],
+    "increment_style": [
+        {
+            "name": "style",
+            "types": null,
+            "values": [
+                "pre",
+                "post"
+            ],
+            "default": "pre",
+            "deprecated": false
+        }
+    ],
+    "list_syntax": [
+        {
+            "name": "syntax",
+            "types": null,
+            "values": [
+                "long",
+                "short"
+            ],
+            "default": "short",
+            "deprecated": false
+        }
+    ],
+    "method_argument_space": [
+        {
+            "name": "after_heredoc",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "attribute_placement",
+            "types": null,
+            "values": [
+                "ignore",
+                "same_line",
+                "standalone"
+            ],
+            "default": "standalone",
+            "deprecated": false
+        },
+        {
+            "name": "keep_multiple_spaces_after_comma",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "on_multiline",
+            "types": null,
+            "values": [
+                "ignore",
+                "ensure_single_line",
+                "ensure_fully_multiline",
+                "ensure_single_line_for_single_argument"
+            ],
+            "default": "ensure_fully_multiline",
+            "deprecated": false
+        }
+    ],
+    "modernize_strpos": [
+        {
+            "name": "modernize_stripos",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "modifier_keywords": [
+        {
+            "name": "elements",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "const",
+                "method",
+                "property"
+            ],
+            "default": [
+                "const",
+                "method",
+                "property"
+            ],
+            "deprecated": false
+        }
+    ],
+    "multiline_promoted_properties": [
+        {
+            "name": "keep_blank_lines",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "minimum_number_of_parameters",
+            "types": [
+                "int"
+            ],
+            "values": null,
+            "default": 1,
+            "deprecated": false
+        }
+    ],
+    "multiline_whitespace_before_semicolons": [
+        {
+            "name": "strategy",
+            "types": null,
+            "values": [
+                "no_multi_line",
+                "new_line_for_chained_calls"
+            ],
+            "default": "no_multi_line",
+            "deprecated": false
+        }
+    ],
+    "native_constant_invocation": [
+        {
+            "name": "exclude",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "null",
+                "false",
+                "true"
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "fix_built_in",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "include",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        },
+        {
+            "name": "scope",
+            "types": null,
+            "values": [
+                "all",
+                "namespaced"
+            ],
+            "default": "all",
+            "deprecated": false
+        },
+        {
+            "name": "strict",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "native_function_invocation": [
+        {
+            "name": "exclude",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        },
+        {
+            "name": "include",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "@compiler_optimized"
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "scope",
+            "types": null,
+            "values": [
+                "all",
+                "namespaced"
+            ],
+            "default": "all",
+            "deprecated": false
+        },
+        {
+            "name": "strict",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "new_expression_parentheses": [
+        {
+            "name": "use_parentheses",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "new_with_braces": [
+        {
+            "name": "anonymous_class",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "named_class",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "new_with_parentheses": [
+        {
+            "name": "anonymous_class",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "named_class",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "no_alias_functions": [
+        {
+            "name": "sets",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "@all",
+                "@exif",
+                "@ftp",
+                "@IMAP",
+                "@internal",
+                "@ldap",
+                "@mbreg",
+                "@mysqli",
+                "@oci",
+                "@odbc",
+                "@openssl",
+                "@pcntl",
+                "@pg",
+                "@posix",
+                "@snmp",
+                "@sodium",
+                "@time"
+            ],
+            "default": [
+                "@internal",
+                "@IMAP",
+                "@pg"
+            ],
+            "deprecated": false
+        }
+    ],
+    "no_alternative_syntax": [
+        {
+            "name": "fix_non_monolithic_code",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "no_break_comment": [
+        {
+            "name": "comment_text",
+            "types": [
+                "string"
+            ],
+            "values": null,
+            "default": "no break",
+            "deprecated": false
+        }
+    ],
+    "no_extra_blank_lines": [
+        {
+            "name": "tokens",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "attribute",
+                "break",
+                "case",
+                "comma",
+                "continue",
+                "curly_brace_block",
+                "default",
+                "extra",
+                "parenthesis_brace_block",
+                "return",
+                "square_brace_block",
+                "switch",
+                "throw",
+                "use",
+                "use_trait"
+            ],
+            "default": [
+                "extra"
+            ],
+            "deprecated": false
+        }
+    ],
+    "no_mixed_echo_print": [
+        {
+            "name": "use",
+            "types": null,
+            "values": [
+                "print",
+                "echo"
+            ],
+            "default": "echo",
+            "deprecated": false
+        }
+    ],
+    "no_spaces_around_offset": [
+        {
+            "name": "positions",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "inside",
+                "outside"
+            ],
+            "default": [
+                "inside",
+                "outside"
+            ],
+            "deprecated": false
+        }
+    ],
+    "no_superfluous_phpdoc_tags": [
+        {
+            "name": "allow_hidden_params",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "allow_mixed",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "allow_unused_params",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "remove_inheritdoc",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "no_trailing_comma_in_singleline": [
+        {
+            "name": "elements",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "arguments",
+                "array",
+                "array_destructuring",
+                "group_import"
+            ],
+            "default": [
+                "arguments",
+                "array",
+                "array_destructuring",
+                "group_import"
+            ],
+            "deprecated": false
+        }
+    ],
+    "no_unneeded_braces": [
+        {
+            "name": "namespaces",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "no_unneeded_control_parentheses": [
+        {
+            "name": "statements",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "break",
+                "clone",
+                "continue",
+                "echo_print",
+                "negative_instanceof",
+                "others",
+                "return",
+                "switch_case",
+                "yield",
+                "yield_from"
+            ],
+            "default": [
+                "break",
+                "clone",
+                "continue",
+                "echo_print",
+                "return",
+                "switch_case",
+                "yield"
+            ],
+            "deprecated": false
+        }
+    ],
+    "no_unneeded_curly_braces": [
+        {
+            "name": "namespaces",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "no_unneeded_final_method": [
+        {
+            "name": "private_methods",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "no_useless_concat_operator": [
+        {
+            "name": "juggle_simple_strings",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "no_whitespace_before_comma_in_array": [
+        {
+            "name": "after_heredoc",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "non_printable_character": [
+        {
+            "name": "use_escape_sequences_in_strings",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "nullable_type_declaration": [
+        {
+            "name": "syntax",
+            "types": null,
+            "values": [
+                "union",
+                "question_mark"
+            ],
+            "default": "question_mark",
+            "deprecated": false
+        }
+    ],
+    "nullable_type_declaration_for_default_null_value": [
+        {
+            "name": "use_nullable_type_declaration",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": true
+        }
+    ],
+    "numeric_literal_separator": [
+        {
+            "name": "override_existing",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "strategy",
+            "types": null,
+            "values": [
+                "use_separator",
+                "no_separator"
+            ],
+            "default": "use_separator",
+            "deprecated": false
+        }
+    ],
+    "operator_linebreak": [
+        {
+            "name": "only_booleans",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "position",
+            "types": null,
+            "values": [
+                "beginning",
+                "end"
+            ],
+            "default": "beginning",
+            "deprecated": false
+        }
+    ],
+    "ordered_attributes": [
+        {
+            "name": "order",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        },
+        {
+            "name": "sort_algorithm",
+            "types": null,
+            "values": [
+                "alpha",
+                "custom"
+            ],
+            "default": "alpha",
+            "deprecated": false
+        }
+    ],
+    "ordered_class_elements": [
+        {
+            "name": "case_sensitive",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "order",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "use_trait",
+                "case",
+                "constant_public",
+                "constant_protected",
+                "constant_private",
+                "property_public",
+                "property_protected",
+                "property_private",
+                "construct",
+                "destruct",
+                "magic",
+                "phpunit",
+                "method_public",
+                "method_protected",
+                "method_private"
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "sort_algorithm",
+            "types": null,
+            "values": [
+                "none",
+                "alpha"
+            ],
+            "default": "none",
+            "deprecated": false
+        }
+    ],
+    "ordered_imports": [
+        {
+            "name": "case_sensitive",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "imports_order",
+            "types": [
+                "string[]",
+                "null"
+            ],
+            "values": null,
+            "default": null,
+            "deprecated": false
+        },
+        {
+            "name": "sort_algorithm",
+            "types": null,
+            "values": [
+                "alpha",
+                "length",
+                "none"
+            ],
+            "default": "alpha",
+            "deprecated": false
+        }
+    ],
+    "ordered_interfaces": [
+        {
+            "name": "case_sensitive",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "direction",
+            "types": null,
+            "values": [
+                "ascend",
+                "descend"
+            ],
+            "default": "ascend",
+            "deprecated": false
+        },
+        {
+            "name": "order",
+            "types": null,
+            "values": [
+                "alpha",
+                "length"
+            ],
+            "default": "alpha",
+            "deprecated": false
+        }
+    ],
+    "ordered_traits": [
+        {
+            "name": "case_sensitive",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "ordered_types": [
+        {
+            "name": "case_sensitive",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "null_adjustment",
+            "types": null,
+            "values": [
+                "always_first",
+                "always_last",
+                "none"
+            ],
+            "default": "always_first",
+            "deprecated": false
+        },
+        {
+            "name": "sort_algorithm",
+            "types": null,
+            "values": [
+                "alpha",
+                "none"
+            ],
+            "default": "alpha",
+            "deprecated": false
+        }
+    ],
+    "php_unit_attributes": [
+        {
+            "name": "keep_annotations",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "php_unit_construct": [
+        {
+            "name": "assertions",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "assertEquals",
+                "assertNotEquals",
+                "assertNotSame",
+                "assertSame"
+            ],
+            "default": [
+                "assertEquals",
+                "assertNotEquals",
+                "assertNotSame",
+                "assertSame"
+            ],
+            "deprecated": false
+        }
+    ],
+    "php_unit_data_provider_method_order": [
+        {
+            "name": "placement",
+            "types": null,
+            "values": [
+                "after",
+                "before"
+            ],
+            "default": "after",
+            "deprecated": false
+        }
+    ],
+    "php_unit_data_provider_name": [
+        {
+            "name": "prefix",
+            "types": [
+                "string"
+            ],
+            "values": null,
+            "default": "provide",
+            "deprecated": false
+        },
+        {
+            "name": "suffix",
+            "types": [
+                "string"
+            ],
+            "values": null,
+            "default": "Cases",
+            "deprecated": false
+        }
+    ],
+    "php_unit_data_provider_static": [
+        {
+            "name": "force",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "php_unit_dedicate_assert": [
+        {
+            "name": "target",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "3.0",
+                "3.5",
+                "5.0",
+                "5.6",
+                "newest"
+            ],
+            "default": "newest",
+            "deprecated": false
+        }
+    ],
+    "php_unit_dedicate_assert_internal_type": [
+        {
+            "name": "target",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "7.5",
+                "newest"
+            ],
+            "default": "newest",
+            "deprecated": false
+        }
+    ],
+    "php_unit_expectation": [
+        {
+            "name": "target",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "5.2",
+                "5.6",
+                "8.4",
+                "newest"
+            ],
+            "default": "newest",
+            "deprecated": false
+        }
+    ],
+    "php_unit_internal_class": [
+        {
+            "name": "types",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "abstract",
+                "final",
+                "normal"
+            ],
+            "default": [
+                "normal",
+                "final"
+            ],
+            "deprecated": false
+        }
+    ],
+    "php_unit_method_casing": [
+        {
+            "name": "case",
+            "types": null,
+            "values": [
+                "camel_case",
+                "snake_case"
+            ],
+            "default": "camel_case",
+            "deprecated": false
+        }
+    ],
+    "php_unit_mock": [
+        {
+            "name": "target",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "5.4",
+                "5.5",
+                "newest"
+            ],
+            "default": "newest",
+            "deprecated": false
+        }
+    ],
+    "php_unit_namespaced": [
+        {
+            "name": "target",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "4.8",
+                "5.7",
+                "6.0",
+                "newest"
+            ],
+            "default": "newest",
+            "deprecated": false
+        }
+    ],
+    "php_unit_no_expectation_annotation": [
+        {
+            "name": "target",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "3.2",
+                "4.3",
+                "newest"
+            ],
+            "default": "newest",
+            "deprecated": false
+        },
+        {
+            "name": "use_class_const",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "php_unit_size_class": [
+        {
+            "name": "group",
+            "types": null,
+            "values": [
+                "small",
+                "medium",
+                "large"
+            ],
+            "default": "small",
+            "deprecated": false
+        }
+    ],
+    "php_unit_strict": [
+        {
+            "name": "assertions",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "assertAttributeEquals",
+                "assertAttributeNotEquals",
+                "assertEquals",
+                "assertNotEquals"
+            ],
+            "default": [
+                "assertAttributeEquals",
+                "assertAttributeNotEquals",
+                "assertEquals",
+                "assertNotEquals"
+            ],
+            "deprecated": false
+        }
+    ],
+    "php_unit_test_annotation": [
+        {
+            "name": "style",
+            "types": null,
+            "values": [
+                "prefix",
+                "annotation"
+            ],
+            "default": "prefix",
+            "deprecated": false
+        }
+    ],
+    "php_unit_test_case_static_method_calls": [
+        {
+            "name": "call_type",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "this",
+                "self",
+                "static"
+            ],
+            "default": "static",
+            "deprecated": false
+        },
+        {
+            "name": "methods",
+            "types": [
+                "array<string, string>"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        },
+        {
+            "name": "target",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "10.0",
+                "11.0",
+                "newest"
+            ],
+            "default": "10.0",
+            "deprecated": false
+        }
+    ],
+    "phpdoc_add_missing_param_annotation": [
+        {
+            "name": "only_untyped",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "phpdoc_align": [
+        {
+            "name": "align",
+            "types": [
+                "string"
+            ],
+            "values": [
+                "left",
+                "vertical"
+            ],
+            "default": "vertical",
+            "deprecated": false
+        },
+        {
+            "name": "spacing",
+            "types": [
+                "int",
+                "array<string, int>"
+            ],
+            "values": null,
+            "default": 1,
+            "deprecated": false
+        },
+        {
+            "name": "tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "method",
+                "param",
+                "property",
+                "return",
+                "throws",
+                "type",
+                "var"
+            ],
+            "deprecated": false
+        }
+    ],
+    "phpdoc_inline_tag_normalizer": [
+        {
+            "name": "tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "example",
+                "id",
+                "internal",
+                "inheritdoc",
+                "inheritdocs",
+                "link",
+                "source",
+                "toc",
+                "tutorial"
+            ],
+            "deprecated": false
+        }
+    ],
+    "phpdoc_line_span": [
+        {
+            "name": "case",
+            "types": null,
+            "values": [
+                "single",
+                "multi",
+                null
+            ],
+            "default": "multi",
+            "deprecated": false
+        },
+        {
+            "name": "class",
+            "types": null,
+            "values": [
+                "single",
+                "multi",
+                null
+            ],
+            "default": "multi",
+            "deprecated": false
+        },
+        {
+            "name": "const",
+            "types": null,
+            "values": [
+                "single",
+                "multi",
+                null
+            ],
+            "default": "multi",
+            "deprecated": false
+        },
+        {
+            "name": "function",
+            "types": null,
+            "values": [
+                "single",
+                "multi",
+                null
+            ],
+            "default": "multi",
+            "deprecated": false
+        },
+        {
+            "name": "method",
+            "types": null,
+            "values": [
+                "single",
+                "multi",
+                null
+            ],
+            "default": "multi",
+            "deprecated": false
+        },
+        {
+            "name": "other",
+            "types": null,
+            "values": [
+                "single",
+                "multi",
+                null
+            ],
+            "default": null,
+            "deprecated": false
+        },
+        {
+            "name": "property",
+            "types": null,
+            "values": [
+                "single",
+                "multi",
+                null
+            ],
+            "default": "multi",
+            "deprecated": false
+        },
+        {
+            "name": "trait_import",
+            "types": null,
+            "values": [
+                "single",
+                "multi",
+                null
+            ],
+            "default": null,
+            "deprecated": false
+        }
+    ],
+    "phpdoc_no_alias_tag": [
+        {
+            "name": "replacements",
+            "types": [
+                "array<string, string>"
+            ],
+            "values": null,
+            "default": {
+                "property-read": "property",
+                "property-write": "property",
+                "type": "var",
+                "link": "see"
+            },
+            "deprecated": false
+        }
+    ],
+    "phpdoc_order": [
+        {
+            "name": "order",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "param",
+                "throws",
+                "return"
+            ],
+            "deprecated": false
+        }
+    ],
+    "phpdoc_order_by_value": [
+        {
+            "name": "annotations",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "author",
+                "covers",
+                "coversNothing",
+                "dataProvider",
+                "depends",
+                "group",
+                "internal",
+                "method",
+                "mixin",
+                "property",
+                "property-read",
+                "property-write",
+                "requires",
+                "throws",
+                "uses"
+            ],
+            "default": [
+                "covers"
+            ],
+            "deprecated": false
+        }
+    ],
+    "phpdoc_return_self_reference": [
+        {
+            "name": "replacements",
+            "types": [
+                "array<string, string>"
+            ],
+            "values": null,
+            "default": {
+                "this": "$this",
+                "@this": "$this",
+                "$self": "self",
+                "@self": "self",
+                "$static": "static",
+                "@static": "static"
+            },
+            "deprecated": false
+        }
+    ],
+    "phpdoc_scalar": [
+        {
+            "name": "types",
+            "types": null,
+            "values": [
+                "boolean",
+                "callback",
+                "double",
+                "integer",
+                "never-return",
+                "never-returns",
+                "no-return",
+                "real",
+                "str"
+            ],
+            "default": [
+                "boolean",
+                "callback",
+                "double",
+                "integer",
+                "real",
+                "str"
+            ],
+            "deprecated": false
+        }
+    ],
+    "phpdoc_separation": [
+        {
+            "name": "groups",
+            "types": [
+                "string[][]"
+            ],
+            "values": null,
+            "default": [
+                [
+                    "author",
+                    "copyright",
+                    "license"
+                ],
+                [
+                    "category",
+                    "package",
+                    "subpackage"
+                ],
+                [
+                    "property",
+                    "property-read",
+                    "property-write"
+                ],
+                [
+                    "deprecated",
+                    "link",
+                    "see",
+                    "since"
+                ]
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "skip_unlisted_annotations",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "phpdoc_tag_casing": [
+        {
+            "name": "tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [
+                "inheritDoc"
+            ],
+            "deprecated": false
+        }
+    ],
+    "phpdoc_tag_no_named_arguments": [
+        {
+            "name": "description",
+            "types": [
+                "string"
+            ],
+            "values": null,
+            "default": "",
+            "deprecated": false
+        },
+        {
+            "name": "fix_attribute",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "fix_internal",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "phpdoc_tag_type": [
+        {
+            "name": "tags",
+            "types": [
+                "array<string, 'annotation'|'inline'>"
+            ],
+            "values": null,
+            "default": {
+                "api": "annotation",
+                "author": "annotation",
+                "copyright": "annotation",
+                "deprecated": "annotation",
+                "example": "annotation",
+                "global": "annotation",
+                "inheritDoc": "annotation",
+                "internal": "annotation",
+                "license": "annotation",
+                "method": "annotation",
+                "package": "annotation",
+                "param": "annotation",
+                "property": "annotation",
+                "return": "annotation",
+                "see": "annotation",
+                "since": "annotation",
+                "throws": "annotation",
+                "todo": "annotation",
+                "uses": "annotation",
+                "var": "annotation",
+                "version": "annotation"
+            },
+            "deprecated": false
+        }
+    ],
+    "phpdoc_to_comment": [
+        {
+            "name": "allow_before_return_statement",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "ignored_tags",
+            "types": [
+                "string[]"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        }
+    ],
+    "phpdoc_to_param_type": [
+        {
+            "name": "scalar_types",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "types_map",
+            "types": [
+                "array<string, string>"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        },
+        {
+            "name": "union_types",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "phpdoc_to_property_type": [
+        {
+            "name": "scalar_types",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "types_map",
+            "types": [
+                "array<string, string>"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        },
+        {
+            "name": "union_types",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "phpdoc_to_return_type": [
+        {
+            "name": "scalar_types",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "types_map",
+            "types": [
+                "array<string, string>"
+            ],
+            "values": null,
+            "default": [],
+            "deprecated": false
+        },
+        {
+            "name": "union_types",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "phpdoc_types": [
+        {
+            "name": "exclude",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "$this",
+                "array",
+                "bool",
+                "boolean",
+                "callable",
+                "double",
+                "false",
+                "float",
+                "int",
+                "integer",
+                "iterable",
+                "mixed",
+                "null",
+                "object",
+                "parent",
+                "resource",
+                "scalar",
+                "self",
+                "static",
+                "string",
+                "true",
+                "void"
+            ],
+            "default": [],
+            "deprecated": false
+        },
+        {
+            "name": "groups",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "alias",
+                "meta",
+                "simple"
+            ],
+            "default": [
+                "alias",
+                "meta",
+                "simple"
+            ],
+            "deprecated": false
+        }
+    ],
+    "phpdoc_types_order": [
+        {
+            "name": "case_sensitive",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "null_adjustment",
+            "types": null,
+            "values": [
+                "always_first",
+                "always_last",
+                "none"
+            ],
+            "default": "always_first",
+            "deprecated": false
+        },
+        {
+            "name": "sort_algorithm",
+            "types": null,
+            "values": [
+                "alpha",
+                "none"
+            ],
+            "default": "alpha",
+            "deprecated": false
+        }
+    ],
+    "psr_autoloading": [
+        {
+            "name": "dir",
+            "types": [
+                "null",
+                "string"
+            ],
+            "values": null,
+            "default": null,
+            "deprecated": false
+        }
+    ],
+    "random_api_migration": [
+        {
+            "name": "replacements",
+            "types": [
+                "array<string, string>"
+            ],
+            "values": null,
+            "default": {
+                "getrandmax": "mt_getrandmax",
+                "rand": "mt_rand",
+                "srand": "mt_srand"
+            },
+            "deprecated": false
+        }
+    ],
+    "return_assignment": [
+        {
+            "name": "skip_named_var_tags",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "return_type_declaration": [
+        {
+            "name": "space_before",
+            "types": null,
+            "values": [
+                "one",
+                "none"
+            ],
+            "default": "none",
+            "deprecated": false
+        }
+    ],
+    "single_class_element_per_statement": [
+        {
+            "name": "elements",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "const",
+                "property"
+            ],
+            "default": [
+                "const",
+                "property"
+            ],
+            "deprecated": false
+        }
+    ],
+    "single_import_per_statement": [
+        {
+            "name": "group_to_single_imports",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "single_line_comment_style": [
+        {
+            "name": "comment_types",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "asterisk",
+                "hash"
+            ],
+            "default": [
+                "asterisk",
+                "hash"
+            ],
+            "deprecated": false
+        }
+    ],
+    "single_quote": [
+        {
+            "name": "strings_containing_single_quote_chars",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "single_space_after_construct": [
+        {
+            "name": "constructs",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "abstract",
+                "as",
+                "attribute",
+                "break",
+                "case",
+                "catch",
+                "class",
+                "clone",
+                "comment",
+                "const",
+                "const_import",
+                "continue",
+                "do",
+                "echo",
+                "else",
+                "elseif",
+                "enum",
+                "extends",
+                "final",
+                "finally",
+                "for",
+                "foreach",
+                "function",
+                "function_import",
+                "global",
+                "goto",
+                "if",
+                "implements",
+                "include",
+                "include_once",
+                "instanceof",
+                "insteadof",
+                "interface",
+                "match",
+                "named_argument",
+                "namespace",
+                "new",
+                "open_tag_with_echo",
+                "php_doc",
+                "php_open",
+                "print",
+                "private",
+                "protected",
+                "public",
+                "readonly",
+                "require",
+                "require_once",
+                "return",
+                "static",
+                "switch",
+                "throw",
+                "trait",
+                "try",
+                "type_colon",
+                "use",
+                "use_lambda",
+                "use_trait",
+                "var",
+                "while",
+                "yield",
+                "yield_from"
+            ],
+            "default": [
+                "abstract",
+                "as",
+                "attribute",
+                "break",
+                "case",
+                "catch",
+                "class",
+                "clone",
+                "comment",
+                "const",
+                "const_import",
+                "continue",
+                "do",
+                "echo",
+                "else",
+                "elseif",
+                "enum",
+                "extends",
+                "final",
+                "finally",
+                "for",
+                "foreach",
+                "function",
+                "function_import",
+                "global",
+                "goto",
+                "if",
+                "implements",
+                "include",
+                "include_once",
+                "instanceof",
+                "insteadof",
+                "interface",
+                "match",
+                "named_argument",
+                "namespace",
+                "new",
+                "open_tag_with_echo",
+                "php_doc",
+                "php_open",
+                "print",
+                "private",
+                "protected",
+                "public",
+                "readonly",
+                "require",
+                "require_once",
+                "return",
+                "static",
+                "switch",
+                "throw",
+                "trait",
+                "try",
+                "use",
+                "use_lambda",
+                "use_trait",
+                "var",
+                "while",
+                "yield",
+                "yield_from"
+            ],
+            "deprecated": false
+        }
+    ],
+    "single_space_around_construct": [
+        {
+            "name": "constructs_contain_a_single_space",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "yield_from"
+            ],
+            "default": [
+                "yield_from"
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "constructs_followed_by_a_single_space",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "abstract",
+                "as",
+                "attribute",
+                "break",
+                "case",
+                "catch",
+                "class",
+                "clone",
+                "comment",
+                "const",
+                "const_import",
+                "continue",
+                "do",
+                "echo",
+                "else",
+                "elseif",
+                "enum",
+                "extends",
+                "final",
+                "finally",
+                "for",
+                "foreach",
+                "function",
+                "function_import",
+                "global",
+                "goto",
+                "if",
+                "implements",
+                "include",
+                "include_once",
+                "instanceof",
+                "insteadof",
+                "interface",
+                "match",
+                "named_argument",
+                "namespace",
+                "new",
+                "open_tag_with_echo",
+                "php_doc",
+                "php_open",
+                "print",
+                "private",
+                "private_set",
+                "protected",
+                "protected_set",
+                "public",
+                "public_set",
+                "readonly",
+                "require",
+                "require_once",
+                "return",
+                "static",
+                "switch",
+                "throw",
+                "trait",
+                "try",
+                "type_colon",
+                "use",
+                "use_lambda",
+                "use_trait",
+                "var",
+                "while",
+                "yield",
+                "yield_from"
+            ],
+            "default": [
+                "abstract",
+                "as",
+                "attribute",
+                "break",
+                "case",
+                "catch",
+                "class",
+                "clone",
+                "comment",
+                "const",
+                "const_import",
+                "continue",
+                "do",
+                "echo",
+                "else",
+                "elseif",
+                "enum",
+                "extends",
+                "final",
+                "finally",
+                "for",
+                "foreach",
+                "function",
+                "function_import",
+                "global",
+                "goto",
+                "if",
+                "implements",
+                "include",
+                "include_once",
+                "instanceof",
+                "insteadof",
+                "interface",
+                "match",
+                "named_argument",
+                "namespace",
+                "new",
+                "open_tag_with_echo",
+                "php_doc",
+                "php_open",
+                "print",
+                "private",
+                "private_set",
+                "protected",
+                "protected_set",
+                "public",
+                "public_set",
+                "readonly",
+                "require",
+                "require_once",
+                "return",
+                "static",
+                "switch",
+                "throw",
+                "trait",
+                "try",
+                "type_colon",
+                "use",
+                "use_lambda",
+                "use_trait",
+                "var",
+                "while",
+                "yield",
+                "yield_from"
+            ],
+            "deprecated": false
+        },
+        {
+            "name": "constructs_preceded_by_a_single_space",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "as",
+                "else",
+                "elseif",
+                "use_lambda"
+            ],
+            "default": [
+                "as",
+                "use_lambda"
+            ],
+            "deprecated": false
+        }
+    ],
+    "space_after_semicolon": [
+        {
+            "name": "remove_in_empty_for_expressions",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "spaces_inside_parentheses": [
+        {
+            "name": "space",
+            "types": null,
+            "values": [
+                "none",
+                "single"
+            ],
+            "default": "none",
+            "deprecated": false
+        }
+    ],
+    "statement_indentation": [
+        {
+            "name": "stick_comment_to_next_continuous_control_statement",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "string_implicit_backslashes": [
+        {
+            "name": "double_quoted",
+            "types": null,
+            "values": [
+                "escape",
+                "unescape",
+                "ignore"
+            ],
+            "default": "escape",
+            "deprecated": false
+        },
+        {
+            "name": "heredoc",
+            "types": null,
+            "values": [
+                "escape",
+                "unescape",
+                "ignore"
+            ],
+            "default": "escape",
+            "deprecated": false
+        },
+        {
+            "name": "single_quoted",
+            "types": null,
+            "values": [
+                "escape",
+                "unescape",
+                "ignore"
+            ],
+            "default": "unescape",
+            "deprecated": false
+        }
+    ],
+    "trailing_comma_in_multiline": [
+        {
+            "name": "after_heredoc",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "elements",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "arguments",
+                "array_destructuring",
+                "arrays",
+                "match",
+                "parameters"
+            ],
+            "default": [
+                "arrays"
+            ],
+            "deprecated": false
+        }
+    ],
+    "type_declaration_spaces": [
+        {
+            "name": "elements",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "constant",
+                "function",
+                "property"
+            ],
+            "default": [
+                "function",
+                "property"
+            ],
+            "deprecated": false
+        }
+    ],
+    "types_spaces": [
+        {
+            "name": "space",
+            "types": null,
+            "values": [
+                "none",
+                "single"
+            ],
+            "default": "none",
+            "deprecated": false
+        },
+        {
+            "name": "space_multiple_catch",
+            "types": null,
+            "values": [
+                "none",
+                "single",
+                null
+            ],
+            "default": null,
+            "deprecated": false
+        }
+    ],
+    "unary_operator_spaces": [
+        {
+            "name": "only_dec_inc",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "visibility_required": [
+        {
+            "name": "elements",
+            "types": [
+                "string[]"
+            ],
+            "values": [
+                "const",
+                "method",
+                "property"
+            ],
+            "default": [
+                "const",
+                "method",
+                "property"
+            ],
+            "deprecated": false
+        }
+    ],
+    "void_return": [
+        {
+            "name": "fix_lambda",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        }
+    ],
+    "whitespace_after_comma_in_array": [
+        {
+            "name": "ensure_single_space",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        }
+    ],
+    "yoda_style": [
+        {
+            "name": "always_move_variable",
+            "types": [
+                "bool"
+            ],
+            "values": null,
+            "default": false,
+            "deprecated": false
+        },
+        {
+            "name": "equal",
+            "types": [
+                "bool",
+                "null"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "identical",
+            "types": [
+                "bool",
+                "null"
+            ],
+            "values": null,
+            "default": true,
+            "deprecated": false
+        },
+        {
+            "name": "less_and_greater",
+            "types": [
+                "bool",
+                "null"
+            ],
+            "values": null,
+            "default": null,
+            "deprecated": false
+        }
+    ]
+}

@@ -281,3 +281,7 @@ Build 8 (wf/config-explain, 2026-10-17), assistant's calls where the plan is sil
 - **Docs link**: the docs site has no rule pages and no decided base URL (the output follow-up row in ../PLAN.md §3),
   so `docs` links the rule's row in mapping.toml on GitHub (`.../crates/pun-config/rules/mapping.toml#L<line>`,
   `pun_config::MAPPING_URL`). Switch it to the rule page once that row decides the base.
+
+Build 4 (wf/options, 2026-10-17): the option names, the `null` spellings, the one-option shorthand and the errors are
+assistant's calls recorded in format.md Decisions ("Option names"). Lint rules that are fixers keep PHP-CS-Fixer's
+option names, kebab-cased, until lint's own option pass.

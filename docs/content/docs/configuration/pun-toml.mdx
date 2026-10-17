@@ -20,7 +20,8 @@ not-name = ["*.blade.php"]
 not-path = ["app/Legacy.php"]
 
 [format.rules]                        # only what differs from the preset
-"operators/concat-spacing" = { spacing = "one" }
+"imports/ordered" = { sort = "length", case-sensitive = true }
+"operators/concat-spacing" = "one"    # a rule with one option takes its value directly
 "arrays/syntax" = false
 
 [lint]
@@ -68,7 +69,7 @@ An `exclude` entry with `*`, `?`, `[` or `{` is a glob matched against the path 
 | `preset` | `laravel` (default), `psr12` or `empty` |
 | `exclude` | Added to `[files] exclude`, for format only. Plain entries are folders, as in Pint's finder; globs match from the project root |
 | `not-name`, `not-path` | File names and paths format skips, as in Pint's finder |
-| `rules` | `true`, `false`, or an options table, per rule |
+| `rules` | `true`, `false`, a table of options, or the value of a rule's only option |
 
 Format rules only change layout, casing and spelling. Risky ones, like `final_class` or `strict_comparison` in PHP-CS-Fixer terms, and the ones that delete or restructure code, like `no_unused_imports`, are [lint rules](/docs/commands/lint). Pint's `per` and `symfony` presets are not format presets: `pun migrate` writes a `pint.json` that used one as `empty` plus its rules.
 
@@ -103,6 +104,38 @@ Analyse rules are on or off; every finding is an error. The Laravel rules run wh
 ## Rule names
 
 Rules use Pun IDs of the form `<command>/<group>/<name>`: `format/imports/ordered`, `lint/style/require-final-class`, `analyse/undefined/method`. Inside a `[<command>.rules]` table the command is implied, so the key is `"imports/ordered"` (quoted, because of the `/`). Groups are one fixed list shared by all three commands: topics such as `arrays`, `imports`, `phpdoc` and `types`, the ecosystems `laravel`, `pest`, `phpunit` and `doctrine`, and one upgrade group per target such as `php-8.4`. There are no aliases: an earlier Pun name (`ordered-imports`), a PHP-CS-Fixer name (`ordered_imports`), a PHPStan identifier (`method.notFound`) or a rule of another command gets an error that names its Pun ID, so a copied rule is never silently ignored. `pun config` prints everything resolved.
+
+## Format rule options
+
+Options have Pun names in kebab-case, and so do their values. Most are PHP-CS-Fixer's with `_` written as `-`
+(`on_multiline = "ensure_fully_multiline"` is `on-multiline = "ensure-fully-multiline"`); PHP keywords such as
+`require_once` keep their spelling. A few read better under new names:
+
+| Rules | PHP-CS-Fixer | Pun |
+| --- | --- | --- |
+| `imports/ordered`, `attributes/ordered`, `types/ordered`, `phpdoc/types-order` | `sort_algorithm = "alpha"` | `sort = "alphabetical"` |
+| `classes/ordered-interfaces` | `order = "alpha"`, `direction = "ascend"` / `"descend"` | `sort = "alphabetical"`, `direction = "ascending"` / `"descending"` |
+| `imports/ordered` | `imports_order` | `order` |
+| `types/ordered`, `phpdoc/types-order` | `null_adjustment = "always_first"` / `"always_last"` | `null-position = "first"` / `"last"` |
+| `comments/header` | `comment_type = "PHPDoc"` | `comment-type = "phpdoc"` |
+
+TOML has no `null`. Where PHP-CS-Fixer uses `null` for "leave it alone", Pun writes `"ignore"`
+(`"control-flow/yoda" = { less-and-greater = "ignore" }`, `"operators/binary-spacing" = { operators = { "|" = "ignore" } }`).
+`types/union-spacing` writes `space-multiple-catch = "same-as-space"`. For `imports/ordered`'s `order` and
+`comments/header`'s `validator`, `null` is the option left out.
+
+A rule with a single option that isn't `true`/`false` or a table takes its value directly: `"arrays/syntax" = "long"`
+is `"arrays/syntax" = { syntax = "long" }`.
+
+An unknown option or value is an error that lists what the rule takes, and a PHP-CS-Fixer name gets the Pun one:
+
+```text
+pun.toml: `imports/ordered` has no option `sort-algorithm`: use `sort`
+pun.toml: `arrays/syntax` option `syntax` = "medium": expected one of "long", "short"
+```
+
+`pun migrate` translates PHP-CS-Fixer's names and values, and `pun config` prints options under Pun's. Every rule's
+options are listed in `crates/pun-config/rules/mapping.toml`, under `[options."format/<group>/<name>"]`.
 
 ## Removed keys
 
