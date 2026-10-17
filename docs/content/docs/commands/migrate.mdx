@@ -49,7 +49,7 @@ preset = "recommended"
 preset = "laravel"
 ```
 
-The starter's `[lint.rules]` also lists the four risky rules Pint's laravel preset applies, so `pun check --fix` still
+The starter's `[lint.rules]` also lists the four risky rules and the eleven code-deleting rules Pint's laravel preset applies, so `pun check --fix` still
 matches `pint`.
 
 Pun reads only `pun.toml`, so `pun migrate` is the one place the old configs are read. Migration day changes no behaviour: `pun check --fix` writes the same bytes Pint did, and `pun analyse` reports the same errors PHPStan did.
@@ -62,7 +62,7 @@ Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.p
   </Step>
   <Step title="Write pun.toml">
 
-`[format]` gets the preset plus only what differs from it. The risky fixers your config enabled go under `[lint.rules]` with `fix = "apply"`, since Pint applied them unattended. Every rule gets its Pun ID. Planned: PHPStan levels expanded into the exact rules they ran.
+`[format]` gets the preset plus only what differs from it. The risky fixers and the fixers that delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) go under `[lint.rules]` with `fix = "apply"`, since Pint applied them unattended. Every rule gets its Pun ID (`"imports/ordered"`, `"imports/no-unused"`). Planned: PHPStan levels expanded into the exact rules they ran.
 
   </Step>
   <Step title="Convert the baseline (planned)">
@@ -72,7 +72,7 @@ Reads `pint.json` the way Pint does (`extend`, `--config`, `--preset`), or a `.p
   </Step>
   <Step title="Rewrite ignore comments">
 
-`// @php-cs-fixer-ignore rule` becomes `// @pun-ignore-file format.rule` (planned: `@phpstan-ignore` comments become `@pun-ignore` with Pun rule IDs). See [Ignore comments](/docs/configuration/ignore-comments).
+`// @php-cs-fixer-ignore rule` becomes `// @pun-ignore-file format/<group>/<name>` (planned: `@phpstan-ignore` comments become `@pun-ignore` with Pun rule IDs). See [Ignore comments](/docs/configuration/ignore-comments).
 
   </Step>
   <Step title="Switch the workflow">

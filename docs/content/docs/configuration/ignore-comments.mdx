@@ -5,22 +5,22 @@ description: One ignore syntax for format, lint and analyse, with rule IDs and r
 
 | Form | Applies to |
 | --- | --- |
-| `$x = foo(); // @pun-ignore analyse.undefined-function` | the line it trails |
-| `// @pun-ignore lint.no-loose-comparison` on its own line | the next line |
+| `$x = foo(); // @pun-ignore analyse/undefined/function` | the line it trails |
+| `// @pun-ignore lint/types/no-loose-comparison` on its own line | the next line |
 | `// @pun-ignore-next-line <id>` | the next line, explicitly |
 | `// @pun-ignore-file <id>` before the first statement | the whole file |
 | `// @pun-ignore-start <id>` … `// @pun-ignore-end` | a region |
 
-- Give one or more rule IDs, comma-separated. A group name like `lint.dead-code` works too.
+- Give one or more rule IDs, comma-separated. Use full IDs, `<command>/<group>/<name>`. A group like `lint/dead-code` works too.
 - A bare `@pun-ignore` with no ID is an error: silent blanket ignores are how real problems hide.
 - Add a reason after ` -- `:
 
 ```php
-eval($code); // @pun-ignore lint.no-eval -- legacy plugin loader
+eval($code); // @pun-ignore lint/security/no-eval -- legacy plugin loader
 ```
 
 - `/* */` and `/** */` forms work too.
 - Format rules can only be ignored per file, since a format rule can't be half-applied to a line.
-- Unused ignores are reported by `lint.no-unused-ignore`, which fixes them by deleting them.
+- Unused ignores are reported by `lint/comments/no-unused-ignore`, which fixes them by deleting them.
 
 `pun migrate` rewrites `@phpstan-ignore` and `@php-cs-fixer-ignore` comments to this form.

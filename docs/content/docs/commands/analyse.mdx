@@ -19,15 +19,15 @@ pun analyse app tests
 preset = "strict"
 paths = ["app", "tests"]
 baseline = "pun-baseline.toml"
-rules.missing-iterable-value-type = "off"
+rules."types/missing-iterable-value-type" = "off"
 ```
 
 There are no levels. A [preset](/docs/configuration/presets) picks a tier, and rules turn on and off one by one. `pun migrate` expands your PHPStan level into the exact list of rules it ran, so nothing changes on migration day.
 
 ## Rule names
 
-Errors carry Pun's own names, grouped under `analyse.*`: `analyse.undefined-method` rather than `method.notFound`. Silence one with an [ignore comment](/docs/configuration/ignore-comments):
+Errors carry Pun's own IDs, `analyse/<group>/<name>`: `analyse/undefined/method` rather than `method.notFound`. Silence one with an [ignore comment](/docs/configuration/ignore-comments):
 
 ```php
-$user->fullName(); // @pun-ignore analyse.undefined-method -- added by a macro
+$user->fullName(); // @pun-ignore analyse/undefined/method -- added by a macro
 ```

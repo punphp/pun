@@ -45,7 +45,7 @@ Replace `vendor/bin/pint --test` with `pun check` ([CI](/docs/guides/ci)).
 
 ## What moved where
 
-`pint` did two kinds of thing in one run: layout, and risky rewrites like making classes `final` or comparisons strict. Pun splits them. `pun format` runs layout only, which is what format-on-save should do. `pun check --fix` runs both, like `pint` did.
+`pint` did two kinds of thing in one run: layout, and rewrites that change code, like making classes `final`, comparisons strict, or removing unused imports and superfluous PHPDoc tags. Pun splits them: the rewrites are lint rules. `pun format` runs layout only, which is what format-on-save should do. `pun check --fix` runs both, like `pint` did.
 
 :::tip[Rolling back]
 Your code doesn't change, and `pint.json` stays unless you pass `--remove-tools`. Switching back is reverting the script and CI lines.

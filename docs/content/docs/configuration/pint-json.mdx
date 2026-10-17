@@ -30,10 +30,11 @@ preset = "laravel"
 exclude = ["build"]
 
 [format.rules]
-concat-space = { spacing = "one" }
+"operators/concat-spacing" = { spacing = "one" }
 
 [lint.rules]
-require-final-class = { fix = "apply" }
+# ...the laravel preset's 15 risky and code-deleting rules, each with fix = "apply", then:
+"style/require-final-class" = { fix = "apply" }
 ```
 
 `pun check --fix` on the migrated project writes exactly what `pint` wrote on the original.

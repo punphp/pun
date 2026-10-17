@@ -7,10 +7,10 @@ Pun has no numbered levels. A preset is one of four **tiers**, named by intent, 
 
 | Tier | What it adds | Examples |
 | --- | --- | --- |
-| `essential` | Definite bugs only: code that crashes or misbehaves at runtime. Near-zero false positives, so it fits a legacy codebase on day one | `undefined-method`, `undefined-variable`, `argument-count`, `readonly-property-write` |
-| `recommended` | **The default.** Likely bugs, dead and unused code, redundant checks, deprecations and safe modernisation | `unused-private-method`, `condition-always-true`, `argument-type`, `prefer-match` |
-| `strict` | Type and strictness policy: native types required, strict comparison and `strict_types`, early returns | `missing-param-type`, `no-loose-comparison`, `require-strict-types` |
-| `pedantic` | Everything that isn't opt-in only: naming, complexity limits, final classes | `missing-throws`, `no-excessive-complexity`, `require-final-class` |
+| `essential` | Definite bugs only: code that crashes or misbehaves at runtime. Near-zero false positives, so it fits a legacy codebase on day one | `undefined/method`, `undefined/variable`, `functions/argument-count`, `types/readonly-property-write` |
+| `recommended` | **The default.** Likely bugs, dead and unused code, redundant checks, deprecations and safe modernisation | `dead-code/unused-private-method`, `dead-code/condition-always-true`, `types/argument`, `php-8.0/prefer-match` |
+| `strict` | Type and strictness policy: native types required, strict comparison and `strict_types`, early returns | `types/missing-param-type`, `types/no-loose-comparison`, `statements/require-strict-types` |
+| `pedantic` | Everything that isn't opt-in only: naming, complexity limits, final classes | `types/missing-throws`, `complexity/no-excessive-cyclomatic`, `style/require-final-class` |
 
 ```toml pun.toml
 preset = "strict"

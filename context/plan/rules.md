@@ -10,8 +10,9 @@ The data is [`crates/pun-config/rules/mapping.toml`](../../crates/pun-config/rul
 (configs, ignore comments), `pun explain <rule>`, and the generated "Coming from Pint / PHPStan / Rector" docs page.
 `scripts/check-rule-mapping.py` checks it (§5).
 
-**Names in this file are today's** (`lint.no-loose-comparison`). The `<command>/<group>/<name>` names come from
-Step 1's rename (config.md Build 1); this file is updated with them.
+**Names in this file are from before the rename** (`lint.no-loose-comparison`, now `lint/types/no-loose-comparison`).
+Step 1 (config.md Build 1-2) gave every rule its `<command>/<group>/<name>` ID in mapping.toml; the names it had to
+invent are under Decisions at the end of this file.
 
 ## 1. Placement
 
@@ -229,3 +230,62 @@ of 542 lint rules (`ported = true`).
 - **Rector:** prepared sets you tick, which became lint sets.
 - **ESLint, typescript-eslint, Biome:** the `recommended` and `strict` names.
 - **Go (`gofmt` / `vet`):** the formatter never changes behaviour and is never configured per line.
+
+## Decisions
+
+Step 1, config.md Build 1-2 (wf/names, 2026-10-17), assistant's calls where the plan is silent:
+
+- **Groups beyond format.md §8.** Lint and analyse add the topic groups `complexity`, `dead-code`, `debug`,
+  `deprecated`, `performance`, `refactor` (configurable codemods only), `security`, `style` and `undefined`, and one
+  upgrade group per target, `php-5.3` ... `php-8.6` and `laravel-5.7` ... `laravel-12`, from the rule's Rector set or
+  `gated_by` version. `doctrine` is an ecosystem group like `laravel`, `pest` and `phpunit`. The full list with a
+  description each is `[meta.groups]` in mapping.toml.
+- **The old `correctness` / `suspicious` groups** are not groups any more: they became the `intent` field (config.md
+  §4, "intent stays as data"), and the rule took a topic group.
+- **Lint `sets`** come from the Rector sets of the upstream rules mapped to the rule (`dead-code`, `code-quality`,
+  `coding-style`, `early-return`, `privatization`, `naming`, `type-declaration` as `types`, the PHP and Laravel level
+  sets as `modernize`). A rule with no Rector source takes the set its old group and tier suggest: dead and unused code
+  → `dead-code`, style policy → `coding-style`, likely bugs and simplifications → `code-quality`; old `pedantic` and
+  opt-in style rules stay in no set. The codemods in `refactor` are in no set.
+- **Analyse `preset`** is the band of the lowest PHPStan level that emits any identifier mapped to the rule (basic 0-1,
+  essential 2-3, recommended 4-5, strict 6-8, max 9-10). Rules with no PHPStan level (strict-rules, deprecation-rules,
+  Larastan, Mago-only) take their old tier: `essential` → `basic`, `recommended` → `recommended`, `strict` → `strict`,
+  `pedantic` → `max`. `imports/prefixed-class-reference` (Mago only, opt-in before) has no preset.
+- **The pun.toml reader** accepts a full ID or `<group>/<name>` inside its own `[<command>.rules]` table. Any other
+  name is an error; when the name is an upstream key (any casing or separator), an old `format.` / `lint.` /
+  `analyse.` name, an old bare name, or a rule of the other command, the error names the Pun ID: ``pun.toml:
+  `array-syntax` is `format/arrays/syntax` in pun.toml``. A name several rules could mean is not guessed.
+
+**Invented lint names for the 40 moved rules** (commands.md §4; the format.md §8 names don't follow the lint verb rule):
+
+| PHP-CS-Fixer | Lint ID | | PHP-CS-Fixer | Lint ID |
+| --- | --- | --- | --- | --- |
+| `no_unused_imports` | `imports/no-unused` | | `combine_consecutive_issets` | `control-flow/prefer-combined-isset` |
+| `no_useless_else` | `control-flow/no-useless-else` | | `combine_consecutive_unsets` | `control-flow/prefer-combined-unset` |
+| `no_useless_return` | `control-flow/no-useless-return` | | `simplified_if_return` | `control-flow/prefer-bool-return` |
+| `no_empty_statement` | `statements/no-empty` | | `simplified_null_return` | `control-flow/prefer-bare-return` |
+| `no_superfluous_elseif` | `control-flow/no-superfluous-elseif` | | `return_assignment` | `control-flow/no-return-assignment` |
+| `no_useless_nullsafe_operator` | `operators/no-useless-nullsafe` | | `ternary_to_null_coalescing` | `operators/prefer-coalesce` |
+| `no_null_property_initialization` | `classes/no-null-property-default` | | `assign_null_coalescing_to_coalesce_equal` | `operators/prefer-coalesce-assign` |
+| `no_redundant_readonly_property` | `classes/no-redundant-readonly` | | `switch_continue_to_break` | `control-flow/no-switch-continue` |
+| `lambda_not_used_import` | `functions/no-unused-closure-use` | | `return_to_yield_from` | `control-flow/prefer-yield-from` |
+| `general_attribute_remove` | `refactor/remove-attribute` | | `protected_to_private` | `classes/no-protected-in-final` |
+| `no_superfluous_phpdoc_tags` | `phpdoc/no-superfluous-tags` | | `self_static_accessor` | `classes/prefer-self-in-final` |
+| `general_phpdoc_annotation_remove` | `refactor/remove-phpdoc-annotation` | | `stringable_for_to_string` | `classes/add-stringable` |
+| `general_phpdoc_tag_rename` | `refactor/rename-phpdoc-tag` | | `ordered_class_elements` | `classes/require-member-order` |
+| `phpdoc_no_access` | `phpdoc/no-access` | | `php_unit_method_casing` | `phpunit/require-method-casing` |
+| `phpdoc_no_package` | `phpdoc/no-package` | | `php_unit_data_provider_method_order` | `phpunit/require-data-provider-order` |
+| `phpdoc_no_empty_return` | `phpdoc/no-empty-return` | | `php_unit_attributes` | `phpunit/prefer-attributes` |
+| `phpdoc_no_useless_inheritdoc` | `phpdoc/no-useless-inheritdoc` | | `php_unit_internal_class` | `phpunit/require-internal` |
+| `phpdoc_add_missing_param_annotation` | `phpdoc/add-missing-param` | | `php_unit_size_class` | `phpunit/require-size` |
+| `phpdoc_to_comment` | `phpdoc/no-misplaced` | | `php_unit_test_class_requires_covers` | `phpunit/require-covers` |
+| `phpdoc_tag_no_named_arguments` | `phpdoc/require-no-named-arguments` | | `Pint/phpdoc_type_annotations_only` | `laravel/require-phpdoc-types-only` |
+
+`protected_to_private` merges with Mago's `no-protected-in-final` and Rector's privatization rules (§2), so it takes
+Mago's name. The three `general_*` rules do nothing until configured, so they are `refactor` codemods.
+
+**Other invented names.** Analyse names drop the word their group now carries (`argument-type` → `types/argument`,
+`invalid-attribute` → `attributes/invalid`, `useless-cast` → `casts/useless`, `invalid-ignore-comment` →
+`comments/invalid-ignore`). `no-excessive-complexity` → `complexity/no-excessive-cyclomatic` (it counts cyclomatic
+complexity; the group already says complexity), `require-string-style` → `strings/require-interpolation-style`, and
+the Pun-only `no-unused-ignore` → `comments/no-unused-ignore`.

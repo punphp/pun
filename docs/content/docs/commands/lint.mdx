@@ -8,7 +8,7 @@ pun lint          # report what the [lint] rules would change
 pun lint --fix    # apply the rules marked fix = "apply"
 ```
 
-Lint rules are the ones that can change what code does, so Pun never applies them unless you say so. They include PHP-CS-Fixer's risky fixers (`final_class`, `strict_comparison`, `declare_strict_types` and the rest), Rector's rules, and the extra rules ported from Mago.
+Lint rules are the ones that can change what code does, so Pun never applies them unless you say so. They include PHP-CS-Fixer's risky fixers (`final_class`, `strict_comparison`, `declare_strict_types` and the rest), the PHP-CS-Fixer fixers that delete or restructure code (`no_unused_imports`, `no_useless_return`, `phpdoc_no_package` and 37 more), Rector's rules, and the extra rules ported from Mago.
 
 ## Configure rules
 
@@ -16,10 +16,10 @@ Each rule under `[lint.rules]` takes a severity, or a table with a `fix` mode an
 
 ```toml pun.toml
 [lint.rules]
-require-final-class = { fix = "apply" }   # applied by --fix
-no-loose-comparison = "warn"              # reported, never applied
-prefer-early-return = "error"
-no-short-ternary = "off"
+"style/require-final-class" = { fix = "apply" }   # applied by --fix
+"types/no-loose-comparison" = "warn"              # reported, never applied
+"style/prefer-early-return" = "error"
+"style/no-short-ternary" = "off"
 ```
 
 | Value | Meaning |
@@ -32,9 +32,9 @@ no-short-ternary = "off"
 
 `pun lint --fix` lists what it did not apply (rules without `fix = "apply"`) as remaining, like `pun lint` reports it, and exits 1 when anything remains.
 
-Options for a rule go in the same table. Rule names are Pun IDs; a PHP-CS-Fixer name gets an error that names its Pun ID.
+Options for a rule go in the same table. Rule names are Pun IDs, `<group>/<name>` inside `[lint.rules]` (`lint/<group>/<name>` in full); an earlier Pun name or a PHP-CS-Fixer name gets an error that names its Pun ID.
 
-Which rules run by default comes from your [preset](/docs/configuration/presets). `pun migrate` moves the risky rules your `pint.json` enabled here with `fix = "apply"`, since Pint applied them unattended.
+Which rules run by default comes from your [preset](/docs/configuration/presets). `pun migrate` moves the risky and code-deleting rules your `pint.json` enabled here with `fix = "apply"`, since Pint applied them unattended.
 
 ## Mago's report-only rules
 

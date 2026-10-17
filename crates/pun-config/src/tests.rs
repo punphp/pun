@@ -73,18 +73,19 @@ exclude = ["a"]
 not-name = ["n.php"]
 not-path = ["p"]
 [format.rules]
-concat-space = { spacing = "one" }
-"format.array-syntax" = false
-laravel-blade = true
+"operators/concat-spacing" = { spacing = "one" }
+"format/arrays/syntax" = false
+"laravel/blade" = true
 [lint.rules]
-no-alias-function = { fix = "apply" }
-"lint.require-final-class" = "warn"
-require-strict-types = "off"
-no-unreachable-default-argument-value = { severity = "error", fix = "safe-only" }
-prefer-mb-functions = false
-no-loose-comparison = true
-require-ordered-traits = { fix = "off" }
-prefer-cast-over-intval = { fix = "apply", severity = "warn" }
+"style/no-alias-function" = { fix = "apply" }
+"lint/style/require-final-class" = "warn"
+"statements/require-strict-types" = "off"
+"functions/no-unreachable-default-argument-value" = { severity = "error", fix = "safe-only" }
+"strings/prefer-mb-functions" = false
+"types/no-loose-comparison" = true
+"style/require-ordered-traits" = { fix = "off" }
+"style/prefer-cast-over-intval" = { fix = "apply", severity = "warn" }
+"imports/no-unused" = true
 [analyse]
 paths = ["app"]
 "#,
@@ -97,12 +98,24 @@ paths = ["app"]
     let concat = n.iter().position(|n| *n == "concat_space").unwrap();
     assert!(concat < n.iter().position(|n| *n == "Pint/laravel_blade").unwrap());
     assert_eq!(c.rules[concat].options, json!({"spacing": "one"}));
-    // The laravel preset's 4 risky fixers are lint rules: off unless [lint.rules] turns them on.
+    // The laravel preset's 4 risky fixers and 11 code-deleting ones are lint rules: off unless [lint.rules] turns
+    // them on (context/plan/commands.md §4).
     for risky in [
         "no_alias_functions",
         "no_unreachable_default_argument_value",
         "ordered_traits",
         "php_unit_set_up_tear_down_visibility",
+        "no_unused_imports",
+        "no_useless_return",
+        "no_empty_statement",
+        "lambda_not_used_import",
+        "no_superfluous_phpdoc_tags",
+        "general_phpdoc_tag_rename",
+        "phpdoc_no_access",
+        "phpdoc_no_package",
+        "phpdoc_no_useless_inheritdoc",
+        "self_static_accessor",
+        "php_unit_method_casing",
     ] {
         assert!(!n.contains(&risky), "{risky}");
     }
@@ -117,6 +130,7 @@ paths = ["app"]
             ("strict_comparison", false),
             ("ordered_traits", false),
             ("modernize_types_casting", true),
+            ("no_unused_imports", false),
         ]
     );
     assert!(c.lint.iter().all(|(r, _)| r.options.is_null()));
@@ -139,7 +153,7 @@ paths = ["app"]
     // Options keep their values; only top-level keys go back to PHP-CS-Fixer's snake_case.
     let d = dir(&[(
         "pun.toml",
-        "[format]\npreset = \"empty\"\n[format.rules]\nordered-imports = { sort-algorithm = \"alpha\", imports-order = [\"class\", \"const\"] }\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"imports/ordered\" = { sort-algorithm = \"alpha\", imports-order = [\"class\", \"const\"] }\n",
     )]);
     let c = load(
         &d,
@@ -156,20 +170,6 @@ paths = ["app"]
     );
     assert!(c.blade);
     assert_eq!(c.php, "8.4");
-    // Earlier Pun names (`aliases` in mapping.toml) still work.
-    let d = dir(&[(
-        "pun.toml",
-        "[format]\npreset = \"empty\"\n[format.rules]\ncurly-to-square-bracket-array-string = true\n",
-    )]);
-    assert_eq!(
-        names(&load(&d, &Options::default()).unwrap().rules),
-        ["normalize_index_brace"]
-    );
-    let d = dir(&[("pun.toml", "[lint.rules]\nfinal-class = true\n")]);
-    assert_eq!(
-        load(&d, &Options::default()).unwrap().lint[0].0.name,
-        "final_class"
-    );
 }
 
 #[test]
@@ -188,39 +188,63 @@ fn pun_toml_errors() {
         "`nope` is not a format rule Pun can run (see crates/pun-config/rules/mapping.toml)"
     ));
     assert!(e("[lint.rules]\nnope = true\n").contains("`nope` is not a lint rule"));
+    // No aliases: an old Pun name, an upstream name or a rule of the other command names the ID to use
+    // (IDs hand-read from rules/mapping.toml).
+    for (table, name, id) in [
+        // Old format names and the kebab-cased fixer, under either table.
+        ("format", "format.array-syntax", "format/arrays/syntax"),
+        ("format", "array-syntax", "format/arrays/syntax"),
+        ("lint", "laravel-blade", "format/laravel/blade"),
+        // The 40 code-deleting fixers are lint rules now (context/plan/commands.md §4).
+        ("format", "no-unused-imports", "lint/imports/no-unused"),
+        ("format", "imports/no-unused", "lint/imports/no-unused"),
+        ("format", "self-static-accessor", "lint/classes/prefer-self-in-final"),
+        // Old lint and analyse names, and the auto-derived ones before the naming pass.
+        ("lint", "lint.no-alias-function", "lint/style/no-alias-function"),
+        ("lint", "final-class", "lint/style/require-final-class"),
+        ("format", "final-class", "lint/style/require-final-class"),
+        ("lint", "simplify-mirror-assign", "lint/dead-code/no-self-assignment"),
+        ("lint", "no-redundant-pest-uses", "lint/pest/no-redundant-uses"),
+        ("lint", "analyse.undefined-method", "analyse/undefined/method"),
+        // Upstream names: PHP-CS-Fixer, Pint, Rector, PHPStan.
+        ("format", "array_syntax", "format/arrays/syntax"),
+        ("format", "Pint/laravel_blade", "format/laravel/blade"),
+        ("lint", "StrictInArray", "lint/types/require-strict-param"),
+        ("lint", "method.notFound", "analyse/undefined/method"),
+        // A rule of the other command, full or short.
+        ("lint", "imports/ordered", "format/imports/ordered"),
+        ("format", "style/require-final-class", "lint/style/require-final-class"),
+        ("lint", "format/imports/ordered", "format/imports/ordered"),
+    ] {
+        let got = e(&format!("[{table}.rules]\n\"{name}\" = true\n"));
+        assert!(
+            got.ends_with(&format!("`{name}` is `{id}` in pun.toml")),
+            "{got}"
+        );
+    }
+    // A name several rules share is not guessed; a rule Pun can't run yet is named as such.
+    // `ordered` is imports/ordered, attributes/ordered and types/ordered.
+    assert!(e("[format.rules]\nordered = true\n").contains("`ordered` is not a format rule Pun can run"));
     assert!(
-        e("[format.rules]\nfinal-class = true\n")
-            .ends_with("`final-class` is `lint.require-final-class` in pun.toml")
+        e("[lint.rules]\n\"dead-code/no-unused-private-method\" = true\n")
+            .contains("`dead-code/no-unused-private-method` is not a lint rule Pun can run")
     );
-    // Upstream names and rules of the other command name the ID to use.
     assert!(
-        e("[format.rules]\narray_syntax = true\n")
-            .ends_with("`array_syntax` is `format.array-syntax` in pun.toml")
+        e("[format.rules]\n\"strings/single-quote\" = \"yes\"\n")
+            .ends_with("`strings/single-quote` must be true, false or a table of options")
     );
     assert!(
-        e("[lint.rules]\nordered-imports = true\n")
-            .ends_with("`ordered-imports` is `format.ordered-imports` in pun.toml")
+        e("[lint.rules]\n\"style/require-final-class\" = 1\n")
+            .ends_with("`style/require-final-class` must be true, false or a table of options")
     );
     assert!(
-        e("[format.rules]\n\"format.require-final-class\" = true\n")
-            .ends_with("`format.require-final-class` is `lint.require-final-class` in pun.toml")
-    );
-    assert!(
-        e("[format.rules]\nsingle-quote = \"yes\"\n")
-            .ends_with("`single-quote` must be true, false or a table of options")
-    );
-    assert!(
-        e("[lint.rules]\nrequire-final-class = 1\n")
-            .ends_with("`require-final-class` must be true, false or a table of options")
-    );
-    assert!(
-        e("[lint.rules]\nrequire-final-class = \"loud\"\n").ends_with(
-            "`require-final-class` = \"loud\": expected \"error\", \"warn\", \"info\" or \"off\""
+        e("[lint.rules]\n\"style/require-final-class\" = \"loud\"\n").ends_with(
+            "`style/require-final-class` = \"loud\": expected \"error\", \"warn\", \"info\" or \"off\""
         )
     );
     assert!(
-        e("[lint.rules]\nrequire-final-class = { fix = \"yes\" }\n")
-            .ends_with("`require-final-class`: fix must be \"apply\", \"safe-only\" or \"off\"")
+        e("[lint.rules]\n\"style/require-final-class\" = { fix = \"yes\" }\n")
+            .ends_with("`style/require-final-class`: fix must be \"apply\", \"safe-only\" or \"off\"")
     );
 }
 
@@ -242,69 +266,66 @@ fn composer_gate() {
 
 #[test]
 fn mapping_lookups() {
+    // Hand-read from rules/mapping.toml.
     assert_eq!(
         rule_of("no_alias_functions"),
-        Some("lint.no-alias-function")
+        Some("lint/style/no-alias-function")
     );
-    assert_eq!(rule_of("Pint/laravel_blade"), Some("format.laravel-blade"));
-    assert_eq!(rule_of("Pun/no_only"), Some("lint.no-only"));
+    assert_eq!(rule_of("no_unused_imports"), Some("lint/imports/no-unused"));
+    assert_eq!(rule_of("Pint/laravel_blade"), Some("format/laravel/blade"));
+    assert_eq!(rule_of("Pun/no_only"), Some("lint/pest/no-only"));
     assert_eq!(rule_of("braces"), None);
     assert_eq!(
-        fixer_of("format", "format.ordered-imports"),
+        fixer_of("format", "format/imports/ordered"),
         Some("ordered_imports")
     );
-    assert_eq!(
-        fixer_of("format", "ordered-imports"),
-        Some("ordered_imports")
-    );
-    assert_eq!(fixer_of("lint", "ordered-imports"), None);
+    assert_eq!(fixer_of("format", "imports/ordered"), Some("ordered_imports"));
+    assert_eq!(fixer_of("lint", "imports/ordered"), None);
+    assert_eq!(fixer_of("lint", "format/imports/ordered"), None);
+    // The old names are gone.
+    assert_eq!(fixer_of("format", "ordered-imports"), None);
+    assert_eq!(fixer_of("format", "format.ordered-imports"), None);
 }
 
 #[test]
 fn rule_metadata() {
     // Hand-read from rules/mapping.toml.
-    let m = rule("lint.no-self-assignment").unwrap();
+    let m = rule("lint/dead-code/no-self-assignment").unwrap();
+    assert_eq!((m.fix, m.summary), ("safe", None));
+    assert_eq!(rule("lint/types/require-strict-param").unwrap().fix, "mixed");
+    let m = rule("format/arrays/syntax").unwrap();
     assert_eq!(
-        (m.fix, m.tier, m.summary, m.aliases.as_slice()),
+        (m.fix, m.summary),
         (
             "safe",
-            Some("recommended"),
-            None,
-            &["simplify-mirror-assign"][..]
+            Some("PHP arrays should be declared using the configured syntax.")
         )
     );
-    let m = rule("lint.require-strict-param").unwrap();
-    assert_eq!((m.fix, m.tier), ("mixed", Some("strict")));
-    let m = rule("format.array-syntax").unwrap();
+    // A moved format rule keeps its summary under its lint ID.
     assert_eq!(
-        (m.fix, m.tier, m.summary, m.aliases.len()),
-        (
-            "safe",
-            None,
-            Some("PHP arrays should be declared using the configured syntax."),
-            0
-        )
+        rule("lint/imports/no-unused").unwrap().summary,
+        Some("Unused `use` statements must be removed.")
     );
     // Analyse rules have no fix.
-    let m = rule("analyse.argument-count").unwrap();
-    assert_eq!((m.fix, m.tier), ("none", Some("essential")));
-    assert!(rule("no-self-assignment").is_none());
-    assert!(rule("lint.array-syntax").is_none());
+    assert_eq!(rule("analyse/functions/argument-count").unwrap().fix, "none");
+    assert!(rule("dead-code/no-self-assignment").is_none());
+    assert!(rule("lint.no-self-assignment").is_none());
+    assert!(rule("format/imports/no-unused").is_none());
 }
 
 #[test]
 fn show() {
     let d = dir(&[(
         "pun.toml",
-        "[format]\npreset = \"empty\"\n[format.rules]\nconcat-space = { spacing = \"one\" }\nsingle-quote = true\n[lint.rules]\nrequire-final-class = { fix = \"apply\" }\nno-alias-function = { sets = [\"@internal\"] }\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"operators/concat-spacing\" = { spacing = \"one\" }\n\"strings/single-quote\" = true\n[lint.rules]\n\"style/require-final-class\" = { fix = \"apply\" }\n\"style/no-alias-function\" = { sets = [\"@internal\"] }\n",
     )]);
     assert_eq!(
         load(&d, &Options::default()).unwrap().show(),
         json!({
             "sources": [d.join("pun.toml")],
             "php": {"version": "8.4"},
-            "format": {"preset": "empty", "rules": {"format.concat-space": {"spacing": "one"}, "format.single-quote": true}},
-            "lint": {"rules": {"lint.require-final-class": {"fix": "apply"}, "lint.no-alias-function": {"sets": ["@internal"]}}},
+            "format": {"preset": "empty", "rules": {"format/operators/concat-spacing": {"spacing": "one"}, "format/strings/single-quote": true}},
+            "lint": {"rules": {"lint/style/require-final-class": {"fix": "apply"}, "lint/style/no-alias-function": {"sets": ["@internal"]}}},
             "finder": {"in": [], "exclude": [], "notName": [], "notPath": []},
         })
     );
@@ -336,8 +357,11 @@ fn rule_sets_like_php_cs_fixer() {
             })
             .collect()
     };
+    // `pun format` runs psr12 without its 2 code-deleting rules, which are lint rules (context/plan/commands.md §4).
     let psr12 = load(&dir(&[]), &preset("psr12")).unwrap();
-    assert_eq!(resolved(psr12.rules), expected(&cases[0]));
+    let mut want = expected(&cases[0]);
+    want.retain(|(r, _)| r != "ordered_class_elements" && r != "no_unused_imports");
+    assert_eq!(resolved(psr12.rules), want);
     for case in &cases {
         let rules = case["rules"].as_object().unwrap().clone();
         assert_eq!(resolved(rule_set(rules).unwrap()), expected(case));
@@ -363,7 +387,8 @@ mod migrate {
         from_pint(&dir(&[("pint.json", json)]).join("pint.json"), None).unwrap()
     }
 
-    /// Hand-derived from Pint's laravel preset (docs/presets/laravel.json) and the mapping.
+    /// Hand-derived from Pint's laravel preset (docs/presets/laravel.json, in its order) and the mapping: its 4 risky
+    /// fixers and 11 code-deleting ones are lint rules (context/plan/commands.md §4).
     #[test]
     fn writes_a_delta_and_moves_risky_rules_to_lint() {
         let m = pint(
@@ -378,16 +403,27 @@ exclude = ["a"]
 not-path = ["y"]
 
 [format.rules]
-concat-space = { spacing = "one" }
-laravel-blade = true
-array-syntax = false
+"operators/concat-spacing" = { spacing = "one" }
+"laravel/blade" = true
+"arrays/syntax" = false
 
 [lint.rules]
-no-alias-function = { fix = "apply" }
-no-unreachable-default-argument-value = { fix = "apply" }
-require-ordered-traits = { fix = "apply" }
-require-protected-setup = { fix = "apply" }
-require-final-class = { fix = "apply" }
+"refactor/rename-phpdoc-tag" = { fix = "apply" }
+"functions/no-unused-closure-use" = { fix = "apply" }
+"style/no-alias-function" = { fix = "apply" }
+"statements/no-empty" = { fix = "apply" }
+"phpdoc/no-superfluous-tags" = { fix = "apply", allow-mixed = true, allow-unused-params = true }
+"functions/no-unreachable-default-argument-value" = { fix = "apply" }
+"imports/no-unused" = { fix = "apply" }
+"control-flow/no-useless-return" = { fix = "apply" }
+"style/require-ordered-traits" = { fix = "apply" }
+"phpunit/require-method-casing" = { fix = "apply", case = "snake_case" }
+"phpunit/require-protected-setup" = { fix = "apply" }
+"phpdoc/no-access" = { fix = "apply" }
+"phpdoc/no-package" = { fix = "apply" }
+"phpdoc/no-useless-inheritdoc" = { fix = "apply" }
+"classes/prefer-self-in-final" = { fix = "apply" }
+"style/require-final-class" = { fix = "apply" }
 "#
         );
         // Re-running gives the same file; laravel's single_quote already is `true`, so it isn't written.
@@ -507,7 +543,7 @@ require-final-class = { fix = "apply" }
         );
         assert_eq!(
             names(&c.lint.iter().map(|(r, _)| r.clone()).collect::<Vec<_>>()),
-            ["strict_param"]
+            ["ordered_class_elements", "strict_param"]
         );
     }
 
@@ -530,7 +566,7 @@ require-final-class = { fix = "apply" }
             from_pint(&dir(&[]).join("pint.json"), Some("psr12"))
                 .unwrap()
                 .toml,
-            "[format]\npreset = \"psr12\"\n"
+            "[format]\npreset = \"psr12\"\n\n[lint.rules]\n\"classes/require-member-order\" = { fix = \"apply\", order = [\"use_trait\"] }\n\"imports/no-unused\" = { fix = \"apply\" }\n"
         );
         assert_eq!(
             e(&[
@@ -589,7 +625,7 @@ require-final-class = { fix = "apply" }
         let m = from_pint(&d.join("custom.json"), None).unwrap();
         assert_eq!(
             m.toml,
-            "[format]\npreset = \"empty\"\npaths = [\"src\"]\nexclude = [\"x\", \"b\"]\nnot-name = [\"n\", \"m\"]\n\n[format.rules]\nsingle-quote = true\nconcat-space = { spacing = \"one\" }\n"
+            "[format]\npreset = \"empty\"\npaths = [\"src\"]\nexclude = [\"x\", \"b\"]\nnot-name = [\"n\", \"m\"]\n\n[format.rules]\n\"strings/single-quote\" = true\n\"operators/concat-spacing\" = { spacing = \"one\" }\n"
         );
     }
 }

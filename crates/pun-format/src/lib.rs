@@ -696,20 +696,21 @@ mod tests {
             dup("\"a\"")
         );
 
-        // Pun's `@pun-ignore-file` (context/plan/rules.md §4): rule IDs, bare names or lint IDs, mapped to their fixers via
-        // rules/mapping.toml; an unknown ID skips nothing. Exactly one space after the name, like upstream's split.
-        let a = found(b"<?php\n// @pun-ignore-file format.single-quote,no-alias-function,nope\n// @php-cs-fixer-ignore x\n").unwrap();
+        // Pun's `@pun-ignore-file` (context/plan/rules.md §4): full rule IDs or `group/name` of a format or lint rule,
+        // mapped to their fixers via rules/mapping.toml; an unknown or old ID skips nothing. Exactly one space after the
+        // name, like upstream's split.
+        let a = found(b"<?php\n// @pun-ignore-file format/strings/single-quote,style/no-alias-function,nope,format.single-quote\n// @php-cs-fixer-ignore x\n").unwrap();
         assert_eq!(
             fixer_annotation::skipped(&a),
             strs(&["x", "single_quote", "no_alias_functions"])
         );
         assert_eq!(
-            found(b"<?php\n// @pun-ignore-file\tformat.x\n").unwrap(),
+            found(b"<?php\n// @pun-ignore-file\tformat/x/y\n").unwrap(),
             vec![]
         );
         // The same, from code, without `@php-cs-fixer-ignore` names (delegate mode); values sort by ID.
         assert_eq!(
-            pun_ignored(b"<?php\n// @pun-ignore-file single-quote,lint.no-alias-function\n// @php-cs-fixer-ignore x\n"),
+            pun_ignored(b"<?php\n// @pun-ignore-file strings/single-quote,lint/style/no-alias-function\n// @php-cs-fixer-ignore x\n"),
             ["no_alias_functions", "single_quote"]
         );
         assert!(pun_ignored(b"<?php\n// @php-cs-fixer-ignore x\n").is_empty());

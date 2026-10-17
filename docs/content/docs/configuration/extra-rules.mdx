@@ -7,8 +7,8 @@ Pun adds opt-in lint rules ported from [Mago](https://github.com/carthage-softwa
 
 ```toml pun.toml
 [lint.rules]
-prefer-dedicated-status-assertion = { fix = "apply" }
-prefer-fake-helper = { fix = "apply" }
+"laravel/prefer-dedicated-status-assertion" = { fix = "apply" }
+"laravel/prefer-fake-helper" = { fix = "apply" }
 ```
 
 Rules marked **risky** can change behaviour; review their diff.
@@ -17,32 +17,32 @@ Rules marked **risky** can change behaviour; review their diff.
 
 | Rule | Rewrites |
 | --- | --- |
-| `prefer-dedicated-status-assertion` | `->assertStatus(404)` → `->assertNotFound()` (25 codes) |
-| `prefer-fake-helper` | `$this->faker` → `fake()` in `*Factory` classes |
-| `prefer-array-validation-rules` | `'required\|string'` → `['required', 'string']` in `rules()` |
-| `no-implicit-model-query` (risky) | `User::where(...)` → `User::query()->where(...)` |
-| `require-final-controller` (risky) | `class UserController` → `final class UserController` |
+| `laravel/prefer-dedicated-status-assertion` | `->assertStatus(404)` → `->assertNotFound()` (25 codes) |
+| `laravel/prefer-fake-helper` | `$this->faker` → `fake()` in `*Factory` classes |
+| `laravel/prefer-array-validation-rules` | `'required\|string'` → `['required', 'string']` in `rules()` |
+| `laravel/no-implicit-model-query` (risky) | `User::where(...)` → `User::query()->where(...)` |
+| `laravel/require-final-controller` (risky) | `class UserController` → `final class UserController` |
 
 ## Pest
 
 | Rule | Rewrites |
 | --- | --- |
-| `prefer-specific-expectations` | `->toBe(true)` → `->toBeTrue()`, likewise `false` and `null` |
-| `prefer-dedicated-expectation` (risky) | `expect(is_array($x))->toBeTrue()` → `expect($x)->toBeArray()` |
-| `prefer-simpler-expectation` | `expect($a > $b)->toBeTrue()` → `expect($a)->toBeGreaterThan($b)` |
-| `no-only` | removes `->only()` from tests |
+| `pest/prefer-specific-expectations` | `->toBe(true)` → `->toBeTrue()`, likewise `false` and `null` |
+| `pest/prefer-dedicated-expectation` (risky) | `expect(is_array($x))->toBeTrue()` → `expect($x)->toBeArray()` |
+| `pest/prefer-simpler-expectation` | `expect($a > $b)->toBeTrue()` → `expect($a)->toBeGreaterThan($b)` |
+| `pest/no-only` | removes `->only()` from tests |
 
 ## Redundant code and modern PHP
 
 | Rule | Rewrites |
 | --- | --- |
-| `no-redundant-isset` | `isset($a, $a['b'])` → `isset($a['b'])` |
-| `no-redundant-literal-return` | `if ($x === null) { return null; } return $x;` → `return $x;` |
-| `no-redundant-nullsafe` | `$user?->name ?? 'Guest'` → `$user->name ?? 'Guest'` |
-| `no-self-assignment` | deletes `$a = $a;` |
-| `prefer-array-spread` (risky) | `array_merge($a, [1], $b)` → `[...$a, 1, ...$b]` |
-| `prefer-explode-over-preg-split` | `preg_split('/, /', $s)` → `explode(', ', $s)` |
-| `prefer-first-class-callable` (risky) | `fn ($x) => $this->m($x)` → `$this->m(...)` |
-| `add-sensitive-parameter` | adds `#[\SensitiveParameter]` to `$password`, `$token`, `$secret` and API-key parameters |
+| `complexity/no-redundant-isset` | `isset($a, $a['b'])` → `isset($a['b'])` |
+| `complexity/no-redundant-literal-return` | `if ($x === null) { return null; } return $x;` → `return $x;` |
+| `complexity/no-redundant-nullsafe` | `$user?->name ?? 'Guest'` → `$user->name ?? 'Guest'` |
+| `dead-code/no-self-assignment` | deletes `$a = $a;` |
+| `arrays/prefer-array-spread` (risky) | `array_merge($a, [1], $b)` → `[...$a, 1, ...$b]` |
+| `performance/prefer-explode-over-preg-split` | `preg_split('/, /', $s)` → `explode(', ', $s)` |
+| `php-8.1/prefer-first-class-callable` (risky) | `fn ($x) => $this->m($x)` → `$this->m(...)` |
+| `security/add-sensitive-parameter` | adds `#[\SensitiveParameter]` to `$password`, `$token`, `$secret` and API-key parameters |
 
 Each rule ports only the rewrites that keep the code's meaning; the edge cases each one skips are listed in the repository's `context/reference/mago-extras.md`.

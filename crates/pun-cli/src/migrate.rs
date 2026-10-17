@@ -406,7 +406,7 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
     Ok(0)
 }
 
-/// `code` with each `@php-cs-fixer-ignore a,b` in a comment turned into `@pun-ignore-file format.a,lint.b`, or
+/// `code` with each `@php-cs-fixer-ignore a,b` in a comment turned into `@pun-ignore-file format/x/a,lint/y/b`, or
 /// `None` when nothing changes. One naming a fixer Pun has no rule for stays as it is, reported in `unknown`.
 fn rewrite(code: &[u8], path: &str, unknown: &mut Vec<(String, String)>) -> Option<Vec<u8>> {
     if !code.windows(19).any(|w| w == b"php-cs-fixer-ignore") {

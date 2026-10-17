@@ -170,7 +170,7 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
     let (mut format, mut lints, mut unsupported) = (String::new(), String::new(), vec![]);
     for r in &rules {
         let id = rule_of(&r.name);
-        let lint = id.is_some_and(|id| id.starts_with("lint."));
+        let lint = id.is_some_and(|id| id.starts_with("lint/"));
         // The preset brings it (rules Pun can't run, such as sets it can't expand, included).
         if !lint
             && base
@@ -190,7 +190,7 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
             unsupported.push(format!("{}: {why}", r.name));
             continue;
         };
-        let name = &id[id.find('.').unwrap() + 1..];
+        let name = &id[id.find('/').unwrap() + 1..];
         let Some(v) = toml_value(&value(&r.options, lint)) else {
             unsupported.push(format!(
                 "{}: an option is null, which TOML can't hold",
@@ -198,13 +198,13 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
             ));
             continue;
         };
-        writeln!(if lint { &mut lints } else { &mut format }, "{name} = {v}").unwrap();
+        writeln!(if lint { &mut lints } else { &mut format }, "\"{name}\" = {v}").unwrap();
     }
     for b in &base {
-        if let Some(name) = rule_of(&b.name).and_then(|id| id.strip_prefix("format."))
+        if let Some(name) = rule_of(&b.name).and_then(|id| id.strip_prefix("format/"))
             && !rules.iter().any(|r| r.name == b.name)
         {
-            writeln!(format, "{name} = false").unwrap();
+            writeln!(format, "\"{name}\" = false").unwrap();
         }
     }
     let mut toml = format!("[format]\npreset = \"{preset}\"\n{finder}");

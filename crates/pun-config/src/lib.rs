@@ -147,21 +147,27 @@ pub fn fixer_entries() -> &'static toml::Table {
     &T
 }
 
-/// The Pun rule ID of a fixer (`no_alias_functions` -> `lint.no-alias-functions`).
+/// The Pun rule ID of a fixer (`no_alias_functions` -> `lint/style/no-alias-function`).
 pub fn rule_of(fixer: &str) -> Option<&'static str> {
     fixer_entries().get(fixer)?.get("pun")?.as_str()
 }
 
-/// The fixer behind a Pun rule ID; `command.` may be left out (`format.ordered-imports` or `ordered-imports`).
+/// The fixer behind a Pun rule ID; the `<command>/` part may be left out (`format/imports/ordered` or
+/// `imports/ordered`).
 pub fn fixer_of(command: &str, rule: &str) -> Option<&'static str> {
-    let id = format!(
-        "{command}.{}",
-        rule.strip_prefix(&format!("{command}.")).unwrap_or(rule)
-    );
+    let id = id(command, rule);
     fixer_entries()
         .iter()
         .find(|(_, e)| e.get("pun").and_then(toml::Value::as_str) == Some(&id))
         .map(|(k, _)| k.as_str())
+}
+
+/// `rule` as a full `<command>/<group>/<name>` ID.
+fn id(command: &str, rule: &str) -> String {
+    match rule.strip_prefix(command).and_then(|r| r.strip_prefix('/')) {
+        Some(_) => rule.to_string(),
+        None => format!("{command}/{rule}"),
+    }
 }
 
 pub fn load(root: &Path, opts: &Options) -> Result<Config> {
@@ -224,7 +230,7 @@ fn parse(
         rules.insert("Pint/laravel_blade".into(), Value::Bool(true));
     }
     // Risky fixers are lint rules: a preset's run only under `[lint.rules]`.
-    rules.retain(|name, _| !rule_of(name).is_some_and(|id| id.starts_with("lint.")));
+    rules.retain(|name, _| !rule_of(name).is_some_and(|id| id.starts_with("lint/")));
     let rules = enabled(rules);
     let blade = rules.iter().any(|r| r.name == "Pint/laravel_blade");
 
@@ -286,19 +292,14 @@ fn parse(
     })
 }
 
-/// The fixer for `name` under `[<command>.rules]`.
+/// The fixer for `name` under `[<command>.rules]`. There are no aliases: an old Pun name, an upstream name or a rule
+/// of the other command is an error that names the ID to use.
 fn fixer(path: &Path, command: &str, name: &str) -> Result<&'static str> {
-    let bare = name.strip_prefix(&format!("{command}.")).unwrap_or(name);
-    if let Some(f) = fixer_of(command, bare).or_else(|| fixer_of(command, alias(command, bare)?)) {
+    if let Some(f) = fixer_of(command, name) {
         return Ok(f);
     }
-    // An upstream fixer name (`array_syntax`) or a rule of the other command: name the ID to use instead.
-    let other = if command == "format" {
-        "lint"
-    } else {
-        "format"
-    };
-    let id = rule_of(&bare.replace('-', "_")).or_else(|| rule_of(fixer_of(other, bare)?));
+    let other = if command == "format" { "lint" } else { "format" };
+    let id = (fixer_of(other, name).and_then(rule_of)).or_else(|| renamed(name));
     match id {
         Some(id) => bail!("{}: `{name}` is `{id}` in pun.toml", path.display()),
         None => bail!(
@@ -308,20 +309,69 @@ fn fixer(path: &Path, command: &str, name: &str) -> Result<&'static str> {
     }
 }
 
+/// The Pun rule ID behind a name from before the `<command>/<group>/<name>` IDs: an upstream rule (`array_syntax`,
+/// `Pint/laravel_blade`, `StrictInArray`, `method.notFound`, Mago's `no-empty`) under any casing or separators (the
+/// earlier auto-derived names were kebab-cased upstream names: `final-class`, `simplify-mirror-assign`), and the old
+/// `format.` / `lint.` / `analyse.` names (`format.array-syntax`, `no-alias-function`, `undefined-method`).
+fn renamed(name: &str) -> Option<&'static str> {
+    let bare = ["format.", "lint.", "analyse."]
+        .iter()
+        .find_map(|p| name.strip_prefix(p))
+        .unwrap_or(name);
+    let norm = |s: &str| -> String {
+        s.chars()
+            .filter(char::is_ascii_alphanumeric)
+            .map(|c| c.to_ascii_lowercase())
+            .collect()
+    };
+    let key = norm(bare);
+    if let Some((_, id)) = upstream().iter().find(|(k, _)| norm(k) == key) {
+        return Some(id);
+    }
+    // The old name is the rule's name, its group and name joined (`undefined-method`), or its name with the group
+    // word in it (`no-redundant-pest-uses` is `pest/no-redundant-uses`).
+    let mut hits = rules().iter().map(|(id, _)| id.as_str()).filter(|id| {
+        let mut parts = id.splitn(3, '/').skip(1);
+        let (group, rule) = (parts.next().unwrap(), parts.next().unwrap());
+        [
+            bare.to_string(),
+            bare.replacen(&format!("{group}-"), "", 1),
+            bare.replacen(&format!("-{group}"), "", 1),
+        ]
+        .contains(&rule.to_string())
+            || format!("{group}-{rule}") == bare
+    });
+    hits.next().filter(|_| hits.next().is_none())
+}
+
+/// Every `[upstream.<tool>]` entry that maps to a rule: upstream key => Pun rule ID. Only an error needs it.
+fn upstream() -> &'static Vec<(String, &'static str)> {
+    static T: LazyLock<Vec<(String, &'static str)>> = LazyLock::new(|| {
+        let mut out = vec![];
+        for part in MAPPING.split("\n[upstream.").skip(1) {
+            let body = part.split_once("]\n").unwrap().1;
+            for (k, e) in toml::from_str::<toml::Table>(body).unwrap() {
+                if let Some(id) = e.get("pun").and_then(toml::Value::as_str) {
+                    let id = rules().iter().find(|(r, _)| r == id).map(|(r, _)| r.as_str());
+                    out.extend(id.map(|id| (k, id)));
+                }
+            }
+        }
+        out
+    });
+    &T
+}
+
 /// A Pun rule's metadata from `[rules.<command>]` of rules/mapping.toml.
 #[derive(Debug)]
 pub struct RuleMeta {
     /// `safe`, `unsafe`, `mixed` or `none` (analyse rules have no fix).
     pub fix: &'static str,
-    /// Lowest preset tier that enables it (lint/analyse); `None` for format rules and opt-in rules.
-    pub tier: Option<&'static str>,
     pub summary: Option<&'static str>,
-    /// Earlier Pun names, without the `command.` prefix.
-    pub aliases: Vec<&'static str>,
 }
 
-/// Every `[rules.format]`, `[rules.lint]` and `[rules.analyse]` entry by rule ID. Parsed on first use: a plain
-/// `pun format` run never needs it.
+/// Every `[rules.format]`, `[rules.lint]` and `[rules.analyse]` entry by rule ID (`lint/style/no-alias-function`).
+/// Parsed on first use: a plain `pun format` run never needs it.
 fn rules() -> &'static Vec<(String, toml::Value)> {
     static T: LazyLock<Vec<(String, toml::Value)>> = LazyLock::new(|| {
         ["format", "lint", "analyse"]
@@ -335,36 +385,20 @@ fn rules() -> &'static Vec<(String, toml::Value)> {
                     toml::from_str::<toml::Table>(body.split("\n[").next().unwrap()).unwrap();
                 rules
                     .into_iter()
-                    .map(move |(rule, e)| (format!("{c}.{rule}"), e))
+                    .map(move |(rule, e)| (format!("{c}/{rule}"), e))
             })
             .collect()
     });
     &T
 }
 
-/// The metadata of a Pun rule ID (`lint.no-self-assignment`).
+/// The metadata of a Pun rule ID (`lint/dead-code/no-self-assignment`).
 pub fn rule(id: &str) -> Option<RuleMeta> {
     let (_, e) = rules().iter().find(|(r, _)| r == id)?;
     let str = |k| e.get(k).and_then(toml::Value::as_str);
     Some(RuleMeta {
         fix: str("fix").unwrap_or("none"),
-        tier: str("tier").filter(|t| *t != "none"),
         summary: str("summary"),
-        aliases: e
-            .get("aliases")
-            .and_then(toml::Value::as_array)
-            .map_or_else(Vec::new, |a| {
-                a.iter().filter_map(toml::Value::as_str).collect()
-            }),
-    })
-}
-
-/// The current name of an earlier Pun rule name (`aliases` in `[rules.<command>]` of mapping.toml).
-fn alias(command: &str, name: &str) -> Option<&'static str> {
-    let prefix = format!("{command}.");
-    rules().iter().find_map(|(id, _)| {
-        let r = id.strip_prefix(&prefix)?;
-        rule(id)?.aliases.contains(&name).then_some(r)
     })
 }
 

@@ -52,13 +52,13 @@ fn agent(dir: &Path, args: &[&str]) -> (String, Option<i32>) {
     run(dir, args, &[("PUN_AGENT", "1")])
 }
 
-const TOML: &str = "[format]\npreset = \"empty\"\n\n[format.rules]\narray-syntax = true\n\n[lint.rules]\nno-alias-function = { fix = \"apply\" }\nno-self-assignment = true\n";
+const TOML: &str = "[format]\npreset = \"empty\"\n\n[format.rules]\n\"arrays/syntax\" = true\n\n[lint.rules]\n\"style/no-alias-function\" = { fix = \"apply\" }\n\"dead-code/no-self-assignment\" = true\n";
 const ARRAY: &str = "<?php\n$a = array(1);\n";
 const ALIAS: &str = "<?php\n$n = sizeof(array());\n";
 const SELF: &str = "<?php\n$a = 1;\n$a = $a;\n";
 const CLEAN: &str = "<?php\n$c = [1];\n";
 
-const ALIAS_LINE: &str = "app/B.php lint.no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.";
+const ALIAS_LINE: &str = "app/B.php lint/style/no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.";
 
 #[test]
 fn detection_priority() {
@@ -185,14 +185,14 @@ fn format() {
     assert_eq!(
         agent(&d, &["format", "--test"]),
         (
-            "pun format: fail, 1 file needs formatting (2 checked, Ts)\napp/A.php format.array-syntax\n".into(),
+            "pun format: fail, 1 file needs formatting (2 checked, Ts)\napp/A.php format/arrays/syntax\n".into(),
             Some(1)
         )
     );
     // -v: the bare diff under each file, paths relative.
     assert_eq!(
         agent(&d, &["format", "--test", "-v"]).0,
-        "pun format: fail, 1 file needs formatting (2 checked, Ts)\napp/A.php format.array-syntax\n--- app/A.php\n+++ app/A.php\n@@ -1,2 +1,2 @@\n <?php\n-$a = array(1);\n+$a = [1];\n"
+        "pun format: fail, 1 file needs formatting (2 checked, Ts)\napp/A.php format/arrays/syntax\n--- app/A.php\n+++ app/A.php\n@@ -1,2 +1,2 @@\n <?php\n-$a = array(1);\n+$a = [1];\n"
     );
     // An explicit --format keeps its reporter; --format=agent is Pint's JSON agent reporter.
     let (json, _) = agent(&d, &["format", "--test", "--format=json"]);
@@ -205,7 +205,7 @@ fn format() {
     assert_eq!(
         agent(&d, &["format", "--repair", "-q"]),
         (
-            "pun format: fixed, 1 file formatted (2 checked, Ts)\napp/A.php format.array-syntax\n"
+            "pun format: fixed, 1 file formatted (2 checked, Ts)\napp/A.php format/arrays/syntax\n"
                 .into(),
             Some(1)
         )
@@ -231,7 +231,7 @@ fn caps_long_lists() {
         .map(|(a, b)| (a.as_str(), b.as_str()))
         .collect();
     let d = project(&files);
-    let line = |n: usize| format!("app/F{n:02}.php format.array-syntax\n");
+    let line = |n: usize| format!("app/F{n:02}.php format/arrays/syntax\n");
     let head = "pun format: fail, 23 files need formatting (23 checked, Ts)\n";
     let first: String = (1..=20).map(line).collect();
     assert_eq!(
@@ -261,7 +261,7 @@ fn lint_and_check() {
         ("app/S.php", SELF),
     ]);
     // A rule without a summary in the mapping prints none.
-    let lint = format!("{ALIAS_LINE}\napp/S.php lint.no-self-assignment [fix:safe]\n");
+    let lint = format!("{ALIAS_LINE}\napp/S.php lint/dead-code/no-self-assignment [fix:safe]\n");
     assert_eq!(
         agent(&d, &["lint"]),
         (
@@ -274,14 +274,14 @@ fn lint_and_check() {
         agent(&d, &["check"]),
         (
             format!(
-                "pun check: fail, 3 files with fixes (3 checked, Ts)\napp/A.php format.array-syntax\napp/B.php format.array-syntax\n{lint}"
+                "pun check: fail, 3 files with fixes (3 checked, Ts)\napp/A.php format/arrays/syntax\napp/B.php format/arrays/syntax\n{lint}"
             ),
             Some(1)
         )
     );
     // --fix applies only `fix = "apply"` rules; the others are reported as remaining, like `--test` reports them,
     // and fail the run.
-    let remaining = "app/S.php lint.no-self-assignment [fix:safe] [remaining]\n";
+    let remaining = "app/S.php lint/dead-code/no-self-assignment [fix:safe] [remaining]\n";
     assert_eq!(
         agent(&d, &["lint", "--fix"]),
         (
@@ -313,7 +313,7 @@ fn lint_and_check() {
         agent(&d, &["check", "--fix"]),
         (
             format!(
-                "pun check: fail, 2 files fixed, 1 file with remaining fixes (3 checked, Ts)\napp/A.php format.array-syntax\napp/B.php format.array-syntax\n{remaining}"
+                "pun check: fail, 2 files fixed, 1 file with remaining fixes (3 checked, Ts)\napp/A.php format/arrays/syntax\napp/B.php format/arrays/syntax\n{remaining}"
             ),
             Some(1)
         )
@@ -356,7 +356,7 @@ fn errors() {
     assert_eq!(
         agent(&d, &["format", "--test"]),
         (
-            "pun format: fail, 1 error, 1 file needs formatting (2 checked, Ts)\napp/A.php format.array-syntax\napp/D.php:2 syntax-error Parse error: syntax error, unexpected token \";\" on line 2.\n".into(),
+            "pun format: fail, 1 error, 1 file needs formatting (2 checked, Ts)\napp/A.php format/arrays/syntax\napp/D.php:2 syntax-error Parse error: syntax error, unexpected token \";\" on line 2.\n".into(),
             Some(1)
         )
     );
@@ -427,7 +427,7 @@ fn git_selection() {
     git(&["commit", "-qm", "init"]);
     git(&["checkout", "-qb", "topic"]);
     std::fs::write(d.join("app/A.php"), ARRAY).unwrap();
-    let want = "pun format: fail, 1 file needs formatting (1 checked, Ts)\napp/A.php format.array-syntax\n";
+    let want = "pun format: fail, 1 file needs formatting (1 checked, Ts)\napp/A.php format/arrays/syntax\n";
     assert_eq!(agent(&d, &["format", "--dirty", "--test"]).0, want);
     git(&["commit", "-qam", "array"]);
     assert_eq!(
@@ -534,7 +534,7 @@ fn migrate_without_a_config() {
         agent(&d, &["migrate"]),
         (
             format!(
-                "pun migrate: ok, starter pun.toml written (preset laravel, 126 format rules, 4 lint rules), ignore comments rewritten in 0 files ({nothing}, Ts)\n"
+                "pun migrate: ok, starter pun.toml written (preset laravel, 115 format rules, 15 lint rules), ignore comments rewritten in 0 files ({nothing}, Ts)\n"
             ),
             Some(0)
         )

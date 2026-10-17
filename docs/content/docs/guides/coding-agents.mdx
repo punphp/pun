@@ -7,8 +7,8 @@ When Pun runs under a coding agent, every command (`format`, `lint`, `check`, `m
 
 ```
 pun check: fail, 1 error, 2 files with fixes (412 checked, 0.21s)
-app/A.php format.array-syntax, format.blank-line-after-opening-tag
-app/B.php lint.no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.
+app/A.php format/arrays/syntax, format/tags/blank-line-after-opening
+app/B.php lint/style/no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.
 app/D.php:2 syntax-error Parse error: syntax error, unexpected token ";" on line 2.
 ```
 

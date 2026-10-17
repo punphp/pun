@@ -196,3 +196,10 @@ Build 6 (remove delegate mode), assistant's calls (2026-10-17):
 - `pun migrate` still reads a `.php-cs-fixer.php` through the project's own PHP-CS-Fixer (one `php -r` run,
   crates/pun-cli/src/php_cs_fixer_rules.php), because the config is PHP code. This reads the old config only; no rule
   ever runs in PHP. Replacing it with a static read is a follow-up for migrate Build 1.
+
+Build 1-2 (wf/names, 2026-10-17), assistant's calls: the added lint and analyse groups, how lint `sets` and analyse
+`preset` were derived, the lint names of the 40 moved rules and the reader's error for old names are recorded in
+rules.md Decisions. The top-level `preset` tiers stay accepted (and still apply nothing) until the schema step (Build 3)
+removes them; mapping.toml no longer carries `tier`. Moved rules keep running in the same priority-ordered token pass,
+so the 11 laravel-preset ones are written by `pun migrate` under `[lint.rules]` with `fix = "apply"`; all 7 corpus
+projects stay at 0 differing files.

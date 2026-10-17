@@ -558,7 +558,7 @@ fn pun_only_behaviour() {
     // No PHP fallback: a rule Pun hasn't ported stops every command, named under its Pun ID (exit 2).
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\narray-syntax = true\nassign-null-coalescing-to-coalesce-equal = true\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n\"strings/explicit-variable\" = true\n",
     )
     .unwrap();
     let toml = dir.join("pun.toml");
@@ -569,7 +569,7 @@ fn pun_only_behaviour() {
             (
                 "",
                 format!(
-                    "pun: {}: rule not supported by Pun yet: `format.assign-null-coalescing-to-coalesce-equal`\n",
+                    "pun: {}: rule not supported by Pun yet: `format/strings/explicit-variable`\n",
                     toml.display()
                 ),
                 Some(2)
@@ -580,7 +580,7 @@ fn pun_only_behaviour() {
     // Lint rules count too, even for `pun format`; several are listed together.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\nassign-null-coalescing-to-coalesce-equal = true\n[lint.rules]\nno-homoglyph-names = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"strings/explicit-variable\" = true\n[lint.rules]\n\"security/no-homoglyph-names\" = \"error\"\n",
     )
     .unwrap();
     let (_, err, code) = pun(&dir, &["format", "--test"]);
@@ -588,7 +588,7 @@ fn pun_only_behaviour() {
         (err, code),
         (
             format!(
-                "pun: {}: rules not supported by Pun yet: `format.assign-null-coalescing-to-coalesce-equal`, `lint.no-homoglyph-names`\n",
+                "pun: {}: rules not supported by Pun yet: `format/strings/explicit-variable`, `lint/security/no-homoglyph-names`\n",
                 toml.display()
             ),
             Some(2)
@@ -600,7 +600,7 @@ fn pun_only_behaviour() {
         (out, code),
         (
             format!(
-                "pun lint: error: {}: rules not supported by Pun yet: `format.assign-null-coalescing-to-coalesce-equal`, `lint.no-homoglyph-names`\n",
+                "pun lint: error: {}: rules not supported by Pun yet: `format/strings/explicit-variable`, `lint/security/no-homoglyph-names`\n",
                 toml.display()
             ),
             Some(2)
@@ -642,7 +642,7 @@ fn pun_only_behaviour() {
     assert_eq!(code, Some(0));
     let v: serde_json::Value = serde_json::from_str(&out).unwrap();
     assert_eq!(v["format"]["preset"], "empty");
-    assert_eq!(v["format"]["rules"]["format.array-syntax"], true);
+    assert_eq!(v["format"]["rules"]["format/arrays/syntax"], true);
     assert_eq!(
         v["sources"][1],
         dir.join("pun.toml").to_string_lossy().as_ref()
@@ -741,7 +741,7 @@ fn migrates_php_cs_fixer_config() {
     );
     assert_eq!(
         std::fs::read_to_string(dir.join("pun.toml")).unwrap(),
-        "# Written by `pun migrate` from .php-cs-fixer.php.\n[format]\npreset = \"empty\"\n\n[format.rules]\nsingle-quote = true\n\n[lint.rules]\nno-alias-function = { fix = \"apply\" }\n"
+        "# Written by `pun migrate` from .php-cs-fixer.php.\n[format]\npreset = \"empty\"\n\n[format.rules]\n\"strings/single-quote\" = true\n\n[lint.rules]\n\"style/no-alias-function\" = { fix = \"apply\" }\n"
     );
     // single_quote is format; no_alias_functions (risky) only runs under lint / check.
     pun(&dir, &["format"]);

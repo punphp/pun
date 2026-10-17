@@ -127,6 +127,9 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
 }
 
 const PUN: [&str; 2] = [env!("CARGO_BIN_EXE_pun"), "format"];
+/// combine_consecutive_unsets deletes code, so it is a lint rule (context/plan/commands.md §4): `pun check --fix`
+/// is what runs it next to the format rules, as Pint does.
+const CHECK_FIX: [&str; 3] = [env!("CARGO_BIN_EXE_pun"), "check", "--fix"];
 
 fn migrate(dir: &Path) {
     let out = Command::new(PUN[0])
@@ -156,6 +159,17 @@ impl Cx {
     }
 
     fn pair(&self, tree: &[(&str, &str)], args: &[&str], o: Opts) -> (Run, Run) {
+        self.pair_cmd(&PUN, tree, args, o)
+    }
+
+    /// `pint <args>` against `<pun> <args>`, where `pun` is the binary and its command.
+    fn pair_cmd(
+        &self,
+        pun: &[&str],
+        tree: &[(&str, &str)],
+        args: &[&str],
+        o: Opts,
+    ) -> (Run, Run) {
         let php = which("php");
         reset(&self.dir, tree);
         let want = run(
@@ -165,7 +179,7 @@ impl Cx {
         );
         reset(&self.dir, tree);
         migrate(&self.dir);
-        let got = run(&[&PUN[..], args].concat(), &self.dir, o);
+        let got = run(&[pun, args].concat(), &self.dir, o);
         (want, got)
     }
 
@@ -184,7 +198,11 @@ impl Cx {
     }
 
     fn same(&self, tree: &[(&str, &str)], args: &[&str], o: Opts) -> Run {
-        let (want, got) = self.pair(tree, args, o);
+        self.same_cmd(&PUN, tree, args, o)
+    }
+
+    fn same_cmd(&self, pun: &[&str], tree: &[(&str, &str)], args: &[&str], o: Opts) -> Run {
+        let (want, got) = self.pair_cmd(pun, tree, args, o);
         assert_eq!(got, want, "{args:?} env={:?} tty={:?}", o.env, o.tty);
         got
     }
@@ -380,7 +398,7 @@ fn ignore_annotations_like_pint() {
         *ignored = String::from_utf8_lossy(ignored)
             .replace(
                 "// @php-cs-fixer-ignore single_quote,array_syntax",
-                "// @pun-ignore-file format.single-quote,format.array-syntax",
+                "// @pun-ignore-file format/strings/single-quote,format/arrays/syntax",
             )
             .into_bytes();
         assert_eq!(got, want, "{args:?}");
@@ -519,7 +537,7 @@ fn gitlab_custom_rule() {
         &[
             (
                 "pun.toml",
-                "[format]\npreset = \"empty\"\n[lint.rules]\nno-only = true\n",
+                "[format]\npreset = \"empty\"\n[lint.rules]\n\"pest/no-only\" = true\n",
             ),
             ("t.php", "<?php\ntest('a', fn () => 1)->only();\n"),
         ],
@@ -627,7 +645,7 @@ fn syntax_error_without_php() {
         &[
             (
                 "pun.toml",
-                "[format]\npreset = \"empty\"\n[format.rules]\narray-syntax = true\n",
+                "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n",
             ),
             ("a.php", "<?php\nfunction (\n"),
         ],
@@ -687,10 +705,10 @@ fn fixer_exception_like_pint() {
         &["--format=agent"],
         &["--test", "-q"],
     ] {
-        let r = cx.same(&t, args, PLAIN);
+        let r = cx.same_cmd(&CHECK_FIX, &t, args, PLAIN);
         assert_eq!(r.code, Some(1), "{args:?}");
     }
     t.push(("app/Bad.php", "<?php\nfunction (\n"));
-    cx.same(&t, &["--test"], PLAIN);
-    cx.same(&t, &["--format=txt", "--test"], PLAIN);
+    cx.same_cmd(&CHECK_FIX, &t, &["--test"], PLAIN);
+    cx.same_cmd(&CHECK_FIX, &t, &["--format=txt", "--test"], PLAIN);
 }

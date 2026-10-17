@@ -48,11 +48,11 @@ fn read(d: &Path, f: &str) -> String {
 }
 
 const PINT: &str = r#"{"preset":"empty","rules":{"array_syntax":true,"final_class":true}}"#;
-const TOML: &str = "# Written by `pun migrate` from pint.json.\n[format]\npreset = \"empty\"\n\n[format.rules]\narray-syntax = true\n\n[lint.rules]\nrequire-final-class = { fix = \"apply\" }\n";
+const TOML: &str = "# Written by `pun migrate` from pint.json.\n[format]\npreset = \"empty\"\n\n[format.rules]\n\"arrays/syntax\" = true\n\n[lint.rules]\n\"style/require-final-class\" = { fix = \"apply\" }\n";
 /// Without a terminal nothing is asked: everything detected is migrated, and said so.
 const PICKED: &str = "pun migrate: migrating everything detected (pick with --from): pint.json\n";
 const IGNORED: &str = "<?php\n\n// @php-cs-fixer-ignore array_syntax,final_class\n$a = array(1);\n$s = '// @php-cs-fixer-ignore array_syntax';\n";
-const REWRITTEN: &str = "<?php\n\n// @pun-ignore-file format.array-syntax,lint.require-final-class\n$a = array(1);\n$s = '// @php-cs-fixer-ignore array_syntax';\n";
+const REWRITTEN: &str = "<?php\n\n// @pun-ignore-file format/arrays/syntax,lint/style/require-final-class\n$a = array(1);\n$s = '// @php-cs-fixer-ignore array_syntax';\n";
 
 #[test]
 fn writes_pun_toml_and_rewrites_ignores() {
@@ -74,7 +74,7 @@ fn writes_pun_toml_and_rewrites_ignores() {
     assert_eq!(
         out,
         format!(
-            "{PICKED}--- pun.toml\n+++ pun.toml\n@@ -1,0 +1,9 @@\n{}--- app/Ignored.php\n+++ app/Ignored.php\n@@ -1,5 +1,5 @@\n <?php\n \n-// @php-cs-fixer-ignore array_syntax,final_class\n+// @pun-ignore-file format.array-syntax,lint.require-final-class\n $a = array(1);\n $s = '// @php-cs-fixer-ignore array_syntax';\npun migrate: pun.toml to write from pint.json, ignore comments to rewrite in 1 file(s).\n  pint.json  to migrate\n",
+            "{PICKED}--- pun.toml\n+++ pun.toml\n@@ -1,0 +1,9 @@\n{}--- app/Ignored.php\n+++ app/Ignored.php\n@@ -1,5 +1,5 @@\n <?php\n \n-// @php-cs-fixer-ignore array_syntax,final_class\n+// @pun-ignore-file format/arrays/syntax,lint/style/require-final-class\n $a = array(1);\n $s = '// @php-cs-fixer-ignore array_syntax';\npun migrate: pun.toml to write from pint.json, ignore comments to rewrite in 1 file(s).\n  pint.json  to migrate\n",
             TOML.lines().map(|l| format!("+{l}\n")).collect::<String>()
         )
     );
@@ -197,7 +197,7 @@ fn config_and_preset_flags() {
         ),
         "{out}"
     );
-    assert!(out.contains("+single-quote = true\n"), "{out}");
+    assert!(out.contains("+\"strings/single-quote\" = true\n"), "{out}");
     let (out, _, _) = pun(&d, &["migrate"]);
     assert_eq!(
         out,
@@ -205,7 +205,7 @@ fn config_and_preset_flags() {
     );
     assert_eq!(
         read(&d, "pun.toml"),
-        "# Written by `pun migrate`: no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found; starter config.\npreset = \"recommended\"\n\n[format]\npreset = \"laravel\"\n\n[lint.rules]\nno-alias-function = { fix = \"apply\" }\nno-unreachable-default-argument-value = { fix = \"apply\" }\nrequire-ordered-traits = { fix = \"apply\" }\nrequire-protected-setup = { fix = \"apply\" }\n"
+        "# Written by `pun migrate`: no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found; starter config.\npreset = \"recommended\"\n\n[format]\npreset = \"laravel\"\n\n[lint.rules]\n\"refactor/rename-phpdoc-tag\" = { fix = \"apply\" }\n\"functions/no-unused-closure-use\" = { fix = \"apply\" }\n\"style/no-alias-function\" = { fix = \"apply\" }\n\"statements/no-empty\" = { fix = \"apply\" }\n\"phpdoc/no-superfluous-tags\" = { fix = \"apply\", allow-mixed = true, allow-unused-params = true }\n\"functions/no-unreachable-default-argument-value\" = { fix = \"apply\" }\n\"imports/no-unused\" = { fix = \"apply\" }\n\"control-flow/no-useless-return\" = { fix = \"apply\" }\n\"style/require-ordered-traits\" = { fix = \"apply\" }\n\"phpunit/require-method-casing\" = { fix = \"apply\", case = \"snake_case\" }\n\"phpunit/require-protected-setup\" = { fix = \"apply\" }\n\"phpdoc/no-access\" = { fix = \"apply\" }\n\"phpdoc/no-package\" = { fix = \"apply\" }\n\"phpdoc/no-useless-inheritdoc\" = { fix = \"apply\" }\n\"classes/prefer-self-in-final\" = { fix = \"apply\" }\n"
     );
 }
 
@@ -331,7 +331,7 @@ fn agent_mode() {
     assert!(out.ends_with("s)\npint.json not-selected\nphpstan.neon not-selected\nrector.php not-supported skipped: Rector migration is not supported yet; rector.php left untouched\n"), "{out}");
     let d = project("agent-empty", &[]);
     let (out, _, _) = pun(&d, &["migrate", "--agent"]);
-    assert!(out.starts_with("pun migrate: ok, starter pun.toml written (preset laravel, 126 format rules, 4 lint rules), ignore comments rewritten in 0 files (no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found, "), "{out}");
+    assert!(out.starts_with("pun migrate: ok, starter pun.toml written (preset laravel, 115 format rules, 15 lint rules), ignore comments rewritten in 0 files (no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found, "), "{out}");
 }
 
 /// On a terminal: a checklist of the detected configs, all checked. Down + space unchecks PHPStan.

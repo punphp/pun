@@ -1,5 +1,5 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\FixerAnnotationAnalyzer` (`// @php-cs-fixer-ignore rule,other`), plus
-//! Pun's own `// @pun-ignore-file format.rule,lint.other` (context/plan/rules.md §4), found the same way.
+//! Pun's own `// @pun-ignore-file format/group/rule,lint/group/other` (context/plan/rules.md §4), found the same way.
 use pcre2::bytes::{Regex, RegexBuilder};
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
@@ -118,7 +118,7 @@ pub fn ignored(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
 }
 
 /// The fixers a file opts out of: `@php-cs-fixer-ignore` names plus the fixers of `@pun-ignore-file` rule IDs
-/// (`format.x` / `lint.x` / bare names; unknown IDs are skipped).
+/// (`format/group/x`, `lint/group/x` or `group/x`; unknown IDs are skipped).
 pub fn skipped(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
     let pun = pun_skipped(annotations)
         .into_iter()

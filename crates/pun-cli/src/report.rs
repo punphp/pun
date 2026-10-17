@@ -344,7 +344,7 @@ fn agent(ctx: &Ctx, results: &[FileResult]) -> String {
                 .map(|f| pun_config::rule_of(f).unwrap_or(f))
                 .collect();
             let (format, lint): (Vec<&str>, Vec<&str>) =
-                ids.into_iter().partition(|id| id.starts_with("format."));
+                ids.into_iter().partition(|id| id.starts_with("format/"));
             let mut item = String::new();
             if !format.is_empty() {
                 let _ = writeln!(item, "{} {}", r.rel, format.join(", "));

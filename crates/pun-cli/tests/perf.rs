@@ -15,7 +15,7 @@ fn project(name: &str, files: &[(&str, &str)]) -> PathBuf {
         ("composer.json", r#"{"require":{"php":"^8.4"}}"#),
         (
             "pun.toml",
-            "[format]\npreset = \"empty\"\n[format.rules]\nno-trailing-whitespace = true\n",
+            "[format]\npreset = \"empty\"\n[format.rules]\n\"whitespace/no-trailing\" = true\n",
         ),
     ]
     .iter()
@@ -122,7 +122,7 @@ fn cache_skips_clean_unchanged_files() {
     // Any rule/option change invalidates everything.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\nno-trailing-whitespace = true\nsingle-quote = true\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"whitespace/no-trailing\" = true\n\"strings/single-quote\" = true\n",
     )
     .unwrap();
     assert_eq!(cache_stat(&run(&[])), Some((0, 3)));

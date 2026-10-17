@@ -36,12 +36,12 @@ pun lint [--fix]        # the [lint] rules (today: PHP-CS-Fixer's risky fixers)
 
 **Config.** Pun reads only `pun.toml`. Without one every command stops with "No pun.toml found. Run `pun migrate`."
 (unless `--preset` or `--no-config` is given: both explicitly ask for a built-in preset, `--no-config` for laravel, as in
-Pint). Rule names in `pun.toml` are Pun IDs; earlier Pun names still work, and a PHP-CS-Fixer name gets an error naming
-its Pun ID. `pun migrate` reads pint.json the way Pint does (`extend`, `--config`,
+Pint). Rule names in `pun.toml` are Pun IDs (`<command>/<group>/<name>`, the command implied inside its own table); there are
+no aliases, so an earlier Pun name or a PHP-CS-Fixer name gets an error naming its Pun ID. `pun migrate` reads pint.json the way Pint does (`extend`, `--config`,
 `--preset`) or, without one, a `.php-cs-fixer(.dist).php` through PHP-CS-Fixer itself, and writes a `pun.toml` with
 Pun rule IDs ([context/plan/rules.md](context/plan/rules.md)): the preset plus what differs from it under `[format.rules]`, and the
-risky fixers under `[lint.rules]` with `fix = "apply"`, since they changed behaviour unattended. It rewrites
-`// @php-cs-fixer-ignore rule` comments to `// @pun-ignore-file format.rule`, lists any rule Pun can't run before
+risky and code-deleting fixers under `[lint.rules]` with `fix = "apply"`, since they changed code unattended. It rewrites
+`// @php-cs-fixer-ignore rule` comments to `// @pun-ignore-file format/<group>/<name>`, lists any rule Pun can't run before
 writing anything (and then writes nothing), and is idempotent. On a terminal it first lists the configs it found
 (pint.json, .php-cs-fixer.php, phpstan.neon, rector.php, mago.toml) as a checklist, all checked, and migrates only
 what you keep checked; `--from pint,phpstan` picks without asking, and `--yes`, agent mode or no terminal migrate
@@ -51,21 +51,22 @@ resolved configuration.
 
 ```toml
 [format]
-preset = "laravel"            # Pint's preset; its risky rules are lint rules
+preset = "laravel"            # Pint's preset; its risky and code-deleting rules are lint rules
 exclude = ["build"]
 
 [format.rules]
-concat-space = { spacing = "one" }
-array-syntax = false
+"operators/concat-spacing" = { spacing = "one" }
+"arrays/syntax" = false
 
 [lint.rules]
-require-final-class = { fix = "apply" }   # applied by `pun lint --fix` / `pun check --fix`
-no-loose-comparison = "warn"              # reported by `pun lint` / `pun check`, never applied
+"style/require-final-class" = { fix = "apply" }   # applied by `pun lint --fix` / `pun check --fix`
+"types/no-loose-comparison" = "warn"              # reported by `pun lint` / `pun check`, never applied
 ```
 
-**Format, lint, check.** `pun format` runs only behaviour-safe rules. Risky PHP-CS-Fixer fixers
-(`strict_comparison`, `final_class`, `declare_strict_types`, ...) are lint rules: `pun lint` reports what they would
-change, `pun lint --fix` applies the ones with `fix = "apply"`. `pun check` runs format and lint in one pass
+**Format, lint, check.** `pun format` runs only behaviour-safe rules that change layout, casing or
+spelling. Risky PHP-CS-Fixer fixers (`strict_comparison`, `final_class`, `declare_strict_types`, ...) and the 40 that
+delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) are lint rules: `pun lint` reports
+what they would change, `pun lint --fix` applies the ones with `fix = "apply"`. `pun check` runs format and lint in one pass
 (fixers in PHP-CS-Fixer's priority order, as Pint runs them), so `pun check --fix` on a migrated project writes exactly
 what `pint` wrote; `pun analyse` joins it once it exists. Output is Pint's for all three (outside coding agents, see below).
 
@@ -77,9 +78,9 @@ Pint's output, with no colours, boxes or progress. The list stops after 20 items
 
 ```
 pun check: fail, 1 error, 2 files with fixes (412 checked, 0.21s)
-app/A.php format.array-syntax, format.blank-line-after-opening-tag
-app/B.php format.array-syntax
-app/B.php lint.no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.
+app/A.php format/arrays/syntax, format/tags/blank-line-after-opening
+app/B.php format/arrays/syntax
+app/B.php lint/style/no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.
 app/D.php:2 syntax-error Parse error: syntax error, unexpected token ";" on line 2.
 ```
 
@@ -93,7 +94,7 @@ A clean run prints only the summary line (`pun format: pass (412 checked, 0.21s)
 it, or send a PR.
 
 **Extra rules.** Opt-in `Pun/` rules ported from Mago (Laravel and Pest idioms, redundant code, ...) are
-listed in [context/reference/mago-extras.md](context/reference/mago-extras.md). They are lint rules (`no-only`, `prefer-fake-helper`, ...)
+listed in [context/reference/mago-extras.md](context/reference/mago-extras.md). They are lint rules (`pest/no-only`, `laravel/prefer-fake-helper`, ...)
 in no preset, so default output stays identical to Pint; enable them under `[lint.rules]`.
 `pun lint --mago [paths...]` reports Mago's lint-only Laravel rules (no auto-fix, never edits).
 

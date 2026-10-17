@@ -3,7 +3,7 @@ title: pun format
 description: Fix layout with Pint's behaviour-safe rules. What format-on-save runs.
 ---
 
-`pun format` runs the `[format]` rules from `pun.toml`: Pint's preset and your overrides, minus the risky fixers, which are [lint rules](/docs/commands/lint). Everything it changes is layout, so it's safe to run on save. [`pun check --fix`](/docs/commands/check) runs format and lint together and writes exactly what `pint` wrote.
+`pun format` runs the `[format]` rules from `pun.toml`: Pint's preset and your overrides, minus the risky fixers and the ones that delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...), which are [lint rules](/docs/commands/lint). Everything it changes is layout, casing or spelling, so it's safe to run on save. [`pun check --fix`](/docs/commands/check) runs format and lint together and writes exactly what `pint` wrote.
 
 On laravel/framework it takes 3.7 s cold and 0.07 s warm, where Pint takes 190 s.
 
@@ -56,7 +56,7 @@ Without a `pun.toml`, every command stops with `No pun.toml found. Run pun migra
 Pun never runs PHP for a rule it lacks. If `pun.toml` (or the `--preset`) enables a rule Pun hasn't ported, `pun format`, `pun lint` and `pun check` stop before touching any file and exit 2, naming the rule:
 
 ```
-pun: /path/to/pun.toml: rule not supported by Pun yet: `format.assign-null-coalescing-to-coalesce-equal`
+pun: /path/to/pun.toml: rule not supported by Pun yet: `format/strings/explicit-variable`
 ```
 
 Remove the rule from `pun.toml`, or send a PR to [punphp/pun](https://github.com/punphp/pun).

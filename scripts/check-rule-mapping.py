@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Check crates/pun-config/rules/mapping.toml against the naming rules in context/plan/rules.md.
+"""Check crates/pun-config/rules/mapping.toml against context/plan/rules.md §3/§5 and config.md §4-§5.
 
-Fails (exit 1) on: a `tentative` entry, a non-kebab-case or duplicate name (rule names and aliases share one namespace
-across all commands), a lint name without a verb prefix, a broken `pun` / `fixed_by` / `conflicts` / `merged`
-reference, an upstream entry that is not exactly one of pun / drop / unsupported, a Rector entry without its class,
-a rule that no upstream entry maps to (unless it is marked `pun_only = true`), and a PHPStan/Larastan entry
-without `variant` when its rule replaces several identifiers. Tiers (context/plan/config.md §5): every lint and analyse rule needs a
-valid `tier`, add-on `presets` must name a [meta] add-on, each tier's resolved set must contain the one below it, and no
-tier may enable both sides of a [meta] conflict (alone, or together with a Pint preset). Prints rule counts per tier.
+Fails (exit 1) on: a `tentative` entry; a rule key that isn't "<group>/<name>"; a group not in [meta.groups]; a name
+that isn't kebab-case, is listed twice in its group, or repeats its group; a lint name without its verb prefix (codemod
+prefixes only in the refactor group); an analyse name phrased as a fix; a field from before the rename (aliases,
+tier, severity, group); format `presets`, lint `sets` or analyse `preset` outside their lists; a broken `pun` /
+`fixed_by` / `conflicts` / `merged` reference; an upstream entry that is not exactly one of pun / drop / unsupported; a
+Rector entry without its class; a rule that no upstream entry maps to (unless `pun_only = true`); a PHPStan/Larastan
+entry without `variant` when its rule replaces several identifiers; and a conflict whose two sides one format preset,
+the lint sets together, or one analyse preset would enable. Prints rule counts per command, set and preset.
 
 Usage: scripts/check-rule-mapping.py [path/to/mapping.toml]
 """
@@ -18,14 +19,35 @@ from collections import defaultdict
 from pathlib import Path
 
 DEFAULT = Path(__file__).resolve().parent.parent / "crates/pun-config/rules/mapping.toml"
+COMMANDS = ("format", "lint", "analyse")
 KEBAB = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*")
-REF = re.compile(r"(format|lint|analyse)\.[a-z0-9-]+")
+# Topic and ecosystem groups are kebab-case; upgrade groups name their target (php-8.5, laravel-13, laravel-5.8).
+GROUP = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*|(php|laravel|phpunit|pest)-\d+(\.\d+)?")
+REF = re.compile(r"\b(?:format|lint|analyse)/[a-z0-9.-]+/[a-z0-9-]+")
 LINT_PREFIXES = ("no-", "prefer-", "require-", "add-")
-# The refactor group (configurable codemods such as Rector RenameMethod) is named after the edit it makes.
-REFACTOR_PREFIXES = ("rename-", "replace-", "remove-", "change-", "wrap-")
+# Configurable codemods (Rector RenameMethod, CS-Fixer general_attribute_remove) are named after their edit.
+CODEMOD_PREFIXES = ("rename-", "replace-", "remove-", "change-", "wrap-")
+# Decided names that read the group word as part of a term (format.md §8).
+REPEATS_GROUP = {"format/whitespace/no-blank-line-whitespace"}
+GONE = ("aliases", "tier", "severity", "group")
 PHPSTAN_FAMILY = ("phpstan", "phpstan-strict-rules", "phpstan-deprecation-rules", "larastan")
 # [analyse] switches (PHPStan levels 7-10) are settings, not rules.
 SWITCH = re.compile(r"\[analyse\] [a-z-]+ = true")
+
+
+def duplicates(text):
+    """Rule keys listed twice in one [rules.<command>] section (TOML refuses the file; this names them)."""
+    out, section, seen = [], None, set()
+    for line in text.splitlines():
+        if line.startswith("["):
+            section, seen = line, set()
+            continue
+        if section and section.startswith("[rules.") and " = " in line:
+            k = line.split(" = ", 1)[0].strip('"')
+            if k in seen:
+                out.append(f"{section[1:-1]}: {k!r} is listed twice")
+            seen.add(k)
+    return out
 
 
 def check(data):
@@ -44,28 +66,53 @@ def check(data):
 
     walk(data, "")
 
+    meta = data["meta"]
+    groups = meta.get("groups", {})
+    for g, desc in groups.items():
+        if not GROUP.fullmatch(g):
+            err(f"meta.groups: {g!r} is not a group name")
+        if not isinstance(desc, str) or not desc:
+            err(f"meta.groups: {g!r} needs a one-line description")
+    sets = meta.get("sets", [])
+    presets = meta.get("presets", {})
     rules = data["rules"]
-    ids = {f"{c}.{n}" for c, rs in rules.items() for n in rs}
-    owner = {}
-    for c, rs in rules.items():
-        for n, r in rs.items():
-            for name in [n, *r.get("aliases", [])]:
-                if not KEBAB.fullmatch(name):
-                    err(f"{c}.{n}: {name!r} is not kebab-case")
-                if name in owner and owner[name] != f"{c}.{n}":
-                    err(f"{c}.{n}: name {name!r} already used by {owner[name]}")
-                owner[name] = f"{c}.{n}"
+    ids = set()
+    for c in COMMANDS:
+        for key, r in rules.get(c, {}).items():
+            rid = f"{c}/{key}"
+            ids.add(rid)
+            g, _, n = key.partition("/")
+            if not n or "/" in n:
+                err(f"{rid}: the key must be <group>/<name>")
+                continue
+            if g not in groups:
+                err(f"{rid}: group {g!r} is not in [meta.groups]")
+            if not KEBAB.fullmatch(n):
+                err(f"{rid}: {n!r} is not kebab-case")
+            if f"-{g}-" in f"-{n}-" and rid not in REPEATS_GROUP:
+                err(f"{rid}: the name repeats its group")
             if r.get("status") != "decided":
-                err(f"{c}.{n}: status is {r.get('status')!r}")
-
-    for n, r in rules.get("lint", {}).items():
-        ok = n.startswith(LINT_PREFIXES)
-        ok = ok or (r.get("group") == "refactor" and n.startswith(REFACTOR_PREFIXES))
-        if not ok:
-            err(f"lint.{n}: lint names start with {'/'.join(LINT_PREFIXES)}")
-    for n in rules.get("analyse", {}):
-        if n.startswith(("prefer-", "require-", "add-")):
-            err(f"analyse.{n}: analyse names describe the problem, not a fix")
+                err(f"{rid}: status is {r.get('status')!r}")
+            for f in GONE:
+                if f in r:
+                    err(f"{rid}: `{f}` is gone (the group is in the key; no aliases, tiers or severities)")
+            if c == "lint":
+                ok = n.startswith(LINT_PREFIXES) or (g == "refactor" and n.startswith(CODEMOD_PREFIXES))
+                if not ok:
+                    err(f"{rid}: lint names start with {'/'.join(LINT_PREFIXES)} (codemods: refactor/rename- ...)")
+            if c == "analyse" and n.startswith(("prefer-", "require-", "add-")):
+                err(f"{rid}: analyse names describe the problem, not a fix")
+            for field, cmd in (("presets", "format"), ("sets", "lint"), ("preset", "analyse")):
+                if field in r and c != cmd:
+                    err(f"{rid}: `{field}` is for {cmd} rules only")
+            for p in r.get("presets", []) if c == "format" else []:
+                if p not in presets.get("format", []) or p == "empty":
+                    err(f"{rid}: presets entry {p!r} is not a format preset")
+            for s in r.get("sets", []) if c == "lint" else []:
+                if s not in sets:
+                    err(f"{rid}: set {s!r} is not in meta.sets")
+            if c == "analyse" and "preset" in r and r["preset"] not in presets.get("analyse", []):
+                err(f"{rid}: preset {r['preset']!r} is not an analyse preset")
 
     sources = defaultdict(set)
     for tool, entries in data["upstream"].items():
@@ -97,9 +144,9 @@ def check(data):
             if tool in PHPSTAN_FAMILY and family.get(u.get("pun"), 0) > 1 and "variant" not in u:
                 err(f"{where}: {u['pun']} replaces several identifiers, so this entry needs variant = {key!r}")
 
-    for c, rs in rules.items():
-        for n, r in rs.items():
-            rid = f"{c}.{n}"
+    for c in COMMANDS:
+        for key, r in rules.get(c, {}).items():
+            rid = f"{c}/{key}"
             if not sources[rid] and not r.get("pun_only"):
                 err(f"{rid}: no upstream entry maps to it (mark Pun-only rules with pun_only = true)")
             if sources[rid] and r.get("pun_only"):
@@ -110,92 +157,62 @@ def check(data):
             if r.get("merged") and len(r["merged"]) < 2:
                 err(f"{rid}: merged lists fewer than two sources")
             for f in r.get("fixed_by", []):
-                if f.startswith("analyse.") or f not in ids:
+                if not f.startswith(("lint/", "format/")) or f not in ids:
                     err(f"{rid}: fixed_by {f!r} is not a lint or format rule")
             for text in (r.get("note", ""), r.get("summary", "")):
                 for ref in REF.finditer(text):
                     if ref.group(0) not in ids:
                         err(f"{rid}: text mentions unknown rule {ref.group(0)!r}")
 
-    for pair in data["meta"].get("conflicts", []):
+    for pair in meta.get("conflicts", []):
         for x in pair:
             if x not in ids:
                 err(f"meta.conflicts: {x!r} is not a rule")
-    check_tiers(data, err)
+    for name, on in enablers(data).items():
+        for a, b in meta.get("conflicts", []):
+            if a in on and b in on:
+                err(f"{name} enables both sides of conflict {a} / {b}")
     return errors
 
 
-def tier_of(data):
-    """Rule ID -> tier index (None for tier = "none") for lint and analyse rules."""
-    tiers = data["meta"].get("tiers", [])
-    return {f"{c}.{n}": (tiers.index(r["tier"]) if r.get("tier") in tiers else None)
-            for c in ("lint", "analyse") for n, r in data["rules"].get(c, {}).items()}
+def enabled(data, cmd, test):
+    return {f"{cmd}/{k}" for k, r in data["rules"].get(cmd, {}).items() if test(r)}
 
 
-def resolve(data, cmd, tier, addons):
-    """The rules `preset = <tier>` enables in one command with the given add-ons on."""
-    k = data["meta"]["tiers"].index(tier)
-    out = set()
-    for n, r in data["rules"].get(cmd, {}).items():
-        t = r.get("tier")
-        if t not in data["meta"]["tiers"] or data["meta"]["tiers"].index(t) > k:
-            continue
-        if r.get("presets") and not set(r["presets"]) & set(addons):
-            continue
-        out.add(f"{cmd}.{n}")
+def analyse_preset(data, preset):
+    """The analyse rules `[analyse] preset = <preset>` enables (each preset includes the ones below it)."""
+    order = data["meta"]["presets"]["analyse"]
+    k = order.index(preset)
+    return enabled(data, "analyse", lambda r: r.get("preset") in order[: k + 1])
+
+
+def enablers(data):
+    """Every rule set a config can turn on at once: each format preset, all lint sets together, each analyse preset."""
+    out = {}
+    for p in data["meta"]["presets"]["format"]:
+        out[f"format preset {p}"] = enabled(data, "format", lambda r: p in r.get("presets", []))
+    out["the lint sets together"] = enabled(data, "lint", lambda r: bool(r.get("sets")))
+    for p in data["meta"]["presets"]["analyse"]:
+        out[f"analyse preset {p}"] = analyse_preset(data, p)
     return out
-
-
-def check_tiers(data, err):
-    meta = data["meta"]
-    tiers, addons = meta.get("tiers", []), meta.get("addons", [])
-    for c in ("lint", "analyse"):
-        for n, r in data["rules"].get(c, {}).items():
-            rid = f"{c}.{n}"
-            if r.get("tier") not in [*tiers, "none"]:
-                err(f"{rid}: tier is {r.get('tier')!r}, expected one of {[*tiers, 'none']}")
-            for a in r.get("presets", []):
-                if a not in addons:
-                    err(f"{rid}: presets entry {a!r} is not an add-on ({addons})")
-            if r.get("tier") == "none" and r.get("presets"):
-                err(f"{rid}: tier none rules are opt-in only and belong to no add-on")
-    for n, r in data["rules"].get("format", {}).items():
-        if "tier" in r:
-            err(f"format.{n}: format rules have no tier (format keeps Pint presets)")
-    for t in meta.get("tier_switches", {}):
-        if t not in tiers:
-            err(f"meta.tier_switches: {t!r} is not a tier")
-    combos = [()] + [(a,) for a in addons] + [tuple(addons)]
-    for c in ("lint", "analyse"):
-        for on in combos:
-            prev = set()
-            for t in tiers:
-                cur = resolve(data, c, t, on)
-                if not prev <= cur:
-                    err(f"{c} tier {t} (add-ons {list(on)}) drops {sorted(prev - cur)[:5]} from the tier below")
-                prev = cur
-    full = {t: resolve(data, "lint", t, addons) | resolve(data, "analyse", t, addons) for t in tiers}
-    pint = {f"format.{n}" for n, r in data["rules"].get("format", {}).items() if r.get("presets")}
-    for a, b in meta.get("conflicts", []):
-        for t in tiers:
-            on = full[t] | pint
-            if a in on and b in on:
-                err(f"tier {t} enables both sides of conflict {a} / {b}")
 
 
 def selftest():
     good = {
-        "meta": {"conflicts": []},
-        "rules": {"lint": {"no-x": {"status": "decided", "aliases": ["old-x"]}},
-                  "analyse": {"undefined-x": {"status": "decided", "fixed_by": ["lint.no-x"]}}},
-        "upstream": {"mago-linter": {"x": {"pun": "lint.no-x", "status": "decided"}},
-                     "phpstan": {"x.notFound": {"pun": "analyse.undefined-x", "status": "decided"}}},
+        "meta": {"conflicts": [], "groups": {"dead-code": "Dead code.", "undefined": "Undefined.",
+                                             "refactor": "Codemods.", "php-8.4": "Upgrade."},
+                 "sets": ["dead-code"], "presets": {"format": ["laravel", "empty"], "analyse": ["basic", "max"]}},
+        "rules": {"lint": {"dead-code/no-x": {"status": "decided", "sets": ["dead-code"]}},
+                  "analyse": {"undefined/x": {"status": "decided", "preset": "basic",
+                                              "fixed_by": ["lint/dead-code/no-x"]}}},
+        "upstream": {"mago-linter": {"x": {"pun": "lint/dead-code/no-x", "status": "decided"}},
+                     "phpstan": {"x.notFound": {"pun": "analyse/undefined/x", "status": "decided"}}},
     }
-    good["meta"].update(tiers=["essential", "recommended"], addons=["laravel"])
-    good["rules"]["lint"]["no-x"]["tier"] = "recommended"
-    good["rules"]["analyse"]["undefined-x"]["tier"] = "essential"
     assert check(good) == [], check(good)
     import copy
+
+    def add(cmd, key, **r):
+        return lambda d: d["rules"].setdefault(cmd, {}).update({key: {"status": "decided", "pun_only": True, **r}})
 
     def bad(mutate, expect):
         d = copy.deepcopy(good)
@@ -203,55 +220,91 @@ def selftest():
         out = check(d)
         assert any(expect in e for e in out), (expect, out)
 
-    bad(lambda d: d["rules"]["lint"]["no-x"].update(status="tentative"), "tentative")
-    bad(lambda d: d["rules"]["lint"].update({"x-thing": {"status": "decided", "pun_only": True}}), "lint names start")
-    bad(lambda d: d["rules"]["analyse"]["undefined-x"].update(aliases=["no-x"]), "already used")
-    bad(lambda d: d["rules"]["analyse"]["undefined-x"].update(aliases=["Bad_Name"]), "kebab-case")
-    bad(lambda d: d["upstream"]["mago-linter"]["x"].update(pun="lint.gone"), "is not a rule")
-    bad(lambda d: d["rules"]["lint"].update({"no-y": {"status": "decided"}}), "no upstream entry")
-    bad(lambda d: d["rules"]["analyse"]["undefined-x"].update(fixed_by=["analyse.undefined-x"]), "fixed_by")
-    bad(lambda d: d["upstream"].update(rector={"Foo": {"pun": "lint.no-x", "status": "decided"}}), "class")
-    bad(lambda d: d["rules"]["lint"]["no-x"].update(merged=["mago-linter:x", "rector:Nope"]), "merged source")
-    bad(lambda d: d["meta"].update(conflicts=[["lint.no-x", "lint.nope"]]), "meta.conflicts")
-    bad(lambda d: d["upstream"]["phpstan"].update({"y.notFound": {"pun": "analyse.undefined-x", "status": "decided"}}),
+    def fine(mutate):
+        d = copy.deepcopy(good)
+        mutate(d)
+        assert check(d) == [], check(d)
+
+    fine(add("lint", "refactor/rename-x"))
+    fine(add("lint", "php-8.4/prefer-x", sets=["dead-code"]))
+    bad(lambda d: d["rules"]["lint"]["dead-code/no-x"].update(status="tentative"), "tentative")
+    bad(add("lint", "dead-code/x-thing"), "lint names start")
+    bad(add("lint", "dead-code/rename-x"), "lint names start")
+    bad(add("analyse", "undefined/prefer-x"), "describe the problem")
+    bad(add("lint", "unknown/no-y"), "not in [meta.groups]")
+    bad(add("lint", "no-y"), "<group>/<name>")
+    bad(add("lint", "dead-code/no-Bad"), "kebab-case")
+    bad(add("lint", "dead-code/no-dead-code-y"), "repeats its group")
+    bad(add("analyse", "undefined/undefined"), "repeats its group")
+    bad(add("lint", "dead-code/no-y", aliases=["old"]), "`aliases` is gone")
+    bad(add("lint", "dead-code/no-y", tier="strict"), "`tier` is gone")
+    bad(add("lint", "dead-code/no-y", sets=["typo"]), "not in meta.sets")
+    bad(add("lint", "dead-code/no-y", preset="basic"), "for analyse rules only")
+    bad(add("analyse", "undefined/y", preset="pedantic"), "not an analyse preset")
+    bad(add("format", "dead-code/y", presets=["empty"]), "not a format preset")
+    bad(lambda d: d["meta"]["groups"].update({"Bad Group": "x"}), "not a group name")
+    bad(lambda d: d["meta"]["groups"].update({"x": ""}), "one-line description")
+    bad(lambda d: d["upstream"]["mago-linter"]["x"].update(pun="lint/dead-code/gone"), "is not a rule")
+    bad(lambda d: d["rules"]["lint"].update({"dead-code/no-y": {"status": "decided"}}), "no upstream entry")
+    bad(lambda d: d["rules"]["analyse"]["undefined/x"].update(fixed_by=["analyse/undefined/x"]), "fixed_by")
+    bad(lambda d: d["upstream"].update(rector={"Foo": {"pun": "lint/dead-code/no-x", "status": "decided"}}), "class")
+    bad(lambda d: d["rules"]["lint"]["dead-code/no-x"].update(merged=["mago-linter:x", "rector:Nope"]),
+        "merged source")
+    bad(lambda d: d["rules"]["lint"]["dead-code/no-x"].update(summary="see lint/dead-code/nope"), "unknown rule")
+    bad(lambda d: d["meta"].update(conflicts=[["lint/dead-code/no-x", "lint/dead-code/nope"]]), "meta.conflicts")
+    bad(lambda d: d["upstream"]["phpstan"].update({"y.notFound": {"pun": "analyse/undefined/x", "status": "decided"}}),
         "needs variant")
     bad(lambda d: d["upstream"]["phpstan"]["x.notFound"].update(variant="other.id"), "variant must be")
-    bad(lambda d: d["rules"]["lint"]["no-x"].pop("tier"), "tier is None")
-    bad(lambda d: d["rules"]["lint"]["no-x"].update(tier="max"), "tier is 'max'")
-    bad(lambda d: d["rules"]["lint"]["no-x"].update(presets=["recommended"]), "not an add-on")
-    bad(lambda d: d["rules"]["lint"]["no-x"].update(tier="none", presets=["laravel"]), "opt-in only")
-    bad(lambda d: d["meta"].update(tier_switches={"max": ["nullables"]}), "tier_switches")
 
     def conflict(d):
-        d["rules"]["lint"]["no-y"] = {"status": "decided", "pun_only": True, "tier": "recommended"}
-        d["meta"]["conflicts"] = [["lint.no-x", "lint.no-y"]]
-    bad(conflict, "both sides of conflict")
+        add("lint", "dead-code/no-y", sets=["dead-code"])(d)
+        d["meta"]["conflicts"] = [["lint/dead-code/no-x", "lint/dead-code/no-y"]]
+    bad(conflict, "the lint sets together enables both sides")
 
+    def analyse_conflict(d):
+        add("analyse", "undefined/y", preset="max")(d)
+        d["meta"]["conflicts"] = [["analyse/undefined/x", "analyse/undefined/y"]]
+    bad(analyse_conflict, "analyse preset max enables both sides")
+
+    def format_conflict(d):
+        add("format", "dead-code/a", presets=["laravel"])(d)
+        add("format", "dead-code/b", presets=["laravel"])(d)
+        d["meta"]["conflicts"] = [["format/dead-code/a", "format/dead-code/b"]]
+    bad(format_conflict, "format preset laravel enables both sides")
+    assert analyse_preset(good, "basic") == {"analyse/undefined/x"}
     d = copy.deepcopy(good)
-    assert resolve(d, "lint", "essential", ()) == set()
-    assert resolve(d, "lint", "recommended", ()) == {"lint.no-x"}
-    d["rules"]["lint"]["no-x"]["presets"] = ["laravel"]
-    assert resolve(d, "lint", "recommended", ()) == set()
-    assert resolve(d, "lint", "recommended", ("laravel",)) == {"lint.no-x"}
+    d["rules"]["analyse"]["undefined/x"]["preset"] = "max"
+    assert analyse_preset(d, "basic") == set() and analyse_preset(d, "max") == {"analyse/undefined/x"}
+    assert duplicates("[rules.lint]\n\"a/no-x\" = {}\n\"a/no-x\" = {}\n[rules.analyse]\n\"a/no-x\" = {}\n") == [
+        "rules.lint: 'a/no-x' is listed twice"]
 
 
 if __name__ == "__main__":
     selftest()
     path = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT
-    data = tomllib.loads(path.read_text())
+    text = path.read_text()
+    dups = duplicates(text)
+    if dups:
+        print("\n".join(dups))
+        sys.exit(1)
+    data = tomllib.loads(text)
     errors = check(data)
     for e in errors:
         print(e)
-    tiers, addons = data["meta"]["tiers"], data["meta"]["addons"]
-    for c in ("lint", "analyse"):
-        own = defaultdict(int)
-        for r in data["rules"][c].values():
-            own[r.get("tier")] += 1
-        core = [len(resolve(data, c, t, ())) for t in tiers]
-        every = [len(resolve(data, c, t, addons)) for t in tiers]
-        cells = ", ".join(f"{t} {a}/{b} (+{own[t]})" for t, a, b in zip(tiers, core, every))
-        print(f"{c} tiers (no add-ons / all add-ons, +own): {cells}, none {own['none']}")
-    counts = {c: len(rs) for c, rs in data["rules"].items()}
-    print(f"{path.name}: {counts}, {sum(len(u) for u in data['upstream'].values())} upstream entries, "
-          f"{len(errors)} error(s)")
+    for c in COMMANDS:
+        per = defaultdict(int)
+        for key in data["rules"][c]:
+            per[key.split("/")[0]] += 1
+        print(f"{c}: {len(data['rules'][c])} rules in {len(per)} groups")
+    print("format presets: " + ", ".join(
+        f"{p} {sum(p in r.get('presets', []) for r in data['rules']['format'].values())}"
+        for p in data["meta"]["presets"]["format"]))
+    print("lint sets: " + ", ".join(
+        f"{s} {sum(s in r.get('sets', []) for r in data['rules']['lint'].values())}" for s in data["meta"]["sets"])
+        + f", no set {sum(not r.get('sets') for r in data['rules']['lint'].values())}")
+    print("analyse presets (cumulative): " + ", ".join(
+        f"{p} {len(analyse_preset(data, p))}" for p in data["meta"]["presets"]["analyse"])
+        + f", opt-in {sum('preset' not in r for r in data['rules']['analyse'].values())}")
+    print(f"{path.name}: {sum(len(r) for r in data['rules'].values())} rules, "
+          f"{sum(len(u) for u in data['upstream'].values())} upstream entries, {len(errors)} error(s)")
     sys.exit(1 if errors else 0)

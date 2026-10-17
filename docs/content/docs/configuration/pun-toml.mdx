@@ -13,21 +13,21 @@ laravel = true                # add-ons: laravel, pest, phpunit
 version = "8.4"
 
 [format]
-preset = "laravel"            # Pint's preset; its risky rules are lint rules
+preset = "laravel"            # Pint's preset; its risky and code-deleting rules are lint rules
 exclude = ["build"]
 
 [format.rules]
-concat-space = { spacing = "one" }
-array-syntax = false
+"operators/concat-spacing" = { spacing = "one" }
+"arrays/syntax" = false
 
 [lint.rules]
-require-final-class = { fix = "apply" }   # applied by pun lint --fix / pun check --fix
-no-loose-comparison = "warn"              # reported, never applied
+"style/require-final-class" = { fix = "apply" }   # applied by pun lint --fix / pun check --fix
+"types/no-loose-comparison" = "warn"              # reported, never applied
 
 [analyse]
 paths = ["app", "tests"]
 baseline = "pun-baseline.toml"
-rules.missing-iterable-value-type = "off"
+rules."types/missing-iterable-value-type" = "off"
 ```
 
 ## Top level
@@ -47,7 +47,7 @@ rules.missing-iterable-value-type = "off"
 | `exclude`, `not-name`, `not-path` | Folders, file names and paths to skip |
 | `rules` | `true`, `false`, or an options table, per rule |
 
-Format rules are behaviour-safe only. Risky ones, like `final_class` or `strict_comparison` in PHP-CS-Fixer terms, are [lint rules](/docs/commands/lint).
+Format rules only change layout, casing and spelling. Risky ones, like `final_class` or `strict_comparison` in PHP-CS-Fixer terms, and the ones that delete or restructure code, like `no_unused_imports`, are [lint rules](/docs/commands/lint).
 
 ## [lint] and [analyse]
 
@@ -55,7 +55,7 @@ Format rules are behaviour-safe only. Risky ones, like `final_class` or `strict_
 
 ## Rule names
 
-Rules use Pun IDs: kebab-case names grouped as `format.*`, `lint.*` and `analyse.*` (the group is implied inside its own table). A PHP-CS-Fixer name gets an error that names its Pun ID, so a copied rule is never silently ignored. `pun config` prints everything resolved.
+Rules use Pun IDs of the form `<command>/<group>/<name>`: `format/imports/ordered`, `lint/style/require-final-class`, `analyse/undefined/method`. Inside a `[<command>.rules]` table the command is implied, so the key is `"imports/ordered"` (quoted, because of the `/`). Groups are one fixed list shared by all three commands: topics such as `arrays`, `imports`, `phpdoc` and `types`, the ecosystems `laravel`, `pest`, `phpunit` and `doctrine`, and one upgrade group per target such as `php-8.4`. There are no aliases: an earlier Pun name (`ordered-imports`), a PHP-CS-Fixer name (`ordered_imports`) or a rule of another command gets an error that names its Pun ID, so a copied rule is never silently ignored. `pun config` prints everything resolved.
 
 ## Without pun.toml
 
