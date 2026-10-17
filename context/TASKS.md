@@ -14,6 +14,7 @@ History before the 2026-10-17 reset (every finished Phase 1 row, with its eviden
 | C2 | Walk through the formatter plan with Pushpak (components/format.md) | plan-reset thread | done (Q7 open) |
 | C8 | Walk through the lint plan with Pushpak (components/lint.md) | plan-reset thread | done |
 | C7 | Walk through the analyse plan with Pushpak (components/analyse.md) | plan-reset thread | done |
+| C3, C4 | Walk through `pun init` and the output for every command (components/init.md, output.md) | plan-reset thread | doing |
 | C0 | Get CI on main green (coverage red; runs 70-72 cancelled by the next push) | - | todo |
 | C0 | Clippy gate in CI (`-D warnings`) | - | todo |
 | C0 | Coverage: pun-analyse to 100% (97.59% in CI); regenerate reports/COVERAGE.md | - | todo |
