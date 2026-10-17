@@ -394,12 +394,7 @@ fn git_selection_matches_pint() {
         ],
         &json(""),
     );
-    let ours = |sel: &GitSelect| {
-        listing(
-            &root,
-            git_paths(&load(&root, None).unwrap(), sel),
-        )
-    };
+    let ours = |sel: &GitSelect| listing(&root, git_paths(&load(&root, None).unwrap(), sel));
     // Not a repository.
     assert!(pint(&root, &["--dirty"]).is_err() || pint(&root, &["--dirty"]).unwrap().1 == 0);
     // Pint swallows the "only available when using Git" abort: nothing selected.

@@ -145,7 +145,10 @@ pub fn rule_of(fixer: &str) -> Option<&'static str> {
 
 /// The fixer behind a Pun rule ID; `command.` may be left out (`format.ordered-imports` or `ordered-imports`).
 pub fn fixer_of(command: &str, rule: &str) -> Option<&'static str> {
-    let id = format!("{command}.{}", rule.strip_prefix(&format!("{command}.")).unwrap_or(rule));
+    let id = format!(
+        "{command}.{}",
+        rule.strip_prefix(&format!("{command}.")).unwrap_or(rule)
+    );
     fixer_entries()
         .iter()
         .find(|(_, e)| e.get("pun").and_then(toml::Value::as_str) == Some(&id))
@@ -156,6 +159,7 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
     let mut sources = Vec::new();
     check_composer(root, &mut sources)?;
     let path = root.join(opts.config.as_deref().unwrap_or(Path::new("pun.toml")));
+    // `--no-config` (Pint's flag) is an explicit choice like `--preset`: the built-in preset, no file.
     let text = if opts.no_config || (opts.config.is_none() && !path.exists()) {
         if !opts.no_config && opts.preset.is_none() {
             bail!(NO_CONFIG);
@@ -172,7 +176,13 @@ pub fn load(root: &Path, opts: &Options) -> Result<Config> {
 
 /// pun.toml text that isn't written yet (`pun migrate`) as `load` resolves it, without the composer.json gate.
 pub fn from_toml(root: &Path, text: &str) -> Result<Config> {
-    parse(root, &root.join("pun.toml"), text, &Options::default(), vec![])
+    parse(
+        root,
+        &root.join("pun.toml"),
+        text,
+        &Options::default(),
+        vec![],
+    )
 }
 
 fn parse(
@@ -216,7 +226,10 @@ fn parse(
             toml::Value::String(s) => match s.as_str() {
                 "off" => continue,
                 "error" | "warn" | "info" => (false, Value::Bool(true)),
-                _ => bail!("{}: `{name}` = \"{s}\": expected \"error\", \"warn\", \"info\" or \"off\"", path.display()),
+                _ => bail!(
+                    "{}: `{name}` = \"{s}\": expected \"error\", \"warn\", \"info\" or \"off\"",
+                    path.display()
+                ),
             },
             toml::Value::Table(mut t) => {
                 t.remove("severity");
@@ -225,7 +238,10 @@ fn parse(
                     Some(fix) => match fix.as_str() {
                         Some("apply") => true,
                         Some("safe-only" | "off") => false,
-                        _ => bail!("{}: `{name}`: fix must be \"apply\", \"safe-only\" or \"off\"", path.display()),
+                        _ => bail!(
+                            "{}: `{name}`: fix must be \"apply\", \"safe-only\" or \"off\"",
+                            path.display()
+                        ),
                     },
                 };
                 // `{ fix = "apply" }` alone is the rule without options.
@@ -263,12 +279,53 @@ fn parse(
 
 /// The fixer for `name` under `[<command>.rules]`.
 fn fixer(path: &Path, command: &str, name: &str) -> Result<&'static str> {
-    fixer_of(command, name).with_context(|| {
-        format!(
+    let bare = name.strip_prefix(&format!("{command}.")).unwrap_or(name);
+    if let Some(f) = fixer_of(command, bare).or_else(|| fixer_of(command, alias(command, bare)?)) {
+        return Ok(f);
+    }
+    // An upstream fixer name (`array_syntax`) or a rule of the other command: name the ID to use instead.
+    let other = if command == "format" {
+        "lint"
+    } else {
+        "format"
+    };
+    let id = rule_of(&bare.replace('-', "_")).or_else(|| rule_of(fixer_of(other, bare)?));
+    match id {
+        Some(id) => bail!("{}: `{name}` is `{id}` in pun.toml", path.display()),
+        None => bail!(
             "{}: `{name}` is not a {command} rule Pun can run (see crates/pun-config/rules/mapping.toml)",
             path.display()
-        )
-    })
+        ),
+    }
+}
+
+/// The current name of an earlier Pun rule name (`aliases` in `[rules.<command>]` of mapping.toml).
+fn alias(command: &str, name: &str) -> Option<&'static str> {
+    static T: LazyLock<Vec<(String, String)>> = LazyLock::new(|| {
+        ["format", "lint"]
+            .iter()
+            .flat_map(|c| {
+                let body = MAPPING
+                    .split_once(&format!("[rules.{c}]\n"))
+                    .expect("mapping section")
+                    .1;
+                let rules =
+                    toml::from_str::<toml::Table>(body.split("\n[").next().unwrap()).unwrap();
+                rules.into_iter().flat_map(move |(rule, e)| {
+                    let aliases = e
+                        .get("aliases")
+                        .and_then(|a| a.as_array())
+                        .cloned()
+                        .unwrap_or_default();
+                    aliases
+                        .into_iter()
+                        .map(move |a| (format!("{c}.{}", a.as_str().unwrap()), rule.clone()))
+                })
+            })
+            .collect()
+    });
+    let key = format!("{command}.{name}");
+    T.iter().find(|(a, _)| *a == key).map(|(_, r)| r.as_str())
 }
 
 /// A rule's value in pun.toml as PHP-CS-Fixer takes it: `true`/`false`, or options with snake_case keys.
@@ -367,15 +424,16 @@ fn check_composer(root: &Path, sources: &mut Vec<PathBuf>) -> Result<()> {
     let v: Value =
         serde_json::from_slice(&bytes).with_context(|| format!("invalid {}", path.display()))?;
     sources.push(path);
-    if let Some(c) = v.pointer("/require/php").and_then(Value::as_str) {
-        // PUN_IGNORE_PHP_CONSTRAINT=1: harness-only escape hatch so pre-8.4 corpora (laravel/framework...) can be diffed.
-        if allows_below(c, (8, 4, 0)).map_err(anyhow::Error::msg)?
-            && std::env::var_os("PUN_IGNORE_PHP_CONSTRAINT").is_none()
-        {
-            bail!(
-                "composer.json requires PHP \"{c}\", which allows PHP < 8.4. Pun only supports projects on PHP 8.4+; raise the constraint (for example \"^8.4\") or keep using Pint."
-            );
-        }
+    let Some(c) = v.pointer("/require/php").and_then(Value::as_str) else {
+        return Ok(());
+    };
+    // PUN_IGNORE_PHP_CONSTRAINT=1: harness-only escape hatch so pre-8.4 corpora (laravel/framework...) can be diffed.
+    if allows_below(c, (8, 4, 0)).map_err(anyhow::Error::msg)?
+        && std::env::var_os("PUN_IGNORE_PHP_CONSTRAINT").is_none()
+    {
+        bail!(
+            "composer.json requires PHP \"{c}\", which allows PHP < 8.4. Pun only supports projects on PHP 8.4+; raise the constraint (for example \"^8.4\") or keep using Pint."
+        );
     }
     Ok(())
 }

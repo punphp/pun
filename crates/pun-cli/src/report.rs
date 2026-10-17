@@ -299,7 +299,7 @@ fn emit_inner(
             );
         }
     } else {
-        out = summary(ctx, results, out_dec)?;
+        out = summary(ctx, results, out_dec);
     }
     print!("{}", fmt(&out, out_dec));
     std::io::Write::flush(&mut std::io::stdout())?;
@@ -402,7 +402,7 @@ pub fn progress<'a>(
     o
 }
 
-fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String> {
+fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> String {
     let w = console::width();
     let inner = w.saturating_sub(4);
     let mut o = progress(results.iter(), w, ctx.dry_run, decorated);
@@ -415,9 +415,8 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String>
         "psr12" => "PSR 12",
         "laravel" => "Laravel",
         "symfony" => "Symfony",
-        "empty" => "Empty",
-        // SummaryOutput's `$this->presets[$preset]` for a preset Pint 1.29 let through.
-        p => anyhow::bail!("Undefined array key \"{p}\""),
+        // pun-config only resolves the five presets.
+        _ => "Empty",
     };
     let _ = writeln!(
         o,
@@ -507,7 +506,7 @@ fn summary(ctx: &Ctx, results: &[FileResult], decorated: bool) -> Result<String>
         }
     }
     o.push('\n');
-    Ok(o)
+    o
 }
 
 /// Termwind's getLength: width without anything STYLING_REGEX takes for a tag (`<x>`, `</a>`, `\e[1m`).

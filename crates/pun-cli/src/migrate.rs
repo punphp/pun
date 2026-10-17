@@ -46,7 +46,10 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
             );
             (f, migrate::from_rules(d.rules()?)?)
         }
-        None => (pint.clone(), migrate::from_pint(&pint, a.preset.as_deref())?),
+        None => (
+            pint.clone(),
+            migrate::from_pint(&pint, a.preset.as_deref())?,
+        ),
     };
     if !m.unsupported.is_empty() {
         eprintln!(
@@ -89,7 +92,14 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
     }
     let rewritten = edits.len();
     if old.as_deref() != Some(&toml) {
-        edits.insert(0, (path, old.unwrap_or_default().into_bytes(), toml.into_bytes()));
+        edits.insert(
+            0,
+            (
+                path,
+                old.unwrap_or_default().into_bytes(),
+                toml.into_bytes(),
+            ),
+        );
     }
     for (f, old, new) in &edits {
         if a.dry_run {
@@ -102,7 +112,11 @@ pub fn run(a: MigrateArgs) -> Result<u8> {
     if !a.dry_run {
         println!(
             "pun migrate: pun.toml {} from {}, ignore comments rewritten in {rewritten} file(s).",
-            if edits.len() > rewritten { "written" } else { "already up to date" },
+            if edits.len() > rewritten {
+                "written"
+            } else {
+                "already up to date"
+            },
             rel(&root, &from)
         );
     }
@@ -118,13 +132,19 @@ fn rewrite(code: &[u8], path: &str, unknown: &mut Vec<String>) -> Option<Vec<u8>
     let mut out = Vec::with_capacity(code.len());
     for t in pun_tokens::Tokens::from_code(code).as_slice() {
         let mut last = 0;
-        for c in IGNORE.captures_iter(&t.content).flatten().filter(|_| t.is_comment()) {
+        for c in IGNORE
+            .captures_iter(&t.content)
+            .flatten()
+            .filter(|_| t.is_comment())
+        {
             let ids: Option<Vec<&str>> = (c[2].split(|&b| b == b','))
                 .map(|r| std::str::from_utf8(r).ok().and_then(pun_config::rule_of))
                 .collect();
             let Some(ids) = ids else {
                 let rules = String::from_utf8_lossy(&c[2]);
-                unknown.push(format!("{path}: `@php-cs-fixer-ignore {rules}` left as is (no Pun rule for it)"));
+                unknown.push(format!(
+                    "{path}: `@php-cs-fixer-ignore {rules}` left as is (no Pun rule for it)"
+                ));
                 continue;
             };
             let m = c.get(0).unwrap();

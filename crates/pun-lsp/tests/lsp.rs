@@ -362,7 +362,10 @@ fn formatting_and_fix_all_match_pint() {
                 "pint.json",
                 r#"{"preset":"laravel","notName":["Skip.php"]}"#,
             ),
-            ("pun.toml", "[format]\npreset = \"laravel\"\nnot-name = [\"Skip.php\"]\n"),
+            (
+                "pun.toml",
+                "[format]\npreset = \"laravel\"\nnot-name = [\"Skip.php\"]\n",
+            ),
         ],
     );
     let mut s = Server::start(&dir, json!({}));

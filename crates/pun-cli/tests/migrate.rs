@@ -41,7 +41,10 @@ fn writes_pun_toml_and_rewrites_ignores() {
         &[
             ("pint.json", PINT),
             ("app/Ignored.php", IGNORED),
-            ("app/Unknown.php", "<?php\n// @php-cs-fixer-ignore Acme/rule\n"),
+            (
+                "app/Unknown.php",
+                "<?php\n// @php-cs-fixer-ignore Acme/rule\n",
+            ),
             ("app/Plain.php", "<?php\n$a = array(1);\n"),
         ],
     );
@@ -63,7 +66,11 @@ fn writes_pun_toml_and_rewrites_ignores() {
     let (out, err, code) = pun(&d, &["migrate"]);
     assert_eq!(
         (out.as_str(), err.as_str(), code),
-        ("pun migrate: pun.toml written from pint.json, ignore comments rewritten in 1 file(s).\n", unknown, Some(0))
+        (
+            "pun migrate: pun.toml written from pint.json, ignore comments rewritten in 1 file(s).\n",
+            unknown,
+            Some(0)
+        )
     );
     assert_eq!(read(&d, "pun.toml"), TOML);
     assert_eq!(read(&d, "app/Ignored.php"), REWRITTEN);
@@ -76,7 +83,10 @@ fn writes_pun_toml_and_rewrites_ignores() {
     let (out, _, code) = pun(&d, &["migrate"]);
     assert_eq!(
         (out.as_str(), code),
-        ("pun migrate: pun.toml already up to date from pint.json, ignore comments rewritten in 0 file(s).\n", Some(0))
+        (
+            "pun migrate: pun.toml already up to date from pint.json, ignore comments rewritten in 0 file(s).\n",
+            Some(0)
+        )
     );
     let (out, _, _) = pun(&d, &["migrate", "--dry-run"]);
     assert_eq!(out, "");
@@ -85,14 +95,23 @@ fn writes_pun_toml_and_rewrites_ignores() {
     let (_, err, code) = pun(&d, &["migrate"]);
     assert_eq!(
         (err.as_str(), code),
-        ("pun: pun.toml exists and differs from what migrate writes; move it away first (`pun migrate --dry-run` shows the difference)\n", Some(1))
+        (
+            "pun: pun.toml exists and differs from what migrate writes; move it away first (`pun migrate --dry-run` shows the difference)\n",
+            Some(1)
+        )
     );
     assert_eq!(read(&d, "pun.toml"), "# mine\n");
 }
 
 #[test]
 fn stops_on_unsupported_rules() {
-    let d = project("unsupported", &[("pint.json", r#"{"rules":{"braces":true,"array_syntax":true}}"#)]);
+    let d = project(
+        "unsupported",
+        &[(
+            "pint.json",
+            r#"{"rules":{"braces":true,"array_syntax":true}}"#,
+        )],
+    );
     let (out, err, code) = pun(&d, &["migrate"]);
     assert_eq!((out.as_str(), code), ("", Some(1)));
     assert!(
@@ -105,17 +124,50 @@ fn stops_on_unsupported_rules() {
     let (_, err, code) = pun(&d, &["migrate"]);
     assert_eq!(
         (err, code),
-        (format!("pun: The configuration file [{}] is not valid JSON.: EOF while parsing an object at line 1 column 1\n", d.join("pint.json").display()), Some(1))
+        (
+            format!(
+                "pun: The configuration file [{}] is not valid JSON.: EOF while parsing an object at line 1 column 1\n",
+                d.join("pint.json").display()
+            ),
+            Some(1)
+        )
     );
 }
 
 /// `--config` / `--preset` read like `pint --config` / `pint --preset`; no pint.json is Pint's default (laravel).
 #[test]
 fn config_and_preset_flags() {
-    let d = project("flags", &[("other.json", r#"{"preset":"empty","rules":{"single_quote":true}}"#)]);
-    pun(&d, &["migrate", "--dry-run", "--config=other.json", "--preset=psr12"]);
-    let (out, _, _) = pun(&d, &["migrate", "--dry-run", "--config=other.json", "--preset=psr12"]);
-    assert!(out.contains("+# Written by `pun migrate` from other.json.\n+[format]\n+preset = \"psr12\"\n"), "{out}");
+    let d = project(
+        "flags",
+        &[(
+            "other.json",
+            r#"{"preset":"empty","rules":{"single_quote":true}}"#,
+        )],
+    );
+    pun(
+        &d,
+        &[
+            "migrate",
+            "--dry-run",
+            "--config=other.json",
+            "--preset=psr12",
+        ],
+    );
+    let (out, _, _) = pun(
+        &d,
+        &[
+            "migrate",
+            "--dry-run",
+            "--config=other.json",
+            "--preset=psr12",
+        ],
+    );
+    assert!(
+        out.contains(
+            "+# Written by `pun migrate` from other.json.\n+[format]\n+preset = \"psr12\"\n"
+        ),
+        "{out}"
+    );
     assert!(out.contains("+single-quote = true\n"), "{out}");
     pun(&d, &["migrate"]);
     assert_eq!(

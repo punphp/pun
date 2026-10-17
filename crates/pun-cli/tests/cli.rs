@@ -141,7 +141,11 @@ fn migrate(dir: &Path) {
         .current_dir(dir)
         .output()
         .unwrap();
-    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
 }
 
 /// `pun format` on `dir` after `pun migrate`.
@@ -604,7 +608,10 @@ fn pun_only_behaviour() {
     let (out, err, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
     assert_eq!((out.as_str(), code), ("", Some(1)));
     assert!(
-        err.starts_with(&format!("pun: invalid {}: ", dir.join("pun.toml").display())),
+        err.starts_with(&format!(
+            "pun: invalid {}: ",
+            dir.join("pun.toml").display()
+        )),
         "{err}"
     );
 
@@ -730,27 +737,38 @@ fn migrates_php_cs_fixer_config() {
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("../pun-delegate/tests/custom");
     let dir = tmp("pcf");
     let read = |f: &str| std::fs::read_to_string(src.join(f)).unwrap();
-    let autoload = format!(
-        "<?php\nreturn require '{}';\n",
-        oracle
-            .parent()
-            .unwrap()
-            .parent()
-            .unwrap()
-            .parent()
-            .unwrap()
-            .join("php-cs-fixer/vendor/autoload.php")
-            .display()
-    );
+    let real = oracle
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join("php-cs-fixer/vendor/autoload.php");
+    let autoload = format!("<?php\nreturn require '{}';\n", real.display());
     let tree: Vec<(&str, String)> = vec![
         ("composer.json", r#"{"require":{"php":"^8.4"}}"#.into()),
         (".php-cs-fixer.php", read(".php-cs-fixer.php")),
         ("UpperTodoFixer.php", read("UpperTodoFixer.php")),
-        ("app/A.php", "<?php\n$a = \"x\";\nin_array($a, []);\n".into()),
+        (
+            "app/A.php",
+            "<?php\n$a = \"x\";\nin_array($a, []);\n".into(),
+        ),
         ("vendor/autoload.php", autoload),
         ("vendor/friendsofphp/php-cs-fixer/.keep", String::new()),
     ];
     let tree: Vec<(&str, &str)> = tree.iter().map(|(a, b)| (*a, b.as_str())).collect();
+    // A config PHP-CS-Fixer can't load: its error, nothing written.
+    reset(&dir, &tree);
+    std::fs::write(
+        dir.join(".php-cs-fixer.php"),
+        "<?php\nthrow new Exception('bad config');\n",
+    )
+    .unwrap();
+    let (_, err, code) = pun(&dir, &["migrate"]);
+    assert_eq!(code, Some(1));
+    assert!(err.contains("bad config"), "{err}");
+    assert!(!dir.join("pun.toml").exists());
     reset(&dir, &tree);
     let finder = "pun migrate: .php-cs-fixer.php configures its own Finder, which is not migrated: check [format] paths and exclude.\n";
     let (out, err, code) = pun(&dir, &["migrate"]);
@@ -758,7 +776,9 @@ fn migrates_php_cs_fixer_config() {
         (out.as_str(), err, code),
         (
             "",
-            format!("{finder}pun migrate: .php-cs-fixer.php uses rules Pun can't run, so nothing was written:\n  Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n"),
+            format!(
+                "{finder}pun migrate: .php-cs-fixer.php uses rules Pun can't run, so nothing was written:\n  Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n"
+            ),
             Some(1)
         )
     );
@@ -785,4 +805,37 @@ fn migrates_php_cs_fixer_config() {
     assert_eq!(a(), "<?php\n$a = 'x';\nin_array($a, []);\n");
     pun(&dir, &["check", "--fix"]);
     assert_eq!(a(), "<?php\n$a = 'x';\nin_array($a, [], true);\n");
+
+    // A delegated fixer (explicit_string_variable isn't ported) that throws or breaks the code fails only its file,
+    // with PHP-CS-Fixer's messages. The project's autoloader shadows the real class with UpperTodoFixer's hooks.
+    let fake = read("UpperTodoFixer.php")
+        .replacen("<?php", "<?php\nnamespace PhpCsFixer\\Fixer\\StringNotation;\nuse PhpCsFixer;\nuse RuntimeException;\nuse SplFileInfo;", 1)
+        .replace("final class UpperTodoFixer", "final class ExplicitStringVariableFixer")
+        .replace("'Acme/upper_todo'", "'explicit_string_variable'");
+    std::fs::write(dir.join("Shadow.php"), fake).unwrap();
+    std::fs::write(
+        dir.join("vendor/autoload.php"),
+        format!(
+            "<?php\n$l = require '{}';\nrequire __DIR__.'/../Shadow.php';\nreturn $l;\n",
+            real.display()
+        ),
+    )
+    .unwrap();
+    std::fs::write(
+        dir.join("pun.toml"),
+        "[format]\npreset = \"empty\"\n[format.rules]\nexplicit-string-variable = true\n",
+    )
+    .unwrap();
+    std::fs::write(dir.join("app/T.php"), "<?php\n\n// THROW\n").unwrap();
+    std::fs::write(dir.join("app/B.php"), "<?php\n\n// BREAK\n$a = 1;\n").unwrap();
+    let (out, err, code) = pun(&dir, &["format", "--test", "--format=agent"]);
+    assert_eq!(code, Some(1), "{err}");
+    assert!(
+        out.contains(r#"{"path":"app\/T.php","message":"boom"}"#),
+        "{out}"
+    );
+    assert!(
+        out.contains(r#"{"path":"app\/B.php","message":"Parse error: Unmatched ')' on line 4."}"#),
+        "{out}"
+    );
 }

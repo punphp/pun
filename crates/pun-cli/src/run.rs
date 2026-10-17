@@ -438,3 +438,16 @@ fn isolated<T>(f: impl FnOnce() -> T) -> Result<T, String> {
             .unwrap_or_default()
     })
 }
+
+#[cfg(test)]
+mod tests {
+    /// A panic inside `isolated` is the file's error and prints nothing; one elsewhere still reaches the default hook.
+    #[test]
+    fn isolated_panics() {
+        assert_eq!(
+            super::isolated(|| panic!("boom")),
+            Err::<(), _>("boom".into())
+        );
+        assert!(std::thread::spawn(|| panic!("elsewhere")).join().is_err());
+    }
+}

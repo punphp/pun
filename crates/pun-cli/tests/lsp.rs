@@ -30,7 +30,11 @@ fn migrate(dir: &Path) {
         .current_dir(dir)
         .output()
         .unwrap();
-    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
 }
 
 /// Pint's stdin output for `code` named `name` in `dir`. Each run gets its own TMPDIR: Pint names its stdin temp

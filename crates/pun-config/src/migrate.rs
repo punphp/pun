@@ -153,7 +153,10 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
             }),
             Some(mk) if vr.is_null() || mk.options.is_null() => mk.options = Value::Null,
             Some(mk) => {
-                let mut all = mk.options["elements"].as_array().cloned().unwrap_or_default();
+                let mut all = mk.options["elements"]
+                    .as_array()
+                    .cloned()
+                    .unwrap_or_default();
                 for e in vr["elements"].as_array().into_iter().flatten() {
                     if !all.contains(e) {
                         all.push(e.clone());
@@ -169,7 +172,11 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
         let id = rule_of(&r.name);
         let lint = id.is_some_and(|id| id.starts_with("lint."));
         // The preset brings it (rules Pun delegates, such as sets it can't expand, included).
-        if !lint && base.iter().any(|b| b.name == r.name && b.options == r.options) {
+        if !lint
+            && base
+                .iter()
+                .any(|b| b.name == r.name && b.options == r.options)
+        {
             continue;
         }
         let Some(id) = id else {
@@ -177,13 +184,18 @@ fn write(preset: &str, mut rules: Vec<Rule>, finder: &str) -> Result<Migration> 
             let why = entry
                 .and_then(|e| e.get("drop").or(e.get("unsupported")))
                 .and_then(toml::Value::as_str)
-                .unwrap_or("not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)");
+                .unwrap_or(
+                    "not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)",
+                );
             unsupported.push(format!("{}: {why}", r.name));
             continue;
         };
         let name = &id[id.find('.').unwrap() + 1..];
         let Some(v) = toml_value(&value(&r.options, lint)) else {
-            unsupported.push(format!("{}: an option is null, which TOML can't hold", r.name));
+            unsupported.push(format!(
+                "{}: an option is null, which TOML can't hold",
+                r.name
+            ));
             continue;
         };
         writeln!(if lint { &mut lints } else { &mut format }, "{name} = {v}").unwrap();
