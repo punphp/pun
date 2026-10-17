@@ -29,7 +29,6 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | `scripts/oracle.sh` | install/verify `.oracle/` (checks the PHAR bundles the pinned php-cs-fixer ref) |
 | `scripts/corpus.sh [name...]` | shallow checkouts per `corpus/manifest.toml`; builds derived `pinkary-dirty` |
 | `scripts/effective-rules.php [pint.json]` | effective fixer list (run order, options, priority, risky, class, file) |
-| `scripts/rank.php <pint.json> <dir>...` | per-fixer changed-file counts, each fixer alone |
 | `scripts/export-fixtures.php <effective.json> <outdir>` | upstream data-provider test cases to JSON |
 | `scripts/cli-parity.sh [--project DIR] [--tty [--cols N]] [--env K=V] "ARGS"...` | byte-compare Pint and Pun's `pint` alias (stdout, stderr, exit code, files) per argument set, same directory |
 | `scripts/perturb.php <dir>` | make a deliberately unformatted copy (anti-laravel config + token noise, `php -l` checked) |
