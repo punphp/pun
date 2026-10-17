@@ -24,8 +24,8 @@ Inputs. Use these defaults unless the user overrides them:
 
 Learn the project before judging it.
 
-1. Read `AGENTS.md` in full, then `context/README.md`, `context/PLAN.md`, `context/plan/foundations.md`,
-   `context/REQUESTS.md`, `context/reference/tokens.md` and `context/reports/COVERAGE.md`.
+1. Read `AGENTS.md` in full, then `context/PLAN.md`, `context/plan/foundations.md`,
+   `context/reference/tokens.md` and `context/reports/COVERAGE.md`.
 2. Read the root `Cargo.toml` (workspace dependencies, profiles, any `[workspace.lints]`), every crate's `Cargo.toml`,
    `.github/workflows/ci.yml`, and any `rustfmt.toml`, `clippy.toml` or `rust-toolchain.toml`. Note every `#[allow]`,
    `#[expect]` and `#![allow]` in the tree (`rg -n '#!?\[(allow|expect)' crates`). Each one is a deliberate choice;
@@ -66,7 +66,7 @@ and report code that breaks them.
 8. **Tests follow AGENTS.md:** 100% line coverage, expected values from an oracle or by hand, no snapshot or
    self-comparison tests. Lines no test reaches should be deleted, not excluded.
 9. **Each crate has one owning agent.** A fix that spans crates is fine to report; mark it `Spans crates.` so it can
-   be split into `context/REQUESTS.md` items.
+   be split into `request` rows in `context/PLAN.md` §3.
 
 Then map the structure: each crate, what it depends on, its public API (`pub` items reachable from `lib.rs`), its
 entry points (`pun` subcommands in `pun-cli`, `Fixer` impls, analyse rules), and its size (`wc -l` per file).
@@ -214,7 +214,7 @@ profile (`cargo build --profile profiling`, `perf`) shows it. Otherwise prefer t
   comments that explain why: the upstream reference, the PHP quirk, the measured reason for a fast path.
 - `pub` items in library crates with no doc comment, or whose first sentence doesn't say what the item is.
 - Magic numbers and byte literals with no name or comment saying where they come from.
-- `TODO`, `FIXME` and `XXX` with no owner in `context/TASKS.md`.
+- `TODO`, `FIXME` and `XXX` with no owner in `context/PLAN.md` §3.
 
 ### 11. Tests
 
