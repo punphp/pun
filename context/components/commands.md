@@ -76,6 +76,21 @@ Each command answers one question and makes one promise.
 
    *Recommend: (b). Lint then means "rules you keep on". Upgrades are something you run once and commit, like
    `npx @next/codemod` or `ng update`.*
+   **How version upgrades should behave (proposal, 2026-10-17).** Today they are ordinary lint rules with a
+   `gated_by` field: 76 rules gated by the PHP version (27 fix code that breaks on that PHP, in `essential`; 44 use
+   newer syntax, in `recommended`), 33 gated by the locked Laravel version, and PHPUnit's removed APIs in `essential`
+   with the `phpunit` add-on. Nothing of it runs yet. The proposal splits them by when they run:
+   - **The version is read from the project, not written in config.** PHP comes from composer.json `require.php`;
+     Laravel, PHPUnit and Pest come from composer.lock. `[php] version` stays only as an override.
+   - **Lint is version-aware, every run.** It fixes code that breaks on the versions you're on, and suggests the newer
+     syntax those versions allow. It never uses a feature above your version. Raising `php` in composer.json and
+     running `pun lint --fix` is how you adopt PHP 8.5 syntax; no set is needed.
+   - **`pun upgrade <package> <version>` for major-version jumps** (`pun upgrade laravel 13`, `pun upgrade phpunit 12`,
+     `pun upgrade php 8.5`). It runs, once and in order, the upgrade steps between the version in composer.lock and the
+     target, shows the diff, writes it, and then tells you which composer.json constraint to bump. These rules are in no
+     tier, so lint never runs them.
+   - This replaces `pun lint --set php85` (DECISIONS.md), which could write PHP 8.5 code into a project that still runs
+     8.4.
 3. **Modernisation rules** (Rector's PHP sets as `prefer-*` rules, such as `prefer-match` and `prefer-readonly-property`)
    keep code on the newest syntax for the configured PHP version. Should these stay in lint even if (2b) happens?
    *Recommend: yes. They are ongoing ("use the newest form"), not one-time.*
