@@ -20,7 +20,6 @@ fn fresh(name: &str) -> PathBuf {
     d.canonicalize().unwrap()
 }
 
-/// pun.toml from `dir`'s pint.json.
 fn migrate(dir: &Path) {
     let out = Command::new(env!("CARGO_BIN_EXE_pun"))
         .arg("migrate")

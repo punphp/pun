@@ -10,7 +10,6 @@ pub fn fixer() -> Box<dyn Fixer> {
 }
 
 impl NoEmptyStatementFixer {
-    /// Fix semicolon after closing curly brace if needed.
     fn fix_semicolon_after_curly_brace_close(
         tokens: &mut Tokens,
         index: usize,
@@ -32,7 +31,6 @@ impl NoEmptyStatementFixer {
             tokens.clear_token_and_merge_surrounding_whitespace(index);
             return;
         }
-        // check for namespaces and class, interface and trait definitions
         if tokens[before_curly_opening_index].is_kind(T_STRING) {
             let mut classy_test_index = tokens
                 .get_prev_meaningful_token(before_curly_opening_index)
@@ -70,7 +68,6 @@ impl NoEmptyStatementFixer {
             tokens.clear_token_and_merge_surrounding_whitespace(index);
             return;
         }
-        // check for function definition
         if tokens[before_opening_brace_index].is_kind(T_STRING) {
             let before_string_index = tokens
                 .get_prev_meaningful_token(before_opening_brace_index)

@@ -66,7 +66,6 @@ fn profile_reports_stage_counts() {
         (Some(2), Some(2), Some(2))
     );
     assert_eq!(count("(lint after fix)"), Some(1));
-    // Off by default.
     let quiet = pun(&dir, &[], &["--test"]);
     assert!(
         !String::from_utf8(quiet.stderr)

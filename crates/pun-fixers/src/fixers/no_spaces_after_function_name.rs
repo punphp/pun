@@ -9,7 +9,6 @@ pub fn fixer() -> Box<dyn Fixer> {
     Box::new(NoSpacesAfterFunctionNameFixer)
 }
 
-/// Token kinds which can work as function calls.
 const FUNCTIONY_TOKEN_KINDS: &[Kind] = &[
     T_ARRAY,
     T_ECHO,
@@ -28,9 +27,7 @@ const FUNCTIONY_TOKEN_KINDS: &[Kind] = &[
 ];
 
 impl NoSpacesAfterFunctionNameFixer {
-    /// Fixes whitespaces around braces of a function(y) call.
     fn fix_function_call(tokens: &mut Tokens, index: usize) {
-        // remove space before opening brace
         if tokens[index - 1].is_whitespace(None) {
             tokens.clear_at(index - 1);
         }
@@ -53,13 +50,11 @@ impl Fixer for NoSpacesAfterFunctionNameFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
-            // looking for start brace
             if !tokens[index].equals("(", true) {
                 continue;
             }
             // last non-whitespace token, can never be `null` always at least PHP open tag before it
             let last_token_index = tokens.get_prev_non_whitespace(index, None).unwrap();
-            // check for ternary operator
             let end_parenthesis_index =
                 tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
             let next_non_white_space = tokens.get_next_meaningful_token(end_parenthesis_index);
@@ -77,11 +72,9 @@ impl Fixer for NoSpacesAfterFunctionNameFixer {
             {
                 continue;
             }
-            // check if it is a function call
             if tokens[last_token_index].is_given_kind(FUNCTIONY_TOKEN_KINDS) {
                 Self::fix_function_call(tokens, index);
             } else if tokens[last_token_index].is_kind(T_STRING) {
-                // for real function calls or definitions
                 let possible_definition_index =
                     tokens.get_prev_meaningful_token(last_token_index).unwrap();
                 if !tokens[possible_definition_index].is_kind(T_FUNCTION) {

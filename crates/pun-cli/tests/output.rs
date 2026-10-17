@@ -128,7 +128,6 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
 
 const PUN: [&str; 2] = [env!("CARGO_BIN_EXE_pun"), "format"];
 
-/// `pun migrate` in `dir`, which must succeed.
 fn migrate(dir: &Path) {
     let out = Command::new(PUN[0])
         .arg("migrate")

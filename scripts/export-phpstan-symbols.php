@@ -256,14 +256,12 @@ function dump(int $phpVersion, array &$typeStrings): array
  * rewrites only this file.
  */
 const PROBES = [
-    // identifiers
     'non-zero-int', 'enum-string', 'numeric', 'number', 'scalar', 'non-empty-lowercase-string', 'non-empty-uppercase-string',
     'non-empty-literal-string', 'callable-object', 'callable-array', 'non-empty-list', 'truthy-string', 'double', 'boolean',
     'integer', 'associative-array', 'never-return', 'noreturn', 'open-resource', 'interface-string', 'trait-string',
     'callable-string', 'negative-int', 'non-positive-int', 'non-negative-int', 'literal-string', 'uppercase-string',
     'iterable', 'object', 'void', 'never', 'self', 'static', '$this', 'Foo-bar', 'OCI-Lob', 'NOT_A_CONSTANT', 'Foo', '\\Countable',
     'TRUE', 'PHP_SAPI', 'PHP_INT_MIN', 'INF', 'NAN', 'M_PI', 'PHP_FLOAT_EPSILON', 'PHP_EOL', 'E_ALL',
-    // generics
     "array<'a', int>", 'array<1, int>', 'array<int, int, int>', 'array<float, int>', 'array<bool, int>', 'array<null, int>',
     "array<'1', int>", 'array<array-key, int>', 'array<mixed, int>', 'array<int|string, int>', 'non-empty-array<int>',
     'non-empty-array<string, int>', 'list<int, int>', 'non-empty-list<string>', 'iterable<int>', 'iterable<int, string>',
@@ -275,14 +273,12 @@ const PROBES = [
     'Generator<int, string>', 'Generator<int, string, bool, void>', 'ArrayIterator<int>', 'ArrayIterator<int, string>',
     'ArrayObject<string>', 'SplObjectStorage<Countable, int>', 'Countable<int>', 'Foo<int>', 'WeakReference<stdClass>',
     'int<1, 3>[]', 'ArrayAccess<int, string>', 'SplFixedArray<int>', 'DatePeriod', 'Closure<int>', 'int<1, 2, 3>',
-    // callables
     'callable(int): void', 'callable(int=, string...): mixed', 'callable(int &$x): bool', 'Closure(int): string',
     'Closure(int $a, string ...$b): (int|string)', 'Foo(int): void',
     'callable(): callable(): int', 'callable(int|string): (int|false)', 'Closure', 'callable(): void|int', 'callable(Countable): int',
     'callable(int): void|callable(string): void', 'callable(): int|callable(): string', 'callable(): mixed|Closure(): int',
     'callable(int, int): int|callable(int): int', 'callable(int...): int|callable(int): int', 'callable&string', 'callable&object',
     'callable&Countable', 'callable-string|Closure', 'callable|string', 'callable(): int|string',
-    // shapes
     'array{a: int, b?: string}', 'array{int, string}', 'list{int, string}', 'non-empty-array{a?: int}', 'non-empty-list{0?: int}',
     'non-empty-list{int}', 'array{a: int, ...}', 'array{a: int, ...<string, int>}', 'array{a: int, ...<int>}', 'list{int, ...<string>}',
     'list{int, ...}', 'array{...<int>}', 'array{...<string, int>}', 'array{...}', 'list{...}', "array{'a b': int, \"c\": int, 'd\\'e': int, 'f\"g': int}",
@@ -291,7 +287,6 @@ const PROBES = [
     'object{a: int, b?: string}', "object{'a': int}", 'array{}', 'list{}', 'array{0?: int}', 'array{a?: int}',
     'array{a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9}', 'array{1, 2, 3, 4, 5, 6, 7, 8, 9}',
     'array{a: int, ...<1|2, string>}', 'array{a: int, ...<\'a\'|\'b\', string>}', 'array{"x": int}', 'array{1.5: int}', 'array{_a1: int, a-b: int, \\a: int, 1a: int}',
-    // unions
     'int|string[]', 'Traversable|string[]', 'array|int[]', 'iterable|int[]', 'list<int>|string[]', 'array{a: int}|int[]',
     'ArrayIterator<int>|int[]', 'Countable|int[]', '(int|string)[]', 'int[]|string[]', '?int', 'int|null|false', '1|2|3', '1.5|2.0|1',
     "'a'|'b'|string", 'true|false', 'true|bool', 'int<1, 3>|int<2, 5>', 'int<1, 3>|int<5, 7>', 'int<1, 3>|int<4, 7>', 'int<1, 3>|4',
@@ -313,7 +308,6 @@ const PROBES = [
     "'Countable'", "'countable'", "'0'", "''", '0.5', '1e3', '-1.5e-7', '0x1A', '0b101', '0o17', '017', '1_000', '-0', '9223372036854775807',
     'float|1.5', 'int|1', 'bool|true', 'string|\'a\'', 'array-key|int', 'int|array-key', '__benevolent<int|string>|int', '__benevolent<int|string>|float',
     'resource|null', 'void|null', 'Closure(): int|Closure(): string', 'Closure(int): void|callable(int): void',
-    // intersections
     'Countable&Traversable', 'non-empty-string&numeric-string', 'string&non-empty-string', 'array<int>&non-empty-array',
     'list<int>&non-empty-array', 'array{a?: int}&non-empty-array', 'array{0?: int}&list', 'array{a: int}&list', 'int&string',
     'int<1, 5>&int<3, 9>', 'int&int<1, 3>', 'int<1, 3>&1', 'int<1, 3>&int<5, 7>', 'iterable<int>&array', 'array&iterable<int>',
@@ -326,9 +320,7 @@ const PROBES = [
     'Countable&(Traversable|ArrayAccess)', 'stdClass&object{a: int}', 'object{a: int}&stdClass', 'DateInterval&object{days: int}',
     'callable-string&non-empty-string', 'non-empty-array&callable', 'list<int>&array<int>', 'non-empty-list&array{a?: int}',
     'array<string>&non-empty-array<string>', 'array<int, string>&non-empty-array<int, string>&list',
-    // conditionals
     '(T is int ? string : bool)', '($x is int ? 1 : 2)', '($x is not int ? 1 : 2)', '(int is int ? true : false)',
-    // more paths
     'int<min, max>', 'int<min, -9223372036854775808>', 'int<9223372036854775807, max>', 'never|1', 'never|int', 'never|Countable',
     'non-empty-string&class-string', 'class-string&non-falsy-string', 'class-string&numeric-string', 'non-falsy-string&numeric-string',
     "uppercase-string&'ABC'", "'ABC'&uppercase-string", "'abc'&uppercase-string", "lowercase-string&'abc'", "'strlen'&callable",
@@ -375,7 +367,6 @@ const PROBES = [
     '\\stdClass', 'STDCLASS', 'stdclass|stdClass', 'stdClass&stdclass', 'Exception|RuntimeException', 'RuntimeException|Exception', 'RuntimeException&Exception',
     'Exception&RuntimeException', 'RuntimeException&LogicException', 'Throwable&RuntimeException', 'Countable&RuntimeException', 'RuntimeException&Countable',
     'Closure&Countable', 'Generator&Iterator', 'WeakMap&Countable', 'Countable&WeakMap', 'Closure&Exception',
-    // callable arrays
     'array{0: Countable, ...<int, non-falsy-string>}&callable', 'array{...<string, string>}&callable', 'array{0: Countable, ...<int, int>}&callable',
     'array{1: string, ...<int, Countable>}&callable', "array{'Countable', 'count'}&callable", 'array{1, 2}&callable', 'array{1, 2, 3}&callable',
     'array{a: 1, b: 2}&callable', 'array{0: Countable, ...<int, string>}&callable', 'array{Countable}&callable', 'array<string>&callable',
@@ -383,14 +374,12 @@ const PROBES = [
     // generalize() through constant-array values and intersection members
     "array{a: Closure(1): 2, b: Generator<1, 'a'>, c: class-string<stdClass>, d: (T is 1 ? 2 : 3), e: (\$x is 1 ? 1.5 : 2.5), f: array<int, true>, g: iterable<1>}|null",
     "array{a: Closure(1): 2}|1", "array{a: true}|array{b: 'x'}|1", "Countable&Generator<1, 'a'>", 'Countable&Iterator<1, true>',
-    // resolver leftovers
     "array{a: int, ...<'b', int>}", 'array{a: int, ...<5, int>}', "array<__benevolent<'1'|1>, int>", 'array<true, int>', 'class-string<Countable&callable>',
     'int-mask<1>', 'int-mask-of<1|string>', 'string<int>', 'SimpleXMLElement<int, string>', 'SimpleXMLElement<string>', 'SimpleXMLElement<int, string, bool>',
     '__template<int>', 'non-empty-list<int>&list<int>',
     "array{a?: int}&array{}", "array{}&array{a?: int}", 'callable-array|null', 'callable-array|array{a: 1}', 'iterable<int>|callable-array',
     'callable((Countable&Traversable)|int): void', 'callable(): ((Countable&Traversable)|int)', "array{'\\\\Foo\\\\Bar': int, '\\\\': int, '\\\\1': int}",
     'array{a: int, ...<__benevolent<int|string>, int>}', 'never&never', 'never|never', 'never-return|never', 'never&never-return',
-    // stars and bad input
     'SplObjectStorage<*, *>', 'int|', '<', '(int', 'array{', 'callable(',
 ];
 

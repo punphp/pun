@@ -23,7 +23,6 @@ pub fn fixer() -> Box<dyn Fixer> {
 }
 
 impl MultilineWhitespaceBeforeSemicolonsFixer {
-    /// Find the index for the next new line. Return the given index when there's no new line.
     fn get_new_line_index(&self, mut index: usize, tokens: &Tokens) -> usize {
         let line_ending = self.whitespaces_config.get_line_ending().as_bytes();
         let count = tokens.count();
@@ -43,7 +42,6 @@ impl MultilineWhitespaceBeforeSemicolonsFixer {
         index
     }
 
-    /// Find the index for the previous significant token. Return the given index when there's no significant token.
     fn get_previous_significant_token_index(mut index: usize, tokens: &Tokens) -> usize {
         let stop_tokens = [
             T_LNUMBER,
@@ -145,16 +143,12 @@ impl Fixer for MultilineWhitespaceBeforeSemicolonsFixer {
                     index += 1;
                     continue;
                 }
-                // unset whitespace and semicolon
                 if previous.is_whitespace(None) {
                     tokens.clear_at(previous_index);
                 }
                 tokens.clear_at(index);
-                // find the line ending token index after the semicolon
                 index = self.get_new_line_index(index, tokens);
-                // appended new line to the last method call
                 let newline = Token::new(T_WHITESPACE, wanted);
-                // insert the new line with indented semicolon
                 tokens.insert_at(index, vec![newline, Token::char(";")]);
                 index += 1;
             } else {
@@ -165,13 +159,10 @@ impl Fixer for MultilineWhitespaceBeforeSemicolonsFixer {
                 let content = previous.get_content();
                 if content.starts_with(line_ending) && tokens[index - 2].is_comment() {
                     // if there is comment between closing parenthesis and semicolon
-                    // unset whitespace and semicolon
                     tokens.clear_at(previous_index);
                     tokens.clear_at(index);
-                    // find the significant token index before the semicolon
                     let significant_token_index =
                         Self::get_previous_significant_token_index(index, tokens);
-                    // insert the semicolon
                     tokens.insert_at(significant_token_index + 1, vec![Token::char(";")]);
                 } else {
                     // if there is whitespace between closing bracket and semicolon, just remove it

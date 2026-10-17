@@ -51,19 +51,15 @@ impl Fixer for TernaryOperatorSpacesFixer {
                     // for `$a ?: $b` remove spaces between `?` and `:`
                     tokens.ensure_whitespace_at_index(index + 1, 0, b"");
                 } else {
-                    // for `$a ? $b : $c` ensure space after `?`
                     ensure_whitespace_existence(tokens, index + 1, true);
                 }
-                // for `$a ? $b : $c` ensure space before `?`
                 ensure_whitespace_existence(tokens, index - 1, false);
                 continue;
             }
             // only `:` is left
-            // for `$a ? $b : $c` ensure space after `:`
             ensure_whitespace_existence(tokens, index + 1, true);
             let prev = tokens.get_prev_non_whitespace(index, None).unwrap();
             if !tokens[prev].equals("?", true) {
-                // for `$a ? $b : $c` ensure space before `:`
                 ensure_whitespace_existence(tokens, index - 1, false);
             }
         }

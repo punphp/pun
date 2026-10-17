@@ -73,7 +73,7 @@ impl ControlCaseStructuresAnalyzer {
     pub fn find_switch_structures(tokens: &Tokens) -> Vec<ControlCaseStructuresAnalysis> {
         let mut out = Vec::new();
         if !tokens.is_token_kind_found(T_SWITCH) {
-            return out; // quick skip
+            return out;
         }
 
         let mut stack: Vec<Frame> = Vec::new();
@@ -201,7 +201,6 @@ impl ControlCaseStructuresAnalyzer {
         let mut ternaries_count = 0;
         loop {
             if tokens[index].equals_any(&["(".into(), "{".into()], true) {
-                // skip constructs
                 let (t, _) = Tokens::detect_block_type(&tokens[index]).unwrap();
                 index = tokens.find_block_end(t, index) + 1;
                 continue;

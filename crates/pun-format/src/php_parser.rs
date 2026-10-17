@@ -421,7 +421,6 @@ impl Parser<'_> {
                     }
                     break 'decide -action;
                 }
-                // Shift.
                 let (_, tok) = la.take().unwrap();
                 let n = self.toks.len();
                 if let Some(t) = tok {

@@ -96,7 +96,6 @@ impl Fixer for NoAliasFunctionsFixer {
         let functions_analyzer = FunctionsAnalyzer::new();
         let arguments_analyzer = ArgumentsAnalyzer;
         for index in tokens.find_given_kind(T_STRING, 0, None) {
-            // check mapping hit
             let token_content = tokens[index].content.to_ascii_lowercase();
             let Some(&(_, alias, number_of_arguments)) = self
                 .aliases
@@ -105,7 +104,6 @@ impl Fixer for NoAliasFunctionsFixer {
             else {
                 continue;
             };
-            // skip expressions without parameters list
             let open_parenthesis = tokens.get_next_meaningful_token(index).unwrap();
             if !tokens[open_parenthesis].equals("(", true) {
                 continue;

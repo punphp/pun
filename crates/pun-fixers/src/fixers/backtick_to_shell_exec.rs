@@ -42,11 +42,9 @@ impl Fixer for BacktickToShellExecFixer {
 }
 
 fn fix_backticks(tokens: &mut Tokens, backtick_tokens: BTreeMap<usize, Token>) {
-    // Track indices for final override
     let opening_backtick_index = *backtick_tokens.keys().next().unwrap();
     let closing_backtick_index = *backtick_tokens.keys().next_back().unwrap();
 
-    // Strip enclosing backticks
     let mut inner: Vec<Token> = backtick_tokens.into_values().collect();
     inner.remove(0);
     inner.pop();

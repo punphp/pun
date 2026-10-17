@@ -77,7 +77,6 @@ pub struct Options {
     pub config: Option<PathBuf>,
     pub no_config: bool,
     pub preset: Option<String>,
-    /// `--blade`.
     pub blade: bool,
 }
 

@@ -51,7 +51,6 @@ impl Fixer for SingleLineAfterImportsFixer {
                 indent = Utils::calculate_trailing_whitespace_indent(&tokens[index - 1]);
             }
 
-            // Handle insert index for inline T_COMMENT with whitespace after semicolon
             let semicolon_index = tokens
                 .get_next_token_of_kind(index, &[";".into(), T_CLOSE_TAG.into()], true)
                 .unwrap();
@@ -81,7 +80,6 @@ impl Fixer for SingleLineAfterImportsFixer {
                 {
                     insert_index += 1;
                 }
-                // Increment insert index for inline T_COMMENT or T_DOC_COMMENT
                 if tokens[insert_index].is_comment() {
                     insert_index += 1;
                 }

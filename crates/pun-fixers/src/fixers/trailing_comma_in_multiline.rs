@@ -58,14 +58,12 @@ impl Fixer for TrailingCommaInMultilineFixer {
         for index in (0..tokens.count()).rev() {
             if tokens[index].is_kind(CT_DESTRUCTURING_BRACKET_OPEN) {
                 if fix_destructuring {
-                    // array destructing short syntax
                     self.fix_block(tokens, index);
                 }
                 continue;
             }
             if tokens[index].is_kind(CT_ARRAY_BRACKET_OPEN) {
                 if fix_arrays {
-                    // array short syntax
                     self.fix_block(tokens, index);
                 }
                 continue;
@@ -76,14 +74,12 @@ impl Fixer for TrailingCommaInMultilineFixer {
             let prev_index = tokens.get_prev_meaningful_token(index).unwrap();
             if tokens[prev_index].is_kind(T_ARRAY) {
                 if fix_arrays {
-                    // array long syntax
                     self.fix_block(tokens, index);
                 }
                 continue;
             }
             if tokens[prev_index].is_kind(T_LIST) {
                 if fix_destructuring || fix_arguments {
-                    // array destructing long syntax
                     self.fix_block(tokens, index);
                 }
                 continue;
@@ -139,7 +135,6 @@ impl TrailingCommaInMultilineFixer {
             return;
         }
         let before_end_token = &tokens[before_end_index];
-        // if there is some item between braces then add `,` after it
         if start_index != before_end_index
             && !before_end_token.equals_any(&[",".into(), CT_FIRST_CLASS_CALLABLE.into()], true)
             && (self.after_heredoc || !before_end_token.is_kind(T_END_HEREDOC))

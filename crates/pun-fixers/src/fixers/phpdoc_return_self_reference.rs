@@ -115,7 +115,6 @@ impl Fixer for PhpdocReturnSelfReferenceFixer {
 
 impl PhpdocReturnSelfReferenceFixer {
     fn fix_method(&self, tokens: &mut Tokens, mut index: usize) {
-        // find PHPDoc of method (if any)
         loop {
             let token_index = tokens.get_prev_meaningful_token(index).unwrap();
             if !tokens[token_index].is_given_kind(&[

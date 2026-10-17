@@ -95,7 +95,7 @@ impl BinaryOperatorSpacesFixer {
     fn fix_white_space_around_operator(&self, tokens: &mut Tokens, index: usize) {
         let token_content = strtolower(tokens[index].get_content());
         let Some(op) = self.operator(&token_content) else {
-            return; // not configured to be changed
+            return;
         };
         if op == SINGLE_SPACE {
             Self::fix_white_space_around_operator_to_single_space(tokens, index);
@@ -109,7 +109,6 @@ impl BinaryOperatorSpacesFixer {
             Self::fix_white_space_around_operator_to_no_space(tokens, index);
             return;
         }
-        // schedule for alignment
         {
             let mut align = self.align_operator_tokens.lock().unwrap();
             match align.iter_mut().find(|(c, _)| *c == token_content) {
@@ -120,7 +119,6 @@ impl BinaryOperatorSpacesFixer {
         if op == ALIGN || op == ALIGN_BY_SCOPE {
             return;
         }
-        // fix white space after operator
         if tokens[index + 1].is_whitespace(None) {
             if op == ALIGN_SINGLE_SPACE_MINIMAL || op == ALIGN_SINGLE_SPACE_MINIMAL_BY_SCOPE {
                 tokens.set(index + 1, Token::new(T_WHITESPACE, " "));
@@ -131,7 +129,6 @@ impl BinaryOperatorSpacesFixer {
     }
 
     fn fix_white_space_around_operator_to_single_space(tokens: &mut Tokens, index: usize) {
-        // fix white space after operator
         if tokens[index + 1].is_whitespace(None) {
             let content = tokens[index + 1].get_content();
             if content != b" "
@@ -143,7 +140,6 @@ impl BinaryOperatorSpacesFixer {
         } else {
             tokens.insert_at(index + 1, vec![Token::new(T_WHITESPACE, " ")]);
         }
-        // fix white space before operator
         if tokens[index - 1].is_whitespace(None) {
             let content = tokens[index - 1].get_content();
             if content != b" "
@@ -158,18 +154,15 @@ impl BinaryOperatorSpacesFixer {
     }
 
     fn fix_white_space_around_operator_to_at_least_single_space(tokens: &mut Tokens, index: usize) {
-        // fix white space after operator
         if !tokens[index + 1].is_whitespace(None) {
             tokens.insert_at(index + 1, vec![Token::new(T_WHITESPACE, " ")]);
         }
-        // fix white space before operator
         if !tokens[index - 1].is_whitespace(None) {
             tokens.insert_at(index, vec![Token::new(T_WHITESPACE, " ")]);
         }
     }
 
     fn fix_white_space_around_operator_to_no_space(tokens: &mut Tokens, index: usize) {
-        // fix white space after operator
         if tokens[index + 1].is_whitespace(None) {
             let content = tokens[index + 1].get_content();
             if !content.contains(&b'\n')
@@ -178,7 +171,6 @@ impl BinaryOperatorSpacesFixer {
                 tokens.clear_at(index + 1);
             }
         }
-        // fix white space before operator
         if tokens[index - 1].is_whitespace(None) {
             let content = tokens[index - 1].get_content();
             if !content.contains(&b'\n')
@@ -209,7 +201,6 @@ impl BinaryOperatorSpacesFixer {
         None
     }
 
-    // Alignment logic related methods
 
     fn fix_alignment(&self, tokens: &mut Tokens, to_align: &[(Vec<u8>, &'static str)]) {
         let levels = Levels {
@@ -622,7 +613,6 @@ impl BinaryOperatorSpacesFixer {
                     continue;
                 }
                 if align_strategy != ALIGN {
-                    // move placeholders to match strategy
                     for &index in group {
                         let current_position = strpos(&lines[index], &placeholder).unwrap();
                         let mut before = lines[index][..current_position].to_vec();
@@ -630,7 +620,6 @@ impl BinaryOperatorSpacesFixer {
                             || align_strategy == ALIGN_SINGLE_SPACE_BY_SCOPE
                         {
                             if !before.ends_with(b" ") {
-                                // if last char of before-content is not ' '; add it
                                 before.push(b' ');
                             }
                         } else if (align_strategy == ALIGN_SINGLE_SPACE_MINIMAL

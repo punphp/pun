@@ -34,7 +34,6 @@ impl Fixer for ArrayPushFixer {
                 index -= 1;
                 continue;
             }
-            // meaningful before must be `<?php`, `{`, `}` or `;`
             let call_index = i;
             let mut i = tokens.get_prev_meaningful_token(i).unwrap();
             let mut namespace_separator_index = None;
@@ -56,12 +55,9 @@ impl Fixer for ArrayPushFixer {
                 continue;
             }
 
-            // figure out where the arguments list opens
             let open_brace_index = tokens.get_next_meaningful_token(call_index).unwrap();
-            // figure out where the arguments list closes
             let close_brace_index =
                 tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_brace_index);
-            // meaningful after `)` must be `;`, `? >` or nothing
             if tokens
                 .get_next_meaningful_token(close_brace_index)
                 .is_some_and(|after| {
@@ -71,7 +67,6 @@ impl Fixer for ArrayPushFixer {
                 continue;
             }
 
-            // must have 2 arguments
             // first argument must be a variable (with possibly array indexing etc.),
             // after that nothing meaningful should be there till the next `,` or `)`
             // if `)` than we cannot fix it (it is a single argument call)
@@ -92,7 +87,6 @@ impl Fixer for ArrayPushFixer {
                 continue;
             }
 
-            // candidate is valid, replace tokens
             tokens.clear_token_and_merge_surrounding_whitespace(close_brace_index);
             tokens.clear_token_and_merge_surrounding_whitespace(first_argument_stop);
             tokens.insert_at(

@@ -47,7 +47,7 @@ impl Fixer for LowercaseStaticReferenceFixer {
 
 fn is_token_to_fix(tokens: &Tokens, index: usize) -> bool {
     if tokens[index].content == tokens[index].content.to_ascii_lowercase() {
-        return false; // case is already correct
+        return false;
     }
     let next_index = tokens.get_next_meaningful_token(index).unwrap();
     if tokens[next_index].is_kind(T_DOUBLE_COLON) {

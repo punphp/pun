@@ -92,7 +92,6 @@ fn expand_element(tokens: &mut Tokens, ty: &str, start_index: usize, end_index: 
         division_content = Some(d);
     }
 
-    // iterate variables to split up
     let mut i = end_index - 1;
     while i > start_index {
         let token = &tokens[i];
@@ -115,7 +114,6 @@ fn expand_element(tokens: &mut Tokens, ty: &str, start_index: usize, end_index: 
         if let Some(d) = division_content.as_ref().filter(|d| !d.is_empty()) {
             tokens.insert_at(i + 1, vec![Token::new(T_WHITESPACE, d.clone())]);
         }
-        // collect modifiers
         let sequence = if ty == "const" {
             get_constant_modifiers_sequence(tokens, start_index)
         } else {

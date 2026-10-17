@@ -33,7 +33,6 @@ impl Fixer for SingleLineCommentSpacingFixer {
                     continue; // cheap check for "//"
                 }
                 if content[1] == b'*' {
-                    // slash asterisk comment
                     if content_length < 5 || content[2] == b'*' || content.contains(&b'\n') {
                         continue; // cheap check for "/**/", comment that looks like a PHPDoc, or multi line comment
                     }
@@ -45,11 +44,9 @@ impl Fixer for SingleLineCommentSpacingFixer {
                     .concat();
                     new_content = fix_comment_leading_space(&c, "/*");
                 } else {
-                    // double slash comment
                     new_content = fix_comment_leading_space(&content, "//");
                 }
             } else {
-                // hash comment
                 if content_length < 2 || content[1] == b'[' {
                     continue; // cheap check for "#" or annotation (like) comment
                 }
@@ -62,7 +59,6 @@ impl Fixer for SingleLineCommentSpacingFixer {
     }
 }
 
-// fix space between comment open and leading text
 fn fix_comment_leading_space(content: &[u8], prefix: &str) -> Vec<u8> {
     let quoted = match prefix {
         "/*" => "/\\*",

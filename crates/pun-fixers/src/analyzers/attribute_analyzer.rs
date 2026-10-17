@@ -50,7 +50,6 @@ impl AttributeAnalyzer {
             tokens[index].is_kind(T_ATTRIBUTE),
             "Given index must point to an attribute."
         );
-        // Rewind to first attribute in group
         loop {
             let prev_index = tokens.get_prev_meaningful_token(index).unwrap();
             if !tokens[prev_index].is_kind(CT_ATTRIBUTE_CLOSE) {
@@ -79,7 +78,6 @@ impl AttributeAnalyzer {
         let mut start_index = index;
         let prev_index = tokens.get_prev_meaningful_token(index).unwrap();
         if tokens[prev_index].is_kind(CT_ATTRIBUTE_CLOSE) {
-            // Include comments/PHPDoc if they are present
             start_index = tokens.get_next_non_whitespace(prev_index, None).unwrap();
         }
         let closing_index = tokens.find_block_end(Tokens::BLOCK_TYPE_ATTRIBUTE, index);

@@ -40,7 +40,7 @@ impl PhpUnitTestCaseAnalyzer {
         while let Some(i) = tokens.get_next_meaningful_token(index) {
             index = i;
             if tokens[i].equals("{", true) {
-                break; // end of class signature
+                break;
             }
             if !tokens[i].is_kind(T_STRING) {
                 continue; // not part of extends nor part of implements; so continue

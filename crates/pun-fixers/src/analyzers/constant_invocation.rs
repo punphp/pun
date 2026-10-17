@@ -144,11 +144,9 @@ pub fn is_constant_invocation(tokens: &Tokens, index: usize) -> bool {
             return false;
         }
     }
-    // check for attribute: `#[Foo]`
     if AttributeAnalyzer::is_attribute(tokens, index) {
         return false;
     }
-    // check for goto label
     if tokens[next_index].equals(":", true)
         && GotoLabelAnalyzer.belongs_to_go_to_label(tokens, next_index)
     {

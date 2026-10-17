@@ -24,7 +24,7 @@ impl BlankLineBetweenImportGroupsFixer {
     fn walk_over_uses(&self, tokens: &mut Tokens, uses: &[usize]) {
         let uses_count = uses.len();
         if uses_count < 2 {
-            return; // nothing to fix
+            return;
         }
         let mut previous_type = None;
         for i in (0..uses_count).rev() {

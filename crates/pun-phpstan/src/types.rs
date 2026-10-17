@@ -307,8 +307,6 @@ impl Type {
         )
     }
 
-    // ---- queries (Type::isX()) ----
-
     fn query(&self, f: &dyn Fn(&Type) -> Tri) -> Tri {
         match self {
             Type::Union(types) => Tri::extreme_identity(types.iter().map(f)),
@@ -661,8 +659,6 @@ impl Type {
         }
     }
 
-    // ---- describe() ----
-
     pub fn describe(&self, level: Level) -> String {
         match self {
             Type::Mixed { .. } => "mixed".to_string(),
@@ -817,8 +813,6 @@ impl Type {
     fn is_implicit_or_explicit_plain_mixed(&self) -> bool {
         matches!(self, Type::Mixed { .. })
     }
-
-    // ---- generalize(lessSpecific) ----
 
     /// `generalize(GeneralizePrecision::lessSpecific())`
     pub fn generalize(&self) -> Type {
@@ -1486,8 +1480,6 @@ fn print_callable_named(ident: &str, sig: &Signature) -> String {
     format!("{ident}({}): {ret}", params.join(", "))
 }
 
-// ---- ConstantArrayType ----
-
 impl ConstArray {
     pub fn empty() -> ConstArray {
         ConstArray {
@@ -1858,8 +1850,6 @@ impl ShapeBuilder {
         Type::ConstArray(Box::new(array))
     }
 }
-
-// ---- isSuperTypeOf ----
 
 /// `$a->isSuperTypeOf($b)`
 pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
@@ -2497,8 +2487,6 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
     }
 }
 
-// ---- TypeCombinator::union ----
-
 pub fn union(types: Vec<Type>) -> Type {
     let mut types = types;
     if types.len() == 1
@@ -3114,8 +3102,6 @@ fn common_array_accessories(arrays: &[Type]) -> Vec<Type> {
     }
     common
 }
-
-// ---- TypeCombinator::intersect ----
 
 pub fn intersect(types: Vec<Type>) -> Type {
     if types.len() <= 1 {

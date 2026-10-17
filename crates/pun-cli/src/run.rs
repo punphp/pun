@@ -368,7 +368,6 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     Ok(code.max(u8::from(failed)))
 }
 
-/// The formatter for this config: native, or delegated to PHP-CS-Fixer.
 pub(crate) fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine> {
     pun_fixers::analyzers::active_preset::set(&cfg.preset);
     let mut p = Pipeline::new(&cfg.rules, &pun_fixers::all)?;

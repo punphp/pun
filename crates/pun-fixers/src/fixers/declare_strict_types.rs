@@ -94,7 +94,7 @@ impl Fixer for DeclareStrictTypesFixer {
             return;
         }
         let Some(declaration) = declaration else {
-            self.insert_sequence(open_tag_index, tokens); // declaration not found, insert one
+            self.insert_sequence(open_tag_index, tokens);
             return;
         };
         self.fix_strict_types_casing_and_value(tokens, &declaration.sequence);
@@ -224,7 +224,6 @@ impl DeclareStrictTypesFixer {
         let next_index = open_tag_index + sequence.len() + 1;
         tokens.insert_at(open_tag_index + 1, sequence);
 
-        // transform "<?php" or "<?php\n" to "<?php " if needed
         let content = tokens[open_tag_index].content.clone();
         if !content.contains(&b' ') || content.contains(&b'\n') {
             let id = tokens[open_tag_index].id;

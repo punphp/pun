@@ -46,11 +46,8 @@ fn fix_else(tokens: &mut Tokens, index: usize) {
     if tokens[after_condition_index].equals(":", true) {
         return;
     }
-    // 1. clear whitespaces between T_ELSE and T_IF
     tokens.clear_at(index + 1);
-    // 2. change token from T_ELSE into T_ELSEIF
     tokens.set(index, Token::new(T_ELSEIF, "elseif"));
-    // 3. clear succeeding T_IF
     tokens.clear_at(if_token_index);
     let before_if_token_index = tokens
         .get_prev_non_whitespace(if_token_index, None)

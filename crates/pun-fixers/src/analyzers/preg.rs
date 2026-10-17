@@ -128,7 +128,6 @@ fn compile_uncached(pattern: &[u8]) -> Option<Regex> {
         d => d,
     };
     if end_delimiter == delimiter {
-        // Scan for an unescaped delimiter.
         while p < pattern.len() {
             if pattern[p] == b'\\' && p + 1 < pattern.len() {
                 p += 1;

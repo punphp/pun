@@ -47,7 +47,6 @@ impl BracesPositionFixer {
         let next_index = tokens
             .get_next_meaningful_token(structure_token_index)
             .unwrap();
-        // return if next token is not opening parenthesis
         if !tokens[next_index].equals("(", true) {
             return structure_token_index;
         }

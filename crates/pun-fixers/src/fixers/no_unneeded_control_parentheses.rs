@@ -187,7 +187,6 @@ impl NoUnneededControlParenthesesFixer {
         };
         let before_open_index = prev(tokens, open_index);
         let after_close_index = next(tokens, close_index);
-        // do a cheap check for negative case: `X()`
         if next(tokens, open_index) == close_index {
             if tokens[before_open_index].is_kind(T_EXIT) {
                 self.remove_useless_parenthesis_pair(
@@ -201,11 +200,9 @@ impl NoUnneededControlParenthesesFixer {
             }
             return;
         }
-        // do a cheap check for negative case: `foo(1,2)`
         if tokens[before_open_index].is_given_kind(KNOWN_NEGATIVE_PRE_TYPES) {
             return;
         }
-        // check for the simple useless wrapped cases
         if self.is_useless_wrapped(tokens, before_open_index, after_close_index) {
             let t = get_config_type(tokens, before_open_index);
             self.remove_useless_parenthesis_pair(
@@ -218,7 +215,6 @@ impl NoUnneededControlParenthesesFixer {
             );
             return;
         }
-        // handle `clone` statements
         if tokens[before_open_index].is_kind(T_CLONE) {
             if self.is_wrapped_clone_argument(
                 tokens,
@@ -238,7 +234,6 @@ impl NoUnneededControlParenthesesFixer {
             }
             return;
         }
-        // handle `instance of` statements
         let instance_of = tokens.find_given_kind(T_INSTANCEOF, open_index, Some(close_index));
         if instance_of.len() == 1 {
             if self.is_wrapped_instance_of(
@@ -375,7 +370,6 @@ impl NoUnneededControlParenthesesFixer {
                 return true;
             }
         }
-        // check if part of some operation sequence
         let before_is_binary_operation = ta.is_binary_operator(before);
         let after_is_binary_operation = ta.is_binary_operator(after);
         if before_is_binary_operation && after_is_binary_operation {

@@ -26,11 +26,9 @@ impl Fixer for NativeFunctionCasingFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         let functions_analyzer = FunctionsAnalyzer::new();
         for index in 0..tokens.count() {
-            // test if we are at a function all
             if !functions_analyzer.is_global_function_call(tokens, index) {
                 continue;
             }
-            // test if the function call is to a native PHP function
             if !is_internal_function(&tokens[index].content) {
                 continue;
             }

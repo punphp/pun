@@ -54,7 +54,6 @@ namespace {
         return $v;
     }
 
-    // --- comments ---
     $parser = (new ReflectionClass(RichParser::class))->newInstanceWithoutConstructor();
     (new ReflectionProperty(RichParser::class, 'ignoreLexer'))->setValue($parser, new IgnoreLexer());
     $linesToIgnore = new ReflectionMethod(RichParser::class, 'getLinesToIgnore');
@@ -116,7 +115,6 @@ namespace {
     }
     write($fixtures.'/comments.json', $comments);
 
-    // --- ignoreErrors ---
     $dir = $fixtures.'/ignore/files';
     $e = static fn (string $message, string $file = 'a.php', ?int $line = 1, ?string $identifier = null, bool $canBeIgnored = true, ?string $trait = null, ?string $description = null): Error => new Error(
         $message, $description ?? $dir.'/'.$file, $line, $canBeIgnored, $dir.'/'.$file, $trait === null ? null : $dir.'/'.$trait, identifier: $identifier,
@@ -207,7 +205,6 @@ namespace {
     }
     write($fixtures.'/ignore.json', $out);
 
-    // --- LocalIgnoresProcessor ---
     $processor = new PHPStan\Analyser\LocalIgnoresProcessor();
     $local = [];
     $localCases = [

@@ -114,11 +114,9 @@ impl PhpUnitMethodCasingFixer {
     }
 
     fn is_test_method(&self, tokens: &Tokens, index: usize) -> bool {
-        // Check if we are dealing with a (non-abstract, non-lambda) function
         if !is_method(tokens, index) {
             return false;
         }
-        // if the function name starts with test it's a test
         let function_name_index = tokens.get_next_meaningful_token(index).unwrap();
         if tokens[function_name_index].content.starts_with(b"test") {
             return true;

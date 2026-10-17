@@ -165,7 +165,6 @@ impl FunctionsAnalyzer {
             self.build_functions_analysis(tokens);
         }
 
-        // figure out in which namespace we are
         let mut scope_start_index = 0;
         let mut scope_end_index = tokens.count() - 1;
         let mut in_global_namespace = false;
@@ -221,12 +220,10 @@ impl FunctionsAnalyzer {
             ..Default::default()
         };
 
-        // find declarations
         if tokens.is_token_kind_found(T_FUNCTION) {
             let end = tokens.count();
             let mut i = 0;
             while i < end {
-                // skip classy, we are looking for functions not methods
                 if tokens[i].is_given_kind(CLASSY_KINDS) {
                     i = tokens
                         .get_next_token_of_kind(i, &["(".into(), "{".into()], true)
@@ -258,7 +255,6 @@ impl FunctionsAnalyzer {
             }
         }
 
-        // find imported functions
         if tokens.is_token_kind_found(CT_FUNCTION_IMPORT) {
             for declaration in NamespaceUsesAnalyzer.get_declarations_from_tokens(tokens, false) {
                 if declaration.is_function() {

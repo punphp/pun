@@ -5,7 +5,6 @@ use std::fmt::Write as _;
 use std::sync::OnceLock;
 use std::time::Instant;
 
-/// Findings shown without `-v`.
 const CAP: usize = 20;
 
 struct Mode {
@@ -134,7 +133,6 @@ pub fn render(
     o
 }
 
-/// A run error, as one line.
 pub fn error(message: &str) -> String {
     let one: Vec<&str> = message
         .lines()
@@ -144,7 +142,6 @@ pub fn error(message: &str) -> String {
     format!("pun {}: error: {}\n", cmd(), one.join(" "))
 }
 
-/// `n file` / `n files`.
 pub fn count(n: usize, what: &str) -> String {
     format!("{n} {what}{}", if n == 1 { "" } else { "s" })
 }

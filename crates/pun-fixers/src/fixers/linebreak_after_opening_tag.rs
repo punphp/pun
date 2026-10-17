@@ -31,14 +31,12 @@ impl Fixer for LinebreakAfterOpeningTagFixer {
         } else {
             0
         };
-        // ignore if linebreak already present
         if tokens[open_tag_index].get_content().contains(&b'\n') {
             return;
         }
         let newline_found = tokens.iter().any(|t| {
             (t.is_whitespace(None) || t.is_kind(T_OPEN_TAG)) && t.get_content().contains(&b'\n')
         });
-        // ignore one-line files
         if !newline_found {
             return;
         }

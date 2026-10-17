@@ -24,11 +24,9 @@ impl Fixer for ObjectOperatorWithoutWhitespaceFixer {
             if !tokens[index].is_object_operator() {
                 continue;
             }
-            // clear whitespace before ->
             if tokens[index - 1].is_whitespace(Some(b" \t")) && !tokens[index - 2].is_comment() {
                 tokens.clear_at(index - 1);
             }
-            // clear whitespace after ->
             if tokens[index + 1].is_whitespace(Some(b" \t")) && !tokens[index + 2].is_comment() {
                 tokens.clear_at(index + 1);
             }

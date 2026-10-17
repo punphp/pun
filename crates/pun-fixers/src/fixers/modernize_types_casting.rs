@@ -38,14 +38,12 @@ impl Fixer for ModernizeTypesCastingFixer {
             ("boolval", Token::new(T_BOOL_CAST, "(bool)")),
         ] {
             let mut curr_index = 0;
-            // try getting function reference and translate boundaries for humans
             while let Some((function_name, open_parenthesis, close_parenthesis)) = finder.find(
                 function_identity,
                 tokens,
                 curr_index,
                 Some(tokens.count() - 1),
             ) {
-                // analysing cursor shift
                 curr_index = open_parenthesis;
                 // indicator that the function is overridden
                 if arguments_analyzer.count_arguments(tokens, open_parenthesis, close_parenthesis)
@@ -73,11 +71,9 @@ impl Fixer for ModernizeTypesCastingFixer {
                 // analyse namespace specification (root one or none) and decide what to do
                 let prev_token_index = tokens.get_prev_meaningful_token(function_name).unwrap();
                 if tokens[prev_token_index].is_kind(T_NS_SEPARATOR) {
-                    // get rid of root namespace when it used
                     tokens.remove_trailing_whitespace(prev_token_index, None);
                     tokens.clear_at(prev_token_index);
                 }
-                // perform transformation
                 let mut replacement_sequence =
                     vec![new_token.clone(), Token::new(T_WHITESPACE, " ")];
                 if wrap_in_parentheses {
@@ -99,7 +95,6 @@ impl Fixer for ModernizeTypesCastingFixer {
                     tokens.insert_at(close_parenthesis, vec![Token::char(")")]);
                 }
                 tokens.override_range(function_name, function_name, replacement_sequence);
-                // nested transformations support
                 curr_index = function_name;
             }
         }

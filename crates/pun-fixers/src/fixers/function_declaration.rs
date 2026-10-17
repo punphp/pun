@@ -81,7 +81,6 @@ impl Fixer for FunctionDeclarationFixer {
                     true,
                 )
                 .unwrap();
-            // fix single-line whitespace before { or =>
             if tokens[start_brace_index].equals_any(&["{".into(), T_DOUBLE_ARROW.into()], true)
                 && (!tokens[start_brace_index - 1].is_whitespace(None)
                     || tokens[start_brace_index - 1]
@@ -110,19 +109,15 @@ impl Fixer for FunctionDeclarationFixer {
                         tokens.clear_token_and_merge_surrounding_whitespace(comma_index);
                     }
                 }
-                // remove single-line edge whitespaces inside use parentheses
                 fix_parenthesis_inner_edge(
                     tokens,
                     use_start_parenthesis_index,
                     use_end_parenthesis_index,
                 );
-                // fix whitespace before CT::T_USE_LAMBDA
                 tokens.ensure_whitespace_at_index(after_parenthesis_index - 1, 1, b" ");
             }
-            // remove single-line edge whitespaces inside parameters list parentheses
             fix_parenthesis_inner_edge(tokens, start_parenthesis_index, end_parenthesis_index);
             let is_lambda = TokensAnalyzer::new(tokens).is_lambda(index);
-            // remove whitespace before (
             if !is_lambda
                 && tokens[start_parenthesis_index - 1].is_whitespace(None)
                 && !tokens[tokens
@@ -138,18 +133,15 @@ impl Fixer for FunctionDeclarationFixer {
                 self.closure_function_spacing_none
             };
             if is_lambda && spacing_none {
-                // optionally remove whitespace after T_FUNCTION of a closure
                 if tokens[index + 1].is_whitespace(None) {
                     tokens.clear_at(index + 1);
                 }
             } else {
-                // otherwise, enforce whitespace after T_FUNCTION
                 tokens.ensure_whitespace_at_index(index + 1, 0, b" ");
             }
             if is_lambda {
                 let prev = tokens.get_prev_meaningful_token(index).unwrap();
                 if tokens[prev].is_kind(T_STATIC) {
-                    // fix whitespace after T_STATIC
                     tokens.ensure_whitespace_at_index(prev + 1, 0, b" ");
                 }
             }
@@ -164,11 +156,9 @@ fn fix_parenthesis_inner_edge(tokens: &mut Tokens, start: usize, mut end: usize)
             break;
         }
     }
-    // remove single-line whitespace before `)`
     if tokens[end].is_whitespace(Some(SINGLE_LINE_WHITESPACE_OPTIONS)) {
         tokens.clear_at(end);
     }
-    // remove single-line whitespace after `(`
     if tokens[start + 1].is_whitespace(Some(SINGLE_LINE_WHITESPACE_OPTIONS)) {
         tokens.clear_at(start + 1);
     }

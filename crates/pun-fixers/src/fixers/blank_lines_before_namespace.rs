@@ -57,11 +57,9 @@ impl BlankLinesBeforeNamespaceFixer {
         let previous_index = index - 1;
         let previous = tokens[previous_index].clone();
         if expected_max == 0 {
-            // Remove all the previous new lines
             if previous.is_whitespace(None) {
                 tokens.clear_at(previous_index);
             }
-            // Remove new lines in opening token
             if newline_in_opening {
                 let t = Token::new(
                     T_OPEN_TAG,
@@ -72,14 +70,12 @@ impl BlankLinesBeforeNamespaceFixer {
             return;
         }
         let line_ending = self.whitespaces_config.get_line_ending();
-        // Allow only as many line breaks as configured
         let mut newlines_for_whitespace_token = if preceding_newlines >= expected_max {
             expected_max
         } else {
             preceding_newlines.max(expected_min)
         };
         if let Some(opening_token) = &opening_token {
-            // Use the configured line ending for the PHP opening tag
             let new_content = [rtrim(opening_token.get_content()), line_ending.as_bytes()].concat();
             tokens.set(
                 opening_token_index.unwrap(),
@@ -88,15 +84,12 @@ impl BlankLinesBeforeNamespaceFixer {
             newlines_for_whitespace_token -= 1;
         }
         if newlines_for_whitespace_token == 0 {
-            // We have all the needed new lines in the opening tag
             if previous.is_whitespace(None) {
-                // Let's remove the previous token containing extra new lines
                 tokens.clear_at(previous_index);
             }
             return;
         }
         if previous.is_whitespace(None) {
-            // Fix the previous whitespace token
             let content = previous.get_content();
             let content = match content.iter().rposition(|&b| b == b'\n') {
                 None => &b""[..],
@@ -112,7 +105,6 @@ impl BlankLinesBeforeNamespaceFixer {
             );
             tokens.set(previous_index, t);
         } else {
-            // Add a new whitespace token
             tokens.insert_at(
                 index,
                 vec![Token::new(

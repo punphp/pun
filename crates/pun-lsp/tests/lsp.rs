@@ -31,7 +31,6 @@ fn project(name: &str, files: &[(&str, &str)]) -> PathBuf {
     d.canonicalize().unwrap()
 }
 
-/// Pint's stdin output for `code` named `name` in `dir`.
 fn pint(dir: &Path, name: &str, code: &str) -> String {
     let mut c = Command::new("php")
         .args([
@@ -216,7 +215,6 @@ impl Server {
         self.request(method, json!({"textDocument": {"uri": uri}, "position": {"line": line, "character": character}}))
     }
 
-    /// shutdown + exit: a clean exit 0.
     fn stop(mut self) {
         assert_eq!(self.request("shutdown", Value::Null)["result"], Value::Null);
         self.notify("exit", Value::Null);

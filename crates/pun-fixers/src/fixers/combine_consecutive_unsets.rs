@@ -36,7 +36,6 @@ impl Fixer for CombineConsecutiveUnsetsFixer {
                     }
                     Ok(call) => call,
                 };
-            // Merge the tokens inside the 'unset' call into the previous one 'unset' call.
             let next_unset_content_start = tokens
                 .get_next_token_of_kind(i, &["(".into()], true)
                 .unwrap();
@@ -67,7 +66,6 @@ impl Fixer for CombineConsecutiveUnsetsFixer {
                 tokens.clear_token_and_merge_surrounding_whitespace(before_brace_end + 1);
             }
 
-            // Remove 'unset', '(', ')' and (possibly) ';' from the merged 'unset' call.
             for at in [i, next_unset_content_start, next_unset_content_end] {
                 tokens.clear_token_and_merge_surrounding_whitespace(at + tokens_add_count);
             }

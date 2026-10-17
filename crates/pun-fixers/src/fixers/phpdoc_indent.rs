@@ -36,7 +36,6 @@ impl Fixer for PhpdocIndentFixer {
             let prev_index = index - 1;
             let prev_token = tokens[prev_index].clone();
 
-            // ignore inline docblocks
             if prev_token.is_kind(T_OPEN_TAG)
                 || (prev_token.is_whitespace(Some(b" \t"))
                     && !tokens[index - 2].is_kind(T_OPEN_TAG))

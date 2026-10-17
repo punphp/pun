@@ -37,7 +37,6 @@ static IGNORE: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?m)^(\h*[*\/]+\h+@)php-cs-fixer-ignore ((?:@?[\w\/,])+)").unwrap()
 });
 
-/// A tool whose config `pun migrate` knows about.
 #[derive(Clone, Copy, PartialEq, Debug, clap::ValueEnum)]
 pub enum Source {
     Pint,
@@ -77,7 +76,6 @@ impl Source {
     }
 }
 
-/// What happens to one detected config.
 #[derive(Clone, Copy, PartialEq, Debug)]
 enum Action {
     Migrate,

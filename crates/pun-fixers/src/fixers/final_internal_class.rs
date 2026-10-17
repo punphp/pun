@@ -154,7 +154,6 @@ impl FinalInternalClassFixer {
             if !tokens[index].is_kind(T_CLASS) || !self.is_class_candidate(tokens, index) {
                 continue;
             }
-            // make class 'final'
             let mut slices = BTreeMap::new();
             slices.insert(
                 index,

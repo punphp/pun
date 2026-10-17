@@ -13,14 +13,12 @@ pub fn is_superfluous_else(tokens: &Tokens, index: usize) -> bool {
         let (start, previous_block_end) = get_previous_block(tokens, previous_block_start);
         previous_block_start = start;
 
-        // short 'if' detection
         let mut previous = previous_block_end;
         if tokens[previous].equals("}", true) {
             previous = tokens.get_prev_meaningful_token(previous).unwrap();
         }
-        if !tokens[previous].equals(";", true) // 'if' block doesn't end with semicolon, keep 'else'
+        if !tokens[previous].equals(";", true)
             || tokens[tokens.get_prev_meaningful_token(previous).unwrap()].equals("{", true)
-        // empty 'if' block, keep 'else'
         {
             return false;
         }
@@ -69,7 +67,6 @@ pub fn is_superfluous_else(tokens: &Tokens, index: usize) -> bool {
 fn get_previous_block(tokens: &Tokens, index: usize) -> (usize, usize) {
     let close = tokens.get_prev_meaningful_token(index).unwrap();
     let mut previous = close;
-    // short 'if' detection
     if tokens[close].equals("}", true) {
         previous = tokens.find_block_start(Tokens::BLOCK_TYPE_BRACE, close);
     }

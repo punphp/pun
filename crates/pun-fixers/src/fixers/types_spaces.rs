@@ -67,7 +67,6 @@ impl Fixer for TypesSpacesFixer {
                     }
                     token_count += fix_spacing(tokens, index, self.space_multiple_catch_single);
                 }
-                // implicit continue
             }
             index += 1;
         }

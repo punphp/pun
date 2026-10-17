@@ -5,7 +5,6 @@ use pun_tokens::Token;
 pub struct Utils;
 
 impl Utils {
-    /// Converts a camel cased string to a snake cased string.
     pub fn camel_case_to_underscore(string: &str) -> String {
         let replaced = Preg::replace(
             "/(?<!^)(?<!_)((?=[\\p{Lu}][^\\p{Lu}])|(?<![\\p{Lu}])(?=[\\p{Lu}]))/",

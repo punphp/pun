@@ -72,11 +72,11 @@ impl Fixer for MagicMethodCasingFixer {
                 }
             }
             if !tokens[i].is_kind(T_STRING) {
-                continue; // wrong type
+                continue;
             }
             let content = &tokens[i].content;
             if !content.starts_with(b"__") {
-                continue; // cheap look ahead
+                continue;
             }
             let name = content.to_ascii_lowercase();
             let Some(&(_, name_in_correct_casing)) =
@@ -85,11 +85,10 @@ impl Fixer for MagicMethodCasingFixer {
                 continue; // method name is not one of the magic ones we can fix
             };
             if name_in_correct_casing.as_bytes() == &content[..] {
-                continue; // method name is already in the correct casing, no fix needed
+                continue;
             }
             if is_function_signature(tokens, i) {
                 if in_class != 0 {
-                    // this is a method definition we want to fix
                     tokens.set(i, Token::new(T_STRING, name_in_correct_casing));
                 }
                 continue;
@@ -114,7 +113,7 @@ fn next_is_open_paren(tokens: &Tokens, index: usize) -> bool {
 fn is_function_signature(tokens: &Tokens, index: usize) -> bool {
     let prev_index = tokens.get_prev_meaningful_token(index).unwrap();
     if !tokens[prev_index].is_kind(T_FUNCTION) {
-        return false; // not a method signature
+        return false;
     }
     next_is_open_paren(tokens, index)
 }

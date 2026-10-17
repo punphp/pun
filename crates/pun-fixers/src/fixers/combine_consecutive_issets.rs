@@ -50,8 +50,7 @@ impl Fixer for CombineConsecutiveIssetsFixer {
                 continue;
             }
             let isset_info = get_isset_info(tokens, index);
-            let mut isset_close_brace_index = isset_info[isset_info.len() - 1]; // ')' token
-            // one index after the previous meaningful of ')'
+            let mut isset_close_brace_index = isset_info[isset_info.len() - 1];
             let mut insert_location = isset_info[isset_info.len() - 2] + 1;
             let mut boolean_and_index = tokens
                 .get_next_meaningful_token(isset_close_brace_index)

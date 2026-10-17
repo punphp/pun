@@ -77,7 +77,6 @@ impl GlobalNamespaceImportFixer {
     ) -> Vec<Vec<u8>> {
         let (global, mut other) =
             Self::filter_use_declarations(use_declarations, |d| d.is_constant(), true);
-        // find namespaced const declarations (`const FOO = 1`) and add them to the not importable names (already used)
         let count = tokens.count();
         let mut index = 0;
         while index < count {
@@ -113,7 +112,6 @@ impl GlobalNamespaceImportFixer {
             let ns_separator_index = tokens.get_prev_meaningful_token(index).unwrap();
             if !tokens[ns_separator_index].is_kind(T_NS_SEPARATOR) {
                 if !global.contains_key(&name) {
-                    // found an unqualified constant invocation, add it to the not importable names (already used)
                     other.insert(name);
                 }
                 continue;
@@ -135,7 +133,6 @@ impl GlobalNamespaceImportFixer {
     ) -> Vec<Vec<u8>> {
         let (global, mut other) =
             Self::filter_use_declarations(use_declarations, |d| d.is_function(), false);
-        // find function declarations and add them to the not importable names (already used)
         let mut declared = Vec::new();
         Self::find_function_declarations(tokens, 0, tokens.count() - 1, &mut declared);
         for name in declared {
@@ -174,7 +171,6 @@ impl GlobalNamespaceImportFixer {
         let (global, mut other) =
             Self::filter_use_declarations(use_declarations, |d| d.is_class(), false);
         let mut doc_blocks: Vec<(usize, DocBlock)> = Vec::new();
-        // find class declarations and class usages in docblocks and add them to the not importable names (already used)
         let count = tokens.count();
         let mut index = 0;
         while index < count {

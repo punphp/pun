@@ -29,10 +29,8 @@ impl FunctionReferenceFinder {
         mut start: usize,
         end: Option<usize>,
     ) -> Option<(usize, usize, usize)> {
-        // make interface consistent with findSequence
         let end = end.unwrap_or(tokens.count());
         loop {
-            // find raw sequence which we can analyse for context
             let matches = tokens.find_sequence(
                 &[(T_STRING, function_name_to_search).into(), "(".into()],
                 start,

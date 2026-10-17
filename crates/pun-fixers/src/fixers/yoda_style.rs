@@ -389,7 +389,6 @@ fn is_variable(tokens: &Tokens, start: usize, end: usize, strict: bool) -> bool 
     while index <= end {
         // (Upstream skips comments/whitespace/empty tokens here; `index` only ever lands on meaningful tokens.)
         let current = &tokens[index];
-        // check if this is the last token
         if index == end {
             return current.is_kind(if expect_string { T_STRING } else { T_VARIABLE });
         }

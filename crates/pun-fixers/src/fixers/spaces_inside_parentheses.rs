@@ -44,7 +44,6 @@ impl Fixer for SpacesInsideParenthesesFixer {
                 }
                 let (block_type, _) = Tokens::detect_block_type(&tokens[index]).unwrap();
                 let end_index = tokens.find_block_end(block_type, index);
-                // remove space after opening `(`
                 if !tokens[tokens.get_next_non_whitespace(index, None).unwrap()].is_comment() {
                     remove_space_around_token(tokens, index + 1);
                 }
@@ -86,11 +85,9 @@ impl Fixer for SpacesInsideParenthesesFixer {
                         .get_next_token_of_kind(after, &["(".into()], true)
                         .unwrap();
                     let use_end = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, use_start);
-                    // add single-line edge whitespaces inside use parentheses
                     fix_parenthesis_inner_edge(tokens, use_start, use_end);
                 }
 
-                // add single-line edge whitespaces inside parameters list parentheses
                 fix_parenthesis_inner_edge(tokens, index, end_parenthesis_index);
                 index += 1;
             }
@@ -106,7 +103,6 @@ fn remove_space_around_token(tokens: &mut Tokens, index: usize) {
 }
 
 fn fix_parenthesis_inner_edge(tokens: &mut Tokens, start: usize, end: usize) {
-    // fix white space before ')'
     if tokens[end - 1].is_whitespace(None) {
         let content = &tokens[end - 1].content;
         if content != b" "
@@ -119,7 +115,6 @@ fn fix_parenthesis_inner_edge(tokens: &mut Tokens, start: usize, end: usize) {
         tokens.insert_at(end, vec![Token::new(T_WHITESPACE, " ")]);
     }
 
-    // fix white space after '('
     if tokens[start + 1].is_whitespace(None) {
         let content = &tokens[start + 1].content;
         if content != b" "

@@ -196,14 +196,11 @@ impl ClassAttributesSeparationFixer {
         let element = &class.elements[element_index];
         let element_above_end = class.elements.get(element_index + 1).map_or(0, |e| e.end);
         let non_white_above = tokens.get_prev_non_whitespace(element.start, None).unwrap();
-        // element is directly after class open brace
         if non_white_above == class.open {
             self.correct_line_breaks(tokens, non_white_above, element.start, 1);
             return;
         }
-        // deal with comments above an element
         if tokens[non_white_above].is_kind(T_COMMENT) {
-            // check if the comment belongs to the previous element
             if element_above_end == non_white_above {
                 let n = self.determine_required_line_count(tokens, class, element_index);
                 self.correct_line_breaks(tokens, non_white_above, element.start, n);
@@ -252,11 +249,8 @@ impl ClassAttributesSeparationFixer {
             }
             return;
         }
-        // deal with element with a PHPDoc/attribute above it
         if tokens[non_white_above].is_given_kind(&[T_DOC_COMMENT, CT_ATTRIBUTE_CLOSE]) {
-            // there should be one linebreak between the element and the attribute above it
             self.correct_line_breaks(tokens, non_white_above, element.start, 1);
-            // make sure there is blank line above the comment (with the exception when it is directly after a class opening)
             let non_white_above =
                 find_comment_block_start(tokens, non_white_above, element_above_end);
             let non_white_above_comment = tokens
@@ -300,13 +294,11 @@ impl ClassAttributesSeparationFixer {
             }
             return meta_above(above_element.start);
         }
-        // only_if_meta
         meta_above(class.elements[element_index].start)
     }
 
     fn fix_space_below_class_element(&self, tokens: &mut Tokens, class: &Class) {
         let element = &class.elements[0];
-        // if this is last element fix; fix to the class end `}` here if appropriate
         if tokens.get_next_non_whitespace(element.end, None) == Some(class.close) {
             self.correct_line_breaks(tokens, element.end, class.close, 1);
         }
@@ -402,7 +394,6 @@ fn get_last_token_index_of_class_element(
     element_index: usize,
     element_type: &str,
 ) -> usize {
-    // find last token of the element
     let mut element_end_index;
     if element_type == "method" && !tokens[class_index].is_kind(T_INTERFACE) {
         let attributes = TokensAnalyzer::new(tokens).get_method_attributes(element_index);

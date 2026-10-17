@@ -24,7 +24,6 @@ impl Fixer for CompactNullableTypeDeclarationFixer {
             if !tokens[index].is_kind(CT_NULLABLE_TYPE) {
                 continue;
             }
-            // remove whitespaces only if there are only whitespaces between '?' and the variable type
             if tokens[index + 1].is_whitespace(None)
                 && tokens[index + 2].is_given_kind(&[
                     CT_ARRAY_TYPEHINT,

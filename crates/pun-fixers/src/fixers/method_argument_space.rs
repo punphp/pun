@@ -29,7 +29,6 @@ pub fn fixer() -> Box<dyn Fixer> {
     Box::new(f)
 }
 
-/// Checks if token is new line.
 fn is_newline(token: &Token) -> bool {
     token.is_whitespace(None) && token.get_content().contains(&b'\n')
 }
@@ -122,7 +121,6 @@ impl MethodArgumentSpaceFixer {
     }
 
     fn ensure_function_fully_multiline(&self, tokens: &mut Tokens, start_function_index: usize) {
-        // find out what the indentation is
         let mut search_index = start_function_index;
         let mut prev_whitespace_token_index;
         loop {
@@ -172,13 +170,11 @@ impl MethodArgumentSpaceFixer {
         let mut index = end_function_index - 1;
         while index > start_function_index {
             let token = &tokens[index];
-            // skip nested method calls and arrays
             if token.equals(")", true) {
                 index = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, index);
                 index -= 1;
                 continue;
             }
-            // skip nested arrays
             if token.is_kind(CT_ARRAY_BRACKET_CLOSE) {
                 index = tokens.find_block_start(Tokens::BLOCK_TYPE_ARRAY_BRACKET, index);
                 index -= 1;
@@ -212,7 +208,6 @@ impl MethodArgumentSpaceFixer {
         self.fix_newline(tokens, start_function_index, &indentation, false);
     }
 
-    /// Insert newline after comma, attribute or opening parenthesis.
     fn fix_newline(&self, tokens: &mut Tokens, index: usize, indentation: &[u8], _override: bool) {
         if tokens[index + 1].is_comment() {
             return;
@@ -237,9 +232,7 @@ impl MethodArgumentSpaceFixer {
         tokens.ensure_whitespace_at_index(index + 1, 0, &ws);
     }
 
-    /// Insert space after comma and remove space before comma.
     fn fix_space(&self, tokens: &mut Tokens, index: usize) {
-        // remove space before comma if exist
         if tokens[index - 1].is_whitespace(None) {
             let prev_index = tokens.get_prev_non_whitespace(index - 1, None).unwrap();
             if !tokens[prev_index].equals(",", true)
@@ -280,7 +273,6 @@ impl MethodArgumentSpaceFixer {
         }
     }
 
-    /// Check if last item of current line is a comment.
     fn is_comment_last_line_token(tokens: &Tokens, index: usize) -> bool {
         if !tokens[index].is_comment() || !tokens[index + 1].is_whitespace(None) {
             return false;
@@ -289,7 +281,6 @@ impl MethodArgumentSpaceFixer {
         content != ltrim_chars(content, b"\r\n")
     }
 
-    /// Whether the argument content should not be collapsed.
     fn argument_content_is_multiline(
         tokens: &Tokens,
         open_parenthesis: usize,
@@ -324,7 +315,6 @@ impl MethodArgumentSpaceFixer {
         false
     }
 
-    /// Collapse a multiline single-argument call/declaration to a single line.
     fn ensure_single_line_for_parentheses(
         tokens: &mut Tokens,
         open_parenthesis: usize,

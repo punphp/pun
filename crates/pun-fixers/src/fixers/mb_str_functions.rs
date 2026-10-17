@@ -70,7 +70,6 @@ impl Fixer for MbStrFunctionsFixer {
             else {
                 continue;
             };
-            // is it a global function call?
             if functions_analyzer.is_global_function_call(tokens, index) {
                 let open_parenthesis = tokens.get_next_meaningful_token(index).unwrap();
                 let close_parenthesis =
@@ -83,7 +82,6 @@ impl Fixer for MbStrFunctionsFixer {
                 tokens.set(index, Token::new(T_STRING, alternative_name));
                 continue;
             }
-            // is it a global function import?
             let mut function_index = tokens.get_prev_meaningful_token(index).unwrap();
             if tokens[function_index].is_kind(T_NS_SEPARATOR) {
                 function_index = tokens.get_prev_meaningful_token(function_index).unwrap();

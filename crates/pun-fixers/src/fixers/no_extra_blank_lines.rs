@@ -201,7 +201,6 @@ impl Run<'_> {
     }
 
     fn remove_empty_lines_after_line_with_token_at(&mut self, index: usize) {
-        // find the line break
         let mut parentheses_depth = 0i64;
         let token_count = self.tokens.count();
         let mut end = index;
@@ -226,7 +225,7 @@ impl Run<'_> {
             end += 1;
         }
         if end == token_count {
-            return; // not found, early return
+            return;
         }
         let ending = self.fixer.whitespaces_config.get_line_ending();
         let mut i = end;

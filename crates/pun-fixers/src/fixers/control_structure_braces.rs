@@ -164,7 +164,6 @@ impl Fixer for ControlStructureBracesFixer {
                 statement_end_index + 1,
                 tokens_to_insert_after_statement,
             )]));
-            // insert opening brace
             tokens.insert_slices(BTreeMap::from([(
                 parenthesis_end_index + 1,
                 vec![Token::new(T_WHITESPACE, " "), Token::char("{")],

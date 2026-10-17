@@ -64,7 +64,6 @@ impl Fixer for CastSpacesFixer {
                 index += 1;
                 continue;
             }
-            // force no whitespace after cast token:
             if tokens[index + 1].is_whitespace(None) {
                 tokens.clear_at(index + 1);
             }

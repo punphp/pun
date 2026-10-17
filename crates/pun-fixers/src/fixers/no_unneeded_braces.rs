@@ -107,7 +107,6 @@ fn clear_if_is_over_complete_namespace_block(tokens: &mut Tokens) {
     {
         return;
     }
-    // clear up
     tokens.clear_token_and_merge_surrounding_whitespace(close_index);
     tokens.set(index, Token::char(";"));
     if tokens[index - 1].is_whitespace(Some(b" \t")) && !tokens[index - 2].is_comment() {

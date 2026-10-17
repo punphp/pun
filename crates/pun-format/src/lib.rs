@@ -584,7 +584,6 @@ mod tests {
                 .unwrap()
                 .is_none()
         );
-        // supports() false skips the fixer.
         let only_upper = Pipeline::new(&[rule("upper")], &factory).unwrap();
         assert!(
             only_upper

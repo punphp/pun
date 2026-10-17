@@ -49,7 +49,6 @@ impl Fixer for NullableTypeDeclarationFixer {
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
-        // `|` -> `?` or `?` -> `|`
         tokens.is_token_kind_found(if self.question_mark {
             CT_TYPE_ALTERNATION
         } else {
@@ -183,7 +182,7 @@ impl NullableTypeDeclarationFixer {
             (n, s)
         };
         if normalized_type_as_string == type_ {
-            return; // nothing to fix
+            return;
         }
         tokens.override_range(
             type_analysis.get_start_index(),
@@ -201,7 +200,7 @@ impl NullableTypeDeclarationFixer {
 
 fn convert_to_nullable_type(type_: &[u8]) -> Vec<Vec<u8>> {
     if type_.starts_with(b"?") {
-        return vec![type_.to_vec()]; // no need to convert; already fixed
+        return vec![type_.to_vec()];
     }
     vec![
         b"?".to_vec(),
@@ -211,7 +210,7 @@ fn convert_to_nullable_type(type_: &[u8]) -> Vec<Vec<u8>> {
 
 fn convert_to_explicit_union_type(type_: &[u8]) -> Vec<Vec<u8>> {
     if type_.contains(&b'|') {
-        return vec![type_.to_vec()]; // no need to convert; already fixed
+        return vec![type_.to_vec()];
     }
     vec![b"null".to_vec(), type_[1..].to_vec()]
 }

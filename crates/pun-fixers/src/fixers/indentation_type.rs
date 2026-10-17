@@ -22,12 +22,10 @@ impl IndentationTypeFixer {
             tokens[index].get_content(),
             -1,
         );
-        // Also check for more tabs.
         while count != 0 {
             (content, count) = Preg::replace_limit("/^(\\ +)?\\t/m", "\\1    ", &content, -1);
         }
         let indent = self.whitespaces_config.get_indent();
-        // change indent to expected one
         let content = Preg::replace_callback(
             "/^(?:    )+/m",
             |m| Self::get_expected_indent(m.str(0), indent),
@@ -49,11 +47,9 @@ impl IndentationTypeFixer {
         }
         let indent = self.whitespaces_config.get_indent();
         let mut new_content = Preg::replace_callback(
-            "/(\\R)(\\h+)/", // find indent
+            "/(\\R)(\\h+)/",
             |m| {
-                // normalize mixed indent
                 let content = Preg::replace("/(?:(?<! ) {1,3})?\\t/", "    ", m.str(2));
-                // change indent to expected one
                 [m.str(1), &Self::get_expected_indent(&content, indent)].concat()
             },
             &content,

@@ -279,7 +279,6 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                         _ => namespace.scope_start_index + 1,
                     }
                 };
-                // Insert all registered FQCNs
                 let names = st
                     .symbols_for_import
                     .0
@@ -417,7 +416,6 @@ impl FullyQualifiedStrictTypesFixer {
         let cache = refresh_uses_cache(st, uses);
         let mut res: Option<Vec<u8>> = None;
 
-        // try to shorten the name using namespace
         let mut i_min = 0;
         let ns_prefix = [namespace_name, b"\\"].concat();
         if let Some(tmp_res) = fqcn.strip_prefix(&ns_prefix[..])
@@ -430,7 +428,6 @@ impl FullyQualifiedStrictTypesFixer {
             i_min = namespace_name.iter().filter(|&&c| c == b'\\').count() + 1;
         }
 
-        // try to shorten the name using uses
         let mut tmp = fqcn;
         let mut i = fqcn.iter().filter(|&&c| c == b'\\').count() as isize;
         while i >= i_min as isize {
@@ -456,7 +453,6 @@ impl FullyQualifiedStrictTypesFixer {
             res = Some(tmp_res.clone());
         }
 
-        // shortening is not possible, add leading backslash if needed
         res.unwrap_or_else(|| {
             if !namespace_name.is_empty()
                 || self.leading_backslash_in_global_namespace
@@ -723,7 +719,7 @@ impl FullyQualifiedStrictTypesFixer {
     }
 
     fn fix_catch(&self, st: &State, tokens: &mut Tokens, index: usize, uses: &OMap, ns: &[u8]) {
-        let index = tokens.get_next_meaningful_token(index).unwrap(); // '('
+        let index = tokens.get_next_meaningful_token(index).unwrap();
         let mut index = tokens.get_next_meaningful_token(index).unwrap(); // first part of first exception class to be caught
         let mut type_start_index = None;
         let mut type_end_index = 0;

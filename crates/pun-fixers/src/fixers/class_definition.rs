@@ -116,13 +116,11 @@ impl ClassDefinitionFixer {
         };
         if def.anonymous_class && !self.inline_constructor_arguments {
             if !tokens[end].equals(")", true) {
-                // anonymous class with `extends` and/or `implements`
                 let start = tokens.get_prev_meaningful_token(end).unwrap();
                 self.make_classy_definition_single_line(tokens, start, end);
                 end = start;
             }
             if tokens[end].equals(")", true) {
-                // skip constructor arguments of anonymous class
                 end = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, end);
             }
         }
@@ -244,7 +242,6 @@ impl ClassDefinitionFixer {
             }
         }
         if def.anonymous_class {
-            // go to "new" for anonymous class
             def.start = tokens
                 .get_prev_token_of_kind(classy_index, &[T_NEW.into()], true)
                 .unwrap();
@@ -371,9 +368,7 @@ impl ClassDefinitionFixer {
                 )
                 .unwrap();
             let break_at_index = tokens.get_next_meaningful_token(previous).unwrap();
-            // make the part of a ',' or 'implements' single line
             self.make_classy_definition_single_line(tokens, break_at_index, i);
-            // make sure the part is on its own line
             let is_on_own_line = (previous + 1..=break_at_index)
                 .rev()
                 .any(|j| has_nl(&tokens[j]));

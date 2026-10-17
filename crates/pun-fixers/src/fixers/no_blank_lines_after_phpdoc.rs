@@ -9,10 +9,8 @@ pub fn fixer() -> Box<dyn Fixer> {
     Box::new(NoBlankLinesAfterPhpdocFixer)
 }
 
-/// Cleanup a whitespace token.
 fn fix_whitespace(tokens: &mut Tokens, index: usize) {
     let content = tokens[index].get_content();
-    // if there is more than one new line in the whitespace, then we need to fix it
     if content.iter().filter(|&&b| b == b'\n').count() > 1 {
         // the final bit of the whitespace must be the next statement's indentation
         let last = content.iter().rposition(|&b| b == b'\n').unwrap();

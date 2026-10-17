@@ -44,12 +44,10 @@ impl ArgumentsAnalyzer {
         let mut arguments_start = param_content_index;
         while param_content_index < close_parenthesis {
             let token = &tokens[param_content_index];
-            // skip nested (), [], {} constructs
             if let Some((block_type, true)) = Tokens::detect_block_type(token) {
                 param_content_index = tokens.find_block_end(block_type, param_content_index) + 1;
                 continue;
             }
-            // if comma matched, increase arguments counter
             if token.equals(",", true) {
                 if tokens.get_next_meaningful_token(param_content_index) == Some(close_parenthesis)
                 {

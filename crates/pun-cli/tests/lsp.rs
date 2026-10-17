@@ -22,7 +22,6 @@ fn project(name: &str, pint_json: &str) -> PathBuf {
     d.canonicalize().unwrap()
 }
 
-/// pun.toml from the current pint.json.
 fn migrate(dir: &Path) {
     let _ = std::fs::remove_file(dir.join("pun.toml"));
     let out = Command::new(env!("CARGO_BIN_EXE_pun"))
@@ -130,7 +129,6 @@ impl Server {
         self.send(json!({"jsonrpc": "2.0", "method": method, "params": params}));
     }
 
-    /// The response to a new request.
     fn request(&mut self, method: &str, params: Value) -> Value {
         self.id += 1;
         self.send(json!({"jsonrpc": "2.0", "id": self.id, "method": method, "params": params}));
@@ -156,7 +154,6 @@ impl Server {
         );
     }
 
-    /// shutdown + exit: a clean exit 0.
     fn stop(mut self) {
         assert_eq!(self.request("shutdown", Value::Null)["result"], Value::Null);
         self.notify("exit", Value::Null);

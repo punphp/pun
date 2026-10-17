@@ -49,11 +49,9 @@ impl Fixer for NoSpacesAroundOffsetFixer {
                     Tokens::BLOCK_TYPE_INDEX_BRACE
                 };
                 let end_index = tokens.find_block_end(block_type, index);
-                // remove space after opening `[` or `{`
                 if tokens[index + 1].is_whitespace(Some(b" \t")) {
                     tokens.clear_at(index + 1);
                 }
-                // remove space before closing `]` or `}`
                 if tokens[end_index - 1].is_whitespace(Some(b" \t")) {
                     tokens.clear_at(end_index - 1);
                 }

@@ -58,8 +58,6 @@ fn panics(f: impl FnOnce() + std::panic::UnwindSafe) -> String {
     }
 }
 
-// LineTest
-
 #[test]
 fn line_tests() {
     let sample = s(&st("LineTest", "sample"));
@@ -112,8 +110,6 @@ fn line_set_content() {
     assert_eq!(line.get_content(), b"");
 }
 
-// DocBlockTest
-
 #[test]
 fn docblock_tests() {
     let sample = s(&st("DocBlockTest", "sample"));
@@ -151,8 +147,6 @@ fn docblock_tests() {
     assert!(doc.is_multi_line());
 }
 
-// ShortDescriptionTest
-
 #[test]
 fn short_description_get_end() {
     for c in cases("ShortDescriptionTest::testGetEnd") {
@@ -166,8 +160,6 @@ fn short_description_get_end() {
     }
 }
 
-// TagTest
-
 #[test]
 fn tag_name() {
     for c in cases("TagTest::testName") {
@@ -176,8 +168,6 @@ fn tag_name() {
         assert_eq!(lossy(&tag.get_name()), lossy(&expected));
     }
 }
-
-// AnnotationTest
 
 #[test]
 fn annotation_sample() {
@@ -290,8 +280,6 @@ fn annotation_type_expression_and_variable_name() {
         b"$x"
     );
 }
-
-// TypeExpressionTest
 
 fn check_inner_start_index(t: &TypeExpression) -> Vec<(usize, Vec<u8>)> {
     let mut res = vec![];

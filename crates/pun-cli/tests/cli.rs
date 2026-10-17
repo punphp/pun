@@ -150,7 +150,6 @@ fn migrate(dir: &Path) {
     );
 }
 
-/// `pun format` on `dir` after `pun migrate`.
 fn pun_format(dir: &Path, args: &[&str], env: &[(&str, &str)], stdin: &[u8]) -> (Run, String) {
     migrate(dir);
     run(Path::new(PUN), &["format"], dir, args, env, stdin)
