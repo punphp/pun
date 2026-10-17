@@ -64,8 +64,7 @@ Each command answers one question and makes one promise.
    - **(b) Move them to lint with safe fixes.** `pun format` becomes pure layout. `pun check --fix` still equals `pint`,
      because it runs both.
 
-   *Recommend: (b). Pint parity is already proven on `pun check --fix`, so nothing is lost, and format then means only
-   "how it looks". If you agree, I'll count exactly which of the 208 format rules move.*
+   *Answered: (b), see §5.*
 2. **One-time changes (version upgrades, codemods).** Answered: they stay in lint, as rule groups (no `pun upgrade`
    command). See "Decisions".
 3. **Modernisation rules** (Rector's PHP sets as `prefer-*` rules, such as `prefer-match` and `prefer-readonly-property`)
@@ -111,6 +110,77 @@ risky fixers stay token fixers and run inside step 2 in PHP-CS-Fixer's priority 
 **The single commands** stay for editors and for running one step: `pun format` on save, `pun lint --fix`, and
 `pun analyse` for PHPStan-style runs.
 
+## 5. Which format rules move to lint (follows from Q1)
+
+**The test.** Format may only:
+- change whitespace, line breaks and indentation;
+- change casing;
+- change how the same construct is spelled (`array()` to `[]`, quotes, cast spelling, `else if` to `elseif`,
+  `\Foo` to an import);
+- sort lists whose order means nothing (imports, union types, `implements` lists, PHPDoc tags).
+
+Anything else moves to lint with a safe fix:
+- removing code;
+- adding or removing PHPDoc;
+- rewriting one construct into another;
+- changing a declaration or the order of class members.
+
+**Result:** 40 of the 208 format rules move. 11 of them are in the laravel preset and 2 in psr12, so format keeps 168
+rules: laravel 115, psr12 50. This list is for review; say if any rule is on the wrong side.
+
+| Why it moves | Rule today (proposed format name) | laravel | psr12 |
+| --- | --- | :-: | :-: |
+| removes code | `no-unused-imports` (`imports/no-unused`) | ✓ | ✓ |
+| removes code | `no-useless-else` (`control-flow/no-useless-else`) |  |  |
+| removes code | `no-useless-return` (`control-flow/no-useless-return`) | ✓ |  |
+| removes code | `no-empty-statement` (`statements/no-empty`) | ✓ |  |
+| removes code | `no-superfluous-elseif` (`control-flow/no-superfluous-elseif`) |  |  |
+| removes code | `no-useless-nullsafe-operator` (`operators/no-useless-nullsafe`) |  |  |
+| removes code | `no-null-property-initialization` (`classes/no-null-property-default`) |  |  |
+| removes code | `no-redundant-readonly-property` (`classes/no-redundant-readonly`) |  |  |
+| removes code | `lambda-not-used-import` (`functions/no-unused-closure-use`) | ✓ |  |
+| removes code | `general-attribute-remove` (`attributes/remove`) |  |  |
+| removes or adds PHPDoc | `no-superfluous-phpdoc-tags` (`phpdoc/no-superfluous-tags`) | ✓ |  |
+| removes or adds PHPDoc | `general-phpdoc-annotation-remove` (`phpdoc/remove-annotation`) |  |  |
+| removes or adds PHPDoc | `general-phpdoc-tag-rename` (`phpdoc/rename-tag`) | ✓ |  |
+| removes or adds PHPDoc | `phpdoc-no-access` (`phpdoc/no-access`) | ✓ |  |
+| removes or adds PHPDoc | `phpdoc-no-package` (`phpdoc/no-package`) | ✓ |  |
+| removes or adds PHPDoc | `phpdoc-no-empty-return` (`phpdoc/no-empty-return`) |  |  |
+| removes or adds PHPDoc | `phpdoc-no-useless-inheritdoc` (`phpdoc/no-useless-inheritdoc`) | ✓ |  |
+| removes or adds PHPDoc | `phpdoc-add-missing-param-annotation` (`phpdoc/add-missing-param`) |  |  |
+| removes or adds PHPDoc | `phpdoc-to-comment` (`phpdoc/to-comment`) |  |  |
+| removes or adds PHPDoc | `phpdoc-tag-no-named-arguments` (`phpdoc/tag-no-named-arguments`) |  |  |
+| removes or adds PHPDoc | `phpdoc-type-annotations-only` (`laravel/phpdoc-type-annotations-only`) |  |  |
+| rewrites one construct into another | `combine-consecutive-issets` (`control-flow/combine-issets`) |  |  |
+| rewrites one construct into another | `combine-consecutive-unsets` (`control-flow/combine-unsets`) |  |  |
+| rewrites one construct into another | `simplified-if-return` (`control-flow/simplified-if-return`) |  |  |
+| rewrites one construct into another | `simplified-null-return` (`control-flow/simplified-null-return`) |  |  |
+| rewrites one construct into another | `return-assignment` (`control-flow/no-return-assignment`) |  |  |
+| rewrites one construct into another | `ternary-to-null-coalescing` (`operators/ternary-to-coalesce`) |  |  |
+| rewrites one construct into another | `assign-null-coalescing-to-coalesce-equal` (`operators/coalesce-equal`) |  |  |
+| rewrites one construct into another | `switch-continue-to-break` (`control-flow/switch-continue-to-break`) |  |  |
+| rewrites one construct into another | `return-to-yield-from` (`control-flow/yield-from`) |  |  |
+| changes declarations or their order | `protected-to-private` (`classes/protected-to-private`) |  |  |
+| changes declarations or their order | `self-static-accessor` (`classes/self-static-accessor`) | ✓ |  |
+| changes declarations or their order | `stringable-for-to-string` (`classes/stringable-for-to-string`) |  |  |
+| changes declarations or their order | `ordered-class-elements` (`classes/ordered-members`) |  | ✓ |
+| changes declarations or their order | `phpunit-method-casing` (`phpunit/method-casing`) | ✓ |  |
+| changes declarations or their order | `phpunit-data-provider-method-order` (`phpunit/data-provider-order`) |  |  |
+| adds test metadata | `phpunit-attributes` (`phpunit/attributes`) |  |  |
+| adds test metadata | `phpunit-internal-class` (`phpunit/internal-class`) |  |  |
+| adds test metadata | `phpunit-size-class` (`phpunit/size-class`) |  |  |
+| adds test metadata | `phpunit-test-class-requires-covers` (`phpunit/require-covers`) |  |  |
+
+What changes for users:
+- `pun format` and format-on-save never delete or restructure code.
+- `pun check --fix` still writes Pint's bytes, because these stay token fixers and run in the same priority-ordered
+  pass as format.
+- `pun migrate` writes the ones a pint.json enables under `[lint.rules]`. They are safe, so `--fix` applies them with
+  no `fix = "apply"`.
+- Moving `simplified-null-return` to lint also settles its conflict with `require-consistent-return` inside one
+  command.
+- These rules then take lint names and groups, so the §9 format table in format.md loses these 40 rows.
+
 ## Decisions
 
 Answered 2026-10-17 (Pushpak):
@@ -124,4 +194,5 @@ Answered 2026-10-17 (Pushpak):
   phpstan.neon. Anything Pun doesn't support yet is named explicitly to the user, never dropped silently.
 - **No levels.** PHPStan's levels don't come over; rules are turned on by name and by presets.
 - **Every PHPStan core rule is supported natively.**
+- **Fixers that delete or restructure code move from format to lint** (Q1 (b), decision card). The list is in §5.
 - **Laravel support is built in.** Nothing to install or import, unlike Larastan or rector-laravel.

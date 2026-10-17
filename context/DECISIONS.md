@@ -45,6 +45,8 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 ## Format (components/format.md, 2026-10-17)
 
 - Risky rules stay in lint; `pun check --fix` equals `pint`.
+- Fixers that delete or restructure code (unused imports, useless else, combine issets and 37 more) move to lint
+  with safe fixes; format only changes layout, casing and spelling (components/commands.md §5, 2026-10-17).
 - Format presets: `laravel`, `psr12`, `empty` only.
 - Rule options are designed for TOML, not copied from PHP-CS-Fixer; migrate translates upstream options.
 - No pun.toml: stop with "Run `pun migrate`, or `pun init` for a new project" (`pun init` to be built).
