@@ -65,4 +65,6 @@ Non-interactive (agents, CI, no terminal, `--yes`): the defaults, or flags `--st
 
 ## Decisions
 
-None yet.
+Answered 2026-10-17 (Pushpak):
+
+- **Q1: old configs present → offer migrate** ("Found phpstan.neon. Migrate it instead? › yes"); yes runs `pun migrate`.
