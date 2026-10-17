@@ -1,0 +1,16 @@
+<!-- @dsCard group="Code" height=130 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>InstallBox</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var P = window.Pun, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'pun-pad' }, h(P.InstallBox, { options: [
+    { label: 'composer', command: 'composer require --dev punphp/pun' },
+    { label: 'curl', command: 'curl -LsSf https://github.com/punphp/pun/releases/latest/download/punphp-installer.sh | sh' },
+    { label: 'brew', command: 'brew install punphp/tap/pun' },
+    { label: 'npm', command: 'npm install --save-dev @punphp/pun' }] })));
+</script>
+</body>
+</html>

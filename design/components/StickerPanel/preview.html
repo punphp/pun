@@ -1,0 +1,17 @@
+<!-- @dsCard group="Surfaces" height=360 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>StickerPanel</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var P = window.Pun, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', { className: 'pun-pad', style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28 } },
+    h(P.StickerPanel, { style: { height: 300, display: 'grid', placeItems: 'center' } },
+      h('div', { style: { position: 'absolute', width: 220, height: 220, borderRadius: '50%', background: 'var(--zap)', border: 'var(--stroke) solid var(--outline)' } }),
+      h('img', { src: '../../assets/Mascot/pun-sprinter-512.png', alt: 'Pun mascot', width: 270, height: 270 })),
+    h(P.StickerPanel, { tone: 'zap', style: { height: 300, display: 'grid', placeItems: 'center' } },
+      h('img', { src: '../../assets/Mascot/pun-sprinter-512.png', alt: 'Pun mascot', width: 250, height: 250 }))));
+</script>
+</body>
+</html>
