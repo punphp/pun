@@ -118,3 +118,6 @@ Answered 2026-10-17 (Pushpak):
 - **Q3: GitHub annotations are automatic** when `GITHUB_ACTIONS` is set, on top of the normal output; `--format=github`
   forces them.
 - **Q4: clean files print nothing**; `-v` adds a dim line per clean file (assistant default, as approved for format).
+- **Q5: Pint's human screen is dropped** once Pun's output lands. Exit codes and machine formats stay Pint- and
+  PHPStan-compatible; scripts/cli-parity.sh then covers only those. AGENTS.md ("output, messages and exit codes must
+  match upstream") needs updating when this is built.
