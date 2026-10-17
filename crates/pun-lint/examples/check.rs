@@ -5,9 +5,11 @@
 //! problem (comparable with Rector's changed files) and `refused` the files that do not parse.
 //! `check --rules` prints the rule IDs, one per line.
 //!
-//! The walk and the checks share the threads: one stack holds the directories still to read and the files still to
-//! check, so the first files are checked while the rest of the tree is being listed (like `ignore`'s parallel walker).
-//! Listing every file on one thread before checking any took about a quarter of laravel-framework's run.
+//! [`READERS`] threads walk the directories and read the files; one thread per core checks the sources they read.
+//! The readers share one stack of the directories still to list and the files still to read, so checking starts with
+//! the first file read. Opening a file is the largest single cost (about 11 us on macOS, ten times a `stat`), and
+//! opens on more than four threads at once slow each other down: eight threads open laravel-framework's files slower
+//! than four. Reading on a few threads of their own keeps the opens from contending while every core parses.
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -15,19 +17,24 @@ use std::sync::{Condvar, Mutex};
 
 use pun_lint::{Linter, rules};
 
+/// The threads that walk and read. Fewer leave the checkers waiting for sources; more make the opens contend
+/// (laravel-framework, 8 cores: 2 readers 46 ms, 3 readers 43 ms, 4 readers 44 ms, 5 readers 47 ms).
+const READERS: usize = 3;
+
 enum Item {
     Dir(PathBuf),
     File(PathBuf),
 }
 
-/// The items not taken yet, and how many threads are reading a directory (and may still add items).
+/// The directories still to list and the files still to read, and how many readers are listing a directory (and
+/// may still add items).
 struct Queue {
     state: Mutex<(Vec<Item>, usize)>,
     changed: Condvar,
 }
 
 impl Queue {
-    /// The next item, or `None` once the stack is empty and no directory is being read.
+    /// The next item, or `None` once the stack is empty and no directory is being listed.
     fn take(&self) -> Option<Item> {
         let mut state = self.state.lock().unwrap();
         loop {
@@ -44,12 +51,44 @@ impl Queue {
         }
     }
 
-    /// Add what a directory held and mark that directory read.
+    /// Add what a directory held and mark that directory listed.
     fn done_dir(&self, found: Vec<Item>) {
         let mut state = self.state.lock().unwrap();
         state.0.extend(found);
         state.1 -= 1;
         drop(state);
+        self.changed.notify_all();
+    }
+}
+
+/// The sources read and not checked yet, and how many readers are still running.
+struct Sources {
+    state: Mutex<(Vec<(PathBuf, String)>, usize)>,
+    changed: Condvar,
+}
+
+impl Sources {
+    /// The next source, or `None` once every reader has finished and every source was taken.
+    fn take(&self) -> Option<(PathBuf, String)> {
+        let mut state = self.state.lock().unwrap();
+        loop {
+            if let Some(item) = state.0.pop() {
+                return Some(item);
+            }
+            if state.1 == 0 {
+                return None;
+            }
+            state = self.changed.wait(state).unwrap();
+        }
+    }
+
+    fn put(&self, path: PathBuf, source: String) {
+        self.state.lock().unwrap().0.push((path, source));
+        self.changed.notify_one();
+    }
+
+    fn reader_done(&self) {
+        self.state.lock().unwrap().1 -= 1;
         self.changed.notify_all();
     }
 }
@@ -99,8 +138,12 @@ fn main() {
             }
         })
         .collect();
-    let queue = Queue {
+    let items = Queue {
         state: Mutex::new((roots, 0)),
+        changed: Condvar::new(),
+    };
+    let sources = Sources {
+        state: Mutex::new((Vec::new(), READERS)),
         changed: Condvar::new(),
     };
     let (files, flagged, problems, refused) = (
@@ -109,22 +152,27 @@ fn main() {
         AtomicUsize::new(0),
         AtomicUsize::new(0),
     );
-    let threads = std::thread::available_parallelism().map_or(1, |n| n.get());
+    let checkers = std::thread::available_parallelism().map_or(1, |n| n.get());
     std::thread::scope(|s| {
-        for _ in 0..threads {
+        for _ in 0..READERS {
             s.spawn(|| {
-                while let Some(item) = queue.take() {
-                    let path = match item {
-                        Item::Dir(dir) => {
-                            queue.done_dir(list(&dir));
-                            continue;
+                while let Some(item) = items.take() {
+                    match item {
+                        Item::Dir(dir) => items.done_dir(list(&dir)),
+                        Item::File(path) => {
+                            files.fetch_add(1, Ordering::Relaxed);
+                            if let Ok(source) = std::fs::read_to_string(&path) {
+                                sources.put(path, source);
+                            }
                         }
-                        Item::File(path) => path,
-                    };
-                    files.fetch_add(1, Ordering::Relaxed);
-                    let Ok(source) = std::fs::read_to_string(&path) else {
-                        continue;
-                    };
+                    }
+                }
+                sources.reader_done();
+            });
+        }
+        for _ in 0..checkers {
+            s.spawn(|| {
+                while let Some((path, source)) = sources.take() {
                     match linter.check(&path, &source) {
                         Ok(found) if !found.is_empty() => {
                             flagged.fetch_add(1, Ordering::Relaxed);

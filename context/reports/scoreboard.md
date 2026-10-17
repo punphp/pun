@@ -234,9 +234,9 @@ is check-only, in a scratch copy with the project's `vendor/`.
 | project | files | rector-ported | rector-full | pun | mago | count (ported / full / pun / mago) | pun vs ported | pun vs full | pun vs mago |
 |---|---:|---:|---:|---:|---:|---|---:|---:|---:|
 | pinkary | 342 | 2.27 s, 951 MB | 12.38 s, 2538 MB | 0.04 s, 14 MB | 0.04 s, 44 MB | 0 / 0 / 0 / 446 | 54x, 70x mem | 293x, 186x mem | 0.89x, 3.2x mem |
-| laravel-framework | 3027 | 37.68 s, 2528 MB | 85.40 s, 4440 MB | 0.09 s, 82 MB | 0.23 s, 227 MB | 9 / 7 / 9 / 24431 | 412x, 31x mem | 933x, 54x mem | 2.5x, 2.8x mem |
+| laravel-framework | 3027 | 37.68 s, 2528 MB | 85.40 s, 4440 MB | 0.06 s, 77 MB | 0.23 s, 227 MB | 9 / 7 / 9 / 24431 | 587x, 33x mem | 1330x, 58x mem | 3.6x, 3.0x mem |
 
-- With the same two rules, Pun is 54-412x faster than Rector and uses 31-70x less memory, and both find the same 9
+- With the same two rules, Pun is 54-587x faster than Rector and uses 33-70x less memory, and both find the same 9
   files on laravel-framework. These rules are cheap, so the ratio shrinks as heavier rules are ported.
 - laravel-framework's rector-full is 3 single-run calls (90.2, 83.8 and 85.4 s): one call of 4 runs would not fit
   in a 10-minute slot.
@@ -257,6 +257,8 @@ also timed with 30 plain spawn-and-wait runs (median; "precise" below).
 | 2 | laravel-framework | 100.5 ms, 82.4 MB | 91.5 ms, 81.6 MB | 66.2 ms, 82.5 MB | 53.2 ms, 85.7 MB |
 | 3 | pinkary | 44.3 ms, 12.9 MB | 43.4 ms, 13.4 MB | 7.8 ms, 13.3 MB | 7.65 ms, 13.3 MB |
 | 3 | laravel-framework | 91.9 ms, 84.3 MB | 89.1 ms, 82.2 MB | 51.3 ms, 87.3 MB | 49.0 ms, 85.9 MB |
+| 4 | pinkary | 43.1 ms, 13.3 MB | 44.7 ms, 12.8 MB | 9.3 ms, 13.5 MB | 8.3 ms, 12.9 MB |
+| 4 | laravel-framework | 88.1 ms, 84.5 MB | 65.3 ms, 77.9 MB | 47.5 ms, 83.8 MB | 41.5 ms, 77.7 MB |
 
 - round 1: the walk writes every report into one list and tags it with its rule ID, instead of a list per node
   drained into the results per rule, which cost an allocation check and a drain on each of ~2.4M nodes. wall -8%
@@ -300,3 +302,21 @@ also timed with 30 plain spawn-and-wait runs (median; "precise" below).
   but a gate of 1-4 concurrent opens in `examples/check` was slower), 35% Mago's parser, 12% the walk. Copying the
   source into the arena (`parse_file_content`) is 2.3%, under the 3% bar, and avoiding it needs a `'static` borrow
   of the source.
+- round 4: `examples/check` reads on 3 threads of its own and checks on one thread per core, where every thread used
+  to both read and check. `open` costs 10.5 us per file here (a `stat` 1 us) and slows down past 4 concurrent
+  callers: 8 threads read laravel-framework's files in 24 ms, 4 in 15 ms. With 8 threads opening, the run spent
+  0.14-0.27 s of system time; with 3 readers 0.08-0.11 s, and the checkers parse while the readers wait in `open`.
+  2, 3, 4 and 5 readers took 46, 43, 44 and 47 ms. laravel-framework wall -10% precise, rss -5%; pinkary -8%
+  precise. The engine is unchanged.
+- round 4: `Linter::check` parses with `parse_file_borrowed_with_settings` on a `File` that borrows the source,
+  instead of `parse_file_content`, which copied the whole source into the arena first (`alloc_slice_copy`, 2.2% of
+  samples). The borrow is `'static` only on paper: the `File` and the tree die before `check` returns. Single-thread
+  `check` (`examples/cost`) 33.5 to 31.4 us per file (-6%); wall -2% precise, rss -3% (the arena no longer holds a
+  copy of the source).
+- round 4 total: laravel-framework wall -12% precise (47.5 to 41.5 ms) and -26% bench.py (88.1 to 65.3 ms, the
+  medians of two 10-run calls each), rss -7%; pinkary wall -11% precise, flat in bench.py (its 8 ms run sits under
+  bench.py's 44 ms floor), rss -4%. Output byte-identical: `examples/dump` on all 3,376 corpus files, and
+  `fix_dir` against `rector process` with the ported rules (`diff -r` empty on both projects).
+- round 4, what is left: in a laravel-framework profile the checkers now wait for sources (`__psynch_cvwait`) in
+  42% of the samples and `open` is 15%, so the readers are the critical path again and each of them spends 82% of
+  its time in `open`. Mago's parser is 18% and the walk 6%. More readers make `open` slower, not faster.

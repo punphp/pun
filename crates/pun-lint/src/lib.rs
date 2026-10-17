@@ -8,13 +8,15 @@
 //! next round, and the rounds stop when no rule has a fix left. There is no printer: an edit inserts the text the rule
 //! wrote, and the format pass that runs after lint (`pun check --fix`) tidies the layout.
 
+use std::borrow::Cow;
 use std::fmt;
 use std::path::{Path, PathBuf};
 
 use mago_allocator::LocalArena;
-use mago_database::file::FileId;
+use mago_database::file::{File, FileId, FileType};
 use mago_span::HasSpan;
 use mago_syntax::cst::{Node, NodeKind};
+use mago_syntax::settings::ParserSettings;
 use mago_syntax::walker::Walker;
 use pun_problem::{Fix, Level, Problem, Span, apply_fixes};
 
@@ -164,9 +166,24 @@ impl Linter {
     /// Parse `source` once and run every rule over the tree. Problems are sorted by start offset; at the same offset
     /// an outer node comes before an inner one, and rules keep their order.
     pub fn check(&self, path: &Path, source: &str) -> Result<Vec<Problem>, LintError> {
+        // SAFETY: `file` and the tree parsed from it borrow `source` and are dropped before this function returns;
+        // nothing built from them outlives `source`. Mago's `File` only takes a `'static` borrow.
+        let contents: &'static [u8] = unsafe { &*std::ptr::from_ref::<[u8]>(source.as_bytes()) };
+        let file = File {
+            id: FileId::zero(),
+            name: Cow::Borrowed(b""),
+            path: None,
+            file_type: FileType::Host,
+            contents: Cow::Borrowed(contents),
+            size: source.len() as u32,
+            lines: Vec::new(),
+        };
         let arena = LocalArena::new();
-        let program =
-            mago_syntax::parser::parse_file_content(&arena, FileId::zero(), source.as_bytes());
+        let program = mago_syntax::parser::parse_file_borrowed_with_settings(
+            &arena,
+            &file,
+            ParserSettings::default(),
+        );
         if let Some(error) = program.errors.first() {
             return Err(LintError::Syntax {
                 span: syntax::span(error.span()),
