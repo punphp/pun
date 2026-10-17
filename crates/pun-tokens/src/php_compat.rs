@@ -232,9 +232,73 @@ pub fn float_to_string(f: f64) -> String {
     }
 }
 
+/// PHP's `intval()` on a string: the leading numeric part (whitespace, sign, digits, fraction, exponent), truncated
+/// toward zero and saturating; 0 when there is none.
+pub fn intval(s: &str) -> i64 {
+    let t = s.trim_start_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']);
+    let b = t.as_bytes();
+    let digits = |i: &mut usize| {
+        let start = *i;
+        while b.get(*i).is_some_and(u8::is_ascii_digit) {
+            *i += 1;
+        }
+        *i > start
+    };
+    let mut i = usize::from(matches!(b.first(), Some(b'+' | b'-')));
+    let int = digits(&mut i);
+    let mut j = i;
+    if b.get(j) == Some(&b'.') {
+        j += 1;
+        if digits(&mut j) {
+            i = j;
+        } else if !int {
+            return 0;
+        }
+    } else if !int {
+        return 0;
+    }
+    if matches!(b.get(i), Some(b'e' | b'E')) {
+        let mut k = i + 1 + usize::from(matches!(b.get(i + 1), Some(b'+' | b'-')));
+        if digits(&mut k) {
+            i = k;
+        }
+    }
+    t[..i].parse::<f64>().map_or(0, |f| f as i64)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Expected values from `php -r 'echo intval($s);'` (PHP 8.4).
+    #[test]
+    fn intval_matches_php() {
+        for (s, want) in [
+            ("3", 3),
+            ("abc", 0),
+            (" 2x", 2),
+            ("-1", -1),
+            ("0", 0),
+            ("+4", 4),
+            ("1e3", 1000),
+            ("1e3x", 1000),
+            ("2.9", 2),
+            (".5", 0),
+            ("  7 ", 7),
+            ("\t5", 5),
+            ("4abc", 4),
+            ("1e", 1),
+            ("1e+2", 100),
+            ("99999999999999999999", i64::MAX),
+            ("-0", 0),
+            ("", 0),
+            ("-", 0),
+            ("3.", 3),
+            (".", 0),
+        ] {
+            assert_eq!(intval(s), want, "intval({s:?})");
+        }
+    }
 
     const INPUTS: &[&str] = &[
         "",

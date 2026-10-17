@@ -142,7 +142,7 @@ pub struct FormatArgs {
     /// Accepted for Pint compatibility; Pun always runs in parallel.
     #[arg(short, long)]
     parallel: bool,
-    /// Accepted for Pint compatibility, unparsed (Pint's intval() takes any value).
+    /// The number of threads (default: one per core). Read like Pint's intval(), so any value is accepted.
     #[arg(long)]
     max_processes: Option<String>,
     #[arg(short, long, action = clap::ArgAction::Count)]

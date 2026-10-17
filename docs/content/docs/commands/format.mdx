@@ -33,7 +33,8 @@ Pint's flags work the same way.
 | `--stdin-filename=<path>` | Path context for code read from stdin (`-` as the path). |
 | `--cache-file=<path>` | Cache location (default: a per-project file under `~/.cache/pun`). |
 | `-v`, `-q` | More or less output. |
-| `--parallel`, `--max-processes` | Accepted. Pun always runs in parallel. |
+| `--parallel` | Accepted. Pun always runs in parallel, one thread per core. |
+| `--max-processes=N` | Caps the threads at `N`, and the PHP and Prettier workers with them. A value that isn't a positive number keeps the default. |
 
 ## Pun's own flags
 

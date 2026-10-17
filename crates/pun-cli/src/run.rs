@@ -308,7 +308,17 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         }
         out
     } else {
-        files.par_iter().map(process).collect()
+        // Pint's `--max-processes` (read with intval()) caps the threads, and with them the PHP and Prettier workers.
+        let threads = a
+            .max_processes
+            .as_deref()
+            .map(pun_tokens::php_compat::intval)
+            .filter(|&n| n > 0)
+            .map_or(0, |n| (n as usize).min(files.len().max(1)));
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(threads)
+            .build()?
+            .install(|| files.par_iter().map(process).collect())
     };
     if a.format.is_none() && !a.quiet && !a.parallel {
         pint_error::progress_before_abort(&all, dry_run, a.ansi, a.no_ansi);
