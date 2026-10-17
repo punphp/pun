@@ -209,6 +209,12 @@ function dump(int $phpVersion, array &$typeStrings): array
             'constants' => [],
             'methods' => [],
         ];
+        // getIterableKeyType() / getIterableValueType() over the class's own templates (for foreach and iterable<>)
+        if ($class->implementsInterface(Traversable::class) || $class->getName() === Traversable::class) {
+            $own = array_values($class->getTemplateTypeMap()->getTypes());
+            $object = $own === [] ? new PHPStan\Type\ObjectType($class->getName()) : new PHPStan\Type\Generic\GenericObjectType($class->getName(), $own);
+            $entry['iterable'] = [t($object->getIterableKeyType()), t($object->getIterableValueType())];
+        }
         foreach ($class->getNativeReflection()->getReflectionConstants() as $const) {
             if ($const->getDeclaringClass()->getName() === $class->getName() && !($class->isEnum() && $class->hasEnumCase($const->getName()))) {
                 $entry['constants'][$const->getName()] = t($resolver->resolve('\\'.$class->getName().'::'.$const->getName(), new NameScope(null, [])));
@@ -354,6 +360,18 @@ const PROBES = [
     '\\stdClass', 'STDCLASS', 'stdclass|stdClass', 'stdClass&stdclass', 'Exception|RuntimeException', 'RuntimeException|Exception', 'RuntimeException&Exception',
     'Exception&RuntimeException', 'RuntimeException&LogicException', 'Throwable&RuntimeException', 'Countable&RuntimeException', 'RuntimeException&Countable',
     'Closure&Countable', 'Generator&Iterator', 'WeakMap&Countable', 'Countable&WeakMap', 'Closure&Exception',
+    // callable arrays
+    'array{0: Countable, ...<int, non-falsy-string>}&callable', 'array{...<string, string>}&callable', 'array{0: Countable, ...<int, int>}&callable',
+    'array{1: string, ...<int, Countable>}&callable', "array{'Countable', 'count'}&callable", 'array{1, 2}&callable', 'array{1, 2, 3}&callable',
+    'array{a: 1, b: 2}&callable', 'array{0: Countable, ...<int, string>}&callable', 'array{Countable}&callable', 'array<string>&callable',
+    'iterable<int>&callable', 'iterable<int>&never', 'array<int>&never', 'never&Countable',
+    // generalize() through constant-array values and intersection members
+    "array{a: Closure(1): 2, b: Generator<1, 'a'>, c: class-string<stdClass>, d: (T is 1 ? 2 : 3), e: (\$x is 1 ? 1.5 : 2.5), f: array<int, true>, g: iterable<1>}|null",
+    "array{a: Closure(1): 2}|1", "array{a: true}|array{b: 'x'}|1", "Countable&Generator<1, 'a'>", 'Countable&Iterator<1, true>',
+    // resolver leftovers
+    "array{a: int, ...<'b', int>}", 'array{a: int, ...<5, int>}', "array<__benevolent<'1'|1>, int>", 'array<true, int>', 'class-string<Countable&callable>',
+    'int-mask<1>', 'int-mask-of<1|string>', 'string<int>', 'SimpleXMLElement<int, string>', 'SimpleXMLElement<string>', 'SimpleXMLElement<int, string, bool>',
+    '__template<int>', 'non-empty-list<int>&list<int>',
     // stars and bad input
     'SplObjectStorage<*, *>', 'int|', '<', '(int', 'array{', 'callable(',
 ];
@@ -377,9 +395,25 @@ function describe_all(TypeStringResolver $resolver, array $strings): array
 $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
 if (($argv[1] ?? '') === 'probes') {
     $probes = array_map(fn ($s) => [null, $s], PROBES);
-    foreach (['static|Countable', '$this|ArrayIterator', 'ArrayIterator|static', 'static|ArrayIterator', 'ArrayIterator|$this', '$this|static', 'static|$this', 'static&Countable', 'callable(static, $this): void', 'callable(): static', 'class-string<static>', 'static|SeekableIterator', 'SeekableIterator|static', 'Iterator&static', 'static&Iterator', 'stdClass|static', 'static|stdClass', 'static', '$this', 'self', 'static::class', 'self::class', 'ArrayIterator::class', 'self::STD_PROP_LIST', 'ArrayIterator::*', 'list<static>', 'Countable::FOO', 'Nope::FOO'] as $s) {
+    foreach (['static|Countable', '$this|ArrayIterator', 'ArrayIterator|static', 'static|ArrayIterator', 'ArrayIterator|$this', '$this|static', 'static|$this', 'static&Countable', 'callable(static, $this): void', 'callable(): static', 'class-string<static>', 'static|SeekableIterator', 'SeekableIterator|static', 'Iterator&static', 'static&Iterator', 'stdClass|static', 'static|stdClass', 'static', '$this', 'self', 'static::class', 'self::class', 'ArrayIterator::class', 'self::STD_PROP_LIST', 'ArrayIterator::*', 'ArrayIterator::STD*LIST', 'ArrayIterator::*_PROP_*', 'ArrayIterator::*X*Y', 'ArrayIterator::S*P*T', 'ArrayIterator::*P*O*', 'list<static>', 'Countable::FOO', 'Nope::FOO'] as $s) {
         $probes[] = ['ArrayIterator', $s];
     }
+    // every ordered pair of these atoms as `A|B` and `A&B`: the union/intersection normalization and isSuperTypeOf()
+    // paths in both directions
+    $atoms = ['int', '1', 'int<1, 5>', 'float', '1.5', 'bool', 'true', 'string', "'a'", "'Countable'", 'non-empty-string',
+        'numeric-string', 'lowercase-string', 'uppercase-string', 'literal-string', 'class-string', 'class-string<Countable>',
+        'null', 'resource', 'object', 'stdClass', 'Countable', 'Traversable<int>', 'Closure', 'Closure(int): void', 'callable',
+        'callable(int): void', 'array', 'array{}', 'array{a: int}', 'list<int>', 'non-empty-array<int>', 'iterable<int>', 'static',
+        '$this', 'Random\\IntervalBoundary::ClosedOpen', 'object{a: int}', 'mixed', 'never', 'void'];
+    foreach ($atoms as $a) {
+        foreach ($atoms as $b) {
+            if ($a !== $b) {
+                array_push($probes, ['ArrayIterator', "$a|$b"], ['ArrayIterator', "$a&$b"]);
+            }
+        }
+    }
+    // sortTypes() leaves more than 1024 types unsorted
+    $probes[] = [null, implode('|', array_map(fn ($i) => "'s$i'", range(1030, 1)))];
     $probes[] = ['Nope', 'static'];
     $probes[] = ['Nope', '$this'];
     $probes[] = ['DatePeriod', '$this'];

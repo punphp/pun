@@ -37,9 +37,9 @@ pub fn resolve(node: &Node, class: Option<&str>) -> Type {
             None => Type::Error,
         },
         Node::Star(s) => match s.as_str() {
-            "ERROR" => Type::Error,
+            "*" => Type::Wildcard,
             "NEVER" => Type::Never(NeverKind::Explicit),
-            _ => Type::Wildcard,
+            _ => Type::Error,
         },
         Node::Nullable(inner) => union(vec![r(inner), Type::Null]),
         Node::Union(members) => {
@@ -326,11 +326,11 @@ fn identifier(name: &str, class: Option<&str>) -> Type {
         }
         "list" => return Type::list(mixed()),
         "non-empty-list" => {
-            let Type::Intersection(mut types) = Type::list(mixed()) else {
-                unreachable!()
-            };
-            types.insert(1, Type::Accessory(A::NonEmptyArray));
-            return Type::Intersection(types);
+            return Type::Intersection(vec![
+                Type::array(Type::IntRange(Some(0), None), mixed()),
+                Type::Accessory(A::NonEmptyArray),
+                Type::Accessory(A::List),
+            ]);
         }
         "__stringandstringable" => return Type::StringAcceptingStringable,
         "__stringnotstringable" => return Type::StringNotAcceptingStringable,
@@ -387,16 +387,15 @@ fn might_be_constant(name: &str) -> bool {
 
 fn generic(base: &str, args: &[Node], class: Option<&str>) -> Type {
     let lower = base.to_ascii_lowercase();
-    if lower == "__template" {
-        let [
+    // Pun's template serialization (`__template<T, 'scope', bound, default>`)
+    if lower == "__template"
+        && let [
             Node::Ident(name),
             Node::Const(ConstExpr::Str(scope)),
             bound,
             rest @ ..,
         ] = args
-        else {
-            return Type::Error;
-        };
+    {
         return Type::Template(Box::new(Template {
             name: name.clone(),
             scope: scope.clone(),
@@ -510,12 +509,9 @@ fn generic_object(base: &str, mut types: Vec<Type>, class: Option<&str>) -> Type
         return Type::Object(class_name, types);
     };
     let iterable = main.is_iterable().yes();
+    // ponytail: template defaults are not filled in for missing arguments; no built-in class can miss one (only
+    // FFI\CData has a default, on its only template). Add for user-defined classes.
     if !reflection.templates.is_empty() {
-        for template in reflection.templates.iter().skip(types.len()) {
-            if let Some(default) = &template.default {
-                types.push(resolve_str(default, Some(&reflection.name)));
-            }
-        }
         if ["Traversable", "IteratorAggregate", "Iterator"].contains(&class_name.as_str())
             && types.len() == 1
         {
@@ -559,23 +555,18 @@ fn generic_object(base: &str, mut types: Vec<Type>, class: Option<&str>) -> Type
 
 /// `expandIntMaskToType()`
 fn int_mask(t: Type) -> Option<Type> {
-    let ints: Vec<i64> = match &t {
-        Type::ConstInt(i) => vec![*i],
-        Type::Union(types) => types
-            .iter()
-            .filter_map(|t| {
-                if let Type::ConstInt(i) = t {
-                    Some(*i)
-                } else {
-                    None
-                }
-            })
-            .collect(),
-        _ => vec![],
+    // `TypeUtils::getConstantIntegers()`: every member a constant integer
+    let members = match &t {
+        Type::Union(types) => types.as_slice(),
+        t => std::slice::from_ref(t),
     };
-    if ints.is_empty() {
-        return None;
-    }
+    let ints: Vec<i64> = members
+        .iter()
+        .map(|t| match t {
+            Type::ConstInt(i) => Some(*i),
+            _ => None,
+        })
+        .collect::<Option<_>>()?;
     let mut values: Vec<i64> = Vec::new();
     for int in ints {
         if int != 0 && !values.contains(&int) {

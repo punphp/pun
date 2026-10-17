@@ -25775,6 +25775,20 @@
     ],
     [
         "CallbackFilterIterator",
+        "__template<TKey, 'class CallbackFilterIterator', mixed>",
+        "TKey (class CallbackFilterIterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "CallbackFilterIterator",
+        "__template<TValue, 'class CallbackFilterIterator', mixed>",
+        "TValue (class CallbackFilterIterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "CallbackFilterIterator",
         "bool",
         "bool",
         "bool",
@@ -36450,6 +36464,13 @@
     ],
     [
         "DOMNamedNodeMap",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "DOMNamedNodeMap",
         "null",
         "null",
         "null",
@@ -38725,6 +38746,13 @@
     ],
     [
         "Dom\\HTMLCollection",
+        "__benevolent<(int | string)>",
+        "(int|string)",
+        "(int|string)",
+        "(int|string)"
+    ],
+    [
+        "Dom\\HTMLCollection",
         "int",
         "int",
         "int",
@@ -38918,6 +38946,13 @@
         "Iterator<(int|string), Dom\\Attr>",
         "Iterator<(int|string), Dom\\Attr>",
         "Iterator<(int|string), Dom\\Attr>"
+    ],
+    [
+        "Dom\\NamedNodeMap",
+        "__benevolent<(int | string)>",
+        "(int|string)",
+        "(int|string)",
+        "(int|string)"
     ],
     [
         "Dom\\NamedNodeMap",
@@ -39520,6 +39555,13 @@
         "TKey (class Ds\\Collection, parameter)",
         "TKey",
         "TKey"
+    ],
+    [
+        "Ds\\Collection",
+        "__template<TValue, 'class Ds\\\\Collection', mixed>",
+        "TValue (class Ds\\Collection, parameter)",
+        "TValue",
+        "TValue"
     ],
     [
         "Ds\\Collection",
@@ -45893,13 +45935,6 @@
     ],
     [
         "Generator",
-        "__template<TYield, 'class Generator', mixed>",
-        "TYield (class Generator, parameter)",
-        "TYield",
-        "TYield"
-    ],
-    [
-        "Generator",
         "array",
         "array",
         "array",
@@ -45928,10 +45963,24 @@
     ],
     [
         "GlobIterator",
+        "(SplFileInfo | string)",
+        "SplFileInfo|string",
+        "SplFileInfo|string",
+        "SplFileInfo|string"
+    ],
+    [
+        "GlobIterator",
         "0",
         "0",
         "0",
         "int"
+    ],
+    [
+        "GlobIterator",
+        "SplFileInfo",
+        "SplFileInfo",
+        "SplFileInfo",
+        "SplFileInfo"
     ],
     [
         "GlobIterator",
@@ -49708,6 +49757,20 @@
     ],
     [
         "InfiniteIterator",
+        "__template<TKey, 'class InfiniteIterator', mixed>",
+        "TKey (class InfiniteIterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "InfiniteIterator",
+        "__template<TValue, 'class InfiniteIterator', mixed>",
+        "TValue (class InfiniteIterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "InfiniteIterator",
         "mixed",
         "mixed",
         "mixed",
@@ -49852,6 +49915,13 @@
         "int",
         "int",
         "int"
+    ],
+    [
+        "IntlBreakIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
     ],
     [
         "IntlBreakIterator",
@@ -52367,6 +52437,13 @@
         "int"
     ],
     [
+        "IntlCodePointBreakIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
         "IntlDateFormatter",
         "(DateTimeInterface | IntlCalendar)",
         "DateTimeInterface|IntlCalendar",
@@ -52906,6 +52983,20 @@
         "int"
     ],
     [
+        "IntlPartsIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "IntlPartsIterator",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
         "IntlRuleBasedBreakIterator",
         "array",
         "array",
@@ -52932,6 +53023,13 @@
         "int",
         "int",
         "int"
+    ],
+    [
+        "IntlRuleBasedBreakIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
     ],
     [
         "IntlRuleBasedBreakIterator",
@@ -53156,6 +53254,20 @@
         "Traversable<TKey (class IteratorAggregate, parameter), TValue (class IteratorAggregate, parameter)>",
         "Traversable<TKey, TValue>",
         "Traversable<TKey, TValue>"
+    ],
+    [
+        "IteratorAggregate",
+        "__template<TKey, 'class IteratorAggregate', mixed>",
+        "TKey (class IteratorAggregate, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "IteratorAggregate",
+        "__template<TValue, 'class IteratorAggregate', mixed>",
+        "TValue (class IteratorAggregate, parameter)",
+        "TValue",
+        "TValue"
     ],
     [
         "IteratorAggregate",
@@ -55588,6 +55700,13 @@
     ],
     [
         "MongoCursorInterface",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "MongoCursorInterface",
         "null",
         "null",
         "null",
@@ -56001,6 +56120,13 @@
     ],
     [
         "MongoDB\\BSON\\Document",
+        "(int | string)",
+        "int|string",
+        "int|string",
+        "int|string"
+    ],
+    [
+        "MongoDB\\BSON\\Document",
         "MongoDB\\BSON\\Document",
         "MongoDB\\BSON\\Document",
         "MongoDB\\BSON\\Document",
@@ -56026,6 +56152,13 @@
         "bool",
         "bool",
         "bool"
+    ],
+    [
+        "MongoDB\\BSON\\Document",
+        "int",
+        "int",
+        "int",
+        "int"
     ],
     [
         "MongoDB\\BSON\\Document",
@@ -56369,6 +56502,13 @@
         "array|object",
         "array|object",
         "array|object"
+    ],
+    [
+        "MongoDB\\BSON\\PackedArray",
+        "(int | string)",
+        "int|string",
+        "int|string",
+        "int|string"
     ],
     [
         "MongoDB\\BSON\\PackedArray",
@@ -60628,6 +60768,20 @@
     ],
     [
         "OuterIterator",
+        "__template<TKey, 'class OuterIterator', mixed>",
+        "TKey (class OuterIterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "OuterIterator",
+        "__template<TValue, 'class OuterIterator', mixed>",
+        "TValue (class OuterIterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "OuterIterator",
         "mixed",
         "mixed",
         "mixed",
@@ -61633,6 +61787,13 @@
         "bool",
         "bool",
         "bool"
+    ],
+    [
+        "ParentIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
     ],
     [
         "ParentIterator",
@@ -63806,6 +63967,13 @@
     ],
     [
         "RarArchive",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "RarArchive",
         "null",
         "null",
         "null",
@@ -64898,6 +65066,13 @@
     ],
     [
         "RecursiveArrayIterator",
+        "__template<TValue, 'class RecursiveArrayIterator', mixed>",
+        "TValue (class RecursiveArrayIterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "RecursiveArrayIterator",
         "bool",
         "bool",
         "bool",
@@ -64961,6 +65136,13 @@
     ],
     [
         "RecursiveCachingIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "RecursiveCachingIterator",
         "void",
         "void",
         "void",
@@ -64986,6 +65168,20 @@
         "TIterator of Traversable<TKey (class RecursiveCallbackFilterIterator, parameter), TValue (class RecursiveCallbackFilterIterator, parameter)> (class RecursiveCallbackFilterIterator, parameter)",
         "TIterator of Traversable<TKey, TValue>",
         "TIterator of Traversable<TKey, TValue>"
+    ],
+    [
+        "RecursiveCallbackFilterIterator",
+        "__template<TKey, 'class RecursiveCallbackFilterIterator', mixed>",
+        "TKey (class RecursiveCallbackFilterIterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "RecursiveCallbackFilterIterator",
+        "__template<TValue, 'class RecursiveCallbackFilterIterator', mixed>",
+        "TValue (class RecursiveCallbackFilterIterator, parameter)",
+        "TValue",
+        "TValue"
     ],
     [
         "RecursiveCallbackFilterIterator",
@@ -65101,6 +65297,13 @@
     ],
     [
         "RecursiveFilterIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "RecursiveFilterIterator",
         "void",
         "void",
         "void",
@@ -65112,6 +65315,20 @@
         "RecursiveIterator",
         "RecursiveIterator",
         "RecursiveIterator"
+    ],
+    [
+        "RecursiveIterator",
+        "__template<TKey, 'class RecursiveIterator', mixed>",
+        "TKey (class RecursiveIterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "RecursiveIterator",
+        "__template<TValue, 'class RecursiveIterator', mixed>",
+        "TValue (class RecursiveIterator, parameter)",
+        "TValue",
+        "TValue"
     ],
     [
         "RecursiveIterator",
@@ -65301,6 +65518,13 @@
         "int",
         "int",
         "int"
+    ],
+    [
+        "RecursiveRegexIterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
     ],
     [
         "RecursiveRegexIterator",
@@ -69595,6 +69819,20 @@
     ],
     [
         "RegexIterator",
+        "__template<TKey, 'class RegexIterator', mixed>",
+        "TKey (class RegexIterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "RegexIterator",
+        "__template<TValue, 'class RegexIterator', mixed>",
+        "TValue (class RegexIterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "RegexIterator",
         "bool",
         "bool",
         "bool",
@@ -70075,6 +70313,13 @@
         "void",
         "void",
         "void"
+    ],
+    [
+        "Relay\\Cluster\\FullscanGenerator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
     ],
     [
         "Relay\\Event",
@@ -73543,6 +73788,20 @@
     ],
     [
         "SeekableIterator",
+        "__template<TKey, 'class SeekableIterator', mixed>",
+        "TKey (class SeekableIterator, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "SeekableIterator",
+        "__template<TValue, 'class SeekableIterator', mixed>",
+        "TValue (class SeekableIterator, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SeekableIterator",
         "int",
         "int",
         "int",
@@ -76686,6 +76945,13 @@
     ],
     [
         "SplStack",
+        "__template<TValue, 'class SplStack', mixed>",
+        "TValue (class SplStack, parameter)",
+        "TValue",
+        "TValue"
+    ],
+    [
+        "SplStack",
         "int",
         "int",
         "int",
@@ -76728,6 +76994,13 @@
     ],
     [
         "SplTempFileObject",
+        "(array | string | false)",
+        "array|string|false",
+        "array|string|false",
+        "array|string|false"
+    ],
+    [
+        "SplTempFileObject",
         "2097152",
         "2097152",
         "2097152",
@@ -76735,10 +77008,31 @@
     ],
     [
         "SplTempFileObject",
+        "array",
+        "array",
+        "array",
+        "array"
+    ],
+    [
+        "SplTempFileObject",
+        "false",
+        "false",
+        "false",
+        "false"
+    ],
+    [
+        "SplTempFileObject",
         "int",
         "int",
         "int",
         "int"
+    ],
+    [
+        "SplTempFileObject",
+        "string",
+        "string",
+        "string",
+        "string"
     ],
     [
         "SplTempFileObject",
@@ -77645,6 +77939,13 @@
     ],
     [
         "Swoole\\Coroutine\\Context",
+        "(int | string)",
+        "int|string",
+        "int|string",
+        "int|string"
+    ],
+    [
+        "Swoole\\Coroutine\\Context",
         "1",
         "1",
         "1",
@@ -77656,6 +77957,34 @@
         "2",
         "2",
         "int"
+    ],
+    [
+        "Swoole\\Coroutine\\Context",
+        "__benevolent<(int | string)>",
+        "(int|string)",
+        "(int|string)",
+        "(int|string)"
+    ],
+    [
+        "Swoole\\Coroutine\\Context",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Swoole\\Coroutine\\Context",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "Swoole\\Coroutine\\Context",
+        "string",
+        "string",
+        "string",
+        "string"
     ],
     [
         "Swoole\\Coroutine\\Http2\\Client",
@@ -77750,6 +78079,13 @@
     ],
     [
         "Swoole\\Coroutine\\Iterator",
+        "(int | string)",
+        "int|string",
+        "int|string",
+        "int|string"
+    ],
+    [
+        "Swoole\\Coroutine\\Iterator",
         "1",
         "1",
         "1",
@@ -77761,6 +78097,34 @@
         "2",
         "2",
         "int"
+    ],
+    [
+        "Swoole\\Coroutine\\Iterator",
+        "__benevolent<(int | string)>",
+        "(int|string)",
+        "(int|string)",
+        "(int|string)"
+    ],
+    [
+        "Swoole\\Coroutine\\Iterator",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Swoole\\Coroutine\\Iterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "Swoole\\Coroutine\\Iterator",
+        "string",
+        "string",
+        "string",
+        "string"
     ],
     [
         "Swoole\\Coroutine\\MySQL",
@@ -79170,6 +79534,41 @@
         "void"
     ],
     [
+        "Swoole\\Timer\\Iterator",
+        "(int | string)",
+        "int|string",
+        "int|string",
+        "int|string"
+    ],
+    [
+        "Swoole\\Timer\\Iterator",
+        "__benevolent<(int | string)>",
+        "(int|string)",
+        "(int|string)",
+        "(int|string)"
+    ],
+    [
+        "Swoole\\Timer\\Iterator",
+        "int",
+        "int",
+        "int",
+        "int"
+    ],
+    [
+        "Swoole\\Timer\\Iterator",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "Swoole\\Timer\\Iterator",
+        "string",
+        "string",
+        "string",
+        "string"
+    ],
+    [
         "Swoole\\WebSocket\\Frame",
         "mixed",
         "mixed",
@@ -79507,6 +79906,13 @@
     ],
     [
         "Thread",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "Thread",
         "null",
         "null",
         "null",
@@ -79749,6 +80155,20 @@
         "string",
         "string",
         "string"
+    ],
+    [
+        "Traversable",
+        "__template<TKey, 'class Traversable', mixed>",
+        "TKey (class Traversable, parameter)",
+        "TKey",
+        "TKey"
+    ],
+    [
+        "Traversable",
+        "__template<TValue, 'class Traversable', mixed>",
+        "TValue (class Traversable, parameter)",
+        "TValue",
+        "TValue"
     ],
     [
         "Traversable",
@@ -81459,6 +81879,13 @@
         "void"
     ],
     [
+        "Volatile",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
         "Vtiful\\Kernel\\Excel",
         "'Sheet1'",
         "'Sheet1'",
@@ -81807,6 +82234,13 @@
         "int",
         "int",
         "int"
+    ],
+    [
+        "Worker",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
     ],
     [
         "Worker",
@@ -88313,10 +88747,24 @@
     ],
     [
         "http\\Client\\Request",
+        "http\\Message",
+        "http\\Message",
+        "http\\Message",
+        "http\\Message"
+    ],
+    [
+        "http\\Client\\Request",
         "http\\Message\\Body",
         "http\\Message\\Body",
         "http\\Message\\Body",
         "http\\Message\\Body"
+    ],
+    [
+        "http\\Client\\Request",
+        "int",
+        "int",
+        "int",
+        "int"
     ],
     [
         "http\\Client\\Request",
@@ -88373,6 +88821,13 @@
         "array",
         "array",
         "array"
+    ],
+    [
+        "http\\Client\\Response",
+        "http\\Message",
+        "http\\Message",
+        "http\\Message",
+        "http\\Message"
     ],
     [
         "http\\Client\\Response",
@@ -88807,6 +89262,20 @@
         "false",
         "false",
         "false"
+    ],
+    [
+        "http\\Env\\Request",
+        "http\\Message",
+        "http\\Message",
+        "http\\Message",
+        "http\\Message"
+    ],
+    [
+        "http\\Env\\Request",
+        "int",
+        "int",
+        "int",
+        "int"
     ],
     [
         "http\\Env\\Request",
@@ -90727,6 +91196,13 @@
         "int"
     ],
     [
+        "mysql_xdevapi\\DocResult",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
         "mysql_xdevapi\\Executable",
         "mysql_xdevapi\\Result",
         "mysql_xdevapi\\Result",
@@ -90769,6 +91245,13 @@
         "int"
     ],
     [
+        "mysql_xdevapi\\Result",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
         "mysql_xdevapi\\RowResult",
         "array",
         "array",
@@ -90795,6 +91278,13 @@
         "int",
         "int",
         "int"
+    ],
+    [
+        "mysql_xdevapi\\RowResult",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
     ],
     [
         "mysql_xdevapi\\Schema",
@@ -90984,6 +91474,13 @@
         "int",
         "int",
         "int"
+    ],
+    [
+        "mysql_xdevapi\\SqlStatementResult",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
     ],
     [
         "mysql_xdevapi\\SqlStatementResult",
@@ -91617,6 +92114,13 @@
     ],
     [
         "mysqli_result",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
+    ],
+    [
+        "mysqli_result",
         "mysqli",
         "mysqli",
         "mysqli",
@@ -91929,6 +92433,13 @@
         "int<0, max>",
         "int<0, max>",
         "int<0, max>"
+    ],
+    [
+        "parallel\\Events",
+        "mixed",
+        "mixed",
+        "mixed",
+        "mixed"
     ],
     [
         "parallel\\Events",

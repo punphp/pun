@@ -119,7 +119,7 @@ fn lex(input: &str) -> Vec<(Tok, String)> {
 pub enum Node {
     Ident(String),
     This,
-    /// Pun's `*ERROR*` / `*NEVER*`.
+    /// `*` (a generic argument), `NEVER` / `ERROR` for `*NEVER*` / `*ERROR*`
     Star(String),
     Nullable(Box<Node>),
     Union(Vec<Node>),
@@ -355,23 +355,18 @@ fn parse_atomic(t: &mut Tokens) -> R<Node> {
     if t.try_consume(Tok::This) {
         return Ok(array_or_offset(t, Node::This));
     }
-    if t.is(Tok::Wildcard) {
-        let save = t.index;
-        t.next();
-        if t.is(Tok::Ident) && matches!(t.value(), "ERROR" | "NEVER") {
-            let name = t.take();
-            if t.try_consume(Tok::Wildcard) {
-                return Ok(Node::Star(name));
-            }
-        }
-        t.index = save;
-        return Err(ParseError);
+    // `*NEVER*` / `*ERROR*`: how reflection prints those types (never a PHPDoc type)
+    if t.try_consume(Tok::Wildcard) {
+        let name = t.value().to_string();
+        t.consume(Tok::Ident)?;
+        t.consume(Tok::Wildcard)?;
+        return Ok(Node::Star(name));
     }
     if t.is(Tok::Ident) {
         let save = t.index;
         let name = t.take();
         if !t.is(Tok::DoubleColon) {
-            return parse_after_identifier(t, name);
+            return parse_after_identifier(t, name, true);
         }
         t.index = save;
     }
@@ -379,12 +374,13 @@ fn parse_atomic(t: &mut Tokens) -> R<Node> {
     Ok(array_or_offset(t, Node::Const(constant)))
 }
 
-fn parse_after_identifier(t: &mut Tokens, name: String) -> R<Node> {
+/// `callable` false: a callable's return type, where `Foo(` does not start another callable.
+fn parse_after_identifier(t: &mut Tokens, name: String, callable: bool) -> R<Node> {
     if t.is(Tok::OpenAngle) {
         let generic = parse_generic(t, name)?;
         return Ok(array_or_offset(t, generic));
     }
-    if t.is(Tok::OpenParen) {
+    if t.is(Tok::OpenParen) && callable {
         return Ok(try_parse_callable(t, name));
     }
     if t.is(Tok::OpenSquare) {
@@ -484,17 +480,21 @@ fn parse_callable_return(t: &mut Tokens) -> R<Node> {
     if t.try_consume(Tok::OpenParen) {
         let ty = sub_parse(t)?;
         t.consume(Tok::CloseParen)?;
-        return Ok(ty);
+        return Ok(array_or_offset(t, ty));
     }
-    let name = t.value().to_string();
-    t.consume(Tok::Ident)?;
-    if t.is(Tok::OpenAngle) {
-        return parse_generic(t, name);
+    if t.try_consume(Tok::This) {
+        return Ok(array_or_offset(t, Node::This));
     }
-    if matches!(name.as_str(), "array" | "list") && t.is(Tok::OpenCurly) {
-        return parse_array_shape(t, name);
+    if t.is(Tok::Ident) {
+        let save = t.index;
+        let name = t.take();
+        if !t.is(Tok::DoubleColon) {
+            return parse_after_identifier(t, name, false);
+        }
+        t.index = save;
     }
-    Ok(Node::Ident(name))
+    let constant = parse_const_expr(t)?;
+    Ok(array_or_offset(t, Node::Const(constant)))
 }
 
 /// `T[]` suffixes. ponytail: offset access (`T[K]`) is not parsed, so it is a parse error (`*ERROR*`) rather than
