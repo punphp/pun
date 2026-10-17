@@ -10,7 +10,6 @@ pub mod preg;
 mod regex;
 mod short_description;
 mod tag;
-pub mod tag_comparator;
 pub mod type_expression;
 
 #[cfg(test)]
@@ -19,25 +18,18 @@ mod tests;
 pub use annotation::{Annotation, TAGS_WITH_TYPES};
 pub use line::{Line, LineRef};
 pub use short_description::ShortDescription;
-pub use tag::{PSR_STANDARD_TAGS, Tag};
-pub use type_expression::{Context, Namespace, NamespaceUse, TypeExpression};
+pub use type_expression::TypeExpression;
 
 use std::cell::OnceCell;
-use std::rc::Rc;
 
 #[derive(Clone, Debug)]
 pub struct DocBlock {
     lines: Vec<LineRef>,
     annotations: OnceCell<Vec<Annotation>>,
-    ctx: Rc<Context>,
 }
 
 impl DocBlock {
     pub fn new(content: &[u8]) -> Self {
-        Self::with_context(content, Rc::default())
-    }
-
-    pub fn with_context(content: &[u8], ctx: Rc<Context>) -> Self {
         let lines = split_lines_ascii(content)
             .unwrap_or_else(|| {
                 preg::split(
@@ -52,7 +44,6 @@ impl DocBlock {
         DocBlock {
             lines,
             annotations: OnceCell::new(),
-            ctx,
         }
     }
 
@@ -75,7 +66,7 @@ impl DocBlock {
                     let lines = (index..index + len)
                         .map(|i| (i, self.lines[i].clone()))
                         .collect();
-                    let annotation = Annotation::new(lines, self.ctx.clone());
+                    let annotation = Annotation::new(lines);
                     index = annotation.get_end();
                     annotations.push(annotation);
                 }

@@ -5,7 +5,7 @@
 use crate::analyzers::analysis::TypeAnalysis;
 use crate::analyzers::attribute_analyzer::AttributeAnalyzer;
 use crate::analyzers::docblock::{
-    Context, TypeExpression, type_expression::REGEX_IDENTIFIER, type_expression::REGEX_TYPES,
+    TypeExpression, type_expression::REGEX_IDENTIFIER, type_expression::REGEX_TYPES,
 };
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
@@ -21,7 +21,6 @@ use serde_json::Value;
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::Path;
-use std::rc::Rc;
 use std::sync::LazyLock;
 
 const CLASSY_KINDS: &[Kind] = &[T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM];
@@ -656,10 +655,9 @@ impl FullyQualifiedStrictTypesFixer {
     }
 
     fn fix_php_doc_type(&self, st: &State, type_: &[u8], uses: &OMap, ns: &[u8]) -> Vec<u8> {
-        let ctx = Rc::new(Context::default());
         static CLASS: LazyLock<String> = LazyLock::new(|| format!("/^{}$/", regex_class()));
         let regex: &str = &CLASS;
-        let type_expression = TypeExpression::new(type_, ctx.clone()).map_types(&mut |type_| {
+        let type_expression = TypeExpression::new(type_).map_types(&mut |type_| {
             let current_type_value = type_.to_string().to_vec();
             if type_.is_composite_type()
                 || !Preg::r#match(regex, &current_type_value)
@@ -677,7 +675,7 @@ impl FullyQualifiedStrictTypesFixer {
                 .flat_map(|t| t.content.iter().copied())
                 .collect();
             // upstream keeps `$type` when the value is unchanged, but determineShortType returns null then
-            TypeExpression::new(&new_type_value, ctx.clone())
+            TypeExpression::new(&new_type_value)
         });
         type_expression.to_string().to_vec()
     }

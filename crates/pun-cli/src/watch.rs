@@ -2,7 +2,8 @@
 //! pick (same discovery, config and exclusions, re-read every time), with the usual Pint output.
 //! Stops when the project directory goes away or the parent process exits.
 
-use crate::{FormatArgs, format, load_config, root};
+use crate::run::{format, load_config};
+use crate::{FormatArgs, root};
 use anyhow::Result;
 use notify::{EventKind, RecursiveMode, Watcher};
 use std::collections::{HashMap, HashSet};

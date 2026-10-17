@@ -56,7 +56,7 @@ fn fix_type(annotation: &Annotation, memo_key: &str, normalize: &dyn Fn(&[u8]) -
         let type_expression = annotation.get_type_expression().unwrap();
         let new = type_expression.map_types(&mut |t| {
             if !t.is_composite_type() {
-                TypeExpression::plain(&normalize(t.to_string()))
+                TypeExpression::new(&normalize(t.to_string()))
             } else {
                 t
             }

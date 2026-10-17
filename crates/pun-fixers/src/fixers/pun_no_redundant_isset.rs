@@ -2,6 +2,7 @@
 //! another argument extends its access path (`isset($a['b'])` already implies `isset($a)`), or repeats it.
 //! Opt-in only (`Pun/no_redundant_isset`). Like Mago, only paths of plain variables, `->name` / `?->name`
 //! and literal string or integer `[...]` indexes are compared.
+use crate::analyzers::helpers::split_list;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
@@ -98,28 +99,6 @@ fn access_path(tokens: &Tokens, s: usize, e: usize) -> Option<Vec<Vec<u8>>> {
         }
     }
     Some(path)
-}
-
-/// (first, last) meaningful token of each comma-separated item between `open` and `close`.
-fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)> {
-    let mut items = vec![];
-    let mut k = tokens.get_next_meaningful_token(open).unwrap();
-    while k < close {
-        let start = k;
-        let mut last = k;
-        while k < close && !tokens[k].equals(",", true) {
-            if let Some((t, true)) = Tokens::detect_block_type(&tokens[k]) {
-                k = tokens.find_block_end(t, k);
-            }
-            last = k;
-            k = tokens.get_next_meaningful_token(k).unwrap();
-        }
-        items.push((start, last));
-        if k < close {
-            k = tokens.get_next_meaningful_token(k).unwrap();
-        }
-    }
-    items
 }
 
 #[cfg(test)]

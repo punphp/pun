@@ -3,9 +3,8 @@
 use super::line::LineRef;
 use super::preg;
 use super::tag::Tag;
-use super::type_expression::{Context, REGEX_IDENTIFIER, REGEX_TYPES, TypeExpression};
+use super::type_expression::{REGEX_IDENTIFIER, REGEX_TYPES, TypeExpression};
 use std::cell::{OnceCell, RefCell};
-use std::rc::Rc;
 
 pub const TAGS_WITH_TYPES: &[&str] = &[
     "extends",
@@ -36,12 +35,11 @@ pub struct Annotation {
     tag: OnceCell<Tag>,
     types_content: RefCell<Option<Vec<u8>>>,
     types: RefCell<Option<Vec<Vec<u8>>>>,
-    ctx: Rc<Context>,
 }
 
 impl Annotation {
     /// `lines` are `(index in the docblock, line)` pairs, like upstream's preserved-key slice.
-    pub fn new(lines: Vec<(usize, LineRef)>, ctx: Rc<Context>) -> Self {
+    pub fn new(lines: Vec<(usize, LineRef)>) -> Self {
         let start = lines.first().unwrap().0;
         let end = lines.last().unwrap().0;
         Annotation {
@@ -51,7 +49,6 @@ impl Annotation {
             tag: OnceCell::new(),
             types_content: RefCell::new(None),
             types: RefCell::new(None),
-            ctx,
         }
     }
 
@@ -68,8 +65,7 @@ impl Annotation {
     }
 
     pub fn get_type_expression(&self) -> Option<TypeExpression> {
-        self.get_types_content()
-            .map(|c| TypeExpression::new(&c, self.ctx.clone()))
+        self.get_types_content().map(|c| TypeExpression::new(&c))
     }
 
     pub fn get_variable_name(&self) -> Option<Vec<u8>> {

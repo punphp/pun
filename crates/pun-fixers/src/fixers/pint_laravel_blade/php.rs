@@ -1,5 +1,7 @@
 //! The PHP string functions Pint's Blade formatters use, byte-oriented like PHP.
 
+pub use pun_tokens::php_compat::{ltrim_chars, rtrim, trim};
+
 /// `strpos($haystack, $needle, $offset)` (callers pass a non-empty needle and `offset <= len`).
 pub fn strpos(haystack: &[u8], needle: &[u8], offset: usize) -> Option<usize> {
     haystack[offset..]
@@ -36,16 +38,8 @@ pub fn contains(haystack: &[u8], needle: &[u8]) -> bool {
     strpos(haystack, needle, 0).is_some()
 }
 
-pub fn trim(s: &[u8]) -> &[u8] {
-    pun_tokens::php_compat::trim(s)
-}
-
 pub fn ltrim(s: &[u8]) -> &[u8] {
     pun_tokens::php_compat::ltrim_chars(s, pun_tokens::php_compat::TRIM_CHARS)
-}
-
-pub fn rtrim(s: &[u8]) -> &[u8] {
-    pun_tokens::php_compat::rtrim(s)
 }
 
 pub fn trim_chars<'a>(s: &'a [u8], chars: &[u8]) -> &'a [u8] {
@@ -72,8 +66,4 @@ pub fn ctype_alnum(c: u8) -> bool {
 
 pub fn ctype_space(c: u8) -> bool {
     matches!(c, b' ' | b'\t' | b'\n' | b'\r' | 0x0b | 0x0c)
-}
-
-pub fn ltrim_chars<'a>(s: &'a [u8], chars: &[u8]) -> &'a [u8] {
-    pun_tokens::php_compat::ltrim_chars(s, chars)
 }

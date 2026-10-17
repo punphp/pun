@@ -1,4 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\Whitespace\IndentationTypeFixer`.
+use pun_tokens::php_compat::str_replace;
 use crate::analyzers::preg::Preg;
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use pun_tokens::{Kind::*, Token, Tokens};
@@ -11,22 +12,6 @@ struct IndentationTypeFixer {
 
 pub fn fixer() -> Box<dyn Fixer> {
     Box::new(IndentationTypeFixer::default())
-}
-
-/// `str_replace($search, $replace, $s)`.
-fn str_replace(search: &[u8], replace: &[u8], s: &[u8]) -> Vec<u8> {
-    let mut out = Vec::with_capacity(s.len());
-    let mut i = 0;
-    while i < s.len() {
-        if s[i..].starts_with(search) {
-            out.extend_from_slice(replace);
-            i += search.len();
-        } else {
-            out.push(s[i]);
-            i += 1;
-        }
-    }
-    out
 }
 
 impl IndentationTypeFixer {

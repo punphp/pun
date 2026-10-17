@@ -2,6 +2,7 @@
 //! inlined when that keeps the keys (no integer-like keys), empty ones are dropped.
 //! Opt-in only (`Pun/prefer_array_spread`). Risky: needs PHP >= 8.1 (string keys in spreads), and a spread
 //! also accepts `Traversable`s, where `array_merge()` throws a `TypeError`.
+use crate::analyzers::helpers::split_list;
 use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
@@ -209,28 +210,6 @@ fn is_string_array_key(raw: &[u8]) -> bool {
         || !digits.iter().all(u8::is_ascii_digit)
         || (digits[0] == b'0' && value != b"0")
         || std::str::from_utf8(&value).is_ok_and(|v| v.parse::<i64>().is_err())
-}
-
-/// (first, last) meaningful token of each comma-separated item between `open` and `close`.
-fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usize)> {
-    let mut items = vec![];
-    let mut k = tokens.get_next_meaningful_token(open).unwrap();
-    while k < close {
-        let start = k;
-        let mut last = k;
-        while k < close && !tokens[k].equals(",", true) {
-            if let Some((t, true)) = Tokens::detect_block_type(&tokens[k]) {
-                k = tokens.find_block_end(t, k);
-            }
-            last = k;
-            k = tokens.get_next_meaningful_token(k).unwrap();
-        }
-        items.push((start, last));
-        if k < close {
-            k = tokens.get_next_meaningful_token(k).unwrap();
-        }
-    }
-    items
 }
 
 #[cfg(test)]

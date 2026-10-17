@@ -1,5 +1,6 @@
 //! Port of `App\PrettierFormatters\EmbeddedBladeMasker`: masks Blade constructs inside
 //! `<style>`/`<script>` before prettier, restores them after.
+use pun_tokens::php_compat::str_replace;
 use super::php::{contains, ctype_alnum, stripos, strpos};
 use crate::analyzers::preg::RawPreg;
 use std::cell::RefCell;
@@ -46,18 +47,6 @@ fn substr_count(haystack: &[u8], needle: &[u8]) -> usize {
     n
 }
 
-fn str_replace(subject: &[u8], search: &[u8], replace: &[u8]) -> Vec<u8> {
-    let mut out = Vec::with_capacity(subject.len());
-    let mut i = 0;
-    while let Some(p) = strpos(subject, search, i) {
-        out.extend_from_slice(&subject[i..p]);
-        out.extend_from_slice(replace);
-        i = p + search.len();
-    }
-    out.extend_from_slice(&subject[i..]);
-    out
-}
-
 impl EmbeddedBladeMasker {
     pub fn pre_format(&mut self, content: &[u8]) -> Vec<u8> {
         self.map = Vec::new();
@@ -93,7 +82,7 @@ impl EmbeddedBladeMasker {
         }
         let mut result = content.to_vec();
         for (token, original) in &self.map {
-            result = str_replace(&result, token, original);
+            result = str_replace(token, original, &result);
         }
         result
     }

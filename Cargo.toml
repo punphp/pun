@@ -46,6 +46,12 @@ tower = "0.4"
 futures = "0.3"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync"] }
 crossbeam-channel = "0.5"
+# pun-analyse (Phase 2 M2.3)
+mago-codex = "=1.57.0"
+mago-analyzer = "=1.57.0"
+mago-prelude = { version = "=1.57.0", features = ["build"] }
+mago-php-version = "=1.57.0"
+pun-analyse = { path = "crates/pun-analyse", package = "punphp-analyse" }
 
 [profile.release]
 lto = "thin"

@@ -4,7 +4,8 @@
 //! when nothing changes, the path is excluded or the code doesn't parse).
 //! Config files are checked (content hashes) on each formatting request and reloaded when they changed.
 
-use crate::{Engine, FormatArgs, engine, fix_text, load_config, root};
+use crate::run::{Engine, engine, fix_text, load_config};
+use crate::{FormatArgs, root};
 use anyhow::Result;
 use lsp_server::{Connection, ErrorCode, Message, Response};
 use lsp_types::notification::{

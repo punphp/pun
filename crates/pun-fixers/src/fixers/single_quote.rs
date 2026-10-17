@@ -1,4 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\StringNotation\SingleQuoteFixer`.
+use pun_tokens::php_compat::str_replace;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
@@ -66,19 +67,4 @@ impl Fixer for SingleQuoteFixer {
             }
         }
     }
-}
-
-fn str_replace(search: &[u8], replace: &[u8], subject: &[u8]) -> Vec<u8> {
-    let mut out = Vec::with_capacity(subject.len());
-    let mut i = 0;
-    while i < subject.len() {
-        if subject[i..].starts_with(search) {
-            out.extend_from_slice(replace);
-            i += search.len();
-        } else {
-            out.push(subject[i]);
-            i += 1;
-        }
-    }
-    out
 }
