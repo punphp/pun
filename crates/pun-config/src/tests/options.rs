@@ -409,6 +409,11 @@ fn pun_toml_errors() {
             "`operators/binary-spacing` option `default` = \"nope\": expected one of \"align\", \"align-by-scope\", \"align-single-space\", \"align-single-space-minimal\", \"align-single-space-by-scope\", \"align-single-space-minimal-by-scope\", \"single-space\", \"no-space\", \"at-least-single-space\", or \"ignore\"",
         ),
         (
+            "operators/binary-spacing",
+            "{ operators = { \"=>>\" = \"single-space\" } }",
+            "`operators/binary-spacing` option `operators` = { \"=>>\" = \"single-space\" }: expected a table with the keys \"=\", \"*\", \"/\", \"%\", \"<\", \">\", \"|\", \"^\", \"+\", \"-\", \"&\", \"&=\", \"&&\", \"||\", \".=\", \"/=\", \"=>\", \"==\", \">=\", \"===\", \"!=\", \"<>\", \"!==\", \"<=\", \"and\", \"or\", \"xor\", \"-=\", \"%=\", \"*=\", \"|=\", \"+=\", \"<<\", \"<<=\", \">>\", \">>=\", \"^=\", \"**\", \"**=\", \"<=>\", \"??\", \"??=\" and the values \"align\", \"align-by-scope\", \"align-single-space\", \"align-single-space-minimal\", \"align-single-space-by-scope\", \"align-single-space-minimal-by-scope\", \"single-space\", \"no-space\", \"at-least-single-space\", or \"ignore\"",
+        ),
+        (
             "arrays/indentation",
             "{ x = 1 }",
             "`arrays/indentation` has no options: it is true or false, without a table",
@@ -473,10 +478,91 @@ fn migrate_errors() {
             json!({"x": 1}),
             "[array_indentation] Is not configurable.",
         ),
+        // The rest: the pinned PHP-CS-Fixer's `configure()`, run on each input.
         (
             "header_comment",
             json!({"header": null}),
-            "[header_comment] Invalid configuration: The option \"header\" with value null is invalid.",
+            "[header_comment] Invalid configuration: The option \"header\" with value null is expected to be of type \"string\", but is of type \"null\".",
+        ),
+        (
+            "array_syntax",
+            json!({"syntax": null}),
+            "[array_syntax] Invalid configuration: The option \"syntax\" with value null is invalid. Accepted values are: \"long\", \"short\".",
+        ),
+        (
+            "phpdoc_line_span",
+            json!({"const": "nope"}),
+            "[phpdoc_line_span] Invalid configuration: The option \"const\" with value \"nope\" is invalid. Accepted values are: \"single\", \"multi\", null.",
+        ),
+        (
+            "class_definition",
+            json!({"single_line": null}),
+            "[class_definition] Invalid configuration: The option \"single_line\" with value null is expected to be of type \"bool\", but is of type \"null\".",
+        ),
+        (
+            "blank_lines_before_namespace",
+            json!({"min_line_breaks": null}),
+            "[blank_lines_before_namespace] Invalid configuration: The option \"min_line_breaks\" with value null is expected to be of type \"int\", but is of type \"null\".",
+        ),
+        (
+            "phpdoc_align",
+            json!({"tags": null}),
+            "[phpdoc_align] Invalid configuration: The option \"tags\" with value null is expected to be of type \"string[]\", but is of type \"null\".",
+        ),
+        (
+            "phpdoc_align",
+            json!({"spacing": null}),
+            "[phpdoc_align] Invalid configuration: The option \"spacing\" with value null is expected to be of type \"int\" or \"int[]\", but is of type \"null\".",
+        ),
+        (
+            "phpdoc_separation",
+            json!({"groups": null}),
+            "[phpdoc_separation] Invalid configuration: The option \"groups\" with value null is expected to be of type \"string[][]\", but is of type \"null\".",
+        ),
+        (
+            "phpdoc_no_alias_tag",
+            json!({"replacements": null}),
+            "[phpdoc_no_alias_tag] Invalid configuration: The option \"replacements\" with value null is expected to be of type \"string[]\", but is of type \"null\".",
+        ),
+        (
+            "binary_operator_spaces",
+            json!({"operators": null}),
+            "[binary_operator_spaces] Invalid configuration: The option \"operators\" with value null is expected to be of type \"array\", but is of type \"null\".",
+        ),
+        (
+            "binary_operator_spaces",
+            json!({"operators": {"nope": "single_space"}}),
+            "[binary_operator_spaces] Invalid configuration: Unexpected \"operators\" key, expected any of \"=\", \"*\", \"/\", \"%\", \"<\", \">\", \"|\", \"^\", \"+\", \"-\", \"&\", \"&=\", \"&&\", \"||\", \".=\", \"/=\", \"=>\", \"==\", \">=\", \"===\", \"!=\", \"<>\", \"!==\", \"<=\", \"and\", \"or\", \"xor\", \"-=\", \"%=\", \"*=\", \"|=\", \"+=\", \"<<\", \"<<=\", \">>\", \">>=\", \"^=\", \"**\", \"**=\", \"<=>\", \"??\" and \"??=\", got \"string#nope\".",
+        ),
+        (
+            "binary_operator_spaces",
+            json!({"operators": {"=>": "nope"}}),
+            "[binary_operator_spaces] Invalid configuration: Unexpected value for operator \"=>\", expected any of \"'align'\", \"'align_by_scope'\", \"'align_single_space'\", \"'align_single_space_minimal'\", \"'align_single_space_by_scope'\", \"'align_single_space_minimal_by_scope'\", \"'single_space'\", \"'no_space'\", \"'at_least_single_space'\" and \"null\", got \"string#nope\".",
+        ),
+        (
+            "phpdoc_tag_type",
+            json!({"tags": {"param": "nope"}}),
+            "[phpdoc_tag_type] Invalid configuration: Unknown tag type \"nope\".",
+        ),
+        (
+            "group_import",
+            json!({"group_types": ["classy", "nope"]}),
+            "[group_import] Invalid configuration: Invalid group type: nope, allowed types: \"classy\", \"functions\" and \"constants\".",
+        ),
+        (
+            "ordered_imports",
+            json!({"imports_order": ["nope"]}),
+            "[ordered_imports] Invalid configuration: Missing sort types \"class\", \"const\" and \"function\".",
+        ),
+        (
+            "ordered_imports",
+            json!({"imports_order": ["class", "const"]}),
+            "[ordered_imports] Invalid configuration: Missing sort type \"function\".",
+        ),
+        (
+            "ordered_imports",
+            json!({"imports_order": ["class", "const", "function", "nope"]}),
+            "[ordered_imports] Invalid configuration: Unknown sort type \"nope\".",
         ),
         (
             "blank_line_before_statement",
@@ -486,7 +572,12 @@ fn migrate_errors() {
         (
             "class_attributes_separation",
             json!({"elements": {"nope": "one"}}),
-            "[class_attributes_separation] Invalid configuration: The option \"elements\" with value array is invalid.",
+            "[class_attributes_separation] Invalid configuration: Unexpected element type, expected any of \"const\", \"method\", \"property\", \"trait_import\" and \"case\", got \"string#nope\".",
+        ),
+        (
+            "class_attributes_separation",
+            json!({"elements": {"method": "nope"}}),
+            "[class_attributes_separation] Invalid configuration: Unexpected spacing for element type \"nope\", expected any of \"none\", \"one\" and \"only_if_meta\", got \"string#nope\".",
         ),
     ];
     for (fixer, options, msg) in cases {

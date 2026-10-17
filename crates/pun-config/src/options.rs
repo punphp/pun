@@ -213,8 +213,10 @@ fn expected(o: &RuleOption) -> String {
 /// `v` under the option's upstream spelling, or `None` when the option doesn't take it.
 fn fixer_value(o: &RuleOption, v: toml::Value) -> Option<Value> {
     use toml::Value as T;
+    // A table's `null` is one of its values (binary_operator_spaces' `operators`), never the table.
     if let (T::String(s), Some(n)) = (&v, &o.null)
         && s == n
+        && o.kind != Kind::Map
     {
         return Some(Value::Null);
     }
@@ -292,7 +294,132 @@ pub fn to_pun(fixer: &str, id: &str, options: &Value) -> Result<Value, String> {
                 "The option {k:?} does not exist. Defined options are: {defined}."
             )));
         };
+        if let Some(msg) = sort_types(fixer, k, v) {
+            return Err(invalid(msg));
+        }
         let Some(p) = pun_value(o, v) else {
+            return Err(invalid(rejected(fixer, o, v)));
+        };
+        if !p.is_null() {
+            out.insert(o.name.clone(), p);
+        }
+    }
+    Ok(match shorthand(opts) {
+        Some(o) if out.len() == 1 && out.contains_key(&o.name) => out.remove(&o.name).unwrap(),
+        _ => Value::Object(out),
+    })
+}
+
+/// PHP-CS-Fixer's `Utils::naturalLanguageJoin`: `"a", "b" and "c"`.
+fn natural<'a>(names: impl Iterator<Item = &'a str>) -> String {
+    let mut names: Vec<String> = names.map(|n| format!("\"{n}\"")).collect();
+    let last = names.pop().unwrap();
+    match names.is_empty() {
+        true => last,
+        false => format!("{} and {last}", names.join(", ")),
+    }
+}
+
+/// ordered_imports' own check of `imports_order`: it names every import type and nothing else. The message for a
+/// list that misses one or names another, else `None`.
+fn sort_types(fixer: &str, option: &str, v: &Value) -> Option<String> {
+    const SUPPORTED: [&str; 3] = ["class", "const", "function"];
+    let (("ordered_imports", "imports_order"), Value::Array(a)) = ((fixer, option), v) else {
+        return None;
+    };
+    let given: Vec<&str> = a.iter().filter_map(Value::as_str).collect();
+    let missing: Vec<&str> = SUPPORTED
+        .into_iter()
+        .filter(|t| !given.contains(t))
+        .collect();
+    let unknown: Vec<&str> = given
+        .into_iter()
+        .filter(|t| !SUPPORTED.contains(t))
+        .collect();
+    let (what, list) = match (&missing[..], &unknown[..]) {
+        ([], []) => return None,
+        ([], u) => ("Unknown", u),
+        (m, _) => ("Missing", m),
+    };
+    let types = if list.len() == 1 { "type" } else { "types" };
+    Some(format!(
+        "{what} sort {types} {}.",
+        natural(list.iter().copied())
+    ))
+}
+
+/// PHP-CS-Fixer's message for `v`, a value option `o` of `fixer` doesn't take: the option resolver's for a `null`
+/// or a value outside a closed list, the fixer's own where it checks a table's or a list's entries itself.
+fn rejected(fixer: &str, o: &RuleOption, v: &Value) -> String {
+    let k = &o.upstream;
+    let ups = |l: &[(String, String)]| natural(l.iter().map(|(_, u)| u.as_str()));
+    let bad = |l: &[(String, String)], s: &str| !l.iter().any(|(_, u)| u == s);
+    // The table entry upstream's check stops at: its key when outside `keys`, else its string value.
+    let entry = || -> (&str, Option<&str>) {
+        let (key, value) = (v.as_object().unwrap().iter())
+            .find(|(e, s)| {
+                (!o.keys.is_empty() && bad(&o.keys, e))
+                    || s.as_str().is_some_and(|s| bad(&o.values, s))
+            })
+            .unwrap();
+        let key_ok = o.keys.is_empty() || !bad(&o.keys, key);
+        (key.as_str(), key_ok.then(|| value.as_str().unwrap()))
+    };
+    match (fixer, v) {
+        (_, Value::Null) if o.kind != Kind::Enum => {
+            let types = match o.kind {
+                Kind::Bool => "\"bool\"",
+                Kind::Int => "\"int\"",
+                Kind::String => "\"string\"",
+                Kind::ListOfLists => "\"string[][]\"",
+                Kind::IntOrMap => "\"int\" or \"int[]\"",
+                // `array<string, ?string>` prints as `array`, `array<string, string>` as `string[]`.
+                Kind::Map if o.null.is_some() => "\"array\"",
+                _ => "\"string[]\"",
+            };
+            format!(
+                "The option {k:?} with value null is expected to be of type {types}, but is of type \"null\"."
+            )
+        }
+        ("class_attributes_separation", Value::Object(_)) => match entry() {
+            (e, None) => format!(
+                "Unexpected element type, expected any of {}, got \"string#{e}\".",
+                ups(&o.keys)
+            ),
+            // Upstream prints the spacing where it means the element type.
+            (_, Some(s)) => format!(
+                "Unexpected spacing for element type \"{s}\", expected any of {}, got \"string#{s}\".",
+                ups(&o.values)
+            ),
+        },
+        ("binary_operator_spaces", Value::Object(_)) => match entry() {
+            (e, None) => format!(
+                "Unexpected \"operators\" key, expected any of {}, got \"string#{e}\".",
+                ups(&o.keys)
+            ),
+            (e, Some(s)) => {
+                let values: Vec<String> = (o.values.iter().map(|(_, u)| format!("'{u}'")))
+                    .chain(["null".to_string()])
+                    .collect();
+                format!(
+                    "Unexpected value for operator \"{e}\", expected any of {}, got \"string#{s}\".",
+                    natural(values.iter().map(String::as_str))
+                )
+            }
+        },
+        ("phpdoc_tag_type", Value::Object(_)) => {
+            format!("Unknown tag type \"{}\".", entry().1.unwrap())
+        }
+        ("group_import", Value::Array(a)) => {
+            let t = (a.iter().filter_map(Value::as_str))
+                .find(|s| bad(&o.values, s))
+                .unwrap();
+            format!(
+                "Invalid group type: {t}, allowed types: {}.",
+                ups(&o.values)
+            )
+        }
+        _ => {
             let accepted = match o.kind {
                 Kind::Enum => {
                     let list = (o.values.iter().map(|(_, u)| format!("{u:?}")))
@@ -303,19 +430,12 @@ pub fn to_pun(fixer: &str, id: &str, options: &Value) -> Result<Value, String> {
                 }
                 _ => String::new(),
             };
-            return Err(invalid(format!(
+            format!(
                 "The option {k:?} with value {} is invalid.{accepted}",
                 php_value(v)
-            )));
-        };
-        if !p.is_null() {
-            out.insert(o.name.clone(), p);
+            )
         }
     }
-    Ok(match shorthand(opts) {
-        Some(o) if out.len() == 1 && out.contains_key(&o.name) => out.remove(&o.name).unwrap(),
-        _ => Value::Object(out),
-    })
 }
 
 /// How PHP-CS-Fixer's errors print a value: strings quoted, arrays as `array`.
@@ -347,7 +467,7 @@ fn pun_value(o: &RuleOption, v: &Value) -> Option<Value> {
             Some(Value::Object(Map::new()))
         }
         (Kind::Enum, Value::String(_) | Value::Null) => pun(v),
-        (Kind::Enum, _) => None,
+        (Kind::Enum, _) | (Kind::Map, Value::Null) => None,
         (Kind::List, Value::Array(a)) => a.iter().map(pun).collect::<Option<_>>().map(Value::Array),
         (Kind::Map, Value::Object(m)) => m
             .iter()

@@ -493,6 +493,9 @@ exported by scripts/export-fixer-options.php); the reader and writer are crates/
   `pun migrate` and `pun config` write the shorthand whenever it applies.
 - **Errors:** pun.toml errors are Pun's, and name the Pun option when an upstream name is used. `pun migrate` stops on
   options PHP-CS-Fixer itself rejects, with PHP-CS-Fixer's message (`[array_syntax] Invalid configuration: ...`),
-  because Pint would stop on them too. PHP's `[]` is read as an empty table for table-valued options.
+  because Pint would stop on them too: an unknown option, a `null` or a value outside a closed list, and the fixers'
+  own checks (ordered_imports' `imports_order`, the keys and values of binary_operator_spaces' `operators` and
+  class_attributes_separation's `elements`, group_import, phpdoc_tag_type). A value of the wrong type is written as it
+  is, and pun.toml's reader names it. PHP's `[]` is read as an empty table for table-valued options.
 - Lint rules that are fixers (risky and code-deleting) keep PHP-CS-Fixer's option names, kebab-cased; giving them Pun
   names is a follow-up in lint's plan.
