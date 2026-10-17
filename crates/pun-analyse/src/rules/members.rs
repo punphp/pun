@@ -98,12 +98,10 @@ pub fn method<'a>(
 ) -> Option<Method<'a>> {
     let lower = word(name.to_ascii_lowercase());
     let mut current = Some(class);
-    let mut first = true;
     while let Some(k) = current {
-        if let Some(m) = declared(codebase, k, &lower, first) {
+        if let Some(m) = declared(codebase, k, &lower) {
             return Some(m);
         }
-        first = false;
         current = k
             .direct_parent_class
             .and_then(|p| codebase.get_class_like(p.as_bytes()));
@@ -112,16 +110,14 @@ pub fn method<'a>(
         .chain(class.all_parent_interfaces.iter())
         .filter_map(|i| codebase.get_class_like(i.as_bytes()))
         .filter(|i| i.kind.is_interface())
-        .find_map(|i| declared(codebase, i, &lower, false))
+        .find_map(|i| declared(codebase, i, &lower))
 }
 
-/// A method `k` itself declares or takes from a trait. Private methods of parents don't count (`first` is the
-/// class asked about).
+/// A method `k` itself declares or takes from a trait (private ones of parents count, as in PHP's reflection).
 fn declared<'a>(
     codebase: &'a CodebaseMetadata,
     k: &'a ClassLikeMetadata,
     lower: &mago_word::Word,
-    first: bool,
 ) -> Option<Method<'a>> {
     if k.flags.is_built_in() {
         let c = symbols::class(&String::from_utf8_lossy(k.name.as_bytes()))?;
@@ -130,15 +126,9 @@ fn declared<'a>(
             .get(String::from_utf8_lossy(lower.as_bytes()).as_ref())?;
         return Some(Method::Builtin { declaring: c, f });
     }
-    let private_ok = |f: &FunctionLikeMetadata| {
-        first
-            || f.method_metadata
-                .as_ref()
-                .is_none_or(|m| !m.visibility.is_private() || m.is_constructor)
-    };
     if k.methods.contains(lower) {
         let f = codebase.get_method(k.name.as_bytes(), lower.as_bytes())?;
-        return private_ok(f).then_some(Method::User { declaring: k, f });
+        return Some(Method::User { declaring: k, f });
     }
     let traits = || {
         k.used_traits
@@ -147,21 +137,19 @@ fn declared<'a>(
     };
     // `use T { foo as bar; }`
     if let Some(original) = k.trait_alias_map.get(lower)
-        && let Some((t, f)) = traits().find_map(|t| {
+        && let Some(f) = traits().find_map(|t| {
             codebase
                 .get_method(t.name.as_bytes(), original.as_bytes())
                 .filter(|_| {
                     t.methods
                         .contains(&word(original.as_bytes().to_ascii_lowercase()))
                 })
-                .map(|f| (t, f))
         })
     {
-        let _ = t;
-        return private_ok(f).then_some(Method::User { declaring: k, f });
+        return Some(Method::User { declaring: k, f });
     }
     // a trait's methods are declared by the class using it, for PHPStan
-    traits().find_map(|t| match declared(codebase, t, lower, first)? {
+    traits().find_map(|t| match declared(codebase, t, lower)? {
         Method::User { f, .. } => Some(Method::User { declaring: k, f }),
         builtin => Some(builtin),
     })
