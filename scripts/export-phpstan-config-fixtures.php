@@ -12,7 +12,7 @@ declare(strict_types=1);
  *   php scripts/export-phpstan-config-fixtures.php [case-or-corpus-name...]
  *
  * case.json: {"args": [phpstan-config.php args after <cwd>], "env": {"NAME": "value"}}.
- * Paths are written with placeholders: {cwd} (the case/farm directory), {root} (the oracle phar's directory), {tmp}
+ * Paths are written with placeholders: {cwd} (the case/farm directory), {repo} (this checkout), {root} (the oracle phar's directory), {tmp}
  * (TMPDIR, target-lintcfg/tmp/sys); the environment is only PATH, TMPDIR and the case's env.
  */
 
@@ -79,7 +79,7 @@ foreach (glob($fixtures.'/config-corpus/*.json') as $caseFile) {
     }
     symlink($root.'/.oracle/phpstan/vendor', $farm.'/vendor');
     $res = oracle($farm.'/vendor/phpstan/phpstan/phpstan.phar', $farm, $case['args'] ?? [], $case['env'] ?? []);
-    $case['expected'] = placeholders($res, [$farm => '{cwd}', $tmp => '{tmp}']);
+    $case['expected'] = placeholders($res, [$farm => '{cwd}', $root => '{repo}', $tmp => '{tmp}']);
     write($caseFile, $case);
     echo $name, ': ', isset($res['error']) ? 'error: '.substr($res['error'], 0, 200) : 'ok', "\n";
 }
