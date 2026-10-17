@@ -1,50 +1,60 @@
-# Pun — agent notes
+# AGENTS.md
 
-Plan: docs/PLAN.md. Home: github.com/punphp/pun (npm: @punphp/pun). Current scope: Phase 0 + Phase 1 (`pun format`, byte-identical to Pint).
+Pun: one Rust binary for the PHP toolchain. `pun format` is byte-identical to Laravel Pint; `pun analyse` (PHPStan/Larastan parity) is in progress. Status and open work: `docs/TASKS.md` (source of truth). Plan: `docs/PLAN.md`. Rule names and upstream mapping: `docs/RULES.md`. Behaviour users see: `README.md`.
 
-- Package names are `punphp-<x>` (dirs stay crates/pun-<x>, Rust import names stay `pun_<x>` via workspace `package =` aliases). Use `cargo test -p punphp-<x>`.
-- Rust toolchain: `source ~/.cargo/env`. Machine has 2 cores / 7 GB: build only your crate (`cargo test -p <crate>`), never `cargo clean`.
-- Crate ownership is per agent. Don't edit another agent's crate; if you need an API from it, read it and adapt, or note the request in docs/REQUESTS.md.
-- Root Cargo.toml: you may append to `[workspace.dependencies]`; don't reorder or remove.
-- Commit only your own paths: `git add <your paths> Cargo.lock && git commit -m ...`. If `.git/index.lock` exists, wait and retry.
-- Oracle = real tools via system PHP 8.5 (no Docker, no embedded libphp yet). Pinned oracle installs live in `.oracle/` (gitignored).
-- Acceptance project: /home/forge/projects/pinkary.com (read-only — never modify it; copy into corpus/ if you need a writable checkout).
-- Use `pcre2` crate where upstream uses preg_*; PHP string semantics (byte strlen, ASCII strtolower) live in pun-tokens `php_compat`.
+## Parity is the spec
 
-## Keeping the box alive (2 cores / 7 GB, several agents at once)
+Output, messages and exit codes equal the pinned upstream tool (Pint, PHP-CS-Fixer, PHPStan). When unsure, run the oracle: `scripts/oracle.sh` installs it into `.oracle/` (system PHP 8.5, no Docker): `php .oracle/pint/builds/pint`, `.oracle/php-cs-fixer`, `.oracle/phpstan`. Port upstream function by function; use the `pcre2` crate wherever upstream calls `preg_*`, and `pun_tokens::php_compat` for PHP string semantics (byte `strlen`, ASCII `strtolower`).
 
-- Always `export CARGO_BUILD_JOBS=1` and prefix heavy commands with `nice` and `timeout` (e.g. `timeout 900 nice cargo test ...`).
-- One cargo/php command at a time per agent; never run things in the background and never `cargo build --workspace`/`--release`.
-- Harness corpus runs: one fixer, one project at a time; prefer Pinkary/laravel-framework subsets while iterating.
-- Commit messages follow Conventional Commits (`type(scope): subject`, lowercase subject, no trailing period; types: feat, fix, docs, chore, test, perf, refactor, ci, style, build). Never add `Co-authored-by` trailers; the only author is Pushpak Chhajed <pushpak1300@gmail.com>.
-- After every commit: `git push origin main` (retry once on failure; never force-push, never rewrite history).
+Corpus projects live in `corpus/` (`scripts/corpus.sh <name>`, listed in `corpus/manifest.toml`). Pinkary at `/home/forge/projects/pinkary.com` is the acceptance project, read-only; copy it into `corpus/` to get a writable checkout.
 
-## Tests: 100% coverage, zero tautological tests
+Parity gates, cheapest first:
 
-- Gate: 100% line coverage per crate, measured by `scripts/coverage.sh` (cargo-llvm-cov). Any line that genuinely cannot be
-  reached gets removed, not excluded; the rare justified exclusion is listed in docs/COVERAGE.md with the reason.
-- Expected values must come from somewhere other than the code under test: upstream fixtures, output of the real tool
-  (`php .oracle/pint/builds/pint`, `.oracle/php-cs-fixer`, `token_get_all`), or hand-derived values for hand-written cases.
-  To cover a fixer branch the upstream fixtures miss, write the input, run the oracle on it, and paste the oracle's output
-  as the expectation.
-- Banned (tautological): asserting a function equals itself or a copy of its own logic; snapshotting current output and
-  calling it expected; `assert!(true)`/no assertion; asserting only that something didn't panic when its output is checkable;
-  mocks that only verify calls; tests of private helpers whose behaviour is already pinned through the public API.
-- Each test must fail on a plausible wrong implementation. If you can't name the bug it catches, delete it.
+```sh
+cargo test -p punphp-<x>                                     # package punphp-<x> lives in crates/pun-<x>, imported as pun_<x>
+cargo test -p punphp-fixers <substring>                      # one test; PUN_FIXERS_ONLY=a,b compiles only those fixers (build.rs)
+cargo build -p punphp -p punphp-harness
+target/debug/pun-harness format --corpus pinkary --diffs 5   # Pint vs `pun migrate` + `pun check --fix`; --fixer <name> isolates one rule
+scripts/cli-parity.sh "ARGS"...                              # byte-compare Pint and pun output and exit code
+scripts/fuzz-parity.sh                                       # mutation fuzzer vs Pint; needs a fresh target/debug/pun
+scripts/coverage.sh punphp-tokens                            # per-crate line coverage
+```
 
-## Handoff between sessions
+## Architecture
 
-- `docs/TASKS.md` "Current state" is the source of truth: set your row to `doing` with your owner/target dir before starting, `done` when pushed.
-- Each agent uses its own `CARGO_TARGET_DIR` (e.g. `target-perf`) and pulls with `--rebase` before every push.
-- Starting a new session: read TASKS.md, `git log -15`, `git status`, `ps aux | grep -E 'cargo|rustc|php'`. Rows marked doing with no live agent are abandoned work — verify and commit or revert their uncommitted files before continuing.
-- The git index is shared by all agents. Never `git add` and commit separately or use `git commit -a`; commit only your files in one step: `git commit -m "..." -- path1 path2`.
+- `pun-tokens` is the base: a `token_get_all`-compatible lexer plus PHP-CS-Fixer's transformers and `TokensAnalyzer`. `pun-format` runs fixers (the `Fixer` trait) in PHP-CS-Fixer priority order over one token list and lints with PHP's own grammar (`php_grammar.rs`, generated by `scripts/gen-php-grammar.py`). `pun-fixers` holds one file per fixer in `src/fixers/`, registered by `build.rs`; its `Pun/*` rules are opt-in Mago ports (`docs/MAGO-EXTRAS.md`).
+- A fixer's tests come from three sources: upstream fixtures exported to JSON, oracle output in `tests/cases/<fixer>.json` (made with `scripts/oracle-case.php`), and `tests/metadata.json` (priority and risky flag vs Pint).
+- `pun-config` reads `pun.toml` only and maps Pun rule IDs to upstream names (`rules/mapping.toml`, checked by `scripts/check-rule-mapping.py`); `migrate.rs` converts pint.json and .php-cs-fixer.php. `docs/presets/laravel.json` is compiled into it, so it stays put.
+- A rule Pun hasn't ported sends every file of the run through the real PHP-CS-Fixer in `pun-delegate`'s `php` workers (`docs/oracle.md#delegate-mode`).
+- `pun-cli` builds `pun` (and answers as `pint` via argv[0]): Pint-identical reporters, compact agent-mode output (`agent.rs`), cache, watch, interactive migrate. `pun-phpstan` ports PHPStan's config, ignore and type-string behaviour, with built-in symbols in `data/symbols.json`; `pun-analyse` builds `pun analyse` on it and Mago's analyzer. `pun-lsp` embeds PHPantom (`docs/LSP.md`). `pun-harness` is local tooling that regenerates `docs/scoreboard.md`.
+- Command model: `format` = layout only; `lint` = code rules, including PHP-CS-Fixer's risky fixers; `analyse` = type errors; `check` = all three in one pass.
+- The Mago crates are pinned `=1.57.0` and bump together.
+- Harness-only switches: `PUN_IGNORE_PHP_CONSTRAINT=1` (corpora allowing PHP < 8.4), `PUN_BIN`, `PUN_HARNESS_ROOT`, `PUN_PROFILE`. Tests that spawn `pun` set `PUN_AGENT=0`, except those testing agent mode.
 
-## Docs site (docs/)
+## Machine budget
 
-- `docs/` is also the public docs site and homepage, built with [Blume](https://useblume.dev): `docs/blume.config.ts`, pages in
-  `docs/content/docs/*.mdx` (routes under `/docs`), the homepage in `docs/pages/index.astro`, assets in `docs/public/`, brand
-  tokens in `docs/theme.css` (mirrors `design/tokens.json`). Run `npm install && npm run dev` (or `npm run build`) inside `docs/`.
-- The Markdown files directly in `docs/` (PLAN.md, TASKS.md, RULES.md, ...) are internal notes and are not published.
-  `docs/presets/laravel.json` is compiled into pun-config; don't move it.
-- Agent skills for the site live in `.claude/skills/blume` and `.claude/skills/blume-update-docs`. When a change alters a
-  flag, rule or behaviour, update the matching page under `docs/content/docs/`.
+2 cores, 7 GB, several agents at once. `source ~/.cargo/env`; `export CARGO_BUILD_JOBS=1`; run heavy commands as `timeout 900 nice cargo ...`; one cargo or php command at a time, in the foreground; build only your crate; keep `target/`. Corpus runs: one fixer on one project, Pinkary or laravel-framework while iterating. Each agent sets its own `CARGO_TARGET_DIR` (e.g. `target-perf`).
+
+## Tests
+
+Gate: 100% line coverage per crate (`scripts/coverage.sh`). Delete a line that cannot be reached; the rare justified exclusion goes in `docs/COVERAGE.md` with its reason.
+
+Expected values come from outside the code under test: upstream fixtures, the real tool's output, `token_get_all`, or a hand-derived value. To cover a branch upstream's fixtures miss, write the input, run the oracle on it, and paste the oracle's output as the expectation.
+
+A test earns its place by failing on a plausible wrong implementation; name the bug it catches or delete it. Tautologies fail that bar: a function compared with itself or a copy of its logic, a snapshot of current output, no assertion, "didn't panic" where output is checkable, mocks that only verify calls, private helpers already pinned through the public API.
+
+## Multi-agent workflow
+
+- Each crate has one owning agent. Read another crate's API and adapt, or file the request in `docs/REQUESTS.md`. In the root `Cargo.toml`, append to `[workspace.dependencies]` only.
+- Start a session with `docs/TASKS.md`, `git log -15`, `git status` and `ps aux | grep -E 'cargo|rustc|php'`. A `doing` row with no live agent is abandoned: verify its uncommitted files, then commit or revert them.
+- Mark your row `doing` (owner, target dir) before starting and `done` when pushed.
+- The git index is shared: commit your files in one step, `git commit -m "..." -- path1 path2`. If `.git/index.lock` exists, wait and retry.
+- After each commit: `git pull --rebase origin main`, `git push origin main`, retry once on failure. History is rewritten or force-pushed only on the user's explicit request.
+
+## Commits
+
+Conventional Commits: `type(scope): subject`, lowercase subject, no trailing period; types feat, fix, docs, chore, test, perf, refactor, ci, style, build. Pushpak Chhajed <pushpak1300@gmail.com> is the only author, and messages carry no `Co-authored-by` trailers.
+
+## Docs site
+
+`docs/` doubles as the public site, built with [Blume](https://useblume.dev) (`npm install && npm run dev` inside `docs/`): pages in `docs/content/docs/*.mdx`, homepage `docs/pages/index.astro`, tokens in `docs/theme.css` (mirrors `design/tokens.json`). The Markdown files directly in `docs/` are internal notes, unpublished. A change to a flag, rule or behaviour updates its page under `docs/content/docs/`; the `blume` and `blume-update-docs` skills in `.claude/skills/` cover the tooling.
