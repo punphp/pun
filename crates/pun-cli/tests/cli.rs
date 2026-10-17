@@ -848,18 +848,19 @@ fn migrates_php_cs_fixer_config() {
         rest,
         ".php-cs-fixer.php migrated\n.php-cs-fixer.php unsupported Acme/upper_todo: not a PHP-CS-Fixer or Pint rule Pun knows (a custom fixer or rule set)\n"
     );
-    // A Finder over the project root: no [files] paths; exclude and notName go to [format]; depth() has no key.
+    // A Finder over the project root: no [files] paths; exclude and notName go to [format]; depth() and
+    // ignoreVCSIgnored() have no key.
     reset(&dir, &tree);
     std::fs::write(
         dir.join(".php-cs-fixer.php"),
-        "<?php\nreturn (new PhpCsFixer\\Config())->setRiskyAllowed(true)->setRules(['single_quote' => true, 'no_alias_functions' => true])\n    ->setFinder(PhpCsFixer\\Finder::create()->in(__DIR__)->exclude('legacy')->notName('*.inc')->depth('< 3'));\n",
+        "<?php\nreturn (new PhpCsFixer\\Config())->setRiskyAllowed(true)->setRules(['single_quote' => true, 'no_alias_functions' => true])\n    ->setFinder(PhpCsFixer\\Finder::create()->in(__DIR__)->exclude('legacy')->notName('*.inc')->depth('< 3')->ignoreVCSIgnored(true));\n",
     )
     .unwrap();
     let (out, err, code) = pun(&dir, &["migrate"]);
     assert_eq!(code, Some(0), "{err}");
     assert_eq!(
         err,
-        "pun migrate: .php-cs-fixer.php: Finder depth(): no pun.toml key for it; skipped\n"
+        "pun migrate: .php-cs-fixer.php: Finder depth(): no pun.toml key for it; skipped\npun migrate: .php-cs-fixer.php: Finder ignoreVCSIgnored(): no pun.toml key for it; skipped\n"
     );
     assert_eq!(
         out,

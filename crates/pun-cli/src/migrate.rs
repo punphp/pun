@@ -430,9 +430,10 @@ fn rel(root: &Path, p: &Path) -> String {
     p.strip_prefix(root).unwrap_or(p).display().to_string()
 }
 
+type Object = serde_json::Map<String, serde_json::Value>;
+
 /// A `.php-cs-fixer.php`'s rules and Finder, read through the project's own PHP-CS-Fixer (the config is PHP code and
 /// may register custom fixers). Migrate is the only place Pun runs PHP, and only to read the old config.
-type Object = serde_json::Map<String, serde_json::Value>;
 fn php_cs_fixer_config(root: &Path, config: &Path) -> Result<(Object, Object)> {
     if !root.join("vendor/friendsofphp/php-cs-fixer").is_dir() {
         bail!(

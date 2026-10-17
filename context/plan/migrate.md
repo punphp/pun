@@ -87,5 +87,5 @@ Build 1 (wf/migrate-format, 2026-10-17), assistant's calls where the plan is sil
   `in()` folders become `[files] paths` (relative to the project; the project root itself is left out), `exclude()`
   (without PhpCsFixer\Finder's own `vendor`), `notName()` and `notPath()` become `[format]` keys, as for pint.json.
   `name()` other than `*.php`, `path()`, `depth()`, `contains()`, `notContains()`, `size()`, `date()`, `filter()`,
-  `append()` and a Finder that is not a Symfony Finder are named as `Finder <call>: no pun.toml key for it`.
+  `append()`, `followLinks()`, `ignoreVCSIgnored(true)` and a Finder that is not a Symfony Finder are named as `Finder <call>: no pun.toml key for it`.
   An empty Finder list is left out of pun.toml.

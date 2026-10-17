@@ -33,10 +33,16 @@ try {
         foreach (array_diff($get('names'), ['/\.php$/']) as $n) {
             $out['unsupported'][] = 'name('.json_encode($n, JSON_UNESCAPED_SLASHES).')';
         }
-        foreach (['paths' => 'path', 'depths' => 'depth', 'contains' => 'contains', 'notContains' => 'notContains', 'sizes' => 'size', 'dates' => 'date', 'filters' => 'filter', 'iterators' => 'append'] as $p => $call) {
-            if ($get($p) !== []) {
+        foreach (['paths' => 'path', 'depths' => 'depth', 'contains' => 'contains', 'notContains' => 'notContains', 'sizes' => 'size', 'dates' => 'date', 'filters' => 'filter', 'pruneFilters' => 'filter', 'iterators' => 'append'] as $p => $call) {
+            if ($get($p) !== [] && !in_array($call.'()', $out['unsupported'], true)) {
                 $out['unsupported'][] = $call.'()';
             }
+        }
+        if ($get('followLinks')) {
+            $out['unsupported'][] = 'followLinks()';
+        }
+        if ($get('ignore') & Symfony\Component\Finder\Finder::IGNORE_VCS_IGNORED_FILES) {
+            $out['unsupported'][] = 'ignoreVCSIgnored()';
         }
     }
     fwrite(STDOUT, json_encode(['rules' => (object) $resolver->getRules(), 'finder' => $out], JSON_UNESCAPED_SLASHES));
