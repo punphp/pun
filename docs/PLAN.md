@@ -83,20 +83,30 @@ The format part (`pint.json` to `[format]`, `@php-cs-fixer-ignore` rewrites) can
 Like [Laravel PAO](https://laravel.com/blog/introducing-laravel-pao-cleaner-output-for-ai-agents), every `pun` command detects when an AI agent runs it. Humans see unchanged output; agents get compact, structured results.
 
 - **Detection.** One shared function ports laravel/agent-detector v2's env list (`CLAUDECODE`, `CLAUDE_CODE`, `CURSOR_AGENT`, `CODEX_SANDBOX`/`CODEX_THREAD_ID`, `GEMINI_CLI`, `AMP_CURRENT_THREAD_ID`, `OPENCODE`, `COPILOT_CLI`, `AUGMENT_AGENT`, `CLINE_ACTIVE`, `AI_AGENT`, and the rest), kept in sync with upstream. `pun format` already does this for Pint's agent reporter. Overrides: `PUN_AGENT=1|0` and `--agent` / `--no-agent`. PAO's `PAO_FORCE` and `PAO_DISABLE` are honoured too.
-- **Output under an agent.**
-  - One JSON object on stdout: `{"tool":"pun","command":"analyse","result":"fail","summary":{...},"items":[...]}`.
-  - Each item has `file`, `line`, `rule` (Pun rule ID), `message`, plus `fix` / `fixable` and `diff` where they apply.
-  - No ANSI, progress bars, dot leaders or boxes.
-  - Long lists are capped, with a `"truncated": N` count and a hint to pass `-v` for the rest.
-  - Errors are JSON too: `{"result":"error","message":...}`.
+- **Output under an agent is a token-saving plain-text format, not JSON.** JSON spends tokens on quotes, braces and repeated keys. Pun prints compiler-style lines, which models already read well and which can be grepped:
+
+  ```
+  pun analyse: fail, 3 errors in 2 files (412 files checked, 0.21s)
+  app/Models/User.php:42:9 analyse.undefined-method Call to undefined method App\Models\User::foo().
+  app/Models/User.php:57:5 analyse.missing-return-type Method User::name() has no return type.
+  app/Http/Kernel.php:12:1 lint.early-return [fix:safe] Use an early return.
+  +2 more; run with -v for all
+  ```
+
+  - The first line is the summary: command, result, counts and time. Passing runs print only that line (`pun format: pass, 799 files, 0.20s`).
+  - Each item is `path:line:col rule message`, with an optional `[fix:safe|unsafe]` tag. Paths are relative to the project, so no absolute prefixes are repeated.
+  - Diffs (format `-v`, lint) are bare unified-diff hunks: no colour, no headers beyond `--- path` / `+++ path`.
+  - No ANSI, progress bars, dot leaders or boxes. Long lists are capped with a `+N more` line and the `-v` hint.
+  - Errors are one line: `pun format: error: <message>`.
+  - `--format=json` stays available for tools that want JSON. The agent format is only the default under an agent.
 - **Per command.**
-  - `format`: changed files, plus the rules applied per file.
+  - `format`: changed files, each with the rules applied (`app/User.php ordered-imports, no-unused-imports`).
   - `lint`: rule, location, safe or unsafe fix, and the diff.
-  - `analyse`: error count plus per-file errors, the shape PAO normalises PHPStan into.
+  - `analyse`: error count plus per-file errors.
   - `migrate`: the plan, unsupported rules, and files rewritten.
   - `test` (later): counts, durations, failures with assertion, file and line.
 - **Exit codes don't change** under an agent, so agents can still rely on them.
-- Implemented once in pun-cli and shared by every subcommand, with a test per command that runs the binary with `CLAUDECODE=1` and asserts the JSON shape.
+- Implemented once in pun-cli and shared by every subcommand, with a test per command that runs the binary with `CLAUDECODE=1` and asserts the exact lines.
 
 ## Decisions for you to confirm
 
