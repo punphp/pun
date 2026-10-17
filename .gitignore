@@ -5,3 +5,4 @@
 !/corpus/manifest.toml
 *.profraw
 target-*/
+/dist/
