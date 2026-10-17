@@ -61,7 +61,7 @@ rules.undefined-method = "error"
 rules.mixed-argument = "off"
 ```
 
-- **No levels.** A PHPStan level becomes the explicit list of rules it enables, written out by `pun migrate`. After that, rules turn on and off one by one, the way mago.toml works.
+- **No levels.** `pun migrate` expands a PHPStan level (plus strict-rules, deprecation-rules and Larastan) into the explicit list of underlying rules and their options in pun.toml, not a level or preset name. After that, rules turn on and off one by one, the way mago.toml works.
 - **Exact parity is the migration safety net, not the end state.** Pun matches Pint, PHPStan and Rector exactly so a project can switch with zero diff. After migration Pun is free to use its own rule names, messages and rule combinations.
 - **Compat read stays.** Without pun.toml, Pun keeps reading pint.json, phpstan.neon and rector.php directly so trying Pun needs no changes, and prints a one-line hint to run `pun migrate`. *(Proposed; confirm.)*
 - **Rule names.** `format.*`, `lint.*`, `analyse.*` and `mago.*`, with Pun's own kebab-case names (`analyse.undefined-method` rather than `method.notFound`). `pun explain <rule>` shows the upstream tool's name and docs. *(Proposed; confirm.)*

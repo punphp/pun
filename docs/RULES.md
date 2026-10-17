@@ -203,6 +203,7 @@ Groups are data used for docs, `pun explain`, and selecting rules in config. The
   and `reportMagicMethods` → `undefined-method = { magic = true }`. Levels 7–10 change how every type rule compares types,
   so they become four named `[analyse]` switches: `union-types` (L7), `nullables` (L8), `explicit-mixed` (L9) and
   `implicit-mixed` (L10). They are named settings, not a ladder.
+- **`pun migrate` writes the underlying rules, not a level or a preset.** For `level: 6` it lists every analyse rule PHPStan level 6 enables, each with its option values. Strict-rules, deprecation-rules and Larastan add their rules the same way, and the needed type switches are set. So pun.toml shows exactly what runs, and a project tunes it rule by rule afterwards. Presets (§5) are for new projects and for `pun.toml` written by hand.
 
 ## 5. Presets
 
