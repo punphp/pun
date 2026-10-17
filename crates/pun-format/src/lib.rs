@@ -1,4 +1,4 @@
-//! Fixer pipeline (PHP-CS-Fixer's Runner::fixFile, single pass, priority order) and the two engines.
+//! Fixer pipeline (PHP-CS-Fixer's Runner::fixFile, single pass, priority order) and the lint.
 
 use anyhow::{Result, bail};
 use pun_config::Rule;
@@ -396,25 +396,6 @@ pub fn lint(code: &[u8]) -> Result<(), LintError> {
         ),
         after_fix: false,
     })
-}
-
-/// `--engine=pun`: mago-formatter with its Pint preset (whole-file reprint, not byte-identical to Pint).
-pub fn format_pun(code: &[u8], php: &str) -> Result<Option<Vec<u8>>, LintError> {
-    let (major, minor) = php.split_once('.').unwrap_or(("8", "4"));
-    let version = mago_php_version::PHPVersion::new(
-        major.parse().unwrap_or(8),
-        minor.parse().unwrap_or(4),
-        0,
-    );
-    let arena = mago_allocator::LocalArena::new();
-    let settings = mago_formatter::presets::FormatterPreset::Pint.settings();
-    let out = mago_formatter::Formatter::new(&arena, version, settings)
-        .format_code("stdin.php".as_bytes().into(), code.to_vec().into())
-        .map_err(|e| LintError {
-            message: format!("Parse error: {e}."),
-            after_fix: false,
-        })?;
-    Ok((out != code).then(|| out.to_vec()))
 }
 
 #[cfg(test)]
@@ -826,20 +807,6 @@ mod tests {
         assert_eq!(
             p.fixers().map(|f| f.name()).collect::<Vec<_>>(),
             ["modifier_keywords", "visibility_required"]
-        );
-    }
-
-    #[test]
-    fn pun_engine() {
-        // Some(new) only when mago-formatter changed the code: its own output comes back as None.
-        let out = format_pun(b"<?php\necho   1;", "8.4").unwrap().unwrap();
-        assert_ne!(out, b"<?php\necho   1;");
-        assert!(format_pun(&out, "8.5").unwrap().is_none());
-        assert!(
-            format_pun(b"<?php\nfunction (", "x")
-                .unwrap_err()
-                .message
-                .starts_with("Parse error: ")
         );
     }
 }

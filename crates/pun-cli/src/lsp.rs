@@ -4,7 +4,7 @@
 //! when nothing changes, the path is excluded or the code doesn't parse).
 //! Config files are checked (mtimes) on each formatting request and reloaded when they changed.
 
-use crate::{Engine2, FormatArgs, engine, fix_text, load_config, root};
+use crate::{Engine, FormatArgs, engine, fix_text, load_config, root};
 use anyhow::Result;
 use lsp_server::{Connection, ErrorCode, Message, Response};
 use lsp_types::notification::{
@@ -115,7 +115,7 @@ pub fn run() -> Result<u8> {
     Ok(0)
 }
 
-fn setup() -> Result<(Config, Engine2)> {
+fn setup() -> Result<(Config, Engine)> {
     let a = FormatArgs::default();
     let root = root()?;
     let cfg = load_config(&a, false, &root)?;
@@ -125,7 +125,7 @@ fn setup() -> Result<(Config, Engine2)> {
 
 /// When each config file last changed and its size (`None`: absent): the ones a project can add, plus what the loaded config
 /// read (an `extend`ed file). A change reloads the config before the next formatting request.
-fn stamp(setup: &Result<(Config, Engine2)>) -> Vec<Option<(SystemTime, u64)>> {
+fn stamp(setup: &Result<(Config, Engine)>) -> Vec<Option<(SystemTime, u64)>> {
     let root = root().unwrap_or_default();
     let mut files: Vec<PathBuf> = [
         "composer.json",
@@ -152,7 +152,7 @@ fn stamp(setup: &Result<(Config, Engine2)>) -> Vec<Option<(SystemTime, u64)>> {
 
 fn formatting(
     cfg: &Config,
-    engine: &Engine2,
+    engine: &Engine,
     docs: &HashMap<String, String>,
     uri: &Uri,
 ) -> Result<Vec<TextEdit>> {

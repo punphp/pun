@@ -1,6 +1,6 @@
 # Mago extras: what Mago 1.57.0 has that PHP-CS-Fixer 3.95.17 / Pint don't
 
-Pun depends on Mago 1.57.0 (`mago-syntax`, `mago-formatter`, ...). Mago also ships a linter (`mago-linter`,
+Pun depends on Mago 1.57.0 (`mago-syntax`, `mago-linter`, ...). Mago also ships a linter (`mago-linter`,
 ~185 rules, about 70 with auto-fixes), an analyzer, and a width-aware formatter. This file lists the Mago
 capabilities with **no equivalent** among PHP-CS-Fixer's fixers (`src/Fixer/**`) or Pint's custom fixers
 (`app/Fixers`: `Pint/laravel_*`, `Pint/phpdoc_type_annotations_only`), and says which ones Pun should adopt.
@@ -85,8 +85,8 @@ PHP-CS-Fixer never reflows code by line width. Mago's formatter is a Prettier-st
 `print_width`, width-driven breaking of argument, parameter, array and attribute lists,
 `method_chain_breaking_style`, `preserve_breaking_*`, `align_named_arguments`, `align_parameters`,
 `array_table_style_alignment`, `always_break_named_arguments_list`, `|>` pipe-expression breaking, and
-`sort_class_methods`. Pun already exposes all of this as `--engine=pun` (whole-file reprint with Mago's Pint
-preset). That output is deliberately not Pint-identical, so there is nothing more to port here.
+`sort_class_methods`. Pun's formatter stays byte-identical to Pint, so none of this is adopted (an opt-in
+`--engine=pun` built on mago-formatter was removed).
 
 ### Analyzer-backed fixes
 

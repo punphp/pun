@@ -167,7 +167,7 @@ Every command runs on Pun's compatibility layer, which is built on Mago's crates
 | mago-guard | test | Evaluates Pest `arch()` expectations statically, without booting PHP |
 | mago-reporting | all | Diagnostic model; Pun adds Pint, PHPStan, checkstyle, JUnit, GitHub and SARIF output |
 | mago-text-edit | format, refactor | Applying edits and fixes |
-| mago-formatter | format, refactor | The opt-in "Pun style" engine, and printing new nodes that Rector-style rules create |
+| mago-formatter | refactor | Printing new nodes that Rector-style rules create |
 | mago-orchestrator, mago-allocator | all | Parallel pipeline and allocator, adopted if their APIs fit; otherwise rayon |
 
 ### Crates Pun writes
@@ -295,10 +295,6 @@ Porting rules: keep upstream's structure function by function, so a diff between
 ### Blade
 
 Pint formats `.blade.php` only when `Pint/laravel_blade` is on, through Node, Prettier and prettier-plugin-blade. Pun does the same with one long-lived Prettier worker per thread and the same pre-flight checks and messages. Blade is now the cold-run bottleneck on Pinkary (about 2.9 s of the 4.2 s), and 30x on cold Pinkary is out of reach while it goes through Node. The fix is a native Blade formatter (a Blade parser plus Prettier-compatible HTML printing). Evaluate Bun's Prettier-compatible formatter (Oxc/Biome based) as the base, with Pint's Prettier output as the oracle. Planned after v0.1.
-
-### Pun style engine
-
-`--engine=pun` uses mago-formatter with its laravel preset: whole-file pretty-printing, faster again, deterministic, but not Pint-identical. Opt-in for teams that want to move past Pint's output.
 
 ### Targets
 

@@ -1,7 +1,7 @@
 //! `pint`-mode (argv[0] = pint) and `pun format` against the real Pint (`php .oracle/pint/builds/pint`): same stdout,
 //! exit code and resulting files for every flag combination below, run in the same directory (so diff headers and
 //! absolute paths agree). Rules: only fully ported ones, so the output must be byte-identical. Skipped without the
-//! oracle. Pun-only behaviour (`--explain`, `--engine`, `config --show`, unported rules) is checked by hand-derived
+//! oracle. Pun-only behaviour (`--explain`, `config --show`, unported rules) is checked by hand-derived
 //! expectations at the end.
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -525,7 +525,7 @@ fn pun_only_behaviour() {
     let (_, err, code) = pun(&dir, &["format", "--test", "--explain"]);
     assert_eq!(code, Some(1));
     let lines: Vec<&str> = err.lines().collect();
-    assert_eq!(lines[0], "engine: compat (PHP 8.4), preset empty, 4 rules");
+    assert_eq!(lines[0], "native (PHP 8.4), preset empty, 4 rules");
     assert_eq!(lines.len(), 5);
     assert!(
         lines[1..].iter().all(|l| l.starts_with("  native ")),
@@ -596,42 +596,12 @@ fn pun_only_behaviour() {
         "{err}"
     );
 
-    // --engine=pun: mago-formatter, blade files skipped; --explain says so.
+    // `pint` ignores pun.toml: an invalid one only breaks `pun format`.
     reset(&dir, &files());
-    std::fs::write(dir.join("app/v.blade.php"), "<div>{{ $a }}</div>\n").unwrap();
-    let (out, err, code) = pun(
-        &dir,
-        &[
-            "format",
-            "--engine=pun",
-            "--explain",
-            "--format=json",
-            "app/Clean.php",
-            "app/v.blade.php",
-        ],
-    );
-    assert_eq!(
-        err,
-        "engine: pun (mago-formatter, pint preset, PHP 8.4); pint.json rules are ignored\n"
-    );
-    assert_eq!(code, Some(0));
-    assert!(
-        out.contains(r#""files":[{"name":"app\/Clean.php"}]"#),
-        "{out}"
-    );
-    assert_ne!(
-        std::fs::read(dir.join("app/Clean.php")).unwrap(),
-        b"<?php\n$a = [1];\n"
-    );
-    assert_eq!(
-        std::fs::read_to_string(dir.join("app/v.blade.php")).unwrap(),
-        "<div>{{ $a }}</div>\n"
-    );
-    // pun.toml picks the engine for `pun format`, but `pint` ignores pun.toml.
-    reset(&dir, &files());
-    std::fs::write(dir.join("pun.toml"), "[format]\nengine = \"pun\"\n").unwrap();
-    let (_, err, _) = pun(&dir, &["format", "--test", "--explain", "app/Clean.php"]);
-    assert!(err.starts_with("engine: pun "), "{err}");
+    std::fs::write(dir.join("pun.toml"), "[format]\nnope = 1\n").unwrap();
+    let (_, err, code) = pun(&dir, &["format", "--test", "app/Clean.php"]);
+    assert_eq!(code, Some(1));
+    assert!(err.contains("invalid ") && err.contains("pun.toml"), "{err}");
     let (_, err) = run(
         &pint_alias(),
         &[],
@@ -640,7 +610,7 @@ fn pun_only_behaviour() {
         &[],
         b"",
     );
-    assert!(!err.contains("engine"), "{err}");
+    assert!(!err.contains("pun.toml"), "{err}");
 
     reset(&dir, &files());
 

@@ -1,5 +1,5 @@
 //! Content-hash cache, PHP-CS-Fixer's `.php-cs-fixer.cache` idea: a JSON file with a signature (Pun build, target PHP,
-//! whitespace config, preset, engine, resolved rules + options, Blade toolchain lockfile) and, per file path, the
+//! whitespace config, preset, resolved rules + options, Blade toolchain lockfile) and, per file path, the
 //! xxh3-128 of content that was clean under exactly that signature. Such a file is skipped without lexing.
 //!
 //! Pint itself never caches (its presets call `setUsingCache(false)`, so the `--cache-file` it computes is unused).
@@ -78,7 +78,6 @@ pub fn signature(cfg: &pun_config::Config) -> Value {
         "indent": "    ",
         "lineEnding": "\n",
         "preset": cfg.preset,
-        "engine": format!("{:?}", cfg.engine),
         "rules": rules,
         "bladeToolchain": blade_toolchain,
     })
