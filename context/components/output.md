@@ -115,3 +115,6 @@ Answered 2026-10-17 (Pushpak):
   ```
   A passing step is one line. Pushpak reconsidered by file vs by command and kept by command after comparing with
   Vite+, whose output is one `pass:` line per step.
+- **Q3: GitHub annotations are automatic** when `GITHUB_ACTIONS` is set, on top of the normal output; `--format=github`
+  forces them.
+- **Q4: clean files print nothing**; `-v` adds a dim line per clean file (assistant default, as approved for format).
