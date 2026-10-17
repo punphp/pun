@@ -1,0 +1,67 @@
+{
+    "test": "Properties/PropertyHookAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/property-hook-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-hook-attributes.php",
+                    "line": 27,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class PropertyHookAttributes\\Foo does not have the method target.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-hook-attributes.php",
+                    "line": 27,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property PropertyHookAttributes\\Lorem::$i should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-hook-attributes.php",
+                    "line": 39,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property PropertyHookAttributes\\Ipsum::$i should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-hook-attributes.php",
+                    "line": 51,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property PropertyHookAttributes\\Dolor::$i should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNoDiscard",
+            "files": [
+                "Properties/data/property-hook-attributes-nodiscard.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-hook-attributes-nodiscard.php",
+                    "line": 9,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class NoDiscard cannot be used on property hooks.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-hook-attributes-nodiscard.php",
+                    "line": 9,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property PropertyHookAttributes\\Sit::$i should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

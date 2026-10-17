@@ -1,0 +1,134 @@
+{
+    "test": "Namespaces/ExistingNamesInUseRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Namespaces/data/uses.php"
+            ],
+            "scan": [
+                "Namespaces/data/uses-defined.php"
+            ],
+            "errors": [
+                {
+                    "file": "Namespaces/data/uses.php",
+                    "line": 7,
+                    "identifier": "function.notFound",
+                    "message": "Used function Uses\\bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Namespaces/data/uses.php",
+                    "line": 8,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant Uses\\OTHER_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Namespaces/data/uses.php",
+                    "line": 10,
+                    "identifier": "interface.nameCase",
+                    "message": "Interface Uses\\Lorem referenced with incorrect case: Uses\\LOREM.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14617UseFunctionAlias",
+            "files": [
+                "Namespaces/data/bug-14617-use-function-alias.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPhpstanInternalClass",
+            "files": [
+                "Classes/data/phpstan-internal-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 14,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 16,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 19,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\PrefixedRuntimeException.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\PrefixedRuntimeException?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 25,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 28,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 30,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 34,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPStan class: _PHPStan_156ee64ba\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 56,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Rector class: RectorPrefix202302\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 59,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHP-Scoper class: _PhpScoper19ae93be897e\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 62,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed PHPUnit class: PHPUnitPHAR\\SebastianBergmann\\Diff\\Exception.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\SebastianBergmann\\Diff\\Exception?"
+                },
+                {
+                    "file": "Classes/data/phpstan-internal-class.php",
+                    "line": 73,
+                    "identifier": "class.prefixed",
+                    "message": "Referencing prefixed Box class: _HumbugBox02f3b3909847\\AClass.",
+                    "tip": "This is most likely unintentional. Did you mean to type \\AClass?"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "test": "Properties/InvalidCallablePropertyTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/invalid-callable-property-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/invalid-callable-property-type.php",
+                    "line": 9,
+                    "identifier": "property.callableType",
+                    "message": "Property InvalidCallablePropertyType\\HelloWorld::$a cannot have callable in its type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/invalid-callable-property-type.php",
+                    "line": 12,
+                    "identifier": "property.callableType",
+                    "message": "Property InvalidCallablePropertyType\\HelloWorld::$b cannot have callable in its type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/invalid-callable-property-type.php",
+                    "line": 15,
+                    "identifier": "property.callableType",
+                    "message": "Property InvalidCallablePropertyType\\HelloWorld::$c cannot have callable in its type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/invalid-callable-property-type.php",
+                    "line": 23,
+                    "identifier": "property.callableType",
+                    "message": "Property InvalidCallablePropertyType\\HelloWorld::$callback cannot have callable in its type declaration.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

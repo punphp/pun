@@ -1,0 +1,3334 @@
+{
+    "test": "Methods/CallMethodsRuleTest",
+    "cases": [
+        {
+            "method": "testIsCallablePhp8",
+            "files": [
+                "Methods/data/call-methods-is-callable.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallMethods",
+            "files": [
+                "Methods/data/call-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 10,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Test\\Foo::protectedMethodFromChild().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 40,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Test\\Bar::loremipsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 41,
+                    "identifier": "method.private",
+                    "message": "Call to private method foo() of class Test\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 46,
+                    "identifier": "arguments.count",
+                    "message": "Method Test\\Foo::test() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 62,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Test\\UnknownClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 66,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 68,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 70,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 72,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 73,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 74,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 75,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 76,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 77,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 77,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 78,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 78,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 79,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 81,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 83,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 84,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 85,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 86,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 90,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 91,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 174,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 177,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 190,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 193,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 243,
+                    "identifier": "function.notFound",
+                    "message": "Function makeDate not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 248,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 398,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 469,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 543,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $param (string) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 581,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $s (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 680,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 714,
+                    "identifier": "arguments.count",
+                    "message": "Method Test\\VariadicAnnotationMethod::definedInPhpDoc() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 743,
+                    "identifier": "return.missing",
+                    "message": "Method class@anonymous/call-methods.php:735::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1072,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Test\\CallAfterPropertyEmpty::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1254,
+                    "identifier": "return.missing",
+                    "message": "Method Test\\AssignmentInInstanceOf::doBar() should return bool|Test\\AssignmentInInstanceOf but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1392,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $bar (Test\\ClassWithToString) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1397,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $baz (string) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1482,
+                    "identifier": "return.missing",
+                    "message": "Method Test\\ClassStringWithUpperBounds::doFoo() should return T of Exception but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallMethodsOnThisOnly",
+            "files": [
+                "Methods/data/call-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 10,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Test\\Foo::protectedMethodFromChild().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 40,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Test\\Bar::loremipsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 41,
+                    "identifier": "method.private",
+                    "message": "Call to private method foo() of class Test\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 46,
+                    "identifier": "arguments.count",
+                    "message": "Method Test\\Foo::test() invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 62,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Test\\UnknownClass not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 66,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 68,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 70,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 72,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 73,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 74,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 75,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 76,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 77,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 77,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 78,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 78,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 79,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 81,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 83,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 84,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 85,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 86,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 90,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 91,
+                    "identifier": "method.void",
+                    "message": "Result of method Test\\Bar::returnsVoid() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 174,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 177,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 190,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 193,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 243,
+                    "identifier": "function.notFound",
+                    "message": "Function makeDate not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 248,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 398,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 469,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 543,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $param (string) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 581,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $s (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 680,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 714,
+                    "identifier": "arguments.count",
+                    "message": "Method Test\\VariadicAnnotationMethod::definedInPhpDoc() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 743,
+                    "identifier": "return.missing",
+                    "message": "Method class@anonymous/call-methods.php:735::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1072,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method Test\\CallAfterPropertyEmpty::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1254,
+                    "identifier": "return.missing",
+                    "message": "Method Test\\AssignmentInInstanceOf::doBar() should return bool|Test\\AssignmentInInstanceOf but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1392,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $bar (Test\\ClassWithToString) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1397,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $baz (string) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods.php",
+                    "line": 1482,
+                    "identifier": "return.missing",
+                    "message": "Method Test\\ClassStringWithUpperBounds::doFoo() should return T of Exception but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallTraitMethods",
+            "files": [
+                "Methods/data/call-trait-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-trait-methods.php",
+                    "line": 26,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallTraitMethods\\Baz::unexistentMethod().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallTraitOverridenMethods",
+            "files": [
+                "Methods/data/call-trait-overridden-methods.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallInterfaceMethods",
+            "files": [
+                "Methods/data/call-interface-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-interface-methods.php",
+                    "line": 25,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method InterfaceMethods\\Baz::barMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-interface-methods.php",
+                    "line": 26,
+                    "identifier": "staticMethod.callToAbstract",
+                    "message": "Cannot call abstract static method InterfaceMethods\\Foo::fooStaticMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-interface-methods.php",
+                    "line": 27,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method InterfaceMethods\\Baz::barStaticMethod().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14719",
+            "files": [
+                "Methods/data/bug-14719.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14720",
+            "files": [
+                "Methods/data/bug-14720.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClosureBind",
+            "files": [
+                "Methods/data/closure-bind.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 8,
+                    "identifier": "class.notFound",
+                    "message": "Method CallClosureBind\\Bar::fooMethod() has invalid return type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 16,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallClosureBind\\Bar::barMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 17,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 23,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallClosureBind\\Bar::barMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 24,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $nonexistent",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 26,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 31,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 36,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type CallClosureBind\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 43,
+                    "identifier": "class.notFound",
+                    "message": "Call to method privateMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 44,
+                    "identifier": "class.notFound",
+                    "message": "Call to method nonexistentMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 45,
+                    "identifier": "class.notFound",
+                    "message": "Class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 47,
+                    "identifier": "return.missing",
+                    "message": "Method CallClosureBind\\Bar::fooMethod() should return CallClosureBind\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Call to method publicMethod() on an unknown class CallClosureBind\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 49,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class CallClosureBind\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 66,
+                    "identifier": "class.notFound",
+                    "message": "Class CallClosureBind\\Foo2 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/closure-bind.php",
+                    "line": 72,
+                    "identifier": "class.notFound",
+                    "message": "Class CallClosureBind\\Foo2 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4865",
+            "files": [
+                "Methods/data/bug-4865.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14715",
+            "files": [
+                "Methods/data/bug-14715.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrowFunctionClosureBind",
+            "files": [
+                "Methods/data/arrow-function-bind.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/arrow-function-bind.php",
+                    "line": 28,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $nonexistent",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/arrow-function-bind.php",
+                    "line": 29,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallArrowFunctionBind\\Bar::barMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/arrow-function-bind.php",
+                    "line": 29,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $nonexistent",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/arrow-function-bind.php",
+                    "line": 35,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallArrowFunctionBind\\Foo::nonexistentMethod().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/arrow-function-bind.php",
+                    "line": 37,
+                    "identifier": "return.missing",
+                    "message": "Method CallArrowFunctionBind\\Bar::fooMethod() should return CallArrowFunctionBind\\Foo but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallVariadicMethods",
+            "files": [
+                "Methods/data/call-variadic-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-variadic-methods.php",
+                    "line": 10,
+                    "identifier": "arguments.count",
+                    "message": "Method CallVariadicMethods\\Foo::baz() invoked with 0 parameters, at least 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-variadic-methods.php",
+                    "line": 11,
+                    "identifier": "arguments.count",
+                    "message": "Method CallVariadicMethods\\Foo::lorem() invoked with 0 parameters, at least 2 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCallToIncorrectCaseMethodName",
+            "files": [
+                "Methods/data/incorrect-method-case.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNullableParameters",
+            "files": [
+                "Methods/data/nullable-parameters.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/nullable-parameters.php",
+                    "line": 5,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class NullableParameters\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testProtectedMethodCallFromParent",
+            "files": [
+                "Methods/data/protected-method-call-from-parent.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testSiblingMethodPrototype",
+            "files": [
+                "Methods/data/sibling-method-prototype.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testOverridenMethodPrototype",
+            "files": [
+                "Methods/data/overriden-method-prototype.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallMethodWithInheritDoc",
+            "files": [
+                "Methods/data/calling-method-with-inheritdoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallMethodWithInheritDocWithoutCurlyBraces",
+            "files": [
+                "Methods/data/calling-method-with-inheritdoc-without-curly-braces.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallMethodWithPhpDocsImplicitInheritance",
+            "files": [
+                "Methods/data/calling-method-with-phpDocs-implicit-inheritance.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/calling-method-with-phpDocs-implicit-inheritance.php",
+                    "line": 87,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $a of anonymous function has invalid type MethodWithPhpDocsImplicitInheritance\\A.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/calling-method-with-phpDocs-implicit-inheritance.php",
+                    "line": 87,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $b of anonymous function has invalid type MethodWithPhpDocsImplicitInheritance\\B.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/calling-method-with-phpDocs-implicit-inheritance.php",
+                    "line": 87,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $c of anonymous function has invalid type MethodWithPhpDocsImplicitInheritance\\C.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/calling-method-with-phpDocs-implicit-inheritance.php",
+                    "line": 87,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $d of anonymous function has invalid type MethodWithPhpDocsImplicitInheritance\\D.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/calling-method-with-phpDocs-implicit-inheritance.php",
+                    "line": 102,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $a of anonymous function has invalid type MethodWithPhpDocsImplicitInheritance\\A.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/calling-method-with-phpDocs-implicit-inheritance.php",
+                    "line": 102,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $b of anonymous function has invalid type MethodWithPhpDocsImplicitInheritance\\B.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/calling-method-with-phpDocs-implicit-inheritance.php",
+                    "line": 102,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $c of anonymous function has invalid type MethodWithPhpDocsImplicitInheritance\\C.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/calling-method-with-phpDocs-implicit-inheritance.php",
+                    "line": 102,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $d of anonymous function has invalid type MethodWithPhpDocsImplicitInheritance\\D.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNegatedInstanceof",
+            "files": [
+                "Methods/data/negated-instanceof.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInvokeMagicInvokeMethod",
+            "files": [
+                "Methods/data/invoke-magic-method.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCheckNullables",
+            "files": [
+                "Methods/data/check-nullables.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/check-nullables.php",
+                    "line": 14,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDoNotCheckNullables",
+            "files": [
+                "Methods/data/check-nullables.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/check-nullables.php",
+                    "line": 14,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMysqliQuery",
+            "files": [
+                "Methods/data/mysqli-query.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallMethodsNullIssue",
+            "files": [
+                "Methods/data/order.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/order.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method CallMethodsNullIssue\\Baz::getFoo() should return CallMethodsNullIssue\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/order.php",
+                    "line": 61,
+                    "identifier": "return.missing",
+                    "message": "Method CallMethodsNullIssue\\Baz::getBar() should return CallMethodsNullIssue\\Bar but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIterables#0",
+            "files": [
+                "Methods/data/call-methods-iterable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-methods-iterable.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Method CallMethodsIterables\\Foo::getIterable() should return iterable<CallMethodsIterables\\Foo> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods-iterable.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method CallMethodsIterables\\Foo::getOtherIterable() should return iterable<CallMethodsIterables\\Bar> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIterables#1",
+            "files": [
+                "Methods/data/call-methods-iterable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-methods-iterable.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Method CallMethodsIterables\\Foo::getIterable() should return iterable<CallMethodsIterables\\Foo> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-methods-iterable.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method CallMethodsIterables\\Foo::getOtherIterable() should return iterable<CallMethodsIterables\\Bar> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAcceptThrowable",
+            "files": [
+                "Methods/data/accept-throwable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/accept-throwable.php",
+                    "line": 38,
+                    "identifier": "function.notFound",
+                    "message": "Function maybeThrows not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/accept-throwable.php",
+                    "line": 45,
+                    "identifier": "catch.notThrowable",
+                    "message": "Caught class AcceptThrowable\\NonExceptionClass is not an exception.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testWithoutCheckUnionTypes",
+            "files": [
+                "Methods/data/without-union-types.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testStrictTypes",
+            "files": [
+                "Methods/data/call-methods-strict.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-methods-strict.php",
+                    "line": 6,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Test\\ClassWithToString not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAliasedTraitsProblem",
+            "files": [
+                "Methods/data/aliased-traits-problem.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClosureCallInvocations",
+            "files": [
+                "Methods/data/closure-call.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMixin",
+            "files": [
+                "Methods/data/mixin.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRecursiveIteratorIterator",
+            "files": [
+                "Methods/data/recursive-iterator-iterator.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMergeInheritedPhpDocs",
+            "files": [
+                "Methods/data/merge-inherited-param.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testShadowedTraitMethod",
+            "files": [
+                "Methods/data/shadowed-trait-method.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testExplicitMixed#0",
+            "files": [
+                "Methods/data/check-explicit-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testExplicitMixed#1",
+            "files": [
+                "Methods/data/check-explicit-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testImplicitMixed#0",
+            "files": [
+                "Methods/data/check-implicit-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testImplicitMixed#1",
+            "files": [
+                "Methods/data/check-implicit-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3409",
+            "files": [
+                "Methods/data/bug-3409.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2600",
+            "files": [
+                "Methods/data/bug-2600.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-2600.php",
+                    "line": 5,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of anonymous function has invalid type Bug2600\\Foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3415",
+            "files": [
+                "Methods/data/bug-3415.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3415Two",
+            "files": [
+                "Methods/data/bug-3415-2.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3445",
+            "files": [
+                "Methods/data/bug-3445.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-3445.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Access to constant BAR on an unknown class Bug3445\\UnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3481",
+            "files": [
+                "Methods/data/bug-3481.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3683",
+            "files": [
+                "Methods/data/bug-3683.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testStringable",
+            "files": [
+                "Methods/data/stringable.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testStringableStrictTypes",
+            "files": [
+                "Methods/data/stringable-strict.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/stringable-strict.php",
+                    "line": 15,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class TestStringables\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMatchExpressionVoidIsUsed",
+            "files": [
+                "Methods/data/match-expr-void-used.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/match-expr-void-used.php",
+                    "line": 10,
+                    "identifier": "method.void",
+                    "message": "Result of method MatchExprVoidUsed\\Foo::doLorem() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/match-expr-void-used.php",
+                    "line": 11,
+                    "identifier": "method.void",
+                    "message": "Result of method MatchExprVoidUsed\\Foo::doBar() (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNullSafe",
+            "files": [
+                "Methods/data/nullsafe-method-call.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDisallowNamedArgumentsInPhpVersionScope",
+            "files": [
+                "Methods/data/disallow-named-arguments-php-version-scope.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/disallow-named-arguments-php-version-scope.php",
+                    "line": 26,
+                    "identifier": "argument.namedNotSupported",
+                    "message": "Named arguments are supported only on PHP 8.0 and later.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNamedArguments",
+            "files": [
+                "Methods/data/named-arguments.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 19,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $j (int) in call to method NamedArgumentsMethod\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 19,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $k (int) in call to method NamedArgumentsMethod\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 21,
+                    "identifier": "argument.positionalAfterNamed",
+                    "message": "Named argument cannot be followed by a positional argument.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 22,
+                    "identifier": "argument.positionalAfterNamed",
+                    "message": "Named argument cannot be followed by a positional argument.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 26,
+                    "identifier": "argument.duplicate",
+                    "message": "Argument for parameter $i has already been passed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 32,
+                    "identifier": "argument.duplicate",
+                    "message": "Argument for parameter $i has already been passed.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 37,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $k (int) in call to method NamedArgumentsMethod\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 46,
+                    "identifier": "argument.unknown",
+                    "message": "Unknown parameter $z in call to method NamedArgumentsMethod\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 73,
+                    "identifier": "argument.unpackAfterNamed",
+                    "message": "Named argument cannot be followed by an unpacked (...) argument.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 77,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $j (int) in call to method NamedArgumentsMethod\\Foo::doFoo().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 77,
+                    "identifier": "argument.positionalAfterNamed",
+                    "message": "Named argument cannot be followed by a positional argument.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 92,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $b (int) in call to method NamedArgumentsMethod\\Foo::doIpsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 93,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $a (int) in call to method NamedArgumentsMethod\\Foo::doIpsum().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 94,
+                    "identifier": "argument.nonUnpackAfterUnpacked",
+                    "message": "Unpacked argument (...) cannot be followed by a non-unpacked argument.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 115,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method NamedArgumentsMethod\\Bar::doBaz().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/named-arguments.php",
+                    "line": 116,
+                    "identifier": "argument.duplicate",
+                    "message": "Argument for parameter $i has already been passed.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4199",
+            "files": [
+                "Methods/data/bug-4199.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4188",
+            "files": [
+                "Methods/data/bug-4188.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testOnlyRelevantUnableToResolveTemplateType",
+            "files": [
+                "Methods/data/only-relevant-unable-to-resolve-template-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/only-relevant-unable-to-resolve-template-type.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method OnlyRelevantUnableToResolve\\Foo::doFoo() should return array<T> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/only-relevant-unable-to-resolve-template-type.php",
+                    "line": 22,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method OnlyRelevantUnableToResolve\\Foo::doBar() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/only-relevant-unable-to-resolve-template-type.php",
+                    "line": 22,
+                    "identifier": "return.missing",
+                    "message": "Method OnlyRelevantUnableToResolve\\Foo::doBar() should return array<int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/only-relevant-unable-to-resolve-template-type.php",
+                    "line": 33,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of method OnlyRelevantUnableToResolve\\Foo::doBaz() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/only-relevant-unable-to-resolve-template-type.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method OnlyRelevantUnableToResolve\\Foo::doBaz() should return T but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/only-relevant-unable-to-resolve-template-type.php",
+                    "line": 49,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method OnlyRelevantUnableToResolve\\Foo::doIpsum() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/only-relevant-unable-to-resolve-template-type.php",
+                    "line": 49,
+                    "identifier": "return.missing",
+                    "message": "Method OnlyRelevantUnableToResolve\\Foo::doIpsum() should return T but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4552",
+            "files": [
+                "Methods/data/bug-4552.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-4552.php",
+                    "line": 20,
+                    "identifier": "return.missing",
+                    "message": "Method Bug4552\\SimpleOptionPresenter::test() should return bool but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2837",
+            "files": [
+                "Methods/data/bug-2837.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2298",
+            "files": [
+                "Methods/data/bug-2298.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1661",
+            "files": [
+                "Methods/data/bug-1661.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1656",
+            "files": [
+                "Methods/data/bug-1656.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3534",
+            "files": [
+                "Methods/data/bug-3534.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4008",
+            "files": [
+                "Methods/data/bug-4008.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3546",
+            "files": [
+                "Methods/data/bug-3546.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4800",
+            "files": [
+                "Methods/data/bug-4800.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-4800.php",
+                    "line": 36,
+                    "identifier": "argument.missing",
+                    "message": "Missing parameter $bar (string) in call to method Bug4800\\HelloWorld2::a().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGenericReturnTypeResolvedToNever",
+            "files": [
+                "Methods/data/generic-return-type-never.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/generic-return-type-never.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method GenericReturnTypeNever\\Foo::doFoo() should return GenericReturnTypeNever\\Lorem&T but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/generic-return-type-never.php",
+                    "line": 43,
+                    "identifier": "return.missing",
+                    "message": "Method GenericReturnTypeNever\\Foo::doBar() should return GenericReturnTypeNever\\Dolor&T but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/generic-return-type-never.php",
+                    "line": 51,
+                    "identifier": "return.missing",
+                    "message": "Method GenericReturnTypeNever\\Foo::doBaz() should return *NEVER* but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/generic-return-type-never.php",
+                    "line": 61,
+                    "identifier": "return.missing",
+                    "message": "Method GenericReturnTypeNever\\Foo::doBazBaz() should return array<GenericReturnTypeNever\\Dolor&T> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnableToResolveCallbackParameterType",
+            "files": [
+                "Methods/data/unable-to-resolve-callback-parameter-type.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4083",
+            "files": [
+                "Methods/data/bug-4083.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5253",
+            "files": [
+                "Methods/data/bug-5253.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4844",
+            "files": [
+                "Methods/data/bug-4844.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5258",
+            "files": [
+                "Methods/data/bug-5258.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5591",
+            "files": [
+                "Methods/data/bug-5591.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNonEmptyStringVerbosity",
+            "files": [
+                "Methods/data/non-empty-string-verbosity.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5536",
+            "files": [
+                "Methods/data/bug-5536.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-5536.php",
+                    "line": 23,
+                    "identifier": "new.static",
+                    "message": "Unsafe usage of new static().",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5372",
+            "files": [
+                "Methods/data/bug-5372.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testLiteralString",
+            "files": [
+                "Methods/data/literal-string.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/literal-string.php",
+                    "line": 24,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3555",
+            "files": [
+                "Methods/data/bug-3555.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3530",
+            "files": [
+                "Methods/data/bug-3530.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5562",
+            "files": [
+                "Methods/data/bug-5562.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4211",
+            "files": [
+                "Methods/data/bug-4211.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3514",
+            "files": [
+                "Methods/data/bug-3514.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3465",
+            "files": [
+                "Methods/data/bug-3465.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5868",
+            "files": [
+                "Methods/data/bug-5868.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5460",
+            "files": [
+                "Methods/data/bug-5460.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testFirstClassCallable",
+            "files": [
+                "Methods/data/first-class-method-callable.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Methods/data/call-method-in-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/call-method-in-enum.php",
+                    "line": 11,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallMethodInEnum\\Foo::doNonexistent().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/call-method-in-enum.php (in context of class CallMethodInEnum\\Bar)",
+                    "line": 22,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method CallMethodInEnum\\Bar::doNonexistent().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6306",
+            "files": [
+                "Methods/data/bug-6306.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRectorDoWhileVarIssue",
+            "files": [
+                "Methods/data/rector-do-while-var-issue.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/rector-do-while-var-issue.php",
+                    "line": 11,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/rector-do-while-var-issue.php",
+                    "line": 17,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/rector-do-while-var-issue.php",
+                    "line": 23,
+                    "identifier": "function.notFound",
+                    "message": "Function doBar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Methods/data/rector-do-while-var-issue.php",
+                    "line": 28,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReadOnlyPropertyPassedByReference",
+            "files": [
+                "Methods/data/readonly-property-passed-by-reference.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/readonly-property-passed-by-reference.php",
+                    "line": 10,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyPassedByRef\\Foo has an uninitialized readonly property $bar. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6055",
+            "files": [
+                "Methods/data/bug-6055.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6081",
+            "files": [
+                "Methods/data/bug-6081.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6236",
+            "files": [
+                "Methods/data/bug-6236.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6118",
+            "files": [
+                "Methods/data/bug-6118.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-6118.php",
+                    "line": 37,
+                    "identifier": "function.notFound",
+                    "message": "Function getValue2 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6464",
+            "files": [
+                "Methods/data/bug-6464.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6423",
+            "files": [
+                "Methods/data/bug-6423.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5869",
+            "files": [
+                "Methods/data/bug-5869.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericsEmptyArray",
+            "files": [
+                "Methods/data/generics-empty-array.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/generics-empty-array.php",
+                    "line": 14,
+                    "identifier": "return.missing",
+                    "message": "Method GenericsEmptyArrayCall\\Foo::doFoo() should return array<int, int|string|T> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGenericsInferCollection",
+            "files": [
+                "Methods/data/generics-infer-collection.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericsInferCollectionLevel8",
+            "files": [
+                "Methods/data/generics-infer-collection.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericVariance",
+            "files": [
+                "Methods/data/generic-variance.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6904",
+            "files": [
+                "Methods/data/bug-6904.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6917",
+            "files": [
+                "Methods/data/bug-6917.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3284",
+            "files": [
+                "Methods/data/bug-3284.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUnresolvableParameter",
+            "files": [
+                "Methods/data/unresolvable-parameter.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConditionalComplexTemplates",
+            "files": [
+                "Methods/data/conditional-complex-templates.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/conditional-complex-templates.php",
+                    "line": 21,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $onFulfilled (callable) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/conditional-complex-templates.php",
+                    "line": 21,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $onRejected (callable) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6291",
+            "files": [
+                "Methods/data/bug-6291.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1517",
+            "files": [
+                "Methods/data/bug-1517.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7593",
+            "files": [
+                "Methods/data/bug-7593.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-7593.php",
+                    "line": 30,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class Bug7593\\LogicException not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug6946",
+            "files": [
+                "Methods/data/bug-6946.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5754",
+            "files": [
+                "Methods/data/bug-5754.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7600",
+            "files": [
+                "Methods/data/bug-7600.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8058",
+            "files": [
+                "Methods/data/bug-8058.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testArrayCastListTypes",
+            "files": [
+                "Methods/data/array-cast-list-types.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5623",
+            "files": [
+                "Methods/data/bug-5623.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testImagick",
+            "files": [
+                "Methods/data/imagick.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testImagickPixel",
+            "files": [
+                "Methods/data/imagick-pixel.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNewInstanceArgsIssue8679",
+            "files": [
+                "Methods/data/reflection-class-issue-8679.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNonEmptyArray",
+            "files": [
+                "Methods/data/non-empty-array.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallablesWithoutCheckNullables#0",
+            "files": [
+                "Methods/data/callables-without-check-nullables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallablesWithoutCheckNullables#1",
+            "files": [
+                "Methods/data/callables-without-check-nullables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallablesWithoutCheckNullables#2",
+            "files": [
+                "Methods/data/callables-without-check-nullables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCallablesWithoutCheckNullables#3",
+            "files": [
+                "Methods/data/callables-without-check-nullables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8713",
+            "files": [
+                "Methods/data/bug-8713.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCannotCallOnGenericClassString",
+            "files": [
+                "Comparison/data/impossible-method-exists-on-generic-class-string.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8888",
+            "files": [
+                "Methods/data/bug-8888.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9542",
+            "files": [
+                "Methods/data/bug-9542.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTrickyCallables",
+            "files": [
+                "Methods/data/tricky-callables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testObjectShapes",
+            "files": [
+                "Methods/data/object-shapes.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9951",
+            "files": [
+                "Methods/data/bug-9951.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTypedClassConstants",
+            "files": [
+                "Methods/data/return-type-class-constant.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNamedParametersForMultiVariantFunctions",
+            "files": [
+                "Methods/data/call-methods-named-params-multivariant.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5518",
+            "files": [
+                "Methods/data/bug-5518.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRequireExtends",
+            "files": [
+                "Properties/data/require-extends.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/require-extends.php",
+                    "line": 44,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method RequireExtends\\MyInterface::doesNotExistStatic().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequireImplements",
+            "files": [
+                "Properties/data/require-implements.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6371",
+            "files": [
+                "Methods/data/bug-6371.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugTemplateMixedUnionIntersect",
+            "files": [
+                "Methods/data/bug-template-mixed-union-intersect.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9009",
+            "files": [
+                "Methods/data/bug-9009.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9487",
+            "files": [
+                "Methods/data/bug-9487.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBuSplObjectStorageRemove",
+            "files": [
+                "Methods/data/bug-SplObjectStorage-remove.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClosureBindToParamClosureThis",
+            "files": [
+                "Methods/data/closure-bind-to-param-closure-this.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11010",
+            "files": [
+                "Methods/data/bug-11010.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPureCallable",
+            "files": [
+                "Methods/data/pure-callable-accepts.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testClosureParameterGenerics",
+            "files": [
+                "Methods/data/closure-parameter-generics.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/closure-parameter-generics.php",
+                    "line": 26,
+                    "identifier": "return.missing",
+                    "message": "Method ClosureParameterGenerics\\Foo::retryableTransaction() should return T but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNoNamedArguments",
+            "files": [
+                "Methods/data/no-named-arguments.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTraitMixin",
+            "files": [
+                "Methods/data/trait-mixin.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testLowercaseString",
+            "files": [
+                "Methods/data/lowercase-string.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testUppercaseString",
+            "files": [
+                "Methods/data/uppercase-string.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10159",
+            "files": [
+                "Methods/data/bug-10159.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1953",
+            "files": [
+                "Methods/data/bug-1953.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11559c",
+            "files": [
+                "Methods/data/bug-11559c.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-11559c.php",
+                    "line": 6,
+                    "identifier": "new.noConstructor",
+                    "message": "Class class@anonymous/bug-11559c.php:6:1 does not have a constructor and must be instantiated without any parameters.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4801",
+            "files": [
+                "Methods/data/bug-4801.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12544",
+            "files": [
+                "Methods/data/bug-12544.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12422",
+            "files": [
+                "Methods/data/bug-12422.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6828",
+            "files": [
+                "Methods/data/bug-6828.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-6828.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Method Bug6828\\Result::unwrap() should return T but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-6828.php",
+                    "line": 35,
+                    "identifier": "return.missing",
+                    "message": "Method Bug6828\\Result::ok() should return Bug6828\\Result<U, mixed> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDynamicCall",
+            "files": [
+                "Methods/data/dynamic-call.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 23,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method MethodsDynamicCall\\Foo::bar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 26,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method MethodsDynamicCall\\Foo::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 26,
+                    "identifier": "method.notFound",
+                    "message": "Call to an undefined method MethodsDynamicCall\\Foo::doBuz().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 33,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method MethodsDynamicCall\\Foo::bar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 36,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method MethodsDynamicCall\\Foo::doBar().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/dynamic-call.php",
+                    "line": 36,
+                    "identifier": "staticMethod.notFound",
+                    "message": "Call to an undefined static method MethodsDynamicCall\\Foo::doBuz().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12884",
+            "files": [
+                "Methods/data/bug-12884.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBu12793",
+            "files": [
+                "Methods/data/bug-12793.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12880",
+            "files": [
+                "Methods/data/bug-12880.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-12880.php",
+                    "line": 18,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array<int<0, max>, mixed>",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-12880.php",
+                    "line": 20,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: list<mixed>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14732",
+            "files": [
+                "Methods/data/bug-14732.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12940",
+            "files": [
+                "Methods/data/bug-12940.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13171",
+            "files": [
+                "Methods/data/bug-13171.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10719",
+            "files": [
+                "Methods/data/bug-10719.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9141",
+            "files": [
+                "Methods/data/bug-9141.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12548",
+            "files": [
+                "Methods/data/bug-12548.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-12548.php",
+                    "line": 71,
+                    "identifier": "ignore.unmatchedIdentifier",
+                    "message": "No error with identifier method.nonObject is reported on line 71.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3589",
+            "files": [
+                "Methods/data/bug-3589.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5642",
+            "files": [
+                "Methods/data/bug-5642.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13708",
+            "files": [
+                "Methods/data/bug-13708.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3396",
+            "files": [
+                "Methods/data/bug-3396.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13881",
+            "files": [
+                "Methods/data/bug-13881.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12219",
+            "files": [
+                "Methods/data/bug-12219.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13511",
+            "files": [
+                "Methods/data/bug-13511.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRandomizer",
+            "files": [
+                "Methods/data/randomizer.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPipeOperator",
+            "files": [
+                "Methods/data/method-call-pipe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-call-pipe.php",
+                    "line": 20,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallPipe\\Foo::doFoo() invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-pipe.php",
+                    "line": 26,
+                    "identifier": "arguments.count",
+                    "message": "Method MethodCallPipe\\Foo::doFoo() invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-pipe.php",
+                    "line": 26,
+                    "identifier": "method.void",
+                    "message": "Result of method MethodCallPipe\\Foo::doFoo() (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-call-pipe.php",
+                    "line": 28,
+                    "identifier": "method.void",
+                    "message": "Result of method MethodCallPipe\\Foo::doBar() (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12663",
+            "files": [
+                "Methods/data/bug-12663.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12735",
+            "files": [
+                "Methods/data/bug-12735.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13993",
+            "files": [
+                "Methods/data/bug-13993.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDiscussion14038",
+            "files": [
+                "Methods/data/discussion-14038.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12875",
+            "files": [
+                "Methods/data/bug-12875.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14150",
+            "files": [
+                "Methods/data/bug-14150.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13805",
+            "files": [
+                "Methods/data/bug-13805.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9820",
+            "files": [
+                "Methods/data/bug-9820.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6120",
+            "files": [
+                "Methods/data/bug-6120.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug1501",
+            "files": [
+                "Methods/data/bug-1501.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7369",
+            "files": [
+                "Methods/data/bug-7369.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-7369.php",
+                    "line": 16,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $account (Bug7369\\AccountInterface) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-7369.php",
+                    "line": 25,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #2 $account (Bug7369\\AccountInterface) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConstantParameterCheckMethods",
+            "files": [
+                "Methods/data/constant-parameter-check-methods.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11073",
+            "files": [
+                "Methods/data/bug-11073.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11463",
+            "files": [
+                "PhpDoc/data/bug-11463.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4608",
+            "files": [
+                "Methods/data/bug-4608.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11978",
+            "files": [
+                "Methods/data/bug-11978.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9155",
+            "files": [
+                "Methods/data/bug-9155.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13272",
+            "files": [
+                "Methods/data/bug-13272.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14549",
+            "files": [
+                "Methods/data/bug-14549-bis.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5509",
+            "files": [
+                "Methods/data/bug-5509.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11894",
+            "files": [
+                "Methods/data/bug-11894.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8048",
+            "files": [
+                "Methods/data/bug-8048.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14596",
+            "files": [
+                "Methods/data/bug-14596.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-14596.php",
+                    "line": 12,
+                    "identifier": "argument.positionalAfterNamed",
+                    "message": "Named argument cannot be followed by a positional argument.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9724",
+            "files": [
+                "Methods/data/bug-9724.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14808",
+            "files": [
+                "Methods/data/bug-14808.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14893",
+            "files": [
+                "Methods/data/bug-14893.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-14893.php",
+                    "line": 6,
+                    "identifier": "function.notFound",
+                    "message": "Used function is_object_in_taxonomy not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14979",
+            "files": [
+                "Methods/data/bug-14979.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug15002",
+            "files": [
+                "Methods/data/bug-15002.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,155 @@
+{
+    "test": "Keywords/DeclareStrictTypesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Keywords/data/declare-position.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/declare-position.php",
+                    "line": 5,
+                    "identifier": "declareStrictTypes.notFirst",
+                    "message": "Declare strict_types must be the very first statement.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRule2",
+            "files": [
+                "Keywords/data/declare-position2.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/declare-position2.php",
+                    "line": 1,
+                    "identifier": "declareStrictTypes.notFirst",
+                    "message": "Declare strict_types must be the very first statement.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNested",
+            "files": [
+                "Keywords/data/declare-position-nested.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": [
+                "Internal error: Internal error. while analysing file /home/forge/projects/pun/.oracle/phpstan-src/tests/PHPStan/Rules/Keywords/data/declare-position-nested.php\n\nRun PHPStan with -v option and post the stack trace to:\nhttps://github.com/phpstan/phpstan/issues/new?template=Bug_report.yaml\n"
+            ]
+        },
+        {
+            "method": "testValidPosition",
+            "files": [
+                "Keywords/data/declare-position-valid.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testTicks",
+            "files": [
+                "Keywords/data/declare-ticks.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testMulti",
+            "files": [
+                "Keywords/data/declare-multi.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testShebang/0",
+            "files": [
+                "Keywords/data/declare-shebang.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testShebang/1",
+            "files": [
+                "Keywords/data/declare-shebang2.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testShebang/2",
+            "files": [
+                "Keywords/data/declare-shebang3.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testHtmlBeforeDecalre",
+            "files": [
+                "Keywords/data/declare-inline-html.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/declare-inline-html.php",
+                    "line": 2,
+                    "identifier": "declareStrictTypes.notFirst",
+                    "message": "Declare strict_types must be the very first statement.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNonsense",
+            "files": [
+                "Keywords/data/declare-strict-nonsense.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/declare-strict-nonsense.php",
+                    "line": 1,
+                    "identifier": "declareStrictTypes.value",
+                    "message": "Declare strict_types must have 0 or 1 as its value, 'foo' given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNonsenseBool",
+            "files": [
+                "Keywords/data/declare-strict-nonsense-bool.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/declare-strict-nonsense-bool.php",
+                    "line": 1,
+                    "identifier": "declareStrictTypes.value",
+                    "message": "Declare strict_types must have 0 or 1 as its value, \\true given.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

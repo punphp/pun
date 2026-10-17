@@ -1,0 +1,22 @@
+{
+    "test": "Methods/ConsistentConstructorDeclarationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/consistent-constructor-declaration.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/consistent-constructor-declaration.php",
+                    "line": 31,
+                    "identifier": "consistentConstructor.private",
+                    "message": "Private constructor cannot be enforced as consistent for child classes.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

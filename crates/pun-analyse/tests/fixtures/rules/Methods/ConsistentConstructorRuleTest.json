@@ -1,0 +1,76 @@
+{
+    "test": "Methods/ConsistentConstructorRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/consistent-constructor.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/consistent-constructor.php",
+                    "line": 13,
+                    "identifier": "method.childParameterType",
+                    "message": "Parameter #1 $b (int) of method ConsistentConstructor\\Bar2::__construct() is not contravariant with parameter #1 $b (string) of method ConsistentConstructor\\Bar::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/consistent-constructor.php",
+                    "line": 32,
+                    "identifier": "parameter.missing",
+                    "message": "Method ConsistentConstructor\\Foo2::__construct() overrides method ConsistentConstructor\\Foo1::__construct() but misses parameter #1 $a.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/consistent-constructor.php",
+                    "line": 58,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #1 $i of method ConsistentConstructor\\ParentWithoutConstructorChildWithConstructorRequiredParams::__construct() is not optional.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/consistent-constructor.php",
+                    "line": 78,
+                    "identifier": "parameter.missing",
+                    "message": "Method ConsistentConstructor\\FakeConnection::__construct() overrides method ConsistentConstructor\\Connection::__construct() but misses parameter #1 $i.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/consistent-constructor.php",
+                    "line": 102,
+                    "identifier": "parameter.notOptional",
+                    "message": "Parameter #1 $i of method ConsistentConstructor\\ChildTwo::__construct() is not optional.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleNoErrors",
+            "files": [
+                "Methods/data/consistent-constructor-no-errors.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12137",
+            "files": [
+                "Methods/data/bug-12137.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-12137.php",
+                    "line": 20,
+                    "identifier": "method.visibility",
+                    "message": "Private method Bug12137\\ChildClass::__construct() overriding protected method Bug12137\\ParentClass::__construct() should be protected or public.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

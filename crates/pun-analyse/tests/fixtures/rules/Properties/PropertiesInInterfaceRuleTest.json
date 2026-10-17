@@ -1,0 +1,208 @@
+{
+    "test": "Properties/PropertiesInInterfaceRuleTest",
+    "cases": [
+        {
+            "method": "testPhp84AndPropertiesInInterface",
+            "files": [
+                "Properties/data/properties-in-interface.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-in-interface.php",
+                    "line": 9,
+                    "identifier": "property.nonHookedInInterface",
+                    "message": "Interfaces can only include hooked properties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-in-interface.php",
+                    "line": 11,
+                    "identifier": "property.nonHookedInInterface",
+                    "message": "Interfaces can only include hooked properties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-in-interface.php",
+                    "line": 13,
+                    "identifier": "property.nonHookedInInterface",
+                    "message": "Interfaces can only include hooked properties.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndNonPublicPropertyHooksInInterface",
+            "files": [
+                "Properties/data/property-hooks-visibility-in-interface.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-hooks-visibility-in-interface.php",
+                    "line": 7,
+                    "identifier": "property.nonPublicInInterface",
+                    "message": "Interfaces cannot include non-public properties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-hooks-visibility-in-interface.php",
+                    "line": 9,
+                    "identifier": "property.nonPublicInInterface",
+                    "message": "Interfaces cannot include non-public properties.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndPropertyHooksWithBodiesInInterface",
+            "files": [
+                "Properties/data/property-hooks-bodies-in-interface.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-hooks-bodies-in-interface.php",
+                    "line": 7,
+                    "identifier": "property.hookBodyInInterface",
+                    "message": "Interfaces cannot include property hooks with bodies.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/property-hooks-bodies-in-interface.php",
+                    "line": 13,
+                    "identifier": "property.hookBodyInInterface",
+                    "message": "Interfaces cannot include property hooks with bodies.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndReadonlyPropertyHooksInInterface",
+            "files": [
+                "Properties/data/readonly-property-hooks-in-interface.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-property-hooks-in-interface.php",
+                    "line": 7,
+                    "identifier": "property.readOnlyInInterface",
+                    "message": "Interfaces cannot include readonly hooked properties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks-in-interface.php",
+                    "line": 9,
+                    "identifier": "property.readOnlyInInterface",
+                    "message": "Interfaces cannot include readonly hooked properties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks-in-interface.php",
+                    "line": 11,
+                    "identifier": "property.readOnlyInInterface",
+                    "message": "Interfaces cannot include readonly hooked properties.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndFinalPropertyHooksInInterface",
+            "files": [
+                "Properties/data/final-property-hooks-in-interface.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/final-property-hooks-in-interface.php",
+                    "line": 7,
+                    "identifier": "property.finalInInterface",
+                    "message": "Interfaces cannot include final properties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/final-property-hooks-in-interface.php",
+                    "line": 9,
+                    "identifier": "property.finalInInterface",
+                    "message": "Interfaces cannot include final properties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/final-property-hooks-in-interface.php",
+                    "line": 11,
+                    "identifier": "property.finalInInterface",
+                    "message": "Interfaces cannot include final properties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/final-property-hooks-in-interface.php",
+                    "line": 13,
+                    "identifier": "property.abstractFinalHook",
+                    "message": "Property hook cannot be both abstract and final.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/final-property-hooks-in-interface.php",
+                    "line": 17,
+                    "identifier": "property.abstractFinalHook",
+                    "message": "Property hook cannot be both abstract and final.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndExplicitAbstractProperty",
+            "files": [
+                "Properties/data/property-in-interface-explicit-abstract.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-in-interface-explicit-abstract.php",
+                    "line": 8,
+                    "identifier": "property.abstractInInterface",
+                    "message": "Property in interface cannot be explicitly abstract.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndStaticHookedPropertyInInterface",
+            "files": [
+                "Properties/data/static-hooked-property-in-interface.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/static-hooked-property-in-interface.php",
+                    "line": 7,
+                    "identifier": "property.hookedStatic",
+                    "message": "Hooked properties cannot be static.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/static-hooked-property-in-interface.php",
+                    "line": 9,
+                    "identifier": "property.hookedStatic",
+                    "message": "Hooked properties cannot be static.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/static-hooked-property-in-interface.php",
+                    "line": 11,
+                    "identifier": "property.hookedStatic",
+                    "message": "Hooked properties cannot be static.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

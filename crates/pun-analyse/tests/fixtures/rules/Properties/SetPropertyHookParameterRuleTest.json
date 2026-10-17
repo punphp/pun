@@ -1,0 +1,43 @@
+{
+    "test": "Properties/SetPropertyHookParameterRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/set-property-hook-parameter.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/set-property-hook-parameter.php",
+                    "line": 41,
+                    "identifier": "propertySetHook.nativeParameterType",
+                    "message": "Parameter $v of set hook has a native type but the property SetPropertyHookParameter\\Bar::$a does not.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/set-property-hook-parameter.php",
+                    "line": 47,
+                    "identifier": "propertySetHook.nativeParameterType",
+                    "message": "Parameter $v of set hook does not have a native type but the property SetPropertyHookParameter\\Bar::$b does.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/set-property-hook-parameter.php",
+                    "line": 53,
+                    "identifier": "propertySetHook.nativeParameterType",
+                    "message": "Native type string of set hook parameter $v is not contravariant with native type int of property SetPropertyHookParameter\\Bar::$c.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/set-property-hook-parameter.php",
+                    "line": 59,
+                    "identifier": "propertySetHook.nativeParameterType",
+                    "message": "Native type string of set hook parameter $v is not contravariant with native type int|string of property SetPropertyHookParameter\\Bar::$d.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

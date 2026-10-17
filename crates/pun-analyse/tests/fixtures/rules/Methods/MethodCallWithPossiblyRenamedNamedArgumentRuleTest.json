@@ -1,0 +1,23 @@
+{
+    "test": "Methods/MethodCallWithPossiblyRenamedNamedArgumentRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/named-argument-renamed-parameter.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7434",
+            "files": [
+                "Methods/data/bug-7434.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

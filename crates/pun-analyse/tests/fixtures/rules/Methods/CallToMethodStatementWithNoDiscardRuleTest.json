@@ -1,0 +1,14 @@
+{
+    "test": "Methods/CallToMethodStatementWithNoDiscardRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/method-call-statement-result-discarded.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

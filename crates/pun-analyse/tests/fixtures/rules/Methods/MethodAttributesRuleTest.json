@@ -1,0 +1,40 @@
+{
+    "test": "Methods/MethodAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/method-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-attributes.php",
+                    "line": 26,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class MethodAttributes\\Foo does not have the method target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5898",
+            "files": [
+                "Methods/data/bug-5898.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDeprecatedAttribute",
+            "files": [
+                "Methods/data/deprecated-attribute.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

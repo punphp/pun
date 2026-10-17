@@ -1,0 +1,85 @@
+{
+    "test": "Functions/InvalidParameterNameRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/bug-14241.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 5,
+                    "identifier": "parameter.superglobal",
+                    "message": "Superglobal variable $_FILES cannot be used as a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 7,
+                    "identifier": "parameter.superglobal",
+                    "message": "Superglobal variable $_GET cannot be used as a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 7,
+                    "identifier": "parameter.superglobal",
+                    "message": "Superglobal variable $_POST cannot be used as a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 13,
+                    "identifier": "parameter.superglobal",
+                    "message": "Superglobal variable $_SERVER cannot be used as a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 15,
+                    "identifier": "parameter.superglobal",
+                    "message": "Superglobal variable $_SESSION cannot be used as a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 18,
+                    "identifier": "parameter.superglobal",
+                    "message": "Superglobal variable $_COOKIE cannot be used as a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 20,
+                    "identifier": "parameter.superglobal",
+                    "message": "Superglobal variable $_REQUEST cannot be used as a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 22,
+                    "identifier": "parameter.superglobal",
+                    "message": "Superglobal variable $_ENV cannot be used as a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 24,
+                    "identifier": "parameter.superglobal",
+                    "message": "Superglobal variable $GLOBALS cannot be used as a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-14241.php",
+                    "line": 26,
+                    "identifier": "parameter.this",
+                    "message": "Cannot use $this as parameter.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

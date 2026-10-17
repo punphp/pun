@@ -1,0 +1,22 @@
+{
+    "test": "Functions/DefineParametersRuleTest",
+    "cases": [
+        {
+            "method": "testFile",
+            "files": [
+                "Functions/data/call-to-define.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/call-to-define.php",
+                    "line": 3,
+                    "identifier": "argument.unused",
+                    "message": "Argument #3 ($case_insensitive) is ignored since declaration of case-insensitive constants is no longer supported.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,151 @@
+{
+    "test": "Functions/PrintfArrayParametersRuleTest",
+    "cases": [
+        {
+            "method": "testFile",
+            "files": [
+                "Functions/data/vprintf.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 10,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 11,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 0 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 12,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 1 placeholder, 2 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 13,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 14,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 2 placeholders, 0 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 14,
+                    "identifier": "arguments.count",
+                    "message": "Function vsprintf invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 15,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 2 placeholders, 0 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 16,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 4 placeholders, 0 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 16,
+                    "identifier": "arguments.count",
+                    "message": "Function vsprintf invoked with 1 parameter, 2 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 18,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 5 placeholders, 2 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 21,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 1 placeholder, 2 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 29,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains 1 placeholder, 1-2 values given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 34,
+                    "identifier": "argument.vprintf",
+                    "message": "Call to vprintf contains 2 placeholders, 1 value given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/vprintf.php",
+                    "line": 35,
+                    "identifier": "arguments.count",
+                    "message": "Function vprintf invoked with 1 parameter, 2 required.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug1889",
+            "files": [
+                "Functions/data/bug-1889.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-1889.php",
+                    "line": 3,
+                    "identifier": "argument.printf",
+                    "message": "Call to printf contains an invalid placeholder.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-1889.php",
+                    "line": 5,
+                    "identifier": "argument.printf",
+                    "message": "Call to printf contains an invalid placeholder.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-1889.php",
+                    "line": 7,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains an invalid placeholder.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-1889.php",
+                    "line": 9,
+                    "identifier": "argument.vsprintf",
+                    "message": "Call to vsprintf contains an invalid placeholder.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

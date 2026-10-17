@@ -1,0 +1,102 @@
+{
+    "test": "Ignore/IgnoreParseErrorRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Ignore/data/ignore-parse-error.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 10,
+                    "identifier": "ignore.parseError",
+                    "message": "Parse error in @phpstan-ignore: Unexpected comma (,) after comma (,), expected identifier",
+                    "tip": null
+                },
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 10,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 13,
+                    "identifier": "ignore.parseError",
+                    "message": "Parse error in @phpstan-ignore: Unexpected T_CLOSE_PARENTHESIS after identifier, expected comma (,) or end or T_OPEN_PARENTHESIS",
+                    "tip": null
+                },
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 15,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 19,
+                    "identifier": "ignore.parseError",
+                    "message": "Parse error in @phpstan-ignore: Unexpected end, unclosed opening parenthesis",
+                    "tip": null
+                },
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 20,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 23,
+                    "identifier": "ignore.parseError",
+                    "message": "Parse error in @phpstan-ignore: Unexpected T_OTHER 'čičí' after @phpstan-ignore, expected identifier",
+                    "tip": null
+                },
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 25,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                },
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 27,
+                    "identifier": "ignore.parseError",
+                    "message": "Parse error in @phpstan-ignore: Unexpected end after @phpstan-ignore, expected identifier",
+                    "tip": null
+                },
+                {
+                    "file": "Ignore/data/ignore-parse-error.php",
+                    "line": 27,
+                    "identifier": "variable.undefined",
+                    "message": "Undefined variable: $foo",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithUnusedTrait",
+            "files": [
+                "Ignore/data/ignore-parse-error-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Ignore/data/ignore-parse-error-trait.php",
+                    "line": 10,
+                    "identifier": "ignore.parseError",
+                    "message": "Parse error in @phpstan-ignore: Unexpected comma (,) after comma (,), expected identifier",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

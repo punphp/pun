@@ -1,0 +1,1030 @@
+{
+    "test": "Methods/ExistingClassesInTypehintsRuleTest",
+    "cases": [
+        {
+            "method": "testExistingClassInTypehint",
+            "files": [
+                "Methods/data/typehints.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 8,
+                    "identifier": "class.notFound",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::foo() has invalid return type TestMethodTypehints\\NonexistentClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 8,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::foo() should return TestMethodTypehints\\NonexistentClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $bar of method TestMethodTypehints\\FooMethodTypehints::bar() has invalid type TestMethodTypehints\\BarMethodTypehints.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::bar() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 18,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::baz() should return TestMethodTypehints\\FooMethodTypehints but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 28,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::lorem() should return array<TestMethodTypehints\\BazMethodTypehints> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::ipsum() should return array<TestMethodTypehints\\BazMethodTypehints> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::dolor() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 53,
+                    "identifier": "parameter.noParent",
+                    "message": "Parameter $parent of method TestMethodTypehints\\FooMethodTypehints::parentWithoutParent() has invalid type parent.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 53,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::parentWithoutParent() should return parent but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 53,
+                    "identifier": "return.noParent",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::parentWithoutParent() has invalid return type parent.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 62,
+                    "identifier": "parameter.noParent",
+                    "message": "Parameter $parent of method TestMethodTypehints\\FooMethodTypehints::phpDocParentWithoutParent() has invalid type parent.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 62,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::phpDocParentWithoutParent() should return parent but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 62,
+                    "identifier": "return.noParent",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::phpDocParentWithoutParent() has invalid return type parent.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 67,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::badCaseTypehints() should return TestMethodTypehints\\FooMethodTypehints but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 76,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::unionTypeBadCaseTypehints() should return stdClass|TestMethodTypehints\\FooMethodTypehints but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 85,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::badCaseInNativeAndPhpDoc() should return TestMethodTypehints\\FooMethodTypehints but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 94,
+                    "identifier": "return.missing",
+                    "message": "Method TestMethodTypehints\\FooMethodTypehints::anotherBadCaseInNativeAndPhpDoc() should return TestMethodTypehints\\FooMethodTypehints but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints.php",
+                    "line": 130,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of method TestMethodTypehints\\TemplateTypeMissingInParameter::doFoo() is not referenced in a parameter.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testExistingClassInIterableTypehint",
+            "files": [
+                "Methods/data/typehints-iterable.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testVoidParameterTypehint",
+            "files": [
+                "Methods/data/void-parameter-typehint.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/void-parameter-typehint.php",
+                    "line": 8,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 8",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativeUnionTypes#0",
+            "files": [
+                "Methods/data/native-union-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/native-union-types.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method NativeUnionTypesSupport\\Foo::doBar() should return bool|int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativeUnionTypes#1",
+            "files": [
+                "Methods/data/native-union-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/native-union-types.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method NativeUnionTypesSupport\\Foo::doBar() should return bool|int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#0",
+            "files": [
+                "Methods/data/required-parameter-after-optional.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 8,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 13,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 29,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 33,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 37,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 41,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#1",
+            "files": [
+                "Methods/data/required-parameter-after-optional.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 8,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 13,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 29,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 33,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 37,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 41,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#2",
+            "files": [
+                "Methods/data/required-parameter-after-optional.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 8,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 13,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 29,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 33,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 37,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 41,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRequiredParameterAfterOptional#3",
+            "files": [
+                "Methods/data/required-parameter-after-optional.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 8,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 13,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $foo (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 17,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 21,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 25,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 29,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 33,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 37,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 41,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 45,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.0: Required parameter $quuz follows optional parameter $quux.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.1: Required parameter $qux follows optional parameter $baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/required-parameter-after-optional.php",
+                    "line": 49,
+                    "identifier": "parameter.requiredAfterOptional",
+                    "message": "Deprecated in PHP 8.3: Required parameter $bar follows optional parameter $foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4641",
+            "files": [
+                "Methods/data/bug-4641.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-4641.php",
+                    "line": 26,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of method Bug4641\\I::getRepository() is not referenced in a parameter.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntersectionTypes#0",
+            "files": [
+                "Methods/data/intersection-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 28,
+                    "identifier": "return.missing",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doFoo() should return MethodIntersectionTypes\\Bar&MethodIntersectionTypes\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 33,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of method MethodIntersectionTypes\\FooClass::doBar() has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doBar() should return *NEVER* but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 33,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doBar() has unresolvable native return type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 38,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of method MethodIntersectionTypes\\FooClass::doBaz() has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doBaz() should return *NEVER* but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 38,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doBaz() has unresolvable native return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntersectionTypes#1",
+            "files": [
+                "Methods/data/intersection-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 28,
+                    "identifier": "return.missing",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doFoo() should return MethodIntersectionTypes\\Bar&MethodIntersectionTypes\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 33,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of method MethodIntersectionTypes\\FooClass::doBar() has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doBar() should return *NEVER* but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 33,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doBar() has unresolvable native return type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 38,
+                    "identifier": "parameter.unresolvableNativeType",
+                    "message": "Parameter $a of method MethodIntersectionTypes\\FooClass::doBaz() has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 38,
+                    "identifier": "return.missing",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doBaz() should return *NEVER* but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/intersection-types.php",
+                    "line": 38,
+                    "identifier": "return.unresolvableNativeType",
+                    "message": "Method MethodIntersectionTypes\\FooClass::doBaz() has unresolvable native return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Methods/data/enums-typehints.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/enums-typehints.php",
+                    "line": 8,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $int of method EnumsTypehints\\Foo::doFoo() has invalid type EnumsTypehints\\intt.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTrueTypehint",
+            "files": [
+                "Methods/data/true-typehint.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/true-typehint.php",
+                    "line": 11,
+                    "identifier": "return.missing",
+                    "message": "Method NativeTrueType\\Truthy::foo() should return true but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConditionalReturnType",
+            "files": [
+                "Methods/data/conditional-return-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/conditional-return-type.php",
+                    "line": 17,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodConditionalReturnType\\Container::notGet() is not referenced in a parameter.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7519",
+            "files": [
+                "Methods/data/bug-7519.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-7519.php",
+                    "line": 19,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug7519\\A::key() is not covariant with tentative return type mixed of method Iterator<TKey,T>::key().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                },
+                {
+                    "file": "Methods/data/bug-7519.php",
+                    "line": 25,
+                    "identifier": "method.tentativeReturnType",
+                    "message": "Return type mixed of method Bug7519\\A::current() is not covariant with tentative return type mixed of method Iterator<TKey,T>::current().",
+                    "tip": "Make it covariant, or use the #[\\ReturnTypeWillChange] attribute to temporarily suppress the error."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTemplateInParamOut",
+            "files": [
+                "Methods/data/param-out.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/param-out.php",
+                    "line": 22,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method ParamOutTemplate\\FooBar::uselessLocalTemplate() is not referenced in a parameter.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParamOutClasses",
+            "files": [
+                "Methods/data/param-out-classes.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testParamClosureThisClasses",
+            "files": [
+                "Methods/data/param-closure-this-classes.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testSelfOut",
+            "files": [
+                "Methods/data/self-out.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/self-out.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Method SelfOutClasses\\Foo::doFoo() has invalid @phpstan-self-out type SelfOutClasses\\Nonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/self-out.php",
+                    "line": 24,
+                    "identifier": "selfOut.trait",
+                    "message": "Method SelfOutClasses\\Foo::doBar() has invalid @phpstan-self-out type SelfOutClasses\\FooTrait.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDeprecatedImplicitlyNullableParameterType",
+            "files": [
+                "Methods/data/method-implicitly-nullable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/method-implicitly-nullable.php",
+                    "line": 13,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #3 $c (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-implicitly-nullable.php",
+                    "line": 15,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #5 $e (int|string) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/method-implicitly-nullable.php",
+                    "line": 17,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #7 $g (stdClass) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12501",
+            "files": [
+                "Methods/data/bug-12501.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNoDiscardVoid",
+            "files": [
+                "Methods/data/typehints-nodiscard.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/typehints-nodiscard.php",
+                    "line": 8,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on void method TestMethodTypehints\\Demo::nothing().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints-nodiscard.php",
+                    "line": 12,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on void method TestMethodTypehints\\Demo::alsoNothing().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints-nodiscard.php",
+                    "line": 15,
+                    "identifier": "return.never",
+                    "message": "Method TestMethodTypehints\\Demo::returnNever() should always throw an exception or terminate script execution but doesn't do that.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints-nodiscard.php",
+                    "line": 16,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on never method TestMethodTypehints\\Demo::returnNever().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints-nodiscard.php",
+                    "line": 19,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on void method TestMethodTypehints\\Demo::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints-nodiscard.php",
+                    "line": 25,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on void method TestMethodTypehints\\Demo::__destruct().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints-nodiscard.php",
+                    "line": 31,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on void method TestMethodTypehints\\Demo::__unset().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints-nodiscard.php",
+                    "line": 37,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on void method TestMethodTypehints\\Demo::__wakeup().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/typehints-nodiscard.php",
+                    "line": 43,
+                    "identifier": "attribute.target",
+                    "message": "Attribute NoDiscard cannot be used on void method TestMethodTypehints\\Demo::__clone().",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11470",
+            "files": [
+                "Methods/data/bug-11470.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14205",
+            "files": [
+                "Methods/data/bug-14205.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14617",
+            "files": [
+                "Methods/data/bug-14617.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14617GroupUse",
+            "files": [
+                "Methods/data/bug-14617-group-use.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

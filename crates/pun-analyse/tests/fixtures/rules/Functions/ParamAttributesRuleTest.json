@@ -1,0 +1,54 @@
+{
+    "test": "Functions/ParamAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/param-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/param-attributes.php",
+                    "line": 33,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ParamAttributes\\Foo does not have the parameter target.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-attributes.php",
+                    "line": 72,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ParamAttributes\\Foo does not have the parameter or property target.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/param-attributes.php",
+                    "line": 82,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ParamAttributes\\Qux does not have the parameter target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testSensitiveParameterAttribute",
+            "files": [
+                "Functions/data/sensitive-parameter.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10298",
+            "files": [
+                "Functions/data/bug-10298.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

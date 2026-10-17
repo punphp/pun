@@ -1,0 +1,7 @@
+{
+    "packages": [
+        {"name": "acme/pkg", "version": "1.0.0", "version_normalized": "1.0.0.0", "type": "library", "install-path": "../acme/pkg", "autoload": {"psr-4": {"Acme\\Pkg\\": "src/"}}},
+        {"name": "acme/str", "version": "1.0.0", "version_normalized": "1.0.0.0", "type": "library", "install-path": "../acme/str", "autoload": {"psr-0": {"Acme_": ""}, "classmap": ["Mapped_In_Package.php"]}},
+        {"name": "acme/files", "version": "1.0.0", "version_normalized": "1.0.0.0", "type": "library", "install-path": "../acme/files", "autoload": {"files": ["functions.php"]}}
+    ]
+}

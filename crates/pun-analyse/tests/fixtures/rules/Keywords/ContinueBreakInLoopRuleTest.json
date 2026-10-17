@@ -1,0 +1,134 @@
+{
+    "test": "Keywords/ContinueBreakInLoopRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Keywords/data/continue-break.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/continue-break.php",
+                    "line": 67,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break.php",
+                    "line": 69,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break.php",
+                    "line": 77,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break.php",
+                    "line": 79,
+                    "identifier": "continue.outOfLoop",
+                    "message": "Keyword continue used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break.php",
+                    "line": 87,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break.php",
+                    "line": 95,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "Keywords/data/continue-break-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/continue-break-property-hook.php",
+                    "line": 13,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break-property-hook.php",
+                    "line": 15,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break-property-hook.php",
+                    "line": 24,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break-property-hook.php",
+                    "line": 26,
+                    "identifier": "continue.outOfLoop",
+                    "message": "Keyword continue used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break-property-hook.php",
+                    "line": 33,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property ContinueBreakPropertyHook\\Foo::$ipsum should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/continue-break-property-hook.php",
+                    "line": 35,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13790",
+            "files": [
+                "Keywords/data/bug-13790-break.php",
+                "Keywords/data/bug-13790-continue.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/bug-13790-break.php",
+                    "line": 2,
+                    "identifier": "break.outOfLoop",
+                    "message": "Keyword break used outside of a loop or a switch statement.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/bug-13790-continue.php",
+                    "line": 2,
+                    "identifier": "continue.outOfLoop",
+                    "message": "Keyword continue used outside of a loop or a switch statement.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

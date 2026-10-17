@@ -1,0 +1,36 @@
+{
+    "test": "Methods/ConstructorReturnTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/constructor-return-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/constructor-return-type.php",
+                    "line": 17,
+                    "identifier": "constructor.returnType",
+                    "message": "Constructor of class ConstructorReturnType\\Bar has a return type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/constructor-return-type.php (in context of class ConstructorReturnType\\RenamesBarTrait)",
+                    "line": 35,
+                    "identifier": "constructor.returnType",
+                    "message": "Original constructor of trait ConstructorReturnType\\BarTrait has a return type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/constructor-return-type.php (in context of class ConstructorReturnType\\UsesFooTrait)",
+                    "line": 26,
+                    "identifier": "constructor.returnType",
+                    "message": "Constructor of class ConstructorReturnType\\UsesFooTrait has a return type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

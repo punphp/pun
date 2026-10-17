@@ -8,6 +8,8 @@
     scripts/analyse-corpus.py diff   [project...]   run Pun's analyser (target-analyse/debug/examples/analyse) and diff
                                                     (file, line, identifier, message) per identifier
     scripts/analyse-corpus.py rank                  error count per identifier over the oracle runs
+    scripts/analyse-corpus.py fixture               PHPStan's errors on crates/pun-analyse/tests/fixtures/project for
+                                                    each of its phpstan*.neon -> expected-<config>.json (relative paths)
 
 The configs are the projects' own includes and paths with `level: 0` and without ignoreErrors and baselines
 (ignores are M2.1, tested on their own), written to <copy>/pun-level0.neon.
@@ -114,6 +116,32 @@ def oracle(p):
     print(f'{p}: {len(errors)} errors, {len(data["errors"])} general, {secs:.1f}s')
 
 
+FIXTURE = os.path.join(ROOT, 'crates/pun-analyse/tests/fixtures/project')
+
+
+def fixture():
+    for neon in sorted(f for f in os.listdir(FIXTURE) if f.startswith('phpstan') and f.endswith('.neon')):
+        tmp = os.path.join(WORK, 'tmp', 'fixture-project')
+        shutil.rmtree(tmp, ignore_errors=True)
+        os.makedirs(tmp)
+        wrapper = os.path.join(tmp, 'wrapper.neon')
+        with open(wrapper, 'w') as f:
+            f.write(f'includes:\n    - {os.path.join(FIXTURE, neon)}\nparameters:\n    tmpDir: {tmp}\n')
+        r = run(['php', os.path.join(ROOT, '.oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar'), 'analyse', '-c',
+                 wrapper, '--error-format=json', '--no-progress'], FIXTURE)
+        # path-independent: the checkout's path is {root} in messages
+        data = json.loads(r.stdout.replace(json.dumps(FIXTURE)[1:-1], '{root}'))
+        errors = [{'file': file.removeprefix('{root}/'), 'line': m.get('line'), 'identifier': m.get('identifier'),
+                   'message': m['message'], 'tip': m.get('tip')}
+                  for file, fe in data['files'].items() for m in fe['messages']]
+        errors.sort(key=lambda e: (e['file'], e['line'] or 0, e['identifier'] or '', e['message']))
+        out = os.path.join(FIXTURE, 'expected-' + neon[:-5] + '.json')
+        with open(out, 'w') as f:
+            json.dump({'general': data['errors'], 'errors': errors}, f, indent=1)
+            f.write('\n')
+        print(f'{neon}: {len(errors)} errors')
+
+
 def load(p):
     with open(os.path.join(WORK, 'oracle', p + '.json')) as f:
         return json.load(f)
@@ -168,6 +196,8 @@ def main():
     cmd, names = sys.argv[1], sys.argv[2:] or list(PROJECTS)
     if cmd == 'rank':
         return rank(names)
+    if cmd == 'fixture':
+        return fixture()
     ok = True
     for p in names:
         ok &= {'setup': setup, 'oracle': oracle, 'diff': diff}[cmd](p) is not False

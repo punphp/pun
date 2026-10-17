@@ -1,0 +1,138 @@
+{
+    "test": "Names/UsedNamesRuleTest",
+    "cases": [
+        {
+            "method": "testSimpleUses",
+            "files": [
+                "Names/data/simple-uses.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Names/data/simple-uses.php",
+                    "line": 7,
+                    "identifier": "class.nameInUse",
+                    "message": "Cannot declare class SomeNamespace\\SimpleUses because the name is already in use.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGroupedUses",
+            "files": [
+                "Names/data/grouped-uses.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Names/data/grouped-uses.php",
+                    "line": 10,
+                    "identifier": "interface.nameInUse",
+                    "message": "Cannot declare interface SomeNamespace\\GroupedUses because the name is already in use.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testSimpleUsesUnderClass",
+            "files": [
+                "Names/data/simple-uses-under-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Names/data/simple-uses-under-class.php",
+                    "line": 9,
+                    "identifier": "use.nameInUse",
+                    "message": "Cannot use SomeOtherNamespace\\UsesUnderClass as SimpleUsesUnderClass because the name is already in use.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGroupedUsesUnderClass",
+            "files": [
+                "Names/data/grouped-uses-under-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Names/data/grouped-uses-under-class.php",
+                    "line": 14,
+                    "identifier": "use.nameInUse",
+                    "message": "Cannot use SomeOtherNamespace\\FooBar as FooBar because the name is already in use.",
+                    "tip": null
+                },
+                {
+                    "file": "Names/data/grouped-uses-under-class.php",
+                    "line": 15,
+                    "identifier": "use.nameInUse",
+                    "message": "Cannot use SomeOtherNamespace\\UsesUnderClass as GroupedUsesUnderClass because the name is already in use.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNoNamespace",
+            "files": [
+                "Names/data/no-namespace.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Names/data/no-namespace.php",
+                    "line": 5,
+                    "identifier": "class.nameInUse",
+                    "message": "Cannot declare class NoNamespace because the name is already in use.",
+                    "tip": null
+                },
+                {
+                    "file": "Names/data/no-namespace.php",
+                    "line": 9,
+                    "identifier": "class.nameInUse",
+                    "message": "Cannot declare class NoNamespace because the name is already in use.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMultipleNamespaces",
+            "files": [
+                "Names/data/multiple-namespaces.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Names/data/multiple-namespaces.php",
+                    "line": 24,
+                    "identifier": "trait.nameInUse",
+                    "message": "Cannot declare trait FirstNamespace\\MultipleNamespaces because the name is already in use.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIgnoreUseFunctionAndConstant",
+            "files": [
+                "Names/data/ignore-use-function-and-constant.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Names/data/ignore-use-function-and-constant.php",
+                    "line": 6,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant CaSeInSeNsItIvE not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

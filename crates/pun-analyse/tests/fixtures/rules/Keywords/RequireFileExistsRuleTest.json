@@ -1,0 +1,243 @@
+{
+    "test": "Keywords/RequireFileExistsRuleTest",
+    "cases": [
+        {
+            "method": "testBasicCase",
+            "files": [
+                "Keywords/data/require-file-simple-case.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/require-file-simple-case.php",
+                    "line": 11,
+                    "identifier": "include.fileNotFound",
+                    "message": "Path in include() \"a-file-that-does-not-exist.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-simple-case.php",
+                    "line": 12,
+                    "identifier": "includeOnce.fileNotFound",
+                    "message": "Path in include_once() \"a-file-that-does-not-exist.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-simple-case.php",
+                    "line": 13,
+                    "identifier": "require.fileNotFound",
+                    "message": "Path in require() \"a-file-that-does-not-exist.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-simple-case.php",
+                    "line": 14,
+                    "identifier": "requireOnce.fileNotFound",
+                    "message": "Path in require_once() \"a-file-that-does-not-exist.php\" is not a file or it does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFileDoesNotExistConditionally",
+            "files": [
+                "Keywords/data/require-file-conditionally.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRelativePath",
+            "files": [
+                "Keywords/data/require-file-relative-path.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 8,
+                    "identifier": "include.fileNotFound",
+                    "message": "Path in include() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 9,
+                    "identifier": "includeOnce.fileNotFound",
+                    "message": "Path in include_once() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 10,
+                    "identifier": "require.fileNotFound",
+                    "message": "Path in require() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 11,
+                    "identifier": "requireOnce.fileNotFound",
+                    "message": "Path in require_once() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRelativePathWithIncludePath",
+            "files": [
+                "Keywords/data/require-file-relative-path.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 8,
+                    "identifier": "include.fileNotFound",
+                    "message": "Path in include() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 9,
+                    "identifier": "includeOnce.fileNotFound",
+                    "message": "Path in include_once() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 10,
+                    "identifier": "require.fileNotFound",
+                    "message": "Path in require() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 11,
+                    "identifier": "requireOnce.fileNotFound",
+                    "message": "Path in require_once() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRelativePathWithSameWorkingDirectory",
+            "files": [
+                "Keywords/data/require-file-relative-path.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 8,
+                    "identifier": "include.fileNotFound",
+                    "message": "Path in include() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 9,
+                    "identifier": "includeOnce.fileNotFound",
+                    "message": "Path in include_once() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 10,
+                    "identifier": "require.fileNotFound",
+                    "message": "Path in require() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/require-file-relative-path.php",
+                    "line": 11,
+                    "identifier": "requireOnce.fileNotFound",
+                    "message": "Path in require_once() \"data/include-me-to-prove-you-work.txt\" is not a file or it does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11738",
+            "files": [
+                "Keywords/data/bug-11738/bug-11738.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12203",
+            "files": [
+                "Keywords/data/bug-12203.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/bug-12203.php",
+                    "line": 5,
+                    "identifier": "requireOnce.fileNotFound",
+                    "message": "Path in require_once() \"../bug-12203-sure-does-not-exist.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/bug-12203.php",
+                    "line": 15,
+                    "identifier": "requireOnce.fileNotFound",
+                    "message": "Path in require_once() \"../bug-12203-sure-does-not-exist.php\" is not a file or it does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "Keywords/data/bug-12203.php",
+                    "line": 15,
+                    "identifier": "requireOnce.fileNotFound",
+                    "message": "Path in require_once() \"..\\bug-12203-sure-does-not-exist.php\" is not a file or it does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRelativePathInTrait",
+            "files": [
+                "Keywords/data/include-relative-in-trait/trait-dir/IncludeRelativeTrait.php",
+                "Keywords/data/include-relative-in-trait/class-dir/IncludeRelativeClass.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Keywords/data/include-relative-in-trait/trait-dir/IncludeRelativeTrait.php (in context of class IncludeRelativeInTrait\\IncludeRelativeClass)",
+                    "line": 15,
+                    "identifier": "include.fileNotFound",
+                    "message": "Path in include() \"only-in-class-dir.php\" is not a file or it does not exist.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug15015",
+            "files": [
+                "Keywords/data/bug-15015/trait-dir/Bug15015Trait.php",
+                "Keywords/data/bug-15015/class-dir/Bug15015Class.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInFileExists",
+            "files": [
+                "Keywords/data/include-in-file-exists.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

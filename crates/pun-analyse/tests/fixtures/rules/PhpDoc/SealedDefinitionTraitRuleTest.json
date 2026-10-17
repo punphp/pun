@@ -1,0 +1,22 @@
+{
+    "test": "PhpDoc/SealedDefinitionTraitRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-sealed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-sealed.php",
+                    "line": 11,
+                    "identifier": "sealed.onTrait",
+                    "message": "PHPDoc tag @phpstan-sealed is only valid on class or interface.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

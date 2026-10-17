@@ -1,0 +1,133 @@
+{
+    "test": "Properties/ExistingClassesInPropertiesRuleTest",
+    "cases": [
+        {
+            "method": "testNonexistentClass",
+            "files": [
+                "Properties/data/properties-types.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNativeTypes",
+            "files": [
+                "Properties/data/properties-native-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-native-types.php",
+                    "line": 10,
+                    "identifier": "class.notFound",
+                    "message": "Property PropertiesNativeTypes\\Foo::$bar has unknown class PropertiesNativeTypes\\Bar as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Properties/data/properties-native-types.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Property PropertiesNativeTypes\\Foo::$baz has unknown class PropertiesNativeTypes\\Baz as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPromotedProperties",
+            "files": [
+                "Properties/data/properties-promoted-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-promoted-types.php",
+                    "line": 11,
+                    "identifier": "parameter.trait",
+                    "message": "Parameter $baz of method PromotedPropertiesExistingClasses\\Foo::__construct() has invalid type PromotedPropertiesExistingClasses\\SomeTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-promoted-types.php",
+                    "line": 11,
+                    "identifier": "property.trait",
+                    "message": "Property PromotedPropertiesExistingClasses\\Foo::$baz has invalid type PromotedPropertiesExistingClasses\\SomeTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-promoted-types.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $ipsum of method PromotedPropertiesExistingClasses\\Foo::__construct() has invalid type PromotedPropertiesExistingClasses\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/properties-promoted-types.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Property PromotedPropertiesExistingClasses\\Foo::$ipsum has unknown class PromotedPropertiesExistingClasses\\Bar as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntersectionTypes#0",
+            "files": [
+                "Properties/data/intersection-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/intersection-types.php",
+                    "line": 30,
+                    "identifier": "property.unresolvableNativeType",
+                    "message": "Property PropertyIntersectionTypes\\Test::$prop2 has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/intersection-types.php",
+                    "line": 32,
+                    "identifier": "property.unresolvableNativeType",
+                    "message": "Property PropertyIntersectionTypes\\Test::$prop3 has unresolvable native type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIntersectionTypes#1",
+            "files": [
+                "Properties/data/intersection-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/intersection-types.php",
+                    "line": 30,
+                    "identifier": "property.unresolvableNativeType",
+                    "message": "Property PropertyIntersectionTypes\\Test::$prop2 has unresolvable native type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/intersection-types.php",
+                    "line": 32,
+                    "identifier": "property.unresolvableNativeType",
+                    "message": "Property PropertyIntersectionTypes\\Test::$prop3 has unresolvable native type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14617",
+            "files": [
+                "Classes/data/bug-14617.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

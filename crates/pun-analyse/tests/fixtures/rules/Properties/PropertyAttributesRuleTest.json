@@ -1,0 +1,55 @@
+{
+    "test": "Properties/PropertyAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/property-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/property-attributes.php",
+                    "line": 26,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class PropertyAttributes\\Foo does not have the property target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDeprecatedAttribute",
+            "files": [
+                "Properties/data/property-attributes-deprecated.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testOverrideAttributeAllowed",
+            "files": [
+                "Properties/data/override-attr-on-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/override-attr-on-property.php",
+                    "line": 11,
+                    "identifier": "property.override",
+                    "message": "Property OverrideAttrOnProperty\\Foo::$foo has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/override-attr-on-property.php",
+                    "line": 14,
+                    "identifier": "property.override",
+                    "message": "Property OverrideAttrOnProperty\\Foo::$bar has #[\\Override] attribute but does not override any property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

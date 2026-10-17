@@ -1,0 +1,22 @@
+{
+    "test": "Functions/ClosureAttributesRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/closure-attributes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-attributes.php",
+                    "line": 28,
+                    "identifier": "attribute.target",
+                    "message": "Attribute class ClosureAttributes\\Foo does not have the function target.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

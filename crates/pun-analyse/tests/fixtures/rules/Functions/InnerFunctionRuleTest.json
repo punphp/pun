@@ -1,0 +1,29 @@
+{
+    "test": "Functions/InnerFunctionRuleTest",
+    "cases": [
+        {
+            "method": "testInnerFunction",
+            "files": [
+                "Functions/data/inner-functions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/inner-functions.php",
+                    "line": 7,
+                    "identifier": "function.inner",
+                    "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/inner-functions.php",
+                    "line": 18,
+                    "identifier": "function.inner",
+                    "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

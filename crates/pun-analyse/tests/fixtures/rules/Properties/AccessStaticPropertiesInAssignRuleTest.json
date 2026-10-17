@@ -1,0 +1,110 @@
+{
+    "test": "Properties/AccessStaticPropertiesInAssignRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/access-static-properties-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-static-properties-assign.php",
+                    "line": 10,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property TestAccessStaticPropertiesAssign\\AccessStaticPropertyWithDimFetch::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties-assign.php",
+                    "line": 15,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property TestAccessStaticPropertiesAssign\\AccessStaticPropertyWithDimFetch::$foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleAssignOp",
+            "files": [
+                "Properties/data/access-static-properties-assign-op.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/access-static-properties-assign-op.php",
+                    "line": 10,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property AccessStaticProperties\\AssignOpNonexistentProperty::$flags.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/access-static-properties-assign-op.php",
+                    "line": 15,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property AccessStaticProperties\\AssignOpNonexistentProperty::$flags.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleExpressionNames",
+            "files": [
+                "Properties/data/properties-from-array-into-static-object.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/properties-from-array-into-static-object.php",
+                    "line": 29,
+                    "identifier": "staticProperty.notFound",
+                    "message": "Access to an undefined static property PropertiesFromArrayIntoStaticObject\\Foo::$noop.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2861",
+            "files": [
+                "Properties/data/bug-2861-assign.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAsymmetricVisibility",
+            "files": [
+                "Properties/data/static-properties-asymmetric-visibility.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/static-properties-asymmetric-visibility.php",
+                    "line": 25,
+                    "identifier": "assign.staticPropertyPrivateSet",
+                    "message": "Access to private(set) property $foo of class StaticPropertiesAsymmetricVisibility\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/static-properties-asymmetric-visibility.php",
+                    "line": 32,
+                    "identifier": "assign.staticPropertyPrivateSet",
+                    "message": "Access to private(set) property $foo of class StaticPropertiesAsymmetricVisibility\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/static-properties-asymmetric-visibility.php",
+                    "line": 33,
+                    "identifier": "assign.staticPropertyProtectedSet",
+                    "message": "Access to protected(set) property $bar of class StaticPropertiesAsymmetricVisibility\\Foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

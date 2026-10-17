@@ -1,0 +1,233 @@
+{
+    "test": "Properties/MissingReadOnlyByPhpDocPropertyAssignRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/missing-readonly-property-assign-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 16,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\Foo has an uninitialized @readonly property $unassigned. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 19,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\Foo has an uninitialized @readonly property $unassigned2. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 36,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Access to an uninitialized @readonly property MissingReadOnlyPropertyAssignPhpDoc\\Foo::$readBeforeAssigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 40,
+                    "identifier": "assign.readOnlyPropertyByPhpDoc",
+                    "message": "@readonly property MissingReadOnlyPropertyAssignPhpDoc\\Foo::$doubleAssigned is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 57,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\BarDoubleAssignInSetter has an uninitialized @readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 72,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\TestCase has an uninitialized @readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 85,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\AssignOp has an uninitialized @readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 92,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Access to an uninitialized @readonly property MissingReadOnlyPropertyAssignPhpDoc\\AssignOp::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 94,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Access to an uninitialized @readonly property MissingReadOnlyPropertyAssignPhpDoc\\AssignOp::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 119,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\Immutable has an uninitialized @readonly property $unassigned. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 121,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\Immutable has an uninitialized @readonly property $unassigned2. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 131,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Access to an uninitialized @readonly property MissingReadOnlyPropertyAssignPhpDoc\\Immutable::$readBeforeAssigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 135,
+                    "identifier": "assign.readOnlyPropertyByPhpDoc",
+                    "message": "@readonly property MissingReadOnlyPropertyAssignPhpDoc\\Immutable::$doubleAssigned is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 156,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\FooTraitClass has an uninitialized @readonly property $unassigned. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 159,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\FooTraitClass has an uninitialized @readonly property $unassigned2. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 188,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Access to an uninitialized @readonly property MissingReadOnlyPropertyAssignPhpDoc\\FooTraitClass::$readBeforeAssigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 192,
+                    "identifier": "assign.readOnlyPropertyByPhpDoc",
+                    "message": "@readonly property MissingReadOnlyPropertyAssignPhpDoc\\FooTraitClass::$doubleAssigned is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 205,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\Entity has an uninitialized @readonly property $id. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 233,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\A has an uninitialized @readonly property $a. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 240,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDoc\\B has an uninitialized @readonly property $b. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 244,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Access to an uninitialized @readonly property MissingReadOnlyPropertyAssignPhpDoc\\B::$b.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc.php",
+                    "line": 257,
+                    "identifier": "assign.readOnlyPropertyByPhpDoc",
+                    "message": "@readonly property MissingReadOnlyPropertyAssignPhpDoc\\C::$c is already assigned.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleIgnoresNativeReadonly",
+            "files": [
+                "Properties/data/missing-readonly-property-assign-phpdoc-and-native.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc-and-native.php",
+                    "line": 16,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDocAndNative\\Foo has an uninitialized readonly property $unassigned. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc-and-native.php",
+                    "line": 19,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssignPhpDocAndNative\\Foo has an uninitialized readonly property $unassigned2. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc-and-native.php",
+                    "line": 36,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Access to an uninitialized readonly property MissingReadOnlyPropertyAssignPhpDocAndNative\\Foo::$readBeforeAssigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign-phpdoc-and-native.php",
+                    "line": 40,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property MissingReadOnlyPropertyAssignPhpDocAndNative\\Foo::$doubleAssigned is already assigned.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13856",
+            "files": [
+                "Properties/data/bug-13856-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug14983",
+            "files": [
+                "Properties/data/bug-14983-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-14983-phpdoc.php",
+                    "line": 9,
+                    "identifier": "property.uninitializedReadonlyByPhpDoc",
+                    "message": "Class Bug14983PhpDoc\\UninitializedFromTrait has an uninitialized @readonly property $property. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

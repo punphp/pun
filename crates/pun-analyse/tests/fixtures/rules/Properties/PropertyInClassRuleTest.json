@@ -1,0 +1,423 @@
+{
+    "test": "Properties/PropertyInClassRuleTest",
+    "cases": [
+        {
+            "method": "testPhp84AndHookedPropertiesWithoutBodiesInClass",
+            "files": [
+                "Properties/data/hooked-properties-without-bodies-in-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/hooked-properties-without-bodies-in-class.php",
+                    "line": 7,
+                    "identifier": "property.hookWithoutBody",
+                    "message": "Non-abstract properties cannot include hooks without bodies.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/hooked-properties-without-bodies-in-class.php",
+                    "line": 9,
+                    "identifier": "property.hookWithoutBody",
+                    "message": "Non-abstract properties cannot include hooks without bodies.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/hooked-properties-without-bodies-in-class.php",
+                    "line": 15,
+                    "identifier": "property.hookWithoutBody",
+                    "message": "Non-abstract properties cannot include hooks without bodies.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndNonAbstractHookedPropertiesInClass",
+            "files": [
+                "Properties/data/non-abstract-hooked-properties-in-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/non-abstract-hooked-properties-in-class.php",
+                    "line": 7,
+                    "identifier": "property.hookWithoutBody",
+                    "message": "Non-abstract properties cannot include hooks without bodies.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/non-abstract-hooked-properties-in-class.php",
+                    "line": 9,
+                    "identifier": "property.hookWithoutBody",
+                    "message": "Non-abstract properties cannot include hooks without bodies.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndAbstractHookedPropertiesInClass",
+            "files": [
+                "Properties/data/abstract-hooked-properties-in-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/abstract-hooked-properties-in-class.php",
+                    "line": 7,
+                    "identifier": "property.abstract",
+                    "message": "Non-abstract classes cannot include abstract properties.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/abstract-hooked-properties-in-class.php",
+                    "line": 9,
+                    "identifier": "property.abstract",
+                    "message": "Non-abstract classes cannot include abstract properties.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndNonAbstractHookedPropertiesInAbstractClass",
+            "files": [
+                "Properties/data/non-abstract-hooked-properties-in-abstract-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/non-abstract-hooked-properties-in-abstract-class.php",
+                    "line": 7,
+                    "identifier": "property.hookWithoutBody",
+                    "message": "Non-abstract properties cannot include hooks without bodies.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/non-abstract-hooked-properties-in-abstract-class.php",
+                    "line": 9,
+                    "identifier": "property.hookWithoutBody",
+                    "message": "Non-abstract properties cannot include hooks without bodies.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/non-abstract-hooked-properties-in-abstract-class.php",
+                    "line": 16,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property NonAbstractHookedPropertiesInAbstractClass\\Foo::$name should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/non-abstract-hooked-properties-in-abstract-class.php",
+                    "line": 25,
+                    "identifier": "property.hookWithoutBody",
+                    "message": "Non-abstract properties cannot include hooks without bodies.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndAbstractNonHookedPropertiesInAbstractClass",
+            "files": [
+                "Properties/data/abstract-non-hooked-properties-in-abstract-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/abstract-non-hooked-properties-in-abstract-class.php",
+                    "line": 7,
+                    "identifier": "property.abstractNonHooked",
+                    "message": "Only hooked properties can be declared abstract.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/abstract-non-hooked-properties-in-abstract-class.php",
+                    "line": 9,
+                    "identifier": "property.abstractNonHooked",
+                    "message": "Only hooked properties can be declared abstract.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndAbstractHookedPropertiesWithBodies",
+            "files": [
+                "Properties/data/abstract-hooked-properties-with-bodies.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/abstract-hooked-properties-with-bodies.php",
+                    "line": 7,
+                    "identifier": "property.abstractWithoutAbstractHook",
+                    "message": "Abstract properties must specify at least one abstract hook.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/abstract-hooked-properties-with-bodies.php",
+                    "line": 12,
+                    "identifier": "property.abstractWithoutAbstractHook",
+                    "message": "Abstract properties must specify at least one abstract hook.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndReadonlyHookedProperties",
+            "files": [
+                "Properties/data/readonly-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-property-hooks.php",
+                    "line": 7,
+                    "identifier": "property.hookReadOnly",
+                    "message": "Hooked properties cannot be readonly.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks.php",
+                    "line": 7,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyHooks\\HelloWorld has an uninitialized readonly property $firstName. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks.php",
+                    "line": 12,
+                    "identifier": "property.hookReadOnly",
+                    "message": "Hooked properties cannot be readonly.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks.php",
+                    "line": 12,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyHooks\\HelloWorld has an uninitialized readonly property $middleName. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks.php",
+                    "line": 14,
+                    "identifier": "property.hookReadOnly",
+                    "message": "Hooked properties cannot be readonly.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks.php",
+                    "line": 14,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyHooks\\HelloWorld has an uninitialized readonly property $lastName. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks.php",
+                    "line": 19,
+                    "identifier": "property.hookReadOnly",
+                    "message": "Hooked properties cannot be readonly.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks.php",
+                    "line": 24,
+                    "identifier": "property.hookReadOnly",
+                    "message": "Hooked properties cannot be readonly.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-property-hooks.php",
+                    "line": 24,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadonlyPropertyHooks\\GoodMorningWorld has an uninitialized readonly property $firstName. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndVirtualHookedProperties",
+            "files": [
+                "Properties/data/virtual-hooked-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/virtual-hooked-properties.php",
+                    "line": 17,
+                    "identifier": "property.virtualDefault",
+                    "message": "Virtual hooked properties cannot have a default value.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndStaticHookedProperties",
+            "files": [
+                "Properties/data/static-hooked-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/static-hooked-properties.php",
+                    "line": 7,
+                    "identifier": "property.hookedStatic",
+                    "message": "Hooked properties cannot be static.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/static-hooked-properties.php",
+                    "line": 8,
+                    "identifier": "staticProperty.nonStaticAccess",
+                    "message": "Non-static access to static property StaticHookedProperties\\HelloWorld::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/static-hooked-properties.php",
+                    "line": 9,
+                    "identifier": "staticProperty.nonStaticAccess",
+                    "message": "Non-static access to static property StaticHookedProperties\\HelloWorld::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/static-hooked-properties.php",
+                    "line": 9,
+                    "identifier": "staticProperty.nonStaticAccess",
+                    "message": "Non-static access to static property StaticHookedProperties\\HelloWorld::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/static-hooked-properties.php",
+                    "line": 15,
+                    "identifier": "property.hookedStatic",
+                    "message": "Hooked properties cannot be static.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndPrivateFinalHookedProperties",
+            "files": [
+                "Properties/data/private-final-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/private-final-property-hooks.php",
+                    "line": 7,
+                    "identifier": "property.finalPrivate",
+                    "message": "Property cannot be both final and private.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/private-final-property-hooks.php",
+                    "line": 11,
+                    "identifier": "property.finalPrivateHook",
+                    "message": "Private property cannot have a final hook.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndAbstractFinalHookedProperties",
+            "files": [
+                "Properties/data/abstract-final-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/abstract-final-property-hook.php",
+                    "line": 7,
+                    "identifier": "property.abstractFinal",
+                    "message": "Property cannot be both abstract and final.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndAbstractPrivateHookedProperties",
+            "files": [
+                "Properties/data/abstract-private-property-hook.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/abstract-private-property-hook.php",
+                    "line": 7,
+                    "identifier": "property.abstractPrivate",
+                    "message": "Property cannot be both abstract and private.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84AndAbstractFinalHookedPropertiesParseError",
+            "files": [
+                "Properties/data/abstract-final-property-hook-parse-error.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/abstract-final-property-hook-parse-error.php",
+                    "line": 7,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use the final modifier on an abstract class member on line 7",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84FinalProperties",
+            "files": [
+                "Properties/data/final-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/final-properties.php",
+                    "line": 7,
+                    "identifier": "property.finalPrivate",
+                    "message": "Property cannot be both final and private.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPhp84FinalPropertyHooks",
+            "files": [
+                "Properties/data/final-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/final-property-hooks.php",
+                    "line": 19,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use the final modifier on an abstract class member on line 19",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAsymmetricVisibilityForStaticProperties",
+            "files": [
+                "Properties/data/static-properties-asymmetric-visibility-support.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

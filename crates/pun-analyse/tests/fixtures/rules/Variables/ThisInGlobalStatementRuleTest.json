@@ -1,0 +1,36 @@
+{
+    "test": "Variables/ThisInGlobalStatementRuleTest",
+    "cases": [
+        {
+            "method": "testBug14351",
+            "files": [
+                "Variables/data/bug-14351.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-14351.php",
+                    "line": 9,
+                    "identifier": "assign.this",
+                    "message": "Cannot re-assign $this.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14351.php",
+                    "line": 15,
+                    "identifier": "global.this",
+                    "message": "Cannot use $this as global variable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-14351.php",
+                    "line": 19,
+                    "identifier": "static.this",
+                    "message": "Cannot use $this as static variable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

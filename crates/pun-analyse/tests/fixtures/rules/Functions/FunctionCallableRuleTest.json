@@ -1,0 +1,29 @@
+{
+    "test": "Functions/FunctionCallableRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/function-callable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/function-callable.php",
+                    "line": 13,
+                    "identifier": "function.notFound",
+                    "message": "Function nonexistent not found.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/function-callable.php",
+                    "line": 50,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $obj of method FunctionCallable\\Foo::doIpsum() has invalid type FunctionCallable\\Nonexistent.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

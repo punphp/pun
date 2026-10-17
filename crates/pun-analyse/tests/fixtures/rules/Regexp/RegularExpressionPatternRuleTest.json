@@ -1,0 +1,274 @@
+{
+    "test": "Regexp/RegularExpressionPatternRuleTest",
+    "cases": [
+        {
+            "method": "testValidRegexPattern",
+            "files": [
+                "Regexp/data/valid-regex-pattern.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 3,
+                    "identifier": "return.missing",
+                    "message": "Anonymous function should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 6,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 7,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 11,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 12,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 16,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 17,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 21,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 22,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 26,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 27,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 29,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 29,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 31,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_replace_callback invoked with 2 parameters, 3-6 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 32,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_replace_callback invoked with 2 parameters, 3-6 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 32,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 33,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_replace_callback invoked with 2 parameters, 3-6 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 33,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 34,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_replace_callback invoked with 2 parameters, 3-6 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 35,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_replace_callback invoked with 2 parameters, 3-6 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 35,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 35,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 38,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 39,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 41,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 41,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 43,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 1 in pattern: ~(~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 43,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 57,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok(?:.*)",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 58,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok(?:.*)",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 59,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 7 in pattern: ~((?:.*)~",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 61,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_replace invoked with 2 parameters, 3-5 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 61,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok(?:.*)nono",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 62,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_replace invoked with 2 parameters, 3-5 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 62,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Delimiter must not be alphanumeric, backslash, or NUL byte in pattern: nok(?:.*)nope",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 63,
+                    "identifier": "arguments.count",
+                    "message": "Function preg_replace invoked with 2 parameters, 3-5 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Regexp/data/valid-regex-pattern.php",
+                    "line": 63,
+                    "identifier": "regexp.pattern",
+                    "message": "Regex pattern is invalid: Compilation failed: missing closing parenthesis at offset 7 in pattern: ~((?:.*)~",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

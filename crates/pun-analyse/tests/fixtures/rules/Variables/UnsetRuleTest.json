@@ -1,0 +1,315 @@
+{
+    "test": "Variables/UnsetRuleTest",
+    "cases": [
+        {
+            "method": "testUnsetRule",
+            "files": [
+                "Variables/data/unset.php"
+            ],
+            "scan": [
+                "Variables/data/unset.php"
+            ],
+            "errors": [
+                {
+                    "file": "Variables/data/unset.php",
+                    "line": 6,
+                    "identifier": "unset.variable",
+                    "message": "Call to function unset() contains undefined variable $notSetVariable.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset.php",
+                    "line": 10,
+                    "identifier": "unset.offset",
+                    "message": "Cannot unset offset 'a' on 3.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset.php",
+                    "line": 14,
+                    "identifier": "unset.offset",
+                    "message": "Cannot unset offset 'b' on 1.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset.php",
+                    "line": 18,
+                    "identifier": "unset.offset",
+                    "message": "Cannot unset offset 'c' on 1.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset.php",
+                    "line": 31,
+                    "identifier": "unset.offset",
+                    "message": "Cannot unset offset 'string' on iterable<int, int>.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset.php",
+                    "line": 36,
+                    "identifier": "unset.variable",
+                    "message": "Call to function unset() contains undefined variable $notSetVariable.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2752",
+            "files": [
+                "Variables/data/bug-2752.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4289",
+            "files": [
+                "Variables/data/bug-4289.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4204",
+            "files": [
+                "Variables/data/bug-4204.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3391",
+            "files": [
+                "Variables/data/bug-3391.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7417",
+            "files": [
+                "Variables/data/bug-7417.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8113",
+            "files": [
+                "Variables/data/bug-8113.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12421",
+            "files": [
+                "Variables/data/bug-12421.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/bug-12421.php",
+                    "line": 6,
+                    "identifier": "unset.possiblyHookedProperty",
+                    "message": "Cannot unset property Bug12421\\RegularProperty::$y because it might have hooks in a subclass.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-12421.php",
+                    "line": 9,
+                    "identifier": "unset.possiblyHookedProperty",
+                    "message": "Cannot unset property Bug12421\\RegularProperty::$y because it might have hooks in a subclass.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-12421.php",
+                    "line": 13,
+                    "identifier": "unset.readOnlyProperty",
+                    "message": "Cannot unset readonly Bug12421\\NativeReadonlyClass::$y property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-12421.php",
+                    "line": 17,
+                    "identifier": "unset.readOnlyProperty",
+                    "message": "Cannot unset readonly Bug12421\\NativeReadonlyProperty::$y property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-12421.php",
+                    "line": 21,
+                    "identifier": "unset.readOnlyPropertyByPhpDoc",
+                    "message": "Cannot unset @readonly Bug12421\\PhpdocReadonlyClass::$y property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-12421.php",
+                    "line": 25,
+                    "identifier": "unset.readOnlyPropertyByPhpDoc",
+                    "message": "Cannot unset @readonly Bug12421\\PhpdocReadonlyProperty::$y property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-12421.php",
+                    "line": 29,
+                    "identifier": "unset.readOnlyPropertyByPhpDoc",
+                    "message": "Cannot unset @readonly Bug12421\\PhpdocImmutableClass::$y property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/bug-12421.php",
+                    "line": 36,
+                    "identifier": "unset.readOnlyProperty",
+                    "message": "Cannot unset readonly Bug12421\\NativeReadonlyProperty::$y property.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnsetHookedProperty",
+            "files": [
+                "Variables/data/unset-hooked-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 6,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\User::$name property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 7,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\User::$fullName property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 9,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\Foo::$ii property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 10,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\Foo::$iii property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 14,
+                    "identifier": "unset.possiblyHookedProperty",
+                    "message": "Cannot unset property UnsetHookedProperty\\NonFinalClass::$publicProperty because it might have hooks in a subclass.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 86,
+                    "identifier": "unset.possiblyHookedProperty",
+                    "message": "Cannot unset property UnsetHookedProperty\\ContainerClass::$finalClass because it might have hooks in a subclass.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 91,
+                    "identifier": "unset.possiblyHookedProperty",
+                    "message": "Cannot unset property UnsetHookedProperty\\ContainerClass::$nonFinalClass because it might have hooks in a subclass.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 93,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\Foo::$iii property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 94,
+                    "identifier": "unset.possiblyHookedProperty",
+                    "message": "Cannot unset property UnsetHookedProperty\\ContainerClass::$foo because it might have hooks in a subclass.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 96,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\User::$name property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 97,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\User::$fullName property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 98,
+                    "identifier": "unset.possiblyHookedProperty",
+                    "message": "Cannot unset property UnsetHookedProperty\\ContainerClass::$user because it might have hooks in a subclass.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 100,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\User::$name property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 101,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\User::$name property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 102,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\User::$fullName property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 103,
+                    "identifier": "unset.hookedProperty",
+                    "message": "Cannot unset hooked UnsetHookedProperty\\User::$fullName property.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 104,
+                    "identifier": "unset.possiblyHookedProperty",
+                    "message": "Cannot unset property UnsetHookedProperty\\ContainerClass::$arrayOfUsers because it might have hooks in a subclass.",
+                    "tip": null
+                },
+                {
+                    "file": "Variables/data/unset-hooked-property.php",
+                    "line": 148,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class UnsetHookedProperty\\UnsetReadonly has an uninitialized readonly property $a. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

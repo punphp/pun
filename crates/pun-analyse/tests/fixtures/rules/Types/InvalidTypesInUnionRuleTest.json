@@ -1,0 +1,119 @@
+{
+    "test": "Types/InvalidTypesInUnionRuleTest",
+    "cases": [
+        {
+            "method": "testRuleOnUnionWithVoid",
+            "files": [
+                "Types/data/invalid-union-with-void.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Types/data/invalid-union-with-void.php",
+                    "line": 11,
+                    "identifier": "unionType.void",
+                    "message": "Type void cannot be part of a union type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Types/data/invalid-union-with-void.php",
+                    "line": 15,
+                    "identifier": "nullableType.void",
+                    "message": "Type void cannot be part of a nullable type declaration.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleOnUnionWithMixed",
+            "files": [
+                "Types/data/invalid-union-with-mixed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Types/data/invalid-union-with-mixed.php",
+                    "line": 9,
+                    "identifier": "nullableType.mixed",
+                    "message": "Type mixed cannot be part of a nullable type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Types/data/invalid-union-with-mixed.php",
+                    "line": 12,
+                    "identifier": "unionType.mixed",
+                    "message": "Type mixed cannot be part of a union type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Types/data/invalid-union-with-mixed.php",
+                    "line": 16,
+                    "identifier": "unionType.mixed",
+                    "message": "Type mixed cannot be part of a union type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Types/data/invalid-union-with-mixed.php",
+                    "line": 17,
+                    "identifier": "unionType.mixed",
+                    "message": "Type mixed cannot be part of a union type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Types/data/invalid-union-with-mixed.php",
+                    "line": 22,
+                    "identifier": "unionType.mixed",
+                    "message": "Type mixed cannot be part of a union type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Types/data/invalid-union-with-mixed.php",
+                    "line": 29,
+                    "identifier": "nullableType.mixed",
+                    "message": "Type mixed cannot be part of a nullable type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Types/data/invalid-union-with-mixed.php",
+                    "line": 29,
+                    "identifier": "nullableType.mixed",
+                    "message": "Type mixed cannot be part of a nullable type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Types/data/invalid-union-with-mixed.php",
+                    "line": 34,
+                    "identifier": "nullableType.mixed",
+                    "message": "Type mixed cannot be part of a nullable type declaration.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleOnUnionWithNever",
+            "files": [
+                "Types/data/invalid-union-with-never.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Types/data/invalid-union-with-never.php",
+                    "line": 7,
+                    "identifier": "nullableType.never",
+                    "message": "Type never cannot be part of a nullable type declaration.",
+                    "tip": null
+                },
+                {
+                    "file": "Types/data/invalid-union-with-never.php",
+                    "line": 16,
+                    "identifier": "unionType.never",
+                    "message": "Type never cannot be part of a union type declaration.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

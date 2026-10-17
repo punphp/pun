@@ -1,0 +1,87 @@
+{
+    "test": "Methods/MissingMethodImplementationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/missing-method-impl.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/missing-method-impl.php",
+                    "line": 24,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class MissingMethodImpl\\Baz contains abstract method doBaz() from class MissingMethodImpl\\Baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-impl.php",
+                    "line": 24,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class MissingMethodImpl\\Baz contains abstract method doFoo() from interface MissingMethodImpl\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-impl.php",
+                    "line": 32,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class MissingMethodImpl\\Baz contains abstract method doBaz().",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-impl.php",
+                    "line": 41,
+                    "identifier": "method.abstract",
+                    "message": "Non-abstract class MissingMethodImpl\\Foo@anonymous/missing-method-impl.php:41 contains abstract method doFoo() from interface MissingMethodImpl\\Foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3469",
+            "files": [
+                "Methods/data/bug-3469.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3958",
+            "files": [
+                "Methods/data/bug-3958.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Methods/data/missing-method-impl-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/missing-method-impl-enum.php",
+                    "line": 21,
+                    "identifier": "method.abstract",
+                    "message": "Enum MissingMethodImplEnum\\Bar contains abstract method doFoo() from interface MissingMethodImplEnum\\FooInterface.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11665",
+            "files": [
+                "Methods/data/bug-11665.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

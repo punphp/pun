@@ -1,0 +1,506 @@
+{
+    "test": "Properties/MissingReadOnlyPropertyAssignRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/missing-readonly-property-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 14,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssign\\Foo has an uninitialized readonly property $unassigned. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 16,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssign\\Foo has an uninitialized readonly property $unassigned2. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 33,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Access to an uninitialized readonly property MissingReadOnlyPropertyAssign\\Foo::$readBeforeAssigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 37,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property MissingReadOnlyPropertyAssign\\Foo::$doubleAssigned is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 53,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssign\\BarDoubleAssignInSetter has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 67,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssign\\TestCase has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 79,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssign\\AssignOp has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 85,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Access to an uninitialized readonly property MissingReadOnlyPropertyAssign\\AssignOp::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 87,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Access to an uninitialized readonly property MissingReadOnlyPropertyAssign\\AssignOp::$bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 114,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssign\\FooTraitClass has an uninitialized readonly property $unassigned. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 116,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssign\\FooTraitClass has an uninitialized readonly property $unassigned2. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 145,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Access to an uninitialized readonly property MissingReadOnlyPropertyAssign\\FooTraitClass::$readBeforeAssigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 149,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property MissingReadOnlyPropertyAssign\\FooTraitClass::$doubleAssigned is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 160,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssign\\Entity has an uninitialized readonly property $id. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 188,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property MissingReadOnlyPropertyAssign\\AdditionalAssignOfReadonlyPromotedProperty::$x is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-readonly-property-assign.php",
+                    "line": 264,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class MissingReadOnlyPropertyAssign\\PropertyAssignedOnDifferentObjectUninitialized has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14983",
+            "files": [
+                "Properties/data/bug-14983.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-14983.php",
+                    "line": 8,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class Bug14983\\UninitializedFromTrait has an uninitialized readonly property $property. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7119",
+            "files": [
+                "Properties/data/bug-7119.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7314",
+            "files": [
+                "Properties/data/bug-7314.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8412",
+            "files": [
+                "Properties/data/bug-8412.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8958",
+            "files": [
+                "Properties/data/bug-8958.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-8958.php",
+                    "line": 53,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #4 $end (DateTimeInterface) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8563",
+            "files": [
+                "Properties/data/bug-8563.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6402",
+            "files": [
+                "Properties/data/bug-6402.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-6402.php",
+                    "line": 28,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Access to an uninitialized readonly property Bug6402\\SomeModel2::$views.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7198",
+            "files": [
+                "Properties/data/bug-7198.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7649",
+            "files": [
+                "Properties/data/bug-7649.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-7649.php",
+                    "line": 7,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class Bug7649\\Foo has an uninitialized readonly property $bar. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9577",
+            "files": [
+                "Classes/data/bug-9577.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/bug-9577.php",
+                    "line": 8,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class Bug9577\\SpecializedException2 has an uninitialized readonly property $message. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAnonymousReadonlyClass",
+            "files": [
+                "Properties/data/missing-readonly-anonymous-class-property-assign.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/missing-readonly-anonymous-class-property-assign.php",
+                    "line": 11,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class class@anonymous/missing-readonly-anonymous-class-property-assign.php:10 has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10523",
+            "files": [
+                "Properties/data/bug-10523.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-10523.php",
+                    "line": 63,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class Bug10523\\SingleWriteInConstructorCalledMethod has an uninitialized readonly property $userAccount. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10822",
+            "files": [
+                "Properties/data/bug-10822.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRedeclaredReadonlyProperties",
+            "files": [
+                "Properties/data/redeclare-readonly-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 16,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property RedeclareReadonlyProperty\\B1::$myProp is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 50,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property RedeclareReadonlyProperty\\B5::$myProp is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 70,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property RedeclareReadonlyProperty\\B7::$myProp is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 78,
+                    "identifier": "arguments.count",
+                    "message": "Class class@anonymous/redeclare-readonly-property.php:78 constructor invoked with 0 parameters, 1 required.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 121,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property RedeclareReadonlyProperty\\A@anonymous/redeclare-readonly-property.php:117::$myProp is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 178,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method RedeclareReadonlyProperty\\A::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 190,
+                    "identifier": "method.staticCall",
+                    "message": "Static call to instance method RedeclareReadonlyProperty\\A::__construct().",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 195,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class RedeclareReadonlyProperty\\B16 has an uninitialized readonly property $myProp. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 218,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class RedeclareReadonlyProperty\\C17 has an uninitialized readonly property $aProp. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/redeclare-readonly-property.php",
+                    "line": 233,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class RedeclareReadonlyProperty\\B18 has an uninitialized readonly property $aProp. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRedeclaredPropertiesOfReadonlyClass",
+            "files": [
+                "Properties/data/redeclare-property-of-readonly-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/redeclare-property-of-readonly-class.php",
+                    "line": 15,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property RedeclarePropertyOfReadonlyClass\\B1::$promotedProp is already assigned.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8101",
+            "files": [
+                "Properties/data/bug-8101.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-8101.php",
+                    "line": 12,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property Bug8101\\B::$myProp is already assigned.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9863",
+            "files": [
+                "Properties/data/bug-9863.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-9863.php",
+                    "line": 17,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property Bug9863\\ReadonlyChildWithoutIsset::$foo is already assigned.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-9863.php",
+                    "line": 23,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class Bug9863\\ReadonlyParentWithIsset has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/bug-9863.php",
+                    "line": 28,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Access to an uninitialized readonly property Bug9863\\ReadonlyParentWithIsset::$foo.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9864",
+            "files": [
+                "Properties/data/bug-9864.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10048",
+            "files": [
+                "Properties/data/bug-10048.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11828",
+            "files": [
+                "Properties/data/bug-11828.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12253",
+            "files": [
+                "Properties/data/bug-12253.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-12253.php",
+                    "line": 52,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class Bug12253\\PayloadWithAdditionalConstructor has an uninitialized readonly property $validation. Assign it in the constructor.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13856",
+            "files": [
+                "Properties/data/bug-13856.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-13856.php",
+                    "line": 57,
+                    "identifier": "assign.readOnlyProperty",
+                    "message": "Readonly property Bug13856\\ReadonlyArray::$numbers is already assigned.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

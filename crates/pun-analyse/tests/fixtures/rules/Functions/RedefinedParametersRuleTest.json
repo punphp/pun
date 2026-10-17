@@ -1,0 +1,36 @@
+{
+    "test": "Functions/RedefinedParametersRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/redefined-parameters.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/redefined-parameters.php",
+                    "line": 11,
+                    "identifier": "parameter.duplicate",
+                    "message": "Redefinition of parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/redefined-parameters.php",
+                    "line": 13,
+                    "identifier": "parameter.duplicate",
+                    "message": "Redefinition of parameter $bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/redefined-parameters.php",
+                    "line": 15,
+                    "identifier": "parameter.duplicate",
+                    "message": "Redefinition of parameter $baz.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
