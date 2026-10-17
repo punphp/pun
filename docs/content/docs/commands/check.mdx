@@ -1,0 +1,18 @@
+---
+title: pun check
+description: Format, lint and analyse in one process with one parse. The command for CI, pre-commit hooks and agents.
+---
+
+```bash
+pun check          # report everything
+pun check --fix    # apply lint fixes, then format
+```
+
+`pun check` is `format --test`, `lint` and `analyse` in one process, sharing one parse and one symbol index. It's the command CI, pre-commit hooks and coding agents should run.
+
+- It reports everything and exits non-zero on any format diff, any lint `error` or any analyse `error`.
+- `--fix` applies safe lint fixes, then formats. It never edits based on analysis. It replaces `rector process && pint`.
+- When a lint rule and a format rule report the same span, only one diagnostic prints.
+- It takes the same flags as the single commands: paths, `--staged`, `--dirty`, `--format=agent`.
+
+The single commands stay for editors, for running one stage, and for exact PHPStan output.

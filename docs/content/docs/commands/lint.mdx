@@ -1,27 +1,30 @@
 ---
 title: pun lint
-description: Report Mago's lint-only Laravel rules. It never edits files.
+description: Report and fix code rules, with the same diff and written files as Rector, plus Mago's lint rules.
 ---
 
 ```bash
-pun lint --mago            # the whole project, with pint.json excludes
-pun lint --mago app routes # specific paths
+pun lint                 # report, like rector process --dry-run
+pun lint --fix           # apply fixes, like rector process
+pun lint --fix --format  # fix, then format, in one pass
 ```
 
-`pun lint --mago` reports Mago's lint-only Laravel rules as `path:line:col: level [rule] message`, plus a help line. These rules have no auto-fix, so `pun lint` never edits files. It exits 1 when it finds something. Blade files and files with syntax errors are skipped.
+`pun lint` runs Rector's rules natively and matches Rector's diff and written files. Like Rector, `pun lint --fix` doesn't format afterwards; add `--format`, or use [`pun check --fix`](/docs/commands/check).
 
-| Rule | Flags |
-| --- | --- |
-| `no-request-all` | `$request->all()` |
-| `prefer-casts-method` | a `$casts` property instead of a `casts()` method |
-| `prefer-anonymous-migration` | named migration classes |
-| `prefer-view-array` | `view()->with()` chains instead of an array |
-| `middleware-in-routes` | middleware set in controllers instead of routes |
+## Rules
 
-Release builds include it. When building from source, enable the `mago-lint` feature.
+Rules come from Rector and its Laravel, PHPUnit and Pest sets, plus Mago's linter, under Pun's own kebab-case names: `lint.prefer-early-return`, `lint.no-loose-comparison`, `lint.no-unused-ignore`. Which rules run is set by your [preset](/docs/configuration/presets) and add-ons, with per-rule overrides in `pun.toml`:
 
-Rules that **do** have an auto-fix are opt-in `Pun/` format rules instead. See [Extra rules](/docs/configuration/extra-rules).
+```toml pun.toml
+[lint]
+rules.prefer-early-return = "error"
+rules.no-loose-comparison = "off"
+```
 
-:::note[Coming next]
-`pun lint --fix` will run Rector's rules natively, with Rector-identical results.
-:::
+Mago's lint rules are opt-in under `[lint.mago]` and reported as `mago.*`.
+
+## Reading rector.php
+
+Without `pun.toml`, Pun reads `rector.php` directly, so trying Pun needs no changes. [`pun migrate`](/docs/commands/migrate) turns it into `pun.toml`.
+
+Rules with no auto-fix only report. Fixes are marked safe or unsafe, and `--fix` applies safe ones.

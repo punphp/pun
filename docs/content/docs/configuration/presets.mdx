@@ -1,0 +1,39 @@
+---
+title: Presets
+description: Four tiers instead of ten levels, plus Laravel, Pest and PHPUnit add-ons.
+---
+
+Pun has no numbered levels. A preset is one of four **tiers**, named by intent, from gentle to maximal. Each tier includes the one below it, and one tier picks rules for `pun lint` and `pun analyse` together. Format keeps Pint's presets; tiers never touch it.
+
+| Tier | What it adds | Examples |
+| --- | --- | --- |
+| `essential` | Definite bugs only: code that crashes or misbehaves at runtime. Near-zero false positives, so it fits a legacy codebase on day one | `undefined-method`, `undefined-variable`, `argument-count`, `readonly-property-write` |
+| `recommended` | **The default.** Likely bugs, dead and unused code, redundant checks, deprecations and safe modernisation | `unused-private-method`, `condition-always-true`, `argument-type`, `prefer-match` |
+| `strict` | Type and strictness policy: native types required, strict comparison and `strict_types`, early returns | `missing-param-type`, `no-loose-comparison`, `require-strict-types` |
+| `pedantic` | Everything that isn't opt-in only: naming, complexity limits, final classes | `missing-throws`, `no-excessive-complexity`, `require-final-class` |
+
+```toml pun.toml
+preset = "strict"
+```
+
+## Add-ons
+
+`laravel` (rector-laravel, Larastan, Laravel lint rules), `pest` and `phpunit` combine with any tier. An add-on rule runs when its add-on is on and the tier includes it, so `recommended` plus `laravel` gives Laravel correctness and dead-code rules, and `strict` plus `laravel` adds the code-quality rewrites.
+
+```toml pun.toml
+preset = "recommended"
+laravel = true
+pest = true
+```
+
+## Coming from PHPStan levels
+
+A tier isn't a level, and `pun migrate` writes the exact rules your level ran rather than guessing a tier. For orientation:
+
+| PHPStan | Closest tier |
+| --- | --- |
+| level 0–1 | `essential` |
+| level 2–5 | `recommended` |
+| level 6–8 | `strict` |
+| level 9–10 | `pedantic` |
+| + Larastan | `laravel` add-on |
