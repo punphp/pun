@@ -156,7 +156,8 @@ fn corpus_configs() {
         let cwd = farm.to_string_lossy().into_owned();
         // What `vendor/bin/phpstan` finds in a project (no extension-installer in .oracle/phpstan).
         let o = options(&farm, &case, Options::for_project(&cwd));
-        let got = got(&o, &[(&cwd, "{cwd}"), (TMP, "{tmp}")]);
+        let repo = root.to_string_lossy();
+        let got = got(&o, &[(&cwd, "{cwd}"), (&repo, "{repo}"), (TMP, "{tmp}")]);
         if let Some(d) = diff(&case["expected"], &got) {
             failures.push(format!("{name}:\n{d}"));
         }
