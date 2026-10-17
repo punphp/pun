@@ -64,7 +64,7 @@ Every command's human output is built from the same four pieces, so learning one
 | `pun lint` | problem blocks, summary | 1 if any error |
 | `pun lint --fix` | file lines for what was fixed, then problem blocks for what remains, summary | 1 if errors remain |
 | `pun analyse` | problem blocks, summary | 1 if any error |
-| `pun check` | everything above in one list (Q2), one summary | 1 if any error or any file needs formatting |
+| `pun check` | three sections (Format, Lint, Analyse), one summary (decided) | 1 if any error or any file needs formatting |
 | `pun migrate` | one line per config moved, then each unsupported item as a ⚠ block, summary | 1 if anything unsupported stopped it |
 | `pun init` | init.md §2 | 0 |
 
@@ -103,3 +103,5 @@ are always errors.
 Answered 2026-10-17 (Pushpak):
 
 - **Q1: problem blocks with code by default**; `--concise` prints one line per problem.
+- **Q2: `pun check` groups by command**: a Format section, then Lint, then Analyse, each with its own files, then one
+  summary line.
