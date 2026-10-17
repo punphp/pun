@@ -120,8 +120,8 @@ fn origin(m: &str, nested: bool) -> (&'static str, u32, &'static str, bool) {
 }
 
 /// A run that aborts on a file (unreadable, unwritable) has already printed the progress of the files before it.
-pub fn progress_before_abort<T>(
-    results: &[anyhow::Result<(report::FileResult, T, bool)>],
+pub fn progress_before_abort<T, U>(
+    results: &[anyhow::Result<(report::FileResult, T, bool, U)>],
     dry_run: bool,
     ansi: bool,
     no_ansi: bool,

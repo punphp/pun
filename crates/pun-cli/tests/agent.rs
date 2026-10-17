@@ -279,18 +279,71 @@ fn lint_and_check() {
             Some(1)
         )
     );
-    // --fix applies only `fix = "apply"` rules.
+    // --fix applies only `fix = "apply"` rules; the others are reported as remaining, like `--test` reports them,
+    // and fail the run.
+    let remaining = "app/S.php lint.no-self-assignment [fix:safe] [remaining]\n";
     assert_eq!(
         agent(&d, &["lint", "--fix"]),
         (
-            format!("pun lint: fixed, 1 file fixed (3 checked, Ts)\n{ALIAS_LINE}\n"),
-            Some(0)
+            format!(
+                "pun lint: fail, 1 file fixed, 1 file with remaining fixes (3 checked, Ts)\n{ALIAS_LINE}\n{remaining}"
+            ),
+            Some(1)
         )
     );
     assert_eq!(
         std::fs::read_to_string(d.join("app/B.php")).unwrap(),
         "<?php\n$n = count(array());\n"
     );
+    assert_eq!(
+        read(&d, "app/S.php"),
+        SELF,
+        "remaining fixes are not written"
+    );
+    // Again (the cache must not hide them): nothing left to fix, the same rule remains.
+    assert_eq!(
+        agent(&d, &["lint", "--fix"]),
+        (
+            format!("pun lint: fail, 1 file with remaining fixes (3 checked, Ts)\n{remaining}"),
+            Some(1)
+        )
+    );
+    // `pun check --fix` too, after the format rules ran.
+    assert_eq!(
+        agent(&d, &["check", "--fix"]),
+        (
+            format!(
+                "pun check: fail, 2 files fixed, 1 file with remaining fixes (3 checked, Ts)\napp/A.php format.array-syntax\napp/B.php format.array-syntax\n{remaining}"
+            ),
+            Some(1)
+        )
+    );
+    // Humans get Pint's summary: FAIL, the fixed files (✓), then the remaining ones (⨯), as `--test` lists them.
+    let (out, code) = run(&d, &["lint", "--fix"], &[]);
+    let lines: Vec<&str> = out.lines().map(str::trim).collect();
+    assert_eq!(code, Some(1), "{out}");
+    assert!(
+        lines
+            .iter()
+            .any(|l| l.starts_with("FAIL") && l.ends_with(" 3 files, 1 style issue remaining")),
+        "{out}"
+    );
+    assert!(
+        lines
+            .iter()
+            .any(|l| l.starts_with("⨯ app/S.php ") && l.ends_with(" Pun/no_self_assignment")),
+        "{out}"
+    );
+    // Without remaining rules --fix passes as before.
+    std::fs::write(d.join("app/S.php"), CLEAN).unwrap();
+    assert_eq!(
+        agent(&d, &["lint", "--fix"]),
+        ("pun lint: pass (3 checked, Ts)\n".to_string(), Some(0))
+    );
+}
+
+fn read(d: &Path, f: &str) -> String {
+    std::fs::read_to_string(d.join(f)).unwrap()
 }
 
 #[test]

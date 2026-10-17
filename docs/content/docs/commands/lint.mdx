@@ -30,6 +30,8 @@ no-short-ternary = "off"
 | `{ fix = "safe-only" }` | Report; apply only fixes marked safe |
 | `{ fix = "off" }` | Report, never apply |
 
+`pun lint --fix` lists what it did not apply (rules without `fix = "apply"`) as remaining, like `pun lint` reports it, and exits 1 when anything remains.
+
 Options for a rule go in the same table. Rule names are Pun IDs; a PHP-CS-Fixer name gets an error that names its Pun ID.
 
 Which rules run by default comes from your [preset](/docs/configuration/presets). `pun migrate` moves the risky rules your `pint.json` enabled here with `fix = "apply"`, since Pint applied them unattended.
