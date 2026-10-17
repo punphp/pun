@@ -24,12 +24,8 @@ Functions/ExistingClassesInClosureTypehintsRuleTest::testIntersectionTypes#0
 Functions/ExistingClassesInClosureTypehintsRuleTest::testIntersectionTypes#1
 Functions/ExistingClassesInTypehintsRuleTest::testIntersectionTypes#0
 Functions/ExistingClassesInTypehintsRuleTest::testIntersectionTypes#1
-Functions/FunctionCallableRuleTest::testRule
-Methods/CallMethodsRuleTest::testCallMethods
-Methods/CallMethodsRuleTest::testCallMethodsOnThisOnly
 Methods/CallMethodsRuleTest::testClosureBind
 Methods/CallMethodsRuleTest::testArrowFunctionClosureBind
-Methods/CallMethodsRuleTest::testBug1656
 Methods/CallMethodsRuleTest::testBug3534
 Methods/CallMethodsRuleTest::testBug5460
 Methods/CallMethodsRuleTest::testEnums
@@ -37,10 +33,6 @@ Methods/CallMethodsRuleTest::testRequireExtends
 Methods/CallMethodsRuleTest::testBug11559c
 Methods/CallMethodsRuleTest::testDynamicCall
 Methods/CallMethodsRuleTest::testPipeOperator
-Methods/CallMethodsRuleTest::testBug14893
-Methods/CallStaticMethodsRuleTest::testCallStaticMethods
-Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
-Methods/CallStaticMethodsRuleTest::testBug1267
 Methods/CallStaticMethodsRuleTest::testRequireExtends
 Methods/CallStaticMethodsRuleTest::testClosureBind
 Methods/CallStaticMethodsRuleTest::testDynamicCall
@@ -48,11 +40,8 @@ Methods/CallStaticMethodsRuleTest::testPipeOperator
 Methods/ExistingClassesInTypehintsRuleTest::testSelfOut
 Methods/MethodCallableRuleTest::testRule
 Methods/StaticMethodCallableRuleTest::testRule
-Namespaces/ExistingNamesInGroupUseRuleTest::testRule
-Namespaces/ExistingNamesInUseRuleTest::testRule
 Properties/AccessPropertiesRuleTest::testRequireExtends
 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
-Properties/ExistingClassesInPropertiesRuleTest::testNativeTypes
 Properties/ExistingClassesInPropertiesRuleTest::testPromotedProperties
 Properties/ExistingClassesInPropertyHookTypehintsRuleTest::testRule
 Properties/MissingReadOnlyPropertyAssignRuleTest::testBug8958

@@ -13,6 +13,8 @@ pub enum Guard {
     Function(String),
     /// `defined('Foo::BAR')`: the class part lowercase, as `foo::BAR`.
     ClassConstant(String),
+    /// `method_exists(Foo::class, 'bar')`, lowercase `foo::bar` (`static`/`self` for those `::class`).
+    Method(String),
 }
 
 /// Guards from `expr` being true. `var` looks a variable's remembered guards up.
@@ -130,6 +132,31 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
         Argument::Positional(a) => a.value,
         Argument::Named(a) => a.value,
     };
+    if name.trim_start_matches('\\') == "method_exists" {
+        let class = match arg {
+            Expression::Access(Access::ClassConstant(ClassConstantAccess {
+                class: Expression::Static(_) | Expression::Self_(_),
+                constant: ClassLikeConstantSelector::Identifier(c),
+                ..
+            })) if c.value.eq_ignore_ascii_case(b"class") => {
+                if matches!(arg, Expression::Access(Access::ClassConstant(a)) if matches!(a.class, Expression::Static(_)))
+                {
+                    "static".to_string()
+                } else {
+                    "self".to_string()
+                }
+            }
+            _ => constant_string(arg, resolve)?,
+        };
+        let method = match call.argument_list.arguments.get(1)? {
+            Argument::Positional(a) => a.value,
+            Argument::Named(a) => a.value,
+        };
+        let method = constant_string(method, resolve)?;
+        return Some(Guard::Method(
+            format!("{}::{}", class.trim_start_matches('\\'), method).to_ascii_lowercase(),
+        ));
+    }
     let value = constant_string(arg, resolve)?;
     let value = value.trim_start_matches('\\').to_string();
     match name.trim_start_matches('\\') {

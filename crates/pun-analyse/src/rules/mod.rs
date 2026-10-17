@@ -53,6 +53,8 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.void",
     "staticMethod.void",
     "method.notFound",
+    "method.private",
+    "method.protected",
     "staticMethod.notFound",
     "method.staticCall",
     "staticMethod.private",
@@ -135,6 +137,8 @@ pub struct Checker<'a, 'arena> {
     /// Spans of expressions PHPStan processes in a top-level ExpressionContext (`isInFirstLevelStatement()`):
     /// expression statements, `for` initialisations and increments, arrow function and match arm bodies.
     top_level: HashSet<(u32, u32)>,
+    /// `f(...)` on the right of `|>`: analysed as the call `f($x)`, not as a first-class callable.
+    piped: HashSet<Span>,
     errors: Vec<Error>,
 }
 
@@ -166,6 +170,7 @@ pub fn check_file(path: &Path, codebase: &CodebaseMetadata, project: &Project) -
         functions: Vec::new(),
         in_exists_call: 0,
         top_level: HashSet::new(),
+        piped: HashSet::new(),
         errors: Vec::new(),
     };
     checker.walk_program(program, &mut ());
@@ -352,6 +357,33 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         }
         let span = e.span();
         self.top_level.insert((span.start.offset, span.end.offset));
+        // PHPStan passes the statement's context on to a ternary's branches, the right side of `&&` / `||` and
+        // the operand of `@`
+        match e {
+            Expression::Conditional(c) => {
+                if let Some(then) = c.then {
+                    self.mark_top_level(then);
+                }
+                self.mark_top_level(c.r#else);
+            }
+            Expression::Binary(b)
+                if matches!(
+                    b.operator,
+                    BinaryOperator::And(_)
+                        | BinaryOperator::LowAnd(_)
+                        | BinaryOperator::Or(_)
+                        | BinaryOperator::LowOr(_)
+                ) =>
+            {
+                self.mark_top_level(b.rhs);
+            }
+            Expression::UnaryPrefix(u)
+                if matches!(u.operator, UnaryPrefixOperator::ErrorControl(_)) =>
+            {
+                self.mark_top_level(u.operand);
+            }
+            _ => {}
+        }
     }
 
     fn is_top_level(&self, span: Span) -> bool {
@@ -481,6 +513,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
         // ponytail: methods of traits and anonymous classes (no class scope yet) unchecked
+        for p in m
+            .parameter_list
+            .parameters
+            .iter()
+            .filter(|p| p.is_promoted_property())
+        {
+            names::property_type(self, p.span(), p.hint.as_ref(), &[p.variable.name]);
+        }
         if let Some(class) = self.class_scope() {
             let class = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
             let method = String::from_utf8_lossy(m.name.value).into_owned();
@@ -657,7 +697,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         calls::method_call(self, call);
     }
     fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
+        self.piped.insert(p.callable.span());
         calls::pipe(self, p);
+    }
+    fn walk_in_function_partial_application(
+        &mut self,
+        f: &'ast FunctionPartialApplication<'arena>,
+        _: &mut (),
+    ) {
+        calls::function_callable(self, f);
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
         calls::static_method_call(self, call);
@@ -670,6 +718,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         for e in f.initializations.iter().chain(f.increments.iter()) {
             self.mark_top_level(e);
         }
+    }
+    fn walk_in_use(&mut self, u: &'ast Use<'arena>, _: &mut ()) {
+        names::use_functions(self, u);
+    }
+    fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
+        let names: Vec<&[u8]> = p.variables().iter().map(|v| v.name).collect();
+        names::property_type(self, p.span(), p.hint(), &names);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         names::typehints(

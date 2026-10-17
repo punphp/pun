@@ -62,7 +62,24 @@ no-loose-comparison = "warn"              # reported by `pun lint` / `pun check`
 (`strict_comparison`, `final_class`, `declare_strict_types`, ...) are lint rules: `pun lint` reports what they would
 change, `pun lint --fix` applies the ones with `fix = "apply"`. `pun check` runs format and lint in one pass
 (fixers in PHP-CS-Fixer's priority order, as Pint runs them), so `pun check --fix` on a migrated project writes exactly
-what `pint` wrote; `pun analyse` joins it once it exists. Output is Pint's for all three.
+what `pint` wrote; `pun analyse` joins it once it exists. Output is Pint's for all three (outside coding agents, see below).
+
+**Coding agents.** Under a coding agent (detected by the [agent-detector](https://crates.io/crates/agent-detector)
+crate from the agent's environment variables) every command prints a summary line and one line per finding instead of
+Pint's output, with no colours, boxes or progress. The list stops after 20 items (`-v` shows all, with diffs):
+
+```
+pun check: fail, 1 error, 2 files with fixes (412 checked, 0.21s)
+app/A.php format.array-syntax, format.blank-line-after-opening-tag
+app/B.php format.array-syntax
+app/B.php lint.no-alias-function [fix:unsafe] Master functions shall be used instead of aliases.
+app/D.php:2 syntax-error Parse error: syntax error, unexpected token ";" on line 2.
+```
+
+A clean run prints only the summary line (`pun format: pass (412 checked, 0.21s)`); run errors are one line
+(`pun format: error: ...`). Exit codes are the same as without an agent. An explicit `--format` keeps its reporter
+(`--format=agent` is Pint's JSON). The override order is `--agent` / `--no-agent`, then `PUN_AGENT=1|0`, then PAO's
+`PAO_DISABLE` / `PAO_FORCE`, then detection. Without an agent the output is unchanged.
 
 **Rules Pun hasn't ported.** If an enabled rule has no native port, Pun runs every file through the real PHP-CS-Fixer in
 long-lived `php` workers, using the project's `vendor/laravel/pint` (or `vendor/friendsofphp/php-cs-fixer`, or a Pint

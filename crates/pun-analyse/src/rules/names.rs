@@ -519,3 +519,87 @@ pub fn class_hierarchy<'arena>(
         }
     }
 }
+
+/// ExistingClassesInPropertiesRule (native types only at level 0, `checkThisOnly`): one property declaration or
+/// promoted constructor parameter, `at` its node.
+pub fn property_type<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    at: Span,
+    hint: Option<&Hint<'arena>>,
+    names: &[&[u8]],
+) {
+    let Some(hint) = hint else {
+        return;
+    };
+    let Some(class) = c.class_scope() else {
+        return; // ponytail: traits and anonymous classes
+    };
+    let display = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
+    let mut classes = Vec::new();
+    hint_classes(c, hint, &mut classes);
+    for name in names {
+        let property =
+            String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();
+        for (referenced, _) in &classes {
+            match known(c, referenced) {
+                None => c.report(
+                    at,
+                    "class.notFound",
+                    format!("Property {display}::${property} has unknown class {referenced} as its type."),
+                    Some(DISCOVERING_SYMBOLS_TIP),
+                ),
+                Some(k) if k.is_trait() => c.report(
+                    at,
+                    "property.trait",
+                    format!("Property {display}::${property} has invalid type {referenced}."),
+                    None,
+                ),
+                Some(_) => {}
+            }
+        }
+    }
+}
+
+/// ExistingNamesInUseRule and ExistingNamesInGroupUseRule for `use function`.
+pub fn use_functions<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
+    let mut functions: Vec<(String, Span)> = Vec::new();
+    let text = |id: &Identifier| {
+        String::from_utf8_lossy(id.value())
+            .trim_start_matches('\\')
+            .to_string()
+    };
+    match &u.items {
+        UseItems::TypedSequence(s) if matches!(s.r#type, UseType::Function(_)) => {
+            for item in s.items.iter() {
+                functions.push((text(&item.name), item.span()));
+            }
+        }
+        UseItems::TypedList(l) if matches!(l.r#type, UseType::Function(_)) => {
+            let prefix = text(&l.namespace);
+            for item in l.items.iter() {
+                functions.push((format!("{prefix}\\{}", text(&item.name)), item.span()));
+            }
+        }
+        UseItems::MixedList(l) => {
+            let prefix = text(&l.namespace);
+            for item in l
+                .items
+                .iter()
+                .filter(|i| matches!(i.r#type, Some(UseType::Function(_))))
+            {
+                functions.push((format!("{prefix}\\{}", text(&item.item.name)), item.span()));
+            }
+        }
+        _ => {}
+    }
+    for (name, at) in functions {
+        if c.function(name.as_bytes()).is_none() {
+            c.report(
+                at,
+                "function.notFound",
+                format!("Used function {name} not found."),
+                Some(DISCOVERING_SYMBOLS_TIP),
+            );
+        }
+    }
+}
