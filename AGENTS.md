@@ -16,6 +16,7 @@ Plan: docs/PLAN.md. Home: github.com/punphp/pun (npm: @punphp/pun). Current scop
 - Always `export CARGO_BUILD_JOBS=1` and prefix heavy commands with `nice` and `timeout` (e.g. `timeout 900 nice cargo test ...`).
 - One cargo/php command at a time per agent; never run things in the background and never `cargo build --workspace`/`--release`.
 - Harness corpus runs: one fixer, one project at a time; prefer Pinkary/laravel-framework subsets while iterating.
+- Commit messages follow Conventional Commits (`type(scope): subject`, lowercase subject, no trailing period; types: feat, fix, docs, chore, test, perf, refactor, ci, style, build). Never add `Co-authored-by` trailers; the only author is Pushpak Chhajed <pushpak1300@gmail.com>.
 - After every commit: `git push origin main` (retry once on failure; never force-push, never rewrite history).
 
 ## Tests: 100% coverage, zero tautological tests
