@@ -50,16 +50,22 @@ enum Cmd {
         #[arg(long)]
         show: bool,
         /// Write pun.toml from pint.json, so pun.toml can be the only config file.
-        #[arg(long, conflicts_with = "show")]
+        #[arg(long, conflicts_with_all = ["show", "format", "config", "preset"])]
         init: bool,
         /// Output format.
-        #[arg(long, default_value = "toml", value_parser = ["toml", "json"])]
-        format: String,
+        #[arg(long, value_enum, default_value_t = ConfigFormat::Toml)]
+        format: ConfigFormat,
         #[arg(long)]
         config: Option<PathBuf>,
         #[arg(long)]
         preset: Option<String>,
     },
+}
+
+#[derive(Clone, Copy, PartialEq, clap::ValueEnum)]
+enum ConfigFormat {
+    Toml,
+    Json,
 }
 
 /// Pint's DefaultCommand flags.
@@ -206,12 +212,11 @@ fn main() -> ExitCode {
             Cmd::Lint(a) => lint::run(a),
             Cmd::Config { init: true, .. } => init_config(),
             Cmd::Config {
-                show: _,
-                init: _,
                 format,
                 config,
                 preset,
-            } => show_config(&format, config, preset),
+                ..
+            } => show_config(format, config, preset),
         }
     };
     #[cfg(feature = "pprof")]
@@ -249,7 +254,7 @@ fn init_config() -> Result<u8> {
     Ok(0)
 }
 
-fn show_config(fmt: &str, config: Option<PathBuf>, preset: Option<String>) -> Result<u8> {
+fn show_config(fmt: ConfigFormat, config: Option<PathBuf>, preset: Option<String>) -> Result<u8> {
     let cfg = pun_config::load(
         &root()?,
         &Options {
@@ -259,7 +264,7 @@ fn show_config(fmt: &str, config: Option<PathBuf>, preset: Option<String>) -> Re
         },
     )?;
     let v = cfg.show();
-    if fmt == "json" {
+    if fmt == ConfigFormat::Json {
         println!("{}", serde_json::to_string_pretty(&v)?);
     } else {
         print!("{}", toml::to_string(&v)?);
