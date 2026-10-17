@@ -152,8 +152,6 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | Work | Status |
 | --- | --- |
 | config 4: TOML-native option names for format rules | doing (workflow, wf/options) |
-| config 7: `[files]` + per-command exclude, `pun list-files` | doing (workflow, wf/files) |
-| config 7 follow-up (from config 3): wire `[lint] exclude`, `[analyse] paths/exclude` and `[files] exclude` glob semantics into pun-workspace (today `[files] exclude` is appended to Pint's finder exclude) | todo |
 | config 8: `pun config` on the new schema, `pun explain <rule>` | doing (workflow, wf/config-explain) |
 | migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | doing (workflow, wf/migrate-format) |
 | migrate 1 follow-up: read `.php-cs-fixer.php` statically (no system PHP), replacing crates/pun-cli/src/php_cs_fixer_rules.php | todo |
@@ -210,6 +208,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | lint 1-2: the engine from the spike; levels, sets, overrides at run time | todo |
 | lint 1-2 follow-up (from config 3): apply `[[lint.overrides]]` (`Config.lint.overrides`) per file in pun-cli's token-fixer pass; warn-level rules do not fail lint/check (only error fails; `--deny-warnings`, `--max-warnings`) | todo |
 | lint 1-2 follow-up: run files in parallel, a cache keyed like format's, and a `pun lint` command on `pun_lint::Linter` | todo |
+| lint 1-2 follow-up (from config 7): run `pun lint` and the lint half of `pun check` over `pun_workspace::files(cfg, Some(Command::Lint), ..)` so `[lint] exclude` takes effect; decide what happens to Blade and storage/framework/views files in that set | todo |
 | pun-lint: replace `syntax::same_code` with a structural node comparator (Rector's NodeComparator), shared by rules | todo |
 | pun-lint: name resolution for rules that need resolved names (mago-names or analyse's index) | todo |
 | pun-lint: rename the two sample rule IDs (`lint/style/prefer-compound-assignment`, `lint/php-8.0/no-unused-catch-variable`) once config 1 lands the groups | todo |
@@ -227,6 +226,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | --- | --- |
 | analyse 1-2: `pun analyse` command, `[analyse]`, presets, output; Pun baseline | todo |
 | analyse 1-2 follow-up (from config 3): read `Config.analyse` (preset, switches, rules, baseline, paths) in `pun analyse` | todo |
+| analyse 1-2 follow-up (from config 7): `pun analyse` discovers files with `pun_workspace::files(cfg, Some(Command::Analyse), ..)` | todo |
 | analyse (needs Pushpak): decide how Mago issues map to Pun rules; forwarding mapped codes gives 226 false errors on Pinkary at level 0, reports/analyse-spike.md proposes Pun checks that read Mago's types, using a Mago issue directly only where its table says yes | todo |
 | analyse 3: finish level 0: ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | todo; analyse agent stopped at 43d9857, trait-method and facade-alias WIP uncommitted |
 | analyse 3 follow-up: fix the 5 gaps.txt cases that regressed with 138dab1's trait-context change (new.static and arguments.count reported per using class, shadowed trait method, variadic @method arity) | todo |
@@ -269,6 +269,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | scripts/coverage.sh: runs on macOS (no `flock`, no cargo-llvm-cov): make the lock optional or document the install | todo |
 | tests: crates/pun-cli/tests/agent.rs `git_selection` passes `-c commit.gpgsign=false` so it does not fail with global gpg signing | todo |
 | tests: crates/pun-cli/tests/migrate.rs pty tests use a `script` invocation that works on macOS (BSD `script` has no `-qec`) | todo |
+| tests: crates/pun-cli/tests/output.rs `ignore_annotations_like_pint` expects the `assert()` message, so it fails on a PHP with `zend.assertions` off (got "Undefined array key 1"); run the oracle with `-d zend.assertions=1` | todo |
 | harness: lint and analyse modes; pun-harness dev-only; fixtures into pun-fixers | todo |
 | scripts/fuzz-parity.sh: drop the `PUN_PINT` passthrough and its comment (delegate mode removed) | todo |
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
