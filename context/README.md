@@ -6,7 +6,7 @@ Everything a person or agent needs to know about where Pun stands lives in this 
 | File | What it is | Edit when |
 | --- | --- | --- |
 | [PLAN.md](PLAN.md) | The plan, by component (C0-C14): goal, done, pending, open questions | A component's scope or status changes |
-| [components/](components/) | One file per component we've walked through: how it works, its plan, open questions (start: [format.md](components/format.md)) | We discuss or change that component |
+| [components/](components/) | One file per component we've walked through: how it works, its plan, open questions ([commands.md](components/commands.md) says which command owns which rule; then [format.md](components/format.md), [lint.md](components/lint.md)) | We discuss or change that component |
 | [DECISIONS.md](DECISIONS.md) | Every decision the user has made | The user decides something |
 | [TASKS.md](TASKS.md) | Task board: who is doing what, per component | You start or finish a task |
 | [REQUESTS.md](REQUESTS.md) | Open asks from one component to another | You need an API you don't own |
