@@ -168,6 +168,33 @@ fn preset_override() {
 }
 
 #[test]
+fn projects_without_pint_json_migrate_pint_defaults() {
+    let r = root("defaults");
+    // A "pun" that records how `pun migrate` was called and the config it was given.
+    let pun = r.join("fake-pun");
+    let log = r.join("migrate.log");
+    script(
+        &pun,
+        &format!(
+            "[ \"$1\" = migrate ] && {{ echo \"$*\" >> {0}; [ \"$2\" = --config ] && cat \"$3\" >> {0}; }}; true",
+            log.display()
+        ),
+    );
+    harness(&r, &pun, &[]);
+    let got = fs::read_to_string(&log).unwrap();
+    let lines: Vec<&str> = got.lines().collect();
+    // a has a pint.json: plain `pun migrate`. b has none: an explicit `{}` (what Pint runs without one), outside the
+    // copied tree, so migrate converts Pint's defaults instead of writing the starter's lint tier.
+    assert_eq!(lines.len(), 3, "{got}");
+    assert_eq!(lines[0], "migrate");
+    let cfg = lines[1].strip_prefix("migrate --config ").unwrap();
+    assert!(cfg.ends_with("/b/pint-defaults.json"), "{got}");
+    assert!(!cfg.contains("/b/pun/"), "{got}");
+    assert_eq!(lines[2], "{}");
+    fs::remove_dir_all(&r).unwrap();
+}
+
+#[test]
 fn missing_pieces() {
     let r = root("missing");
     // No pun binary: identity, with a note. Only b so the run is short; b then matches its source.
