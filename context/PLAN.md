@@ -303,6 +303,10 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf lint 3 follow-up: parse from a borrowed source (Mago's parse_file_borrowed_with_settings on a mago_database File) to drop the source copy in parse_file_content (about 2% of samples); only worth it if `pun check` already holds a File per source | todo |
 | perf analyse 1 follow-up: discover vendor symbols on demand (PSR-4/classmap lookup from referenced names, as PHPStan does) instead of scanning every Composer-autoloadable file; cuts the 8-18k opens and Mago's metadata for them; needs its own parity plan because the visible symbol set changes | todo |
 | perf analyse 1 follow-up: scripts/bench.py polls `ps -A` every 20 ms, which slows the measured process (pinkary 0.53-0.86 s in the bench vs 0.48-0.60 s under /usr/bin/time); a waiter thread with wait4's ru_maxrss would be cheaper and exact | todo |
+| perf analyse 2 follow-up: pun-cli: consider mimalloc as the global allocator once `pun analyse` lands; in the analyse example it gave wall -4 to -5% and rss -6% on pinkary and laravel-framework, +7% rss on laravel-pint | todo |
+| perf analyse 2 follow-up: on-demand vendor symbol discovery (the perf analyse 1 row above) is the only big lever left: open() is about 30% of analyse CPU and Mago's parse and scan of about 17k vendor files about 35% | todo |
+| perf analyse 2 follow-up: bench.py 3-run analyse medians vary 5-10% between calls; the wait4 ru_maxrss waiter (perf analyse 1 row above) would cut the noise | todo |
+| perf analyse 2 follow-up: Mago's populate (15-20% of analyse wall) and its parser memory are upstream Mago costs; raise them upstream rather than in pun-analyse | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 
 ## 4. Open questions
