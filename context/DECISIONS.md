@@ -44,7 +44,7 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 - Blade stays on Node + Prettier until a native formatter exists.
 - Speed and memory are a priority now.
 - Big runs format files in parallel (one worker per core); kept, and measured by the 8-core benchmark.
-- Pun's own human output: modern and coloured like oxfmt / Biome / Ruff (proposal in components/format.md §10); machine
+- Pun's own human output: modern and coloured like oxfmt / Biome / Ruff (approved, components/format.md §10); machine
   formats stay Pint-compatible.
 - A Pun reprinting style (`preset = "pun"`) comes later, after 1.0.
 

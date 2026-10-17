@@ -182,7 +182,7 @@ Second round (Pushpak, 2026-10-17):
 - **Q2: grouped names (option b), designed for maintenance and growth.** Approved (third round, below).
 - **Q8: a Pun style is wanted in the future**, as its own preset next to Pint's. Not now.
 - **Q9: Pun gets its own modern, coloured terminal output**, modelled on today's Rust tools (oxfmt, Biome, Ruff).
-  Proposal in §10, waiting for a yes. Machine formats (`--format=json`, checkstyle, junit, gitlab) stay as they are.
+  Approved (§10). Machine formats (`--format=json`, checkstyle, junit, gitlab) stay as they are.
 
 Third round (Pushpak, 2026-10-17):
 
@@ -497,7 +497,7 @@ exactly these names.
 | `doctrine/annotation-spaces` | `doctrine-annotation-spaces` |  |  |  |
 
 
-## 10. Proposal: Pun's own terminal output (Q9)
+## 10. Pun's own terminal output (Q9, approved)
 
 Today `pun format` prints Pint's screen exactly. The proposal replaces that for humans with the style of current Rust
 tools: Biome and oxfmt (summary line with a time, coloured diffs, code frames for errors) and Ruff (one line per file,

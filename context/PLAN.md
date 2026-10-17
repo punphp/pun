@@ -183,6 +183,8 @@ baselines and `ignoreErrors`, so CI can swap with no baseline churn.
 
 ## C8. Lint (Rector parity)
 
+Plan under review with Pushpak: components/lint.md (how it works, config, rules, questions).
+
 **Goal.** `pun lint` reports and `pun lint --fix` writes exactly what `rector process --dry-run` / `rector process` do
 for the project's rules, plus CS-Fixer's risky rules and opt-in Mago rules.
 
