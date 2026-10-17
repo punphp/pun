@@ -36,7 +36,7 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 - **Positioning:** Pun is to PHP what Bun is to JavaScript. Laravel first, PHP 8.4+ projects only.
 - **1.0 ships everything at once.** Nothing is published or tagged until `pun format`, `pun analyse`, `pun lint` and
   `pun migrate` all exist and meet the 1.0 bar below. The site presents that release as 1.0. Publishing needs Pushpak's go.
-- **The 1.0 bar:** every lint rule (703) native; every PHPStan core rule (327 Rule classes) native; Larastan built in with seven
+- **The 1.0 bar:** every lint rule for 1.0 (428 of 703) native; every PHPStan core rule (327 Rule classes) native; Larastan built in with seven
   improvements (typed config, routes, views, translations, env keys, Inertia pages, fresh model data); Pest built in
   with the PHPUnit typing it needs; deprecation-rules and strict-rules as plain rules; a result cache. Speed and memory
   come first in every command.
@@ -111,6 +111,9 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
 - **Rector scope for now** (2026-10-17): only the rules in the eight sets (dead-code, modernize, code-quality, types,
   early-return, privatization, naming, coding-style) plus the rector-laravel, PHPUnit and Pest sets. Rules in no set
   are left out for now.
+- **After 1.0** (2026-10-18): the PHPUnit and Pest lint rules (rector-phpunit, Pest's Rector plugin and the
+  `phpunit`/`pest` groups) and the lint rules in no set wait until after 1.0, except those Pint's presets need or that
+  are already ported. 275 of the 703 lint rules carry `later = true` in mapping.toml; 428 are the 1.0 bar.
 - **No upgrades below the floor** (2026-10-17): Rector's php-5.3 to php-8.3 upgrade sets and Laravel upgrade sets
   before 12 are not supported; php-8.4/8.5 and laravel-12/13 are. Pun targets PHP 8.4+ projects.
 
@@ -223,7 +226,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | lint 3-6: token-path diagnostics, ignore comments, output, Mago rules folded in | todo |
 | lint: turn on the laravel/pest/phpunit groups from `pun_config::composer::Composer` and gate version rules on `Locked.semver` | todo |
 | lint (from config 4): give the options of lint rules that are fixers (risky and code-deleting) Pun names through mapping.toml's `[options]` tables; they are still PHP-CS-Fixer names, kebab-cased | todo |
-| lint 7: all 703 rules native, in usage order | todo |
+| lint 7: the 428 lint rules for 1.0 native, in usage order (`later = true` rules wait) | todo |
 | lint (from mapping): write summaries in rules/mapping.toml for the 286 lint rules added by the one-to-one mapping (several have none) | todo |
 | lint (from mapping): look at the upstream rector-laravel laravel-120 set's RenameMethod bug, and decide whether the livewire-40 set belongs in scope | todo |
 | migrate 4: rector.php | todo |
@@ -311,6 +314,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf analyse 2 follow-up: bench.py 3-run analyse medians vary 5-10% between calls; the wait4 ru_maxrss waiter (perf analyse 1 row above) would cut the noise | todo |
 | perf analyse 2 follow-up: Mago's populate (15-20% of analyse wall) and its parser memory are upstream Mago costs; raise them upstream rather than in pun-analyse | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
+| later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 
 ## 4. Open questions
 

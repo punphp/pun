@@ -114,6 +114,9 @@ def check(data):
                 err(f"{rid}: the name repeats its group")
             if r.get("status") != "decided":
                 err(f"{rid}: status is {r.get('status')!r}")
+            # `later = true`: after 1.0 (PLAN.md §2); only a lint rule that is not ported yet can wait.
+            if "later" in r and (c != "lint" or r["later"] is not True or r.get("ported")):
+                err(f"{rid}: `later = true` is only for lint rules that are not ported")
             for f in GONE:
                 if f in r:
                     err(f"{rid}: `{f}` is gone (the group is in the key; no aliases, tiers or severities)")
@@ -365,6 +368,8 @@ def selftest():
     fine(add("lint", "refactor/rename-x"))
     fine(add("lint", "php-8.4/prefer-x", sets=["dead-code"]))
     bad(lambda d: d["rules"]["lint"]["dead-code/no-x"].update(status="tentative"), "tentative")
+    bad(lambda d: d["rules"]["lint"]["dead-code/no-x"].update(later=True, ported=True), "only for lint rules that are not ported")
+    bad(lambda d: d["rules"]["analyse"]["undefined/x"].update(later=True), "only for lint rules that are not ported")
     bad(add("lint", "dead-code/x-thing"), "lint names start")
     bad(add("lint", "dead-code/rename-x"), "lint names start")
     bad(add("analyse", "undefined/prefer-x"), "describe the problem")
@@ -491,7 +496,9 @@ if __name__ == "__main__":
         per = defaultdict(int)
         for key in data["rules"][c]:
             per[key.split("/")[0]] += 1
-        print(f"{c}: {len(data['rules'][c])} rules in {len(per)} groups")
+        later = sum(1 for r in data["rules"][c].values() if r.get("later"))
+        print(f"{c}: {len(data['rules'][c])} rules in {len(per)} groups"
+              + (f" ({len(data['rules'][c]) - later} for 1.0, {later} later)" if later else ""))
     print("format presets: " + ", ".join(
         f"{p} {sum(p in r.get('presets', []) for r in data['rules']['format'].values())}"
         for p in data["meta"]["presets"]["format"]))
