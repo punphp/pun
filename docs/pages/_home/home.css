@@ -140,6 +140,17 @@
 .pun-home .code .add { color: #9bf0c9; } .pun-home .code .del { color: #ff9cc8; } .pun-home .code .dim { color: #8d85a0; }
 .pun-home .code .str { color: #9bf0c9; } .pun-home .code .kw { color: #ffe53d; } .pun-home .code .hot { color: #ffe53d; font-weight: 700; }
 
+/* ---------- laravel ---------- */
+.pun-home .laravel-sec { display: grid; grid-template-columns: .85fr 1.15fr; gap: 56px; align-items: start; }
+.pun-home .laravel-sec .sec-lede { margin-top: -16px; }
+.pun-home .toml-mini { max-width: 320px; }
+.pun-home .laravel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.pun-home .lv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: start; padding: 18px; border: var(--pun-stroke) solid var(--pun-outline); border-radius: 20px; background: var(--pun-card); box-shadow: var(--pun-pop-sm); }
+.pun-home .lv .tile { grid-row: span 2; width: 40px; height: 40px; font-size: 18px; border-radius: 12px; }
+.pun-home .lv h3 { font-size: 18px; line-height: 1.2; }
+.pun-home .lv p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--pun-ink-2); }
+.pun-home .lv code { font: 500 .82em/1 var(--blume-font-mono); padding: 2px 5px; border-radius: 6px; background: var(--pun-paper-2); color: var(--pun-ink); }
+
 /* ---------- one config ---------- */
 .pun-home .config-sec, .pun-home .agents-sec { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
 .pun-home .merge { position: relative; padding-top: 72px; }
@@ -179,7 +190,7 @@
 
 /* ---------- responsive ---------- */
 @media (max-width: 960px) {
-  .pun-home .hero, .pun-home .bench-sec, .pun-home .config-sec, .pun-home .agents-sec { grid-template-columns: 1fr; gap: 40px; }
+  .pun-home .hero, .pun-home .bench-sec, .pun-home .config-sec, .pun-home .agents-sec, .pun-home .laravel-sec { grid-template-columns: 1fr; gap: 40px; }
   .pun-home .stage { max-width: 460px; width: 100%; justify-self: center; }
   .pun-home .tools { grid-template-columns: 1fr 1fr; }
   .pun-home .race-grid, .pun-home .parity { grid-template-columns: 1fr; }
@@ -188,7 +199,7 @@
   .pun-home .cta-mascot { left: 50%; top: -60px; bottom: auto; width: 240px; margin-left: -120px; }
 }
 @media (max-width: 560px) {
-  .pun-home .tools { grid-template-columns: 1fr; }
+  .pun-home .tools, .pun-home .laravel-grid { grid-template-columns: 1fr; }
   .pun-home .tool, .pun-home .stick.in { transform: none; }
   .pun-home .lane { grid-template-columns: 1fr; gap: 8px; }
   .pun-home .burst { right: -6px; } .pun-home .loose { left: -6px; }
