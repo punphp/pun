@@ -235,3 +235,26 @@ Build 3 (wf/schema, 2026-10-17), assistant's calls where the plan is silent. The
   `warn` rule's fix fails `pun lint` / `pun check` like an `error`. `--preset per` on the command line still works
   (Pint's flag; format 1). The no-config message stays "Run `pun migrate`." until `pun init` exists.
 
+
+Build 7 (wf/files, 2026-10-17), assistant's calls where the plan is silent:
+
+- **Glob semantics are Mago's** (`mago_database::matcher::ExclusionMatcher`, default glob settings): an `exclude` entry
+  with `*`, `?`, `[` or `{` is a glob matched against the root-relative path (`*` crosses `/`); any other entry is a
+  root-relative path prefix. For `format`, plain entries in `[files] exclude` and `[format] exclude` keep Pint's
+  Symfony `exclude()` meaning (a folder name at any depth, or path segments under each `in` dir), so migrated
+  pint.json excludes and the Pint corpus are unchanged; only glob entries take Mago's meaning there (also for
+  `--stdin-filename`). A pint.json exclude with a glob character now means a glob, not a literal folder name.
+- **The `[files]` set** (no `--command`, `lint`, `analyse`) walks like PHP-CS-Fixer's `Finder::create()`: `*.php`
+  (`.blade.php` included), no `vendor` folder at any depth, no dot files or VCS folders, symlinked folders not
+  followed. Pint's own skips (`storage`, `build`, `node_modules`, `bootstrap/cache`, IDE helpers, Blade without the
+  rule, not-name, not-path) are format's only.
+- **Path arguments** replace `[files] paths` (and `[analyse] paths`). Outside format a pun.toml exclude also drops an
+  explicitly named file (Mago); format keeps Pint's rules (an explicit file bypasses every filter, and with `in` set
+  the arguments replace the whole finder). A missing `[files] paths` entry fails with Pint's
+  `The "x" directory does not exist.`, a missing argument with `The path "x" is not readable.`; a `[files] paths` entry
+  may name a file.
+- **Output.** `-0` and `--format=json` print no agent summary; the agent summary is
+  `pun list-files: N files[, <command> set] (Ts)` followed by the full, uncapped list. `--format` takes only `json`;
+  `--config` is accepted like on every other command.
+- **Not wired yet:** `pun lint` and `pun check` still run over format's (Pint's) file set in one token pass, so
+  `[lint] exclude` only shows in `pun list-files --command lint`. Wiring it belongs with the lint engine (lint 1-2).

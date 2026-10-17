@@ -1,0 +1,42 @@
+---
+title: pun list-files
+description: Print the files Pun would check with the current pun.toml.
+---
+
+```bash
+pun list-files                      # the [files] set
+pun list-files --command analyse    # what pun analyse checks
+pun list-files --command format     # what pun format checks, with Pint's finder rules
+pun list-files -0 app | xargs -0 wc -l
+pun list-files --format json
+```
+
+Prints one path per line, relative to the project root and sorted, so you can see that `paths` and `exclude` in [pun.toml](/docs/configuration/pun-toml) do what you think.
+
+- Without `--command`, it lists the `[files]` set: the PHP files under `[files] paths` (the project root when there are none), minus `[files] exclude`.
+- `--command lint` and `--command analyse` add that command's own `exclude`. Analyse uses `[analyse] paths` when it has them.
+- `--command format` lists what `pun format` checks: Pint's finder, which also skips `storage`, `build`, `node_modules`, `bootstrap/cache`, IDE helper files, `[format] not-name` and `not-path`, and `*.blade.php` unless the Blade rule is on.
+- Paths on the command line replace `[files] paths`. Outside format, `exclude` still applies to them, also to a file you name.
+- `vendor/` is never listed, though analyse reads it for symbols.
+
+Not yet at run time: `pun lint` and `pun check` still check the format set, so `[lint] exclude` shows here but does not change a run yet.
+
+| Flag | Meaning |
+| --- | --- |
+| `--command format\|lint\|analyse` | List one command's files |
+| `-0`, `--zero-terminate` | End each path with a NUL byte instead of a newline, for `xargs -0` |
+| `--format json` | Print a JSON array |
+| `--config <path>` | Read another pun.toml |
+
+Under a coding agent, a summary line such as `pun list-files: 12 files, analyse set (0.01s)` comes first.
+
+For example, with this pun.toml, `pun list-files` lists the files in `app` and `tests`, and `pun list-files --command analyse` lists only those in `app`:
+
+```toml
+[files]
+paths = ["app", "tests"]
+exclude = ["storage/**"]
+
+[analyse]
+exclude = ["tests/**"]
+```

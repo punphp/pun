@@ -6,12 +6,17 @@
 //! - Excluded names without `/` match a directory of that name at any depth; names with `/` match as path segments.
 //! - Explicit file arguments bypass every filter (`Finder::append`).
 //! - Symlinked dirs are not followed; symlinked files are listed (Pint counts them) and the runner skips them.
+//!
+//! On top of Pint's finder, pun.toml's `[files]` and per-command `exclude` (context/plan/config.md §3, §7): an
+//! exclude entry with a glob metacharacter (`*`, `?`, `[`, `{`) is a Mago glob matched against the path relative to
+//! the project root. For `format` a plain entry keeps Symfony's `exclude()` meaning above; for every other file set a
+//! plain entry is Mago's root-relative path prefix. See [`files`].
 
 use anyhow::{Context, Result, bail};
+use mago_database::matcher::{ExclusionMatcher, contains_glob_metacharacters};
 use pcre2::bytes::{Regex, RegexBuilder};
 use pun_config::Config;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
 const PINT_NOT_NAME: [&str; 4] = [
     "_ide_helper_actions.php",
@@ -40,6 +45,8 @@ struct Finder {
     excluded_pattern: Option<Regex>,
     not_names: Vec<Regex>,
     not_paths: Vec<Regex>,
+    /// pun.toml excludes matched Mago's way against the path relative to `root`.
+    matcher: Option<(PathBuf, ExclusionMatcher<String>)>,
 }
 
 impl Finder {
@@ -52,6 +59,7 @@ impl Finder {
             excluded_pattern: None,
             not_names: vec![],
             not_paths: vec![],
+            matcher: None,
         }
         .exclude(["vendor"])
     }
@@ -66,7 +74,12 @@ impl Finder {
             .not_name(not_name)?
             .exclude(PINT_EXCLUDE);
         // pint.json finder options, applied in Pint's key order (exclude, in, notPath, notName are independent).
-        f = f.exclude(cfg.finder.exclude.iter().map(String::as_str));
+        // Globs are pun.toml's own (Pint has none): Mago's root-relative match.
+        let (globs, plain): (Vec<&String>, Vec<&String>) =
+            (cfg.finder.exclude.iter()).partition(|e| contains_glob_metacharacters(e.as_str()));
+        f = f
+            .exclude(plain.into_iter().map(String::as_str))
+            .matching(&cfg.root, globs.into_iter().cloned())?;
         for d in &cfg.finder.in_dirs {
             let p = cfg.root.join(d);
             // ponytail: Symfony also globs non-directory `in` values; add when a project uses `in: ["src/*"]`.
@@ -99,6 +112,21 @@ impl Finder {
             self.excluded_pattern = Some(Regex::new(&pats.join("|")).expect("quoted pattern"));
         }
         self
+    }
+
+    /// Mago's `ExclusionMatcher` over `patterns`, relative to `root`; none when there are no patterns.
+    fn matching(mut self, root: &Path, patterns: impl IntoIterator<Item = String>) -> Result<Self> {
+        let m = ExclusionMatcher::compile(patterns, Default::default())
+            .map_err(|e| anyhow::anyhow!("invalid exclude: {e}"))?;
+        self.matcher = (!m.is_empty()).then(|| (root.to_path_buf(), m));
+        Ok(self)
+    }
+
+    /// The path relative to the project root matches a pun.toml exclude.
+    fn matched(&self, path: &Path) -> bool {
+        self.matcher.as_ref().is_some_and(|(root, m)| {
+            m.is_match(&path.strip_prefix(root).unwrap_or(path).to_string_lossy())
+        })
     }
 
     fn not_name<'a>(mut self, globs: impl IntoIterator<Item = &'a str>) -> Result<Self> {
@@ -136,7 +164,8 @@ impl Finder {
                         || self
                             .excluded_pattern
                             .as_ref()
-                            .is_some_and(|r| r.is_match(rel.as_bytes()).unwrap_or(false));
+                            .is_some_and(|r| r.is_match(rel.as_bytes()).unwrap_or(false))
+                        || self.matched(entry.path());
                     if pruned && entry.file_type().is_dir() {
                         it.skip_current_dir();
                     }
@@ -147,7 +176,10 @@ impl Finder {
                 if !m(&name, &fname) || self.not_names.iter().any(|r| m(r, &fname)) {
                     continue;
                 }
-                if m(&dot, &rel) || self.not_paths.iter().any(|r| m(r, &rel)) {
+                if m(&dot, &rel)
+                    || self.not_paths.iter().any(|r| m(r, &rel))
+                    || self.matched(entry.path())
+                {
                     continue;
                 }
                 out.push(entry.into_path());
@@ -181,15 +213,71 @@ pub fn discover(cfg: &Config, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
             let real = abs
                 .canonicalize()
                 .map_err(|_| anyhow::anyhow!("The path \"{}\" is not readable.", p.display()))?;
-            if real.is_file() {
-                f.append.push(real)
-            } else {
-                f.dirs.push(real)
-            }
+            push(&mut f, real);
         }
         f
     };
     Ok(dedup(f.files()?))
+}
+
+/// The command whose file set [`files`] lists (`pun list-files --command`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Command {
+    Format,
+    Lint,
+    Analyse,
+}
+
+/// The files a command checks, sorted by path (`pun list-files`, context/plan/config.md §7). Without a command:
+/// the `[files]` set, `[files] paths` (or `paths`) walked like PHP-CS-Fixer's `Finder::create()` (`*.php`, no
+/// `vendor`, dot or VCS directories) minus `[files] exclude`. `Lint` and `Analyse` add their own `exclude` (and
+/// analyse's `paths`); `Format` is Pint's finder, [`discover`]. Outside `Format` an explicit file is excluded like
+/// any other, as in Mago.
+pub fn files(cfg: &Config, command: Option<Command>, paths: &[PathBuf]) -> Result<Vec<PathBuf>> {
+    let (dirs, exclude) = match command {
+        Some(Command::Format) => {
+            let mut out = discover(cfg, paths)?;
+            out.sort();
+            return Ok(out);
+        }
+        None => (&cfg.files.paths, &cfg.files.exclude),
+        Some(Command::Lint) => (&cfg.files.paths, &cfg.lint.exclude),
+        Some(Command::Analyse) => (&cfg.analyse.paths, &cfg.analyse.exclude),
+    };
+    let mut f = Finder::php_cs_fixer().matching(&cfg.root, exclude.iter().cloned())?;
+    if paths.is_empty() {
+        for d in dirs {
+            let p = cfg.root.join(d);
+            if !p.exists() {
+                bail!("The \"{d}\" directory does not exist.");
+            }
+            push(&mut f, p);
+        }
+        if dirs.is_empty() {
+            f.dirs.push(cfg.root.clone());
+        }
+    } else {
+        for p in paths {
+            let real =
+                cfg.root.join(p).canonicalize().map_err(|_| {
+                    anyhow::anyhow!("The path \"{}\" is not readable.", p.display())
+                })?;
+            push(&mut f, real);
+        }
+    }
+    let mut out: Vec<PathBuf> = f.files()?;
+    out.retain(|p| !f.matched(p));
+    out.sort();
+    out.dedup();
+    Ok(out)
+}
+
+fn push(f: &mut Finder, p: PathBuf) {
+    if p.is_file() {
+        f.append.push(p)
+    } else {
+        f.dirs.push(p)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -347,6 +435,13 @@ pub fn is_path_excluded(cfg: &Config, file: &Path) -> bool {
             .chain(cfg.finder.exclude.iter().map(String::as_str))
             .any(under)
         || cfg.finder.not_path.iter().any(|p| fnmatch(p, &rel))
+        || (cfg.finder.exclude.iter())
+            .any(|e| contains_glob_metacharacters(e) && glob_matches(e, &rel))
+}
+
+/// One pun.toml glob exclude against a root-relative path, as Mago matches it.
+fn glob_matches(glob: &str, rel: &str) -> bool {
+    ExclusionMatcher::compile([glob], Default::default()).is_ok_and(|m| m.is_match(rel))
 }
 
 /// PHP fnmatch() with no flags: `*` and `?` also match `/`, `[...]` classes, `\\` escapes.
@@ -388,7 +483,7 @@ fn fnmatch(pat: &str, s: &str) -> bool {
 }
 
 fn git(root: &Path, args: &[&str]) -> Option<String> {
-    let out = Command::new("git")
+    let out = std::process::Command::new("git")
         .args(args)
         .current_dir(root)
         .output()

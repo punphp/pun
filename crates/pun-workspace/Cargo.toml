@@ -11,6 +11,7 @@ categories = ["development-tools"]
 
 [dependencies]
 anyhow.workspace = true
+mago-database.workspace = true
 pcre2.workspace = true
 walkdir.workspace = true
 pun-config.workspace = true

@@ -495,6 +495,95 @@ fn pun_env(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, String, 
     )
 }
 
+/// `pun list-files` (context/plan/config.md §7), expected sets derived by hand from the plan's example.
+#[test]
+fn list_files() {
+    let dir = tmp("list");
+    reset(&dir, &[]);
+    for f in [
+        "app/A.php",
+        "app/B.php",
+        "tests/T.php",
+        "storage/S.php",
+        "vendor/v/V.php",
+    ] {
+        std::fs::create_dir_all(dir.join(f).parent().unwrap()).unwrap();
+        std::fs::write(dir.join(f), "<?php\n").unwrap();
+    }
+    std::fs::write(
+        dir.join("pun.toml"),
+        "[files]\npaths = [\"app\", \"tests\"]\nexclude = [\"storage/**\"]\n\n[analyse]\nexclude = [\"tests/**\"]\n",
+    )
+    .unwrap();
+    let ok = |s: &str| (s.to_string(), String::new(), Some(0));
+    assert_eq!(
+        pun(&dir, &["list-files"]),
+        ok("app/A.php\napp/B.php\ntests/T.php\n")
+    );
+    assert_eq!(
+        pun(&dir, &["list-files", "--command", "analyse"]),
+        ok("app/A.php\napp/B.php\n")
+    );
+    assert_eq!(
+        pun(&dir, &["list-files", "-0", "tests"]),
+        ok("tests/T.php\0")
+    );
+    assert_eq!(
+        pun(
+            &dir,
+            &["list-files", "--zero-terminate", "--command=lint", "app"]
+        ),
+        ok("app/A.php\0app/B.php\0")
+    );
+    assert_eq!(
+        pun(
+            &dir,
+            &["list-files", "--format=json", "--command", "analyse"]
+        ),
+        ok("[\"app/A.php\",\"app/B.php\"]\n")
+    );
+    // JSON wins over agent mode; agent mode puts a summary line first.
+    assert_eq!(
+        pun_env(
+            &dir,
+            &["list-files", "--format", "json", "tests"],
+            &[("PUN_AGENT", "1")]
+        ),
+        ok("[\"tests/T.php\"]\n")
+    );
+    let (out, _, code) = pun_env(
+        &dir,
+        &["list-files", "--command", "analyse"],
+        &[("PUN_AGENT", "1")],
+    );
+    let (summary, rest) = out.split_once('\n').unwrap();
+    assert!(
+        summary.starts_with("pun list-files: 2 files, analyse set ("),
+        "{summary}"
+    );
+    assert_eq!((rest, code), ("app/A.php\napp/B.php\n", Some(0)));
+    let (out, _, _) = pun_env(&dir, &["list-files", "tests"], &[("PUN_AGENT", "1")]);
+    assert!(out.starts_with("pun list-files: 1 file ("), "{out}");
+    assert_eq!(
+        pun(&dir, &["list-files", "--format=txt"]),
+        (
+            String::new(),
+            "pun: --format=txt: expected `json`\n".into(),
+            Some(1)
+        )
+    );
+    assert_eq!(
+        pun(&dir, &["list-files", "nope"]),
+        (
+            String::new(),
+            "pun: The path \"nope\" is not readable.\n".into(),
+            Some(1)
+        )
+    );
+    // The hidden `pun format --list-files` flag is gone.
+    assert_eq!(pun(&dir, &["format", "--list-files"]).2, Some(2));
+}
+
 /// Pun-only flags, hand-derived.
 #[test]
 fn pun_only_behaviour() {
@@ -514,9 +603,9 @@ fn pun_only_behaviour() {
     let (_, _, code) = pun(&dir, &["format", "--test", "--no-config"]);
     assert_eq!(code, Some(1));
     migrate(&dir);
-    let (out, _, code) = pun(&dir, &["format", "--list-files"]);
-    let mut listed: Vec<&str> = out.lines().collect();
-    listed.sort();
+    // `pun list-files --command format`: Pint's finder (the symlinked file counts), sorted.
+    let (out, _, code) = pun(&dir, &["list-files", "--command", "format"]);
+    let listed: Vec<&str> = out.lines().collect();
     assert_eq!(
         listed,
         [

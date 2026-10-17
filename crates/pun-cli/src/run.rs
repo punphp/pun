@@ -163,13 +163,6 @@ pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
         None => pun_workspace::discover(&cfg, &a.paths)?,
     };
 
-    if a.pun.list_files {
-        for f in &files {
-            println!("{}", f.strip_prefix(&root).unwrap_or(f).display());
-        }
-        return Ok(0);
-    }
-
     let cache = if a.pun.no_cache {
         None
     } else {

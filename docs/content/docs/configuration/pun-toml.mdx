@@ -57,14 +57,17 @@ baseline = "pun-baseline.toml"
 | `[files] paths` | What every command checks when no paths are given |
 | `[files] exclude` | What every command skips. Each command's own `exclude` adds to it |
 
-`vendor/` is never checked.
+`vendor/` is never checked, nor are dot folders such as `.git`.
+
+An `exclude` entry with `*`, `?`, `[` or `{` is a glob matched against the path from the project root, as in Mago: `storage/**` skips `storage/` but not `app/storage/`, and `*` also matches `/`. Any other entry is a path from the project root that skips itself and everything under it (`build` skips `build/`). Format is the exception: a plain entry in `[files] exclude` or `[format] exclude` keeps Pint's meaning, a folder of that name at any depth, and format also skips what Pint's finder skips. Run [`pun list-files`](/docs/commands/list-files) to see the result.
 
 ## [format]
 
 | Key | Meaning |
 | --- | --- |
 | `preset` | `laravel` (default), `psr12` or `empty` |
-| `exclude`, `not-name`, `not-path` | Folders, file names and paths format skips, as in Pint's finder |
+| `exclude` | Added to `[files] exclude`, for format only. Plain entries are folders, as in Pint's finder; globs match from the project root |
+| `not-name`, `not-path` | File names and paths format skips, as in Pint's finder |
 | `rules` | `true`, `false`, or an options table, per rule |
 
 Format rules only change layout, casing and spelling. Risky ones, like `final_class` or `strict_comparison` in PHP-CS-Fixer terms, and the ones that delete or restructure code, like `no_unused_imports`, are [lint rules](/docs/commands/lint). Pint's `per` and `symfony` presets are not format presets: `pun migrate` writes a `pint.json` that used one as `empty` plus its rules.

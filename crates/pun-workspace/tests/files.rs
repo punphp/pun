@@ -1,0 +1,218 @@
+//! `[files]` and each command's `exclude` (context/plan/config.md §3, §7). Expected sets are derived by hand from
+//! the plan's rules: the `[files]` set walks `paths` like PHP-CS-Fixer's `Finder::create()` and drops pun.toml's
+//! excludes (globs and plain prefixes matched Mago's way, relative to the project root); `format` is Pint's finder.
+extern crate punphp_workspace as pun_workspace;
+use pun_workspace::{Command, files, is_path_excluded};
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+fn tree(files: &[&str]) -> PathBuf {
+    static N: AtomicUsize = AtomicUsize::new(0);
+    let root = std::env::temp_dir().join(format!(
+        "pun-files-{}-{}",
+        std::process::id(),
+        N.fetch_add(1, Ordering::Relaxed)
+    ));
+    let _ = std::fs::remove_dir_all(&root);
+    for f in files {
+        let p = root.join(f);
+        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+        std::fs::write(p, "<?php\n").unwrap();
+    }
+    std::fs::create_dir_all(&root).unwrap();
+    root.canonicalize().unwrap()
+}
+
+fn list(
+    root: &Path,
+    toml: &str,
+    command: Option<Command>,
+    paths: &[&str],
+) -> Result<Vec<String>, String> {
+    let cfg = pun_config::from_toml(root, toml).map_err(|e| e.to_string())?;
+    let paths: Vec<PathBuf> = paths.iter().map(PathBuf::from).collect();
+    let out = files(&cfg, command, &paths).map_err(|e| e.to_string())?;
+    Ok(out
+        .iter()
+        .map(|p| p.strip_prefix(root).unwrap().to_string_lossy().into_owned())
+        .collect())
+}
+
+const TREE: &[&str] = &[
+    "app/A.php",
+    "app/Models/User.php",
+    "app/storage/Kept.php",
+    "app/view.blade.php",
+    "app/_ide_helper.php",
+    "app/vendor/V.php",
+    "app/.hidden/H.php",
+    "app/notes.txt",
+    "tests/Feature/ExampleTest.php",
+    "tests/Pest.php",
+    "storage/framework/S.php",
+    "src/Other.php",
+    "vendor/x/V.php",
+    "Root.php",
+];
+
+#[test]
+fn plan_example_gives_the_listed_sets() {
+    let root = tree(TREE);
+    let toml = r#"
+[files]
+paths = ["app", "tests"]
+exclude = ["storage/**"]
+
+[analyse]
+exclude = ["tests/**"]
+"#;
+    let app = [
+        "app/A.php",
+        "app/Models/User.php",
+        "app/_ide_helper.php",
+        "app/storage/Kept.php",
+        "app/view.blade.php",
+    ];
+    let tests = ["tests/Feature/ExampleTest.php", "tests/Pest.php"];
+    // `pun list-files`: app and tests. `storage/**` is root-relative, so app/storage stays.
+    assert_eq!(
+        list(&root, toml, None, &[]).unwrap(),
+        [&app[..], &tests].concat()
+    );
+    // `pun list-files --command analyse`: only app.
+    assert_eq!(list(&root, toml, Some(Command::Analyse), &[]).unwrap(), app);
+    // Lint has no exclude of its own here: the [files] set.
+    assert_eq!(
+        list(&root, toml, Some(Command::Lint), &[]).unwrap(),
+        [&app[..], &tests].concat()
+    );
+    // Format is Pint's finder: no `storage` dir at any depth, no IDE helpers, no Blade without the Blade rule.
+    assert_eq!(
+        list(&root, toml, Some(Command::Format), &[]).unwrap(),
+        [
+            "app/A.php",
+            "app/Models/User.php",
+            "tests/Feature/ExampleTest.php",
+            "tests/Pest.php"
+        ]
+    );
+}
+
+#[test]
+fn each_command_adds_its_own_exclude() {
+    let root = tree(TREE);
+    let toml = r#"
+[files]
+exclude = ["tests"]
+
+[format]
+exclude = ["app/Models/**"]
+
+[lint]
+exclude = ["app/*.php", "Root.php"]
+
+[analyse]
+paths = ["app"]
+exclude = ["app/Models"]
+"#;
+    // No [files] paths: the project root. Plain `tests` is a root-relative prefix; vendor/ is never listed.
+    let all = [
+        "Root.php",
+        "app/A.php",
+        "app/Models/User.php",
+        "app/_ide_helper.php",
+        "app/storage/Kept.php",
+        "app/view.blade.php",
+        "src/Other.php",
+        "storage/framework/S.php",
+    ];
+    assert_eq!(list(&root, toml, None, &[]).unwrap(), all);
+    // Mago's globs let `*` cross `/`: `app/*.php` drops every PHP file under app.
+    assert_eq!(
+        list(&root, toml, Some(Command::Lint), &[]).unwrap(),
+        ["src/Other.php", "storage/framework/S.php"]
+    );
+    assert_eq!(
+        list(&root, toml, Some(Command::Analyse), &[]).unwrap(),
+        [
+            "app/A.php",
+            "app/_ide_helper.php",
+            "app/storage/Kept.php",
+            "app/view.blade.php"
+        ]
+    );
+    // Format: Pint's `exclude: ["tests"]` (a dir name at any depth) plus the root-relative glob.
+    assert_eq!(
+        list(&root, toml, Some(Command::Format), &[]).unwrap(),
+        ["Root.php", "app/A.php", "src/Other.php"]
+    );
+}
+
+#[test]
+fn path_arguments_replace_paths_but_keep_excludes() {
+    let root = tree(TREE);
+    let toml = "[files]\npaths = [\"app\"]\nexclude = [\"src/**\", \"app/Models\"]\n";
+    // An explicit file outside a skipped directory is listed; one a pun.toml exclude matches is not (Mago).
+    assert_eq!(
+        list(
+            &root,
+            toml,
+            None,
+            &[
+                "src",
+                "vendor/x/V.php",
+                "app/Models/User.php",
+                "tests/Pest.php"
+            ]
+        )
+        .unwrap(),
+        ["tests/Pest.php", "vendor/x/V.php"]
+    );
+    // Format keeps Pint's rule: with `in` set, path arguments replace the finder, excludes included.
+    assert_eq!(
+        list(
+            &root,
+            toml,
+            Some(Command::Format),
+            &["src", "app/Models/User.php"]
+        )
+        .unwrap(),
+        ["app/Models/User.php", "src/Other.php"]
+    );
+    assert_eq!(
+        list(&root, toml, None, &["nope"]).unwrap_err(),
+        "The path \"nope\" is not readable."
+    );
+    assert_eq!(
+        list(&root, "[files]\npaths = [\"missing\"]\n", None, &[]).unwrap_err(),
+        "The \"missing\" directory does not exist."
+    );
+    // A [files] path may name a file.
+    assert_eq!(
+        list(
+            &root,
+            "[files]\npaths = [\"Root.php\", \"tests\"]\n",
+            Some(Command::Lint),
+            &[]
+        )
+        .unwrap(),
+        [
+            "Root.php",
+            "tests/Feature/ExampleTest.php",
+            "tests/Pest.php"
+        ]
+    );
+    assert!(
+        list(&root, "[files]\nexclude = [\"a/{b\"]\n", None, &[])
+            .unwrap_err()
+            .starts_with("invalid exclude: ")
+    );
+}
+
+#[test]
+fn stdin_filename_honours_glob_excludes() {
+    let root = tree(&[]);
+    let cfg = pun_config::from_toml(&root, "[format]\nexclude = [\"app/Gen*/**\"]\n").unwrap();
+    assert!(is_path_excluded(&cfg, &root.join("app/Generated/X.php")));
+    assert!(!is_path_excluded(&cfg, &root.join("app/Models/X.php")));
+}

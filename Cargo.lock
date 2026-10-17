@@ -1513,6 +1513,7 @@ name = "punphp-workspace"
 version = "0.0.1"
 dependencies = [
  "anyhow",
+ "mago-database",
  "pcre2",
  "punphp-config",
  "walkdir",

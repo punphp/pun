@@ -7,6 +7,7 @@ mod fix_report;
 mod highlight;
 #[cfg(feature = "mago-lint")]
 mod lint;
+mod list_files;
 mod migrate;
 mod php_diff;
 mod pint_error;
@@ -58,6 +59,8 @@ enum Cmd {
     Check(Box<StageCmd>),
     /// Write pun.toml from pint.json (or .php-cs-fixer(.dist).php) and rewrite `@php-cs-fixer-ignore` comments.
     Migrate(migrate::MigrateArgs),
+    /// Print the files a command would check with the current pun.toml.
+    ListFiles(list_files::ListFilesArgs),
     /// Print the resolved configuration.
     Config {
         /// Accepted for compatibility; showing is all `pun config` does.
@@ -178,9 +181,6 @@ pub struct PunArgs {
     /// Keep running and re-format files as they change (Pun).
     #[arg(long, conflicts_with_all = ["stdin", "stdin_filename"])]
     watch: bool,
-    /// Print the discovered files and exit (debugging finder parity).
-    #[arg(long, hide = true)]
-    list_files: bool,
 }
 
 fn main() -> ExitCode {
@@ -192,6 +192,7 @@ fn main() -> ExitCode {
         Cmd::Lint { .. } => "lint",
         Cmd::Check(_) => "check",
         Cmd::Migrate(_) => "migrate",
+        Cmd::ListFiles(_) => "list-files",
         Cmd::Config { .. } => "config",
     };
     let flag = (cli.agent || cli.no_agent).then_some(cli.agent);
@@ -204,6 +205,7 @@ fn main() -> ExitCode {
         Cmd::Lint { cmd, .. } => (stage(*cmd, Stage::Lint), true),
         Cmd::Check(cmd) => (stage(*cmd, Stage::Check), true),
         Cmd::Migrate(a) => (migrate::run(a), false),
+        Cmd::ListFiles(a) => (list_files::run(a), false),
         Cmd::Config {
             format,
             config,
