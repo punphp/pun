@@ -6,7 +6,7 @@
 //! evaluates it once instead of twice.
 
 use mago_span::HasSpan;
-use mago_syntax::cst::{AssignmentOperator, BinaryOperator, Expression, Node};
+use mago_syntax::cst::{AssignmentOperator, BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use crate::syntax::{node_span, same_code, unparenthesize};
@@ -19,6 +19,10 @@ impl Rule for PreferCompoundAssignment {
         "lint/style/prefer-compound-assignment"
     }
 
+    fn targets(&self) -> Option<&'static [NodeKind]> {
+        Some(&[NodeKind::Assignment])
+    }
+
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,
@@ -26,13 +30,11 @@ impl Rule for PreferCompoundAssignment {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Assignment(assign) = node else {
-            return;
-        };
-        if !matches!(assign.operator, AssignmentOperator::Assign(_)) {
+        let Node::Assignment(a) = node else { return };
+        if !matches!(a.operator, AssignmentOperator::Assign(_)) {
             return;
         }
-        let Expression::Binary(binary) = unparenthesize(assign.rhs) else {
+        let Expression::Binary(binary) = unparenthesize(a.rhs) else {
             return;
         };
         let Some(op) = compound(&binary.operator) else {
@@ -44,7 +46,7 @@ impl Rule for PreferCompoundAssignment {
         {
             return;
         }
-        let var = node_span(assign.lhs);
+        let var = node_span(a.lhs);
         if !same_code(ctx.source, var, node_span(left)) {
             return;
         }
@@ -63,7 +65,7 @@ impl Rule for PreferCompoundAssignment {
             }
             inner => node_span(inner),
         };
-        let end = assign.span().end.offset as usize;
+        let end = a.span().end.offset as usize;
         let mut edits = vec![Edit::new(
             Span::new(var.end, right.start),
             format!(" {op}= "),
@@ -72,7 +74,7 @@ impl Rule for PreferCompoundAssignment {
             edits.push(Edit::new(Span::new(right.end, end), ""));
         }
         out.push(Report {
-            span: node_span(assign),
+            span: node_span(a),
             message: format!("Use `{op}=` instead of repeating the assigned variable."),
             help: None,
             fix: Some(Fix {

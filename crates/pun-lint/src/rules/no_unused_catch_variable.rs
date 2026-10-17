@@ -7,7 +7,7 @@
 //! argument naming it.
 
 use mago_syntax::cst::{
-    Argument, ArrayElement, Expression, Identifier, Literal, Node, Statement, Variable,
+    Argument, ArrayElement, Expression, Identifier, Literal, Node, NodeKind, Variable,
 };
 use pun_problem::{Edit, Fix, Safety, Span};
 
@@ -26,7 +26,13 @@ impl Rule for NoUnusedCatchVariable {
         80000
     }
 
-    /// Rector's `refactor` on every node of `NodeGroup::STMTS_AWARE`: here, every node with statement children.
+    /// Rector's `refactor` on every node of `NodeGroup::STMTS_AWARE` (here, every node with statement children),
+    /// for each `try` among its statements. Pun visits the `try` itself and finds that list two levels up: under it
+    /// is the `try`'s statement, and above it the list's own parent. Only a `try` costs any work.
+    fn targets(&self) -> Option<&'static [NodeKind]> {
+        Some(&[NodeKind::Try])
+    }
+
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,
@@ -34,58 +40,61 @@ impl Rule for NoUnusedCatchVariable {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let parent = ancestors.last();
-        let stmts = statements(node);
+        let Node::Try(r#try) = node else { return };
+        // A `try` is always a statement, and the statement's parent holds the list.
+        let n = ancestors.len();
+        let (holder, this) = (ancestors[n - 2], ancestors[n - 1]);
+        let parent = n.checked_sub(3).map(|i| ancestors[i]);
+        let stmts = statements(holder);
+        let key = stmts
+            .iter()
+            .position(|s| matches!(this, Node::Statement(t) if std::ptr::eq(*s, t)))
+            .expect("a try is one of its parent's statements");
         // isVariableUsedInNextStmt: when the list is a try block, the try's catches and finally come after it.
         let mut after_list: Vec<Node> = Vec::new();
-        if let (Node::Block(block), Some(Node::Try(outer))) = (node, parent)
+        if let (Node::Block(block), Some(Node::Try(outer))) = (holder, parent)
             && std::ptr::eq(block, &outer.block)
         {
             after_list.extend(outer.catch_clauses.iter().map(Node::TryCatchClause));
             after_list.extend(outer.finally_clause.iter().map(|f| Node::Block(&f.block)));
         }
-        for (key, stmt) in stmts.iter().enumerate() {
-            let Statement::Try(r#try) = stmt else {
+        for catch in r#try.catch_clauses.iter() {
+            let Some(var) = &catch.variable else {
                 continue;
             };
-            for catch in r#try.catch_clauses.iter() {
-                let Some(var) = &catch.variable else {
-                    continue;
-                };
-                let name = var.name;
-                let in_catch = uses(Node::Block(&catch.block), None, name)
-                    || r#try
-                        .finally_clause
-                        .iter()
-                        .any(|f| uses(Node::Block(&f.block), None, name));
-                let in_next = stmts[key + 1..]
+            let name = var.name;
+            let in_catch = uses(Node::Block(&catch.block), None, name)
+                || r#try
+                    .finally_clause
                     .iter()
-                    .map(|s| Node::Statement(s))
-                    .chain(after_list.iter().copied())
-                    .any(|n| uses(n, None, name));
-                if in_catch || in_next {
-                    continue;
-                }
-                // php-parser's removal map strips the whitespace token left of the variable (`Stmt_Catch->var`).
-                let var_span = node_span(var);
-                let bytes = ctx.source.as_bytes();
-                let mut start = var_span.start;
-                while start > 0 && matches!(bytes[start - 1], b' ' | b'\t' | b'\n' | b'\r') {
-                    start -= 1;
-                }
-                out.push(Report {
-                    span: var_span,
-                    message: format!(
-                        "`{}` is caught but never used.",
-                        String::from_utf8_lossy(name)
-                    ),
-                    help: Some("Since PHP 8.0 a catch needs no variable; remove it.".to_string()),
-                    fix: Some(Fix {
-                        safety: Safety::Safe,
-                        edits: vec![Edit::new(Span::new(start, var_span.end), "")],
-                    }),
-                });
+                    .any(|f| uses(Node::Block(&f.block), None, name));
+            let in_next = stmts[key + 1..]
+                .iter()
+                .map(|s| Node::Statement(s))
+                .chain(after_list.iter().copied())
+                .any(|n| uses(n, None, name));
+            if in_catch || in_next {
+                continue;
             }
+            // php-parser's removal map strips the whitespace token left of the variable (`Stmt_Catch->var`).
+            let var_span = node_span(var);
+            let bytes = ctx.source.as_bytes();
+            let mut start = var_span.start;
+            while start > 0 && matches!(bytes[start - 1], b' ' | b'\t' | b'\n' | b'\r') {
+                start -= 1;
+            }
+            out.push(Report {
+                span: var_span,
+                message: format!(
+                    "`{}` is caught but never used.",
+                    String::from_utf8_lossy(name)
+                ),
+                help: Some("Since PHP 8.0 a catch needs no variable; remove it.".to_string()),
+                fix: Some(Fix {
+                    safety: Safety::Safe,
+                    edits: vec![Edit::new(Span::new(start, var_span.end), "")],
+                }),
+            });
         }
     }
 }

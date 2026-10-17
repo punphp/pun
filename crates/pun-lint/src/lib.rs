@@ -1,12 +1,12 @@
 //! Pun's lint engine (lint.md §6, Build 1): rules on Mago's syntax tree that report problems and fix them with text
 //! edits.
 //!
-//! A [`Rule`] is called once for every node of the tree, parents before children, and returns [`Report`]s: a byte
-//! span, a message, an optional help line and an optional [`Fix`] made of text edits on byte ranges. [`Linter::check`]
-//! parses a file once and runs every rule over that one tree. [`Linter::fix`] applies the fixes, with
-//! [`pun_problem::apply_fixes`], in rounds: a fix that overlaps one applied before it waits for the next round, and
-//! the rounds stop when no rule has a fix left. There is no printer: an edit inserts the text the rule wrote, and the
-//! format pass that runs after lint (`pun check --fix`) tidies the layout.
+//! A [`Rule`] is called once for every node of the tree (or of the kinds it targets), parents before children, and
+//! returns [`Report`]s: a byte span, a message, an optional help line and an optional [`Fix`] made of text edits on
+//! byte ranges. [`Linter::check`] parses a file once and runs every rule over that one tree. [`Linter::fix`] applies
+//! the fixes, with [`pun_problem::apply_fixes`], in rounds: a fix that overlaps one applied before it waits for the
+//! next round, and the rounds stop when no rule has a fix left. There is no printer: an edit inserts the text the rule
+//! wrote, and the format pass that runs after lint (`pun check --fix`) tidies the layout.
 
 use std::fmt;
 use std::path::{Path, PathBuf};
@@ -14,7 +14,7 @@ use std::path::{Path, PathBuf};
 use mago_allocator::LocalArena;
 use mago_database::file::FileId;
 use mago_span::HasSpan;
-use mago_syntax::cst::Node;
+use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::{Fix, Level, Problem, Span, apply_fixes};
 
 pub mod rules;
@@ -37,8 +37,8 @@ pub struct Report {
     pub fix: Option<Fix>,
 }
 
-/// A lint rule. `visit` is called for every node; `ancestors` lists the node's parents, outermost first, so its last
-/// element is the direct parent.
+/// A lint rule. `visit` is called for every node of the rule's [`Rule::targets`]; `ancestors` lists the node's
+/// parents, outermost first, so its last element is the direct parent.
 pub trait Rule: Send + Sync {
     /// The full rule ID, `lint/<group>/<name>`.
     fn id(&self) -> &'static str;
@@ -47,6 +47,12 @@ pub trait Rule: Send + Sync {
     /// `MinPhpVersionInterface`. Below it the rule does not run.
     fn min_php_version(&self) -> u32 {
         0
+    }
+
+    /// The node kinds `visit` can report on, like Mago's `LintRule::targets`; `None` means every node. The engine
+    /// calls `visit` for these kinds only, so a rule that names its kinds costs nothing on the other nodes.
+    fn targets(&self) -> Option<&'static [NodeKind]> {
+        None
     }
 
     fn visit<'ast, 'arena>(
@@ -109,20 +115,43 @@ pub struct Fixed {
     pub rounds: usize,
 }
 
+/// The reports of one walk, in the order the rules made them, and the ID of the rule behind each. Every rule writes
+/// into the one `reports` list, so a node costs no list of its own.
+#[derive(Default)]
+struct Found {
+    reports: Vec<Report>,
+    rules: Vec<&'static str>,
+}
+
 /// A set of rules for one PHP version.
 pub struct Linter {
     rules: Vec<Box<dyn Rule>>,
+    /// For each [`NodeKind`] (as `u8`), the rules to call on it with their IDs, in rule order.
+    by_kind: Vec<Vec<(&'static str, usize)>>,
     php_version: u32,
 }
 
 impl Linter {
     /// Rules whose `min_php_version` is above `php_version` are dropped.
     pub fn new(rules: Vec<Box<dyn Rule>>, php_version: u32) -> Self {
-        let rules = rules
+        let rules: Vec<Box<dyn Rule>> = rules
             .into_iter()
             .filter(|r| r.min_php_version() <= php_version)
             .collect();
-        Linter { rules, php_version }
+        let mut by_kind = vec![Vec::new(); usize::from(u8::MAX) + 1];
+        for (i, rule) in rules.iter().enumerate() {
+            match rule.targets() {
+                Some(kinds) => kinds
+                    .iter()
+                    .for_each(|&k| by_kind[k as usize].push((rule.id(), i))),
+                None => by_kind.iter_mut().for_each(|r| r.push((rule.id(), i))),
+            }
+        }
+        Linter {
+            rules,
+            by_kind,
+            php_version,
+        }
     }
 
     /// The IDs of the rules that run, in order.
@@ -147,10 +176,12 @@ impl Linter {
             path,
             php_version: self.php_version,
         };
-        let mut found = Vec::new();
+        let mut found = Found::default();
         let mut ancestors = Vec::new();
         self.walk(Node::Program(program), &mut ancestors, &ctx, &mut found);
-        found.sort_by_key(|(_, report): &(&'static str, Report)| report.span.start);
+        let mut found: Vec<(&'static str, Report)> =
+            found.rules.into_iter().zip(found.reports).collect();
+        found.sort_by_key(|(_, report)| report.span.start);
         Ok(found
             .into_iter()
             .map(|(rule, report)| Problem {
@@ -170,12 +201,11 @@ impl Linter {
         node: Node<'ast, 'arena>,
         ancestors: &mut Vec<Node<'ast, 'arena>>,
         ctx: &Context<'_>,
-        found: &mut Vec<(&'static str, Report)>,
+        found: &mut Found,
     ) {
-        let mut reports = Vec::new();
-        for rule in &self.rules {
-            rule.visit(node, ancestors, ctx, &mut reports);
-            found.extend(reports.drain(..).map(|r| (rule.id(), r)));
+        for &(id, i) in &self.by_kind[node.kind() as usize] {
+            self.rules[i].visit(node, ancestors, ctx, &mut found.reports);
+            found.rules.resize(found.reports.len(), id);
         }
         ancestors.push(node);
         node.visit_children(|child| self.walk(child, ancestors, ctx, found));
