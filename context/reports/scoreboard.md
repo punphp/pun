@@ -178,3 +178,29 @@ is check-only, in a scratch copy with the project's `vendor/`.
   files on laravel-framework. These rules are cheap, so the ratio shrinks as heavier rules are ported.
 - laravel-framework's rector-full is 3 single-run calls (90.2, 83.8 and 85.4 s): one call of 4 runs would not fit
   in a 10-minute slot.
+
+### Lint perf rounds
+
+Each round reruns `BENCH=lint TOOLS=pun RUNS=10 scripts/bench.py pinkary laravel-framework` under
+`HEAVY_EXCLUSIVE=1`, before and after, and keeps pun-lint's output byte-identical: the `check` problems and the `fix`
+output of all 3,376 corpus files (`examples/dump`), and `fix_dir` against `rector process` with the ported rules
+(`diff -r` empty on both projects). bench.py polls every 20 ms, which hides most of a 70 ms run, so each change is
+also timed with 30 plain spawn-and-wait runs (median; "precise" below).
+
+| project | before (bench.py) | after (bench.py) | before (precise) | after (precise) |
+|---|---:|---:|---:|---:|
+| pinkary | 45.2 ms, 14.4 MB | 44.3 ms, 13.2 MB | 10.2 ms, 14.2 MB | 9.6 ms, 13.7 MB |
+| laravel-framework | 108.4 ms, 83.5 MB | 102.0 ms, 81.8 MB | 80.9 ms, 84.0 MB | 67.0 ms, 82.8 MB |
+
+- round 1: the walk writes every report into one list and tags it with its rule ID, instead of a list per node
+  drained into the results per rule, which cost an allocation check and a drain on each of ~2.4M nodes. wall -8%
+  (laravel-framework, precise), rss 0%.
+- round 1: `no-unused-catch-variable` visits only `try` nodes and finds their statement list two ancestors up,
+  instead of collecting the statement children of every node. wall -4%, rss 0%.
+- round 1: rules name the node kinds they report on (`Rule::targets`, as in Mago's linter) and the engine calls a
+  rule only on those kinds; a rule without targets still sees every node. wall -6%, rss -1%.
+- round 1 total: laravel-framework wall -17% precise (-6% bench.py), rss -1 to -2%; pinkary wall -6% precise (-2%
+  bench.py), rss -4 to -8%; single-thread CPU (`examples/cost`) 67.2 to 40.5 us per file. What is left is Mago's
+  parser (about 70% of user time), the tree walk (Mago's `visit_children` on every node, about 25%), and file opens
+  (most of the system time). Peak memory is the Mago arenas of the files parsed at the same time; a reused
+  per-thread arena did not change wall time and raised peak memory by 9 MB, so it was dropped.
