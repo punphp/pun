@@ -151,17 +151,16 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 
 | Work | Status |
 | --- | --- |
-| config 3: new pun.toml schema (`[files]`, presets, sets, levels, groups, overrides, `[analyse]`) | doing (workflow, wf/schema) |
 | config 4: TOML-native option names for format rules | doing (workflow, wf/options) |
-| config 3 follow-up: default `[php] version` to `pun_config::composer::detect(root).php_version()` when pun.toml sets none; update pun-cli/tests/agent.rs (expects PHP 8.4 for a ^8.5 project) | todo |
 | config 7: `[files]` + per-command exclude, `pun list-files` | doing (workflow, wf/files) |
+| config 7 follow-up (from config 3): wire `[lint] exclude`, `[analyse] paths/exclude` and `[files] exclude` glob semantics into pun-workspace (today `[files] exclude` is appended to Pint's finder exclude) | todo |
 | config 8: `pun config` on the new schema, `pun explain <rule>` | doing (workflow, wf/config-explain) |
 | migrate 1: format part on the new names (moved here: the Step 1 gate runs through `pun migrate`) | doing (workflow, wf/migrate-format) |
 | migrate 1 follow-up: read `.php-cs-fixer.php` statically (no system PHP), replacing crates/pun-cli/src/php_cs_fixer_rules.php | todo |
-| config 3 follow-up: drop the top-level `preset` tiers and rewrite docs/content/docs/configuration/presets.mdx around lint sets and analyse presets (mapping.toml has no `tier` since config 1) | todo |
 | config 1 follow-up: bring rules.md §1-§2 and §5 examples up to the new IDs (they still use names like `lint.no-loose-comparison`) | todo |
 | config 1 follow-up: decide whether `@pun-ignore-file` keeps accepting the short `group/name` form (§4 Q2); accepted today | todo |
 | config 3 follow-up: decide whether every config error exits 2 like the unported-rule error (config 6 keeps the others at 1) | todo |
+| config 3 follow-up: switch the no-config message to "No pun.toml found. Run `pun migrate`, or `pun init` for a new project." once `pun init` lands | todo |
 
 **Gate:** the 7-project corpus still gives 0 differing files with `pun migrate` + `pun check --fix`, and
 `scripts/check-rule-mapping.py` passes on the new names.
@@ -209,6 +208,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | Work | Status |
 | --- | --- |
 | lint 1-2: the engine from the spike; levels, sets, overrides at run time | todo |
+| lint 1-2 follow-up (from config 3): apply `[[lint.overrides]]` (`Config.lint.overrides`) per file in pun-cli's token-fixer pass; warn-level rules do not fail lint/check (only error fails; `--deny-warnings`, `--max-warnings`) | todo |
 | lint 1-2 follow-up: run files in parallel, a cache keyed like format's, and a `pun lint` command on `pun_lint::Linter` | todo |
 | pun-lint: replace `syntax::same_code` with a structural node comparator (Rector's NodeComparator), shared by rules | todo |
 | pun-lint: name resolution for rules that need resolved names (mago-names or analyse's index) | todo |
@@ -226,6 +226,7 @@ After Step 2, three tracks run in parallel threads. Each row's "done when" is in
 | Work | Status |
 | --- | --- |
 | analyse 1-2: `pun analyse` command, `[analyse]`, presets, output; Pun baseline | todo |
+| analyse 1-2 follow-up (from config 3): read `Config.analyse` (preset, switches, rules, baseline, paths) in `pun analyse` | todo |
 | analyse (needs Pushpak): decide how Mago issues map to Pun rules; forwarding mapped codes gives 226 false errors on Pinkary at level 0, reports/analyse-spike.md proposes Pun checks that read Mago's types, using a Mago issue directly only where its table says yes | todo |
 | analyse 3: finish level 0: ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | todo; analyse agent stopped at 43d9857, trait-method and facade-alias WIP uncommitted |
 | analyse 3 follow-up: fix the 5 gaps.txt cases that regressed with 138dab1's trait-context change (new.static and arguments.count reported per using class, shadowed trait method, variadic @method arity) | todo |
@@ -258,6 +259,9 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | Work | Status |
 | --- | --- |
 | CI: get CI on main green (coverage red; runs cancelled by the next push) | todo |
+| pun-harness: the comment in src/main.rs about the starter's `preset = "recommended"` is stale (migrate no longer writes it) | todo |
+| tests: crates/pun-cli/tests/watch.rs `watch_reformats_like_pint` fails on macOS (FSEvents re-reports the first run's own writes, which are not recorded in `done`) | todo |
+| scripts/coverage.sh: on macOS fall back to the toolchain's llvm-profdata/llvm-cov when cargo-llvm-cov or flock is missing | todo |
 | CI: clippy gate (`-D warnings`); clippy is at 0 warnings | todo |
 | CI: pun-analyse coverage to 100% (97.59% in CI); regenerate reports/COVERAGE.md | todo |
 | CI: one branch and PR per thread; rewrite AGENTS.md "Work with other agents" (§4 Q1) | todo |
