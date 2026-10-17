@@ -2,7 +2,7 @@
 //! Documents sync in full; `textDocument/formatting` runs the `--stdin` pipeline with the document's path, so the
 //! project's pint.json / pun.toml and their exclusions apply, and answers with one whole-document edit (no edits
 //! when nothing changes, the path is excluded or the code doesn't parse).
-//! Config files are checked (mtimes) on each formatting request and reloaded when they changed.
+//! Config files are checked (content hashes) on each formatting request and reloaded when they changed.
 
 use crate::{Engine, FormatArgs, engine, fix_text, load_config, root};
 use anyhow::Result;
@@ -20,7 +20,6 @@ use pun_config::Config;
 use serde_json::from_value;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::time::SystemTime;
 
 pub fn run() -> Result<u8> {
     let (conn, io) = Connection::stdio();
@@ -49,7 +48,8 @@ pub fn run() -> Result<u8> {
                 if conn.handle_shutdown(&req)? {
                     break;
                 }
-                if req.method == Formatting::METHOD && stamp(&setup) != seen {
+                // A failed load can't list the files it read (an `extend`ed one), so it is retried on every request.
+                if req.method == Formatting::METHOD && (setup.is_err() || stamp(&setup) != seen) {
                     setup = self::setup();
                     seen = stamp(&setup);
                 }
@@ -123,9 +123,9 @@ fn setup() -> Result<(Config, Engine)> {
     Ok((cfg, engine))
 }
 
-/// When each config file last changed and its size (`None`: absent): the ones a project can add, plus what the loaded config
-/// read (an `extend`ed file). A change reloads the config before the next formatting request.
-fn stamp(setup: &Result<(Config, Engine)>) -> Vec<Option<(SystemTime, u64)>> {
+/// A hash of each config file (`None`: absent): the ones a project can add, plus what the loaded config read (an
+/// `extend`ed file). Content, not mtime + size: a same-size rewrite within one mtime tick is still a change.
+fn stamp(setup: &Result<(Config, Engine)>) -> Vec<Option<u64>> {
     let root = root().unwrap_or_default();
     let mut files: Vec<PathBuf> = [
         "composer.json",
@@ -143,9 +143,9 @@ fn stamp(setup: &Result<(Config, Engine)>) -> Vec<Option<(SystemTime, u64)>> {
     files
         .iter()
         .map(|f| {
-            std::fs::metadata(f)
-                .and_then(|m| Ok((m.modified()?, m.len())))
+            std::fs::read(f)
                 .ok()
+                .map(|c| xxhash_rust::xxh3::xxh3_64(&c))
         })
         .collect()
 }
@@ -164,10 +164,17 @@ fn formatting(
         return Ok(vec![]);
     };
     // Positions count UTF-16 units (the protocol's default encoding); the range ends after the last character.
-    let mut lines = text.split('\n');
+    // Line breaks are \n, \r\n and a lone \r.
+    let breaks =
+        text.matches('\n').count() + text.matches('\r').count() - text.matches("\r\n").count();
     let end = Position {
-        line: (lines.clone().count() - 1) as u32,
-        character: lines.next_back().unwrap_or("").encode_utf16().count() as u32,
+        line: breaks as u32,
+        character: text
+            .rsplit(['\r', '\n'])
+            .next()
+            .unwrap_or("")
+            .encode_utf16()
+            .count() as u32,
     };
     Ok(vec![TextEdit {
         range: Range {
@@ -191,10 +198,7 @@ fn file_path(uri: &Uri) -> Option<PathBuf> {
         .ok()?
         .into_owned();
     // `file:///C:/x` on Windows.
-    let path = if cfg!(windows) {
-        path.strip_prefix('/').map(str::to_string).unwrap_or(path)
-    } else {
-        path
-    };
+    #[cfg(windows)]
+    let path = path.strip_prefix('/').map(str::to_string).unwrap_or(path);
     Some(PathBuf::from(path))
 }
