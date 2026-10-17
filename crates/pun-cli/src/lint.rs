@@ -1,6 +1,6 @@
 //! `pun lint --mago`: runs Mago 1.57's lint-only Laravel rules (no auto-fix in Mago) and reports, never edits.
 //! Only built with `--features mago-lint`.
-use anyhow::{Result, bail};
+use anyhow::Result;
 use mago_allocator::LocalArena;
 use mago_database::file::File;
 use mago_linter::Linter;
@@ -21,32 +21,16 @@ pub const RULES: &[&str] = &[
     "middleware-in-routes",
 ];
 
-#[derive(clap::Args)]
-pub struct LintArgs {
-    /// The paths to lint (default: the project, with pint.json excludes).
-    paths: Vec<PathBuf>,
-    /// Run Mago's lint-only Laravel rules: no-request-all, prefer-casts-method, prefer-anonymous-migration,
-    /// prefer-view-array, middleware-in-routes.
-    #[arg(long)]
-    mago: bool,
-    /// The configuration that should be used.
-    #[arg(long)]
-    config: Option<PathBuf>,
-}
-
-pub fn run(a: LintArgs) -> Result<u8> {
-    if !a.mago {
-        bail!("`pun lint` only runs Mago's rules for now; pass --mago");
-    }
+pub fn run(paths: Vec<PathBuf>, config: Option<PathBuf>) -> Result<u8> {
     let root = super::root()?;
     let cfg = pun_config::load(
         &root,
         &pun_config::Options {
-            config: a.config,
+            config,
             ..Default::default()
         },
     )?;
-    let files = pun_workspace::discover(&cfg, &a.paths)?;
+    let files = pun_workspace::discover(&cfg, &paths)?;
     let mut settings = Settings::default();
     settings.integrations.insert(Integration::Laravel);
     let only: Vec<String> = RULES.iter().map(|r| r.to_string()).collect();

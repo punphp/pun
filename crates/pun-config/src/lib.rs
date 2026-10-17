@@ -1,11 +1,14 @@
-//! Resolved formatter configuration: Pint preset + pint.json + pun.toml, gated on composer.json.
+//! Resolved configuration from pun.toml: a Pint preset plus `[format]` / `[lint]` rules under Pun rule IDs
+//! (rules/mapping.toml), gated on composer.json. pint.json and `.php-cs-fixer.php` are only read by `pun migrate`.
 
 mod constraint;
+pub mod migrate;
 
 use anyhow::{Context, Result, bail};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::path::{Path, PathBuf};
+use std::sync::LazyLock;
 
 pub use constraint::allows_below;
 
@@ -26,14 +29,20 @@ pub const PRESETS: [(&str, &str); 5] = [
 /// Other sets stay unexpanded and are reported as not ported.
 const SETS: &str = include_str!("../presets/sets.json");
 
-/// One enabled fixer. `options` is `Null` when the rule is just `true`.
+/// Upstream rule -> Pun rule mapping (docs/RULES.md).
+const MAPPING: &str = include_str!("../rules/mapping.toml");
+
+/// What every command prints when the project has no pun.toml.
+pub const NO_CONFIG: &str = "No pun.toml found. Run `pun migrate`.";
+
+/// One enabled fixer (upstream name). `options` is `Null` when the rule is just `true`.
 #[derive(Debug, Clone, Serialize)]
 pub struct Rule {
     pub name: String,
     pub options: Value,
 }
 
-/// Finder options from pint.json, kept as Pint passes them to Symfony Finder.
+/// Finder options, kept as Pint passes them to Symfony Finder.
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct Finder {
     #[serde(rename = "in")]
@@ -49,43 +58,49 @@ pub struct Finder {
 pub struct Config {
     pub root: PathBuf,
     pub preset: String,
-    /// Target PHP version (`[compat] php`).
+    /// Target PHP version (`[php] version`).
     pub php: String,
-    /// Enabled rules in merge order (preset, then pint.json, then pun.toml). The pipeline sorts by priority.
+    /// `pun format`'s fixers: the preset's and `[format.rules]`, minus lint rules. The pipeline sorts by priority.
     pub rules: Vec<Rule>,
+    /// `[lint.rules]` backed by a fixer, and whether `--fix` applies it (`fix = "apply"`).
+    pub lint: Vec<(Rule, bool)>,
     pub finder: Finder,
     /// `Pint/laravel_blade` is on: `*.blade.php` files are discovered.
     pub blade: bool,
     /// Files that contributed, in load order.
     pub sources: Vec<PathBuf>,
-    /// The merged rule map before set expansion and `false` filtering: what Pint's Config gets (delegate mode).
-    pub configured_rules: Map<String, Value>,
-    /// `.php-cs-fixer(.dist).php` that replaces pint.json (`pun format` without pint.json): run by delegate mode.
-    pub php_cs_fixer: Option<PathBuf>,
 }
 
 #[derive(Debug, Default, Clone)]
 pub struct Options {
-    /// `--config`: pint.json path (relative to root).
+    /// `--config`: pun.toml path (relative to root).
     pub config: Option<PathBuf>,
     pub no_config: bool,
     pub preset: Option<String>,
     /// `--blade`.
     pub blade: bool,
-    /// Invoked as `pint`: ignore pun.toml and .php-cs-fixer.php like Pint does.
-    pub pint_mode: bool,
 }
 
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields)]
 struct PunToml {
     #[serde(default)]
+    php: PunPhp,
+    #[serde(default)]
     format: PunFormat,
     #[serde(default)]
-    compat: PunCompat,
+    lint: PunLint,
+    /// `[analyse]` is `pun analyse`'s.
+    #[serde(default, rename = "analyse")]
+    _analyse: Option<toml::Table>,
 }
 
-/// `[format]`: everything pint.json holds, so pun.toml can replace it. Keys set here win over pint.json's.
+#[derive(Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+struct PunPhp {
+    version: Option<String>,
+}
+
 #[derive(Deserialize, Default)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 struct PunFormat {
@@ -95,193 +110,178 @@ struct PunFormat {
     not_name: Option<Vec<String>>,
     not_path: Option<Vec<String>>,
     #[serde(default)]
-    rules: Map<String, Value>,
+    rules: toml::Table,
 }
 
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields)]
-struct PunCompat {
-    php: Option<String>,
+struct PunLint {
+    #[serde(default)]
+    rules: toml::Table,
+}
+
+/// `[upstream.php-cs-fixer]`, `[upstream.pint]` and `[upstream.pun]` of rules/mapping.toml: fixer => entry. Only
+/// these sections are parsed: every `pun format` run needs them, the rest of the file is ten times bigger.
+pub fn fixer_entries() -> &'static toml::Table {
+    static T: LazyLock<toml::Table> = LazyLock::new(|| {
+        let mut out = toml::Table::new();
+        for tool in ["php-cs-fixer", "pint", "pun"] {
+            let head = format!("[upstream.{tool}]\n");
+            let body = MAPPING.split_once(&head).expect("mapping section").1;
+            let body = body.split("\n[").next().unwrap();
+            let entries = toml::from_str::<toml::Table>(body).expect("mapping.toml");
+            // The fixers are `Pun/no_only`; the mapping spells them `Pun/no-only` (docs/REQUESTS.md).
+            out.extend(entries.into_iter().map(|(k, v)| (k.replace('-', "_"), v)));
+        }
+        out
+    });
+    &T
+}
+
+/// The Pun rule ID of a fixer (`no_alias_functions` -> `lint.no-alias-functions`).
+pub fn rule_of(fixer: &str) -> Option<&'static str> {
+    fixer_entries().get(fixer)?.get("pun")?.as_str()
+}
+
+/// The fixer behind a Pun rule ID; `command.` may be left out (`format.ordered-imports` or `ordered-imports`).
+pub fn fixer_of(command: &str, rule: &str) -> Option<&'static str> {
+    let id = format!("{command}.{}", rule.strip_prefix(&format!("{command}.")).unwrap_or(rule));
+    fixer_entries()
+        .iter()
+        .find(|(_, e)| e.get("pun").and_then(toml::Value::as_str) == Some(&id))
+        .map(|(k, _)| k.as_str())
 }
 
 pub fn load(root: &Path, opts: &Options) -> Result<Config> {
     let mut sources = Vec::new();
     check_composer(root, &mut sources)?;
-
-    // `--config=http://...` must reach read_pint_json unjoined (Path::join would make it `root/http:/...`).
-    let pint_path = match &opts.config {
-        Some(c) if c.to_string_lossy().contains("://") => c.clone(),
-        c => root.join(c.clone().unwrap_or_else(|| "pint.json".into())),
-    };
-    let pint = if opts.no_config {
-        Map::new()
+    let path = root.join(opts.config.as_deref().unwrap_or(Path::new("pun.toml")));
+    let text = if opts.no_config || (opts.config.is_none() && !path.exists()) {
+        if !opts.no_config && opts.preset.is_none() {
+            bail!(NO_CONFIG);
+        }
+        String::new()
     } else {
-        read_pint_json(
-            &pint_path,
-            opts.config.as_deref().unwrap_or(&pint_path),
-            &mut sources,
-        )?
-    };
-
-    let php_cs_fixer = [".php-cs-fixer.php", ".php-cs-fixer.dist.php"]
-        .iter()
-        .map(|f| root.join(f))
-        .find(|f| f.exists())
-        .filter(|_| {
-            !opts.pint_mode
-                && !opts.no_config
-                && opts.config.is_none()
-                && !pint_path.exists()
-                && !root.join("pun.toml").exists()
-        });
-
-    let toml_path = root.join("pun.toml");
-    let toml = if !opts.pint_mode && toml_path.exists() {
-        let t: PunToml = toml::from_str(&std::fs::read_to_string(&toml_path)?)
-            .with_context(|| format!("invalid {}", toml_path.display()))?;
-        sources.push(toml_path);
+        let t = std::fs::read_to_string(&path)
+            .with_context(|| format!("can't read {}", path.display()))?;
+        sources.push(path.clone());
         t
-    } else {
-        PunToml::default()
     };
+    parse(root, &path, &text, opts, sources)
+}
+
+/// pun.toml text that isn't written yet (`pun migrate`) as `load` resolves it, without the composer.json gate.
+pub fn from_toml(root: &Path, text: &str) -> Result<Config> {
+    parse(root, &root.join("pun.toml"), text, &Options::default(), vec![])
+}
+
+fn parse(
+    root: &Path,
+    path: &Path,
+    text: &str,
+    opts: &Options,
+    sources: Vec<PathBuf>,
+) -> Result<Config> {
+    let toml: PunToml =
+        toml::from_str(text).with_context(|| format!("invalid {}", path.display()))?;
+    let PunToml {
+        php,
+        format: f,
+        lint,
+        ..
+    } = toml;
 
     let preset = opts
         .preset
         .clone()
-        .or_else(|| toml.format.preset.clone())
-        .or_else(|| pint.get("preset").and_then(Value::as_str).map(String::from))
+        .or(f.preset)
         .unwrap_or_else(|| "laravel".into());
-    // Pint 1.29 runs an unknown preset on no files and then fails rendering its name (the CLI does that part).
-    let mut rules = match preset_rules(&preset) {
-        Some(rules) => rules,
-        None if opts.pint_mode => Map::new(),
-        None => bail!("Preset not found."),
-    };
-
-    // Pint: array_merge($preset, $pintJson['rules']) — overrides keep the preset's position.
-    if let Some(r) = pint.get("rules").and_then(Value::as_object) {
-        rules.extend(r.clone());
+    let mut rules = resolve_set(preset_rules(&preset).context("Preset not found.")?)?;
+    for (name, v) in f.rules {
+        let fixer = fixer(path, "format", &name)?;
+        rules.insert(fixer.into(), options(&name, v)?);
     }
     if opts.blade {
         rules.insert("Pint/laravel_blade".into(), Value::Bool(true));
     }
-
-    let PunToml { format: f, compat } = toml;
-    rules.extend(f.rules);
-    let php = compat.php.unwrap_or_else(|| "8.4".into());
-
-    // RuleSet::__construct: only true, false or an options array.
-    for (name, v) in &rules {
-        if !matches!(v, Value::Bool(_) | Value::Array(_) | Value::Object(_)) {
-            let (what, kind) = if name.starts_with('@') {
-                ("Set must be enabled (true) or disabled (false).", "set")
-            } else {
-                (
-                    "Rule must be enabled (true), disabled (false) or configured (non-empty, assoc array).",
-                    "rule",
-                )
-            };
-            let null = if v.is_null() {
-                format!(" To disable the {kind}, use \"FALSE\" instead of \"NULL\".")
-            } else {
-                String::new()
-            };
-            bail!("[{name}] {what} Other values are not allowed.{null}");
-        }
-    }
-
-    let configured_rules = rules.clone();
-    let rules = rule_set(rules)?;
+    // Risky fixers are lint rules: a preset's run only under `[lint.rules]`.
+    rules.retain(|name, _| !rule_of(name).is_some_and(|id| id.starts_with("lint.")));
+    let rules = enabled(rules);
     let blade = rules.iter().any(|r| r.name == "Pint/laravel_blade");
 
-    let list = |k: &str| match pint.get(k) {
-        Some(Value::Array(a)) => a
-            .iter()
-            .filter_map(|v| v.as_str().map(String::from))
-            .collect(),
-        Some(Value::String(s)) => vec![s.clone()],
-        _ => vec![],
-    };
-    let finder = Finder {
-        in_dirs: f.paths.unwrap_or_else(|| list("in")),
-        exclude: f.exclude.unwrap_or_else(|| list("exclude")),
-        not_name: f.not_name.unwrap_or_else(|| list("notName")),
-        not_path: f.not_path.unwrap_or_else(|| list("notPath")),
-    };
+    let mut lint_rules = vec![];
+    for (name, v) in lint.rules {
+        let fixer = fixer(path, "lint", &name)?;
+        let (apply, v) = match v {
+            toml::Value::String(s) => match s.as_str() {
+                "off" => continue,
+                "error" | "warn" | "info" => (false, Value::Bool(true)),
+                _ => bail!("{}: `{name}` = \"{s}\": expected \"error\", \"warn\", \"info\" or \"off\"", path.display()),
+            },
+            toml::Value::Table(mut t) => {
+                t.remove("severity");
+                let apply = match t.remove("fix") {
+                    None => false,
+                    Some(fix) => match fix.as_str() {
+                        Some("apply") => true,
+                        Some("safe-only" | "off") => false,
+                        _ => bail!("{}: `{name}`: fix must be \"apply\", \"safe-only\" or \"off\"", path.display()),
+                    },
+                };
+                // `{ fix = "apply" }` alone is the rule without options.
+                let v = if t.is_empty() {
+                    Value::Bool(true)
+                } else {
+                    options(&name, toml::Value::Table(t))?
+                };
+                (apply, v)
+            }
+            v => (false, options(&name, v)?),
+        };
+        if v != Value::Bool(false) {
+            let mut r = enabled(Map::from_iter([(fixer.to_string(), v)]));
+            lint_rules.push((r.remove(0), apply));
+        }
+    }
 
     Ok(Config {
         root: root.to_path_buf(),
         preset,
-        php,
+        php: php.version.unwrap_or_else(|| "8.4".into()),
         rules,
-        finder,
+        lint: lint_rules,
+        finder: Finder {
+            in_dirs: f.paths.unwrap_or_default(),
+            exclude: f.exclude.unwrap_or_default(),
+            not_name: f.not_name.unwrap_or_default(),
+            not_path: f.not_path.unwrap_or_default(),
+        },
         blade,
         sources,
-        configured_rules,
-        php_cs_fixer,
     })
 }
 
-/// Pint's ConfigurationJsonRepository::get(): a missing file means "no config"; `extend` is one level deep.
-/// Errors name the file as given (`shown`: `--config` verbatim, else the absolute default).
-fn read_pint_json(
-    path: &Path,
-    shown: &Path,
-    sources: &mut Vec<PathBuf>,
-) -> Result<Map<String, Value>> {
-    let s = path.to_string_lossy();
-    if s.starts_with("http://") {
-        bail!("Loading the configuration over plaintext HTTP is not allowed. Use HTTPS.");
-    }
-    if s.starts_with("https://") {
-        bail!("Remote configuration files are not yet supported.");
-    }
-    if !path.exists() {
-        return Ok(Map::new());
-    }
-    let invalid = || {
+/// The fixer for `name` under `[<command>.rules]`.
+fn fixer(path: &Path, command: &str, name: &str) -> Result<&'static str> {
+    fixer_of(command, name).with_context(|| {
         format!(
-            "The configuration file [{}] is not valid JSON.",
-            shown.display()
+            "{}: `{name}` is not a {command} rule Pun can run (see crates/pun-config/rules/mapping.toml)",
+            path.display()
         )
-    };
-    let mut v: Value = serde_json::from_slice(&std::fs::read(path)?).with_context(invalid)?;
-    if let Some(ext) = v.get("extend").and_then(Value::as_str) {
-        let ext_path = path.parent().unwrap_or(Path::new(".")).join(ext);
-        // file_get_contents(realpath(...)): a missing file is realpath's `false`.
-        let raw =
-            std::fs::read(&ext_path).map_err(|_| anyhow::anyhow!("Path must not be empty"))?;
-        // json_decode then array_replace_recursive($base, ...): anything but an array is a TypeError.
-        let base: Value = serde_json::from_slice(&raw).unwrap_or(Value::Null);
-        let given = match &base {
-            Value::Object(_) | Value::Array(_) => None,
-            Value::Null => Some("null"),
-            Value::Bool(true) => Some("true"),
-            Value::Bool(false) => Some("false"),
-            Value::Number(n) if n.is_i64() => Some("int"),
-            Value::Number(_) => Some("float"),
-            Value::String(_) => Some("string"),
-        };
-        if let Some(t) = given {
-            bail!(
-                "array_replace_recursive(): Argument #1 ($array) must be of type array, {t} given"
-            );
-        }
-        if base.get("extend").is_some() {
-            bail!("Pint configuration cannot extend from more than 1 file.");
-        }
-        let mut merged = base;
-        replace_recursive(&mut merged, v);
-        v = merged;
-        sources.push(ext_path);
-    }
-    sources.push(path.to_path_buf());
-    match v {
-        Value::Object(m) => Ok(m),
-        // json_decode(..., true) makes a list a PHP array with only int keys, so no setting is found.
-        Value::Array(_) => Ok(Map::new()),
-        _ => bail!(invalid()),
-    }
+    })
+}
+
+/// A rule's value in pun.toml as PHP-CS-Fixer takes it: `true`/`false`, or options with snake_case keys.
+fn options(rule: &str, v: toml::Value) -> Result<Value> {
+    Ok(match v {
+        toml::Value::Boolean(b) => Value::Bool(b),
+        toml::Value::Table(t) => Value::Object(
+            t.into_iter()
+                .map(|(k, v)| (k.replace('-', "_"), serde_json::to_value(v).unwrap()))
+                .collect(),
+        ),
+        _ => bail!("`{rule}` must be true, false or a table of options"),
+    })
 }
 
 /// A preset's `getRules()` (sets unresolved), or `None` for an unknown preset.
@@ -296,7 +296,11 @@ pub fn preset_rules(preset: &str) -> Option<Map<String, Value>> {
 
 /// `new RuleSet($rules)`: sets resolved, disabled rules dropped, `true` as no options.
 pub fn rule_set(rules: Map<String, Value>) -> Result<Vec<Rule>> {
-    Ok(resolve_set(rules)?
+    Ok(enabled(resolve_set(rules)?))
+}
+
+fn enabled(rules: Map<String, Value>) -> Vec<Rule> {
+    rules
         .into_iter()
         .filter(|(_, v)| *v != Value::Bool(false))
         .map(|(name, v)| Rule {
@@ -307,7 +311,7 @@ pub fn rule_set(rules: Map<String, Value>) -> Result<Vec<Rule>> {
                 v
             },
         })
-        .collect())
+        .collect()
 }
 
 /// RuleSet::resolveSet: sets expand in place (array_merge: a rule already present keeps its position, takes the
@@ -354,31 +358,6 @@ fn resolve_subset(
     Some(rules)
 }
 
-/// PHP's array_replace_recursive on JSON values (lists merge by index).
-fn replace_recursive(base: &mut Value, over: Value) {
-    match (base, over) {
-        (Value::Object(b), Value::Object(o)) => {
-            for (k, v) in o {
-                match b.get_mut(&k) {
-                    Some(slot) => replace_recursive(slot, v),
-                    None => {
-                        b.insert(k, v);
-                    }
-                }
-            }
-        }
-        (Value::Array(b), Value::Array(o)) => {
-            for (i, v) in o.into_iter().enumerate() {
-                match b.get_mut(i) {
-                    Some(slot) => replace_recursive(slot, v),
-                    None => b.push(v),
-                }
-            }
-        }
-        (b, o) => *b = o,
-    }
-}
-
 /// Refuse projects whose `require.php` admits any PHP below 8.4.
 fn check_composer(root: &Path, sources: &mut Vec<PathBuf>) -> Result<()> {
     let path = root.join("composer.json");
@@ -401,456 +380,25 @@ fn check_composer(root: &Path, sources: &mut Vec<PathBuf>) -> Result<()> {
     Ok(())
 }
 
-/// `pun config --init`: pint.json rewritten as a standalone pun.toml (same preset, rule overrides and finder keys).
-pub fn init_toml(root: &Path) -> Result<String> {
-    let path = root.join("pint.json");
-    let pint = read_pint_json(&path, &path, &mut Vec::new())?;
-    let mut format = toml::Table::new();
-    format.insert(
-        "preset".into(),
-        pint.get("preset")
-            .and_then(Value::as_str)
-            .unwrap_or("laravel")
-            .into(),
-    );
-    for (json, key) in [
-        ("in", "paths"),
-        ("exclude", "exclude"),
-        ("notName", "not-name"),
-        ("notPath", "not-path"),
-    ] {
-        match pint.get(json) {
-            Some(Value::String(s)) => drop(format.insert(key.into(), vec![s.clone()].into())),
-            Some(v @ Value::Array(_)) => drop(format.insert(key.into(), toml::Value::try_from(v)?)),
-            _ => {}
-        }
-    }
-    if let Some(r) = pint.get("rules") {
-        format.insert("rules".into(), toml::Value::try_from(r)?);
-    }
-    let mut doc = toml::Table::new();
-    doc.insert("format".into(), format.into());
-    Ok(toml::to_string(&doc)?)
-}
-
 impl Config {
-    /// `pun config --show`, as a plain JSON/TOML-friendly tree (`true` for option-less rules).
+    /// `pun config --show`: what runs, under Pun rule IDs (`true` for option-less rules).
     pub fn show(&self) -> Value {
-        let rules: Map<String, Value> = self
-            .rules
-            .iter()
-            .map(|r| {
-                (
-                    r.name.clone(),
-                    if r.options.is_null() {
-                        Value::Bool(true)
-                    } else {
-                        r.options.clone()
-                    },
-                )
-            })
+        let id = |r: &Rule| rule_of(&r.name).unwrap_or(&r.name).to_string();
+        let format: Map<String, Value> = (self.rules.iter())
+            .map(|r| (id(r), migrate::value(&r.options, false)))
+            .collect();
+        let lint: Map<String, Value> = (self.lint.iter())
+            .map(|(r, apply)| (id(r), migrate::value(&r.options, *apply)))
             .collect();
         serde_json::json!({
             "sources": self.sources,
-            "format": { "preset": self.preset, "rules": rules },
-            "compat": { "php": self.php },
+            "php": { "version": self.php },
+            "format": { "preset": self.preset, "rules": format },
+            "lint": { "rules": lint },
             "finder": self.finder,
         })
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn dir(files: &[(&str, &str)]) -> PathBuf {
-        static N: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
-        let n = N.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        let d = std::env::temp_dir().join(format!("pun-config-{}-{n}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&d);
-        std::fs::create_dir_all(&d).unwrap();
-        for (n, c) in files {
-            std::fs::write(d.join(n), c).unwrap();
-        }
-        d
-    }
-
-    #[test]
-    fn merges_like_pint() {
-        let d = dir(&[
-            ("composer.json", r#"{"require":{"php":"^8.4"}}"#),
-            (
-                "base.json",
-                r#"{"rules":{"final_class":true},"exclude":["a","b"]}"#,
-            ),
-            (
-                "pint.json",
-                r#"{"extend":"base.json","rules":{"array_syntax":false,"concat_space":{"spacing":"one"},"Pint/laravel_blade":true},"exclude":["x"],"notPath":"y"}"#,
-            ),
-            (
-                "pun.toml",
-                "[format.rules]\nfinal_class = false\n[compat]\nphp = \"8.5\"\n",
-            ),
-        ]);
-        let c = load(&d, &Options::default()).unwrap();
-        let names: Vec<_> = c.rules.iter().map(|r| r.name.as_str()).collect();
-        assert!(!names.contains(&"array_syntax") && !names.contains(&"final_class"));
-        let concat = names.iter().position(|n| *n == "concat_space").unwrap();
-        assert!(
-            concat
-                < names
-                    .iter()
-                    .position(|n| *n == "Pint/laravel_blade")
-                    .unwrap(),
-            "override keeps preset position"
-        );
-        assert_eq!(c.rules[concat].options["spacing"], "one");
-        assert!(c.blade);
-        assert_eq!(c.finder.exclude, ["x", "b"]);
-        assert_eq!(c.finder.not_path, ["y"]);
-        assert_eq!(c.php, "8.5");
-    }
-
-    #[test]
-    fn gates() {
-        let d = dir(&[("composer.json", r#"{"require":{"php":"^8.2"}}"#)]);
-        assert!(
-            load(&d, &Options::default())
-                .unwrap_err()
-                .to_string()
-                .contains("PHP < 8.4")
-        );
-        // A PHP-CS-Fixer config replaces pint.json for `pun format` (php-cs-fixer's lookup order); `pint`, pint.json,
-        // pun.toml and --config keep Pint's behaviour of ignoring it.
-        let d = dir(&[("composer.json", "{}"), (".php-cs-fixer.dist.php", "<?php")]);
-        assert_eq!(
-            load(&d, &Options::default()).unwrap().php_cs_fixer,
-            Some(d.join(".php-cs-fixer.dist.php"))
-        );
-        std::fs::write(d.join(".php-cs-fixer.php"), "<?php").unwrap();
-        assert_eq!(
-            load(&d, &Options::default()).unwrap().php_cs_fixer,
-            Some(d.join(".php-cs-fixer.php"))
-        );
-        assert_eq!(
-            load(
-                &d,
-                &Options {
-                    pint_mode: true,
-                    ..Default::default()
-                }
-            )
-            .unwrap()
-            .php_cs_fixer,
-            None
-        );
-        assert_eq!(
-            load(
-                &d,
-                &Options {
-                    config: Some("x.json".into()),
-                    ..Default::default()
-                }
-            )
-            .unwrap()
-            .php_cs_fixer,
-            None
-        );
-        std::fs::write(d.join("pun.toml"), "").unwrap();
-        assert_eq!(load(&d, &Options::default()).unwrap().php_cs_fixer, None);
-        std::fs::remove_file(d.join("pun.toml")).unwrap();
-        std::fs::write(
-            d.join("pint.json"),
-            r#"{"preset":"psr12","rules":{"braces_position":false,"single_quote":true}}"#,
-        )
-        .unwrap();
-        let c = load(&d, &Options::default()).unwrap();
-        assert_eq!(c.php_cs_fixer, None);
-        // Delegate mode gets the map Pint builds: sets unexpanded, `false` kept, in merge order.
-        assert_eq!(
-            serde_json::Value::Object(c.configured_rules),
-            serde_json::json!({"@PSR12": true, "no_unused_imports": true, "braces_position": false, "single_quote": true})
-        );
-        assert!(
-            !c.rules
-                .iter()
-                .any(|r| r.name == "braces_position" || r.name.starts_with('@'))
-        );
-    }
-
-    fn err(d: &Path, o: Options) -> String {
-        load(d, &o).unwrap_err().to_string()
-    }
-
-    /// Messages are Pint's (ConfigurationResolverFactory, ConfigurationJsonRepository).
-    #[test]
-    fn pint_errors() {
-        let d = dir(&[("pint.json", r#"{"preset":"nope"}"#)]);
-        assert_eq!(err(&d, Options::default()), "Preset not found.");
-        // Real Pint 1.29: an unknown preset runs no rules (on no files; the CLI then fails on the summary).
-        let c = load(
-            &d,
-            &Options {
-                pint_mode: true,
-                ..Default::default()
-            },
-        )
-        .unwrap();
-        assert_eq!((c.preset.as_str(), c.rules.len()), ("nope", 0));
-        // Real Pint: a top-level JSON list is an empty config (laravel preset), not invalid JSON.
-        let d = dir(&[("pint.json", "[1]")]);
-        assert_eq!(load(&d, &Options::default()).unwrap().preset, "laravel");
-        // Real Pint: `pint --config=http://x/pint.json` prints this and exits 1.
-        let o = |c: &str| Options {
-            config: Some(c.into()),
-            ..Default::default()
-        };
-        assert_eq!(
-            err(&d, o("http://x/pint.json")),
-            "Loading the configuration over plaintext HTTP is not allowed. Use HTTPS."
-        );
-        assert!(err(&d, o("https://x/pint.json")).contains("not yet supported"));
-        let d = dir(&[
-            ("a.json", r#"{"extend":"b.json"}"#),
-            ("pint.json", r#"{"extend":"a.json"}"#),
-        ]);
-        assert_eq!(
-            err(&d, Options::default()),
-            "Pint configuration cannot extend from more than 1 file."
-        );
-        let d = dir(&[("pint.json", "1")]);
-        assert!(err(&d, Options::default()).ends_with("pint.json] is not valid JSON."));
-        let d = dir(&[("pint.json", "{")]);
-        assert!(err(&d, Options::default()).ends_with("pint.json] is not valid JSON."));
-    }
-
-    #[test]
-    fn options_and_show() {
-        // Lists merge by index like array_replace_recursive: ["x"] over ["a","b"] is ["x","b"]; a longer override appends.
-        let d = dir(&[
-            ("base.json", r#"{"preset":"empty","notName":["a"]}"#),
-            (
-                "custom.json",
-                r#"{"extend":"base.json","rules":{"concat_space":{"spacing":"one"},"single_quote":true},"notName":["x","y"],"in":"src"}"#,
-            ),
-        ]);
-        let c = load(
-            &d,
-            &Options {
-                config: Some("custom.json".into()),
-                blade: true,
-                ..Default::default()
-            },
-        )
-        .unwrap();
-        assert_eq!(c.finder.not_name, ["x", "y"]);
-        assert_eq!(c.finder.in_dirs, ["src"]);
-        assert!(c.blade);
-        assert_eq!(c.sources, [d.join("base.json"), d.join("custom.json")]);
-        assert_eq!(
-            c.show(),
-            serde_json::json!({
-                "sources": [d.join("base.json"), d.join("custom.json")],
-                "format": {"preset": "empty", "rules": {"concat_space": {"spacing": "one"}, "single_quote": true, "Pint/laravel_blade": true}},
-                "compat": {"php": "8.4"},
-                "finder": {"in": ["src"], "exclude": [], "notName": ["x", "y"], "notPath": []},
-            })
-        );
-        // --no-config ignores pint.json; --preset wins.
-        let d = dir(&[("pint.json", r#"{"preset":"nope"}"#)]);
-        let c = load(
-            &d,
-            &Options {
-                no_config: true,
-                preset: Some("psr12".into()),
-                ..Default::default()
-            },
-        )
-        .unwrap();
-        assert_eq!((c.preset.as_str(), c.sources.len()), ("psr12", 0));
-    }
-
-    #[test]
-    fn pun_toml_replaces_pint_json() {
-        // pun.toml keys win key by key; pint.json keys pun.toml doesn't set still apply.
-        let d = dir(&[
-            (
-                "pint.json",
-                r#"{"preset":"psr12","exclude":["a"],"notName":["n.php"],"rules":{"single_quote":true}}"#,
-            ),
-            (
-                "pun.toml",
-                "[format]\npreset = \"empty\"\npaths = [\"src\"]\nexclude = [\"vendor2\"]\nnot-path = [\"p\"]\n[format.rules]\nfinal_class = true\n",
-            ),
-        ]);
-        let c = load(&d, &Options::default()).unwrap();
-        assert_eq!(c.preset, "empty");
-        assert_eq!(
-            c.rules.iter().map(|r| r.name.as_str()).collect::<Vec<_>>(),
-            ["single_quote", "final_class"]
-        );
-        assert_eq!(
-            (
-                c.finder.in_dirs,
-                c.finder.exclude,
-                c.finder.not_name,
-                c.finder.not_path
-            ),
-            (
-                vec!["src".to_string()],
-                vec!["vendor2".to_string()],
-                vec!["n.php".to_string()],
-                vec!["p".to_string()]
-            )
-        );
-        // --preset still beats pun.toml; pint mode ignores pun.toml entirely.
-        assert_eq!(
-            load(
-                &d,
-                &Options {
-                    preset: Some("laravel".into()),
-                    ..Default::default()
-                }
-            )
-            .unwrap()
-            .preset,
-            "laravel"
-        );
-        assert_eq!(
-            load(
-                &d,
-                &Options {
-                    pint_mode: true,
-                    ..Default::default()
-                }
-            )
-            .unwrap()
-            .preset,
-            "psr12"
-        );
-        let d = dir(&[("pun.toml", "[format]\nexlude = [\"typo\"]\n")]);
-        assert!(
-            format!("{:#}", load(&d, &Options::default()).unwrap_err())
-                .contains("unknown field `exlude`")
-        );
-    }
-
-    #[test]
-    fn init_toml_round_trips() {
-        // The generated pun.toml alone must resolve to exactly what pint.json resolved to.
-        let pint = r#"{"preset":"psr12","in":"app","exclude":["a","b"],"notPath":"y","rules":{"concat_space":{"spacing":"one"},"array_syntax":false,"final_class":true}}"#;
-        let from_pint = load(&dir(&[("pint.json", pint)]), &Options::default()).unwrap();
-        let toml = init_toml(&dir(&[("pint.json", pint)])).unwrap();
-        let from_toml = load(&dir(&[("pun.toml", &toml)]), &Options::default()).unwrap();
-        assert_eq!(from_toml.show()["format"], from_pint.show()["format"]);
-        assert_eq!(from_toml.show()["finder"], from_pint.show()["finder"]);
-        assert_eq!(
-            init_toml(&dir(&[])).unwrap(),
-            "[format]\npreset = \"laravel\"\n"
-        );
-    }
-
-    #[test]
-    fn rule_values_like_pint() {
-        // Messages from real Pint 1.29.3 (PHP-CS-Fixer RuleSet) on the same pint.json.
-        let d = dir(&[("pint.json", r#"{"rules":{"final_class":null}}"#)]);
-        assert_eq!(
-            err(&d, Options::default()),
-            "[final_class] Rule must be enabled (true), disabled (false) or configured (non-empty, assoc array). Other values are not allowed. To disable the rule, use \"FALSE\" instead of \"NULL\"."
-        );
-        let d = dir(&[("pint.json", r#"{"rules":{"@PSR12":1}}"#)]);
-        assert_eq!(
-            err(&d, Options::default()),
-            "[@PSR12] Set must be enabled (true) or disabled (false). Other values are not allowed."
-        );
-        // A broken or missing extended file (messages from Pint 1.29.3).
-        for (base, given) in [
-            ("{bad", "null"),
-            ("null", "null"),
-            ("\"x\"", "string"),
-            ("1", "int"),
-            ("1.5", "float"),
-            ("true", "true"),
-            ("false", "false"),
-        ] {
-            let d = dir(&[
-                ("pint.json", r#"{"extend":"base.json"}"#),
-                ("base.json", base),
-            ]);
-            assert_eq!(
-                err(&d, Options::default()),
-                format!(
-                    "array_replace_recursive(): Argument #1 ($array) must be of type array, {given} given"
-                )
-            );
-        }
-        let d = dir(&[("pint.json", r#"{"extend":"base.json"}"#)]);
-        assert_eq!(err(&d, Options::default()), "Path must not be empty");
-        let d = dir(&[("pun.toml", "[format.rules]\nfinal_class = \"yes\"\n")]);
-        assert!(err(&d, Options::default()).starts_with("[final_class] Rule must be enabled"));
-        // A set configured with options gets past RuleSet::__construct, then resolveSet rejects it.
-        for v in ["{}", "[]", "[1]", r#"{"a":1}"#] {
-            let d = dir(&[("pint.json", &format!(r#"{{"rules":{{"@PSR12":{v}}}}}"#))]);
-            assert_eq!(
-                err(&d, Options::default()),
-                "Nested rule set \"@PSR12\" configuration must be a boolean.",
-                "{v}"
-            );
-        }
-    }
-
-    /// Rule sets resolve like PHP-CS-Fixer's RuleSet (tests/rule_sets.json: `(new RuleSet($rules))->getRules()` of the
-    /// pinned version): same rules, options and order. The first case is Pint's psr12 preset.
-    #[test]
-    fn rule_sets_like_php_cs_fixer() {
-        let cases: Vec<Value> =
-            serde_json::from_str(include_str!("../tests/rule_sets.json")).unwrap();
-        let resolved = |c: &Config| -> Vec<(String, Value)> {
-            c.rules
-                .iter()
-                .map(|r| (r.name.clone(), r.options.clone()))
-                .collect()
-        };
-        let expected = |case: &Value| -> Vec<(String, Value)> {
-            let m = case["expected"].as_object().unwrap();
-            m.iter()
-                .map(|(k, v)| {
-                    (
-                        k.clone(),
-                        if *v == Value::Bool(true) {
-                            Value::Null
-                        } else {
-                            v.clone()
-                        },
-                    )
-                })
-                .collect()
-        };
-        let psr12 = load(
-            &dir(&[]),
-            &Options {
-                preset: Some("psr12".into()),
-                ..Default::default()
-            },
-        )
-        .unwrap();
-        assert_eq!(resolved(&psr12), expected(&cases[0]));
-        for case in &cases {
-            let pint = serde_json::json!({"preset": "empty", "rules": case["rules"]}).to_string();
-            assert_eq!(
-                resolved(&load(&dir(&[("pint.json", &pint)]), &Options::default()).unwrap()),
-                expected(case)
-            );
-        }
-        // Sets pun has no definition for stay as one rule, so they are reported as not ported.
-        let c = load(
-            &dir(&[(
-                "pint.json",
-                r#"{"preset":"empty","rules":{"@PER-CS":true}}"#,
-            )]),
-            &Options::default(),
-        )
-        .unwrap();
-        assert_eq!(resolved(&c), [("@PER-CS".to_string(), Value::Null)]);
-    }
-}
+mod tests;

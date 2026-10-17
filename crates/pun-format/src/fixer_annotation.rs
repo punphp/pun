@@ -1,4 +1,5 @@
-//! Port of `PhpCsFixer\Tokenizer\Analyzer\FixerAnnotationAnalyzer` (`// @php-cs-fixer-ignore rule,other`).
+//! Port of `PhpCsFixer\Tokenizer\Analyzer\FixerAnnotationAnalyzer` (`// @php-cs-fixer-ignore rule,other`), plus
+//! Pun's own `// @pun-ignore-file format.rule,lint.other` (docs/RULES.md §7), found the same way.
 use pcre2::bytes::{Regex, RegexBuilder};
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
@@ -7,7 +8,8 @@ use std::sync::LazyLock;
 /// Annotation name => its values.
 pub type Annotations = Vec<(Vec<u8>, Vec<Vec<u8>>)>;
 
-const PATTERN: &str = r"^\h*[*\/]+\h+@(php-cs-fixer-\w+\h+(?:@?[\w\/,])+)";
+const PATTERN: &str =
+    r"^\h*[*\/]+\h+@(php-cs-fixer-\w+\h+(?:@?[\w\/,])+|pun-ignore-file +[\w\/,.-]+)";
 
 /// Preg::matchAll adds `/u` (PHP: UTF + UCP) and falls back to the plain pattern when the subject isn't UTF-8.
 static UTF: LazyLock<Regex> = LazyLock::new(|| {
@@ -112,9 +114,24 @@ pub fn find(tokens: &Tokens) -> Result<Annotations, FindError> {
 
 /// `$fixerAnnotationAnalysis['php-cs-fixer-ignore'] ?? []`.
 pub fn ignored(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
+    values(annotations, b"php-cs-fixer-ignore")
+}
+
+/// The fixers a file opts out of: `@php-cs-fixer-ignore` names plus the fixers of `@pun-ignore-file` rule IDs
+/// (`format.x` / `lint.x` / bare names; unknown IDs are skipped).
+pub fn skipped(annotations: &[(Vec<u8>, Vec<Vec<u8>>)]) -> Vec<Vec<u8>> {
+    let pun = values(annotations, b"pun-ignore-file").into_iter().filter_map(|id| {
+        let id = String::from_utf8(id).ok()?;
+        let fixer = pun_config::fixer_of("format", &id).or_else(|| pun_config::fixer_of("lint", &id))?;
+        Some(fixer.as_bytes().to_vec())
+    });
+    ignored(annotations).into_iter().chain(pun).collect()
+}
+
+fn values(annotations: &[(Vec<u8>, Vec<Vec<u8>>)], name: &[u8]) -> Vec<Vec<u8>> {
     annotations
         .iter()
-        .find(|(n, _)| n == b"php-cs-fixer-ignore")
+        .find(|(n, _)| n == name)
         .map(|(_, v)| v.clone())
         .unwrap_or_default()
 }

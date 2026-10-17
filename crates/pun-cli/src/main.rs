@@ -1,4 +1,4 @@
-//! `pun` binary. Invoked as `pint` (argv[0]), it takes Pint's flags and mimics its output and exit codes.
+//! `pun` binary. `pun format` takes Pint's flags and mimics its output and exit codes; every command reads pun.toml.
 
 mod cache;
 mod console;
@@ -7,6 +7,7 @@ mod highlight;
 #[cfg(feature = "mago-lint")]
 mod lint;
 mod lsp;
+mod migrate;
 mod php_diff;
 mod pint_error;
 mod report;
@@ -18,7 +19,7 @@ mod watch;
 use anyhow::Result;
 use clap::{Args, Parser, Subcommand};
 use pun_config::Options;
-use run::format;
+use run::{Stage, format};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -35,21 +36,28 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
-    /// Fix (or check) the coding style of the given paths.
-    Format(Box<FormatCmd>),
-    /// Report Mago's lint-only rules (`--mago`); never edits files. Needs the `mago-lint` build feature.
-    #[cfg(feature = "mago-lint")]
-    Lint(lint::LintArgs),
+    /// Fix (or check) the layout of the given paths: the `[format]` rules.
+    Format(Box<FormatArgs>),
+    /// Report the `[lint]` rules' fixes; `--fix` applies those with `fix = "apply"`.
+    Lint {
+        #[command(flatten)]
+        cmd: Box<StageCmd>,
+        /// Run Mago's lint-only Laravel rules instead (report only).
+        #[cfg(feature = "mago-lint")]
+        #[arg(long)]
+        mago: bool,
+    },
+    /// Format and lint in one run (analyse joins once `pun analyse` exists): reports, or `--fix` applies.
+    Check(Box<StageCmd>),
+    /// Write pun.toml from pint.json (or .php-cs-fixer(.dist).php) and rewrite `@php-cs-fixer-ignore` comments.
+    Migrate(migrate::MigrateArgs),
     /// Formatting-only language server on stdio (textDocument/formatting).
     Lsp,
-    /// Inspect configuration.
+    /// Print the resolved configuration.
     Config {
-        /// Print the resolved configuration after imports.
+        /// Accepted for compatibility; showing is all `pun config` does.
         #[arg(long)]
         show: bool,
-        /// Write pun.toml from pint.json, so pun.toml can be the only config file.
-        #[arg(long, conflicts_with_all = ["show", "format", "config", "preset"])]
-        init: bool,
         /// Output format.
         #[arg(long, value_enum, default_value_t = ConfigFormat::Toml)]
         format: ConfigFormat,
@@ -60,13 +68,23 @@ enum Cmd {
     },
 }
 
+/// `pun lint` / `pun check`: `pun format`'s flags plus `--fix`.
+#[derive(Args)]
+struct StageCmd {
+    #[command(flatten)]
+    args: FormatArgs,
+    /// Apply the fixes instead of reporting them.
+    #[arg(long)]
+    fix: bool,
+}
+
 #[derive(Clone, Copy, PartialEq, clap::ValueEnum)]
 enum ConfigFormat {
     Toml,
     Json,
 }
 
-/// Pint's DefaultCommand flags.
+/// Pint's DefaultCommand flags, plus Pun's own.
 #[derive(Args, Default, Clone)]
 #[command(about = "Fix the coding style of the given path")]
 pub struct FormatArgs {
@@ -130,8 +148,7 @@ pub struct FormatArgs {
     no_ansi: bool,
     #[arg(short = 'n', long, hide = true)]
     no_interaction: bool,
-    /// Set from `pun format`'s own flags; `pint` mode doesn't parse them, so they are unknown options there.
-    #[arg(skip)]
+    #[command(flatten)]
     pun: PunArgs,
 }
 
@@ -164,58 +181,24 @@ pub struct PunArgs {
     list_files: bool,
 }
 
-#[derive(Args)]
-struct FormatCmd {
-    #[command(flatten)]
-    args: FormatArgs,
-    #[command(flatten)]
-    pun: PunArgs,
-}
-
 fn main() -> ExitCode {
-    let argv0 = std::env::args_os()
-        .next()
-        .map(PathBuf::from)
-        .unwrap_or_default();
-    let pint_mode = argv0.file_stem().is_some_and(|s| s == "pint");
     #[cfg(feature = "pprof")]
     let sampler = sampler::start();
-    let result = if pint_mode {
-        #[derive(Parser)]
-        // ArgvInput lets a flag repeat.
-        #[command(name = "pint", args_override_self = true)]
-        struct Pint {
-            #[command(flatten)]
-            args: FormatArgs,
-        }
-        match Pint::try_parse() {
-            Ok(p) => format(p.args, true),
-            Err(e) => Err(anyhow::anyhow!(
-                pint_error::from_clap(&e).unwrap_or_else(|| e.exit())
-            )),
-        }
-    } else {
-        match Cli::parse().cmd {
-            Cmd::Format(c) => {
-                let FormatCmd { args, pun } = *c;
-                let a = FormatArgs { pun, ..args };
-                if a.pun.watch {
-                    watch::run(a)
-                } else {
-                    format(a, false)
-                }
-            }
-            Cmd::Lsp => lsp::run(),
-            #[cfg(feature = "mago-lint")]
-            Cmd::Lint(a) => lint::run(a),
-            Cmd::Config { init: true, .. } => init_config(),
-            Cmd::Config {
-                format,
-                config,
-                preset,
-                ..
-            } => show_config(format, config, preset),
-        }
+    let (result, pint_errors) = match Cli::parse().cmd {
+        Cmd::Format(a) if a.pun.watch => (watch::run(*a), true),
+        Cmd::Format(a) => (format(*a, Stage::Format), true),
+        #[cfg(feature = "mago-lint")]
+        Cmd::Lint { cmd, mago: true } => (lint::run(cmd.args.paths, cmd.args.config), false),
+        Cmd::Lint { cmd, .. } => (stage(*cmd, Stage::Lint), true),
+        Cmd::Check(cmd) => (stage(*cmd, Stage::Check), true),
+        Cmd::Migrate(a) => (migrate::run(a), false),
+        Cmd::Lsp => (lsp::run(), false),
+        Cmd::Config {
+            format,
+            config,
+            preset,
+            ..
+        } => (show_config(format, config, preset), false),
     };
     #[cfg(feature = "pprof")]
     if let Some(s) = sampler {
@@ -223,33 +206,27 @@ fn main() -> ExitCode {
     }
     match result {
         Ok(code) => ExitCode::from(code),
-        Err(e) if pint_mode => {
+        // A run's errors are Pint's error boxes, like the rest of its output.
+        Err(e) if pint_errors => {
             print!("{}", pint_error::render(&e.to_string()));
             ExitCode::FAILURE
         }
         Err(e) => {
-            eprintln!("\n  {e}\n");
+            eprintln!("pun: {e:#}");
             ExitCode::FAILURE
         }
     }
 }
 
-fn root() -> Result<PathBuf> {
-    Ok(std::env::current_dir()?.canonicalize()?)
+/// `pun lint` / `pun check`: a `pun format` run over other rules; without `--fix` nothing is written.
+fn stage(cmd: StageCmd, stage: fn(bool) -> Stage) -> Result<u8> {
+    let mut a = cmd.args;
+    a.test |= !cmd.fix;
+    format(a, stage(cmd.fix))
 }
 
-fn init_config() -> Result<u8> {
-    let root = root()?;
-    let path = root.join("pun.toml");
-    if path.exists() {
-        anyhow::bail!("pun.toml already exists.");
-    }
-    std::fs::write(&path, pun_config::init_toml(&root)?)?;
-    println!(
-        "Wrote {}. pint.json is no longer needed unless you still run Pint.",
-        path.display()
-    );
-    Ok(0)
+fn root() -> Result<PathBuf> {
+    Ok(std::env::current_dir()?.canonicalize()?)
 }
 
 fn show_config(fmt: ConfigFormat, config: Option<PathBuf>, preset: Option<String>) -> Result<u8> {

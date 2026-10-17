@@ -1,5 +1,5 @@
-//! Differential harness: run the pinned Pint oracle and `pun format` on copies of each
-//! corpus project and byte-diff the results. See docs/oracle.md.
+//! Differential harness: run the pinned Pint oracle on a copy of each corpus project, and `pun migrate` then
+//! `pun check --fix` on another, and byte-diff the results. See docs/oracle.md.
 
 use anyhow::{Context, Result, bail};
 use clap::{Parser, Subcommand};
@@ -17,7 +17,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
-    /// Run oracle (pint) and `pun format` on each corpus project and diff the output.
+    /// Run oracle (pint) and `pun migrate` + `pun check --fix` on each corpus project and diff the output.
     Format {
         /// Only these corpus projects (repeatable). Default: all in corpus/manifest.toml.
         #[arg(long)]
@@ -114,15 +114,16 @@ fn main() -> Result<()> {
             "pint",
         )?;
         if pun.exists() {
-            run(
-                Command::new(&pun)
-                    .env("PUN_IGNORE_PHP_CONSTRAINT", "1")
-                    .arg("format")
-                    .arg("--no-cache")
-                    .args(&args)
-                    .current_dir(&pun_dir),
-                "pun",
-            )?;
+            // migrate reads the same pint.json / --preset Pint got, so this also proves the migration.
+            let pun_cmd = |sub: &[&str]| {
+                let mut c = Command::new(&pun);
+                c.env("PUN_IGNORE_PHP_CONSTRAINT", "1")
+                    .args(sub)
+                    .current_dir(&pun_dir);
+                c
+            };
+            run(pun_cmd(&["migrate"]).args(&args), "pun migrate")?;
+            run(&mut pun_cmd(&["check", "--fix", "--no-cache"]), "pun")?;
         }
 
         let o = compare(&p.name, &src, &oracle_dir, &pun_dir)?;
@@ -252,6 +253,8 @@ fn compare(name: &str, src: &Path, oracle: &Path, pun: &Path) -> Result<Outcome>
     let (mut a, mut b) = (BTreeSet::new(), BTreeSet::new());
     list_files(oracle, "", &mut a)?;
     list_files(pun, "", &mut b)?;
+    // Written by `pun migrate`.
+    b.remove("pun.toml");
     let mut o = Outcome {
         name: name.into(),
         files: a.union(&b).count(),

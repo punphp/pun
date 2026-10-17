@@ -357,10 +357,13 @@ fn formatting_and_fix_all_match_pint() {
     let Some(_) = oracle() else { return };
     let dir = project(
         "fmt",
-        &[(
-            "pint.json",
-            r#"{"preset":"laravel","notName":["Skip.php"]}"#,
-        )],
+        &[
+            (
+                "pint.json",
+                r#"{"preset":"laravel","notName":["Skip.php"]}"#,
+            ),
+            ("pun.toml", "[format]\npreset = \"laravel\"\nnot-name = [\"Skip.php\"]\n"),
+        ],
     );
     let mut s = Server::start(&dir, json!({}));
     // One whole-document edit ending after the last character in UTF-16 units ("é" 1, "😀" 2).
@@ -442,8 +445,8 @@ fn unported_rules_fail_formatting_instead_of_half_fixing() {
     let dir = project(
         "unported",
         &[(
-            "pint.json",
-            r#"{"preset":"empty","rules":{"array_syntax":true,"not_a_real_rule":true}}"#,
+            "pun.toml",
+            "[format]\npreset = \"empty\"\n[format.rules]\narray-syntax = true\nassign-null-coalescing-to-coalesce-equal = true\n",
         )],
     );
     let mut s = Server::start(&dir, json!({}));
@@ -458,7 +461,7 @@ fn unported_rules_fail_formatting_instead_of_half_fixing() {
         r["error"]["message"]
             .as_str()
             .unwrap()
-            .contains("not_a_real_rule"),
+            .contains("not ported: assign_null_coalescing_to_coalesce_equal"),
         "{r}"
     );
     s.stop();

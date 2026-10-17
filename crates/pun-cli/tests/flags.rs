@@ -1,7 +1,9 @@
 //! Git selection and run-mode flags against the real Pint (`php .oracle/pint/builds/pint`). Every scenario is a bash
 //! script that builds a throwaway git repo; it runs twice (one copy per tool, so readdir order agrees) and both tools
-//! must print the same stdout/stderr (repo paths normalised), exit the same and leave the same files. Pun-only flags
-//! (`--stdin`, `--staged`, `--since`) are compared with Pint run on the same content or the same explicit file list.
+//! must print the same stdout/stderr (repo paths normalised), exit the same and leave the same files. Pun runs
+//! `pun migrate` on the config Pint reads (pint.json in the cwd, `--config`, `--preset`), then `pun format`. Pun-only
+//! flags (`--stdin`, `--staged`, `--since`) are compared with Pint run on the same content or the same explicit file
+//! list.
 //! Skipped without the oracle.
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -72,7 +74,7 @@ fn snapshot(dir: &Path, rel: &str, out: &mut BTreeMap<String, Vec<u8>>) {
         } else {
             format!("{rel}/{}", e.file_name().to_string_lossy())
         };
-        if r == ".git" || r == "home" || e.path().is_symlink() {
+        if r == ".git" || r == "home" || r.ends_with("pun.toml") || e.path().is_symlink() {
             continue;
         }
         if e.path().is_dir() {
@@ -92,8 +94,15 @@ struct Run {
 }
 
 /// Builds `BASE + script` in a fresh dir and runs `program` from `sub` with an isolated HOME/TMPDIR (no Pint result
-/// cache, no Pun cache). Repo paths in the output become `ROOT`.
-fn run(program: &[&str], script: &str, sub: &str, args: &[&str], stdin: &[u8]) -> Run {
+/// cache, no Pun cache), after `pun migrate <migrate>` there when given. Repo paths in the output become `ROOT`.
+fn run(
+    program: &[&str],
+    script: &str,
+    sub: &str,
+    args: &[&str],
+    stdin: &[u8],
+    migrate: Option<&[&str]>,
+) -> Run {
     // One path per test thread, so a path wrapped in an error box is the same for both tools.
     thread_local! { static REPO: PathBuf = tmp("repo"); }
     let dir = REPO.with(PathBuf::clone);
@@ -113,6 +122,15 @@ fn run(program: &[&str], script: &str, sub: &str, args: &[&str], stdin: &[u8]) -
     );
     let home = dir.join("home");
     std::fs::create_dir_all(&home).unwrap();
+    if let Some(m) = migrate {
+        let out = Command::new(env!("CARGO_BIN_EXE_pun"))
+            .arg("migrate")
+            .args(m)
+            .current_dir(dir.join(sub))
+            .output()
+            .unwrap();
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    }
     let mut c = Command::new(program[0]);
     c.args(&program[1..])
         .args(args)
@@ -150,33 +168,31 @@ fn run(program: &[&str], script: &str, sub: &str, args: &[&str], stdin: &[u8]) -
 
 struct Cx {
     oracle: String,
-    alias: String,
 }
 
 impl Cx {
     fn new() -> Option<Self> {
         let oracle = oracle()?.to_string_lossy().into_owned();
-        let p = tmp("bin").join("pint");
-        std::os::unix::fs::symlink(env!("CARGO_BIN_EXE_pun"), &p).unwrap();
-        Some(Cx {
-            oracle,
-            alias: p.to_string_lossy().into_owned(),
-        })
+        Some(Cx { oracle })
     }
     fn pint(&self, script: &str, sub: &str, args: &[&str], stdin: &[u8]) -> Run {
-        run(&["php", &self.oracle], script, sub, args, stdin)
+        run(&["php", &self.oracle], script, sub, args, stdin, None)
     }
-    /// The `pint` alias, or `pun format` for Pun's own flags (`pint` rejects them like Pint).
+    /// `pun migrate` with Pint's config flags (`--config`, `--preset`), then `pun format` with the rest. `--no-config`
+    /// needs no pun.toml, so it skips the migration and keeps the flags.
     fn ours(&self, script: &str, sub: &str, args: &[&str], stdin: &[u8]) -> Run {
-        let pun_only = args
-            .iter()
-            .any(|a| ["--stdin", "--staged", "--since"].contains(&a.split('=').next().unwrap()));
-        let cmd: &[&str] = if pun_only {
-            &[env!("CARGO_BIN_EXE_pun"), "format"]
-        } else {
-            &[&self.alias]
-        };
-        run(cmd, script, sub, args, stdin)
+        let config = |a: &&str| a.starts_with("--config=") || a.starts_with("--preset=");
+        let pun = [env!("CARGO_BIN_EXE_pun"), "format"];
+        if args.contains(&"--no-config") {
+            return run(&pun, script, sub, args, stdin, None);
+        }
+        let mut args: Vec<&str> = args.to_vec();
+        if let Some(i) = args.iter().position(|a| *a == "--config") {
+            let v = args.remove(i + 1);
+            args[i] = Box::leak(format!("--config={v}").into_boxed_str());
+        }
+        let (migrate, rest): (Vec<&str>, Vec<&str>) = args.into_iter().partition(config);
+        run(&pun, script, sub, &rest, stdin, Some(&migrate))
     }
     /// Same output, exit code and files; `pint_args` for Pun-only spellings.
     fn same_as(
@@ -378,11 +394,17 @@ printf '{"preset":"empty","rules":{"array_syntax":true},"notName":["Keep.php"]}'
     ] {
         cx.same(cfg, sub, args);
     }
+    // A broken pint.json: Pint's error box; `pun migrate` stops with the same message (with the absolute path).
     let bad = &format!("{cfg}\nprintf 'not json' > bad.json");
-    cx.same_error(
-        bad,
-        &["--config=bad.json"],
-        "The configuration file [bad.json] is not valid JSON.",
+    let r = cx.pint(bad, "", &["--config=bad.json"], b"");
+    assert_eq!(r.code, Some(1));
+    assert!(r.stdout.contains("The configuration file [bad.json] is not valid JSON."), "{}", r.stdout);
+    let r = run(&[env!("CARGO_BIN_EXE_pun"), "migrate", "--config=bad.json"], bad, "", &[], b"", None);
+    assert_eq!(r.code, Some(1));
+    assert!(
+        r.stderr.starts_with("pun: The configuration file [ROOT/bad.json] is not valid JSON."),
+        "{}",
+        r.stderr
     );
 }
 

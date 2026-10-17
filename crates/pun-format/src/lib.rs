@@ -278,7 +278,7 @@ impl Pipeline {
         let mut tokens = self.timed("(tokenize)", || Tokens::from_code(code));
         // `check_annotations` reports a bad annotation; here it only selects the rules to skip.
         let ignored = has_annotation(code)
-            .then(|| fixer_annotation::find(&tokens).map(|a| fixer_annotation::ignored(&a)));
+            .then(|| fixer_annotation::find(&tokens).map(|a| fixer_annotation::skipped(&a)));
         let ignored = ignored.and_then(Result::ok).unwrap_or_default();
         let mut applied = Vec::new();
         for f in &self.fixers {
@@ -365,7 +365,8 @@ impl Pipeline {
 
 /// Cheap guard: FixerAnnotationAnalyzer can only find something when the marker is in the file.
 fn has_annotation(code: &[u8]) -> bool {
-    code.windows(13).any(|w| w == b"php-cs-fixer-")
+    code.windows(13)
+        .any(|w| w == b"php-cs-fixer-" || w == b"pun-ignore-fi")
 }
 
 /// `filter_var($v, FILTER_VALIDATE_BOOLEAN)`.
@@ -685,6 +686,15 @@ mod tests {
             dup("\"a\"")
         );
 
+        // Pun's `@pun-ignore-file` (docs/RULES.md §7): rule IDs, bare names or lint IDs, mapped to their fixers via
+        // rules/mapping.toml; an unknown ID skips nothing. Exactly one space after the name, like upstream's split.
+        let a = found(b"<?php\n// @pun-ignore-file format.single-quote,no-alias-function,nope\n// @php-cs-fixer-ignore x\n").unwrap();
+        assert_eq!(
+            fixer_annotation::skipped(&a),
+            strs(&["x", "single_quote", "no_alias_functions"])
+        );
+        assert_eq!(found(b"<?php\n// @pun-ignore-file\tformat.x\n").unwrap(), vec![]);
+
         // Runner::fixFile skips the annotated rules; the others still run.
         let p =
             Pipeline::new(&[rule("upper"), rule("drop_space"), rule("gone")], &factory).unwrap();
@@ -696,6 +706,9 @@ mod tests {
         // Rules named must be enabled (ported or not); messages and order as Pint prints them.
         p.check_annotations(Path::new("a.php"), code).unwrap();
         p.check_annotations(Path::new("a.php"), b"<?php foo();")
+            .unwrap();
+        // Only `@php-cs-fixer-ignore` names must be enabled rules.
+        p.check_annotations(Path::new("a.php"), b"<?php\n// @pun-ignore-file nope\n")
             .unwrap();
         let err = |code: &[u8]| {
             p.check_annotations(Path::new("/p/b.php"), code)

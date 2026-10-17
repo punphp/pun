@@ -1,4 +1,4 @@
-//! `pun format` (and `pint`): load the config, pick the engine, fix the files, report.
+//! `pun format` / `lint` / `check`: load the config, pick the engine, fix the files, report.
 use crate::report::{self, FileResult, Status};
 use crate::{FormatArgs, cache, pint_error, root};
 use anyhow::{Context, Result};
@@ -8,10 +8,20 @@ use rayon::prelude::*;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
+/// Which rules a run applies. `bool`: `--fix` (only lint rules with `fix = "apply"`; without it every enabled lint
+/// rule is checked, nothing written).
+#[derive(Clone, Copy)]
+pub(crate) enum Stage {
+    Format,
+    Lint(bool),
+    /// Format and lint fixers in one pipeline, so fixers run in PHP-CS-Fixer's priority order, as Pint runs them.
+    /// ponytail: `pun analyse` joins here once pun-analyse has a library entry point.
+    Check(bool),
+}
+
 pub(crate) enum Engine {
     Native(Pipeline),
-    /// Every file through real PHP-CS-Fixer (pun-delegate): unported rules or a .php-cs-fixer.php config.
-    /// With the enabled rules Pun hasn't ported (empty for a .php-cs-fixer.php run).
+    /// Every file through real PHP-CS-Fixer (pun-delegate), with the enabled rules Pun hasn't ported.
     Delegate(pun_delegate::Delegate, Vec<String>),
 }
 
@@ -57,20 +67,37 @@ impl Engine {
     }
 }
 
-pub(crate) fn load_config(a: &FormatArgs, pint_mode: bool, root: &Path) -> Result<Config> {
+pub(crate) fn load_config(a: &FormatArgs, root: &Path) -> Result<Config> {
     let opts = Options {
         config: a.config.clone(),
         no_config: a.no_config,
         preset: a.preset.clone(),
         blade: a.blade,
-        pint_mode,
     };
     pun_config::load(root, &opts)
 }
 
-pub(crate) fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
+pub(crate) fn format(a: FormatArgs, stage: Stage) -> Result<u8> {
     let root = root()?;
-    let cfg = load_config(&a, pint_mode, &root)?;
+    // Config errors are one line (on stderr), not a Pint box: Pint never reads pun.toml.
+    let mut cfg = match load_config(&a, &root) {
+        Ok(cfg) => cfg,
+        Err(e) => {
+            eprintln!("pun: {e:#}");
+            return Ok(1);
+        }
+    };
+    if let Stage::Lint(fix) | Stage::Check(fix) = stage {
+        let lint = (cfg.lint.iter())
+            .filter(|(_, apply)| *apply || !fix)
+            .map(|(r, _)| r.clone());
+        if let Stage::Lint(_) = stage {
+            cfg.rules = lint.collect();
+            cfg.blade = false;
+        } else {
+            cfg.rules.extend(lint);
+        }
+    }
     // EnsurePrettierIsConfigured: `"Pint/laravel_blade": true` (or --blade) needs Node and prettier in the project.
     let blade_on = cfg
         .rules
@@ -81,7 +108,7 @@ pub(crate) fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
         return Ok(1);
     }
     let engine = engine(&a, &cfg, &root)?;
-    if a.pun.explain || (a.verbose > 0 && !pint_mode) {
+    if a.pun.explain || a.verbose > 0 {
         explain(&cfg, &engine, a.pun.explain);
     }
 
@@ -103,15 +130,9 @@ pub(crate) fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
             .as_ref()
             .map(|r| pun_workspace::GitSelect::Since(r.clone()))
     };
-    let files = match (&selection, &engine) {
-        // `pint` mode only (`pun format` refuses it): Pint 1.29 finds no files for an unknown preset.
-        _ if !pun_config::PRESETS.iter().any(|(n, _)| *n == cfg.preset) => vec![],
-        (Some(sel), _) => pun_workspace::git_paths(&cfg, sel)?,
-        // A .php-cs-fixer.php brings its own Finder.
-        (None, Engine::Delegate(d, _)) if cfg.php_cs_fixer.is_some() && a.paths.is_empty() => {
-            d.files()?
-        }
-        (None, _) => pun_workspace::discover(&cfg, &a.paths)?,
+    let files = match &selection {
+        Some(sel) => pun_workspace::git_paths(&cfg, sel)?,
+        None => pun_workspace::discover(&cfg, &a.paths)?,
     };
 
     if a.pun.list_files {
@@ -228,7 +249,7 @@ pub(crate) fn format(a: FormatArgs, pint_mode: bool) -> Result<u8> {
     } else {
         files.par_iter().map(process).collect()
     };
-    if pint_mode && a.format.is_none() && !a.quiet && !a.parallel {
+    if a.format.is_none() && !a.quiet && !a.parallel {
         pint_error::progress_before_abort(&all, dry_run, a.ansi, a.no_ansi);
     }
     let results: Vec<(FileResult, Option<String>, bool)> =
@@ -288,27 +309,29 @@ pub(crate) fn engine(a: &FormatArgs, cfg: &Config, root: &Path) -> Result<Engine
     if std::env::var_os("PUN_PROFILE").is_some() {
         p.enable_profile();
     }
-    let source = match &cfg.php_cs_fixer {
-        Some(f) => Some(pun_delegate::Source::Config(f.clone())),
-        None => (!p.not_ported.is_empty())
-            .then(|| pun_delegate::Source::Rules(cfg.configured_rules.clone().into())),
-    };
-    Ok(match source {
-        Some(_) if a.pun.native_only && cfg.php_cs_fixer.is_some() => {
-            anyhow::bail!(
-                "--native-only can't read .php-cs-fixer.php (it needs PHP); add a pint.json or pun.toml instead."
-            )
-        }
-        Some(s) if !a.pun.native_only => {
-            // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
-            let d = pun_delegate::Delegate::start(
-                root,
-                s,
-                std::env::var_os("PUN_PINT").map(PathBuf::from),
-            )?;
-            Engine::Delegate(d, p.not_ported)
-        }
-        _ => Engine::Native(p),
+    Ok(if p.not_ported.is_empty() || a.pun.native_only {
+        Engine::Native(p)
+    } else {
+        // Pint's Config gets the rules as a map (`true` for no options).
+        let rules = cfg
+            .rules
+            .iter()
+            .map(|r| {
+                let v = if r.options.is_null() {
+                    true.into()
+                } else {
+                    r.options.clone()
+                };
+                (r.name.clone(), v)
+            })
+            .collect();
+        // PUN_PINT: a Pint PHAR to delegate to when the project has none (the harness, CI images).
+        let d = pun_delegate::Delegate::start(
+            root,
+            pun_delegate::Source::Rules(serde_json::Value::Object(rules)),
+            std::env::var_os("PUN_PINT").map(PathBuf::from),
+        )?;
+        Engine::Delegate(d, p.not_ported)
     })
 }
 
@@ -317,15 +340,12 @@ fn explain(cfg: &Config, engine: &Engine, full: bool) {
     let mut err = std::io::stderr().lock();
     match engine {
         Engine::Delegate(d, not_ported) => {
-            let why = match &cfg.php_cs_fixer {
-                Some(f) => format!("{} configures the run", f.display()),
-                None => format!(
-                    "{} of {} rules are not ported ({})",
-                    not_ported.len(),
-                    cfg.rules.len(),
-                    not_ported.join(", ")
-                ),
-            };
+            let why = format!(
+                "{} of {} rules are not ported ({})",
+                not_ported.len(),
+                cfg.rules.len(),
+                not_ported.join(", ")
+            );
             let _ = writeln!(
                 err,
                 "delegate: {why}, so every file runs through PHP-CS-Fixer in `php` ({})",

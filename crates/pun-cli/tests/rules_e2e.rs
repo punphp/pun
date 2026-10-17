@@ -1,8 +1,8 @@
 //! Every rule end to end through the real binary: tests/e2e/rules.json (scripts/export-e2e-cases.py) holds, per
 //! rule, a one-file project enabling only that rule (pint.json, or pun.toml for Pun/ rules) and what real Pint does
 //! to it: the file it writes and `pint --test`'s stdout and exit code. Pun/ rules have no Pint; their expectation
-//! is the first Mago-derived case of the fixer's own tests. `pun format` must write the same file and
-//! `pun format --test` must print the same and exit the same.
+//! is the first Mago-derived case of the fixer's own tests. After `pun migrate` (risky fixers become lint rules),
+//! `pun check --fix` must write the same file and `pun check` must print the same and exit the same.
 
 use serde_json::Value;
 use std::path::{Path, PathBuf};
@@ -14,6 +14,7 @@ fn project(case: &Value, i: usize) -> PathBuf {
     std::fs::create_dir_all(&d).unwrap();
     if let Some(cfg) = case.get("pint.json") {
         std::fs::write(d.join("pint.json"), cfg.to_string()).unwrap();
+        assert_eq!(pun(&d, &["migrate"]).0, 0, "{cfg}");
     }
     if let Some(toml) = case.get("pun.toml") {
         std::fs::write(d.join("pun.toml"), toml.as_str().unwrap()).unwrap();
@@ -64,14 +65,16 @@ fn every_rule_matches_pint() {
             )
             .unwrap();
         }
-        let (code, stdout) = pun(&dir, &["format", "--test"]);
+        let (code, stdout) = pun(&dir, &["check"]);
         if code != case["test_exit"].as_i64().unwrap() as i32 {
             failures.push(format!(
-                "{rule}: `--test` exited {code}, Pint {}\n{stdout}",
+                "{rule}: `check` exited {code}, `pint --test` {}\n{stdout}",
                 case["test_exit"]
             ));
         }
         if let Some(want) = case.get("test_stdout").and_then(Value::as_str) {
+            // `pun migrate` folds the deprecated visibility_required into modifier_keywords.
+            let want = want.replace("visibility_required", "  modifier_keywords");
             if stdout != want {
                 failures.push(format!(
                     "{rule}: `--test` output\n--- pint\n{want}\n--- pun\n{stdout}"
@@ -88,7 +91,7 @@ fn every_rule_matches_pint() {
             case["input"].as_str().unwrap(),
             "{rule}: --test wrote the file"
         );
-        pun(&dir, &["format"]);
+        pun(&dir, &["check", "--fix"]);
         let got = std::fs::read_to_string(&file).unwrap();
         if got != case["expected"].as_str().unwrap() {
             failures.push(format!(

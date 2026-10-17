@@ -12,11 +12,12 @@ fixer's own tests (crates/pun-fixers/src/fixers/pun_*.rs `mago_cases`), there be
 
 usage: scripts/export-e2e-cases.py   (needs php 8.5 and .oracle/pint; ~3 minutes)
 """
-import json, os, shutil, subprocess, tempfile
+import json, os, shutil, subprocess, tempfile, tomllib
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PINT = os.path.join(ROOT, '.oracle/pint/builds/pint')
 OUT = os.path.join(ROOT, 'crates/pun-cli/tests/e2e/rules.json')
+MAPPING = tomllib.load(open(os.path.join(ROOT, 'crates/pun-config/rules/mapping.toml'), 'rb'))
 NODE_MODULES = os.path.join(ROOT, 'crates/pun-fixers/node_modules')  # prettier + prettier-plugin-blade
 ENV = {'PATH': os.environ['PATH'], 'HOME': os.environ.get('HOME', '/tmp')}
 
@@ -126,7 +127,8 @@ def main():
                       'test_stdout': stdout, 'test_exit': exit_code})
         print(f'{rule}: ok', flush=True)
     for rule, (code, expected) in PUN.items():
-        cases.append({'rule': rule, 'file': 'test.php', 'pun.toml': f'[format]\npreset = "empty"\n\n[format.rules]\n"{rule}" = true\n', 'input': code,
+        name = next(v['pun'] for k, v in MAPPING['upstream']['pun'].items() if k.replace('-', '_') == rule).split('.', 1)[1]
+        cases.append({'rule': rule, 'file': 'test.php', 'pun.toml': f'[format]\npreset = "empty"\n\n[lint.rules]\n{name} = {{ fix = "apply" }}\n', 'input': code,
                       'expected': expected, 'test_exit': 1})
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     json.dump(cases, open(OUT, 'w'), indent=1, ensure_ascii=False)

@@ -109,8 +109,12 @@ def outputs(code, project):
         if os.path.exists(os.path.join(project, 'node_modules')):
             os.symlink(os.path.realpath(os.path.join(project, 'node_modules')), os.path.join(d, 'node_modules'))
         open(os.path.join(d, 'x.php'), 'wb').write(code)
-        cmd = ['php', os.path.join(ROOT, '.oracle/pint/builds/pint'), 'x.php'] if tool == 'pint' else [os.environ.get('PUN_BIN', os.path.join(ROOT, 'target/debug/pun')), 'format', 'x.php']
-        subprocess.run(cmd, cwd=d, capture_output=True, env={'PATH': os.environ['PATH'], 'HOME': os.environ.get('HOME', '/tmp')}, timeout=300)
+        env = {'PATH': os.environ['PATH'], 'HOME': os.environ.get('HOME', '/tmp')}
+        pun = os.environ.get('PUN_BIN', os.path.join(ROOT, 'target/debug/pun'))
+        if tool == 'pun':
+            subprocess.run([pun, 'migrate'], cwd=d, capture_output=True, env=env, timeout=300)
+        cmd = ['php', os.path.join(ROOT, '.oracle/pint/builds/pint'), 'x.php'] if tool == 'pint' else [pun, 'check', '--fix', 'x.php']
+        subprocess.run(cmd, cwd=d, capture_output=True, env=env, timeout=300)
         res.append(open(os.path.join(d, 'x.php'), 'rb').read())
         shutil.rmtree(d)
     return res

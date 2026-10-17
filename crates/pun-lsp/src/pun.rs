@@ -29,7 +29,7 @@ const MAGO_RULES: &[&str] = &[
 
 pub struct Pun {
     root: PathBuf,
-    /// The project's pint.json / pun.toml and its pipeline, or why formatting is unavailable (Pint's message for a
+    /// The project's pun.toml and its pipeline, or why formatting is unavailable (Pint's message for a
     /// broken config).
     format: Result<(Config, Pipeline), String>,
     lint: (Settings, Arc<RuleRegistry>),
@@ -41,9 +41,9 @@ impl Pun {
             pun_fixers::analyzers::active_preset::set(&cfg.preset);
             let p = Pipeline::new(&cfg.rules, &pun_fixers::all).map_err(|e| e.to_string())?;
             // ponytail: no PHP-CS-Fixer delegation here; `pun lsp` gets it once it shares pun-cli's engine.
-            match (&cfg.php_cs_fixer, p.not_ported.is_empty()) {
-                (None, true) => Ok((cfg, p)),
-                _ => Err(format!("pun lsp formats natively only; `pun format` delegates this config to PHP-CS-Fixer (not ported: {})", p.not_ported.join(", "))),
+            match p.not_ported.is_empty() {
+                true => Ok((cfg, p)),
+                false => Err(format!("pun lsp formats natively only; `pun format` delegates this config to PHP-CS-Fixer (not ported: {})", p.not_ported.join(", "))),
             }
         });
         let mut settings = Settings::default();
