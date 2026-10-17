@@ -150,3 +150,24 @@ parents); expected values are never written by hand. Re-run one after touching i
 | `php scripts/export-ignore-fixtures.php` | `comments.json` (RichParser::getLinesToIgnore), `local-processor.json` (LocalIgnoresProcessor), `ignore.json` (IgnoredErrorHelper + result processing) |
 | `php scripts/export-local-ignore-fixtures.php` | `local.json`: real `phpstan analyse` on `local/*.php`, comments blanked vs. kept |
 | `php scripts/export-php-helpers-fixtures.php` | `php.json`: regex (Nette Strings::match), preg_quote, FileHelper, relative paths, fnmatch, (string) casts, `phpfile/ok-*.php` |
+| `php scripts/export-phpstan-symbols.php` | `../data/symbols.json` (every built-in function, method, class and constant as PHPStan 2.2.7 reflects them on PHP 8.4, with the 8.5 differences), `type-strings.json` (every signature-map type string through TypeStringResolver + `describe()`), `reflected-types.json` (every type in those signatures, `toPhpDocNode()` and its descriptions) |
+| `php scripts/export-phpstan-symbols.php probes` | `type-probes.json` (hand-picked and generated type strings: descriptions and iterable key/value), `type-super.json` (`isSuperTypeOf()` of every ordered pair within each atom set) |
+
+### How PHPStan resolves a built-in function's signature
+
+`NativeFunctionReflectionProvider` asks `SignatureMapProviderFactory` for a provider: on PHP >= 8.0 that is
+`Php8SignatureMapProvider`, which reads the function (or method) from the bundled php-8-stubs
+(`vendor/phpstan/php-8-stubs/stubs`, picking the declaration whose `#[Since]`/`#[Until]` attributes match
+`phpVersion`). If `resources/functionMap.php` (with the `functionMap_php74delta.php` ... `php85delta.php`
+deltas applied up to `phpVersion`) also has the name, its typed variants are merged over the stub's native one
+(`getMergedSignatures()`: functionMap types refine, variants come from the map). A name without a php-8 stub
+falls back to the functionMap alone (`FunctionSignatureMapProvider`). PHPDoc types come from
+`StubPhpDocProvider` (PHPStan's own `stubs/*.stub`), and each parameter and the return become
+`TypehintHelper::decideType(signature type, PHPDoc type)`; the reflection's doc comment (jetbrains/phpstorm-stubs,
+through BetterReflection) only adds `@throws` and deprecation. `resources/functionMetadata.php`
+adds `hasSideEffects`/purity. Dynamic return type extensions are not part of the signature (M2.3).
+
+Pun does not re-implement that chain: the exporter asks PHPStan's own `ReflectionProvider` for every built-in
+and stores the result (`crates/pun-phpstan/data/symbols.json`); `pun-phpstan`'s type parser (`phpdoc.rs`),
+resolver (`resolve.rs`) and type model (`types.rs`: `TypeCombinator` union/intersect, `isSuperTypeOf`,
+`describe()`) read it back and are tested against the fixtures above.
