@@ -34,7 +34,7 @@ Each command answers one question and makes one promise.
 | Command | Question | Promise | Needs | Edits |
 | --- | --- | --- | --- | --- |
 | `pun format` | How does the code look? | Never changes what the code does | the file's tokens | always, safe on save |
-| `pun lint` | Is there a better way to write this? | Every change is labelled safe or unsafe; unsafe changes only happen when you ask for them | one file's syntax tree (types optional, to make more fixes safe) | with `--fix` |
+| `pun lint` | Is there a better way to write this? | Every change is labelled safe or unsafe; `--fix` applies all of them (`fix = "off"` keeps a rule report-only) | one file's syntax tree (types optional, to make more fixes safe) | with `--fix` |
 | `pun analyse` | Is this wrong? | Never touches your files | types and symbols from the whole project | never |
 
 `pun check` runs all three in one pass and is what CI and agents run. `pun migrate` only moves config onto pun.toml.
@@ -94,7 +94,7 @@ parsing each file once.
    214 files in 0.4 s`. The exit code is 1 if anything is at `error`, or anything needs formatting.
 
 **`pun check --fix`:**
-1. **Lint fixes**: safe fixes, plus rules with `fix = "apply"`, plus unsafe fixes with `--unsafe`. They run in a loop
+1. **Lint fixes**: every fix of every enabled rule, except rules with `fix = "off"` (decided: no `--unsafe`). They run in a loop
    until no rule has more to fix, because one fix can expose the next.
 2. **Format** the result, so whatever lint inserted gets the project's layout.
 3. **Write** each changed file once.

@@ -76,6 +76,9 @@ confirm", "Update, Oct 17"), docs/RULES.md §10 and project memory.
 ## Engineering
 
 - **Mago:** depend on crates.io releases (pinned `=1.57.0`); no maintainer outreach needed.
+- **`pun lint --fix` applies every fix of every enabled rule** (2026-10-17), as Rector does: no `--unsafe` flag, no
+  `fix = "apply"`. Safe/unsafe stays a label in the output; `fix = "off"` makes a rule report-only. This replaces
+  RULES.md §4's fix-safety gating.
 - **Lint edits code with text edits** on Mago's syntax tree, not a port of php-parser's printer; format tidies the
   layout afterwards (2026-10-17, components/lint.md).
 - **The Mago-based formatter is removed** (`--engine=pun`, `format_pun`): one formatter engine, the PHP-CS-Fixer port.

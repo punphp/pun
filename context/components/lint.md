@@ -270,6 +270,10 @@ Answered 2026-10-17 (Pushpak):
   Lint gets its own preset choice, separate from analyse.
 - **Lint presets are a checklist of sets** (§9): `[lint] sets = ["dead-code", "modernize", ...]`, with dead-code and
   modernize ticked by default in `pun init`; Rector's prepared sets migrate 1:1.
+- **Q7: `--fix` applies every fix of every enabled rule**, as Rector does. There is no `--unsafe` flag. Safe/unsafe
+  stays as a label in the output (`[fix:unsafe]`) so reviewers know which changes to read closely. A rule that should
+  only report takes `fix = "off"`. `fix = "apply"` and `"safe-only"` go away, and migrate no longer needs to promote
+  rules.
 - **Q10: `pun lint --fix` doesn't format**; `pun check --fix` does lint, then format (commands.md §4).
 - **Q9: unported rules are named, not delegated.** `pun migrate` and every run say which configured rules Pun doesn't
   support yet (commands.md decisions).
