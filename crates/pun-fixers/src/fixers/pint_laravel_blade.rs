@@ -24,6 +24,8 @@ use std::cell::RefCell;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, Stdio};
+use std::sync::OnceLock;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, channel};
 use std::time::Duration;
 
@@ -128,21 +130,31 @@ thread_local! {
 }
 
 /// The worker script and prettier config, in a temp dir named by their content so every run shares it
-/// (a per-process dir would be left behind by each run). Written via rename, so a concurrent run never sees a
-/// partial file.
+/// (a per-process dir would be left behind by each run). Resolved once per process; written via rename, so a
+/// concurrent run never sees a partial file.
 fn resources() -> Result<(PathBuf, PathBuf)> {
-    let mut hasher = std::hash::DefaultHasher::new();
-    std::hash::Hash::hash(&(WORKER, PRETTIERRC), &mut hasher);
-    let hash = std::hash::Hasher::finish(&hasher);
-    resources_in(&std::env::temp_dir().join(format!("pun-blade-{hash:016x}")))
+    static RESOURCES: OnceLock<Result<(PathBuf, PathBuf), String>> = OnceLock::new();
+    RESOURCES
+        .get_or_init(|| {
+            let mut hasher = std::hash::DefaultHasher::new();
+            std::hash::Hash::hash(&(WORKER, PRETTIERRC), &mut hasher);
+            let hash = std::hash::Hasher::finish(&hasher);
+            resources_in(&std::env::temp_dir().join(format!("pun-blade-{hash:016x}")))
+                .map_err(|e| e.to_string())
+        })
+        .clone()
+        .map_err(anyhow::Error::msg)
 }
 
 fn resources_in(dir: &Path) -> Result<(PathBuf, PathBuf)> {
     let (worker, config) = (dir.join("worker.cjs"), dir.join("prettierrc.json"));
-    if !worker.exists() {
+    if !(worker.exists() && config.exists()) {
         std::fs::create_dir_all(dir)?;
         for (path, body) in [(&config, PRETTIERRC), (&worker, WORKER)] {
-            let tmp = path.with_extension(std::process::id().to_string());
+            // One temp name per process and write, so concurrent writers never share a file.
+            static WRITES: AtomicUsize = AtomicUsize::new(0);
+            let n = WRITES.fetch_add(1, Ordering::Relaxed);
+            let tmp = path.with_extension(format!("{}-{n}", std::process::id()));
             std::fs::write(&tmp, body)?;
             std::fs::rename(&tmp, path)?;
         }
@@ -233,8 +245,12 @@ fn prettier_format_with(
     let mut formatted: Vec<u8> = Vec::new();
     let failure = loop {
         if php::contains(&formatted, END) {
-            let body = &formatted[php::strpos(&formatted, START, 0).unwrap() + START.len()..];
-            return Ok(body[..php::strpos(body, END, 0).unwrap()].to_vec());
+            // Str::after(START)->before(END), after checking both markers are present.
+            let Some(start) = php::strpos(&formatted, START, 0) else {
+                bail!("Laravel Pint's Prettier worker did not return a valid response.");
+            };
+            let body = &formatted[start + START.len()..];
+            return Ok(body[..php::strpos(body, END, 0).unwrap_or(body.len())].to_vec());
         }
         match worker.events.recv_timeout(idle_timeout) {
             Ok(Chunk::Out(c)) => formatted.extend(c),
@@ -338,6 +354,50 @@ mod tests {
         }
     }
 
+    /// Pint's Prettier::format() reply parsing: a reply without the start marker (the tail of an earlier reply
+    /// whose template contained the end marker) fails the file and keeps the worker; the body is cut at the first
+    /// end marker after the start marker, or runs to the end of the output when there is none.
+    #[test]
+    fn worker_replies() {
+        let mut sh = Command::new("sh");
+        sh.args(["-c", "printf 'x[PINT_PRETTIER_WORKER_END]'; cat >/dev/null"]);
+        let mut guard = Some(spawn(sh).unwrap());
+        let err = prettier_format_with(&mut guard, "a.blade.php", b"x", WORKER_IDLE_TIMEOUT)
+            .unwrap_err();
+        assert_eq!(
+            err.to_string(),
+            "Laravel Pint's Prettier worker did not return a valid response."
+        );
+        assert!(guard.is_some());
+        let mut sh = Command::new("sh");
+        sh.args([
+            "-c",
+            "printf 'x[PINT_PRETTIER_WORKER_END]y[PINT_PRETTIER_WORKER_START]abc'; cat >/dev/null",
+        ]);
+        let mut guard = Some(spawn(sh).unwrap());
+        let got = prettier_format_with(&mut guard, "a.blade.php", b"x", WORKER_IDLE_TIMEOUT);
+        assert_eq!(got.unwrap(), b"abc");
+    }
+
+    /// Threads that write the worker files into a fresh dir at once all get complete copies.
+    #[test]
+    fn resources_written_concurrently() {
+        let dir = std::env::temp_dir().join(format!("pun-blade-race-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let barrier = std::sync::Barrier::new(16);
+        std::thread::scope(|s| {
+            for _ in 0..16 {
+                s.spawn(|| {
+                    barrier.wait();
+                    resources_in(&dir).unwrap();
+                });
+            }
+        });
+        assert_eq!(std::fs::read_to_string(dir.join("worker.cjs")).unwrap(), WORKER);
+        assert_eq!(std::fs::read_to_string(dir.join("prettierrc.json")).unwrap(), PRETTIERRC);
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
     /// Every run shares one copy of the worker files instead of leaving a temp dir per process.
     #[test]
     fn resources_are_shared() {
@@ -348,11 +408,15 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
         let (worker, config) = resources_in(&dir).unwrap();
         assert_eq!(std::fs::read_to_string(&worker).unwrap(), WORKER);
-        assert_eq!(std::fs::read_to_string(config).unwrap(), PRETTIERRC);
+        assert_eq!(std::fs::read_to_string(&config).unwrap(), PRETTIERRC);
         // An existing copy is used as is.
         std::fs::write(&worker, "kept").unwrap();
         resources_in(&dir).unwrap();
         assert_eq!(std::fs::read_to_string(&worker).unwrap(), "kept");
+        // A missing config is written again.
+        std::fs::remove_file(&config).unwrap();
+        resources_in(&dir).unwrap();
+        assert_eq!(std::fs::read_to_string(&config).unwrap(), PRETTIERRC);
         std::fs::remove_dir_all(&dir).unwrap();
     }
 }
