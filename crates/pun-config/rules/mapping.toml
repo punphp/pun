@@ -1256,17 +1256,17 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-void-cast" = { preset = "basic", ported = true, status = "decided" }
 "types/method-param-default" = { preset = "essential", status = "decided" }
 "types/method-variance" = { preset = "essential", status = "decided" }
-"types/missing-constant-type" = { preset = "strict", status = "decided" }
+"types/missing-constant-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-hook-throws" = { preset = "max", status = "decided" }
-"types/missing-method-param-type" = { preset = "strict", status = "decided" }
-"types/missing-method-return-type" = { preset = "strict", status = "decided" }
+"types/missing-method-param-type" = { preset = "strict", ported = true, status = "decided" }
+"types/missing-method-return-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-method-throws" = { preset = "max", status = "decided" }
-"types/missing-param-type" = { preset = "strict", status = "decided" }
+"types/missing-param-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-preg-quote-delimiter" = { preset = "recommended", status = "decided" }
-"types/missing-property-type" = { preset = "strict", status = "decided" }
+"types/missing-property-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-return" = { preset = "basic", status = "decided" }
-"types/missing-return-type" = { preset = "strict", fixed_by = ["lint/types/add-void-return-type"], status = "decided", note = "level 6; fixed by the Rector-derived return-type rules where the type is inferable" }
-"types/missing-self-out-type" = { preset = "strict", status = "decided" }
+"types/missing-return-type" = { preset = "strict", ported = true, fixed_by = ["lint/types/add-void-return-type"], status = "decided", note = "level 6; fixed by the Rector-derived return-type rules where the type is inferable" }
+"types/missing-self-out-type" = { preset = "strict", ported = true, status = "decided" }
 "types/missing-throws" = { preset = "max", status = "decided" }
 "types/nullsafe-by-ref-return" = { preset = "basic", ported = true, status = "decided" }
 "types/offset-assign" = { preset = "essential", status = "decided" }

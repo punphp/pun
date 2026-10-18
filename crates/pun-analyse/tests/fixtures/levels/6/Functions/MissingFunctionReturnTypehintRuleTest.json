@@ -1,0 +1,264 @@
+{
+    "test": "Functions/MissingFunctionReturnTypehintRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/missing-function-return-typehint.php"
+            ],
+            "scan": [
+                "Functions/data/missing-function-return-typehint.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 5,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction1() has parameter $a with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 5,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction1() has parameter $b with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 5,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction1() has parameter $c with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 5,
+                    "identifier": "missingType.return",
+                    "message": "Function globalFunction1() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 10,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction2() has parameter $a with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 10,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction2() has parameter $b with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 10,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction2() has parameter $c with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 22,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction3() has parameter $a with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 22,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction3() has parameter $b with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 22,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction3() has parameter $c with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 30,
+                    "identifier": "missingType.parameter",
+                    "message": "Function MissingFunctionReturnTypehint\\namespacedFunction1() has parameter $d with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 30,
+                    "identifier": "missingType.parameter",
+                    "message": "Function MissingFunctionReturnTypehint\\namespacedFunction1() has parameter $e with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 30,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionReturnTypehint\\namespacedFunction1() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 35,
+                    "identifier": "missingType.parameter",
+                    "message": "Function MissingFunctionReturnTypehint\\namespacedFunction2() has parameter $d with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 35,
+                    "identifier": "missingType.parameter",
+                    "message": "Function MissingFunctionReturnTypehint\\namespacedFunction2() has parameter $e with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 43,
+                    "identifier": "missingType.parameter",
+                    "message": "Function MissingFunctionReturnTypehint\\namespacedFunction3() has parameter $d with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 43,
+                    "identifier": "missingType.parameter",
+                    "message": "Function MissingFunctionReturnTypehint\\namespacedFunction3() has parameter $e with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 51,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingFunctionReturnTypehint\\unionTypeWithUnknownArrayValueTypehint() return type has no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 51,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\unionTypeWithUnknownArrayValueTypehint() should return array|int|stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 70,
+                    "identifier": "missingType.generics",
+                    "message": "Function MissingFunctionReturnTypehint\\returnsGenericInterface() return type with generic interface MissingFunctionReturnTypehint\\GenericInterface does not specify its types: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 70,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\returnsGenericInterface() should return MissingFunctionReturnTypehint\\GenericInterface but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 75,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\returnsNonGenericClass() should return MissingFunctionReturnTypehint\\NonGenericClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 89,
+                    "identifier": "missingType.generics",
+                    "message": "Function MissingFunctionReturnTypehint\\returnsGenericClass() return type with generic class MissingFunctionReturnTypehint\\GenericClass does not specify its types: A, B",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 89,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\returnsGenericClass() should return MissingFunctionReturnTypehint\\GenericClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 97,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\genericGenericValidArgs() should return MissingFunctionReturnTypehint\\GenericClass<MissingFunctionReturnTypehint\\GenericClass<int, int>, MissingFunctionReturnTypehint\\GenericClass<int, int>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 105,
+                    "identifier": "missingType.generics",
+                    "message": "Function MissingFunctionReturnTypehint\\genericGenericMissingTemplateArgs() return type with generic class MissingFunctionReturnTypehint\\GenericClass does not specify its types: A, B",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 105,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\genericGenericMissingTemplateArgs() should return MissingFunctionReturnTypehint\\GenericClass<MissingFunctionReturnTypehint\\GenericClass, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 113,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\closureWithNoPrototype() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 120,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\closureWithPrototype() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 127,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\callableWithNoPrototype() should return callable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 134,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\callableWithPrototype() should return callable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 141,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\callableNestedNoPrototype() should return callable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 148,
+                    "identifier": "return.missing",
+                    "message": "Function MissingFunctionReturnTypehint\\callableNestedWithPrototype() should return callable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-return-typehint.php",
+                    "line": 212,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingFunctionReturnTypehint\\returnsTraversableNoPrototype() return type has no value type specified in iterable type Traversable.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13831",
+            "files": [
+                "Functions/data/bug-13831.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

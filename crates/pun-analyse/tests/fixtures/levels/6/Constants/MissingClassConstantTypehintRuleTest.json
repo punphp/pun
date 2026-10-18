@@ -1,0 +1,111 @@
+{
+    "test": "Constants/MissingClassConstantTypehintRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Constants/data/missing-class-constant-typehint.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/missing-class-constant-typehint.php",
+                    "line": 8,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant MissingClassConstantTypehint\\Foo::FOO is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "Constants/data/missing-class-constant-typehint.php",
+                    "line": 11,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant MissingClassConstantTypehint\\Foo::BAR is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "Constants/data/missing-class-constant-typehint.php",
+                    "line": 11,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Constant MissingClassConstantTypehint\\Foo::BAR type has no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Constants/data/missing-class-constant-typehint.php",
+                    "line": 14,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant MissingClassConstantTypehint\\Foo::BARR is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "Constants/data/missing-class-constant-typehint.php",
+                    "line": 17,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant MissingClassConstantTypehint\\Foo::BAZ with type MissingClassConstantTypehint\\Bar is incompatible with value 1.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/missing-class-constant-typehint.php",
+                    "line": 17,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant MissingClassConstantTypehint\\Foo::BAZ is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                },
+                {
+                    "file": "Constants/data/missing-class-constant-typehint.php",
+                    "line": 17,
+                    "identifier": "missingType.generics",
+                    "message": "Constant MissingClassConstantTypehint\\Foo::BAZ with generic class MissingClassConstantTypehint\\Bar does not specify its types: T",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/missing-class-constant-typehint.php",
+                    "line": 20,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant MissingClassConstantTypehint\\Foo::LOREM with type callable(): mixed is incompatible with value 1.",
+                    "tip": null
+                },
+                {
+                    "file": "Constants/data/missing-class-constant-typehint.php",
+                    "line": 20,
+                    "identifier": "classConstant.unused",
+                    "message": "Constant MissingClassConstantTypehint\\Foo::LOREM is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8957",
+            "files": [
+                "Constants/data/bug-8957.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testRuleShouldNotApplyToNativeTypes",
+            "files": [
+                "Constants/data/class-constant-native-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/class-constant-native-type.php",
+                    "line": 19,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Constant ClassConstantNativeTypeForMissingTypehintRule\\Foo::B type has no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Constants/data/class-constant-native-type.php",
+                    "line": 24,
+                    "identifier": "missingType.generics",
+                    "message": "Constant ClassConstantNativeTypeForMissingTypehintRule\\Foo::D with generic class ClassConstantNativeTypeForMissingTypehintRule\\Bar does not specify its types: T",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

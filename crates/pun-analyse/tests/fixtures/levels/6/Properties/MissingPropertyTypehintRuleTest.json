@@ -1,0 +1,285 @@
+{
+    "test": "Properties/MissingPropertyTypehintRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/missing-property-typehint.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 7,
+                    "identifier": "missingType.property",
+                    "message": "Property MissingPropertyTypehint\\MyClass::$prop1 has no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 7,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\MyClass::$prop1 is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 9,
+                    "identifier": "missingType.property",
+                    "message": "Property MissingPropertyTypehint\\MyClass::$prop2 has no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 12,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @var has invalid value (): Unexpected token \"\\n\\t \", expected type at offset 12 on line 2",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 14,
+                    "identifier": "missingType.property",
+                    "message": "Property MissingPropertyTypehint\\MyClass::$prop3 has no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 32,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Property MissingPropertyTypehint\\ChildClass::$unionProp type has no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 32,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\ChildClass::$unionProp is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 32,
+                    "identifier": "property.unusedType",
+                    "message": "Property MissingPropertyTypehint\\ChildClass::$unionProp (array|int|stdClass|null) is never assigned array so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 32,
+                    "identifier": "property.unusedType",
+                    "message": "Property MissingPropertyTypehint\\ChildClass::$unionProp (array|int|stdClass|null) is never assigned int so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 32,
+                    "identifier": "property.unusedType",
+                    "message": "Property MissingPropertyTypehint\\ChildClass::$unionProp (array|int|stdClass|null) is never assigned stdClass so it can be removed from the property type.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 40,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\PrefixedTags::$fooPhpstan is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 43,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\PrefixedTags::$fooPsalm is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 46,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\PrefixedTags::$fooPhan is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 77,
+                    "identifier": "missingType.generics",
+                    "message": "Property MissingPropertyTypehint\\Bar::$foo with generic interface MissingPropertyTypehint\\GenericInterface does not specify its types: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 77,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\Bar::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 80,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\Bar::$bar is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 83,
+                    "identifier": "missingType.generics",
+                    "message": "Property MissingPropertyTypehint\\Bar::$baz with generic class MissingPropertyTypehint\\GenericClass does not specify its types: A, B",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 83,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\Bar::$baz is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 89,
+                    "identifier": "property.unused",
+                    "message": "Property class@anonymous/missing-property-typehint.php:87::$dateTime is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 96,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\CallableSignature::$cb is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 106,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Property MissingPropertyTypehint\\NestedArrayInProperty::$args type has no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 131,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\Baz::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 134,
+                    "identifier": "missingType.generics",
+                    "message": "Property MissingPropertyTypehint\\Baz::$bar with generic class MissingPropertyTypehint\\GenericClassWithSomeDefaults does not specify its types: T, U (1-2 required)",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/missing-property-typehint.php",
+                    "line": 134,
+                    "identifier": "property.unused",
+                    "message": "Property MissingPropertyTypehint\\Baz::$bar is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3402",
+            "files": [
+                "Properties/data/bug-3402.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-3402.php",
+                    "line": 10,
+                    "identifier": "property.unused",
+                    "message": "Property Bug3402\\Foo::$foo is unused.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11761",
+            "files": [
+                "Properties/data/bug-11761-bis.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testPromotedProperties",
+            "files": [
+                "Properties/data/promoted-properties-missing-typehint.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/promoted-properties-missing-typehint.php",
+                    "line": 11,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method PromotedPropertiesMissingTypehint\\Foo::__construct() has parameter $ipsum with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Properties/data/promoted-properties-missing-typehint.php",
+                    "line": 11,
+                    "identifier": "missingType.parameter",
+                    "message": "Method PromotedPropertiesMissingTypehint\\Foo::__construct() has parameter $lorem with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/promoted-properties-missing-typehint.php",
+                    "line": 12,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property PromotedPropertiesMissingTypehint\\Foo::$foo is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/promoted-properties-missing-typehint.php",
+                    "line": 13,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property PromotedPropertiesMissingTypehint\\Foo::$bar is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/promoted-properties-missing-typehint.php",
+                    "line": 14,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property PromotedPropertiesMissingTypehint\\Foo::$baz is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/promoted-properties-missing-typehint.php",
+                    "line": 15,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property PromotedPropertiesMissingTypehint\\Foo::$lorem is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Properties/data/promoted-properties-missing-typehint.php",
+                    "line": 16,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property PromotedPropertiesMissingTypehint\\Foo::$ipsum is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14012",
+            "files": [
+                "Properties/data/bug-14012.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/bug-14012.php",
+                    "line": 40,
+                    "identifier": "property.defaultValue",
+                    "message": "Static property Bug14012\\ExpectationMethodResolver::$resolvers (array{hasMethod: Closure(PHPStan\\Analyser\\Scope, PhpParser\\Node\\Arg, PhpParser\\Node\\Arg): PhpParser\\Node\\Expr, hasProperty: Closure(PHPStan\\Analyser\\Scope, PhpParser\\Node\\Arg, PhpParser\\Node\\Arg): PhpParser\\Node\\Expr, isArray: Closure(PHPStan\\Analyser\\Scope, PhpParser\\Node\\Arg): PhpParser\\Node\\Expr, isBool: Closure(PHPStan\\Analyser\\Scope, PhpParser\\Node\\Arg): PhpParser\\Node\\Expr, isCallable: Closure(PHPStan\\Analyser\\Scope, PhpParser\\Node\\Arg): PhpParser\\Node\\Expr, isCountable: Closure(PHPStan\\Analyser\\Scope, PhpParser\\Node\\Arg): PhpParser\\Node\\Expr, isFalse: Closure(PHPStan\\Analyser\\Scope, PhpParser\\Node\\Arg): PhpParser\\Node\\Expr, isFloat: Closure(PHPStan\\Analyser\\Scope, PhpParser\\Node\\Arg): PhpParser\\Node\\Expr, ...}) does not accept default value of type array{}.",
+                    "tip": "Array does not have offset 'hasMethod'."
+                }
+            ],
+            "general": []
+        }
+    ]
+}

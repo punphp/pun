@@ -1,0 +1,11 @@
+# Cases of tests/levels.rs that still differ from PHPStan: "<level> <test>::<method>".
+# `extends generic class ... but does not specify its types` (Generics/ClassAncestorsRule, InterfaceAncestorsRule)
+6 Methods/MissingMethodParameterTypehintRuleTest::testFilterIteratorChildClass
+# built-in parents' PHPDocs (phpstorm-stubs): Serializable::unserialize(), PDO::query(), Exception::$message
+6 Methods/MissingMethodParameterTypehintRuleTest::testRule
+6 Methods/MissingMethodReturnTypehintRuleTest::testBug5436
+6 Properties/MissingPropertyTypehintRuleTest::testBug11761
+# `static<array>` (generic static types)
+6 Methods/MissingMethodReturnTypehintRuleTest::testGenericStatic
+# PHPDocs inherited from an abstract trait method with `@use T<...>` arguments
+6 Methods/MissingMethodReturnTypehintRuleTest::testBug9657

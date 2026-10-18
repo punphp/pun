@@ -648,7 +648,19 @@ impl Type {
             }
             Type::Union(types) => union(types.iter().map(Type::iterable_value_type).collect()),
             Type::Template(t) => t.bound.iterable_value_type(),
-            Type::Object(class, args) => iterable_arg(class, args, false),
+            Type::Object(class, args) => {
+                let value = iterable_arg(class, args, false);
+                // an Iterator's `current()` and an IteratorAggregate's `getIterator()` resolve a missing argument
+                // to its bound, an explicit `mixed` (`ObjectType::getIterableValueType()`)
+                if value.is_implicit_mixed()
+                    && (is_instance_of(class, "Iterator").yes()
+                        || is_instance_of(class, "IteratorAggregate").yes())
+                {
+                    Type::Mixed { explicit: true }
+                } else {
+                    value
+                }
+            }
             Type::Static(class) | Type::This(class) => static_object(class).iterable_value_type(),
             Type::Never(_) => Type::Never(NeverKind::Implicit),
             _ => mixed(),
@@ -870,6 +882,14 @@ impl Type {
                 otherwise: f(&c.otherwise),
                 negated: c.negated,
             })),
+            // `ConstantArrayType::traverse()`: the keys and values (and the unsealed `...<K, V>`)
+            Type::ConstArray(a) => {
+                let mut a = a.clone();
+                a.keys = a.keys.iter().map(f).collect();
+                a.values = a.values.iter().map(f).collect();
+                a.unsealed = a.unsealed.map(|(k, v)| (f(&k), f(&v)));
+                Type::ConstArray(a)
+            }
             Type::ObjectShape(props) => Type::ObjectShape(
                 props
                     .iter()
@@ -3312,12 +3332,11 @@ fn template_bound(bound: Type) -> Type {
 
 /// `IterableType::isSuperTypeOfMixed()`
 fn iterable_super_of_mixed(key: &Type, value: &Type, b: &Type) -> Tri {
-    let nested = |x: &Type, y: &Type| {
-        if matches!(x, Type::Mixed { .. }) {
-            Tri::Yes
-        } else {
-            is_super_type_of(x, y)
-        }
+    // `isNestedTypeSuperTypeOf()`: an explicit `mixed` is only maybe wider than an implicit one
+    let nested = |x: &Type, y: &Type| match (x, y) {
+        (Type::Mixed { explicit: true }, Type::Mixed { explicit: false }) => Tri::Maybe,
+        (Type::Mixed { .. }, Type::Mixed { .. }) => Tri::Yes,
+        _ => is_super_type_of(x, y),
     };
     b.is_iterable()
         .and(nested(value, &b.iterable_value_type()))

@@ -1,0 +1,427 @@
+{
+    "test": "Methods/MissingMethodParameterTypehintRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/missing-method-parameter-typehint.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 8,
+                    "identifier": "missingType.parameter",
+                    "message": "Method MissingMethodParameterTypehint\\FooInterface::getFoo() has parameter $p1 with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 15,
+                    "identifier": "missingType.parameter",
+                    "message": "Method MissingMethodParameterTypehint\\FooParent::getBar() has parameter $p2 with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 15,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\FooParent::getBar() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 25,
+                    "identifier": "missingType.parameter",
+                    "message": "Method MissingMethodParameterTypehint\\Foo::getFoo() has parameter $p1 with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 33,
+                    "identifier": "missingType.parameter",
+                    "message": "Method MissingMethodParameterTypehint\\Foo::getBar() has parameter $p2 with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 33,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\Foo::getBar() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 42,
+                    "identifier": "missingType.parameter",
+                    "message": "Method MissingMethodParameterTypehint\\Foo::getBaz() has parameter $p3 with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 58,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method MissingMethodParameterTypehint\\Foo::unionTypeWithUnknownArrayValueTypehint() has parameter $a with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 58,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\Foo::unionTypeWithUnknownArrayValueTypehint() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 91,
+                    "identifier": "missingType.generics",
+                    "message": "Method MissingMethodParameterTypehint\\Bar::acceptsGenericInterface() has parameter $i with generic interface MissingMethodParameterTypehint\\GenericInterface but does not specify its types: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 91,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\Bar::acceptsGenericInterface() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 96,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\Bar::acceptsNonGenericClass() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 101,
+                    "identifier": "missingType.generics",
+                    "message": "Method MissingMethodParameterTypehint\\Bar::acceptsGenericClass() has parameter $c with generic class MissingMethodParameterTypehint\\GenericClass but does not specify its types: A, B",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 101,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\Bar::acceptsGenericClass() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 111,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $collection of method MissingMethodParameterTypehint\\CollectionIterableAndGeneric::acceptsCollection() has invalid type DoctrineIntersectionTypeIsSupertypeOf\\Collection.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 119,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $collection of method MissingMethodParameterTypehint\\CollectionIterableAndGeneric::acceptsCollection2() has invalid type DoctrineIntersectionTypeIsSupertypeOf\\Collection.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 119,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $collection of method MissingMethodParameterTypehint\\CollectionIterableAndGeneric::acceptsCollection2() has invalid type DoctrineIntersectionTypeIsSupertypeOf\\Collection.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 127,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $collection of method MissingMethodParameterTypehint\\CollectionIterableAndGeneric::acceptsCollection3() has invalid type DoctrineIntersectionTypeIsSupertypeOf\\Collection.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 127,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $collection of method MissingMethodParameterTypehint\\CollectionIterableAndGeneric::acceptsCollection3() has invalid type DoctrineIntersectionTypeIsSupertypeOf\\Collection.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 141,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\TraversableInTemplateBound::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 155,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\GenericClassInTemplateBound::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 162,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class MissingMethodParameterTypehint\\SerializableImpl implements the Serializable interface, but does not implement __serialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 162,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class MissingMethodParameterTypehint\\SerializableImpl implements the Serializable interface, but does not implement __unserialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 186,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class MissingMethodParameterTypehint\\SerializableImpl2 implements the Serializable interface, but does not implement __serialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 186,
+                    "identifier": "class.serializable",
+                    "message": "Non-abstract class MissingMethodParameterTypehint\\SerializableImpl2 implements the Serializable interface, but does not implement __unserialize().",
+                    "tip": "See https://wiki.php.net/rfc/phase_out_serializable"
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 207,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method MissingMethodParameterTypehint\\MissingParamOutType::oneArray() has @param-out PHPDoc tag for parameter $a with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 215,
+                    "identifier": "missingType.generics",
+                    "message": "Method MissingMethodParameterTypehint\\MissingParamOutType::generics() has @param-out PHPDoc tag for parameter $a with generic class ReflectionClass but does not specify its types: T",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 226,
+                    "identifier": "missingType.generics",
+                    "message": "Method MissingMethodParameterTypehint\\MissingParamClosureThisType::generics() has @param-closure-this PHPDoc tag for parameter $cb with generic class ReflectionClass but does not specify its types: T",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 265,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\Baz::acceptsGenericWithDefault() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 270,
+                    "identifier": "missingType.generics",
+                    "message": "Method MissingMethodParameterTypehint\\Baz::acceptsGenericWithSomeDefaults() has parameter $c with generic class MissingMethodParameterTypehint\\GenericClassWithSomeDefaults but does not specify its types: T, U (1-2 required)",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-parameter-typehint.php",
+                    "line": 270,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodParameterTypehint\\Baz::acceptsGenericWithSomeDefaults() has no return type specified.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPromotedProperties",
+            "files": [
+                "Methods/data/missing-typehint-promoted-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/missing-typehint-promoted-properties.php",
+                    "line": 8,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method MissingTypehintPromotedProperties\\Foo::__construct() has parameter $foo with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/missing-typehint-promoted-properties.php",
+                    "line": 9,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property MissingTypehintPromotedProperties\\Foo::$foo is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Methods/data/missing-typehint-promoted-properties.php",
+                    "line": 10,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property MissingTypehintPromotedProperties\\Foo::$bar is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Methods/data/missing-typehint-promoted-properties.php",
+                    "line": 21,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method MissingTypehintPromotedProperties\\Bar::__construct() has parameter $foo with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/missing-typehint-promoted-properties.php",
+                    "line": 22,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property MissingTypehintPromotedProperties\\Bar::$foo is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                },
+                {
+                    "file": "Methods/data/missing-typehint-promoted-properties.php",
+                    "line": 23,
+                    "identifier": "property.onlyWritten",
+                    "message": "Property MissingTypehintPromotedProperties\\Bar::$bar is never read, only written.",
+                    "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDeepInspectTypes",
+            "files": [
+                "Methods/data/deep-inspect-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/deep-inspect-types.php",
+                    "line": 11,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method DeepInspectTypes\\Foo::doFoo() has parameter $foo with no value type specified in iterable type iterable.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/deep-inspect-types.php",
+                    "line": 17,
+                    "identifier": "missingType.generics",
+                    "message": "Method DeepInspectTypes\\Foo::doBar() has parameter $bars with generic class DeepInspectTypes\\Bar but does not specify its types: T",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3723",
+            "files": [
+                "Methods/data/bug-3723.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6472",
+            "files": [
+                "Methods/data/bug-6472.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-6472.php (in context of class Bug6472\\B)",
+                    "line": 12,
+                    "identifier": "expr.resultUnused",
+                    "message": "Expression \"new class…\" on a separate line does not do anything.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testFilterIteratorChildClass",
+            "files": [
+                "Methods/data/filter-iterator-child-class.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/filter-iterator-child-class.php",
+                    "line": 7,
+                    "identifier": "missingType.generics",
+                    "message": "Class FilterIteratorChild\\ArchivableFilesFinder extends generic class FilterIterator but does not specify its types: TKey, TValue, TIterator",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/filter-iterator-child-class.php",
+                    "line": 33,
+                    "identifier": "missingType.generics",
+                    "message": "Interface FilterIteratorChild\\IteratorChild extends generic interface Iterator but does not specify its types: TKey, TValue",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/filter-iterator-child-class.php",
+                    "line": 63,
+                    "identifier": "missingType.return",
+                    "message": "Method FilterIteratorChild\\Foo::doFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/filter-iterator-child-class.php",
+                    "line": 71,
+                    "identifier": "missingType.return",
+                    "message": "Method FilterIteratorChild\\Foo::doFoo2() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/filter-iterator-child-class.php",
+                    "line": 81,
+                    "identifier": "missingType.generics",
+                    "message": "Interface FilterIteratorChild\\IteratorChild3 extends generic interface Iterator but does not specify its types: TKey, TValue",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/filter-iterator-child-class.php",
+                    "line": 89,
+                    "identifier": "missingType.return",
+                    "message": "Method FilterIteratorChild\\IteratorChildTest::doFoo() has no return type specified.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug7662",
+            "files": [
+                "Methods/data/bug-7662.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-7662.php",
+                    "line": 6,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method Bug7662\\Foo::__construct() has parameter $bar with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug14549",
+            "files": [
+                "Methods/data/bug-14549.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-14549.php",
+                    "line": 46,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method Bug14549\\Foo::doIntersection() has parameter $array with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/bug-14549.php",
+                    "line": 46,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method Bug14549\\Foo::doIntersection() has parameter $array with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

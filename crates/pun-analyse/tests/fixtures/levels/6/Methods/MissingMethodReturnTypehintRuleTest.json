@@ -1,0 +1,297 @@
+{
+    "test": "Methods/MissingMethodReturnTypehintRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/missing-method-return-typehint.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 8,
+                    "identifier": "missingType.parameter",
+                    "message": "Method MissingMethodReturnTypehint\\FooInterface::getFoo() has parameter $p1 with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 8,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodReturnTypehint\\FooInterface::getFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 15,
+                    "identifier": "missingType.parameter",
+                    "message": "Method MissingMethodReturnTypehint\\FooParent::getBar() has parameter $p2 with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 15,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodReturnTypehint\\FooParent::getBar() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 25,
+                    "identifier": "missingType.parameter",
+                    "message": "Method MissingMethodReturnTypehint\\Foo::getFoo() has parameter $p1 with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 25,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodReturnTypehint\\Foo::getFoo() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 33,
+                    "identifier": "missingType.parameter",
+                    "message": "Method MissingMethodReturnTypehint\\Foo::getBar() has parameter $p2 with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 33,
+                    "identifier": "missingType.return",
+                    "message": "Method MissingMethodReturnTypehint\\Foo::getBar() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 46,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method MissingMethodReturnTypehint\\Foo::unionTypeWithUnknownArrayValueTypehint() return type has no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 46,
+                    "identifier": "return.missing",
+                    "message": "Method MissingMethodReturnTypehint\\Foo::unionTypeWithUnknownArrayValueTypehint() should return array|int|stdClass|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 79,
+                    "identifier": "missingType.generics",
+                    "message": "Method MissingMethodReturnTypehint\\Bar::returnsGenericInterface() return type with generic interface MissingMethodReturnTypehint\\GenericInterface does not specify its types: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 79,
+                    "identifier": "return.missing",
+                    "message": "Method MissingMethodReturnTypehint\\Bar::returnsGenericInterface() should return MissingMethodReturnTypehint\\GenericInterface but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 84,
+                    "identifier": "return.missing",
+                    "message": "Method MissingMethodReturnTypehint\\Bar::returnsNonGenericClass() should return MissingMethodReturnTypehint\\NonGenericClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 89,
+                    "identifier": "missingType.generics",
+                    "message": "Method MissingMethodReturnTypehint\\Bar::returnsGenericClass() return type with generic class MissingMethodReturnTypehint\\GenericClass does not specify its types: A, B",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 89,
+                    "identifier": "return.missing",
+                    "message": "Method MissingMethodReturnTypehint\\Bar::returnsGenericClass() should return MissingMethodReturnTypehint\\GenericClass but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 99,
+                    "identifier": "return.missing",
+                    "message": "Method MissingMethodReturnTypehint\\CallableSignature::doFoo() should return callable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 110,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method MissingMethodReturnTypehint\\IterableIntersection::doFoo() return type has no value type specified in iterable type Traversable.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 110,
+                    "identifier": "return.missing",
+                    "message": "Method MissingMethodReturnTypehint\\IterableIntersection::doFoo() should return Traversable but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 110,
+                    "identifier": "return.unresolvableType",
+                    "message": "PHPDoc tag @return contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 137,
+                    "identifier": "return.missing",
+                    "message": "Method MissingMethodReturnTypehint\\Baz::returnsGenericWithDefault() should return MissingMethodReturnTypehint\\GenericClassWithDefault but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 142,
+                    "identifier": "missingType.generics",
+                    "message": "Method MissingMethodReturnTypehint\\Baz::returnsGenericWithSomeDefaults() return type with generic class MissingMethodReturnTypehint\\GenericClassWithSomeDefaults does not specify its types: T, U (1-2 required)",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/missing-method-return-typehint.php",
+                    "line": 142,
+                    "identifier": "return.missing",
+                    "message": "Method MissingMethodReturnTypehint\\Baz::returnsGenericWithSomeDefaults() should return MissingMethodReturnTypehint\\GenericClassWithSomeDefaults but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIndirectInheritanceBug2740",
+            "files": [
+                "Methods/data/bug2740.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4415",
+            "files": [
+                "Methods/data/bug-4415.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5089",
+            "files": [
+                "Methods/data/bug-5089.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5436",
+            "files": [
+                "Methods/data/bug-5436.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-5436.php",
+                    "line": 7,
+                    "identifier": "missingType.parameter",
+                    "message": "Method Bug5436\\PDO::query() has parameter $fetchModeArgs with no type specified.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4758",
+            "files": [
+                "Methods/data/bug-4758.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9571",
+            "files": [
+                "Methods/data/bug-9571.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9571PhpDocs",
+            "files": [
+                "Methods/data/bug-9571-phpdocs.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericStatic",
+            "files": [
+                "Methods/data/missing-return-type-generic-static.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/missing-return-type-generic-static.php",
+                    "line": 12,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method MissingReturnTypeGenericStatic\\Foo::doFoo() return type has no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/missing-return-type-generic-static.php",
+                    "line": 12,
+                    "identifier": "return.missing",
+                    "message": "Method MissingReturnTypeGenericStatic\\Foo::doFoo() should return static(MissingReturnTypeGenericStatic\\Foo<array>) but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9657",
+            "files": [
+                "Methods/data/bug-9657.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testInheritPhpDocReturnTypeWithNarrowerNativeReturnType",
+            "files": [
+                "Methods/data/inherit-phpdoc-return-type-with-narrower-native-return-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/inherit-phpdoc-return-type-with-narrower-native-return-type.php",
+                    "line": 13,
+                    "identifier": "return.missing",
+                    "message": "Method InheritPhpDocReturnTypeWithNarrowerNativeReturnType\\Foo::doFoo() should return array<string>|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/inherit-phpdoc-return-type-with-narrower-native-return-type.php",
+                    "line": 23,
+                    "identifier": "return.missing",
+                    "message": "Method InheritPhpDocReturnTypeWithNarrowerNativeReturnType\\Bar::doFoo() should return array<string> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

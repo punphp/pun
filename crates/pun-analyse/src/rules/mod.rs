@@ -10,12 +10,15 @@ mod classes;
 mod constants;
 mod declarations;
 mod driver;
+mod declared;
+mod doc;
 mod enums;
 mod functions;
 mod hierarchy;
 mod infer;
 mod members;
 mod names;
+mod missing_types;
 mod params;
 mod properties;
 mod reflection;
@@ -433,7 +436,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     fn report(&mut self, at: impl HasSpan, identifier: &str, message: String, tip: Option<&str>) {
         debug_assert!(
-            IDENTIFIERS.contains(&identifier),
+            IDENTIFIERS.contains(&identifier) || missing_types::IDENTIFIERS.contains(&identifier),
             "{identifier} is not in IDENTIFIERS"
         );
         if self.trait_context.is_some() && !self.in_target {
@@ -855,6 +858,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             .filter(|t| t.from_docblock)
             .map(|t| &t.type_union);
         names::no_discard(
+        missing_types::function(self, f);
             self,
             names::FunctionKind::Function(&name),
             f.span(),
@@ -935,6 +939,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             {
                 hierarchy::callable_property(self, p.span(), p.variable.name, p.hint.as_ref());
             }
+        missing_types::method(self, m);
         }
         if let Some(class) = self.class_scope() {
             let docblock = self
@@ -1298,6 +1303,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
     }
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+        missing_types::property(self, p);
         declarations::constant(self, k);
         constants::class_constant(self, k);
         attributes::check(
@@ -1318,6 +1324,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
         attributes::constant(self, k);
+        missing_types::class_constant(self, k);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         functions::function_like(self, f, &f.parameter_list);

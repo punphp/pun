@@ -1,0 +1,241 @@
+{
+    "test": "Functions/MissingFunctionParameterTypehintRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/missing-function-parameter-typehint.php"
+            ],
+            "scan": [
+                "Functions/data/missing-function-parameter-typehint.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 9,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction() has parameter $b with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 9,
+                    "identifier": "missingType.parameter",
+                    "message": "Function globalFunction() has parameter $c with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 24,
+                    "identifier": "missingType.parameter",
+                    "message": "Function MissingFunctionParameterTypehint\\namespacedFunction() has parameter $d with no type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 31,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\intIterableTypehint() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 36,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingFunctionParameterTypehint\\missingArrayTypehint() has parameter $a with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 36,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\missingArrayTypehint() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 44,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingFunctionParameterTypehint\\missingPhpDocIterableTypehint() has parameter $a with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 44,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\missingPhpDocIterableTypehint() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 52,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\explicitMixedArrayTypehint() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 60,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingFunctionParameterTypehint\\unionTypeWithUnknownArrayValueTypehint() has parameter $a with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 60,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\unionTypeWithUnknownArrayValueTypehint() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 68,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\iterableIntersectionTypehint() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 76,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\iterableIntersectionTypehint2() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 84,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\iterableIntersectionTypehint3() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 92,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\iterableIntersectionTypehint4() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 111,
+                    "identifier": "missingType.generics",
+                    "message": "Function MissingFunctionParameterTypehint\\acceptsGenericInterface() has parameter $i with generic interface MissingFunctionParameterTypehint\\GenericInterface but does not specify its types: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 111,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\acceptsGenericInterface() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 116,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\acceptsNonGenericClass() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 130,
+                    "identifier": "missingType.generics",
+                    "message": "Function MissingFunctionParameterTypehint\\acceptsGenericClass() has parameter $c with generic class MissingFunctionParameterTypehint\\GenericClass but does not specify its types: A, B",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 130,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\acceptsGenericClass() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 135,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingFunctionParameterTypehint\\missingIterableTypehint() has parameter $iterable with no value type specified in iterable type iterable.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 135,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\missingIterableTypehint() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 143,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingFunctionParameterTypehint\\missingIterableTypehintPhpDoc() has parameter $iterable with no value type specified in iterable type iterable.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 143,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\missingIterableTypehintPhpDoc() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 148,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingFunctionParameterTypehint\\missingTraversableTypehint() has parameter $traversable with no value type specified in iterable type Traversable.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 148,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\missingTraversableTypehint() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 156,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingFunctionParameterTypehint\\missingTraversableTypehintPhpDoc() has parameter $traversable with no value type specified in iterable type Traversable.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 156,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\missingTraversableTypehintPhpDoc() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 161,
+                    "identifier": "missingType.return",
+                    "message": "Function MissingFunctionParameterTypehint\\missingCallableSignature() has no return type specified.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 173,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Function MissingParamOutType\\oneArray() has @param-out PHPDoc tag for parameter $a with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 181,
+                    "identifier": "missingType.generics",
+                    "message": "Function MissingParamOutType\\generics() has @param-out PHPDoc tag for parameter $a with generic class ReflectionClass but does not specify its types: T",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/missing-function-parameter-typehint.php",
+                    "line": 191,
+                    "identifier": "missingType.generics",
+                    "message": "Function MissingParamClosureThisType\\generics() has @param-closure-this PHPDoc tag for parameter $cb with generic class ReflectionClass but does not specify its types: T",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

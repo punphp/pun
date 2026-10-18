@@ -276,7 +276,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 3 follow-up (from 3g): names.rs hint_classes misses PHPStan's class.notFound for a `?parent` return and for `self` outside a class | todo |
 | analyse 3 follow-up (from 3g): run the signatures.rs checks on anonymous-class methods beyond parameter defaults, with the anonymous-class naming follow-up below | todo |
 | analyse 3 follow-up (from 3g): replace the TypehintHelper::decideType approximation (pun-phpstan is_super_type_of, Mago is_instance_of on Maybe) with a port once analyse 4 maps Mago types to PHPStan's | todo |
-| analyse 3 follow-up (from 3g, pun-phpstan): pun_phpstan::phpdoc accepts `*` inside a union, PHPStan's parser rejects it | request |
+| analyse 3 follow-up (from 3g, pun-phpstan): pun_phpstan::phpdoc accepts `*` inside a union, PHPStan's parser rejects it | doing (analyse-b): `phpdoc::parse_prefix` (tag values) no longer accepts `*NAME*`; `parse` still does |
 | analyse 3 follow-up (from 3g): codebase.rs rescans with intersections masked to `mixed` when Mago 1.57.0 panics (TUnion::from_vec empty) on an intersection with keyword types; drop the retry when the Mago pin fixes it | todo |
 | analyse 3 follow-up (from 3f): describe the expression type of `instanceof.trait` beyond `$this` and `mixed` (needs analyse 4's Mago-to-PHPStan type descriptions) | todo |
 | analyse 3 follow-up (from 3e): port FunctionCallParametersCheck's argument.* identifiers for attribute constructors (argument.unknown appears at level 0 in ClassAttributesRuleTest::testRule) | todo |
@@ -293,7 +293,11 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 3 follow-up: use the `@method` annotation fallback in CallStaticMethodsRule (static pseudo methods) and class lookups, then check the corpus | todo |
 | analyse 3 follow-up: port upstream's parentTraitNames recursion guard in check_file instead of the (class, trait) dedup | todo |
 | analyse 3 follow-up: apply a trait alias's visibility (`foo as protected`) to the walked trait method | todo |
-| analyse 4-5: type inference; levels 1-10 as the five presets; strict-rules, deprecation rules | todo |
+| analyse 4-5: type inference; levels 1-10 as the five presets; strict-rules, deprecation rules | doing (analyse-b, main): level 6 missingType.* rules ported (rules/missing_types.rs, declared.rs, doc.rs; tests/levels.rs runs `export-rule-fixtures.php --level=N` fixtures) |
+| analyse-b follow-up (level 6): built-in parents' PHPDocs (phpstorm-stubs `@param`/`@return`/`@var` of Serializable, PDO, Exception, ArrayAccess ...) are not inherited; needs a data file extracted from PHPStan's phar | todo |
+| analyse-b follow-up (level 6): generic `static<T>` types, PHPDoc inheritance from abstract trait methods through `@use T<...>`, and Generics/ClassAncestorsRule + InterfaceAncestorsRule (`extends generic class ... but does not specify its types`) | todo |
+| analyse-b request (for the pun-tokens owner): pun-phpstan tests/php.rs `php_helpers` fails since 3c8d807: `preg` compile-error offsets are one past PHP's (`/a)/` offset 2, PHP says 1) | request |
+| analyse-b request (analyse-a): rules/driver.rs, rules/mod.rs and project.rs carry analyse-b's `level` and `checkGenericIterableClasses` plumbing (Project::level, Checks::level, Checker::level, Checker::generic_iterable_classes); please commit them with driver.rs | request |
 | analyse 4-5: all 378 analyse rules native (one PHPStan Rule class each, rules.md §7) | todo |
 | analyse (from mapping): re-link `fixed_by` from analyse/types/missing-param-type, missing-property-type and missing-return-type to the split lint type rules where one fits | todo |
 | analyse (from mapping): consider dedicated home rules for identifiers that many classes emit (class.notFound, missingType.iterableValue), so migrated ignores read naturally | todo |

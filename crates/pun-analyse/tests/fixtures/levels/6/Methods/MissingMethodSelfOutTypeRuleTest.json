@@ -1,0 +1,29 @@
+{
+    "test": "Methods/MissingMethodSelfOutTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Methods/data/missing-method-self-out-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/missing-method-self-out-type.php",
+                    "line": 14,
+                    "identifier": "missingType.iterableValue",
+                    "message": "Method MissingMethodSelfOutType\\Foo::doFoo() has PHPDoc tag @phpstan-self-out with no value type specified in iterable type array.",
+                    "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type"
+                },
+                {
+                    "file": "Methods/data/missing-method-self-out-type.php",
+                    "line": 22,
+                    "identifier": "missingType.generics",
+                    "message": "Method MissingMethodSelfOutType\\Foo::doFoo2() has PHPDoc tag @phpstan-self-out with generic class MissingMethodSelfOutType\\Foo but does not specify its types: T",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}
