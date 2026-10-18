@@ -252,9 +252,10 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse (needs Pushpak): decide how Mago issues map to Pun rules; forwarding mapped codes gives 226 false errors on Pinkary at level 0, reports/analyse-spike.md proposes Pun checks that read Mago's types, using a Mago issue directly only where its table says yes | todo |
 | analyse 1-2 follow-up (from bench): switch the `pun` row of `BENCH=analyse` in scripts/bench.py from crates/pun-analyse/examples/analyse.rs to `pun analyse` once it exists | todo |
 | analyse 1-2 follow-up (from perf analyse 1): `pun analyse` in pun-cli calls `pun_analyse::analyse` so it gets the parallel pipeline; its global rayon pool is shared with format/lint and capped by `--max-processes` | todo |
-| analyse 3: finish level 0: ~100 rules left, 40 gaps, corpus diffs 1/6/5/15 | todo; analyse agent stopped at 43d9857, trait-method and facade-alias WIP uncommitted |
-| analyse 3 follow-up: fix the 5 gaps.txt cases that regressed with 138dab1's trait-context change (new.static and arguments.count reported per using class, shadowed trait method, variadic @method arity) | todo |
-| analyse 3 follow-up (from perf analyse 1, also on HEAD before it): a class in an analysed file using a trait declared only in a scanned file (scanDirectories) gets the trait's errors as 'lib/T.php (in context of class C)'; PHPStan 2.2.7 reports nothing | todo |
+| analyse 3: finish level 0: ~100 rules left, 37 gaps, corpus diffs 1/6/5/15 | todo; trait-in-context work redone (analyse 3a); only the facade-alias work remains, as analyse 6 |
+| analyse 3 follow-up: use the `@method` annotation fallback in CallStaticMethodsRule (static pseudo methods) and class lookups, then check the corpus | todo |
+| analyse 3 follow-up: port upstream's parentTraitNames recursion guard in check_file instead of the (class, trait) dedup | todo |
+| analyse 3 follow-up: apply a trait alias's visibility (`foo as protected`) to the walked trait method | todo |
 | analyse 4-5: type inference; levels 1-10 as the five presets; strict-rules, deprecation rules | todo |
 | analyse 4-5: all 378 analyse rules native (one PHPStan Rule class each, rules.md §7) | todo |
 | analyse (from mapping): re-link `fixed_by` from analyse/types/missing-param-type, missing-property-type and missing-return-type to the split lint type rules where one fits | todo |
