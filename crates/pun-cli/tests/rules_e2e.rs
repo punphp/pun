@@ -5,6 +5,7 @@
 //! `pun check --fix` must write the same file, and `pun check` must exit the same and name the same rule (in Pun's
 //! own output, under its Pun ID) or the same syntax error.
 
+mod common;
 #[path = "common/prettier.rs"]
 mod prettier;
 
@@ -13,9 +14,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 fn project(case: &Value, i: usize) -> PathBuf {
-    let d = std::env::temp_dir().join(format!("pun-rules-e2e-{}-{i}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&d);
-    std::fs::create_dir_all(&d).unwrap();
+    let d = common::scratch("rules-e2e", &i.to_string());
     if let Some(cfg) = case.get("pint.json") {
         std::fs::write(d.join("pint.json"), cfg.to_string()).unwrap();
         assert_eq!(pun(&d, &["migrate"]).0, 0, "{cfg}");

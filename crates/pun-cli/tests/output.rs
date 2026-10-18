@@ -6,51 +6,16 @@
 //! skipped without the oracle.
 mod common;
 
+use common::{migrate, oracle, scratch, write_files};
+
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::atomic::{AtomicUsize, Ordering};
-
-fn oracle() -> Option<PathBuf> {
-    let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle/pint/builds/pint");
-    p.exists().then(|| p.canonicalize().unwrap())
-}
-
-fn tmp(name: &str) -> PathBuf {
-    static N: AtomicUsize = AtomicUsize::new(0);
-    let d = std::env::temp_dir().join(format!(
-        "pun-out-{name}-{}-{}",
-        std::process::id(),
-        N.fetch_add(1, Ordering::Relaxed)
-    ));
-    let _ = std::fs::remove_dir_all(&d);
-    std::fs::create_dir_all(&d).unwrap();
-    d.canonicalize().unwrap()
-}
 
 /// Recreates `dir` with `files` (fresh directory, so readdir order is the same for both tools).
 fn reset(dir: &Path, files: &[(&str, &str)]) {
     let _ = std::fs::remove_dir_all(dir);
-    for (f, c) in files {
-        let p = dir.join(f);
-        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
-        std::fs::write(p, c).unwrap();
-    }
-}
-
-fn snapshot(dir: &Path, rel: &str, out: &mut BTreeMap<String, Vec<u8>>) {
-    for e in std::fs::read_dir(dir.join(rel)).unwrap().flatten() {
-        let r = format!("{rel}{}", e.file_name().to_string_lossy());
-        // Written by `pun migrate` for Pun's run.
-        if e.path().is_symlink() || r == "pun.toml" {
-            continue;
-        }
-        if e.path().is_dir() {
-            snapshot(dir, &format!("{r}/"), out)
-        } else {
-            out.insert(r, std::fs::read(e.path()).unwrap());
-        }
-    }
+    write_files(dir, files);
 }
 
 #[derive(Debug, PartialEq)]
@@ -123,8 +88,8 @@ fn run(cmd: &[&str], dir: &Path, o: Opts) -> Run {
         .stdin(std::process::Stdio::null())
         .output()
         .unwrap();
-    let mut files = BTreeMap::new();
-    snapshot(dir, "", &mut files);
+    // pun.toml: written by `pun migrate` for Pun's run.
+    let files = common::snapshot(dir, |r| r == "pun.toml");
     // A pty turns `\n` into `\r\n`; BSD's script echoes the closed stdin as `^D` and two backspaces first.
     let text = |b: &[u8]| {
         let t = String::from_utf8_lossy(b).replace("\r\n", "\n");
@@ -144,20 +109,6 @@ const PUN: [&str; 2] = [env!("CARGO_BIN_EXE_pun"), "format"];
 /// is what runs it next to the format rules, as Pint does.
 const CHECK_FIX: [&str; 3] = [env!("CARGO_BIN_EXE_pun"), "check", "--fix"];
 
-fn migrate(dir: &Path) {
-    let out = Command::new(PUN[0])
-        .arg("migrate")
-        .env("PUN_AGENT", "0")
-        .current_dir(dir)
-        .output()
-        .unwrap();
-    assert!(
-        out.status.success(),
-        "{}",
-        String::from_utf8_lossy(&out.stderr)
-    );
-}
-
 struct Cx {
     oracle: PathBuf,
     dir: PathBuf,
@@ -167,7 +118,7 @@ impl Cx {
     fn new(name: &str) -> Option<Cx> {
         Some(Cx {
             oracle: oracle()?,
-            dir: tmp(name),
+            dir: scratch("out", name),
         })
     }
 
@@ -433,7 +384,7 @@ fn sample_tree(broken: bool) -> Vec<(&'static str, &'static str)> {
 
 /// `pun <args>` on a fresh copy of `tree`: stdout (the time in the summary as `T`) and the exit code.
 fn sample(tree: &[(&str, &str)], args: &[&str], o: Opts) -> (String, Option<i32>) {
-    let dir = tmp("sample");
+    let dir = scratch("out", "sample");
     reset(&dir, tree);
     let r = run(&[&[env!("CARGO_BIN_EXE_pun")][..], args].concat(), &dir, o);
     (timeless(&r.stdout), r.code)
@@ -810,7 +761,7 @@ fn error_boxes_like_pint() {
         "{h:?}"
     );
     // Unreadable / unwritable files abort the run (kept outside the snapshotted tree).
-    let outside = tmp("perm").join("Fix.php");
+    let outside = scratch("out", "perm").join("Fix.php");
     // --bail stops there too.
     for (mode, before, args) in [
         (0o000, &[][..], &["--test"][..]),
@@ -879,7 +830,7 @@ fn error_boxes_like_pint() {
 /// wording. Hand-derived from GitlabReporter::generate (Pint has no such rules to run).
 #[test]
 fn gitlab_custom_rule() {
-    let dir = tmp("gitlab");
+    let dir = scratch("out", "gitlab");
     reset(
         &dir,
         &[
@@ -1019,7 +970,7 @@ fn prettier_preflight_like_pint() {
     cx.same_abort(&old, &["--test"], PLAIN, "✖ `format/laravel/blade` needs newer prettier packages: prettier 2.1.0 (needs ^3.8.4), prettier-plugin-tailwindcss 0.9.1 (needs ^0.8.0)\n  update them: yarn add -D prettier@^3.8.4 prettier-plugin-tailwindcss@^0.8.0\n");
     cx.same_abort(&old, &["--test", "--format=json"], PLAIN, "");
     // No Node.js on PATH.
-    let bin = tmp("nonode");
+    let bin = scratch("out", "nonode");
     for b in ["php", "sh"] {
         std::os::unix::fs::symlink(which(b), bin.join(b)).unwrap();
     }
@@ -1035,7 +986,7 @@ fn prettier_preflight_like_pint() {
 /// line), in the same problem block. Hand-derived: Pint itself always has PHP.
 #[test]
 fn syntax_error_without_php() {
-    let dir = tmp("nophp");
+    let dir = scratch("out", "nophp");
     reset(
         &dir,
         &[
@@ -1112,7 +1063,7 @@ fn fixer_exception_like_pint() {
 /// syntax errors at PHP's line and the first column; fixed files print nothing.
 #[test]
 fn github_annotations() {
-    let dir = tmp("github");
+    let dir = scratch("out", "github");
     reset(
         &dir,
         &[
@@ -1223,7 +1174,7 @@ fn github_annotations() {
 /// its file as `fixer-error`, and Pun exits 2.
 #[test]
 fn github_fixer_error() {
-    let dir = tmp("github-crash");
+    let dir = scratch("out", "github-crash");
     reset(
         &dir,
         &[
@@ -1278,7 +1229,7 @@ fn github_fixer_error() {
 /// hint under it) on stderr, with and without colour; findings still exit 1 and a clean run 0.
 #[test]
 fn run_errors_exit_2() {
-    let dir = tmp("runerr");
+    let dir = scratch("out", "runerr");
     reset(&dir, &[("app/A.php", "<?php\n$a = array(1);\n")]);
     let pun = |args: &[&str]| {
         let r = run(

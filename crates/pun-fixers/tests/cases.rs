@@ -1,9 +1,10 @@
 //! Extra cases for branches the upstream fixtures miss: tests/cases/<fixer>.json is a list of
 //! `{"fixer", "config"?, "input", "expected"}` where `expected` is the real PHP-CS-Fixer's output for
 //! `input` (fixer alone, default whitespace config; scripts/oracle-case.php; Pint's own fixers: scripts/export-pint-fixer-cases.php,
-//! with an optional `path` for `supports`). Same checks as AbstractFixerTestCase::doTest.
+//! with an optional `path` for `supports`). Same checks as AbstractFixerTestCase::doTest (tests/common).
 //! `{"fixer", "config", "error"}` cases (scripts/oracle-config-error.php) pin the message of an invalid configuration.
 extern crate punphp_fixers as pun_fixers;
+mod common;
 use serde_json::Value;
 use std::path::Path;
 
@@ -47,32 +48,18 @@ fn oracle_cases() {
                     .and_then(Value::as_str)
                     .unwrap_or("test.php"),
             );
-            let mut problems = Vec::new();
-            let mut tokens = pun_tokens::Tokens::from_code(input.as_bytes());
-            if tokens.count() > 0 && fixer.is_candidate(&tokens) && fixer.supports(file) {
-                fixer.fix(file, &mut tokens);
-            }
-            let got = tokens.generate_code();
-            if got != expected.as_bytes() {
-                problems.push(format!("got:\n{}", String::from_utf8_lossy(&got)));
-            }
-            if input != expected && !tokens.is_changed() {
-                problems.push("tokens not marked changed".into());
-            }
-            let mut tokens = pun_tokens::Tokens::from_code(expected.as_bytes());
-            if tokens.count() > 0 && fixer.is_candidate(&tokens) && fixer.supports(file) {
-                fixer.fix(file, &mut tokens);
-            }
-            if tokens.generate_code() != expected.as_bytes() {
-                problems.push("expected code changed".into());
-            }
+            // doTest's input is null when the code is already fixed.
+            let input = (input != expected).then_some(input);
+            let (problems, got) = common::do_test(&*fixer, file, expected, input);
             if problems.is_empty() {
                 p += 1;
             } else {
                 fail += 1;
                 eprintln!(
-                    "--- {name} case {i} ---\ninput:\n{input}\nexpected:\n{expected}\n{}",
-                    problems.join("\n")
+                    "--- {name} case {i} ({}) ---\ninput:\n{}\nexpected:\n{expected}\ngot:\n{}",
+                    problems.join(", "),
+                    input.unwrap_or(expected),
+                    String::from_utf8_lossy(&got)
                 );
             }
         }

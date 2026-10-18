@@ -1,6 +1,103 @@
 //! Shared by the tests that run `pun format` next to Pint. Human output is Pun's own (output.md §1), so a human run
 //! that ends in a summary (Pint's Termwind box, Pun's summary line) is compared by the files each tool names; abort
 //! boxes, `-q`, stdin and every `--format` stay byte for byte.
+//!
+//! Also the scratch-project helpers every end-to-end test uses, and `pty` for the interactive commands.
+#![allow(dead_code, reason = "each test binary uses some of the helpers")]
+pub mod pty;
+
+use std::collections::BTreeMap;
+use std::path::{Path, PathBuf};
+use std::process::Command;
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+pub const PUN: &str = env!("CARGO_BIN_EXE_pun");
+
+/// The pinned Pint (`scripts/oracle.sh`), canonical so paths in its output match; `None` skips the Pint cases.
+pub fn oracle() -> Option<PathBuf> {
+    let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle/pint/builds/pint");
+    p.exists().then(|| p.canonicalize().unwrap())
+}
+
+/// A fresh, empty directory `pun-<prefix>-<name>-<pid>-<n>` under the temp dir, canonical.
+pub fn scratch(prefix: &str, name: &str) -> PathBuf {
+    static N: AtomicUsize = AtomicUsize::new(0);
+    let d = std::env::temp_dir().join(format!(
+        "pun-{prefix}-{name}-{}-{}",
+        std::process::id(),
+        N.fetch_add(1, Ordering::Relaxed)
+    ));
+    let _ = std::fs::remove_dir_all(&d);
+    std::fs::create_dir_all(&d).unwrap();
+    d.canonicalize().unwrap()
+}
+
+/// Writes each `(path, content)` under `dir`, creating parent directories.
+pub fn write_files(dir: &Path, files: &[(&str, &str)]) {
+    for (f, c) in files {
+        let p = dir.join(f);
+        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+        std::fs::write(p, c).unwrap();
+    }
+}
+
+/// A scratch project holding `files`.
+pub fn project(prefix: &str, name: &str, files: &[(&str, &str)]) -> PathBuf {
+    let d = scratch(prefix, name);
+    write_files(&d, files);
+    d
+}
+
+/// The text of `f` under `d`.
+pub fn read(d: &Path, f: &str) -> String {
+    std::fs::read_to_string(d.join(f)).unwrap()
+}
+
+/// Every file under `dir` by its `/`-separated relative path, except symlinks and the paths `skip` names (checked
+/// for directories too). An unreadable file reads as `<unreadable>`.
+pub fn snapshot(dir: &Path, skip: impl Fn(&str) -> bool) -> BTreeMap<String, Vec<u8>> {
+    fn walk(
+        dir: &Path,
+        rel: &str,
+        skip: &dyn Fn(&str) -> bool,
+        out: &mut BTreeMap<String, Vec<u8>>,
+    ) {
+        for e in std::fs::read_dir(dir.join(rel)).unwrap().flatten() {
+            let r = if rel.is_empty() {
+                e.file_name().to_string_lossy().into_owned()
+            } else {
+                format!("{rel}/{}", e.file_name().to_string_lossy())
+            };
+            if skip(&r) || e.path().is_symlink() {
+                continue;
+            }
+            if e.path().is_dir() {
+                walk(dir, &r, skip, out)
+            } else {
+                let content = std::fs::read(e.path()).unwrap_or_else(|_| b"<unreadable>".to_vec());
+                out.insert(r, content);
+            }
+        }
+    }
+    let mut out = BTreeMap::new();
+    walk(dir, "", &skip, &mut out);
+    out
+}
+
+/// `pun migrate` in `dir`, which must succeed.
+pub fn migrate(dir: &Path) {
+    let out = Command::new(PUN)
+        .arg("migrate")
+        .env("PUN_AGENT", "0")
+        .current_dir(dir)
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+}
 
 /// Whether `args` print human output: no `--format`, no `-q` (alone or in a short-option group), no stdin.
 pub fn human(args: &[&str]) -> bool {

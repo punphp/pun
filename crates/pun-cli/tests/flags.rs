@@ -8,11 +8,12 @@
 //! Skipped without the oracle.
 mod common;
 
+use common::{oracle, scratch};
+
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 /// A committed repo on `main`: fixable files (`bad`), a clean one, a vendor file, a corpus file when available.
 const BASE: &str = r#"
@@ -53,41 +54,6 @@ bad sub/Untr.php; bad "sub/Un tr.php"
 g mv app/Ren.php app/Renamed.php; g rm -q app/Del.php
 "#;
 
-fn oracle() -> Option<PathBuf> {
-    let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle/pint/builds/pint");
-    p.exists().then_some(p)
-}
-
-fn tmp(name: &str) -> PathBuf {
-    static N: AtomicUsize = AtomicUsize::new(0);
-    let d = std::env::temp_dir().join(format!(
-        "pun-flags-{name}-{}-{}",
-        std::process::id(),
-        N.fetch_add(1, Ordering::Relaxed)
-    ));
-    let _ = std::fs::remove_dir_all(&d);
-    std::fs::create_dir_all(&d).unwrap();
-    d.canonicalize().unwrap()
-}
-
-fn snapshot(dir: &Path, rel: &str, out: &mut BTreeMap<String, Vec<u8>>) {
-    for e in std::fs::read_dir(dir.join(rel)).unwrap().flatten() {
-        let r = if rel.is_empty() {
-            e.file_name().to_string_lossy().into_owned()
-        } else {
-            format!("{rel}/{}", e.file_name().to_string_lossy())
-        };
-        if r == ".git" || r == "home" || r.ends_with("pun.toml") || e.path().is_symlink() {
-            continue;
-        }
-        if e.path().is_dir() {
-            snapshot(dir, &r, out)
-        } else {
-            out.insert(r, std::fs::read(e.path()).unwrap());
-        }
-    }
-}
-
 #[derive(Debug, PartialEq)]
 struct Run {
     stdout: String,
@@ -107,7 +73,7 @@ fn run(
     migrate: Option<&[&str]>,
 ) -> Run {
     // One path per test thread, so a path wrapped in an error box is the same for both tools.
-    thread_local! { static REPO: PathBuf = tmp("repo"); }
+    thread_local! { static REPO: PathBuf = scratch("flags", "repo"); }
     let dir = REPO.with(PathBuf::clone);
     std::fs::remove_dir_all(&dir).unwrap();
     std::fs::create_dir_all(&dir).unwrap();
@@ -159,8 +125,9 @@ fn run(
     let mut child = c.spawn().unwrap();
     child.stdin.take().unwrap().write_all(stdin).unwrap();
     let out = child.wait_with_output().unwrap();
-    let mut files = BTreeMap::new();
-    snapshot(&dir, "", &mut files);
+    let files = common::snapshot(&dir, |r| {
+        r == ".git" || r == "home" || r.ends_with("pun.toml")
+    });
     let root = dir.to_string_lossy().into_owned();
     let norm = |b: &[u8]| {
         String::from_utf8_lossy(b)

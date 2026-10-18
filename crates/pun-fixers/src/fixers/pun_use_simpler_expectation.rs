@@ -171,13 +171,7 @@ fn single_comparison(tokens: &Tokens, open: usize, close: usize) -> Option<(usiz
 #[cfg(test)]
 mod tests {
     fn fix(code: &str) -> String {
-        let mut tokens = pun_tokens::Tokens::from_code(code.as_bytes());
-        // Gate on is_candidate like Pipeline::run does, so a too-strict candidate check fails the cases.
-        let f = super::fixer();
-        if f.is_candidate(&tokens) {
-            f.fix(std::path::Path::new("t.php"), &mut tokens);
-        }
-        String::from_utf8(tokens.generate_code()).unwrap()
+        crate::fix_with(&*super::fixer(), code)
     }
 
     #[test]

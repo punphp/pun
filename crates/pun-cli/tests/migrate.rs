@@ -1,14 +1,14 @@
 //! `pun migrate` end to end. Expectations are hand-derived from pint.json and context/plan/rules.md §4, or come from the real
 //! Pint (`php .oracle/pint/builds/pint`) on the unmigrated project.
-#[path = "common/pty.rs"]
 mod common;
 
-use common::{pun, read};
+use common::pty::pun;
+use common::read;
 use std::path::{Path, PathBuf};
 
 /// `pun migrate` on a pseudo-terminal, typing `keys` (printf escapes) once it is up. The output with `\r` removed.
 fn pty(dir: &Path, keys: &str) -> String {
-    let (out, code) = common::pty(dir, "migrate", keys, &[]);
+    let (out, code) = common::pty::pty(dir, "migrate", keys, &[]);
     assert_eq!(code, Some(0), "{out}");
     out
 }

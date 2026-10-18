@@ -1,31 +1,18 @@
 //! Speed features with timing-free, hand-derived expectations: `PUN_PROFILE` stage counts.
+mod common;
+
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 fn project(name: &str, files: &[(&str, &str)]) -> PathBuf {
-    static N: AtomicUsize = AtomicUsize::new(0);
-    let d = std::env::temp_dir().join(format!(
-        "pun-perf-{name}-{}-{}",
-        std::process::id(),
-        N.fetch_add(1, Ordering::Relaxed)
-    ));
-    let _ = std::fs::remove_dir_all(&d);
-    for (f, c) in [
+    let base = [
         ("composer.json", r#"{"require":{"php":"^8.4"}}"#),
         (
             "pun.toml",
             "[format]\npreset = \"empty\"\n[format.rules]\n\"whitespace/no-trailing\" = true\n",
         ),
-    ]
-    .iter()
-    .chain(files)
-    {
-        let p = d.join(f);
-        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
-        std::fs::write(p, c).unwrap();
-    }
-    d.canonicalize().unwrap()
+    ];
+    common::project("perf", name, &[&base[..], files].concat())
 }
 
 fn pun(dir: &Path, env: &[(&str, &str)], args: &[&str]) -> Output {

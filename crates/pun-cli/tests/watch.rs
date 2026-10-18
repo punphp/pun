@@ -4,52 +4,20 @@
 //! runs, errors don't stop the watch, and removing the project ends it with exit 0. Skipped without the oracle.
 mod common;
 
+use common::{PUN, migrate, oracle, scratch, write_files};
+
 use std::io::Read;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::{Command, Stdio};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-fn oracle() -> Option<PathBuf> {
-    let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle/pint/builds/pint");
-    p.exists().then(|| p.canonicalize().unwrap())
-}
-
-fn fresh(name: &str) -> PathBuf {
-    let d = std::env::temp_dir().join(format!("pun-watch-{name}-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&d);
-    std::fs::create_dir_all(&d).unwrap();
-    d.canonicalize().unwrap()
-}
-
-fn migrate(dir: &Path) {
-    let out = Command::new(env!("CARGO_BIN_EXE_pun"))
-        .arg("migrate")
-        .env("PUN_AGENT", "0")
-        .current_dir(dir)
-        .output()
-        .unwrap();
-    assert!(
-        out.status.success(),
-        "{}",
-        String::from_utf8_lossy(&out.stderr)
-    );
-}
-
-fn write(dir: &Path, files: &[(&str, &str)]) {
-    for (f, c) in files {
-        let p = dir.join(f);
-        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
-        std::fs::write(p, c).unwrap();
-    }
-}
-
 /// Pint's stdout on `files` (on top of `before`, all fresh in a scratch copy; the whole project unless `explicit`),
 /// and the resulting `files`' contents.
 fn pint(before: &[(&str, &str)], files: &[(&str, &str)], explicit: bool) -> (String, Vec<String>) {
-    let dir = fresh("oracle");
-    write(&dir, before);
-    write(&dir, files);
+    let dir = scratch("watch", "oracle");
+    write_files(&dir, before);
+    write_files(&dir, files);
     let mut args = vec![oracle().unwrap().to_str().unwrap().to_string()];
     args.extend(files.iter().filter(|_| explicit).map(|f| f.0.to_string()));
     let out = Command::new("php")
@@ -79,7 +47,7 @@ impl Drop for Reap {
 }
 
 fn watcher(dir: &Path, home: &Path) -> Command {
-    let mut c = Command::new(env!("CARGO_BIN_EXE_pun"));
+    let mut c = Command::new(PUN);
     c.args(["format", "--watch"])
         .current_dir(dir)
         .env_clear()
@@ -117,10 +85,10 @@ fn watch_reformats_like_pint() {
         ("app/A.php", "<?php\n$a = array(1,2);\n"),
         ("app/Clean.php", "<?php\n\n$c = 1;\n"),
     ];
-    let dir = fresh("live");
-    write(&dir, &start);
+    let dir = scratch("watch", "live");
+    write_files(&dir, &start);
     migrate(&dir);
-    let home = fresh("home");
+    let home = scratch("watch", "home");
     let mut child = Reap(
         watcher(&dir, &home)
             .stdin(Stdio::null())
@@ -186,8 +154,8 @@ fn watch_reformats_like_pint() {
         ("app/Skip.php", "<?php\n$s = array(1);\n"),
         ("vendor/V.php", "<?php\n$v = array(1);\n"),
     ];
-    write(&dir, &excluded);
-    write(&dir, &edits);
+    write_files(&dir, &excluded);
+    write_files(&dir, &edits);
     let (second, after) = pint(&fixed, &edits, true);
     assert!(second.contains("2 files"), "{second}");
     wait_for("the re-run", &out, |o| runs(o).len() >= 2);
@@ -211,11 +179,11 @@ fn watch_reformats_like_pint() {
 
     // A broken pun.toml, then an unreadable file: reported on stderr, and the watch goes on.
     let toml = std::fs::read_to_string(dir.join("pun.toml")).unwrap();
-    write(&dir, &[("pun.toml", "[format")]);
+    write_files(&dir, &[("pun.toml", "[format")]);
     wait_for("the config error", &err, |e| {
         e.contains(&format!("invalid {}/pun.toml", dir.display()))
     });
-    write(&dir, &[("pun.toml", &toml), ("app/U.php", "<?php\n")]);
+    write_files(&dir, &[("pun.toml", &toml), ("app/U.php", "<?php\n")]);
     std::fs::set_permissions(
         dir.join("app/U.php"),
         std::os::unix::fs::PermissionsExt::from_mode(0o000),
@@ -240,10 +208,10 @@ fn watch_reformats_like_pint() {
 /// The watch ends when the process that started it does (here a shell that exits right after starting it).
 #[test]
 fn watch_ends_with_its_parent() {
-    let dir = fresh("orphan");
-    write(&dir, &[("pint.json", "{}"), ("a.php", "<?php\n")]);
+    let dir = scratch("watch", "orphan");
+    write_files(&dir, &[("pint.json", "{}"), ("a.php", "<?php\n")]);
     migrate(&dir);
-    let home = fresh("orphan-home");
+    let home = scratch("watch", "orphan-home");
     let w = watcher(&dir, &home);
     let program = w.get_program().to_str().unwrap().to_string();
     let args: Vec<String> = w

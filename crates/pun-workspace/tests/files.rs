@@ -2,25 +2,13 @@
 //! the plan's rules: the `[files]` set walks `paths` like PHP-CS-Fixer's `Finder::create()` and drops pun.toml's
 //! excludes (globs and plain prefixes matched Mago's way, relative to the project root); `format` is Pint's finder.
 extern crate punphp_workspace as pun_workspace;
+mod common;
+
 use pun_workspace::{Command, FinderError, files, is_path_excluded};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 fn tree(files: &[&str]) -> PathBuf {
-    static N: AtomicUsize = AtomicUsize::new(0);
-    let root = std::env::temp_dir().join(format!(
-        "pun-files-{}-{}",
-        std::process::id(),
-        N.fetch_add(1, Ordering::Relaxed)
-    ));
-    let _ = std::fs::remove_dir_all(&root);
-    for f in files {
-        let p = root.join(f);
-        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
-        std::fs::write(p, "<?php\n").unwrap();
-    }
-    std::fs::create_dir_all(&root).unwrap();
-    root.canonicalize().unwrap()
+    common::tree("files", files, "<?php\n")
 }
 
 fn list(

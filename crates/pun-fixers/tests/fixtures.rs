@@ -6,6 +6,7 @@
 //! config from the `whitespacesConfig` arg or a literal `new WhitespacesFixerConfig(...)` in the body;
 //! input must be a candidate and fix to expected (and mark tokens changed); expected must stay unchanged.
 extern crate punphp_fixers as pun_fixers;
+mod common;
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use serde_json::Value;
 use std::path::{Path, PathBuf};
@@ -260,40 +261,8 @@ fn upstream_fixtures() {
                         continue;
                     }
                     fixer.set_whitespaces_config(&ws);
-                    let supported = fixer.supports(&file);
-                    let mut problems = Vec::new();
-                    let mut got_text = Vec::new();
-                    if let Some(input) = &input {
-                        let mut tokens = pun_tokens::Tokens::from_code(input.as_bytes());
-                        if supported {
-                            if !fixer.is_candidate(&tokens) {
-                                problems.push("not a candidate for input")
-                            }
-                            fixer.fix(&file, &mut tokens);
-                        }
-                        let got = tokens.generate_code();
-                        if got != expected.as_bytes() {
-                            problems.push("input did not fix to expected")
-                        }
-                        if !tokens.is_changed() {
-                            problems.push("tokens not marked changed")
-                        }
-                        got_text = got;
-                    }
-                    let mut tokens = pun_tokens::Tokens::from_code(expected.as_bytes());
-                    // AbstractFixer::fix: applyFix only for non-empty, candidate, supported input.
-                    if supported && tokens.count() > 0 && fixer.is_candidate(&tokens) {
-                        fixer.fix(&file, &mut tokens);
-                    }
-                    let got2 = tokens.generate_code();
-                    if got2 != expected.as_bytes() {
-                        problems.push("expected code changed");
-                        if input.is_none() {
-                            got_text = got2
-                        }
-                    } else if tokens.is_changed() {
-                        problems.push("expected tokens marked changed")
-                    }
+                    let (problems, got_text) =
+                        common::do_test(&*fixer, &file, &expected, input.as_deref());
                     if problems.is_empty() {
                         p += 1
                     } else {

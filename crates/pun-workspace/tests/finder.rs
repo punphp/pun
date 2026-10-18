@@ -3,36 +3,24 @@
 //! every discovered regular file ("N) path") and counts every discovered file, symlinks included ("Found x of N").
 //! Our side must produce the same set and count. Skipped when the oracle is not installed.
 extern crate punphp_workspace as pun_workspace;
+mod common;
+
 use pun_workspace::{GitSelect, discover, git_paths, is_path_excluded};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 const BAD: &str = "<?PHP\necho 1;\n";
+
+fn tree(files: &[&str], pint_json: &str) -> PathBuf {
+    let root = common::tree("finder", files, BAD);
+    std::fs::write(root.join("pint.json"), pint_json).unwrap();
+    root
+}
 
 fn oracle() -> Option<PathBuf> {
     let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle/pint/builds/pint");
     p.exists().then_some(p)
-}
-
-/// A temp project with `files` (each `BAD`) and `pint.json` = `pint_json` merged over the base rules.
-fn tree(files: &[&str], pint_json: &str) -> PathBuf {
-    static N: AtomicUsize = AtomicUsize::new(0);
-    let root = std::env::temp_dir().join(format!(
-        "pun-finder-{}-{}",
-        std::process::id(),
-        N.fetch_add(1, Ordering::Relaxed)
-    ));
-    let _ = std::fs::remove_dir_all(&root);
-    for f in files {
-        let p = root.join(f);
-        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
-        std::fs::write(p, BAD).unwrap();
-    }
-    std::fs::create_dir_all(&root).unwrap();
-    std::fs::write(root.join("pint.json"), pint_json).unwrap();
-    root.canonicalize().unwrap()
 }
 
 fn json(extra: &str) -> String {

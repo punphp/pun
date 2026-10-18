@@ -8,11 +8,12 @@ mod common;
 #[path = "common/prettier.rs"]
 mod prettier;
 
+use common::{PUN, migrate, oracle, scratch, write_files};
+
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 const PINT_JSON: &str = r#"{"preset":"empty","rules":{"array_syntax":true,"no_trailing_whitespace":true,"trim_array_spaces":true,"whitespace_after_comma_in_array":true}}"#;
 const LONG: &str = "app/Long/VeryLongDirectoryNameToForceTruncationOfTheDescription/File.php";
@@ -29,23 +30,6 @@ fn files() -> Vec<(&'static str, &'static str)> {
     ]
 }
 
-fn oracle() -> Option<PathBuf> {
-    let p = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oracle/pint/builds/pint");
-    p.exists().then_some(p)
-}
-
-fn tmp(name: &str) -> PathBuf {
-    static N: AtomicUsize = AtomicUsize::new(0);
-    let d = std::env::temp_dir().join(format!(
-        "pun-cli-{name}-{}-{}",
-        std::process::id(),
-        N.fetch_add(1, Ordering::Relaxed)
-    ));
-    let _ = std::fs::remove_dir_all(&d);
-    std::fs::create_dir_all(&d).unwrap();
-    d.canonicalize().unwrap()
-}
-
 /// Writes `files` into `dir` (after wiping everything but `.git`), plus a symlinked file.
 fn reset(dir: &Path, files: &[(&str, &str)]) {
     for e in std::fs::read_dir(dir).unwrap().flatten() {
@@ -58,35 +42,9 @@ fn reset(dir: &Path, files: &[(&str, &str)]) {
             }
         }
     }
-    for (f, c) in files {
-        let p = dir.join(f);
-        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
-        std::fs::write(p, c).unwrap();
-    }
+    write_files(dir, files);
     if dir.join("app/Fix.php").exists() {
         std::os::unix::fs::symlink("Fix.php", dir.join("app/Link.php")).unwrap();
-    }
-}
-
-fn snapshot(dir: &Path, rel: &str, out: &mut BTreeMap<String, Vec<u8>>) {
-    for e in std::fs::read_dir(dir.join(rel)).unwrap().flatten() {
-        let r = if rel.is_empty() {
-            e.file_name().to_string_lossy().into_owned()
-        } else {
-            format!("{rel}/{}", e.file_name().to_string_lossy())
-        };
-        // pun.toml: what `pun migrate` wrote for Pun's run.
-        if r == ".git" || r == "pun.toml" || e.path().is_symlink() {
-            continue;
-        }
-        if e.path().is_dir() {
-            snapshot(dir, &r, out)
-        } else {
-            out.insert(
-                r,
-                std::fs::read(e.path()).unwrap_or_else(|_| b"<unreadable>".to_vec()),
-            );
-        }
     }
 }
 
@@ -126,8 +84,8 @@ fn run(
     let mut child = c.spawn().unwrap();
     child.stdin.take().unwrap().write_all(stdin).unwrap();
     let out = child.wait_with_output().unwrap();
-    let mut files = BTreeMap::new();
-    snapshot(dir, "", &mut files);
+    // pun.toml: what `pun migrate` wrote for Pun's run.
+    let files = common::snapshot(dir, |r| r == ".git" || r == "pun.toml");
     (
         Run {
             stdout: String::from_utf8_lossy(&out.stdout).into_owned(),
@@ -136,23 +94,6 @@ fn run(
         },
         String::from_utf8_lossy(&out.stderr).into_owned(),
     )
-}
-
-const PUN: &str = env!("CARGO_BIN_EXE_pun");
-
-/// `pun migrate` in `dir`, which must succeed: Pun's runs read the pun.toml it writes from Pint's pint.json.
-fn migrate(dir: &Path) {
-    let out = Command::new(PUN)
-        .arg("migrate")
-        .env("PUN_AGENT", "0")
-        .current_dir(dir)
-        .output()
-        .unwrap();
-    assert!(
-        out.status.success(),
-        "{}",
-        String::from_utf8_lossy(&out.stderr)
-    );
 }
 
 fn pun_format(dir: &Path, args: &[&str], env: &[(&str, &str)], stdin: &[u8]) -> (Run, String) {
@@ -238,7 +179,7 @@ impl Ctx {
 fn matches_pint() {
     let Some(oracle) = oracle() else { return };
     let cx = Ctx { oracle };
-    let dir = tmp("p");
+    let dir = scratch("cli", "p");
     let tree = files();
     for args in [
         &[][..],
@@ -414,7 +355,7 @@ fn blade_like_pint() {
         eprintln!("skipping: no prettier in crates/pun-fixers/node_modules (bun install there)");
         return;
     };
-    let dir = tmp("blade");
+    let dir = scratch("cli", "blade");
     for (preset, blade, check) in [
         (
             "empty",
@@ -468,7 +409,7 @@ fn blade_like_pint() {
 fn diffs_like_pint() {
     let Some(oracle) = oracle() else { return };
     let cx = Ctx { oracle };
-    let dir = tmp("diff");
+    let dir = scratch("cli", "diff");
     let big: String = std::iter::once("<?php\n".to_string())
         .chain((0..1000).map(|i| format!("$a{i} = array({i});\n$b = {};\n", i % 7)))
         .collect();
@@ -520,7 +461,7 @@ fn pun_env(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, String, 
 /// `pun list-files` (context/plan/config.md §7), expected sets derived by hand from the plan's example.
 #[test]
 fn list_files() {
-    let dir = tmp("list");
+    let dir = scratch("cli", "list");
     reset(&dir, &[]);
     for f in [
         "app/A.php",
@@ -609,7 +550,7 @@ fn list_files() {
 /// Pun-only flags, hand-derived.
 #[test]
 fn pun_only_behaviour() {
-    let dir = tmp("own");
+    let dir = scratch("cli", "own");
     reset(&dir, &files());
     // Every command needs pun.toml; `--preset` or `--no-config` runs without one.
     for cmd in [
@@ -811,7 +752,7 @@ fn pun_only_behaviour() {
 fn migrates_php_cs_fixer_config() {
     let Some(oracle) = oracle() else { return };
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/php-cs-fixer-custom");
-    let dir = tmp("pcf");
+    let dir = scratch("cli", "pcf");
     let read = |f: &str| std::fs::read_to_string(src.join(f)).unwrap();
     let real = oracle
         .parent()
@@ -920,7 +861,7 @@ fn migrates_php_cs_fixer_config() {
 /// option, so it prints as that option's value (format.md Decisions, "Option names").
 #[test]
 fn config_prints_resolved_schema() {
-    let dir = tmp("config");
+    let dir = scratch("cli", "config");
     let toml = r#"[php]
 version = "8.5"
 
@@ -1032,7 +973,10 @@ magic = true
         (want.into(), String::new(), Some(0))
     );
     // Nothing read (a preset, no pun.toml or composer.json): no comment, and PHP 8.4.
-    let (out, _, code) = pun(&tmp("config-none"), &["config", "--preset=empty"]);
+    let (out, _, code) = pun(
+        &scratch("cli", "config-none"),
+        &["config", "--preset=empty"],
+    );
     assert!(out.starts_with("[php]\nversion = \"8.4\"\n"), "{out}");
     assert_eq!(code, Some(0));
 }
@@ -1041,7 +985,7 @@ magic = true
 /// Expected text from mapping.toml's `style/no-alias-function` row, its upstream rows and `[meta.groups] style`.
 #[test]
 fn explain_rule() {
-    let dir = tmp("explain");
+    let dir = scratch("cli", "explain");
     let text = "lint/style/no-alias-function
 Master functions shall be used instead of aliases.
 
@@ -1072,7 +1016,7 @@ docs      https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mappin
 #[cfg(feature = "mago-lint")]
 #[test]
 fn mago_lint_read_error_names_the_file() {
-    let dir = tmp("mago-unreadable");
+    let dir = scratch("cli", "mago-unreadable");
     reset(
         &dir,
         &[

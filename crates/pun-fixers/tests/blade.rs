@@ -66,18 +66,12 @@ fn files(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
-/// Runner::fixFile + AbstractFixer::fix: every fixer in order, skipping empty or non-candidate tokens. Like the
-/// Runner (and Pint's tests), only the resulting code counts.
+/// Runner::fixFile (`Pipeline::run`). Like the Runner (and Pint's tests), only the resulting code counts.
 fn run(pipeline: &pun_format::Pipeline, file: &Path, code: &[u8]) -> Vec<u8> {
-    let mut tokens = pun_tokens::Tokens::from_code(code);
-    for f in pipeline.fixers() {
-        if tokens.count() > 0 && f.is_candidate(&tokens) {
-            f.fix(file, &mut tokens);
-            tokens.clear_empty_tokens();
-            tokens.clear_changed();
-        }
+    match pipeline.run(file, code) {
+        Ok(fixed) => fixed.map_or_else(|| code.to_vec(), |f| f.code),
+        Err(e) => panic!("{}: {e:?}", file.display()),
     }
-    tokens.generate_code()
 }
 
 #[test]

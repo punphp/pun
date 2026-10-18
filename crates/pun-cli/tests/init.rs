@@ -1,10 +1,10 @@
 //! `pun init` end to end on scratch projects: a Laravel 13 + Pest 4 app and a plain PHP project. The expected output is
 //! context/plan/init.md §2 written out by hand (without the check and baseline lines, which wait for init 4); the
 //! error wording is crates/pun-config/src/schema.rs's.
-#[path = "common/pty.rs"]
 mod common;
 
-use common::{pun, pun_with, read};
+use common::pty::{pun, pun_with};
+use common::read;
 use pun_config::{AnalysePreset, Options};
 use std::path::{Path, PathBuf};
 
@@ -218,7 +218,7 @@ fn agent_mode() {
 #[test]
 fn terminal_accepts_the_defaults() {
     let d = laravel("tty", &[]);
-    let (out, code) = common::pty(&d, "init", "\\r\\r\\r", ENV);
+    let (out, code) = common::pty::pty(&d, "init", "\\r\\r\\r", ENV);
     assert_eq!(code, Some(0), "{out}");
     assert!(
         out.contains("  Pun · new project setup\n  Found Laravel 13, Pest 4, PHP ^8.4 (composer.json, composer.lock)\n"),
@@ -244,7 +244,7 @@ fn terminal_accepts_the_defaults() {
 
     // Down from psr12 wraps to laravel; tick `code-quality` too; one down to `strict`.
     let d = plain("tty-pick");
-    let (out, code) = common::pty(&d, "init", "\\033[B\\r\\033[B\\033[B \\r\\033[B\\r", ENV);
+    let (out, code) = common::pty::pty(&d, "init", "\\033[B\\r\\033[B\\033[B \\r\\033[B\\r", ENV);
     assert_eq!(code, Some(0), "{out}");
     assert!(out.contains("Code style: laravel"), "{out}");
     assert_eq!(
@@ -258,7 +258,7 @@ fn terminal_accepts_the_defaults() {
 
     // CI asks nothing, even on a terminal.
     let d = plain("tty-ci");
-    let (out, code) = common::pty(&d, "init", "", &[("CI", "true"), ENV[0], ENV[1]]);
+    let (out, code) = common::pty::pty(&d, "init", "", &[("CI", "true"), ENV[0], ENV[1]]);
     assert_eq!(code, Some(0), "{out}");
     assert!(
         out.contains("\nCode style: psr12\nLint sets: dead-code, modernize\n"),
@@ -271,7 +271,7 @@ fn terminal_accepts_the_defaults() {
 #[test]
 fn terminal_offers_migrate() {
     let d = laravel("tty-migrate", &[("pint.json", r#"{"preset":"psr12"}"#)]);
-    let (out, code) = common::pty(&d, "init", "\\r\\r", ENV);
+    let (out, code) = common::pty::pty(&d, "init", "\\r\\r", ENV);
     assert_eq!(code, Some(0), "{out}");
     assert!(
         out.contains("Found pint.json. Migrate it instead?"),
@@ -284,7 +284,7 @@ fn terminal_offers_migrate() {
     assert!(read(&d, "pun.toml").starts_with("# Written by `pun migrate` from pint.json.\n"));
 
     let d = laravel("tty-no-migrate", &[("pint.json", "{}")]);
-    let (out, code) = common::pty(&d, "init", "n\\r\\r\\r", ENV);
+    let (out, code) = common::pty::pty(&d, "init", "n\\r\\r\\r", ENV);
     assert_eq!(code, Some(0), "{out}");
     assert!(out.ends_with(NEXT), "{out}");
     assert_eq!(

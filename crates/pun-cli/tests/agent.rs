@@ -2,26 +2,11 @@
 //! Expected rule IDs and summaries come from rules/mapping.toml, the fixers each input triggers from Pint
 //! (`php .oracle/pint/builds/pint --format=agent` on the same files), the env list from the agent-detector crate
 //! 0.2.1's src/agents.rs plus laravel/agent-detector's AgentDetector::AGENT_ENV_VARS (380e6e4). The run time in the summary line is replaced by `T`.
-use std::path::{Path, PathBuf};
+mod common;
+
+use common::{PUN, read};
+use std::path::Path;
 use std::process::Command;
-use std::sync::atomic::{AtomicUsize, Ordering};
-
-const PUN: &str = env!("CARGO_BIN_EXE_pun");
-
-fn project(files: &[(&str, &str)]) -> PathBuf {
-    static N: AtomicUsize = AtomicUsize::new(0);
-    let d = std::env::temp_dir().join(format!(
-        "pun-agent-{}-{}",
-        std::process::id(),
-        N.fetch_add(1, Ordering::Relaxed)
-    ));
-    let _ = std::fs::remove_dir_all(&d);
-    for (f, c) in files {
-        std::fs::create_dir_all(d.join(f).parent().unwrap()).unwrap();
-        std::fs::write(d.join(f), c).unwrap();
-    }
-    d.canonicalize().unwrap()
-}
 
 /// stdout (time normalised) and exit code; only PATH (and coverage's variable) survive from the environment.
 fn run(dir: &Path, args: &[&str], env: &[(&str, &str)]) -> (String, Option<i32>) {
@@ -62,7 +47,7 @@ const ALIAS_LINE: &str = "app/B.php lint/style/no-alias-function [fix:unsafe] Ma
 
 #[test]
 fn detection_priority() {
-    let d = project(&[("pun.toml", TOML), ("app/A.php", ARRAY)]);
+    let d = common::project("agent", "t", &[("pun.toml", TOML), ("app/A.php", ARRAY)]);
     let is_agent = |args: &[&str], env: &[(&str, &str)]| {
         let mut a = vec!["format", "--test"];
         a.extend(args);
@@ -182,11 +167,15 @@ fn detection_priority() {
 
 #[test]
 fn format() {
-    let d = project(&[
-        ("pun.toml", TOML),
-        ("app/A.php", ARRAY),
-        ("app/C.php", CLEAN),
-    ]);
+    let d = common::project(
+        "agent",
+        "t",
+        &[
+            ("pun.toml", TOML),
+            ("app/A.php", ARRAY),
+            ("app/C.php", CLEAN),
+        ],
+    );
     assert_eq!(
         agent(&d, &["format", "--test"]),
         (
@@ -235,7 +224,7 @@ fn caps_long_lists() {
         .iter()
         .map(|(a, b)| (a.as_str(), b.as_str()))
         .collect();
-    let d = project(&files);
+    let d = common::project("agent", "t", &files);
     let line = |n: usize| format!("app/F{n:02}.php format/arrays/syntax\n");
     let head = "pun format: fail, 23 files need formatting (23 checked, Ts)\n";
     let first: String = (1..=20).map(line).collect();
@@ -259,12 +248,16 @@ fn caps_long_lists() {
 
 #[test]
 fn lint_and_check() {
-    let d = project(&[
-        ("pun.toml", TOML),
-        ("app/A.php", ARRAY),
-        ("app/B.php", ALIAS),
-        ("app/S.php", SELF),
-    ]);
+    let d = common::project(
+        "agent",
+        "t",
+        &[
+            ("pun.toml", TOML),
+            ("app/A.php", ARRAY),
+            ("app/B.php", ALIAS),
+            ("app/S.php", SELF),
+        ],
+    );
     // A rule without a summary in the mapping prints none.
     let lint = format!("{ALIAS_LINE}\napp/S.php lint/dead-code/no-self-assignment [fix:safe]\n");
     assert_eq!(
@@ -344,17 +337,17 @@ fn lint_and_check() {
     );
 }
 
-fn read(d: &Path, f: &str) -> String {
-    std::fs::read_to_string(d.join(f)).unwrap()
-}
-
 #[test]
 fn errors() {
-    let d = project(&[
-        ("pun.toml", TOML),
-        ("app/A.php", ARRAY),
-        ("app/D.php", "<?php\n$a = (;\n"),
-    ]);
+    let d = common::project(
+        "agent",
+        "t",
+        &[
+            ("pun.toml", TOML),
+            ("app/A.php", ARRAY),
+            ("app/D.php", "<?php\n$a = (;\n"),
+        ],
+    );
     assert_eq!(
         agent(&d, &["format", "--test"]),
         (
@@ -389,7 +382,7 @@ fn errors() {
         )
     );
     // Config errors too, for every command.
-    let empty = project(&[("app/A.php", ARRAY)]);
+    let empty = common::project("agent", "t", &[("app/A.php", ARRAY)]);
     for cmd in ["format", "lint", "config"] {
         assert_eq!(
             agent(&empty, &[cmd]),
@@ -406,11 +399,15 @@ fn errors() {
 /// --dirty and --diff list only the files git selects.
 #[test]
 fn git_selection() {
-    let d = project(&[
-        ("pun.toml", TOML),
-        ("app/A.php", CLEAN),
-        ("app/C.php", CLEAN),
-    ]);
+    let d = common::project(
+        "agent",
+        "t",
+        &[
+            ("pun.toml", TOML),
+            ("app/A.php", CLEAN),
+            ("app/C.php", CLEAN),
+        ],
+    );
     let git = |args: &[&str]| {
         let ok = Command::new("git")
             .args([
@@ -448,10 +445,14 @@ fn git_selection() {
 
 #[test]
 fn config() {
-    let d = project(&[
-        ("pun.toml", TOML),
-        ("composer.json", r#"{"require":{"php":"^8.5"}}"#),
-    ]);
+    let d = common::project(
+        "agent",
+        "t",
+        &[
+            ("pun.toml", TOML),
+            ("composer.json", r#"{"require":{"php":"^8.5"}}"#),
+        ],
+    );
     let (human, _) = run(&d, &["config"], &[]);
     // The summary line, then the same TOML a human gets.
     assert_eq!(
@@ -471,14 +472,18 @@ fn config() {
 
 #[test]
 fn migrate() {
-    let d = project(&[
-        (
-            "pint.json",
-            r#"{"preset":"empty","rules":{"array_syntax":true,"no_alias_functions":true}}"#,
-        ),
-        ("app/A.php", "<?php\n// @php-cs-fixer-ignore array_syntax\n"),
-        ("app/U.php", "<?php\n// @php-cs-fixer-ignore Acme/rule\n"),
-    ]);
+    let d = common::project(
+        "agent",
+        "t",
+        &[
+            (
+                "pint.json",
+                r#"{"preset":"empty","rules":{"array_syntax":true,"no_alias_functions":true}}"#,
+            ),
+            ("app/A.php", "<?php\n// @php-cs-fixer-ignore array_syntax\n"),
+            ("app/U.php", "<?php\n// @php-cs-fixer-ignore Acme/rule\n"),
+        ],
+    );
     let summary = "pun.toml (preset empty, 1 format rule, 1 lint rule), ignore comments";
     // --dry-run: the summary first, then the diffs.
     let (out, code) = agent(&d, &["migrate", "--dry-run"]);
@@ -540,7 +545,7 @@ fn migrate() {
 /// No config at all: pun.toml's comment, the human lines and the agent summary say so (a starter, not "from pint.json").
 #[test]
 fn migrate_without_a_config() {
-    let d = project(&[("app/A.php", CLEAN)]);
+    let d = common::project("agent", "t", &[("app/A.php", CLEAN)]);
     let nothing = "no pint.json, .php-cs-fixer.php, phpstan.neon, rector.php or mago.toml found";
     assert_eq!(
         agent(&d, &["migrate"]),
@@ -582,7 +587,7 @@ fn prettier_preflight() {
     if Command::new("node").arg("-v").output().is_err() {
         return;
     }
-    let d = project(&[("pun.toml", TOML), ("app/A.php", CLEAN)]);
+    let d = common::project("agent", "t", &[("pun.toml", TOML), ("app/A.php", CLEAN)]);
     assert_eq!(
         agent(&d, &["format", "--blade"]),
         (
