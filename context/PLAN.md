@@ -290,7 +290,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 
 | Work | Status |
 | --- | --- |
-| CI: get CI on main green (coverage red; runs cancelled by the next push) | todo |
+| CI: get CI on main green, then re-enable it (disabled on GitHub 2026-10-18 by Pushpak: every agent push was billing a run; `gh workflow enable CI`) | todo |
 | tests: crates/pun-phpstan/tests/php.rs `php_helpers` fails on macOS on two error offsets (`/a)/` gives 2, PHP 1; `/(?<1a>x)/` gives 4, PHP 3); the linked pcre2 likely differs from PHP's PCRE2 | todo |
 | tests: crates/pun-phpstan/tests/config.rs `corpus_configs` fails in a wf worktree because `.oracle` is a symlink, so phar paths resolve to the main checkout instead of {repo}/.oracle | todo |
 | pun-phpstan: clippy collapsible_if at src/schema.rs:754 | todo |
