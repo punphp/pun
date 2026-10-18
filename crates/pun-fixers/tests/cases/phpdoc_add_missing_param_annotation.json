@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_add_missing_param_annotation",
+        "input": "<?php\n/**\n * Foo\n */\nfunction f($a, $b, $a) {}\n",
+        "expected": "<?php\n/**\n * Foo\n * @param mixed $a\n * @param mixed $b\n */\nfunction f($a, $b, $a) {}\n"
+    }
+]

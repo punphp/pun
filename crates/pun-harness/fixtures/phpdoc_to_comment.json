@@ -1,0 +1,505 @@
+{
+    "fixer": "phpdoc_to_comment",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocToCommentFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocToCommentFixerTest.php",
+    "case_count": 53,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocToCommentFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n/**\n * Do not convert this\n */\n namespace Docs;\n\n/**\n * Do not convert this\n */\nclass DocBlocks\n{\n    /**\n     * Do not convert this\n     */\n    use TestTrait;\n\n    /**\n     * Do not convert this\n     */\n    const STRUCTURAL = true;\n\n    /**\n     * Do not convert this\n     */\n    protected $indent = false;\n\n    /**\n     * Do not convert this\n     */\n    var $oldPublicStyle;\n\n    /**\n     * Do not convert this\n     */\n    public function test() {}\n\n    /**\n     * Do not convert this\n     */\n    private function testPrivate() {}\n\n    /**\n     * Do not convert this\n     */\n    function testNoVisibility() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php namespace Docs;\n\n/**\n * Do not convert this\n */\n\n/**\n * Do not convert this\n */\nclass DocBlocks{}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\n/**\n * Do not convert this\n */\n\nnamespace Foo;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * Do not convert this\n */\nabstract class DocBlocks\n{\n\n    /**\n     * Do not convert this\n     */\n    abstract public function test();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * Do not convert this\n */\ninterface DocBlocks\n{\n    public function test();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nnamespace NS;\n\n/**\n * Do not\n */\nfinal class Foo\n{\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * Do not convert this\n */\nrequire \"require.php\";\n\n/**\n * Do not convert this\n */\nrequire_once \"require_once.php\";\n\n/**\n * Do not convert this\n */\ninclude \"include.php\";\n\n/**\n * Do not convert this\n */\ninclude_once \"include_once.php\";\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * Do not convert this\n *\n * @var int\n */\n$a = require \"require.php\";\n\n/**\n * Do not convert this\n *\n * @var int\n */\n$b = require_once \"require_once.php\";\n\n/**\n * Do not convert this\n *\n * @var int\n */\n$c = include \"include.php\";\n\n/**\n * Do not convert this\n *\n * @var int\n */\n$d = include_once \"include_once.php\";\n\n/**\n * @var Composer\\Autoload\\ClassLoader $loader\n */\n$loader = require_once __DIR__.\"/vendor/autoload.php\";\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * @var ClassLoader $loader\n */\n$loader = require_once __DIR__.\"/../app/autoload.php\";\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * Do not convert this\n *\n * @var Foo\n */\n$foo = createFoo();\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * Do not convert this\n *\n * @var bool $local\n */\n$local = true;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * Comment\n */\n$local = true;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var \\Sqlite3 $sqlite */\nforeach($connections as $sqlite) {\n    $sqlite->open($path);\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var \\Sqlite3 $sqlite */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var int $key */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/* This should not be a docblock */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** This should not be a docblock */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/* there should be no docblock here */\n$sqlite1->open($path);\n",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** there should be no docblock here */\n$sqlite1->open($path);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/* there should be no docblock here */\n$i++;\n",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** there should be no docblock here */\n$i++;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var int $index */\n$index = $a['number'];\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var string $two */\nlist($one, $two) = explode(\",\" , $csvLines);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/* This should be a comment */\nlist($one, $two) = explode(\",\" , $csvLines);\n",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** This should be a comment */\nlist($one, $two) = explode(\",\" , $csvLines);\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var int $index */\nforeach ($foo->getPairs($c->bar(), $bar) as $index => list($a, $b)) {\n    // Do something with $index, $a and $b\n}\n\n/** @var \\Closure $value */\nif (!$value = $this->getValue()) {\n    return false;\n}\n\n/** @var string $name */\nswitch ($name = $this->getName()) {\n    case \"John\":\n        return false;\n    case \"Jane\":\n        return true;\n}\n\n/** @var string $content */\nwhile ($content = $this->getContent()) {\n    $name .= $content;\n}\n\n/** @var int $size */\nfor($i = 0, $size = count($people); $i < $size; ++$i) {\n    $people[$i]['salt'] = mt_rand(000000, 999999);\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/* @var int $wrong */\nforeach ($foo->getPairs($c->bar(), $bar) as $index => list($a, $b)) {\n    // Do something with $index, $a and $b\n}\n\n/* @var \\Closure $notValue */\nif (!$value = $this->getValue()) {\n    return false;\n}\n\n/* @var string $notName */\nswitch ($name = $this->getName()) {\n    case \"John\":\n        return false;\n    case \"Jane\":\n        return true;\n}\n\n/* @var string $notContent */\nwhile ($content = $this->getContent()) {\n    $name .= $content;\n}\n\n/* @var int $notSize */\nfor($i = 0, $size = count($people); $i < $size; ++$i) {\n    $people[$i]['salt'] = mt_rand(000000, 999999);\n}",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var int $wrong */\nforeach ($foo->getPairs($c->bar(), $bar) as $index => list($a, $b)) {\n    // Do something with $index, $a and $b\n}\n\n/** @var \\Closure $notValue */\nif (!$value = $this->getValue()) {\n    return false;\n}\n\n/** @var string $notName */\nswitch ($name = $this->getName()) {\n    case \"John\":\n        return false;\n    case \"Jane\":\n        return true;\n}\n\n/** @var string $notContent */\nwhile ($content = $this->getContent()) {\n    $name .= $content;\n}\n\n/** @var int $notSize */\nfor($i = 0, $size = count($people); $i < $size; ++$i) {\n    $people[$i]['salt'] = mt_rand(000000, 999999);\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n/* This should be a comment */\n",
+                        "<?php\n/** This should be a comment */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n/**\n * This is a page level docblock should stay untouched\n */\n\necho \"Some string\";\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var \\NumberFormatter $formatter */\nstatic $formatter;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\nfunction getNumberFormatter()\n{\n    /** @var \\NumberFormatter $formatter */\n    static $formatter;\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n\nclass A\n{\n    public function b()\n    {\n        /** @var int $c */\n        print($c = 0);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n/** header */\necho 123;\n\n/** @var int $bar1 */\n(print($bar1 = 0));\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n/** header */\necho 123;\n\n/** @var ClassLoader $loader */\n$loader = require __DIR__.'/../vendor/autoload.php';\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @todo Do not convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        null,
+                        {
+                            "ignored_tags": [
+                                "todo"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/* Convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n\n/** @todo Do not convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** Convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n\n/** @todo Do not convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        {
+                            "ignored_tags": [
+                                "todo"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/* Convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n\n/** @fix-me Do not convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** Convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n\n/** @fix-me Do not convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        {
+                            "ignored_tags": [
+                                "fix-me"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/* @todoNot Convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n\n/** @TODO Do not convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @todoNot Convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n\n/** @TODO Do not convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        {
+                            "ignored_tags": [
+                                "todo"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/* Convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n\n/**\n * @deprecated This tag is not in the list but the next one is\n * @todo This should be a PHPDoc as the tag is on \"ignored_tags\" list\n */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** Convert this */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}\n\n/**\n * @deprecated This tag is not in the list but the next one is\n * @todo This should be a PHPDoc as the tag is on \"ignored_tags\" list\n */\nforeach($connections as $key => $sqlite) {\n    $sqlite->open($path);\n}",
+                        {
+                            "ignored_tags": [
+                                "todo"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not convert before fn",
+                    "args": [
+                        "<?php // needed because by default first comment is never fixed\n            /** @param int $x */\n            fn ($x) => $x + 42;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "convert before return without option",
+                    "args": [
+                        "<?php\nfunction doSomething()\n{\n    /* @var void */\n    return;\n}\n",
+                        "<?php\nfunction doSomething()\n{\n    /** @var void */\n    return;\n}\n",
+                        {
+                            "allow_before_return_statement": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not convert before return with option",
+                    "args": [
+                        "<?php\nfunction doSomething()\n{\n    /** @var void */\n    return;\n}\n",
+                        null,
+                        {
+                            "allow_before_return_statement": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * Do not convert this\n */\ntrait DocBlocks\n{\n    public function test() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n/** header */\necho 123;\n\n/** @var User $bar3 */\n($bar3 = tmp())->doSomething();\n\n/** @var Session $session */ # test\n$session = new Session();\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var int $a */\n[$a] = $b;\n\n/* @var int $c */\n[$a] = $c;\n                ",
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/** @var int $a */\n[$a] = $b;\n\n/** @var int $c */\n[$a] = $c;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n$first = true;// needed because by default first docblock is never fixed.\n\n/**\n * @var int $a\n */\n[$a] = $b;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\n                class Foo {\n                    /**\n                     * Do not convert this\n                     */\n                    private int $foo;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n                class Foo {\n                    /**\n                     * Do not convert this\n                     */\n                    protected ?string $foo;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n                class Foo {\n                    /**\n                     * Do not convert this\n                     */\n                    public ? float $foo;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n                class Foo {\n                    /**\n                     * Do not convert this\n                     */\n                    var ? Foo\\Bar $foo;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n                class Foo {\n                    /**\n                     * Do not convert this\n                     */\n                    var ? array $foo;\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocToCommentFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n/**\n * @Annotation\n */\n#[CustomAnnotationA]\nClass MyAnnotation3\n{\n    /**\n     * @Annotation\n     */\n    #[CustomAnnotationB]\n    #[CustomAnnotationC]\n    public function foo() {}\n\n    /**\n     * @Annotation\n     */\n    #[CustomAnnotationD]\n    public $var;\n\n    /*\n     * end of class\n     */\n}",
+                        "<?php\n/**\n * @Annotation\n */\n#[CustomAnnotationA]\nClass MyAnnotation3\n{\n    /**\n     * @Annotation\n     */\n    #[CustomAnnotationB]\n    #[CustomAnnotationC]\n    public function foo() {}\n\n    /**\n     * @Annotation\n     */\n    #[CustomAnnotationD]\n    public $var;\n\n    /**\n     * end of class\n     */\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Foo\n{\n\tpublic function __construct(\n\t    /** @var string Do not convert this */\n\t\tpublic string $bar\n\t) {\n\t}\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocToCommentFixerTest",
+            "body": "    public function testFix81(string $expected): void\n    {\n        $this->doTest($expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum",
+                    "args": [
+                        "<?php\ndeclare(strict_types=1);\n\nnamespace PhpCsFixer\\Tests\\Tokenizer\\Analyzer;\n\n/** Before enum */\nenum Foo {\n    //\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "phpDoc over enum case",
+                    "args": [
+                        "<?php\nenum Foo: int\n{\n    /**\n     * @deprecated do not convert this\n     */\n    case BAR = 1;\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocToCommentFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility",
+                    "args": [
+                        "<?php class Foo {\n    /** @var int */\n    public(set) int $a;\n    /** @var int */\n    protected(set) int $b;\n    /** @var int */\n    private(set) int $c;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "property hooks",
+                    "args": [
+                        "<?php\nclass Foo\n{\n    public int $a {\n        /** @var int */\n        get => $this->a;\n\n        /** @var int */\n        set => $this->a = $value;\n    }\n\n    public int $b {\n        /** @var int */\n        GET => $this->b;\n\n        /** @var int */\n        SET => $this->b = $value;\n    }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

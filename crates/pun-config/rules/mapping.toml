@@ -612,10 +612,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "php-8.5/prefer-array-first-last" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = false, status = "decided", summary = "Make use of array_first() and array_last()" }
 "php-8.5/prefer-ord-first-byte" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = false, status = "decided", summary = "Replace ord($str) with ord($str[0])" }
 "php-8.6/prefer-clamp" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = false, status = "decided", summary = "Convert nested min()/max() calls to clamp()" }
-"phpdoc/add-missing-param" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "PHPDoc should contain `@param` for all params." }
+"phpdoc/add-missing-param" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "PHPDoc should contain `@param` for all params." }
 "phpdoc/no-access" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@access` annotations must be removed from PHPDoc." }
 "phpdoc/no-empty-return" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@return void` and `@return null` annotations must be removed from PHPDoc." }
-"phpdoc/no-misplaced" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Docblocks should only be used on structural elements." }
+"phpdoc/no-misplaced" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Docblocks should only be used on structural elements." }
 "phpdoc/no-mixed-overruled-by-native" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
 "phpdoc/no-package" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@package` and `@subpackage` annotations must be removed from PHPDoc." }
 "phpdoc/no-superfluous-tags" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes `@param`, `@return` and `@var` tags that don't provide any useful information." }

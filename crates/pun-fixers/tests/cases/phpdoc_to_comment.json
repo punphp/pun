@@ -1,0 +1,27 @@
+[
+    {
+        "fixer": "phpdoc_to_comment",
+        "input": "<?php\nfoo();\n/** doc */\nbar();\n",
+        "expected": "<?php\nfoo();\n/* doc */\nbar();\n"
+    },
+    {
+        "fixer": "phpdoc_to_comment",
+        "config": {
+            "allow_before_return_statement": true
+        },
+        "input": "<?php\n$a = 1;\n/** x */",
+        "expected": "<?php\n$a = 1;\n/* x */"
+    },
+    {
+        "fixer": "phpdoc_to_comment",
+        "config": {
+            "foo": 1
+        },
+        "error": "[phpdoc_to_comment] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"allow_before_return_statement\", \"ignored_tags\"."
+    },
+    {
+        "fixer": "phpdoc_to_comment",
+        "input": "<?php\ndeclare(strict_types=1);\n/** header */\nfoo();\n",
+        "expected": "<?php\ndeclare(strict_types=1);\n/** header */\nfoo();\n"
+    }
+]

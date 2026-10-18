@@ -1,0 +1,518 @@
+{
+    "fixer": "phpdoc_add_missing_param_annotation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAddMissingParamAnnotationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocAddMissingParamAnnotationFixerTest.php",
+    "case_count": 38,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAddMissingParamAnnotationFixerTest",
+            "body": "    public function testInvalidConfiguration(array $configuration, string $expectedMessage): void\n    {\n        $this->expectException(InvalidConfigurationException::class);\n        $this->expectExceptionMessageMatches($expectedMessage);\n\n        $this->fixer->configure($configuration); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "unknown key",
+                    "args": [
+                        {
+                            "foo": "bar"
+                        },
+                        "#The option \"foo\" does not exist\\.#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "null",
+                    "args": [
+                        {
+                            "only_untyped": null
+                        },
+                        "#expected to be of type \"bool\", but is of type \"(null|NULL)\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "int",
+                    "args": [
+                        {
+                            "only_untyped": 1
+                        },
+                        "#expected to be of type \"bool\", but is of type \"(int|integer)\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "array",
+                    "args": [
+                        {
+                            "only_untyped": []
+                        },
+                        "#expected to be of type \"bool\", but is of type \"array\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "float",
+                    "args": [
+                        {
+                            "only_untyped": 0.1
+                        },
+                        "#expected to be of type \"bool\", but is of type \"(float|double)\"\\.$#"
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "object",
+                    "args": [
+                        {
+                            "only_untyped": {
+                                "__class": "stdClass"
+                            }
+                        },
+                        "#expected to be of type \"bool\", but is of type \"stdClass\"\\.$#"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAddMissingParamAnnotationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    /**\n     *\n     */",
+                        null,
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    /**\n     * @param int $foo\n     * @param mixed $bar\n     */\n    function f1($foo, $bar) {}",
+                        "<?php\n    /**\n     * @param int $foo\n     */\n    function f1($foo, $bar) {}",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    /**\n     * @param int $bar\n     * @param mixed $foo\n     */\n    function f2($foo, $bar) {}",
+                        "<?php\n    /**\n     * @param int $bar\n     */\n    function f2($foo, $bar) {}",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n    /**\n     * @return void\n     * @param mixed $foo\n     * @param mixed $bar\n     */\n    function f3($foo, $bar) {}",
+                        "<?php\n    /**\n     * @return void\n     */\n    function f3($foo, $bar) {}",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n    abstract class Foo {\n        /**\n         * @param int $bar\n         * @param mixed $foo\n         */\n        abstract public function f4a($foo, $bar);\n    }",
+                        "<?php\n    abstract class Foo {\n        /**\n         * @param int $bar\n         */\n        abstract public function f4a($foo, $bar);\n    }",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    class Foo {\n        /**\n         * @param int $bar\n         * @param mixed $foo\n         */\n        static final public function f4b($foo, $bar) {}\n    }",
+                        "<?php\n    class Foo {\n        /**\n         * @param int $bar\n         */\n        static final public function f4b($foo, $bar) {}\n    }",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n    class Foo {\n        /**\n         * @var int\n         */\n        private $foo;\n    }",
+                        null,
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n    /**\n     * @param $bar No type !!\n     * @param mixed $foo\n     */\n    function f5($foo, $bar) {}",
+                        "<?php\n    /**\n     * @param $bar No type !!\n     */\n    function f5($foo, $bar) {}",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    /**\n     * @param int\n     * @param int $bar\n     * @param Foo\\Bar $foo\n     */\n    function f6(Foo\\Bar $foo, $bar) {}",
+                        "<?php\n    /**\n     * @param int\n     * @param int $bar\n     */\n    function f6(Foo\\Bar $foo, $bar) {}",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n    /**\n     * @param int $bar\n     * @param null|string $foo\n     */\n    function f7(string $foo = nuLl, $bar) {}",
+                        "<?php\n    /**\n     * @param int $bar\n     */\n    function f7(string $foo = nuLl, $bar) {}",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n    /**\n     * @param int $bar\n     * @param mixed $baz\n     *\n     * @return void\n     */\n    function f9(string $foo, $bar, $baz) {}",
+                        "<?php\n    /**\n     * @param int $bar\n     *\n     * @return void\n     */\n    function f9(string $foo, $bar, $baz) {}",
+                        {
+                            "only_untyped": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n    /**\n     * @param bool|bool[] $caseSensitive Line 1\n     *                                   Line 2\n     */\n     function f11($caseSensitive) {}\n",
+                        null,
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n    /** @return string */\n    function hello($string)\n    {\n        return $string;\n    }",
+                        null,
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n    /** @return string\n     * @param mixed $string\n     */\n    function hello($string)\n    {\n        return $string;\n    }",
+                        "<?php\n    /** @return string\n     */\n    function hello($string)\n    {\n        return $string;\n    }",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n    /**\n     * @param mixed $string\n     * @return string */\n    function hello($string)\n    {\n        return $string;\n    }",
+                        "<?php\n    /**\n     * @return string */\n    function hello($string)\n    {\n        return $string;\n    }",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n    /**\n     * @param int $bar\n     * @param string $foo\n     */\n    function f8(string $foo = \"null\", $bar) {}",
+                        "<?php\n    /**\n     * @param int $bar\n     */\n    function f8(string $foo = \"null\", $bar) {}",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n    /**\n     * @{inheritdoc}\n     */\n    function f10(string $foo = \"null\", $bar) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n    /**\n     * @inheritDoc\n     */\n    function f10(string $foo = \"null\", $bar) {}",
+                        null,
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n    /**\n     * @param int $bar\n     * @param ?array $foo\n     */\n    function p1(?array $foo = null, $bar) {}",
+                        "<?php\n    /**\n     * @param int $bar\n     */\n    function p1(?array $foo = null, $bar) {}",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n    /**\n     * Foo\n     * @param mixed $bar\n     */\n    function p1(?int $foo = 0, $bar) {}",
+                        "<?php\n    /**\n     * Foo\n     */\n    function p1(?int $foo = 0, $bar) {}",
+                        {
+                            "only_untyped": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n    /**\n     * Foo\n     * @return int\n     */\n    function p1(?int $foo = 0) {}",
+                        null,
+                        {
+                            "only_untyped": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\r\n\t/**\r\n\t * @param int $bar\r\n\t * @param null|string $foo\r\n\t */\r\n\tfunction f7(string $foo = nuLl, $bar) {}",
+                        "<?php\r\n\t/**\r\n\t * @param int $bar\r\n\t */\r\n\tfunction f7(string $foo = nuLl, $bar) {}",
+                        {
+                            "only_untyped": false
+                        },
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                    /**\n                     * something\n                     * @param mixed $numbers\n                     */\n                    function add(&$numbers) {}\n                ",
+                        "<?php\n                    /**\n                     * something\n                     */\n                    function add(&$numbers) {}\n                ",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n                    /**\n                     * something\n                     * @param null|array $numbers\n                     */\n                    function add(array &$numbers = null) {}\n                ",
+                        "<?php\n                    /**\n                     * something\n                     */\n                    function add(array &$numbers = null) {}\n                ",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n                    /**\n                     * something\n                     * @param array $numbers\n                     */\n                    function sum(...$numbers) {}\n                ",
+                        "<?php\n                    /**\n                     * something\n                     */\n                    function sum(...$numbers) {}\n                ",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                    /**\n                     * @param int $a\n                     * @param array $numbers\n                     */\n                    function sum($a, ...$numbers) {}\n                ",
+                        "<?php\n                    /**\n                     * @param int $a\n                     */\n                    function sum($a, ...$numbers) {}\n                ",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n                    /**\n                     * @param \\Date[] $numbers\n                     */\n                    function sum(\\Date ...$numbers) {}\n                ",
+                        "<?php\n                    /**\n                     */\n                    function sum(\\Date ...$numbers) {}\n                ",
+                        {
+                            "only_untyped": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAddMissingParamAnnotationFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->fixer->configure(['only_untyped' => false]);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "promoted properties",
+                    "args": [
+                        "<?php class Foo {\n                /**\n                 * @param Bar $x\n                 * @param ?Bar $y\n                 * @param null|Bar $z\n                 */\n                public function __construct(\n                    public Bar $x,\n                    protected ?Bar $y,\n                    private null|Bar $z,\n                ) {}\n            }",
+                        "<?php class Foo {\n                /**\n                 */\n                public function __construct(\n                    public Bar $x,\n                    protected ?Bar $y,\n                    private null|Bar $z,\n                ) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "promoted properties with attributes",
+                    "args": [
+                        "<?php class Foo {\n                /**\n                 * @param string $a\n                 * @param ?string $b\n                 * @param int $c\n                 */\n                public function __construct(\n                    #[SomeAttr]\n                    public string $a,\n                    #[AnotherAttr('value')]\n                    public ?string $b,\n                    #[FirstAttr] #[SecondAttr] public int $c,\n                ) {}\n            }",
+                        "<?php class Foo {\n                /**\n                 */\n                public function __construct(\n                    #[SomeAttr]\n                    public string $a,\n                    #[AnotherAttr('value')]\n                    public ?string $b,\n                    #[FirstAttr] #[SecondAttr] public int $c,\n                ) {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "function arguments with attributes",
+                    "args": [
+                        "<?php\n                /**\n                 * @param string $a\n                 * @param int $b\n                 */\n                function foo(#[SomeAttr] string $a, #[AnotherAttr('x')] int $b) {}\n            ",
+                        "<?php\n                /**\n                 */\n                function foo(#[SomeAttr] string $a, #[AnotherAttr('x')] int $b) {}\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAddMissingParamAnnotationFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->fixer->configure(['only_untyped' => false]);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo {\n                /**\n                 * @param Bar $bar\n                 * @param Baz $baz\n                 */\n                public function __construct(\n                    public readonly Bar $bar,\n                    readonly public Baz $baz,\n                ) {}\n            }",
+                        "<?php class Foo {\n                /**\n                 */\n                public function __construct(\n                    public readonly Bar $bar,\n                    readonly public Baz $baz,\n                ) {}\n            }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocAddMissingParamAnnotationFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->testFix($expected, $input, ['only_untyped' => false]);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility",
+                    "args": [
+                        "<?php class Foo {\n    /**\n     * @param bool $a\n     * @param bool $b\n     * @param bool $c\n     */\n    public function __construct(\n        public public(set) bool $a,\n        public protected(set) bool $b,\n        public private(set) bool $c,\n    ) {}\n}",
+                        "<?php class Foo {\n    /**\n     */\n    public function __construct(\n        public public(set) bool $a,\n        public protected(set) bool $b,\n        public private(set) bool $c,\n    ) {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}
