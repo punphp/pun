@@ -538,9 +538,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   three unclosed HTML tags in pun-fixers docs and a public doc linking a private item in pun-config. At d565ad2:
   `no_useless_else` uses `PRIORITY`, the statement map is looked up once, single_quote calls `Preg::r#match` with
   upstream's pattern, `build.rs` writes `#[path = {:?}]`, the example names `punphp-tokens`, and the HTML tags and
-  the private link are fixed. Not reproduced: the namespaces clone (475eb65 moved the analyzer to pun-tokens and
-  `get_namespace_at` clones only the entry it finds) and pun-analyse's two broken links (`cargo doc` is clean there).
-  md5 left as it is (needs a decision). Fixed in wf/audit-hygiene.
+  the private link are fixed. Deferred: pun-analyse's two links to a missing `typed_expressions()` (warned by `cargo
+  doc --document-private-items`; point them at `TypedExpressions`), as the analyse track owns `rules/mod.rs`. Not
+  reproduced: the namespaces clone (475eb65 moved the
+  analyzer to pun-tokens and `get_namespace_at` clones only the entry it finds). md5 left as it is (needs a decision). Fixed in wf/audit-hygiene.
 
 ### Lints
 
