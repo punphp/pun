@@ -1,0 +1,31 @@
+[
+    {
+        "fixer": "phpdoc_tag_no_named_arguments",
+        "input": "<?php class Foo {}\n",
+        "expected": "<?php \n/**\n * @no-named-arguments\n */\nclass Foo {}\n"
+    },
+    {
+        "fixer": "phpdoc_tag_no_named_arguments",
+        "input": "<?php\nnamespace A;class Foo {}\n",
+        "expected": "<?php\nnamespace A;\n\n/**\n * @no-named-arguments\n */\nclass Foo {}\n"
+    },
+    {
+        "fixer": "phpdoc_tag_no_named_arguments",
+        "input": "<?php\n/** Foo */ class A {}\n",
+        "expected": "<?php\n/**\n * Foo\n * @no-named-arguments\n */ class A {}\n"
+    },
+    {
+        "fixer": "phpdoc_tag_no_named_arguments",
+        "config": {
+            "description": 1
+        },
+        "error": "[phpdoc_tag_no_named_arguments] Invalid configuration: The option \"description\" with value 1 is expected to be of type \"string\", but is of type \"int\"."
+    },
+    {
+        "fixer": "phpdoc_tag_no_named_arguments",
+        "config": {
+            "foo": true
+        },
+        "error": "[phpdoc_tag_no_named_arguments] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"description\", \"fix_attribute\", \"fix_internal\"."
+    }
+]

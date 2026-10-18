@@ -254,7 +254,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "arrays/prefer-array-append" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `$array[] =` instead of `array_push()` in a statement." }
 "arrays/prefer-array-spread" = { fix = "unsafe", sets = ["modernize"], ported = true, origin = "mago", status = "decided" }
 "classes/add-dynamic-properties" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
-"classes/add-stringable" = { fix = "safe", sets = ["modernize"], ported = false, status = "decided", summary = "A class that implements the `__toString()` method must explicitly implement the `Stringable` interface." }
+"classes/add-stringable" = { fix = "safe", sets = ["modernize"], ported = true, status = "decided", summary = "A class that implements the `__toString()` method must explicitly implement the `Stringable` interface." }
 "classes/no-explicit-constructor-call" = { fix = "none", intent = "suspicious", sets = ["code-quality"], status = "decided" }
 "classes/no-null-property-default" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Properties MUST not be explicitly initialised with `null` except when they have a type declaration (PHP 7.4)." }
 "classes/no-null-property-init" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided" }
@@ -614,7 +614,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "php-8.6/prefer-clamp" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = false, status = "decided", summary = "Convert nested min()/max() calls to clamp()" }
 "phpdoc/add-missing-param" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "PHPDoc should contain `@param` for all params." }
 "phpdoc/no-access" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@access` annotations must be removed from PHPDoc." }
-"phpdoc/no-empty-return" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "`@return void` and `@return null` annotations must be removed from PHPDoc." }
+"phpdoc/no-empty-return" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@return void` and `@return null` annotations must be removed from PHPDoc." }
 "phpdoc/no-misplaced" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Docblocks should only be used on structural elements." }
 "phpdoc/no-mixed-overruled-by-native" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
 "phpdoc/no-package" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@package` and `@subpackage` annotations must be removed from PHPDoc." }
@@ -625,7 +625,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/no-useless-return" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
 "phpdoc/no-useless-var" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
 "phpdoc/no-void-on-magic-method" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided" }
-"phpdoc/require-no-named-arguments" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait." }
+"phpdoc/require-no-named-arguments" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait." }
 "phpunit/add-allow-mock-objects-attribute" = { fix = "safe", ported = false, later = true, status = "decided", summary = "Add #[AllowMockObjectsWithoutExpectations] to PHPUnit test classes whose mocks have no expectations." }
 "phpunit/add-closure-return-type-from-assert" = { fix = "unsafe", sets = ["types"], ported = false, later = true, status = "decided" }
 "phpunit/add-data-provider-allow-mock-objects" = { fix = "safe", ported = false, later = true, status = "decided" }
@@ -813,10 +813,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-php4-constructor" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Convert PHP4-style constructors to `__construct`." }
 "style/no-redundant-final" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Removes `final` from methods where possible." }
 "style/no-redundant-final-const" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove final from constants in classes defined as final" }
-"style/no-redundant-yield-from" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Yield from array must be unpacked to series of yields." }
+"style/no-redundant-yield-from" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Yield from array must be unpacked to series of yields." }
 "style/no-short-ternary" = { fix = "none", sets = ["coding-style"], status = "decided", summary = "Detects the use of the shorthand ternary and elvis operators." }
 "style/no-side-effects-with-declarations" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Enforces that a PHP file either declares symbols (classes, functions," }
-"style/no-sleep-wakeup" = { fix = "unsafe", sets = ["modernize"], gated_by = "php-version", ported = false, status = "decided", summary = "Replace __sleep()/__wakeup() with __serialize()/__unserialize()." }
+"style/no-sleep-wakeup" = { fix = "unsafe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Replace __sleep()/__wakeup() with __serialize()/__unserialize()." }
 "style/no-sprintf-concat" = { fix = "none", ported = false, origin = "mago", later = true, status = "decided", summary = "Disallows string concatenation with the result of an `sprintf` call." }
 "style/no-unreachable-loop" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Detects loops (for, foreach, while, do-while) that unconditionally break or return" }
 "style/no-useless-printf" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "There must be no `printf` calls with only the first argument." }
@@ -848,7 +848,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-pow-operator" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Converts `pow` to the `**` operator." }
 "style/prefer-property-over-local-getter" = { fix = "unsafe", sets = ["privatization"], ported = true, status = "decided", summary = "Privatize getter of local property to property" }
 "style/prefer-random-int" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs or `random_int`." }
-"style/prefer-readonly-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts readonly comment on classes to the readonly keyword." }
+"style/prefer-readonly-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts readonly comment on classes to the readonly keyword." }
 "style/prefer-self-reference" = { fix = "unsafe", ported = true, status = "decided", summary = "Inside class or interface element `self` should be preferred to the class name itself." }
 "style/prefer-short-ternary" = { fix = "unsafe", ported = false, later = true, status = "decided", summary = "Use the Elvis operator `?:` where possible." }
 "style/prefer-spread" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replace `call_user_func_array()` with variadic" }

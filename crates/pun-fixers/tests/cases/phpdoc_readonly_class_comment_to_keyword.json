@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "phpdoc_readonly_class_comment_to_keyword",
+        "input": "<?php\n/** @readonly */\nfunction foo() {}\n",
+        "expected": "<?php\n/** @readonly */\nfunction foo() {}\n"
+    }
+]

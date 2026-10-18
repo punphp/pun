@@ -1,0 +1,83 @@
+{
+    "fixer": "phpdoc_readonly_class_comment_to_keyword",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\PhpdocReadonlyClassCommentToKeywordFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ClassNotation/PhpdocReadonlyClassCommentToKeywordFixerTest.php",
+    "case_count": 7,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ClassNotation\\PhpdocReadonlyClassCommentToKeywordFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n\nreadonly class C {\n}",
+                        "<?php\n\n/** @readonly */\nclass C {\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n/**\n */\nreadonly class C {\n}",
+                        "<?php\n\n/**\n * @readonly\n */\nclass C {\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\n/**\n * Very impressive class\n *\n */\nreadonly class C {\n}",
+                        "<?php\n\n/**\n * Very impressive class\n *\n * @readonly\n */\nclass C {\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n */\nfinal readonly class C {\n}",
+                        "<?php\n\n/**\n * @readonly\n */\nfinal class C {\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\n/**\n */\nabstract readonly class C {\n}",
+                        "<?php\n\n/**\n * @readonly\n */\nabstract class C {\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n/**\n */\nreadonly class A {\n}",
+                        "<?php\n/**\n * @readonly\n */\nreadonly class A {\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n/** Class A. */\nclass A {\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

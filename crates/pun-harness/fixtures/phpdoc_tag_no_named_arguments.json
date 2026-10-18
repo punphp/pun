@@ -1,0 +1,288 @@
+{
+    "fixer": "phpdoc_tag_no_named_arguments",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagNoNamedArgumentsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocTagNoNamedArgumentsFixerTest.php",
+    "case_count": 16,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "whitespacesConfig",
+                    "type": "?PhpCsFixer\\WhitespacesFixerConfig",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagNoNamedArgumentsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?WhitespacesFixerConfig $whitespacesConfig = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->fixer->setWhitespacesConfig($whitespacesConfig ?? new WhitespacesFixerConfig());\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not add for anonymous class",
+                    "args": [
+                        "<?php\nnew class () {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not add for internal class",
+                    "args": [
+                        "<?php\n/**\n * @internal\n */\nclass Foo {}",
+                        null,
+                        {
+                            "fix_internal": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add for internal class by default",
+                    "args": [
+                        "<?php\n/**\n * @internal\n * @no-named-arguments\n */\nclass Foo {}",
+                        "<?php\n/**\n * @internal\n */\nclass Foo {}",
+                        {
+                            "fix_internal": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "create PHPDoc comment",
+                    "args": [
+                        "<?php\n\n/**\n * @no-named-arguments\n */\nclass Foo {}",
+                        "<?php\nclass Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "create PHPDoc with description",
+                    "args": [
+                        "<?php\n\n/**\n * @no-named-arguments The description\n */\nclass Foo {}",
+                        "<?php\nclass Foo {}",
+                        {
+                            "description": "The description"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "add description",
+                    "args": [
+                        "<?php\n/**\n * @no-named-arguments New description\n */\nclass Foo {}",
+                        "<?php\n/**\n * @no-named-arguments\n */\nclass Foo {}",
+                        {
+                            "description": "New description"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "change description",
+                    "args": [
+                        "<?php\n/**\n * @no-named-arguments New description\n */\nclass Foo {}",
+                        "<?php\n/**\n * @no-named-arguments Old description\n */\nclass Foo {}",
+                        {
+                            "description": "New description"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove description",
+                    "args": [
+                        "<?php\n/**\n * @no-named-arguments\n */\nclass Foo {}",
+                        "<?php\n/**\n * @no-named-arguments Description to remove\n */\nclass Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple classes",
+                    "args": [
+                        "<?php\n\n/**\n * @no-named-arguments\n */\nclass Foo {}\n\nnew class {};\n\n/**\n * @no-named-arguments\n */\nclass Bar {}",
+                        "<?php\nclass Foo {}\n\nnew class {};\n\nclass Bar {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "tabs and Windows Line endings",
+                    "args": [
+                        "<?php\r\n\r\n/**\r\n * @no-named-arguments\r\n */\r\nclass Foo {}",
+                        "<?php\r\n\r\nclass Foo {}",
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\WhitespacesFixerConfig",
+                            "indent": "\t",
+                            "lineEnding": "\r\n"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagNoNamedArgumentsFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "do not add for attribute class",
+                    "args": [
+                        "<?php\n#[Attribute(flags: Attribute::TARGET_METHOD)]\nfinal class MyAttributeClass {}",
+                        null,
+                        {
+                            "fix_attribute": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "add for attribute class",
+                    "args": [
+                        "<?php\n\n/**\n * @no-named-arguments\n */\n#[Attribute(flags: Attribute::TARGET_METHOD)]\nfinal class MyAttributeClass {}",
+                        "<?php\n#[Attribute(flags: Attribute::TARGET_METHOD)]\nfinal class MyAttributeClass {}",
+                        {
+                            "fix_attribute": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "do not add for attribute class (with alias)",
+                    "args": [
+                        "<?php\nnamespace Foo;\nuse Attribute as TheAttributeClass;\n#[TheAttributeClass(flags: TheAttributeClass::TARGET_METHOD)]\nfinal class MyAttributeClass {}",
+                        null,
+                        {
+                            "fix_attribute": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagNoNamedArgumentsFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->testFix($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum",
+                    "args": [
+                        "<?php\n\n/**\n * @no-named-arguments\n */\nenum Size {\n    case Small;\n    case Medium;\n    case Large;\n\n    public static function fromLength(int $cm) {\n        return match(true) {\n            $cm < 50 => static::Small,\n            $cm < 100 => static::Medium,\n        default => static::Large,\n    };\n  }\n}",
+                        "<?php\nenum Size {\n    case Small;\n    case Medium;\n    case Large;\n\n    public static function fromLength(int $cm) {\n        return match(true) {\n            $cm < 50 => static::Small,\n            $cm < 100 => static::Medium,\n        default => static::Large,\n    };\n  }\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagNoNamedArgumentsFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->testFix($expected, $input, $configuration);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "do not add for attribute (readonly) class",
+                    "args": [
+                        "<?php\n\n/**\n * @no-named-arguments\n */\n#[FooAttribute]\nfinal readonly class NotAttributeClass1 {}\n\n#[Attribute(flags: Attribute::TARGET_METHOD)]\nfinal readonly class MyAttributeClass {}\n\n/**\n * @no-named-arguments\n */\nfinal readonly class NoAttributes {}\n\n/**\n * @no-named-arguments\n */\n#[FooAttribute]\n#[BarAttribute]\n#[BazAttribute]\nfinal readonly class NotAttributeClass2 {}",
+                        "<?php\n#[FooAttribute]\nfinal readonly class NotAttributeClass1 {}\n\n#[Attribute(flags: Attribute::TARGET_METHOD)]\nfinal readonly class MyAttributeClass {}\n\nfinal readonly class NoAttributes {}\n\n#[FooAttribute]\n#[BarAttribute]\n#[BazAttribute]\nfinal readonly class NotAttributeClass2 {}",
+                        {
+                            "fix_attribute": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocTagNoNamedArgumentsFixerTest",
+            "body": "    public function testFixPre85(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre85Cases",
+                    "key": "always add for abstract attribute class",
+                    "args": [
+                        "<?php\nnamespace Foo;\n/**\n * @no-named-arguments\n */\n#[\\Attribute(flags: \\Attribute::TARGET_METHOD)]\nabstract class MyAttributeClass {}",
+                        "<?php\nnamespace Foo;\n#[\\Attribute(flags: \\Attribute::TARGET_METHOD)]\nabstract class MyAttributeClass {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

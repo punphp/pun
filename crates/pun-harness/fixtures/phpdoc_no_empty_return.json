@@ -1,0 +1,120 @@
+{
+    "fixer": "phpdoc_no_empty_return",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoEmptyReturnFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocNoEmptyReturnFixerTest.php",
+    "case_count": 12,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocNoEmptyReturnFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "void",
+                    "args": [
+                        "<?php\n    /**\n     */\n",
+                        "<?php\n    /**\n     * @return void\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "null",
+                    "args": [
+                        "<?php\n    /**\n     */\n",
+                        "<?php\n    /**\n     * @return null\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "null with end on the same line",
+                    "args": [
+                        "<?php\n    /**\n     */\n",
+                        "<?php\n    /**\n     * @return null */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "null with end on the same line no space",
+                    "args": [
+                        "<?php\n    /**\n     */\n",
+                        "<?php\n    /**\n     * @return null*/\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "void case insensitive",
+                    "args": [
+                        "<?php\n    /**\n     */\n",
+                        "<?php\n    /**\n     * @return vOId\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "null case insensitive",
+                    "args": [
+                        "<?php\n    /**\n     */\n",
+                        "<?php\n    /**\n     * @return nULl\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "full",
+                    "args": [
+                        "<?php\n    /**\n     * Hello!\n     *\n     * @param string $foo\n     */\n",
+                        "<?php\n    /**\n     * Hello!\n     *\n     * @param string $foo\n     * @return void\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do nothing",
+                    "args": [
+                        "<?php\n    /**\n     * @var null\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do nothing again",
+                    "args": [
+                        "<?php\n    /**\n     * @return null|int\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "other do nothing",
+                    "args": [
+                        "<?php\n    /**\n     * @return int|null\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "yet another do nothing",
+                    "args": [
+                        "<?php\n    /**\n     * @return null[]|string[]\n     */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle single line phpdoc",
+                    "args": [
+                        "<?php\n\n\n",
+                        "<?php\n\n/** @return null */\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}
