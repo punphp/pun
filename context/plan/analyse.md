@@ -160,9 +160,10 @@ inference.
   (every one of the 559 identifiers maps to a Pun rule, or is listed as dropped or unsupported with a reason).
 - Mago's inference, narrowing and generics exist today. A port of PHPStan's would be the largest single piece of
   work in Pun.
-- **Rules:** where a Mago issue code is the same check as a PHPStan rule (190 codes), Pun reports it under the Pun
-  rule. The other PHPStan rules are written as Pun checks that read Mago's inferred types, the same way the 54
-  level-0 rules already read Mago's codex.
+- **Rules** (Pushpak, 2026-10-18, replacing "report a matching Mago issue under the Pun rule"): every PHPStan rule is
+  a Pun check that reads Mago's inferred types, the same way the 54 level-0 rules read Mago's codex. Mago's issue codes
+  are broader than PHPStan's checks (forwarding them gave 226 false errors on Pinkary at level 0, reports/analyse-spike.md),
+  so a Mago issue is used directly only where the spike's table says `yes` with no extras.
 - **Laravel** (Larastan's knowledge) is a built-in Mago plugin in Pun. Providers give return and property types for
   models, relations, facades, the container and config; hooks add the Laravel-specific checks.
 - **Parity test:** PHPStan's own rule fixtures and the corpus, compared on file, line and Pun rule, not message text.

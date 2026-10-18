@@ -129,7 +129,9 @@ All from Pushpak unless marked "assistant's call"; dated 2026-10-17 unless given
   No php-parser printer port. Parity is `format(pun lint --fix)` = `format(rector process)`. Mago's rules become normal
   lint rules and `--mago` goes away.
 - **Analyse** (assistant's call, delegated): Mago's analyser for inference, one Pun rule per PHPStan rule in the
-  mapping, messages may be reworded, Laravel as a built-in Mago plugin (Pest after 1.0). Built-in symbols come from PHPStan's
+  mapping, messages may be reworded. **Mago's issues are evidence, not rules** (Pushpak, 2026-10-18, after the spike):
+  each rule is a Pun check that reads Mago's inferred types, with PHPStan's semantics for that rule and preset; a Mago
+  issue is used directly only where reports/analyse-spike.md shows exactly the same check (`yes`, no extras), Laravel as a built-in Mago plugin (Pest after 1.0). Built-in symbols come from PHPStan's
   reflection (crates/pun-phpstan/data/symbols.json). Baselines are Pun's own (`pun analyse --generate-baseline`,
   pun-baseline.toml); migrate never copies a PHPStan baseline. A result cache re-checks only changed files and their
   dependents.
@@ -251,7 +253,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 1-2: `pun analyse` command, `[analyse]` (its `exclude` globs skip both analysis and symbol scan), presets, output; Pun baseline | todo |
 | analyse 1-2 follow-up (from config 3): read `Config.analyse` (preset, switches, rules, baseline, paths) in `pun analyse` | todo |
 | analyse 1-2 follow-up (from config 7): `pun analyse` discovers files with `pun_workspace::files(cfg, Some(Command::Analyse), ..)` | todo |
-| analyse (needs Pushpak): decide how Mago issues map to Pun rules; forwarding mapped codes gives 226 false errors on Pinkary at level 0, reports/analyse-spike.md proposes Pun checks that read Mago's types, using a Mago issue directly only where its table says yes | todo |
 | analyse 1-2 follow-up (from bench): switch the `pun` row of `BENCH=analyse` in scripts/bench.py from crates/pun-analyse/examples/analyse.rs to `pun analyse` once it exists | todo |
 | analyse 1-2 follow-up (from perf analyse 1): `pun analyse` in pun-cli calls `pun_analyse::analyse` so it gets the parallel pipeline; its global rayon pool is shared with format/lint and capped by `--max-processes` | todo |
 | analyse 3: finish level 0: ~87 rules left, 38 gaps, corpus diffs 1/6/5/15 | todo; trait-in-context work redone (analyse 3a); analyse 3b ported 13 declaration and keyword rules (functions.rs, statements.rs); only the facade-alias work remains, as analyse 6 |
