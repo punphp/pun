@@ -474,7 +474,7 @@ fn type_expression_parses_sort_types_inputs() {
 #[test]
 fn type_regex_does_not_have_unnamed_capturing_group() {
     // PHP drops trailing unset groups from $matches; count only up to the last set one like upstream does.
-    let m = preg::captures(format!("~{}~", type_expression::REGEX_TYPES), b"int").unwrap();
+    let m = Preg::match_groups(format!("~{}~", type_expression::REGEX_TYPES), b"int", 0).unwrap();
     let last = m.len() - 1;
     let re = pcre2::bytes::Regex::new(type_expression::REGEX_TYPES).unwrap();
     let named = re.capture_names()[..=last]

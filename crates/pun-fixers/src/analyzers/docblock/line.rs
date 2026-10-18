@@ -1,6 +1,6 @@
 //! `PhpCsFixer\DocBlock\Line`.
 
-use super::preg;
+use crate::analyzers::preg::Preg;
 use pun_tokens::php_compat::trim;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -29,7 +29,7 @@ impl Line {
     }
 
     pub fn contains_useful_content(&self) -> bool {
-        preg::is_match(r"/\*\s*\S+/", &self.content)
+        Preg::r#match(r"/\*\s*\S+/", &self.content)
             && !trim(
                 &self
                     .content
@@ -42,7 +42,7 @@ impl Line {
 
     pub fn contains_a_tag(&self) -> bool {
         if !self.content.is_ascii() {
-            return preg::is_match(r"/\*\s*@/", &self.content);
+            return Preg::r#match(r"/\*\s*@/", &self.content);
         }
         // ASCII `\s`: space, TAB, LF, VT, FF, CR.
         self.content.iter().enumerate().any(|(i, &b)| {
@@ -71,7 +71,7 @@ impl Line {
     }
 
     pub fn add_blank(&mut self) {
-        let Some(m) = preg::captures(r"/^(\h*\*)[^\r\n]*(\r?\n)$/", &self.content) else {
+        let Some(m) = Preg::match_groups(r"/^(\h*\*)[^\r\n]*(\r?\n)$/", &self.content, 0) else {
             return;
         };
         let add = [m.str(1), m.str(2)].concat();

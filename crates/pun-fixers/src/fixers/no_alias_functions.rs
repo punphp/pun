@@ -53,20 +53,17 @@ impl NoAliasFunctionsFixer {
     /// configurePostNormalisation: array_merge of the chosen sets (string keys: later wins, position kept).
     fn set_sets(&mut self, sets: &[String]) {
         // array_merge: the sets share no alias, and a set listed twice only adds identical, already-fixed entries.
-        fn merge(aliases: &mut Vec<Alias>, items: &[Alias]) {
-            aliases.extend_from_slice(items);
-        }
         let mut aliases: Vec<Alias> = Vec::new();
         for set in sets {
             if set == "@all" {
                 aliases.clear();
                 for (_, items) in SETS {
-                    merge(&mut aliases, items);
+                    aliases.extend_from_slice(items);
                 }
                 break;
             }
             if let Some((_, items)) = SETS.iter().find(|(n, _)| n == set) {
-                merge(&mut aliases, items);
+                aliases.extend_from_slice(items);
             }
         }
         self.aliases = aliases;

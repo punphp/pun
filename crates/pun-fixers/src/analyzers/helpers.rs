@@ -1,5 +1,4 @@
 //! Small token helpers shared by several fixers (Pun's own; upstream inlines these).
-use crate::analyzers::preg::Preg;
 use pun_tokens::Kind::{self, *};
 use pun_tokens::Tokens;
 
@@ -40,9 +39,4 @@ pub fn split_list(tokens: &Tokens, open: usize, close: usize) -> Vec<(usize, usi
         }
     }
     items
-}
-
-/// `Preg::match('/\R/', $s)`.
-pub fn has_newline(s: &[u8]) -> bool {
-    Preg::r#match("/\\R/", s)
 }

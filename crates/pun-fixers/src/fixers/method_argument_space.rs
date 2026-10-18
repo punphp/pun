@@ -1,5 +1,4 @@
 //! Port of `PhpCsFixer\Fixer\FunctionNotation\MethodArgumentSpaceFixer`.
-use crate::analyzers::helpers::has_newline;
 use crate::analyzers::arguments_analyzer::ArgumentsAnalyzer;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::preg::Preg;
@@ -51,7 +50,7 @@ impl MethodArgumentSpaceFixer {
         );
         for index in [first_whitespace_index, last_whitespace_index] {
             let Some(index) = index else { continue };
-            if !has_newline(tokens[index].get_content()) {
+            if !Preg::r#match("/\\R/", tokens[index].get_content()) {
                 continue;
             }
             if self.on_multiline != "ensure_single_line" {
@@ -252,7 +251,7 @@ impl MethodArgumentSpaceFixer {
             if self.on_multiline == "ensure_single_line" {
                 new_content = Preg::replace("/\\R/", "", &new_content);
             }
-            if (!self.keep_multiple_spaces_after_comma || has_newline(&new_content))
+            if (!self.keep_multiple_spaces_after_comma || Preg::r#match("/\\R/", &new_content))
                 && !Self::is_comment_last_line_token(tokens, index + 2)
             {
                 new_content = ltrim_chars(&new_content, b" \t").to_vec();

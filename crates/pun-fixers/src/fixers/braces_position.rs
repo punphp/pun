@@ -1,5 +1,4 @@
 //! Port of `PhpCsFixer\Fixer\Basic\BracesPositionFixer`.
-use crate::analyzers::helpers::has_newline;
 use crate::analyzers::fixer_configuration_resolver::resolve;
 use crate::analyzers::indentation_trait::get_line_indentation;
 use crate::analyzers::preg::Preg;
@@ -59,7 +58,7 @@ impl BracesPositionFixer {
         while index < max {
             let token = &tokens[index];
             if !token.is_comment() {
-                return token.is_whitespace(None) && has_newline(token.get_content());
+                return token.is_whitespace(None) && Preg::r#match("/\\R/", token.get_content());
             }
             index += 1;
         }
@@ -68,7 +67,7 @@ impl BracesPositionFixer {
 
     fn has_comment_on_same_line(tokens: &Tokens, index: usize) -> bool {
         let mut token = &tokens[index + 1];
-        if token.is_whitespace(None) && !has_newline(token.get_content()) {
+        if token.is_whitespace(None) && !Preg::r#match("/\\R/", token.get_content()) {
             token = &tokens[index + 2];
         }
         token.is_comment()
@@ -273,7 +272,7 @@ impl Fixer for BracesPositionFixer {
                         && !token_inside_braces.is_whitespace(None)
                         && !token_inside_braces.is_comment())
                         || (token_inside_braces.is_whitespace(None)
-                            && has_newline(token_inside_braces.get_content()))
+                            && Preg::r#match("/\\R/", token_inside_braces.get_content()))
                     {
                         add_newlines_inside_braces = true;
                         break;
@@ -327,7 +326,7 @@ impl Fixer for BracesPositionFixer {
                         previous_token_index -= 1;
                     }
                     if tokens[previous_token_index].is_whitespace(None)
-                        && has_newline(tokens[previous_token_index].get_content())
+                        && Preg::r#match("/\\R/", tokens[previous_token_index].get_content())
                     {
                         whitespace = b" ".to_vec();
                     }
@@ -354,11 +353,11 @@ impl Fixer for BracesPositionFixer {
                     index_before_open_brace -= 1; // >= previous_meaningful_index >= 1: no underflow
                 }
             } else if !tokens[open_brace_index - 1].is_whitespace(None)
-                || !has_newline(tokens[open_brace_index - 1].get_content())
+                || !Preg::r#match("/\\R/", tokens[open_brace_index - 1].get_content())
             {
                 for index_after_open_brace in open_brace_index + 1..close_brace_index {
                     if tokens[index_after_open_brace].is_whitespace(None)
-                        && has_newline(tokens[index_after_open_brace].get_content())
+                        && Preg::r#match("/\\R/", tokens[index_after_open_brace].get_content())
                     {
                         break;
                     }
@@ -376,7 +375,7 @@ impl Fixer for BracesPositionFixer {
                 let moved_token = tokens[open_brace_index].clone();
                 let delta: isize = if open_brace_index < move_to { 1 } else { -1 };
                 if tokens[open_brace_index.wrapping_add_signed(delta)].is_whitespace(None) {
-                    if delta == -1 && has_newline(tokens[open_brace_index - 1].get_content()) {
+                    if delta == -1 && Preg::r#match("/\\R/", tokens[open_brace_index - 1].get_content()) {
                         let content = Preg::replace(
                             "/^(\\h*?\\R)?\\h*/",
                             "",
@@ -430,7 +429,7 @@ impl Fixer for BracesPositionFixer {
                 prev_index -= 1;
             }
             let prev_token = &tokens[prev_index];
-            if prev_token.is_whitespace(None) && has_newline(prev_token.get_content()) {
+            if prev_token.is_whitespace(None) && Preg::r#match("/\\R/", prev_token.get_content()) {
                 continue;
             }
             let whitespace =

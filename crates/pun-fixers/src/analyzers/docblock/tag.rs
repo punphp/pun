@@ -1,7 +1,7 @@
 //! `PhpCsFixer\DocBlock\Tag`.
 
 use super::line::LineRef;
-use super::preg;
+use crate::analyzers::preg::Preg;
 use std::cell::RefCell;
 
 #[derive(Clone, Debug)]
@@ -23,7 +23,7 @@ impl Tag {
             let content = self.line.borrow().get_content().to_vec();
             let name = match tag_name_ascii(&content) {
                 Some(name) => name,
-                None => match preg::match_all(r"/@[a-zA-Z0-9_-]+(?=\s|$)/", &content).first() {
+                None => match Preg::match_all(r"/@[a-zA-Z0-9_-]+(?=\s|$)/", &content, 0).first() {
                     Some(m) => m.str(0)[1..].to_vec(),
                     None => b"other".to_vec(),
                 },

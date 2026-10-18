@@ -49,15 +49,11 @@ impl ImportProcessor {
                     items.push(Token::new(CT_FUNCTION_IMPORT, "function"));
                     items.push(Token::new(T_WHITESPACE, " "));
                 }
-                items.extend(Self::tokenize_name(name));
+                items.extend(pun_tokens::transformers::tokenize_name(name));
                 items.push(Token::char(";"));
             }
             tokens.insert_at(at_index, items);
         }
-    }
-
-    pub fn tokenize_name(name: &[u8]) -> Vec<Token> {
-        pun_tokens::transformers::tokenize_name(name)
     }
 }
 

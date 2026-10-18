@@ -1,6 +1,6 @@
 //! `PhpCsFixer\DocBlock\TypeExpression`.
 
-use super::preg;
+use crate::analyzers::preg::{Captures, Preg};
 use std::sync::LazyLock;
 
 pub const REGEX_IDENTIFIER: &str = crate::__regex_identifier!();
@@ -95,7 +95,7 @@ impl TypeExpression {
         let t = if value == self.value {
             self.clone()
         } else {
-            self.inner(&value)
+            TypeExpression::new(&value)
         };
         callback(t)
     }
@@ -113,7 +113,7 @@ impl TypeExpression {
         let value = self.value.clone();
         let mut index = 0;
         let matches = loop {
-            let Some(m) = preg::match_at(pattern, &value, index) else {
+            let Some(m) = Preg::match_at(pattern, &value, 0, index) else {
                 return Err(ParseError(value));
             };
             let glue = m.name_str("glue");
@@ -142,7 +142,7 @@ impl TypeExpression {
                 let glue = self.types_glue.unwrap();
                 if seen[0] != seen[1] {
                     for iv in &inner_values {
-                        let e = self.inner_checked(&iv.value)?;
+                        let e = TypeExpression::try_new(&iv.value)?;
                         self.inner_type_expressions.push((iv.start_index, e));
                     }
                 } else {
@@ -160,7 +160,7 @@ impl TypeExpression {
                             );
                             i += 1;
                         }
-                        let e = self.inner_checked(&inner_value)?;
+                        let e = TypeExpression::try_new(&inner_value)?;
                         self.inner_type_expressions.push((inner_start_index, e));
                         i += 1;
                     }
@@ -231,7 +231,7 @@ impl TypeExpression {
     }
 
     fn push(&mut self, start_index: usize, value: &[u8]) -> Result<(), ParseError> {
-        let e = self.inner_checked(value)?;
+        let e = TypeExpression::try_new(value)?;
         self.inner_type_expressions.push((start_index, e));
         Ok(())
     }
@@ -244,8 +244,8 @@ impl TypeExpression {
         let pattern: &str = &COMMA_SEPARATED_PATTERN;
         let mut index = 0;
         while value.len() != index {
-            let m =
-                preg::match_at(pattern, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
+            let m = Preg::match_at(pattern, value, 0, index)
+                .ok_or_else(|| ParseError(value.to_vec()))?;
             self.push(start_index + index, m.name_str("types"))?;
             index += m.str(0).len();
         }
@@ -262,19 +262,20 @@ impl TypeExpression {
         sep: &str,
         prefix: &[u8],
         suffix: &[u8],
-        mut each: impl FnMut(&preg::Caps, usize, &mut Vec<(usize, Vec<u8>)>),
+        mut each: impl FnMut(&Captures, usize, &mut Vec<(usize, Vec<u8>)>),
     ) -> Result<(), ParseError> {
         let pre = format!(r"{{\G(?:(?=1)0{REGEX_TYPES}|(?<_{group}>(?&{group})){sep})}}");
         let full = format!(r"{{^{REGEX_TYPES}$}}");
         let mut index = 0;
         while value.len() != index {
             let pm =
-                preg::match_at(&pre, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
+                Preg::match_at(&pre, value, 0, index).ok_or_else(|| ParseError(value.to_vec()))?;
             let consumed_value = pm.name_str(&format!("_{group}"));
             let consumed_value_length = consumed_value.len();
             let consumed_comma_length = pm.str(0).len() - consumed_value_length;
             let subject = [prefix, consumed_value, suffix].concat();
-            let m = preg::captures(&full, &subject).ok_or_else(|| ParseError(value.to_vec()))?;
+            let m =
+                Preg::match_groups(&full, &subject, 0).ok_or_else(|| ParseError(value.to_vec()))?;
             let mut out = vec![];
             each(&m, start_index + index, &mut out);
             for (i, v) in out {
@@ -353,14 +354,6 @@ impl TypeExpression {
                 out.push((base + s - p, m.name_str("array_shape_inner_value").to_vec()));
             },
         )
-    }
-
-    fn inner_checked(&self, value: &[u8]) -> Result<TypeExpression, ParseError> {
-        TypeExpression::try_new(value)
-    }
-
-    fn inner(&self, value: &[u8]) -> TypeExpression {
-        TypeExpression::new(value)
     }
 
     #[cfg(test)]

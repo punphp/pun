@@ -1,9 +1,9 @@
 //! `PhpCsFixer\DocBlock\Annotation`.
 
 use super::line::LineRef;
-use super::preg;
 use super::tag::Tag;
 use super::type_expression::{REGEX_IDENTIFIER, REGEX_TYPES, TypeExpression};
+use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, PREG_SPLIT_NO_EMPTY, Preg, preg_quote};
 use std::cell::{OnceCell, RefCell};
 
 pub const TAGS_WITH_TYPES: &[&str] = &[
@@ -74,7 +74,7 @@ impl Annotation {
         if let Some(v) = variable_name_ascii(&content, &self.get_tag().get_name(), &types) {
             return Some(v);
         }
-        let ty = preg::quote(&types, Some(b'/'));
+        let ty = preg_quote(&types, Some(b'/'));
         let regex = [
             &b"/@"[..],
             &self.get_tag().get_name(),
@@ -85,7 +85,7 @@ impl Annotation {
             b")(?:.*|$)/",
         ]
         .concat();
-        preg::captures(&regex, &content).map(|m| m.name_str("variable").to_vec())
+        Preg::match_groups(&regex, &content, 0).map(|m| m.name_str("variable").to_vec())
     }
 
     pub fn get_types(&self) -> Vec<Vec<u8>> {
@@ -114,24 +114,28 @@ impl Annotation {
             return;
         }
         let split = |s: &[u8]| {
-            preg::split(
+            Preg::split(
                 r"/([^\n\r]+\R*)/",
                 s,
-                preg::SPLIT_NO_EMPTY | preg::SPLIT_DELIM_CAPTURE,
+                -1,
+                PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE,
             )
+            .into_iter()
+            .map(|p| p.text)
+            .collect::<Vec<_>>()
         };
         let original_types_lines = split(&orig_types_content);
         let new_types_lines = split(&new_types_content);
         for (index, line) in new_types_lines.iter().enumerate() {
             let pattern = [
                 &b"/"[..],
-                &preg::quote(&original_types_lines[index], Some(b'/')),
+                &preg_quote(&original_types_lines[index], Some(b'/')),
                 b"/",
             ]
             .concat();
             let content = self.lines[index].borrow().get_content().to_vec();
             // the replacement is a literal in upstream only by accident of content; keep preg_replace semantics
-            let new = preg::replace(&pattern, line, &content, 1);
+            let new = Preg::replace_limit(&pattern, line, &content, 1).0;
             self.lines[index].borrow_mut().set_content(new);
         }
         self.clear_cache();
@@ -143,10 +147,12 @@ impl Annotation {
             if line.is_the_start() && line.is_the_end() {
                 line.remove();
             } else if line.is_the_start() {
-                let content = preg::replace(r"#(\s*/\*\*).*#", b"$1", line.get_content(), -1);
+                let content =
+                    Preg::replace_limit(r"#(\s*/\*\*).*#", b"$1", line.get_content(), -1).0;
                 line.set_content(content);
             } else if line.is_the_end() {
-                let content = preg::replace(r"#(\s*)\S.*(\*/.*)#", b"$1$2", line.get_content(), -1);
+                let content =
+                    Preg::replace_limit(r"#(\s*)\S.*(\*/.*)#", b"$1$2", line.get_content(), -1).0;
                 line.set_content(content);
             } else {
                 line.remove();
@@ -184,7 +190,7 @@ impl Annotation {
             ]
             .concat();
             let content = self.get_content();
-            if let Some(m) = preg::captures(&pattern, &content) {
+            if let Some(m) = Preg::match_groups(&pattern, &content, 0) {
                 *self.types_content.borrow_mut() = Some(m.name_str("types").to_vec());
             }
         }

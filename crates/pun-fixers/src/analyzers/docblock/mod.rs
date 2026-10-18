@@ -5,7 +5,6 @@
 
 mod annotation;
 mod line;
-pub mod preg;
 #[macro_use]
 mod regex;
 mod short_description;
@@ -20,6 +19,7 @@ pub use line::{Line, LineRef};
 pub use short_description::ShortDescription;
 pub use type_expression::TypeExpression;
 
+use crate::analyzers::preg::{PREG_SPLIT_DELIM_CAPTURE, PREG_SPLIT_NO_EMPTY, Preg};
 use std::cell::OnceCell;
 
 #[derive(Clone, Debug)]
@@ -32,11 +32,15 @@ impl DocBlock {
     pub fn new(content: &[u8]) -> Self {
         let lines = split_lines_ascii(content)
             .unwrap_or_else(|| {
-                preg::split(
+                Preg::split(
                     r"/([^\n\r]+\R*)/",
                     content,
-                    preg::SPLIT_NO_EMPTY | preg::SPLIT_DELIM_CAPTURE,
+                    -1,
+                    PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE,
                 )
+                .into_iter()
+                .map(|p| p.text)
+                .collect()
             })
             .into_iter()
             .map(Line::shared)

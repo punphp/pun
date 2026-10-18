@@ -354,10 +354,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
   (`_override`, passed `true`/`false`); `embedded_blade_masker.rs:350-351` (`length`); `pun-lint/src/lib.rs:24-29`
   (`Context.path`, `Context.php_version`); `pun-lint/Cargo.toml:25` (`serde_json` dev-dependency); the orphan comment
   at `no_unneeded_control_parentheses.rs:83`.
-- [ ] 73. Forwarding wrappers: `ordered_imports.rs:153-155` (`spaceship`), `no_alias_functions.rs:56-58` (`merge`),
+- [x] 73. Forwarding wrappers: `ordered_imports.rs:153-155` (`spaceship`), `no_alias_functions.rs:56-58` (`merge`),
   `import_processor.rs:59-61` (`tokenize_name`), `type_expression.rs:358-364`, `helpers.rs:28-30` (`has_newline`,
   used twice while 28 sites call `Preg` directly), `pun-phpstan/src/types.rs:288-290`, and all of
-  `docblock/preg.rs` (49 lines renaming `Preg` methods). Inline Function.
+  `docblock/preg.rs` (49 lines renaming `Preg` methods). Inline Function. Fixed in wf/audit-fixers-rules (`has_newline` now has 7 call sites, all
+  inlined; in `types.rs` the forwarded `is_implicit_mixed` went and `is_plain_implicit_mixed` keeps its body).
 - [ ] 74. `crates/pun-cli/src/run.rs:480-487`: `assert!(thread::spawn(|| panic!()).join().is_err())` passes whatever
   the panic hook does. Delete it or assert the hook's effect.
 

@@ -280,13 +280,9 @@ impl Type {
         matches!(self, Type::Never(_))
     }
 
-    fn is_implicit_mixed(&self) -> bool {
-        matches!(self, Type::Mixed { explicit: false })
-    }
-
     /// `$t instanceof MixedType && $t->describe(precise) === 'mixed' && !$t->isExplicitMixed()`
     fn is_plain_implicit_mixed(&self) -> bool {
-        self.is_implicit_mixed()
+        matches!(self, Type::Mixed { explicit: false })
     }
 
     fn is_compound(&self) -> bool {

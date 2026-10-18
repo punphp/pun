@@ -150,14 +150,10 @@ impl Fixer for OrderedImportsFixer {
     }
 }
 
-fn spaceship(a: &[u8], b: &[u8]) -> Ordering {
-    a.cmp(b)
-}
-
 impl OrderedImportsFixer {
     fn cmp_str(&self, a: &[u8], b: &[u8]) -> Ordering {
         if self.case_sensitive {
-            spaceship(a, b)
+            a.cmp(b)
         } else {
             strcasecmp(a, b).cmp(&0)
         }
