@@ -22,7 +22,7 @@ impl Fixer for LowercaseCastFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.count() {
-            if !tokens[index].is_cast() {
+            if !tokens[index].is_cast() || !tokens[index].content.iter().any(u8::is_ascii_uppercase) {
                 continue;
             }
             let t = &tokens[index];

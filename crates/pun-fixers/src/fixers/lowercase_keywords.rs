@@ -23,7 +23,10 @@ impl Fixer for LowercaseKeywordsFixer {
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.len() {
             let token = &tokens[index];
-            if token.is_keyword() && !token.is_kind(T_HALT_COMPILER) {
+            if token.is_keyword()
+                && !token.is_kind(T_HALT_COMPILER)
+                && token.content.iter().any(u8::is_ascii_uppercase)
+            {
                 let new = Token::new(token.id.unwrap(), token.content.to_ascii_lowercase());
                 tokens.set(index, new);
             }

@@ -85,11 +85,11 @@ impl Fixer for NoAliasFunctionsFixer {
         let functions_analyzer = FunctionsAnalyzer::new();
         let arguments_analyzer = ArgumentsAnalyzer;
         for index in tokens.find_given_kind(T_STRING, 0, None) {
-            let token_content = tokens[index].content.to_ascii_lowercase();
+            let token_content = &tokens[index].content;
             let Some(&(_, alias, number_of_arguments)) = self
                 .aliases
                 .iter()
-                .find(|a| a.0.as_bytes() == &token_content[..])
+                .find(|a| a.0.as_bytes().eq_ignore_ascii_case(token_content))
             else {
                 continue;
             };

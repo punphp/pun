@@ -62,11 +62,11 @@ impl Fixer for MbStrFunctionsFixer {
             if !tokens[index].is_kind(T_STRING) {
                 continue;
             }
-            let lowercased_content = tokens[index].content.to_ascii_lowercase();
+            let content = &tokens[index].content;
             let Some(&(_, alternative_name, argument_count)) = self
                 .functions
                 .iter()
-                .find(|(n, _, _)| n.as_bytes() == &lowercased_content[..])
+                .find(|(n, _, _)| n.as_bytes().eq_ignore_ascii_case(content))
             else {
                 continue;
             };

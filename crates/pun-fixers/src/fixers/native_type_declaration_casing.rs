@@ -47,9 +47,11 @@ impl Fixer for NativeTypeDeclarationCasingFixer {
     }
     fn fix(&self, _file: &Path, tokens: &mut Tokens) {
         for index in 0..tokens.len() {
-            let token = &tokens[index];
-            let lowercase_content = token.content.to_ascii_lowercase();
-            if token.content == lowercase_content || !TYPES.contains(&&lowercase_content[..]) {
+            let content = &tokens[index].content;
+            // Already lowercase (the usual case) is skipped first; the lowercase copy is made only for the rewrite.
+            if !content.iter().any(u8::is_ascii_uppercase)
+                || !TYPES.iter().any(|t| t.eq_ignore_ascii_case(content))
+            {
                 continue;
             }
             let prev_index = tokens.get_prev_meaningful_token(index).unwrap();
@@ -79,7 +81,10 @@ impl Fixer for NativeTypeDeclarationCasingFixer {
             // Every native type keyword is a T_STRING/T_ARRAY/T_CALLABLE/T_STATIC token, never a bare char.
             tokens.set(
                 index,
-                Token::new(tokens[index].id.unwrap(), lowercase_content),
+                Token::new(
+                    tokens[index].id.unwrap(),
+                    tokens[index].content.to_ascii_lowercase(),
+                ),
             );
         }
     }
