@@ -45,7 +45,6 @@ Uncovered lines:
 
 ## Known deviations found while testing
 
-- `pun_format::lint` takes the error line from Mago's offset, which can differ from PHP's. For `<?php\nfunction (\n`, Mago reports line 2 and PHP/Pint report line 3. Pint prints that line for invalid files, so `crates/pun-cli/tests/cli.rs` compares invalid-file output with the message text masked.
 - `--preset=<unknown>`: the pinned Pint phar crashes with "Undefined array key" instead of aborting with "Preset not found.". pun prints the intended message, and the test checks pun's message on its own.
 
 ## Test audit (tautology sweep)

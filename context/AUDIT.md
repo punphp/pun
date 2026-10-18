@@ -415,9 +415,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `docblock/tests.rs:46-59` swaps the process panic hook. Use per-run temp dirs, `env_clear()` and `catch_unwind`.
 - [ ] 81. Oracle tests disagree on a missing `php`: `pun-tokens/src/php_compat.rs:356-378` says "skipped" but panics,
   while `tests/parity.rs:10-16` and `tests/api.rs:285-296` return silently and pass. One helper, one policy.
-- [ ] 82. Weak or stale assertions: `pun-format/src/lib.rs:595-603` checks only a `"Parse error: "` prefix under a
+- [x] 82. Weak or stale assertions: `pun-format/src/lib.rs:595-603` checks only a `"Parse error: "` prefix under a
   comment about Mago, which lint no longer uses (also `context/reports/COVERAGE.md:38`); `docblock/tests.rs:332-343`
-  uses `contains`. Assert the oracle's exact message.
+  uses `contains`. Assert the oracle's exact message. The pun-format test now asserts PHP 8.5's exact messages and the
+  stale Mago note is gone from COVERAGE.md; the docblock message is left to item 15, whose exact-message test (oracle
+  values, `var_export` escaping) lands with that fix. Fixed in wf/audit-format.
 
 ### Splits and smaller items
 

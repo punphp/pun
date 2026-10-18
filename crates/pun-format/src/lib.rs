@@ -602,20 +602,18 @@ mod tests {
         let e = p
             .run(Path::new("a.php"), b"<?php\nfunction (\n")
             .unwrap_err();
-        // (The line is mago's error position; PHP reports this one on line 3, mago on line 2 — see context/reports/COVERAGE.md.)
-        assert!(
-            !e.after_fix && e.message.starts_with("Parse error: "),
-            "{}",
-            e.message
-        );
+        // Expected messages: token_get_all($code, TOKEN_PARSE) on PHP 8.5, worded by TokenizerLintingResult.
+        assert!(!e.after_fix);
+        assert_eq!(e.message, "Parse error: Unclosed '(' on line 2 on line 3.");
         let only_drop = Pipeline::new(&[rule("drop_space")], &factory).unwrap();
+        // drop_space turns the input into `<?php\nfunctiona() {}`.
         let e = only_drop
             .run(Path::new("a.php"), b"<?php\nfunction a() {}")
             .unwrap_err();
-        assert!(
-            e.after_fix && e.message.starts_with("Parse error: "),
-            "{}",
-            e.message
+        assert!(e.after_fix);
+        assert_eq!(
+            e.message,
+            "Parse error: syntax error, unexpected token \"{\" on line 2."
         );
     }
 
