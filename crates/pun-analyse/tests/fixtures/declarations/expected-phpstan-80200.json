@@ -1,0 +1,180 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "constants.php",
+   "line": 28,
+   "identifier": "classConstant.final",
+   "message": "Constant Constants\\Child::B overrides final constant Constants\\I0::B.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 30,
+   "identifier": "classConstant.visibility",
+   "message": "Private constant Constants\\Child::Q overriding protected constant Constants\\Base::Q should be protected or public.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 31,
+   "identifier": "classConstant.final",
+   "message": "Constant Constants\\Child::D overrides final constant Constants\\Base::D.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 31,
+   "identifier": "classConstant.final",
+   "message": "Constant Constants\\Child::F overrides final constant Constants\\Base::F.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 31,
+   "identifier": "classConstant.visibility",
+   "message": "Protected constant Constants\\Child::D overriding public constant Constants\\Base::D should also be public.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 31,
+   "identifier": "classConstant.visibility",
+   "message": "Protected constant Constants\\Child::F overriding public constant Constants\\Base::F should also be public.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 36,
+   "identifier": "classConstant.final",
+   "message": "Constant Constants\\Direct::B overrides final constant Constants\\I0::B.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 60,
+   "identifier": "classConstant.visibility",
+   "message": "Private constant Constants\\Child2::Y overriding protected constant Constants\\Parent2::Y should be protected or public.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 60,
+   "identifier": "classConstant.visibility",
+   "message": "Private constant Constants\\Child2::Y overriding protected constant Constants\\TBase::Y should also be protected.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 60,
+   "identifier": "classConstant.visibility",
+   "message": "Private constant Constants\\Child2::Y overriding protected constant Constants\\TOuter::Y should also be protected.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 61,
+   "identifier": "classConstant.nativeType",
+   "message": "Constant Constants\\Child2::N (int) overriding constant Constants\\TBase::N (int|null) should have the same native type int|null.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 61,
+   "identifier": "classConstant.nativeType",
+   "message": "Constant Constants\\Child2::N (int) overriding constant Constants\\TOuter::N (int|null) should have the same native type int|null.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 61,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 69,
+   "identifier": "classConstant.value",
+   "message": "Constant Constants\\UsesOuter::X with value 2 overriding constant Constants\\TOuter::X with different value 1 should have the same value.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 70,
+   "identifier": "classConstant.final",
+   "message": "Final constant Constants\\UsesOuter::Z overriding non-final constant Constants\\TBase::Z should also be non-final.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 70,
+   "identifier": "classConstant.final",
+   "message": "Final constant Constants\\UsesOuter::Z overriding non-final constant Constants\\TOuter::Z should also be non-final.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 71,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 78,
+   "identifier": "classConstant.value",
+   "message": "Constant Constants\\UsesBase::X with value 'x' overriding constant Constants\\TBase::X with different value 1 should have the same value.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 79,
+   "identifier": "classConstant.visibility",
+   "message": "Public constant Constants\\UsesBase::Y overriding protected constant Constants\\TBase::Y should also be protected.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\Parent2)",
+   "line": 43,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesBase)",
+   "line": 43,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesOuter)",
+   "line": 43,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "readonly.php",
+   "line": 14,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Anonymous readonly classes are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 18,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 41,
+   "identifier": "function.notFound",
+   "message": "Function undefined_fn not found.",
+   "tip": null
+  }
+ ]
+}

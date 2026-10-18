@@ -1,0 +1,26 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "readonly.php",
+   "line": 5,
+   "identifier": "phpstan.parse",
+   "message": "Syntax error, unexpected T_CLASS on line 5",
+   "tip": null
+  },
+  {
+   "file": "readonly.php",
+   "line": 9,
+   "identifier": "phpstan.parse",
+   "message": "Syntax error, unexpected T_STRING, expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS on line 9",
+   "tip": null
+  },
+  {
+   "file": "readonly.php",
+   "line": 14,
+   "identifier": "phpstan.parse",
+   "message": "Syntax error, unexpected T_CLASS, expecting ';' on line 14",
+   "tip": null
+  }
+ ]
+}

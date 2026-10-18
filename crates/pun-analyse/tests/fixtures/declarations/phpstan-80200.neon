@@ -1,0 +1,4 @@
+parameters:
+    level: 0
+    phpVersion: 80200
+    paths: [readonly.php, versions.php, constants.php]

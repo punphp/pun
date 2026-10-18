@@ -41,3 +41,7 @@ Variables/DefinedVariableRuleTest::testDefinedVariables
 Keywords/DeclareStrictTypesRuleTest::testNested
 # anonymous class display names (class@anonymous/<file>:<line>, FuzzyRelativePathHelper) are not ported
 Methods/MissingMethodImplementationRuleTest::testRule
+# array.duplicateKey on variable keys ($idx++, a @param 'foo'|'bar' $key) needs their inferred constant types
+Arrays/DuplicateKeysInLiteralArraysRuleTest::testDuplicateKeys
+# classConstant.value on a trait's duplicate constants (a PHP error): PHP's reflection keeps the last, the codex the first
+Classes/DuplicateTraitDeclarationRuleTest::testBug14250

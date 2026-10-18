@@ -1,6 +1,7 @@
 //! Keyword, cast and context checks that need no types: MagicConstantContextRule, DeclareStrictTypesRule,
-//! GotoUndefinedLabelRule, ConstructorReturnTypeRule, DeprecatedCastRule, UnsetCastRule, VoidCastRule and
-//! BacktickRule.
+//! GotoUndefinedLabelRule, ConstructorReturnTypeRule, DeprecatedCastRule, UnsetCastRule, VoidCastRule,
+//! BacktickRule, NoncapturingCatchRule, ThrowExpressionRule, InstantiationCallableRule and the PHP version branch of
+//! the first-class callable rules.
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
@@ -332,4 +333,104 @@ pub fn backtick(c: &mut Checker, s: &ShellExecuteString) {
             .to_string(),
         None,
     );
+}
+
+impl Checker<'_, '_> {
+    /// `$scope->getPhpVersion()->...->yes()` for `version >= at_least`: the configured version, or the range a
+    /// `PHP_VERSION_ID` guard leaves (see `may_be_at_least()`).
+    fn surely_at_least(&self, at_least: i64) -> bool {
+        const MIN: i64 = 50207;
+        match super::scope::version_range(&self.guards) {
+            Some((lo, hi)) if lo.is_some_and(|l| l > MIN) || hi.is_some() => {
+                let lo = lo.unwrap_or(MIN).max(MIN);
+                // an empty range is never, which every version range contains
+                lo >= at_least || hi.is_some_and(|h| h < lo)
+            }
+            _ => i64::from(self.php_version) >= at_least,
+        }
+    }
+}
+
+/// NoncapturingCatchRule.
+pub fn noncapturing_catch(c: &mut Checker, clause: &TryCatchClause) {
+    if clause.variable.is_some() || c.surely_at_least(80000) {
+        return;
+    }
+    c.report_non_ignorable(
+        clause,
+        "catch.nonCapturingNotSupported",
+        "Non-capturing catch is supported only on PHP 8.0 and later.".to_string(),
+        None,
+    );
+}
+
+/// StandaloneThrowExprVisitor: a `throw` that is an expression statement.
+pub fn standalone_throw(c: &mut Checker, s: &ExpressionStatement) {
+    let mut e = s.expression;
+    while let Expression::Parenthesized(p) = e {
+        e = p.expression;
+    }
+    if let Expression::Throw(t) = e {
+        c.standalone_throws.insert(t.span());
+    }
+}
+
+/// ThrowExpressionRule.
+pub fn throw_expression(c: &mut Checker, t: &Throw) {
+    // PhpVersion::supportsThrowExpression()
+    if c.php_version >= 80000 || c.standalone_throws.contains(&t.span()) {
+        return;
+    }
+    c.report_non_ignorable(
+        t,
+        "throw.notSupported",
+        "Throw expression is supported only on PHP 8.0 and later.".to_string(),
+        None,
+    );
+}
+
+/// The PHP version branch of FunctionCallableRule, MethodCallableRule and StaticMethodCallableRule on `f(...)` at
+/// `at`: whether it reported (the rest of the rule is then skipped).
+pub fn first_class_callable(c: &mut Checker, at: Span, args: &PartialArgumentList) -> bool {
+    // PhpVersion::supportsFirstClassCallables(); `x |> f(...)` is the call `f(x)`
+    if c.php_version >= 80100
+        || c.piped.contains(&at)
+        || !matches!(
+            args.arguments.iter().collect::<Vec<_>>().as_slice(),
+            [PartialArgument::VariadicPlaceholder(_)]
+        )
+    {
+        return false;
+    }
+    c.report_non_ignorable(
+        at,
+        "callable.notSupported",
+        "First-class callables are supported only on PHP 8.1 and later.".to_string(),
+        None,
+    );
+    true
+}
+
+/// InstantiationCallableRule: `new X(...)`, which Mago parses as one unpacked argument that is a parse error. Whether it
+/// reported (NodeScopeResolver then analyses no `new`).
+pub fn instantiation_callable(c: &mut Checker, new: &Instantiation) -> bool {
+    let Some(list) = &new.argument_list else {
+        return false;
+    };
+    if !matches!(
+        list.arguments.iter().collect::<Vec<_>>().as_slice(),
+        [Argument::Positional(PositionalArgument {
+            ellipsis: Some(_),
+            value: Expression::Error(_),
+        })]
+    ) {
+        return false;
+    }
+    c.report_non_ignorable(
+        new,
+        "callable.notSupported",
+        "Cannot create callable from the new operator.".to_string(),
+        None,
+    );
+    true
 }

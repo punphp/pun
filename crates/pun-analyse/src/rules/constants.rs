@@ -1,0 +1,449 @@
+//! Class-constant declaration rules: ClassAsClassConstantRule, ConstantsInTraitsRule, FinalConstantRule,
+//! NativeTypedClassConstantRule, ConflictingTraitConstantsRule and OverridingConstantRule (level 0: its native type
+//! and PHPDoc type checks need checkPhpDocMethodSignatures, on from level 3), plus ReadOnlyClassRule, which PHPStan
+//! reports under `classConstant.nativeTypeNotSupported`.
+
+use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::metadata::class_like_constant::ClassLikeConstantMetadata;
+use mago_codex::visibility::Visibility;
+use mago_span::{HasSpan, Span};
+use mago_syntax::cst::*;
+use pun_phpstan::resolve::resolve_str;
+use pun_phpstan::types::{Level, Type};
+
+use super::Checker;
+
+fn text(b: &[u8]) -> String {
+    String::from_utf8_lossy(b).into_owned()
+}
+
+fn display(k: &ClassLikeMetadata) -> String {
+    text(k.original_name.as_bytes())
+}
+
+/// The visibility a declaration's modifiers give (public without one).
+fn visibility(modifiers: &[Modifier]) -> Visibility {
+    modifiers
+        .iter()
+        .find_map(|m| match m {
+            Modifier::Private(_) => Some(Visibility::Private),
+            Modifier::Protected(_) => Some(Visibility::Protected),
+            Modifier::Public(_) => Some(Visibility::Public),
+            _ => None,
+        })
+        .unwrap_or(Visibility::Public)
+}
+
+fn is_final(modifiers: &[Modifier]) -> bool {
+    modifiers.iter().any(|m| matches!(m, Modifier::Final(_)))
+}
+
+/// The rules registered for `Node\Stmt\ClassConst`.
+pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant<'arena>) {
+    class_as_class_constant(c, k);
+    let modifiers = k.modifiers.as_slice();
+    // ConstantsInTraitsRule (`$scope->isInTrait()`), PhpVersion::supportsConstantsInTraits()
+    if c.php_version < 80200 && c.in_target {
+        c.report_non_ignorable(
+            k,
+            "classConstant.inTrait",
+            "Constant is declared inside a trait but is only supported on PHP 8.2 and later."
+                .to_string(),
+            None,
+        );
+    }
+    // FinalConstantRule, PhpVersion::supportsFinalConstants()
+    if is_final(modifiers) && c.php_version < 80100 {
+        c.report_non_ignorable(
+            k,
+            "classConstant.finalNotSupported",
+            "Final class constants are supported only on PHP 8.1 and later.".to_string(),
+            None,
+        );
+    }
+    // NativeTypedClassConstantRule, PhpVersion::supportsNativeTypesInClassConstants()
+    if k.hint.is_some() && c.php_version < 80300 {
+        c.report_non_ignorable(
+            k,
+            "classConstant.nativeTypeNotSupported",
+            "Class constants with native types are supported only on PHP 8.3 and later."
+                .to_string(),
+            None,
+        );
+    }
+    // ponytail: anonymous classes have no class scope here (their class@anonymous name is not ported)
+    let Some(class) = c.class_scope() else {
+        return;
+    };
+    conflicting_trait_constants(c, class, k);
+    overriding_constant(c, class, k);
+}
+
+/// ClassAsClassConstantRule.
+fn class_as_class_constant(c: &mut Checker, k: &ClassLikeConstant) {
+    for item in k.items.iter() {
+        if !item.name.value.eq_ignore_ascii_case(b"class") {
+            continue;
+        }
+        c.report_non_ignorable(
+            item,
+            "classConstant.class",
+            "A class constant must not be called 'class'; it is reserved for class name fetching."
+                .to_string(),
+            None,
+        );
+    }
+}
+
+/// ReadOnlyClassRule (`InClassNode`): a `readonly` class declared at `at`.
+pub fn read_only_class(c: &mut Checker, at: Span, modifiers: &[Modifier], anonymous: bool) {
+    // Below PHP 8.1 php-parser lexes `readonly` as a name: PHPStan reports a parse error and never reaches the rule.
+    if c.php_version < 80100 || !modifiers.iter().any(|m| matches!(m, Modifier::Readonly(_))) {
+        return;
+    }
+    let message = if anonymous {
+        // PhpVersion::supportsReadOnlyAnonymousClasses()
+        if c.php_version >= 80300 {
+            return;
+        }
+        "Anonymous readonly classes are supported only on PHP 8.3 and later."
+    } else {
+        // PhpVersion::supportsReadOnlyClasses()
+        if c.php_version >= 80200 {
+            return;
+        }
+        "Readonly classes are supported only on PHP 8.2 and later."
+    };
+    c.report_non_ignorable(
+        at,
+        "classConstant.nativeTypeNotSupported",
+        message.to_string(),
+        None,
+    );
+}
+
+impl<'a> Checker<'a, '_> {
+    fn class_named(&self, name: &mago_word::Word) -> Option<&'a ClassLikeMetadata> {
+        self.codebase.get_class_like(name.as_bytes())
+    }
+
+    /// A native type written at `span` of the file `file`, as PHPStan describes it (`self` resolved in `class`).
+    // assistant's call: the hint's source text through pun-phpstan's type resolver (class names stay as written)
+    fn native_type(
+        &self,
+        file: mago_database::file::FileId,
+        span: Span,
+        class: &str,
+    ) -> Option<Type> {
+        let contents = self.file_contents(file)?;
+        let written = contents.get(span.to_range_usize())?;
+        Some(resolve_str(&text(written), Some(class)))
+    }
+}
+
+/// ConflictingTraitConstantsRule.
+fn conflicting_trait_constants<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    class: &ClassLikeMetadata,
+    k: &ClassLikeConstant<'arena>,
+) {
+    let display = display(class);
+    let class_name = text(class.name.as_bytes());
+    // `getTraits(true)`: the class's traits, theirs, and those of its parents (the codex's `used_traits`)
+    let recursive: Vec<&ClassLikeMetadata> = class
+        .used_traits
+        .iter()
+        .filter_map(|t| c.class_named(t))
+        .collect();
+    for item in k.items.iter() {
+        for t in &recursive {
+            if let Some(constant) = t.constants.get(&mago_word::word(item.name.value)) {
+                single_trait_constant(c, &display, &class_name, t, constant, k, item);
+            }
+        }
+    }
+    let immediate: Vec<&ClassLikeMetadata> = class
+        .direct_trait_names()
+        .filter_map(|t| c.class_named(&t))
+        .collect();
+    for item in k.items.iter() {
+        let name = mago_word::word(item.name.value);
+        for t in &immediate {
+            let Some(theirs) = t.constants.get(&name) else {
+                continue;
+            };
+            // the constant declared here: the class's own, or in a trait walked in its context that trait's
+            let owner = match &c.context_trait {
+                Some(trait_name) if c.in_target => trait_name.as_str(),
+                _ => class_name.as_str(),
+            };
+            // ponytail: values the codex cannot reduce to a constant scalar (arrays, floats, expressions) are not
+            // compared
+            // ponytail: of duplicate declarations (a PHP error) the codex keeps the first, PHP's reflection the last
+            let ours = c
+                .codebase
+                .get_class_constant(owner.as_bytes(), item.name.value)
+                .and_then(|m| super::enums::constant_value(c, m.inferred_type.as_ref()?));
+            let (Some(ours), Some(theirs)) = (
+                ours,
+                theirs
+                    .inferred_type
+                    .as_ref()
+                    .and_then(|v| super::enums::constant_value(c, v)),
+            ) else {
+                continue;
+            };
+            if ours == theirs {
+                continue;
+            }
+            let name = text(item.name.value);
+            c.report_non_ignorable(
+                k,
+                "classConstant.value",
+                format!(
+                    "Constant {display}::{name} with value {} overriding constant {}::{name} with different value {} should have the same value.",
+                    ours.describe(Level::Value),
+                    display_of(t),
+                    theirs.describe(Level::Value),
+                ),
+                None,
+            );
+        }
+    }
+}
+
+/// `getDeclaringClass()->getName()` of a trait's constant: the trait.
+fn display_of(t: &ClassLikeMetadata) -> String {
+    display(t)
+}
+
+/// ConflictingTraitConstantsRule::processSingleConstant().
+fn single_trait_constant<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    display: &str,
+    class_name: &str,
+    t: &ClassLikeMetadata,
+    theirs: &ClassLikeConstantMetadata,
+    k: &ClassLikeConstant<'arena>,
+    item: &ClassLikeConstantItem<'arena>,
+) {
+    let name = text(item.name.value);
+    let trait_display = display_of(t);
+    let ours = visibility(k.modifiers.as_slice());
+    let label = |v: Visibility| match v {
+        Visibility::Public => ("Public", "public"),
+        Visibility::Protected => ("Protected", "protected"),
+        Visibility::Private => ("Private", "private"),
+    };
+    if ours != theirs.visibility {
+        let (ours, _) = label(ours);
+        let (_, theirs) = label(theirs.visibility);
+        c.report_non_ignorable(
+            k,
+            "classConstant.visibility",
+            format!(
+                "{ours} constant {display}::{name} overriding {theirs} constant {trait_display}::{name} should also be {theirs}."
+            ),
+            None,
+        );
+    }
+    let final_here = is_final(k.modifiers.as_slice());
+    // assistant's call: the codex's FINAL flag (also set by `@final`) stands in for ReflectionClassConstant::isFinal()
+    if theirs.flags.is_final() {
+        if !final_here {
+            c.report_non_ignorable(
+                k,
+                "classConstant.nonFinal",
+                format!(
+                    "Non-final constant {display}::{name} overriding final constant {trait_display}::{name} should also be final."
+                ),
+                None,
+            );
+        }
+    } else if final_here {
+        c.report_non_ignorable(
+            k,
+            "classConstant.final",
+            format!(
+                "Final constant {display}::{name} overriding non-final constant {trait_display}::{name} should also be non-final."
+            ),
+            None,
+        );
+    }
+    let trait_name = text(t.name.as_bytes());
+    let theirs_type = theirs
+        .type_declaration
+        .as_ref()
+        .map(|d| c.native_type(theirs.span.file_id, d.span, &trait_name));
+    let ours_type = k
+        .hint
+        .as_ref()
+        .map(|h| c.native_type(c.file.id, h.span(), class_name));
+    let describe = |t: &Type| t.describe(Level::TypeOnly);
+    match (theirs_type, ours_type) {
+        (None, Some(Some(ours))) => c.report_non_ignorable(
+            k,
+            "classConstant.nativeType",
+            format!(
+                "Constant {display}::{name} ({}) overriding constant {trait_display}::{name} should not have a native type.",
+                describe(&ours)
+            ),
+            None,
+        ),
+        (Some(Some(theirs)), None) => {
+            let theirs = describe(&theirs);
+            c.report_non_ignorable(
+                k,
+                "classConstant.missingNativeType",
+                format!(
+                    "Constant {display}::{name} overriding constant {trait_display}::{name} ({theirs}) should also have native type {theirs}."
+                ),
+                None,
+            );
+        }
+        (Some(Some(theirs)), Some(Some(ours))) if theirs != ours => {
+            let theirs = describe(&theirs);
+            c.report_non_ignorable(
+                k,
+                "classConstant.nativeType",
+                format!(
+                    "Constant {display}::{name} ({}) overriding constant {trait_display}::{name} ({theirs}) should have the same native type {theirs}.",
+                    describe(&ours)
+                ),
+                None,
+            );
+        }
+        _ => {}
+    }
+}
+
+/// OverridingConstantRule at level 0 (checkPhpDocMethodSignatures off: no native or PHPDoc type checks).
+fn overriding_constant<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    class: &ClassLikeMetadata,
+    k: &ClassLikeConstant<'arena>,
+) {
+    let display = display(class);
+    let ours = visibility(k.modifiers.as_slice());
+    for item in k.items.iter() {
+        let Some((prototype, declaring)) = find_prototype(c, class, item.name.value) else {
+            continue;
+        };
+        let name = text(item.name.value);
+        // an interface's constants are final before PHP 8.1 (BetterReflection's isFinal())
+        let interface_final = declaring.kind.is_interface() && c.php_version < 80100;
+        let declaring = self::display(declaring);
+        if prototype.flags.is_final() || interface_final {
+            c.report_non_ignorable(
+                k,
+                "classConstant.final",
+                format!("Constant {display}::{name} overrides final constant {declaring}::{name}."),
+                None,
+            );
+        }
+        if prototype.visibility == Visibility::Public {
+            if ours != Visibility::Public {
+                let label = if ours == Visibility::Private {
+                    "Private"
+                } else {
+                    "Protected"
+                };
+                c.report_non_ignorable(
+                    k,
+                    "classConstant.visibility",
+                    format!(
+                        "{label} constant {display}::{name} overriding public constant {declaring}::{name} should also be public."
+                    ),
+                    None,
+                );
+            }
+        } else if ours == Visibility::Private {
+            c.report_non_ignorable(
+                k,
+                "classConstant.visibility",
+                format!(
+                    "Private constant {display}::{name} overriding protected constant {declaring}::{name} should be protected or public."
+                ),
+                None,
+            );
+        }
+    }
+}
+
+/// OverridingConstantRule::findPrototype(): the constant of the first immediate interface that has it, else the
+/// parent's unless private; with the display name of the class declaring it.
+fn find_prototype<'a>(
+    c: &Checker<'a, '_>,
+    class: &'a ClassLikeMetadata,
+    name: &[u8],
+) -> Option<(&'a ClassLikeConstantMetadata, &'a ClassLikeMetadata)> {
+    let name = mago_word::word(name);
+    let ancestors: Vec<&ClassLikeMetadata> = std::iter::successors(
+        class.direct_parent_class.and_then(|p| c.class_named(&p)),
+        |k| k.direct_parent_class.and_then(|p| c.class_named(&p)),
+    )
+    .take(64)
+    .collect();
+    // getImmediateInterfaces(): the class's interfaces less those of its parents and those its interfaces extend
+    let interfaces: Vec<&ClassLikeMetadata> = class
+        .all_parent_interfaces
+        .iter()
+        .filter_map(|i| c.class_named(i))
+        .collect();
+    let indirect = |i: &ClassLikeMetadata| {
+        ancestors
+            .iter()
+            .any(|p| p.all_parent_interfaces.contains(&i.name))
+            || interfaces
+                .iter()
+                .any(|o| o.all_parent_interfaces.contains(&i.name))
+    };
+    for i in interfaces.iter().filter(|i| !indirect(i)) {
+        if let Some(constant) = i.constants.get(&name) {
+            return Some((constant, declaring(c, i, constant)));
+        }
+    }
+    let parent = *ancestors.first()?;
+    let constant = parent
+        .constants
+        .get(&name)
+        .filter(|k| k.visibility != Visibility::Private)?;
+    Some((constant, declaring(c, parent, constant)))
+}
+
+/// `getDeclaringClass()` of a constant `k` has: the class-like whose declaration holds it, or the class using the
+/// trait that does.
+fn declaring<'a>(
+    c: &Checker<'a, '_>,
+    k: &'a ClassLikeMetadata,
+    constant: &ClassLikeConstantMetadata,
+) -> &'a ClassLikeMetadata {
+    let holds = |s: Span| {
+        s.file_id == constant.span.file_id
+            && s.start.offset <= constant.span.start.offset
+            && constant.span.end.offset <= s.end.offset
+    };
+    // a trait's `used_traits` holds the traits it uses, recursively
+    let in_traits = |k: &ClassLikeMetadata| {
+        k.direct_trait_names()
+            .filter_map(|t| c.class_named(&t))
+            .any(|t| {
+                holds(t.span)
+                    || t.used_traits
+                        .iter()
+                        .filter_map(|u| c.class_named(u))
+                        .any(|u| holds(u.span))
+            })
+    };
+    std::iter::successors(Some(k), |k| {
+        k.direct_parent_class.and_then(|p| c.class_named(&p))
+    })
+    .take(64)
+    .chain(
+        k.all_parent_interfaces
+            .iter()
+            .filter_map(|i| c.class_named(i)),
+    )
+    .find(|k| holds(k.span) || in_traits(k))
+    .unwrap_or(k)
+}

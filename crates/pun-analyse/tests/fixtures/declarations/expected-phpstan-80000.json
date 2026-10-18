@@ -1,0 +1,68 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "versions.php",
+   "line": 16,
+   "identifier": "classConstant.finalNotSupported",
+   "message": "Final class constants are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 18,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 38,
+   "identifier": "callable.notSupported",
+   "message": "First-class callables are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 39,
+   "identifier": "callable.notSupported",
+   "message": "First-class callables are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 40,
+   "identifier": "callable.notSupported",
+   "message": "First-class callables are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 41,
+   "identifier": "callable.notSupported",
+   "message": "First-class callables are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php (in context of class Versions\\A)",
+   "line": 7,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php (in context of class Versions\\A)",
+   "line": 9,
+   "identifier": "classConstant.finalNotSupported",
+   "message": "Final class constants are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php (in context of class Versions\\A)",
+   "line": 9,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  }
+ ]
+}

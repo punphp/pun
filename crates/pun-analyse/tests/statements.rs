@@ -2,7 +2,8 @@
 //! `phpVersion`s, declare values, trait aliases, interface constructors, by-reference arguments, destructuring
 //! targets, use statements, promoted and hooked property types, final and abstract parents, traits used in a trait).
 //! Expected: PHPStan's run on tests/fixtures/statements for each
-//! phpstan*.neon there, restricted to the identifiers Pun reports.
+//! phpstan*.neon there, restricted to the identifiers Pun reports. tests/fixtures/declarations holds the class
+//! constant, PHP version and literal array checks, run the same way for each `phpVersion` that changes them.
 
 use std::path::Path;
 
@@ -13,7 +14,13 @@ use serde_json::Value;
 type Key = (String, u32, String, String, Option<String>);
 
 fn check(neon: &str) {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/statements");
+    check_in("statements", neon);
+}
+
+fn check_in(fixtures: &str, neon: &str) {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures")
+        .join(fixtures);
     let dir = root.to_string_lossy().into_owned();
     let options = Options {
         config: Some(format!("{dir}/{neon}.neon")),
@@ -84,4 +91,41 @@ fn void_cast_before_php_8_5() {
             "The (void) cast is supported only on PHP 8.5 and later.".to_string()
         )]
     );
+}
+
+/// Every version gate below 8.0: non-capturing catches, throw expressions, first-class callables (whose other checks
+/// are then skipped), final and typed constants, constants in traits (once per using class), and interface constants
+/// final before 8.1.
+#[test]
+fn declarations_php_7_4() {
+    check_in("declarations", "phpstan-70400");
+}
+
+/// A PHP_VERSION_ID guard does not lift the non-capturing catch check; 8.0 allows catches and throw expressions.
+#[test]
+fn declarations_php_8_0() {
+    check_in("declarations", "phpstan-80000");
+}
+
+/// Readonly classes before 8.2, anonymous ones before 8.3.
+#[test]
+fn declarations_php_8_1() {
+    check_in("declarations", "phpstan-80100");
+}
+
+#[test]
+fn declarations_php_8_2() {
+    check_in("declarations", "phpstan-80200");
+}
+
+/// Overridden and trait constants, literal array keys and references to properties with narrower write visibility.
+#[test]
+fn declarations_php_8_5() {
+    check_in("declarations", "phpstan-80500");
+}
+
+/// Below PHP 8.1 PHPStan cannot parse a readonly class, so ReadOnlyClassRule reports nothing (only parse errors).
+#[test]
+fn declarations_readonly_php_8_0() {
+    check_in("declarations", "phpstan-80000-readonly");
 }

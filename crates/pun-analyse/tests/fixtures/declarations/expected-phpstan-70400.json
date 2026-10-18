@@ -1,0 +1,495 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "constants.php",
+   "line": 8,
+   "identifier": "classConstant.finalNotSupported",
+   "message": "Final class constants are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 17,
+   "identifier": "classConstant.final",
+   "message": "Constant Constants\\Base::A overrides final constant Constants\\I0::A.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 20,
+   "identifier": "classConstant.finalNotSupported",
+   "message": "Final class constants are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 28,
+   "identifier": "classConstant.final",
+   "message": "Constant Constants\\Child::B overrides final constant Constants\\I0::B.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 30,
+   "identifier": "classConstant.visibility",
+   "message": "Private constant Constants\\Child::Q overriding protected constant Constants\\Base::Q should be protected or public.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 31,
+   "identifier": "classConstant.final",
+   "message": "Constant Constants\\Child::D overrides final constant Constants\\Base::D.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 31,
+   "identifier": "classConstant.final",
+   "message": "Constant Constants\\Child::F overrides final constant Constants\\Base::F.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 31,
+   "identifier": "classConstant.visibility",
+   "message": "Protected constant Constants\\Child::D overriding public constant Constants\\Base::D should also be public.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 31,
+   "identifier": "classConstant.visibility",
+   "message": "Protected constant Constants\\Child::F overriding public constant Constants\\Base::F should also be public.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 36,
+   "identifier": "classConstant.final",
+   "message": "Constant Constants\\Direct::B overrides final constant Constants\\I0::B.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 60,
+   "identifier": "classConstant.visibility",
+   "message": "Private constant Constants\\Child2::Y overriding protected constant Constants\\Parent2::Y should be protected or public.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 60,
+   "identifier": "classConstant.visibility",
+   "message": "Private constant Constants\\Child2::Y overriding protected constant Constants\\TBase::Y should also be protected.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 60,
+   "identifier": "classConstant.visibility",
+   "message": "Private constant Constants\\Child2::Y overriding protected constant Constants\\TOuter::Y should also be protected.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 61,
+   "identifier": "classConstant.nativeType",
+   "message": "Constant Constants\\Child2::N (int) overriding constant Constants\\TBase::N (int|null) should have the same native type int|null.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 61,
+   "identifier": "classConstant.nativeType",
+   "message": "Constant Constants\\Child2::N (int) overriding constant Constants\\TOuter::N (int|null) should have the same native type int|null.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 61,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 69,
+   "identifier": "classConstant.value",
+   "message": "Constant Constants\\UsesOuter::X with value 2 overriding constant Constants\\TOuter::X with different value 1 should have the same value.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 70,
+   "identifier": "classConstant.final",
+   "message": "Final constant Constants\\UsesOuter::Z overriding non-final constant Constants\\TBase::Z should also be non-final.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 70,
+   "identifier": "classConstant.final",
+   "message": "Final constant Constants\\UsesOuter::Z overriding non-final constant Constants\\TOuter::Z should also be non-final.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 70,
+   "identifier": "classConstant.finalNotSupported",
+   "message": "Final class constants are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 71,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 78,
+   "identifier": "classConstant.value",
+   "message": "Constant Constants\\UsesBase::X with value 'x' overriding constant Constants\\TBase::X with different value 1 should have the same value.",
+   "tip": null
+  },
+  {
+   "file": "constants.php",
+   "line": 79,
+   "identifier": "classConstant.visibility",
+   "message": "Public constant Constants\\UsesBase::Y overriding protected constant Constants\\TBase::Y should also be protected.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\Parent2)",
+   "line": 41,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\Parent2)",
+   "line": 42,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\Parent2)",
+   "line": 43,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\Parent2)",
+   "line": 43,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\Parent2)",
+   "line": 44,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesBase)",
+   "line": 41,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesBase)",
+   "line": 42,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesBase)",
+   "line": 43,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesBase)",
+   "line": 43,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesBase)",
+   "line": 44,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesOuter)",
+   "line": 41,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesOuter)",
+   "line": 42,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesOuter)",
+   "line": 43,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesOuter)",
+   "line": 43,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "constants.php (in context of class Constants\\UsesOuter)",
+   "line": 44,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 24,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 'g' (G1, G2).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 26,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 'a' (self::A, \\Keys\\K::B).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 28,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 'Keys\\\\K' (\\Keys\\K::class, 'Keys\\K').",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 30,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 1 (self::C, '1').",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 34,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 0 (0, 0).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 38,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 1 (1, 1).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 38,
+   "identifier": "assign.invalidExpr",
+   "message": "Expression on left side of assignment is not assignable.",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 41,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 6 (6, 6).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 43,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 0 (0, 0).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 44,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 'a\\'b' ('a\\'b', \"a'b\").",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 44,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value -1 (-1, -1.5).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 45,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value '' (null, '').",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 45,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 3 duplicate keys with value 0 (false, 0, 0.5).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 46,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 'g' (\\Keys\\G1, G2).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 46,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 'p' ('p', 'p').",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 46,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 3 (+3, 3).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 47,
+   "identifier": "classConstant.dynamicFetch",
+   "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 48,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value '' (self::N, '').",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 48,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 'pa' (parent::PA, \\Keys\\Base::PA).",
+   "tip": null
+  },
+  {
+   "file": "keys.php",
+   "line": 48,
+   "identifier": "array.duplicateKey",
+   "message": "Array has 2 duplicate keys with value 1 (self::T, 1).",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 16,
+   "identifier": "classConstant.finalNotSupported",
+   "message": "Final class constants are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 18,
+   "identifier": "classConstant.nativeTypeNotSupported",
+   "message": "Class constants with native types are supported only on PHP 8.3 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 23,
+   "identifier": "catch.nonCapturingNotSupported",
+   "message": "Non-capturing catch is supported only on PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 38,
+   "identifier": "callable.notSupported",
+   "message": "First-class callables are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 39,
+   "identifier": "callable.notSupported",
+   "message": "First-class callables are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 40,
+   "identifier": "callable.notSupported",
+   "message": "First-class callables are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 41,
+   "identifier": "callable.notSupported",
+   "message": "First-class callables are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 42,
+   "identifier": "throw.notSupported",
+   "message": "Throw expression is supported only on PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php",
+   "line": 43,
+   "identifier": "throw.notSupported",
+   "message": "Throw expression is supported only on PHP 8.0 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php (in context of class Versions\\A)",
+   "line": 7,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php (in context of class Versions\\A)",
+   "line": 9,
+   "identifier": "classConstant.finalNotSupported",
+   "message": "Final class constants are supported only on PHP 8.1 and later.",
+   "tip": null
+  },
+  {
+   "file": "versions.php (in context of class Versions\\A)",
+   "line": 9,
+   "identifier": "classConstant.inTrait",
+   "message": "Constant is declared inside a trait but is only supported on PHP 8.2 and later.",
+   "tip": null
+  }
+ ]
+}

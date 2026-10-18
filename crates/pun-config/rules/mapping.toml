@@ -979,9 +979,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/abstract-method-in-concrete-class" = { preset = "basic", ported = true, status = "decided" }
 "classes/abstract-private-method" = { preset = "basic", ported = true, status = "decided" }
 "classes/callable-property-type" = { preset = "basic", ported = true, status = "decided" }
-"classes/class-named-constant" = { preset = "basic", status = "decided" }
-"classes/conflicting-trait-constant" = { preset = "basic", status = "decided" }
-"classes/constant-in-trait" = { preset = "basic", status = "decided" }
+"classes/class-named-constant" = { preset = "basic", ported = true, status = "decided" }
+"classes/conflicting-trait-constant" = { preset = "basic", ported = true, status = "decided" }
+"classes/constant-in-trait" = { preset = "basic", ported = true, status = "decided" }
 "classes/constructor-with-return-type" = { preset = "basic", ported = true, status = "decided" }
 "classes/disallowed-subtype" = { preset = "basic", status = "decided" }
 "classes/duplicate-declaration" = { preset = "basic", ported = true, status = "decided" }
@@ -989,7 +989,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/dynamic-static-call" = { preset = "strict", status = "decided" }
 "classes/dynamic-static-callable" = { preset = "strict", status = "decided" }
 "classes/enum-case-outside-enum" = { preset = "basic", ported = true, status = "decided" }
-"classes/final-constant-not-supported" = { preset = "basic", status = "decided" }
+"classes/final-constant-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "classes/final-private-constant" = { preset = "basic", ported = true, status = "decided" }
 "classes/final-private-method" = { preset = "basic", ported = true, status = "decided" }
 "classes/get-hook-without-read" = { preset = "essential", status = "decided" }
@@ -1027,14 +1027,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/missing-required-interface" = { preset = "essential", status = "decided" }
 "classes/missing-required-parent" = { preset = "essential", status = "decided" }
 "classes/missing-serialize-methods" = { preset = "basic", ported = true, status = "decided" }
-"classes/new-as-callable" = { preset = "basic", status = "decided" }
+"classes/new-as-callable" = { preset = "basic", ported = true, status = "decided" }
 "classes/new-static-in-abstract" = { preset = "basic", status = "decided" }
 "classes/non-public-interface-method" = { preset = "basic", status = "decided" }
 "classes/private-consistent-constructor" = { preset = "basic", ported = true, status = "decided" }
 "classes/read-write-only-property" = { preset = "basic", status = "decided" }
-"classes/readonly-class-not-supported" = { preset = "basic", status = "decided" }
+"classes/readonly-class-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "classes/set-hook-without-assign" = { preset = "essential", status = "decided" }
-"classes/typed-constant-not-supported" = { preset = "basic", status = "decided" }
+"classes/typed-constant-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "classes/uninitialized-phpdoc-readonly" = { preset = "basic", status = "decided" }
 "classes/uninitialized-property" = { preset = "basic", status = "decided" }
 "classes/uninitialized-readonly" = { preset = "basic", status = "decided" }
@@ -1192,8 +1192,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/invalid-empty" = { preset = "basic", status = "decided" }
 "statements/invalid-isset" = { preset = "basic", status = "decided" }
 "statements/magic-constant-out-of-context" = { preset = "basic", ported = true, status = "decided" }
-"statements/non-capturing-catch-not-supported" = { preset = "basic", status = "decided" }
-"statements/throw-expression-not-supported" = { preset = "basic", status = "decided" }
+"statements/non-capturing-catch-not-supported" = { preset = "basic", ported = true, status = "decided" }
+"statements/throw-expression-not-supported" = { preset = "basic", ported = true, status = "decided" }
 "strings/invalid-date-interval" = { preset = "recommended", status = "decided" }
 "strings/invalid-date-time" = { preset = "recommended", status = "decided" }
 "types/argument" = { preset = "basic", status = "decided" }
@@ -1242,7 +1242,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-method-template" = { preset = "essential", status = "decided" }
 "types/invalid-offset" = { preset = "essential", status = "decided" }
 "types/invalid-pipe" = { preset = "basic", status = "decided" }
-"types/invalid-property-assignment" = { preset = "basic", status = "decided" }
+"types/invalid-property-assignment" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-property-type" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-regex" = { preset = "basic", status = "decided" }
 "types/invalid-self-out-tag" = { preset = "essential", status = "decided" }

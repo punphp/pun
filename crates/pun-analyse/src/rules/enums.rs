@@ -236,6 +236,11 @@ fn case_value(c: &Checker, e: &Enum, enum_name: &str, case: &str, depth: usize) 
     None
 }
 
+/// A codex constant's inferred type as PHPStan's constant type (see [`constant()`]).
+pub(super) fn constant_value(c: &Checker, a: &TAtomic) -> Option<Type> {
+    constant(c, a, false, 0)
+}
+
 /// A codex constant type as PHPStan's constant type, following references to class constants and, in `value-of`
 /// (the codex's `X::Case->value`, always of one case), to an enum case's value.
 fn constant(c: &Checker, a: &TAtomic, value_of: bool, depth: usize) -> Option<Type> {

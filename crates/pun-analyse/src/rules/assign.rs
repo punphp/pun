@@ -1,12 +1,13 @@
 //! Assignment checks: InvalidAssignVarRule with NullsafeCheck, InvalidVariableAssignRule (the VariableAssignNodes
 //! AssignHandler::processAssignVar() emits) and OffsetAccessWithoutDimForReadingRule (with the expressions
-//! `$scope->isInExpressionAssign()` holds for).
+//! `$scope->isInExpressionAssign()` holds for), and PropertyAssignRefRule.
 
 use std::collections::HashSet;
 
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::visibility::Visibility;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::symbols::ByRef;
@@ -550,4 +551,96 @@ pub fn typed_object<'e, 'arena>(
     let named = matches!(object, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
         || !is_expr_class(object);
     (!named && args.arguments.iter().any(|a| by_ref_candidate(a.value()))).then_some(object)
+}
+
+/// The property fetch `=&` references, whose holder's type PropertyAssignRefRule reads (`$this` aside).
+pub fn referenced_property<'e, 'arena>(
+    a: &'e Assignment<'arena>,
+) -> Option<&'e PropertyAccess<'arena>> {
+    let (AssignmentOperator::Assign(_), Expression::UnaryPrefix(u)) =
+        (&a.operator, unparenthesized(a.rhs))
+    else {
+        return None;
+    };
+    match u
+        .operator
+        .is_reference()
+        .then(|| unparenthesized(u.operand))?
+    {
+        Expression::Access(Access::Property(p)) => Some(p),
+        _ => None,
+    }
+}
+
+/// PropertyAssignRefRule.
+pub fn property_assign_ref(c: &mut Checker, a: &Assignment) {
+    // PhpVersion::supportsAsymmetricVisibility()
+    if c.php_version < 80400 {
+        return;
+    }
+    let Some(fetch) = referenced_property(a) else {
+        return;
+    };
+    // ponytail: a dynamic name (`$o->$name`) needs its constant strings
+    let ClassLikeMemberSelector::Identifier(name) = &fetch.property else {
+        return;
+    };
+    let scope = c.class_scope();
+    let holder = match unparenthesized(fetch.object) {
+        Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => scope,
+        object => object_class(c, object),
+    };
+    let Some(holder) = holder else {
+        return;
+    };
+    let mut property = Vec::with_capacity(name.value.len() + 1);
+    property.push(b'$');
+    property.extend_from_slice(name.value);
+    let (Some(p), Some(declaring)) = (
+        c.codebase
+            .get_declaring_property(holder.name.as_bytes(), &property),
+        c.codebase
+            .get_declaring_property_class(holder.name.as_bytes(), &property)
+            .and_then(|d| c.class_like(&String::from_utf8_lossy(d.as_bytes()))),
+    ) else {
+        return;
+    };
+    if p.flags.is_static() {
+        return;
+    }
+    let declaring_name = String::from_utf8_lossy(declaring.name.as_bytes()).into_owned();
+    // `isPrivateSet()` / `isProtectedSet()`: a set visibility narrower than the read one (readonly is
+    // protected(set) when public)
+    let rank = |v: Visibility| match v {
+        Visibility::Private => 0,
+        Visibility::Protected => 1,
+        Visibility::Public => 2,
+    };
+    let asymmetric = rank(p.write_visibility) < rank(p.read_visibility);
+    let visibility = if asymmetric {
+        p.write_visibility
+    } else {
+        p.read_visibility
+    };
+    // `$scope->canWriteProperty()`
+    // ponytail: a closure bound with Closure::bind() & co. keeps no class scope here
+    if super::calls::can_call(c, scope, &declaring_name, visibility) {
+        return;
+    }
+    let label = match (asymmetric, visibility) {
+        (true, Visibility::Private) => "private(set)",
+        (true, _) => "protected(set)",
+        (false, Visibility::Private) => "private",
+        (false, _) => "protected",
+    };
+    c.report(
+        a,
+        "property.assignByRef",
+        format!(
+            "Property {}::${} with {label} visibility is assigned by reference.",
+            String::from_utf8_lossy(declaring.original_name.as_bytes()),
+            String::from_utf8_lossy(name.value),
+        ),
+        None,
+    );
 }

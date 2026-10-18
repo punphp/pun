@@ -375,3 +375,32 @@ was silent):
   with `__callStatic()` (reportMagicMethods is off at level 0), unless a guard or an `@method static` tag knows it.
 - AccessStaticPropertiesCheck and StaticMethodCallableRule have no call site in Pun yet (their rules are not
   ported), so their ClassNameCheck calls wait for those rules.
+
+Assistant's calls in analyse 3h (class-constant, PHP-version and literal-array declaration rules, constants.rs,
+arrays.rs, 2026-10-19; the plan was silent):
+- OverridingConstantRule is ported at level 0: its native and PHPDoc type checks (`classConstant.nativeType`,
+  `classConstant.missingNativeType`, `classConstant.type`) run only with checkPhpDocMethodSignatures (level 3), so
+  those identifiers come from ConflictingTraitConstantsRule at level 0. `classConstant.value` is also emitted by
+  ValueAssignedToClassConstantRule (level 2); both are kept in IDENTIFIERS, as level 0 has no other source of them.
+- An interface's constants are final before PHP 8.1 (BetterReflection's `isFinal()`, oracle-confirmed); otherwise a
+  constant is final by keyword or `@final` (Mago's FINAL flag). The trait constants ConflictingTraitConstantsRule reads
+  use the same flag for `isFinal()`.
+- A trait constant's declaring class is the trait iterated (PHP's reflection copies a used trait's constants into the
+  using trait); a parent's constant taken from a trait is declared by the class using the trait (oracle-confirmed).
+- Native constant types are compared as PHPStan describes them, from the hint's source text through pun-phpstan's
+  type resolver (class names stay as written, `self` resolves to the class).
+- Constant values are compared only when the codex reduces both to a constant scalar; of duplicate declarations (a
+  PHP error) the codex keeps the first and PHP's reflection the last, so DuplicateTraitDeclarationRuleTest::testBug14250
+  stays in gaps.txt.
+- ReadOnlyClassRule is ported with this batch because it also emits `classConstant.nativeTypeNotSupported` (the
+  mapping.toml entry is right); below PHP 8.1 php-parser lexes `readonly` as a name, so only 8.1 reaches its check.
+- DuplicateKeysInLiteralArraysRule knows a key's value for literals, `true`/`false`/`null`, user global and class
+  constants (`self::`, `parent::`, named classes) and `X::class`; variables, calls, `static::X` and built-in constants
+  are unknown keys. A key is printed as written, with class names and qualified constant names fully qualified, as
+  php-parser's printer does after NameResolver (oracle-confirmed). DuplicateKeysInLiteralArraysRuleTest::testDuplicateKeys
+  stays in gaps.txt for its variable keys.
+- `new X(...)` is a Mago parse error; the recovered argument list (one unpacked error argument) is
+  InstantiationCallableRule's node, and the `new` is then not analysed, as in NodeScopeResolver.
+- PropertyAssignRefRule reads the holder's class from `$this` or Mago's type of a single named object; a dynamic
+  property name and a closure bound with `Closure::bind()` are not ported. A property's set visibility is asymmetric
+  only when narrower than its read visibility (`protected readonly` is `protected`, oracle-confirmed).
