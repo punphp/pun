@@ -31,8 +31,9 @@ impl P<'_> {
         let rest = &self.s[self.i..];
         let word = t.chars().all(|c| c.is_ascii_alphanumeric() || c == '_');
         let matches = if word {
-            rest.len() >= t.len()
-                && rest[..t.len()].eq_ignore_ascii_case(t)
+            rest.as_bytes()
+                .get(..t.len())
+                .is_some_and(|p| p.eq_ignore_ascii_case(t.as_bytes()))
                 && !rest[t.len()..].starts_with(|c: char| c.is_ascii_alphanumeric() || c == '_')
         } else {
             rest.starts_with(t)
