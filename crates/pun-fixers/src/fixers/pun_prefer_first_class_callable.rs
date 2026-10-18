@@ -8,6 +8,8 @@
 //! - a variadic parameter must be forwarded as `...$args` (Mago also accepts `fn (...$a) => f($a)`);
 //! - a closure calling a method on a variable it doesn't `use` by value is skipped (the closure would fail,
 //!   the first-class callable would not).
+//! - a call whose receiver is one of the parameters (`fn ($x) => $x->equals($x)`) is skipped (the
+//!   first-class callable would read an outer `$x`).
 use crate::analyzers::helpers::split_list;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
@@ -108,7 +110,11 @@ fn fix_one(tokens: &mut Tokens, kw: usize) -> Option<()> {
             .get_next_meaningful_token(c)
             .filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR))?;
         c = arrow;
-        Some(tokens[call_start].get_content().to_vec())
+        let receiver = tokens[call_start].get_content().to_vec();
+        if params.iter().any(|(name, _)| *name == receiver) {
+            return None;
+        }
+        Some(receiver)
     } else {
         if tokens[c].is_kind(T_NS_SEPARATOR) {
             c = tokens.get_next_meaningful_token(c)?;
@@ -285,6 +291,9 @@ mod tests {
             "<?php $f = fn ($x) => (new Foo)->m($x);",
             "<?php $f = fn ($x) => $this->m(f($x));",
             "<?php $f = function ($x) { return $this->m($x) + 1; };",
+            // the receiver is a parameter: `$x->equals(...)` would read an undefined outer `$x`
+            "<?php $f = fn ($x) => $x->equals($x);",
+            "<?php $f = fn ($a, $b) => $b->cmp($a, $b);",
         ] {
             assert_eq!(fix(same), same);
         }

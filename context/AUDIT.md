@@ -40,10 +40,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   must stay at offset 0) fail to compile, so an `ignoreErrors` message regex panics `config::resolve`. PHP compiles
   both. Return the error with `?`, close a trailing `\Q` with `\E`, and keep leading `(*VERB)`s before `\G`.
   Reproduced (PHP and Pun). Fixed in 9c85148 and c28d355.
-- [ ] 7. `crates/pun-fixers/src/fixers/pun_prefer_first_class_callable.rs:106-111`, `:155-163`: the arrow-function
+- [x] 7. `crates/pun-fixers/src/fixers/pun_prefer_first_class_callable.rs:106-111`, `:155-163`: the arrow-function
   branch never checks the receiver against the parameters, so `fn ($x) => $x->equals($x)` becomes
   `$x->equals(...)`, which reads an undefined outer `$x`. Return `None` when `callee` is one of `params`, and add the
-  case to the tests. Reproduced.
+  case to the tests. Reproduced. Fixed in wf/audit-fixers-rules.
 - [ ] 8. `crates/pun-fixers/src/fixers/pun_prefer_dedicated_status_assertion.rs:58-67` parses `0404` as decimal 404,
   so `assertStatus(0404)` (octal 260 in PHP) becomes `assertNotFound()` and changes what the test asserts. Skip
   literals with a leading `0`, or decode them like `switch_continue_to_break::base_dec`. Reproduced (PHP gives 260).
