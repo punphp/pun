@@ -1,0 +1,2529 @@
+{
+    "fixer": "psr_autoloading",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Basic\\PsrAutoloadingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Basic/PsrAutoloadingFixerTest.php",
+    "case_count": 200,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                },
+                {
+                    "name": "file",
+                    "type": "?SplFileInfo",
+                    "default": {
+                        "__class": "SplFileInfo",
+                        "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/PsrAutoloadingFixerTest.php"
+                    }
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\PsrAutoloadingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = [], ?\\SplFileInfo $file = null): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input, $file ?? new \\SplFileInfo(__FILE__));\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with originally short name",
+                    "args": [
+                        "<?php class PsrAutoloadingFixerTest {}",
+                        "<?php class Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "interface with originally short name",
+                    "args": [
+                        "<?php interface PsrAutoloadingFixerTest {}",
+                        "<?php interface Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "trait with originally short name",
+                    "args": [
+                        "<?php trait PsrAutoloadingFixerTest {}",
+                        "<?php trait Foo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "abstract class",
+                    "args": [
+                        "<?php abstract class PsrAutoloadingFixerTest {}",
+                        "<?php abstract class WrongName {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "final class",
+                    "args": [
+                        "<?php final class PsrAutoloadingFixerTest {}",
+                        "<?php final class WrongName {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with originally long name",
+                    "args": [
+                        "<?php class PsrAutoloadingFixerTest {}",
+                        "<?php class FooFooFooFooFooFooFooFooFooFooFooFooFoo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with wrong casing",
+                    "args": [
+                        "<?php class PsrAutoloadingFixerTest {}",
+                        "<?php class psrautoloadingfixertest {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespaced class with wrong casing",
+                    "args": [
+                        "<?php namespace Foo; class PsrAutoloadingFixerTest {}",
+                        "<?php namespace Foo; class psrautoloadingfixertest {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with wrong casing (1 level namespace)",
+                    "args": [
+                        "<?php class Basic_PsrAutoloadingFixerTest {}",
+                        "<?php class BASIC_PSRAUTOLOADINGFIXERTEST {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with wrong casing (2 levels namespace)",
+                    "args": [
+                        "<?php class Fixer_Basic_PsrAutoloadingFixerTest {}",
+                        "<?php class FIXER_BASIC_PSRAUTOLOADINGFIXERTEST {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with name not matching directory structure",
+                    "args": [
+                        "<?php class PsrAutoloadingFixerTest {}",
+                        "<?php class Aaaaa_Bbbbb_PsrAutoloadingFixerTest {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "configured directory (1 subdirectory)",
+                    "args": [
+                        "<?php class Basic_PsrAutoloadingFixerTest {}",
+                        "<?php class PsrAutoloadingFixerTest {}",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/.."
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "configured directory (2 subdirectories)",
+                    "args": [
+                        "<?php class Fixer_Basic_PsrAutoloadingFixerTest {}",
+                        "<?php class PsrAutoloadingFixerTest {}",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../.."
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "configured directory (other directory)",
+                    "args": [
+                        "<?php namespace Basic; class Foobar {}",
+                        null,
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../Test"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple classy elements in file",
+                    "args": [
+                        "<?php interface Foo {} class Bar {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace with wrong casing",
+                    "args": [
+                        "<?php namespace Fixer\\Basic; class PsrAutoloadingFixerTest {}",
+                        "<?php namespace Fixer\\BASIC; class PsrAutoloadingFixerTest {}",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../.."
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple namespaces in file",
+                    "args": [
+                        "<?php namespace Foo\\Helpers; function helper() {}; namespace Foo\\Domain; class Feature {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace and class with comments",
+                    "args": [
+                        "<?php namespace /* namespace here */ PhpCsFixer\\Tests\\Fixer\\Basic; class /* hi there */ PsrAutoloadingFixerTest /* hello */ {} /* class end */",
+                        "<?php namespace /* namespace here */ PhpCsFixer\\Tests\\Fixer\\Basic; class /* hi there */ Foo /* hello */ {} /* class end */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace partially matching directory structure",
+                    "args": [
+                        "<?php namespace Foo\\Bar\\Baz\\FIXER\\Basic; class PsrAutoloadingFixerTest {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace partially matching directory structure with comment",
+                    "args": [
+                        "<?php namespace /* hi there */ Foo\\Bar\\Baz\\FIXER\\Basic; class /* hi there */ PsrAutoloadingFixerTest {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace partially matching directory structure with configured directory",
+                    "args": [
+                        "<?php namespace Foo\\Bar\\Baz\\Fixer\\Basic; class PsrAutoloadingFixerTest {}",
+                        "<?php namespace Foo\\Bar\\Baz\\FIXER\\Basic; class PsrAutoloadingFixerTest {}",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../.."
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace partially matching directory structure with comment and configured directory",
+                    "args": [
+                        "<?php namespace /* hi there */ Foo\\Bar\\Baz\\Fixer\\Basic; class /* hi there */ PsrAutoloadingFixerTest {}",
+                        "<?php namespace /* hi there */ Foo\\Bar\\Baz\\FIXER\\Basic; class /* hi there */ PsrAutoloadingFixerTest {}",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../.."
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace not matching directory structure",
+                    "args": [
+                        "<?php namespace Foo\\Bar\\Baz; class PsrAutoloadingFixerTest {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "namespace not matching directory structure with configured directory",
+                    "args": [
+                        "<?php namespace Foo\\Bar\\Baz; class PsrAutoloadingFixerTest {}",
+                        null,
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Fixer;\nclass FixerInterface {}\n",
+                        "<?php\nnamespace PhpCsFixer\\fixer;\nclass FixerInterface {}\n",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src"
+                        },
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/FixerInterface.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Fixer_Basic_PsrAutoloadingFixer {}\n",
+                        "<?php\nclass Fixer_bASIc_PsrAutoloadingFixer {}\n",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src"
+                        },
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/Basic/PsrAutoloadingFixer.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Fixer;\nclass FixerInterface {}\n",
+                        "<?php\nnamespace PhpCsFixer\\Fixer;\nclass fixerinterface {}\n",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src"
+                        },
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/FixerInterface.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\ninterface SomeInterfaceToBeUsedInTests {}\nclass blah {}\n/* class foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\ninterface SomeInterfaceToBeUsedInTests {}\nnamespace AnotherNamespace;\nclass blah {}\n/* class foo */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nclass PsrAutoloadingFixerTest {}\n/* class foo */\n",
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nclass blah {}\n/* class foo */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nabstract class PsrAutoloadingFixerTest {}\n/* class foo */\n",
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nabstract class blah {}\n/* class foo */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nfinal class PsrAutoloadingFixerTest {}\n/* class foo */\n",
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nfinal class blah {}\n/* class foo */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nnamespace /* namespace here */ PhpCsFixer\\Fixer\\Psr;\nclass /* hi there */ PsrAutoloadingFixerTest /* why hello */ {}\n/* class foo */\n",
+                        "<?php\nnamespace /* namespace here */ PhpCsFixer\\Fixer\\Psr;\nclass /* hi there */ blah /* why hello */ {}\n/* class foo */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar\\Baz\\FIXER\\Basic;\nclass PsrAutoloadingFixer {}\n",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/Basic/PsrAutoloadingFixer.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nnamespace /* hi there */ Foo\\Bar\\Baz\\FIXER\\Basic;\nclass /* hi there */ PsrAutoloadingFixer {}\n",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/Basic/PsrAutoloadingFixer.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar\\Baz;\nclass PsrAutoloadingFixer {}\n",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/Basic/PsrAutoloadingFixer.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar\\Baz\\Fixer\\Basic;\nclass PsrAutoloadingFixer {}\n",
+                        "<?php\nnamespace Foo\\Bar\\Baz\\FIXER\\Basic;\nclass PsrAutoloadingFixer {}\n",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src"
+                        },
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/Basic/PsrAutoloadingFixer.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nnamespace /* hi there */ Foo\\Bar\\Baz\\Fixer\\Basic;\nclass /* hi there */ PsrAutoloadingFixer {}\n",
+                        "<?php\nnamespace /* hi there */ Foo\\Bar\\Baz\\FIXER\\Basic;\nclass /* hi there */ PsrAutoloadingFixer {}\n",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src"
+                        },
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/Basic/PsrAutoloadingFixer.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nnamespace Foo\\Bar\\Baz;\nclass PsrAutoloadingFixer {}\n",
+                        null,
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/Basic"
+                        },
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/../../../src/Fixer/Basic/PsrAutoloadingFixer.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php class PsrAutoloadingFixerTest {}",
+                        "<?php class PsrAutoloadingFixerTestFoo {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": ".php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "Foo.class.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "4Foo.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "$#.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__halt_compiler.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__HALT_COMPILER.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "abstract.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ABSTRACT.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "and.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "AND.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "array.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ARRAY.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "as.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "AS.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "break.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "BREAK.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "callable.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "CALLABLE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "case.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "CASE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "catch.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "CATCH.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "class.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "CLASS.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "clone.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "CLONE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "const.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "CONST.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "continue.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "CONTINUE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "declare.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "DECLARE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "default.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "DEFAULT.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "die.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "DIE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "do.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "DO.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "echo.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ECHO.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "else.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ELSE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "elseif.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ELSEIF.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "empty.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "EMPTY.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "enddeclare.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ENDDECLARE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "endfor.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ENDFOR.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "endforeach.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ENDFOREACH.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "endif.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ENDIF.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "endswitch.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ENDSWITCH.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "endwhile.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ENDWHILE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "eval.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "EVAL.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "exit.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "EXIT.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "extends.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "EXTENDS.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "final.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "FINAL.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "finally.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "FINALLY.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "for.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "FOR.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "foreach.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "FOREACH.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 72,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "function.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 73,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "FUNCTION.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 74,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "global.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 75,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "GLOBAL.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 76,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "goto.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 77,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "GOTO.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 78,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "if.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 79,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "IF.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 80,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "implements.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 81,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "IMPLEMENTS.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 82,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "include.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 83,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "INCLUDE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 84,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "include_once.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 85,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "INCLUDE_ONCE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 86,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "instanceof.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 87,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "INSTANCEOF.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 88,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "insteadof.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 89,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "INSTEADOF.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 90,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "interface.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 91,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "INTERFACE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 92,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "isset.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 93,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "ISSET.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 94,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "list.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 95,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "LIST.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 96,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "namespace.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 97,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "NAMESPACE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 98,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "new.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 99,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "NEW.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 100,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "or.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 101,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "OR.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 102,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "print.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 103,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "PRINT.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 104,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "private.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 105,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "PRIVATE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 106,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "protected.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 107,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "PROTECTED.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 108,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "public.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 109,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "PUBLIC.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 110,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "require.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 111,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "REQUIRE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 112,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "require_once.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 113,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "REQUIRE_ONCE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 114,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "return.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 115,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "RETURN.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 116,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "static.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 117,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "STATIC.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 118,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "switch.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 119,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "SWITCH.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 120,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "throw.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 121,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "THROW.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 122,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "trait.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 123,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "TRAIT.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 124,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "try.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 125,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "TRY.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 126,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "unset.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 127,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "UNSET.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 128,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "use.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 129,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "USE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 130,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "var.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 131,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "VAR.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 132,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "while.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 133,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "WHILE.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 134,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "xor.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 135,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "XOR.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 136,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__CLASS__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 137,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__class__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 138,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__DIR__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 139,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__dir__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 140,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__FILE__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 141,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__file__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 142,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__FUNCTION__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 143,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__function__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 144,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__LINE__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 145,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__line__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 146,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__METHOD__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 147,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__method__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 148,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__NAMESPACE__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 149,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__namespace__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 150,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__TRAIT__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 151,
+                    "args": [
+                        "<?php\nnamespace Aaa;\nclass Bar {}",
+                        null,
+                        [],
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "__trait__.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class with anonymous class",
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nclass PsrAutoloadingFixerTest {\n    public function foo() {\n        return new class() implements FooInterface {};\n    }\n}\n",
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nclass stdClass {\n    public function foo() {\n        return new class() implements FooInterface {};\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore anonymous class implementing interface",
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nnew class implements Countable {};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore anonymous class extending other class",
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nnew class extends stdClass {};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore multiple classy in file with anonymous class between them",
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nclass ClassOne {};\nnew class extends stdClass {};\nclass ClassTwo {};\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "PhpCsFixer\\StdinFileInfo are not supported",
+                    "args": [
+                        "<?php abstract class WrongName {}",
+                        null,
+                        [],
+                        {
+                            "__class": "PhpCsFixer\\StdinFileInfo",
+                            "pathname": "stdin.php"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "file as \"dir\"",
+                    "args": [
+                        "<?php namespace Foo; class PsrAutoloadingFixerTest {}",
+                        "<?php namespace Foo; class Bar {}",
+                        {
+                            "dir": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/PsrAutoloadingFixerTest.php"
+                        },
+                        {
+                            "__class": "SplFileInfo",
+                            "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/PsrAutoloadingFixerTest.php"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\PsrAutoloadingFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "anonymous + annotation",
+                    "args": [
+                        "<?php\nnamespace PhpCsFixer\\Tests\\Fixer\\Basic;\nnew\n#[Foo]\nclass extends stdClass {};\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "file",
+                    "type": "?\\SplFileInfo",
+                    "default": {
+                        "__class": "SplFileInfo",
+                        "pathname": "/Users/pushpakchhajed/Projects/pun/.oracle/php-cs-fixer/tests/Fixer/Basic/PsrAutoloadingFixerTest.php"
+                    }
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Basic\\PsrAutoloadingFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input, new \\SplFileInfo(__FILE__));\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "enum with wrong casing",
+                    "args": [
+                        "<?php enum PsrAutoloadingFixerTest {}",
+                        "<?php enum psrautoloadingfixertest {}"
+                    ]
+                }
+            ]
+        }
+    ],
+    "note": "Post-processed by lint-b: the `file` the test bodies pass when a case gives none (`new \\SplFileInfo(__FILE__)`) is written as the file parameter's default, since the fixture runner's default is test.php."
+}

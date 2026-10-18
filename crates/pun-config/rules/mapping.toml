@@ -272,7 +272,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/prefer-self-over-static" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided" }
 "classes/prefer-serialize-method" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided" }
 "classes/prefer-unserialize-method" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided" }
-"classes/require-class-matches-file" = { fix = "unsafe", intent = "correctness", sets = ["code-quality"], ported = false, status = "decided", summary = "Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name." }
+"classes/require-class-matches-file" = { fix = "unsafe", intent = "correctness", sets = ["code-quality"], ported = true, status = "decided", summary = "Classes must be in a path that matches their namespace, be at least one namespace deep and the class name should match the file name." }
 "classes/require-member-order" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Orders the elements of classes/interfaces/traits/enums." }
 "comments/no-unused-ignore" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], status = "decided", pun_only = true, summary = "A @pun-ignore comment that suppressed nothing. Fix removes it." }
 "complexity/no-and-assignment" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Split 2 assigns with \"and\" to separate lines" }
@@ -822,7 +822,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-useless-printf" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "There must be no `printf` calls with only the first argument." }
 "style/no-useless-sprintf" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove sprintf() calls with only the format argument." }
 "style/no-variable-variable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided" }
-"style/prefer-arrow-function" = { fix = "unsafe", sets = ["modernize"], ported = false, status = "decided", summary = "Anonymous functions with return as the only statement must use arrow functions." }
+"style/prefer-arrow-function" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Anonymous functions with return as the only statement must use arrow functions." }
 "style/prefer-cast-over-intval" = { fix = "unsafe", ported = true, status = "decided", summary = "Replaces `intval`, `floatval`, `doubleval`, `strval` and `boolval` function calls with according type casting operator." }
 "style/prefer-cast-over-settype" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cast shall be used, not `settype`." }
 "style/prefer-catch-name-from-type" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Type and name of catch exception should match" }

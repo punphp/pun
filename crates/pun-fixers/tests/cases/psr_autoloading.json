@@ -1,0 +1,22 @@
+[
+    {
+        "fixer": "psr_autoloading",
+        "config": {
+            "dir": 1
+        },
+        "error": "[psr_autoloading] Invalid configuration: The option \"dir\" with value 1 is expected to be of type \"null\" or \"string\", but is of type \"int\"."
+    },
+    {
+        "fixer": "psr_autoloading",
+        "config": {
+            "dir": "/nonexistent/dir"
+        },
+        "error": "Failed to resolve configured directory \"/nonexistent/dir\"."
+    },
+    {
+        "fixer": "psr_autoloading",
+        "path": "/nonexistent/Foo.php",
+        "input": "<?php class Bar {}\n",
+        "expected": "<?php class Bar {}\n"
+    }
+]

@@ -1,0 +1,261 @@
+{
+    "fixer": "use_arrow_functions",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\UseArrowFunctionsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/UseArrowFunctionsFixerTest.php",
+    "case_count": 28,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\UseArrowFunctionsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php foo(function () use ($a, &$b) { return 1; });"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php foo(function () { bar(); return 1; });"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php foo(fn()=> 1);",
+                        "<?php foo(function(){return 1;});"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php foo(fn()=>$a);",
+                        "<?php foo(function()use($a){return$a;});"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php foo( fn () => 1 );",
+                        "<?php foo( function () { return 1; } );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $func = static fn &(array &$a, string ...$b): ?int => 1;",
+                        "<?php $func = static function &(array &$a, string ...$b): ?int { return 1; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n    foo(1, fn (int $a, Foo $b) => bar($a, $c), 2);",
+                        "<?php\n    foo(1, function (int $a, Foo $b) use ($c, $d) {\n        return bar($a, $c);\n    }, 2);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n    foo(fn () => 1);",
+                        "<?php\n    foo(function () {\n\n\n        return 1;\n\n\n    });"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    foo(fn ($a) => fn () => $a + 1);",
+                        "<?php\n    foo(function ($a) {\n        return function () use ($a) {\n            return $a + 1;\n        };\n    });"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n    foo(function () {// comment\n        return 1;\n    });"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n    foo(function () {\n        // comment\n        return 1;\n    });"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n    foo(function () {\n        return 1; // comment\n    });"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n    foo(function () {\n        return 1;\n        // comment\n    });"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n    foo(fn () =>\n            1);",
+                        "<?php\n    foo(function () {\n        return\n            1;\n    });"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n    $func = fn (\n        $a,\n        $b\n    ) => 1;",
+                        "<?php\n    $func = function (\n        $a,\n        $b\n    ) {\n        return 1;\n    };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n    $func = function () {\n        return function () {\n            foo();\n        };\n    };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $testDummy = fn () => null;",
+                        "<?php $testDummy = function () { return; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $testDummy = fn () => null ;",
+                        "<?php $testDummy = function () { return ; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $testDummy = fn () => null/* foo */;",
+                        "<?php $testDummy = function () { return/* foo */; };"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php return fn () => [\n        CONST_A,\n        CONST_B,\n    ];",
+                        "<?php return function () {\n    return [\n        CONST_A,\n        CONST_B,\n    ];\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n            foo(\n                fn () => 42\n                        \n            );",
+                        "<?php\n            foo(\n                function () {\n                    return 42\n                        ;\n                }\n            );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not convert when closure with use() includes external file",
+                    "args": [
+                        "<?php\n$load = \\Closure::bind(static function ($path, $env) use ($container, $loader, $resource, $type) {\n    return include $path;\n}, null, null);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not convert when closure with use() includes_once external file",
+                    "args": [
+                        "<?php\n$load = function ($path) use ($config) {\n    return include_once $path;\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not convert when closure with use() requires external file",
+                    "args": [
+                        "<?php\n$load = function ($path) use ($data) {\n    return require $path;\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not convert when closure with use() requires_once external file",
+                    "args": [
+                        "<?php\n$load = function ($path) use ($settings) {\n    return require_once $path;\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "convert when closure without use() includes external file",
+                    "args": [
+                        "<?php\n$load = fn ($path) => include $path;",
+                        "<?php\n$load = function ($path) {\n    return include $path;\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "convert when closure with use() does not include external file",
+                    "args": [
+                        "<?php\n$load = fn ($path) => $data[$path];",
+                        "<?php\n$load = function ($path) use ($data) {\n    return $data[$path];\n};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix85",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.5.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\UseArrowFunctionsFixerTest",
+            "body": "    public function testFix85(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix85Cases",
+                    "key": "do not convert closure in attribute",
+                    "args": [
+                        "<?php\nclass Foo {\n    function f1() {\n        return fn (int $x): int => 100 - $x;\n    }\n\n    #[Bar(callback: static function () { return true; })]\n    #[Baz(callback: static function (int $i): int { return $i + 100; })]\n    function f2() {\n        return static fn (int $x, int $y): int => 2 * $x + 3 * $y;\n    }\n}",
+                        "<?php\nclass Foo {\n    function f1() {\n        return function (int $x): int { return 100 - $x; };\n    }\n\n    #[Bar(callback: static function () { return true; })]\n    #[Baz(callback: static function (int $i): int { return $i + 100; })]\n    function f2() {\n        return static function (int $x, int $y): int { return 2 * $x + 3 * $y; };\n    }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}
