@@ -9,7 +9,6 @@ use mago_syntax::cst::*;
 use pun_phpstan::types::Type;
 
 use super::Checker;
-use super::reflection::display;
 
 /// The arrays php-parser has as `List_` (destructuring targets), which are no LiteralArrayNode.
 #[derive(Default)]
@@ -227,7 +226,7 @@ fn key_value(c: &Checker, key: &Expression) -> Option<Key> {
         Expression::Access(Access::ClassConstant(a)) => {
             let class = match a.class {
                 Expression::Identifier(id) => c.resolved(id),
-                Expression::Self_(_) => display(c.class_scope()?),
+                Expression::Self_(_) => c.display(c.class_scope()?),
                 Expression::Parent(_) => {
                     let parent = c.class_scope()?.direct_parent_class?;
                     String::from_utf8_lossy(

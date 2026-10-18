@@ -1,0 +1,47 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "src/a.php",
+   "line": 26,
+   "identifier": "method.abstract",
+   "message": "Non-abstract class Anon\\Base@anonymous/a.php:26:2 contains abstract method name() from class Anon\\Base.",
+   "tip": null
+  },
+  {
+   "file": "src/a.php",
+   "line": 26,
+   "identifier": "method.abstract",
+   "message": "Non-abstract class Anon\\Shape@anonymous/a.php:26:1 contains abstract method area() from interface Anon\\Shape.",
+   "tip": null
+  },
+  {
+   "file": "src/a.php",
+   "line": 31,
+   "identifier": "new.noConstructor",
+   "message": "Class class@anonymous/a.php:31 does not have a constructor and must be instantiated without any parameters.",
+   "tip": null
+  },
+  {
+   "file": "src/a.php",
+   "line": 39,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method class@anonymous/a.php:31::missing().",
+   "tip": null
+  },
+  {
+   "file": "src/a.php",
+   "line": 46,
+   "identifier": "arguments.count",
+   "message": "Class class@anonymous/a.php:46 constructor invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "src/t.php (in context of class@anonymous/a.php:55)",
+   "line": 9,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method class@anonymous/a.php:55::nope().",
+   "tip": null
+  }
+ ]
+}

@@ -5,7 +5,10 @@ use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
 use pun_phpstan::symbols::{self, PhpVersion, Symbols};
 
-use super::{Checker, params};
+use mago_allocator::LocalArena;
+
+use super::{Checker, anonymous, params};
+use crate::codebase::parse;
 
 /// PHPStan's reflection of built-ins for a `phpVersion` id: 8.5's from 80500 on, 8.4's below.
 pub(crate) fn builtins(php_version: u32) -> &'static Symbols {
@@ -16,9 +19,31 @@ pub(crate) fn builtins(php_version: u32) -> &'static Symbols {
     })
 }
 
-/// A class's name as declared.
-pub(super) fn display(k: &ClassLikeMetadata) -> String {
-    String::from_utf8_lossy(k.original_name.as_bytes()).into_owned()
+impl Checker<'_, '_> {
+    /// `ClassReflection::getDisplayName()`: the name as declared, or an anonymous class's
+    /// `class@anonymous/<path>:<line>` (see [`anonymous::names()`]).
+    pub(super) fn display(&self, k: &ClassLikeMetadata) -> String {
+        let name = k.original_name.as_bytes();
+        if let Some(display) = self.anonymous.get(name) {
+            return display.clone();
+        }
+        if name.starts_with(b"{anonymous-class:")
+            && let Some(file) = self
+                .files
+                .get(&k.span.file_id)
+                .and_then(|p| self.sources.get(p))
+        {
+            // one declared in another file (an inferred `new class`)
+            let arena = LocalArena::new();
+            let (program, names) = parse(&arena, file);
+            if let Some(display) =
+                anonymous::names(file, program, &names, self.relative_path).remove(name)
+            {
+                return display;
+            }
+        }
+        String::from_utf8_lossy(name).into_owned()
+    }
 }
 
 /// What PHPStan's reflection knows of a class: user code from Mago, built-ins from data/symbols.json.
@@ -64,9 +89,10 @@ impl Known<'_> {
         }
     }
 
+    /// The name as declared (a name in the source never finds an anonymous class).
     pub(super) fn display(&self) -> String {
         match self {
-            Known::User(k) => display(k),
+            Known::User(k) => String::from_utf8_lossy(k.original_name.as_bytes()).into_owned(),
             Known::Builtin(k) => k.name.clone(),
         }
     }

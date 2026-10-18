@@ -17,7 +17,6 @@ use super::Checker;
 use super::class_names::{self, Pair};
 use super::declarations::doc_before;
 use super::names::FunctionKind;
-use super::reflection::display;
 use super::reflection::{Known, known};
 
 /// The names PHPDoc types resolve against: the namespace and its `use` imports (php-parser's NameScope).
@@ -863,9 +862,8 @@ fn self_out(c: &mut Checker, at: Span, subject: &str, doc: &Doc) {
     class_names::check(c, &pairs, case);
 }
 
-/// The checks whose messages don't name the function-like: checkImplicitlyNullableType() and
-/// checkRequiredParameterAfterOptional() (the only ones Pun runs on an anonymous class's methods).
-pub fn parameter_defaults(c: &mut Checker, parameters: &FunctionLikeParameterList) {
+/// checkImplicitlyNullableType() and checkRequiredParameterAfterOptional().
+fn parameter_defaults(c: &mut Checker, parameters: &FunctionLikeParameterList) {
     let params: Vec<&FunctionLikeParameter> = parameters.parameters.iter().collect();
     for (i, p) in params.iter().enumerate() {
         implicitly_nullable(c, p, i + 1);
@@ -991,7 +989,7 @@ pub fn property<'arena>(
     if c.php_version < 80100 || !unresolvable(c, hint) {
         return;
     }
-    let display = display(class);
+    let display = c.display(class);
     for name in names {
         let property =
             String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();
@@ -1009,7 +1007,7 @@ pub fn hooks<'arena>(c: &mut Checker<'_, 'arena>, name: &[u8], list: &PropertyHo
     let Some(class) = c.class_scope() else {
         return;
     };
-    let display = display(class);
+    let display = c.display(class);
     let property = String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();
     for hook in list.hooks.iter() {
         let Some(params) = &hook.parameter_list else {

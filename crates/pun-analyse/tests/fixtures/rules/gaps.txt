@@ -21,7 +21,6 @@ Methods/CallMethodsRuleTest::testClosureBind
 Methods/CallMethodsRuleTest::testArrowFunctionClosureBind
 Methods/CallMethodsRuleTest::testBug3534
 Methods/CallMethodsRuleTest::testRequireExtends
-Methods/CallMethodsRuleTest::testBug11559c
 Methods/CallMethodsRuleTest::testDynamicCall
 Methods/CallMethodsRuleTest::testPipeOperator
 Methods/CallStaticMethodsRuleTest::testRequireExtends
@@ -32,14 +31,11 @@ Methods/MethodCallableRuleTest::testRule
 Methods/StaticMethodCallableRuleTest::testRule
 Properties/AccessPropertiesRuleTest::testRequireExtends
 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
-Properties/MissingReadOnlyPropertyAssignRuleTest::testRedeclaredReadonlyProperties
 Variables/DefinedVariableRuleTest::testDefinedVariables
 # PHPStan 2.2.7 at level 0 aborts this file with an internal error (MissingReturnRule, ShouldNotHappenException on a
 # declare inside a method body), so it reports none of the file's errors; Pun reports the two declares as the
 # RuleTestCase expects
 Keywords/DeclareStrictTypesRuleTest::testNested
-# anonymous class display names (class@anonymous/<file>:<line>, FuzzyRelativePathHelper) are not ported
-Methods/MissingMethodImplementationRuleTest::testRule
 # array.duplicateKey on variable keys ($idx++, a @param 'foo'|'bar' $key) needs their inferred constant types
 Arrays/DuplicateKeysInLiteralArraysRuleTest::testDuplicateKeys
 # classConstant.value on a trait's duplicate constants (a PHP error): PHP's reflection keeps the last, the codex the first

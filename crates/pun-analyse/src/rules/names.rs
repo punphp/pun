@@ -7,7 +7,6 @@ use mago_syntax::cst::*;
 use mago_word::word;
 
 use super::class_names::{self, Pair};
-use super::reflection::display;
 use super::reflection::{Known, known};
 use super::scope::Guard;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
@@ -35,9 +34,9 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
         }
         Expression::Self_(_) | Expression::Static(_) => {
             let Some(scope) = c.class_scope() else {
-                return; // ponytail: trait and anonymous class scopes
+                return;
             };
-            let display = display(scope);
+            let display = c.display(scope);
             let described = if matches!(access.class, Expression::Static(_)) {
                 format!("static({display})")
             } else {
@@ -148,8 +147,9 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
                 })
                 .last()
                 .unwrap_or(k);
-            let declaring_display = display(declaring);
-            if !super::calls::can_call(c, c.class_scope(), &declaring_display, visibility) {
+            let declaring_display = c.display(declaring);
+            let declaring_name = String::from_utf8_lossy(declaring.original_name.as_bytes());
+            if !super::calls::can_call(c, c.class_scope(), &declaring_name, visibility) {
                 let v = super::restricted(visibility);
                 c.report(
                     access,
@@ -603,9 +603,9 @@ pub fn property_type<'arena>(
         return;
     };
     let Some(class) = c.class_scope() else {
-        return; // ponytail: traits and anonymous classes
+        return;
     };
-    let display = display(class);
+    let display = c.display(class);
     let mut classes = Vec::new();
     hint_classes(c, hint, &mut classes);
     for name in names {

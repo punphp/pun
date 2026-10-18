@@ -12,7 +12,6 @@ use pun_phpstan::resolve::resolve_str;
 use pun_phpstan::types::{Level, Type};
 
 use super::Checker;
-use super::reflection::display;
 
 fn text(b: &[u8]) -> String {
     String::from_utf8_lossy(b).into_owned()
@@ -68,7 +67,6 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, k: &ClassLikeConstant
             None,
         );
     }
-    // ponytail: anonymous classes have no class scope here (their class@anonymous name is not ported)
     let Some(class) = c.class_scope() else {
         return;
     };
@@ -144,7 +142,7 @@ fn conflicting_trait_constants<'arena>(
     class: &ClassLikeMetadata,
     k: &ClassLikeConstant<'arena>,
 ) {
-    let display = display(class);
+    let display = c.display(class);
     let class_name = text(class.name.as_bytes());
     // `getTraits(true)`: the class's traits, theirs, and those of its parents (the codex's `used_traits`)
     let recursive: Vec<&ClassLikeMetadata> = class
@@ -197,18 +195,13 @@ fn conflicting_trait_constants<'arena>(
                 format!(
                     "Constant {display}::{name} with value {} overriding constant {}::{name} with different value {} should have the same value.",
                     ours.describe(Level::Value),
-                    display_of(t),
+                    c.display(t),
                     theirs.describe(Level::Value),
                 ),
                 None,
             );
         }
     }
-}
-
-/// `getDeclaringClass()->getName()` of a trait's constant: the trait.
-fn display_of(t: &ClassLikeMetadata) -> String {
-    display(t)
 }
 
 /// ConflictingTraitConstantsRule::processSingleConstant().
@@ -222,7 +215,7 @@ fn single_trait_constant<'arena>(
     item: &ClassLikeConstantItem<'arena>,
 ) {
     let name = text(item.name.value);
-    let trait_display = display_of(t);
+    let trait_display = c.display(t);
     let ours = visibility(k.modifiers.as_slice());
     let label = |v: Visibility| match v {
         Visibility::Public => ("Public", "public"),
@@ -317,7 +310,7 @@ fn overriding_constant<'arena>(
     class: &ClassLikeMetadata,
     k: &ClassLikeConstant<'arena>,
 ) {
-    let display = display(class);
+    let display = c.display(class);
     let ours = visibility(k.modifiers.as_slice());
     for item in k.items.iter() {
         let Some((prototype, declaring)) = find_prototype(c, class, item.name.value) else {
@@ -326,7 +319,7 @@ fn overriding_constant<'arena>(
         let name = text(item.name.value);
         // an interface's constants are final before PHP 8.1 (BetterReflection's isFinal())
         let interface_final = declaring.kind.is_interface() && c.php_version < 80100;
-        let declaring = self::display(declaring);
+        let declaring = c.display(declaring);
         if prototype.flags.is_final() || interface_final {
             c.report_non_ignorable(
                 k,

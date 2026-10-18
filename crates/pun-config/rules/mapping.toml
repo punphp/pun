@@ -1010,7 +1010,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/invalid-dynamic-constant-fetch" = { preset = "basic", status = "decided" }
 "classes/invalid-enum" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-enum-implements" = { preset = "basic", ported = true, status = "decided" }
-"classes/invalid-extends" = { preset = "basic", status = "decided" }
+"classes/invalid-extends" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-implements" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-interface-extends" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-interface-property" = { preset = "basic", ported = true, status = "decided" }
@@ -1022,7 +1022,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/invalid-property-hook" = { preset = "basic", status = "decided" }
 "classes/invalid-readonly-property" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-static-method-callable" = { preset = "basic", status = "decided" }
-"classes/missing-method-implementation" = { preset = "basic", status = "decided" }
+"classes/missing-method-implementation" = { preset = "basic", ported = true, status = "decided" }
 "classes/missing-parent-constructor-call" = { preset = "strict", status = "decided" }
 "classes/missing-required-interface" = { preset = "essential", status = "decided" }
 "classes/missing-required-parent" = { preset = "essential", status = "decided" }
@@ -1325,13 +1325,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "undefined/group-import" = { preset = "basic", status = "decided" }
 "undefined/import" = { preset = "basic", status = "decided" }
 "undefined/include-file" = { preset = "basic", status = "decided" }
-"undefined/instanceof-class" = { preset = "basic", status = "decided" }
+"undefined/instanceof-class" = { preset = "basic", ported = true, status = "decided" }
 "undefined/method" = { preset = "basic", status = "decided" }
 "undefined/offset" = { preset = "essential", status = "decided" }
 "undefined/property" = { preset = "basic", status = "decided" }
 "undefined/static-method" = { preset = "basic", status = "decided" }
 "undefined/static-property" = { preset = "basic", status = "decided" }
-"undefined/trait" = { preset = "basic", status = "decided" }
+"undefined/trait" = { preset = "basic", ported = true, status = "decided" }
 "undefined/variable" = { preset = "basic", status = "decided" }
 
 # Format rule options, as pun.toml takes them (context/plan/format.md Decisions, "Option names"). One table per

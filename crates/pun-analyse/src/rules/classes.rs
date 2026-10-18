@@ -8,11 +8,10 @@ use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_syntax::cst::*;
 
-use mago_span::HasSpan;
+use mago_span::{HasSpan, Span};
 
 use super::class_names::{self, Pair};
 use super::reflection::Lookup;
-use super::reflection::display;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP, members, params};
 
 /// NewStaticRule, then InstantiationRule (level 0: no argument types).
@@ -52,7 +51,7 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
         }
         Expression::Static(_) => {
             let Some(class) = c.class_scope() else {
-                return; // ponytail: trait and anonymous class scopes
+                return;
             };
             if !class.flags.is_final()
                 && (!has_constructor(c, class) || !consistent_constructor(c, class))
@@ -78,7 +77,7 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
                 None | Some(Lookup::NotFound) => {
                     let action = format!(
                         "{}::{}() calls new parent",
-                        display(scope),
+                        c.display(scope),
                         c.function_name()
                     );
                     c.report_no_parent(new, scope, &action);
@@ -86,7 +85,6 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
                 }
             }
         }
-        Expression::AnonymousClass(_) => return, // ponytail: anonymous class constructors unchecked
         expr => {
             for (name, is_name) in class_names(c, expr) {
                 let pair = Pair::node(name.clone(), expr.span());
@@ -95,7 +93,14 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
             return;
         }
     };
-    check_class(c, new, class, is_static, true);
+    check_class(
+        c,
+        new.span(),
+        args.map(params::count),
+        class,
+        is_static,
+        true,
+    );
 }
 
 /// `getClassNames()` for `new $expr`: the class-strings' concrete classes, else the constant strings (as names)
@@ -131,7 +136,7 @@ fn class_names(c: &Checker, expr: &Expression) -> Vec<(String, bool)> {
             .iter()
             .filter_map(|n| c.class_like(n).found())
             .filter(|k| !k.flags.is_abstract() && !k.kind.is_interface())
-            .map(|k| (display(k), true))
+            .map(|k| (c.display(k), true))
             .collect();
         if !concretes.is_empty() {
             return concretes;
@@ -155,7 +160,14 @@ fn named<'arena>(
     match c.class_like(name) {
         Lookup::Found(class) => {
             class_names::check(c, &[pair], true);
-            check_class(c, new, class, false, is_name);
+            check_class(
+                c,
+                new.span(),
+                new.argument_list.as_ref().map(params::count),
+                class,
+                false,
+                is_name,
+            );
         }
         Lookup::Opaque => class_names::check(c, &[pair], true),
         Lookup::NotFound if c.in_class_exists(name) => {}
@@ -168,15 +180,24 @@ fn named<'arena>(
     }
 }
 
-fn check_class<'arena>(
-    c: &mut Checker<'_, 'arena>,
-    new: &Instantiation<'arena>,
+/// InstantiationRule on `new class(...) { ... }`: the class is the anonymous class itself.
+pub fn anonymous(c: &mut Checker, a: &AnonymousClass, name: &str) {
+    if let Some(class) = c.codebase.get_class_like(name.as_bytes()) {
+        let args = a.argument_list.as_ref().map(params::count_partial);
+        check_class(c, a.span(), args, class, false, true);
+    }
+}
+
+/// `checkClassName()` on a found class, `args` the [`params::count()`] of the arguments.
+fn check_class(
+    c: &mut Checker,
+    new: Span,
+    args: Option<params::Counts>,
     class: &ClassLikeMetadata,
     is_static: bool,
     is_name: bool,
 ) {
-    let args = new.argument_list.as_ref();
-    let display = display(class);
+    let display = c.display(class);
     let refusal = match class.kind {
         SymbolKind::Trait => Some(("new.trait", format!("Cannot instantiate trait {display}."))),
         SymbolKind::Enum => Some(("new.enum", format!("Cannot instantiate enum {display}."))),
@@ -198,7 +219,7 @@ fn check_class<'arena>(
         return;
     }
     let Some(constructor) = members::method(c, class, b"__construct") else {
-        if args.is_some_and(|a| !a.arguments.is_empty()) {
+        if args.is_some_and(|a| a.any) {
             c.report(
                 new,
                 "new.noConstructor",
@@ -208,9 +229,14 @@ fn check_class<'arena>(
         }
         return;
     };
-    let declaring = constructor.declaring_display();
+    let declaring = constructor.declaring_display(c);
     let visibility = constructor.visibility();
-    if !super::calls::can_call(c, c.class_scope(), &declaring, visibility) {
+    if !super::calls::can_call(
+        c,
+        c.class_scope(),
+        &constructor.declaring_name(),
+        visibility,
+    ) {
         let v = super::restricted(visibility);
         c.report(
             new,
@@ -226,7 +252,7 @@ fn check_class<'arena>(
             None,
         );
     }
-    let counts = args.map_or_else(params::Counts::default, params::count);
+    let counts = args.unwrap_or_default();
     params::check(
         c,
         &params::select(constructor.variants(), counts.positional, counts.unpack),

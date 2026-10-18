@@ -7,7 +7,6 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
 use super::Checker;
-use super::reflection::display;
 
 /// What a scope boundary on [`Checker::frames`] is.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -217,7 +216,6 @@ fn print_expr(c: &Checker, e: &Expression) -> String {
 
 /// ConstructorReturnTypeRule (`InClassMethodNode`).
 pub fn constructor_return_type(c: &mut Checker, m: &Method) {
-    // ponytail: anonymous classes have no class scope here (PHPStan names them class@anonymous/<file>:<line>)
     let (Some(_), Some(class)) = (&m.return_type_hint, c.class_scope()) else {
         return;
     };
@@ -235,7 +233,7 @@ pub fn constructor_return_type(c: &mut Checker, m: &Method) {
                 let display = c
                     .codebase
                     .get_class_like(t.as_bytes())
-                    .map_or(t, display);
+                    .map_or_else(|| t.clone(), |k| c.display(k));
                 c.report_non_ignorable(
                     m,
                     "constructor.returnType",
@@ -258,7 +256,7 @@ pub fn constructor_return_type(c: &mut Checker, m: &Method) {
     if name != b"__construct" {
         return;
     }
-    let display = display(class);
+    let display = c.display(class);
     c.report_non_ignorable(
         m,
         "constructor.returnType",

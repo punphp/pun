@@ -1,6 +1,7 @@
 //! PHPStan's level-0 rules. One walk per analysed file; each `walk_in_*` hook is the `processNode()` of the rules
 //! registered for that node type, in PHPStan's source order.
 
+mod anonymous;
 mod arrays;
 mod assign;
 mod attributes;
@@ -9,16 +10,16 @@ mod class_names;
 mod classes;
 mod constants;
 mod declarations;
-mod driver;
 mod declared;
 mod doc;
+mod driver;
 mod enums;
 mod functions;
 mod hierarchy;
 mod infer;
 mod members;
-mod names;
 mod missing_types;
+mod names;
 mod params;
 mod properties;
 mod reflection;
@@ -43,7 +44,6 @@ use mago_syntax::walker::MutWalker;
 use pun_phpstan::ignore::Error;
 
 use crate::codebase::Sources;
-use reflection::display;
 use scope::{Guard, Saved};
 use statements::{Frame, FrameKind};
 
@@ -323,6 +323,9 @@ pub enum FunctionScopeKind {
 
 pub struct Checker<'a, 'arena> {
     file: &'a File,
+    /// The display names of the file's anonymous classes, by their codex name (see [`anonymous::names()`]).
+    anonymous: HashMap<Vec<u8>, String>,
+    relative_path: &'a crate::relative_path::RelativePath,
     /// Mago's inferred types of the expressions rules ask about (see [`typed_expressions()`]).
     types: HashMap<Span, TUnion>,
     names: &'a ResolvedNames<'arena>,
@@ -405,7 +408,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// `class.noParent`: `{action} but C does not extend any class.`, for a parent:: or `new parent` in class `scope`.
     fn report_no_parent(&mut self, at: impl HasSpan, scope: &ClassLikeMetadata, action: &str) {
-        let display = display(scope);
+        let display = self.display(scope);
         self.report(
             at,
             "class.noParent",
@@ -566,8 +569,17 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         self.codebase.get_class_like(name.as_bytes())
     }
 
-    fn enter_class(&mut self, name: Option<Span>, members: &[ClassLikeMember<'arena>]) {
-        let name = name.map(|s| String::from_utf8_lossy(self.names.get(&s)).into_owned());
+    /// In an anonymous class's body (not in a trait it uses).
+    fn in_anonymous_class(&self) -> bool {
+        self.trait_context.is_none()
+            && self
+                .classes
+                .last()
+                .and_then(|k| k.name.as_deref())
+                .is_some_and(|n| n.starts_with("{anonymous-class:"))
+    }
+
+    fn enter_class(&mut self, name: Option<String>, members: &[ClassLikeMember<'arena>]) {
         let constructor_guards = members
             .iter()
             .find_map(|m| match m {
@@ -646,7 +658,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             let name = self.resolved_span(class.name.span);
             self.trait_uses_of(&name, class.members.as_slice());
         }
-        self.enter_class(Some(class.name.span), class.members.as_slice());
+        self.enter_class(
+            Some(self.resolved_span(class.name.span)),
+            class.members.as_slice(),
+        );
         self.push_frame(FrameKind::Class);
         let decl = self.decl_of(
             class.span(),
@@ -667,9 +682,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 .modifiers
                 .iter()
                 .any(|m| matches!(m, Modifier::Readonly(_))),
-            Some(&name),
+            &name,
         );
         hierarchy::in_class(self, class.span(), &name);
+        missing_types::class(self, class);
         constants::read_only_class(self, class.span(), class.modifiers.as_slice(), false);
     }
     fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
@@ -688,7 +704,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             true,
             false,
         );
-        self.enter_class(Some(i.name.span), i.members.as_slice());
+        self.enter_class(Some(self.resolved_span(i.name.span)), i.members.as_slice());
         self.push_frame(FrameKind::Class);
         let decl = self.decl_of(
             i.span(),
@@ -706,8 +722,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             i.attribute_lists.as_slice(),
             SymbolKind::Interface,
             false,
-            Some(&name),
+            &name,
         );
+        missing_types::interface(self, i);
     }
     fn walk_out_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {
         self.classes.pop();
@@ -729,7 +746,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             let name = self.resolved_span(e.name.span);
             self.trait_uses_of(&name, e.members.as_slice());
         }
-        self.enter_class(Some(e.name.span), e.members.as_slice());
+        self.enter_class(Some(self.resolved_span(e.name.span)), e.members.as_slice());
         self.push_frame(FrameKind::Class);
         let decl = self.decl_of(e.span(), Some(e.name.span), SymbolKind::Enum, &[], None);
         self.decls.push(decl);
@@ -742,16 +759,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             e.attribute_lists.as_slice(),
             SymbolKind::Enum,
             false,
-            Some(&name),
+            &name,
         );
         hierarchy::in_class(self, e.span(), &name);
+        missing_types::enum_(self, e);
     }
     fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
         self.classes.pop();
         self.decls.pop();
         self.pop_frame();
     }
-    // ponytail: trait bodies have no class scope; PHPStan analyses them once per using class (add with traits).
     /// A trait is analysed only in the context of each class using it (see [`in_trait_context()`]).
     fn walk_trait(&mut self, t: &'ast Trait<'arena>, c: &mut ()) {
         let start = i64::from(self.file.line_number(t.span().start.offset)) + 1;
@@ -760,6 +777,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let Some(class) = self.trait_context.as_ref().map(|t| t.class.clone()) else {
             attributes::trait_declaration(self, t);
             hierarchy::sealed_trait(self, t);
+            missing_types::trait_(self, t);
             return;
         };
         let name = self.resolved_span(t.name.span);
@@ -810,16 +828,27 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 .iter()
                 .any(|m| matches!(m, Modifier::Readonly(_))),
         );
-        self.enter_class(None, a.members.as_slice());
+        let name = String::from_utf8_lossy(
+            mago_codex::get_anonymous_class_name(self.file, a.span()).as_bytes(),
+        )
+        .into_owned();
+        classes::anonymous(self, a, &name);
+        if self.trait_context.is_none() {
+            self.trait_uses_of(&name, a.members.as_slice());
+        }
+        self.enter_class(Some(name.clone()), a.members.as_slice());
         self.push_frame(FrameKind::Class);
-        let decl = self.decl_of(
+        let mut decl = self.decl_of(
             a.span(),
             None,
             SymbolKind::Class,
             a.modifiers.as_slice(),
             a.extends.as_ref(),
         );
+        let display = self.anonymous[name.as_bytes()].clone();
+        decl.display = Some(display.clone());
         self.decls.push(decl);
+        declarations::duplicates(self, a.members.as_slice());
         attributes::class_like(
             self,
             a.span(),
@@ -828,13 +857,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             a.modifiers
                 .iter()
                 .any(|m| matches!(m, Modifier::Readonly(_))),
-            None,
+            &display,
         );
+        hierarchy::in_class(self, a.span(), &name);
         constants::read_only_class(self, a.span(), a.modifiers.as_slice(), true);
     }
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
         functions::inner_function(self, f);
+        missing_types::function(self, f);
         functions::function_like(self, f, &f.parameter_list);
         self.push_frame(FrameKind::Named);
         let name = self.resolved_span(f.name.span);
@@ -858,7 +889,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             .filter(|t| t.from_docblock)
             .map(|t| &t.type_union);
         names::no_discard(
-        missing_types::function(self, f);
             self,
             names::FunctionKind::Function(&name),
             f.span(),
@@ -897,7 +927,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         functions::function_like(self, m, &m.parameter_list);
         statements::constructor_return_type(self, m);
         self.push_frame(FrameKind::Named);
-        // ponytail: methods of traits and anonymous classes (no class scope yet) unchecked
         for p in m
             .parameter_list
             .parameters
@@ -917,6 +946,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         };
         declarations::method(self, m, &method);
         hierarchy::method(self, m, &method);
+        missing_types::method(self, m);
         declarations::promoted(
             self,
             m.span(),
@@ -939,7 +969,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             {
                 hierarchy::callable_property(self, p.span(), p.variable.name, p.hint.as_ref());
             }
-        missing_types::method(self, m);
         }
         if let Some(class) = self.class_scope() {
             let docblock = self
@@ -948,7 +977,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 .and_then(|f| f.return_type_metadata.as_ref())
                 .filter(|t| t.from_docblock)
                 .map(|t| &t.type_union);
-            let class = display(class);
+            let class = self.display(class);
             let kind = names::FunctionKind::Method(&class, &method);
             names::typehints(self, kind, &m.parameter_list, m.return_type_hint.as_ref());
             signatures::check(
@@ -980,10 +1009,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 forced_void,
                 docblock,
             );
-        }
-        if self.class_scope().is_none() {
-            // an anonymous class's method: the checks that don't print its class@anonymous name
-            signatures::parameter_defaults(self, &m.parameter_list);
         }
         syntax::function_like_types(self, Some(&m.parameter_list), m.return_type_hint.as_ref());
         if m.name.value.eq_ignore_ascii_case(b"__construct") {
@@ -1285,6 +1310,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             signatures::hooks(self, h.item.variable().name, &h.hook_list);
         }
         properties::property(self, p);
+        missing_types::property(self, p);
         for v in p.variables() {
             hierarchy::callable_property(self, v.span(), v.name, p.hint());
         }
@@ -1303,9 +1329,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
     }
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
-        missing_types::property(self, p);
         declarations::constant(self, k);
         constants::class_constant(self, k);
+        missing_types::class_constant(self, k);
         attributes::check(
             self,
             k.attribute_lists.as_slice(),
@@ -1324,7 +1350,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
         attributes::constant(self, k);
-        missing_types::class_constant(self, k);
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         functions::function_like(self, f, &f.parameter_list);

@@ -137,3 +137,10 @@ fn declarations_php_8_5() {
 fn declarations_readonly_php_8_0() {
     check_in("declarations", "phpstan-80000-readonly");
 }
+
+/// Anonymous class names (`class@anonymous/<path>:<line>`, `:<index>` for several on a line, the parent or first
+/// interface's name) in messages and in a trait's `in context of` label.
+#[test]
+fn anonymous_classes() {
+    check_in("anonymous", "phpstan");
+}

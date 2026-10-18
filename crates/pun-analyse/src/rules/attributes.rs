@@ -149,6 +149,7 @@ pub fn check<'arena>(
             positional,
             named: positional < arguments.len(),
             unpack: false,
+            any: !arguments.is_empty(),
         };
         params::check(
             c,
@@ -201,33 +202,28 @@ fn attribute_flags(c: &Checker, class: &ClassLikeMetadata) -> Option<i64> {
 }
 
 /// The InClassNode rules for a class, interface or enum: NonClassAttributeClassRule, then ClassAttributesRule.
-/// `at` is the declaration; `display` is `None` for an anonymous class.
+/// `at` is the declaration.
 pub fn class_like<'arena>(
     c: &mut Checker<'_, 'arena>,
     at: Span,
     lists: &[AttributeList<'arena>],
     kind: SymbolKind,
     readonly: bool,
-    display: Option<&str>,
+    display: &str,
 ) {
-    if let Some(display) = display {
-        non_class_attribute_class(c, at, lists, kind, display);
-    }
+    non_class_attribute_class(c, at, lists, kind, display);
     let type_name = match kind {
         SymbolKind::Interface => "interface",
         SymbolKind::Enum => "enum",
         _ => "class",
     };
     if has_native(c, lists, "Deprecated") {
-        // ponytail: an anonymous class's `class@anonymous` display name is not ported
-        if let Some(display) = display {
-            c.report_non_ignorable(
-                at,
-                &format!("{type_name}.deprecatedAttribute"),
-                format!("Attribute class Deprecated cannot be used with {type_name} {display}."),
-                None,
-            );
-        }
+        c.report_non_ignorable(
+            at,
+            &format!("{type_name}.deprecatedAttribute"),
+            format!("Attribute class Deprecated cannot be used with {type_name} {display}."),
+            None,
+        );
         return;
     }
     check(c, lists, TARGET_CLASS, "class");
@@ -283,9 +279,7 @@ fn non_class_attribute_class<'arena>(
         );
         return;
     }
-    let codebase = c.codebase;
-    if codebase
-        .get_class_like(display.as_bytes())
+    if c.class_scope()
         .and_then(|k| members::method(c, k, b"__construct"))
         .is_some_and(|m| !m.visibility().is_public())
     {

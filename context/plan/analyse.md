@@ -292,17 +292,14 @@ Assistant's calls in analyse 3b (the first 13 level-0 declaration and keyword ru
   RuleTestCase expects.
 - A `(void)` cast that starts an expression statement counts as first-level even when Mago parses it as the input of
   `|>` (`(void) 5 |> f(...);`), since PHP's grammar has `(void) expr;` as a statement.
-- ConstructorReturnTypeRule skips anonymous classes (no class scope; PHPStan names them
-  `class@anonymous/<relative path>:<line>`, which needs the analysed paths), and a trait method's alias comes from the
-  class's alias map, not from the `use` block of that trait alone.
+- A trait method's alias in ConstructorReturnTypeRule comes from the class's alias map, not from the `use` block of
+  that trait alone.
 - BacktickRule also reports an empty pair of backticks, where PHPStan stops the file with an internal error.
 - Verify (2026-10-18): PHPStan runs no rule on statements after a terminating one (`return; echo __CLASS__;` reports
   nothing), while Pun's walk checks dead code for every rule, these 13 included. That is an engine gap (unreachable
   statements, later with never-returning calls from inference), not a bug in this batch; it shows only on dead code.
 
 Assistant's calls in analyse 3c (class-member declaration rules, 2026-10-18; the plan was silent):
-- Rules that print a class name (DuplicateDeclarationRule, FinalPrivateMethodRule, FinalPrivateConstantRule) skip
-  anonymous classes: PHPStan's `class@anonymous/<relative path>:<line>` display name is not ported yet.
 - An enum case's value is the constant Mago's codex infers for it (class constants and `X::Case->value` followed
   through the codebase); float literals and `self::Case->value`, which the codex leaves untyped, are read from the
   case's own expression. A value neither gives (an array, a float constant) reports nothing.
@@ -332,7 +329,6 @@ check, 2026-10-18; the plan was silent):
 - The attribute name check (class.nameCase, class.prefixed) waits for ClassNameCheck's port: other level-0 rules emit
   those identifiers too. attribute.deprecated waits for deprecation-rules (`deprecationRulesInstalled` is false).
 - constant.attributesRuleCannotRun is never reported: Pun behaves as PHPStan on a PHP 8.5 runtime.
-- `%s.deprecatedAttribute` and NonClassAttributeClassRule skip anonymous classes (no `class@anonymous` display name).
 - `#[NoDiscard]` on a function or method reads the native return type, then (with none) the PHPDoc type Mago read;
   constructors, `__destruct()`, `__unset()`, `__wakeup()`, `__clone()`, `__set()` and `__unserialize()` are void, as
   in PhpMethodFromParserNodeReflection.
@@ -352,8 +348,6 @@ Assistant's calls in analyse 3f (class-hierarchy declaration rules, hierarchy.rs
   refuses that hierarchy and PHPStan reports no missing method. `isProvidedByBuiltinAncestor()` is not ported:
   Mago's stubs give the built-in parents concrete methods, so no input reaches it.
 - `instanceof.trait` describes only `$this` (`$this(Class)`) and `mixed`; other expression types wait for analyse 4.
-- Anonymous classes are skipped where the message names them (`class@anonymous/<path>:<line>` needs
-  FuzzyRelativePathHelper): MissingMethodImplementationRuleTest::testRule stays in gaps.txt for that.
 - The ClassNameCheck part of the three ExistingClassIn* rules (`*.nameCase`, `class.prefixed`) is not ported (analyse 3i ported it).
 
 Assistant's calls in analyse 3i (ClassNameCheck once for every level-0 caller, class_names.rs, 2026-10-19; the plan
@@ -404,3 +398,15 @@ arrays.rs, 2026-10-19; the plan was silent):
 - PropertyAssignRefRule reads the holder's class from `$this` or Mago's type of a single named object; a dynamic
   property name and a closure bound with `Closure::bind()` are not ported. A property's set visibility is asymmetric
   only when narrower than its read visibility (`protected readonly` is `protected`, oracle-confirmed).
+
+Assistant's calls in analyse 3j (anonymous-class names, anonymous.rs and relative_path.rs, 2026-10-19; the plan was
+silent):
+- An anonymous class's name is BetterReflectionProvider's `<parent>@anonymous/<path>:<line>`: the parent class as
+  written (resolved), else the first interface, else `class`; `:<index>` when several start on one line
+  (AnonymousClassVisitor, in source order). The line is php-parser's `Class_` start: the attributes, else the
+  modifiers, else the `class` keyword.
+- The path is FuzzyRelativePathHelper's: the analysed paths' common directory below the working directory (the process
+  cwd, as PHPStan's `currentWorkingDirectory`), else ParentDirectoryRelativePathHelper's path from the cwd. Windows
+  drive prefixes are not ported.
+- A trait walked in an anonymous class's context is labelled `T.php (in context of class@anonymous/...)`, without
+  `class ` (MutatingScope::getFileDescription()).

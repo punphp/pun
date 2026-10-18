@@ -10,7 +10,6 @@ use super::class_names::{self, Pair};
 use super::members;
 use super::params;
 use super::reflection::Lookup;
-use super::reflection::display;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
 /// CallToNonExistentFunctionRule (level 0: no name-case check), then CallToFunctionParametersRule.
@@ -179,7 +178,7 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
         {
             return;
         }
-        let display = display(class);
+        let display = c.display(class);
         c.report(
             name,
             "method.notFound",
@@ -188,9 +187,9 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
         );
         return;
     };
-    let declaring = method.declaring_display();
+    let declaring = method.declaring_display(c);
     let visibility = method.visibility();
-    if !can_call(c, Some(class), &declaring, visibility) {
+    if !can_call(c, Some(class), &method.declaring_name(), visibility) {
         let v = super::restricted(visibility);
         c.report(
             name,
@@ -216,7 +215,7 @@ fn arguments<'arena>(
     name: &LocalIdentifier<'arena>,
     method: &members::Method,
 ) {
-    let subject = format!("{}::{}()", method.declaring_display(), method.name());
+    let subject = format!("{}::{}()", method.declaring_display(c), method.name());
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
     params::check(
@@ -262,7 +261,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         }
         Expression::Self_(_) | Expression::Static(_) => match scope_class {
             Some(k) => k,
-            None => return, // ponytail: traits and anonymous classes, see Checker::classes
+            None => return,
         },
         Expression::Parent(_) => {
             let Some(scope) = scope_class else {
@@ -277,7 +276,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
                 None | Some(Lookup::NotFound) => {
                     let action = format!(
                         "{}::{}() calls parent::{method_name}()",
-                        display(scope),
+                        c.display(scope),
                         c.function_name()
                     );
                     c.report_no_parent(name, scope, &action);
@@ -307,7 +306,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         }
         _ => return,
     };
-    let display = display(class);
+    let display = c.display(class);
     let Some(method) = members::method(c, class, name.value) else {
         let guarded = match call.class {
             Expression::Static(_) => "static".to_string(),
@@ -336,7 +335,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         return;
     };
     class_names::check(c, pair.as_slice(), true);
-    let declaring = method.declaring_display();
+    let declaring = method.declaring_display(c);
     let declared = method.name();
     let is_static = method.is_static();
     // after "Static call to instance method", PHPStan checks only the arguments
@@ -367,7 +366,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     }
     let kind = if is_static { "static method" } else { "method" };
     let visibility = method.visibility();
-    if !checked && !can_call(c, scope_class, &declaring, visibility) {
+    if !checked && !can_call(c, scope_class, &method.declaring_name(), visibility) {
         let v = super::restricted(visibility);
         c.report(
             name,

@@ -11,6 +11,7 @@ use pun_phpstan::php::FileExcluder;
 use rayon::prelude::*;
 use serde_json::Value as Json;
 
+use crate::relative_path::{RelativePath, absolute};
 use crate::{display, php_files};
 
 pub struct Project {
@@ -31,11 +32,13 @@ pub struct Project {
     pub ignore_errors: IgnoredErrors,
     /// PHPStan's `checkClassCaseSensitivity` (see `rules::Checks`): false, as at level 0, until the presets set it.
     pub check_class_case_sensitivity: bool,
-}
     /// The rule level: `level` (`max` is 10), 0 when unset.
     pub level: u8,
     /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
     pub check_generic_iterable_classes: bool,
+    /// How anonymous class names print their file: relative to the working directory and the analysed paths.
+    pub relative_path: RelativePath,
+}
 
 /// PHP 8.5.11, the oracle's runtime, which PHPStan uses when `phpVersion` is null.
 pub(crate) const RUNTIME_PHP_VERSION: u32 = 80511;
@@ -66,6 +69,10 @@ impl Project {
         let analyse_only = FileExcluder::new(group("analyse"));
         let mut analysed = Vec::new();
         let mut scanned = Vec::new();
+        let paths: Vec<String> = strings(params, "paths")
+            .into_iter()
+            .map(|p| absolute(Path::new(p)))
+            .collect();
         for path in strings(params, "paths") {
             let p = Path::new(path);
             let found = if p.is_file() {
@@ -120,13 +127,6 @@ impl Project {
             report_ignores_without_comments: flag("reportIgnoresWithoutComments"),
             ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores),
             check_class_case_sensitivity: false,
-        }
-    }
-
-    /// PHPStan's defaults (no `ignoreErrors`, unmatched ignores reported) over the given files.
-    pub fn new(analysed: Vec<PathBuf>, scanned: Vec<PathBuf>) -> Project {
-        Project {
-            analysed,
             level: match params.get_str("level") {
                 Some(Value::Int(i)) => u8::try_from(*i).unwrap_or(10).min(10),
                 Some(Value::Str(s)) if s == "max" => 10,
@@ -137,6 +137,16 @@ impl Project {
                 .and_then(Value::as_array)
                 .and_then(|t| t.get_str("checkGenericIterableClasses"))
                 == Some(&Value::Bool(true)),
+            relative_path: RelativePath::of(&paths),
+        }
+    }
+
+    /// PHPStan's defaults (no `ignoreErrors`, unmatched ignores reported) over the given files.
+    pub fn new(analysed: Vec<PathBuf>, scanned: Vec<PathBuf>) -> Project {
+        let paths: Vec<String> = analysed.iter().map(|p| absolute(p)).collect();
+        Project {
+            relative_path: RelativePath::of(&paths),
+            analysed,
             scanned,
             autoloaded: Vec::new(),
             php_version: RUNTIME_PHP_VERSION,
@@ -144,6 +154,8 @@ impl Project {
             report_ignores_without_comments: false,
             ignore_errors: IgnoredErrors::new(&Array::new(), true),
             check_class_case_sensitivity: false,
+            level: 0,
+            check_generic_iterable_classes: false,
         }
     }
 }
@@ -154,8 +166,6 @@ pub struct Autoloaded {
     /// The class name, ASCII-lowercased: the psr-4 prefix and the path below the directory, or for psr-0 the path
     /// alone, with `\` for `/` and without the extension.
     pub class: Vec<u8>,
-            level: 0,
-            check_generic_iterable_classes: false,
     /// psr-0, where `_` in the class's own name is a directory too.
     pub psr0: bool,
 }

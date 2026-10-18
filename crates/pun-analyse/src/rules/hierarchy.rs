@@ -11,7 +11,7 @@ use mago_syntax::cst::*;
 use super::class_names::{self, Pair};
 use super::declarations::{doc_before, doc_tags, has_tag, is_abstract, is_private};
 use super::members;
-use super::reflection::{Known, display, known};
+use super::reflection::{Known, known};
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
 /// `ClassReflection::implementsInterface(Serializable::class)`.
@@ -154,7 +154,7 @@ pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
     let in_trait = c.in_trait().map(|t| {
         c.codebase
             .get_class_like(t.as_bytes())
-            .map_or_else(|| t.to_string(), super::reflection::display)
+            .map_or_else(|| t.to_string(), |k| c.display(k))
     });
     let pairs: Vec<Pair> = u
         .trait_names
@@ -178,8 +178,8 @@ pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
     }
     let current = match (in_trait, display) {
         (Some(t), _) => format!("Trait {t}"),
-        (None, None) => "Anonymous class".to_string(),
-        (None, Some(d)) => format!("Class {d}"),
+        (None, Some(d)) if !c.in_anonymous_class() => format!("Class {d}"),
+        (None, _) => "Anonymous class".to_string(),
     };
     for id in u.trait_names.iter() {
         let name = c.resolved(id);
@@ -214,11 +214,9 @@ pub fn trait_use<'arena>(c: &mut Checker<'_, 'arena>, u: &TraitUse<'arena>) {
 /// trait method's alias).
 pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &str) {
     let decl = c.decls.last().expect("in a class-like");
-    let Some(display) = decl.display.clone() else {
-        return; // ponytail: anonymous classes (their class@anonymous/<file>:<line> name is not ported)
-    };
+    let display = decl.display.clone().unwrap_or_default();
     let (kind, class_abstract) = (decl.kind, decl.is_abstract);
-    let class = c.codebase.get_class_like(display.as_bytes());
+    let class = c.class_scope();
     let modifiers = m.modifiers.as_slice();
     if !class_abstract && modifiers.iter().any(is_abstract) {
         let lower = name.to_ascii_lowercase();
@@ -298,7 +296,7 @@ pub fn in_class(c: &mut Checker, at: Span, name: &str) {
     {
         return;
     }
-    let display = display(k);
+    let display = c.display(k);
     let is_enum = k.kind == SymbolKind::Enum;
     let description = if is_enum {
         "Enum"
@@ -350,7 +348,7 @@ pub fn in_class(c: &mut Checker, at: Span, name: &str) {
             format!(
                 "{description} {display} contains abstract method {}() from {what} {}.",
                 m.name(),
-                m.declaring_display(),
+                m.declaring_display(c),
             ),
             None,
         );
@@ -460,7 +458,6 @@ pub fn callable_property(c: &mut Checker, at: Span, name: &[u8], hint: Option<&H
     if !hint.is_some_and(names_callable) {
         return;
     }
-    // ponytail: anonymous classes (their class@anonymous/<file>:<line> name is not ported)
     if let Some(display) = c.decls.last().and_then(|d| d.display.clone()) {
         let property =
             String::from_utf8_lossy(name.strip_prefix(b"$").unwrap_or(name)).into_owned();

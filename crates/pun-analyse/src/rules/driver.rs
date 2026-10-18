@@ -16,13 +16,14 @@ use pun_phpstan::ignore::{
     Error, ignores_without_comments, local_ignores, parse_errors, unmatched_line_errors,
 };
 
-use super::reflection::display;
-use super::{Checker, arrays, assign, class_names, infer::infer, reflection, signatures, syntax};
+use super::{
+    Checker, anonymous, arrays, assign, class_names, infer::infer, reflection, signatures, syntax,
+};
 use crate::Project;
 use crate::codebase::{Sources, parse};
+use crate::relative_path::RelativePath;
 
 /// What the rules read of the project (its `ignoreErrors` stay on the calling thread).
-#[derive(Clone, Copy)]
 pub(crate) struct Checks {
     php_version: u32,
     report_ignores_without_comments: bool,
@@ -35,6 +36,8 @@ pub(crate) struct Checks {
     /// [`Project::level`] and [`Project::check_generic_iterable_classes`].
     level: u8,
     generic_iterable_classes: bool,
+    /// [`Project::relative_path`].
+    relative_path: RelativePath,
 }
 
 impl Checks {
@@ -46,6 +49,7 @@ impl Checks {
             php_version: project.php_version,
             report_ignores_without_comments: project.report_ignores_without_comments,
             report_unmatched_ignores: project.report_unmatched_ignores,
+            relative_path: project.relative_path.clone(),
         }
     }
 }
@@ -65,11 +69,14 @@ fn checker<'a, 'arena>(
     program: &'arena Program<'arena>,
     names: &'a ResolvedNames<'arena>,
     codebase: &'a CodebaseMetadata,
-    php_version: u32,
+    project: &'a Checks,
     files: &'a HashMap<FileId, PathBuf>,
     sources: &'a Sources,
 ) -> Checker<'a, 'arena> {
+    let php_version = project.php_version;
     Checker {
+        anonymous: anonymous::names(file, program, names, &project.relative_path),
+        relative_path: &project.relative_path,
         file,
         types: infer(arena, file, program, names, codebase, php_version),
         names,
@@ -107,9 +114,9 @@ fn checker<'a, 'arena>(
         class_names: class_names::State::default(),
         arrays: arrays::State::default(),
         standalone_throws: HashSet::new(),
-        case_sensitivity: false,
-        level: 0,
-        generic_iterable_classes: false,
+        case_sensitivity: project.check_class_case_sensitivity,
+        level: project.level,
+        generic_iterable_classes: project.generic_iterable_classes,
         errors: Vec::new(),
     }
 }
@@ -130,18 +137,8 @@ pub(crate) fn check_file(
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, file);
     let mut checker = checker(
-        &arena,
-        file,
-        program,
-        &names,
-        codebase,
-        project.php_version,
-        files,
-        sources,
+        &arena, file, program, &names, codebase, project, files, sources,
     );
-    checker.case_sensitivity = project.check_class_case_sensitivity;
-    checker.level = project.level;
-    checker.generic_iterable_classes = project.generic_iterable_classes;
     checker.walk_program(program, &mut ());
     let name = checker.file_name();
     let (mut lines, parse) = lines_to_ignore(&file.contents);
@@ -208,28 +205,24 @@ fn in_trait_context(
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, &file);
     let mut checker = checker(
-        &arena,
-        &file,
-        program,
-        &names,
-        codebase,
-        project.php_version,
-        files,
-        sources,
+        &arena, &file, program, &names, codebase, project, files, sources,
     );
     let display = codebase
         .get_class_like(class.as_bytes())
-        .map_or_else(|| class.to_string(), display);
-    checker.label = format!("{} (in context of class {display})", checker.file_name());
+        .map_or_else(|| class.to_string(), |k| checker.display(k));
+    // getFileDescription(): an anonymous class's name stands alone
+    let context = if class.starts_with("{anonymous-class:") {
+        display
+    } else {
+        format!("class {display}")
+    };
+    checker.label = format!("{} (in context of {context})", checker.file_name());
     checker.trait_context = Some(super::TraitContext {
         class_file: class_file.to_string(),
         class: class.to_string(),
         trait_name: String::from_utf8_lossy(t.name.as_bytes()).into_owned(),
         renames: u.renames.clone(),
     });
-    checker.case_sensitivity = project.check_class_case_sensitivity;
-    checker.level = project.level;
-    checker.generic_iterable_classes = project.generic_iterable_classes;
     checker.walk_program(program, &mut ());
     let label = checker.label.clone();
     let (mut lines, _) = lines_to_ignore(&file.contents);

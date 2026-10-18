@@ -83,22 +83,52 @@ pub struct Counts {
     pub named: bool,
     /// Unpacks an array that is not a constant one.
     pub unpack: bool,
+    /// Has any argument.
+    pub any: bool,
 }
 
 pub fn count(args: &ArgumentList) -> Counts {
-    let mut counts = Counts::default();
+    let mut counts = Counts {
+        any: !args.arguments.is_empty(),
+        ..Counts::default()
+    };
     for arg in args.arguments.iter() {
         match arg {
             Argument::Named(_) => counts.named = true,
-            Argument::Positional(p) if p.ellipsis.is_some() => match unpacked(p.value) {
-                Unpacked::List(k) => counts.positional += k,
-                Unpacked::Named => counts.named = true,
-                Unpacked::Unknown => counts.unpack = true,
-            },
-            Argument::Positional(_) => counts.positional += 1,
+            Argument::Positional(p) => counts.positional(p),
         }
     }
     counts
+}
+
+/// [`count()`] of an anonymous class's constructor arguments.
+pub fn count_partial(args: &PartialArgumentList) -> Counts {
+    let mut counts = Counts {
+        any: !args.arguments.is_empty(),
+        ..Counts::default()
+    };
+    for arg in args.arguments.iter() {
+        match arg {
+            PartialArgument::Positional(p) => counts.positional(p),
+            // named arguments; placeholders (`?`) are no PHP 8.5 syntax, so php-parser rejects them
+            _ => counts.named = true,
+        }
+    }
+    counts
+}
+
+impl Counts {
+    fn positional(&mut self, p: &PositionalArgument) {
+        if p.ellipsis.is_none() {
+            self.positional += 1;
+            return;
+        }
+        match unpacked(p.value) {
+            Unpacked::List(k) => self.positional += k,
+            Unpacked::Named => self.named = true,
+            Unpacked::Unknown => self.unpack = true,
+        }
+    }
 }
 
 /// What unpacking an expression gives.
@@ -165,6 +195,7 @@ pub fn check(
         positional: n,
         named,
         unpack,
+        ..
     } = counts;
     if !named {
         let min = acceptor.min();

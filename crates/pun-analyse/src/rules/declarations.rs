@@ -10,13 +10,11 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
 use super::Checker;
-use super::reflection::display;
 
 /// The class-like a member is declared in, as its ClassReflection answers (in a trait walked in a class's context,
 /// that class).
 pub struct Decl {
-    /// `getDisplayName()`, `None` for an anonymous class (its `class@anonymous/file:line` name is not ported, so the
-    /// rules that print it skip anonymous classes).
+    /// `getDisplayName()`.
     pub display: Option<String>,
     pub kind: SymbolKind,
     pub is_abstract: bool,
@@ -148,7 +146,7 @@ impl<'arena> Checker<'_, 'arena> {
     pub(super) fn decl_of_class(&mut self, class: &str) -> Option<Decl> {
         let meta = self.codebase.get_class_like(class.as_bytes())?;
         Some(Decl {
-            display: Some(display(meta)),
+            display: Some(self.display(meta)),
             kind: meta.kind,
             is_abstract: meta.flags.is_abstract(),
             is_readonly: meta.flags.is_readonly(),
@@ -203,7 +201,7 @@ impl<'arena> Checker<'_, 'arena> {
 /// DuplicateDeclarationRule: the duplicate constants, enum cases, properties (promoted ones too) and methods of a
 /// class, interface or enum.
 pub fn duplicates<'arena>(c: &mut Checker<'_, 'arena>, members: &[ClassLikeMember<'arena>]) {
-    // called for named class-likes only, right after their Decl
+    // called right after the Decl
     let decl = c.decls.last().expect("declared");
     let display = decl.display.clone().expect("named");
     let kind = match decl.kind {

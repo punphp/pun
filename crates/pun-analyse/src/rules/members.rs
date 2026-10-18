@@ -23,7 +23,15 @@ pub enum Method<'a> {
 }
 
 impl Method<'_> {
-    pub fn declaring_display(&self) -> String {
+    pub fn declaring_display(&self, c: &Checker) -> String {
+        match self {
+            Method::User { declaring, .. } => c.display(declaring),
+            Method::Builtin { declaring, .. } => declaring.name.clone(),
+        }
+    }
+
+    /// The declaring class's name (an anonymous class's codex name), for visibility checks.
+    pub fn declaring_name(&self) -> String {
         match self {
             Method::User { declaring, .. } => {
                 String::from_utf8_lossy(declaring.original_name.as_bytes()).into_owned()
