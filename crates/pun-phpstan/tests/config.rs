@@ -174,3 +174,35 @@ fn corpus_configs() {
         failures.join("\n")
     );
 }
+
+/// PHPStan finds an unreadable `phpstan.neon` with `is_file()` and then fails to read it; it does not fall back to
+/// `phpstan.neon.dist` (`scripts/phpstan-config.php` on such a directory).
+#[cfg(unix)]
+#[test]
+fn unreadable_default_config() {
+    use std::os::unix::fs::PermissionsExt;
+    let dir = std::env::temp_dir().join(format!("pun-phpstan-unreadable-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let dir = dir.canonicalize().unwrap();
+    let neon = dir.join("phpstan.neon");
+    std::fs::write(&neon, "parameters:\n  level: 3\n").unwrap();
+    std::fs::write(dir.join("phpstan.neon.dist"), "parameters:\n  level: 5\n").unwrap();
+    std::fs::set_permissions(&neon, std::fs::Permissions::from_mode(0o000)).unwrap();
+    // (root reads it anyway)
+    let readable = std::fs::read(&neon).is_ok();
+    let o = Options {
+        cwd: dir.to_string_lossy().into_owned(),
+        phar: format!("{ROOT}/phpstan.phar"),
+        ..Options::default()
+    };
+    let got = resolve(&o)
+        .map(|_| ())
+        .map_err(|e| e.replace(&*dir.to_string_lossy(), "{cwd}"));
+    std::fs::remove_dir_all(&dir).unwrap();
+    if !readable {
+        assert_eq!(
+            got,
+            Err("File '{cwd}/phpstan.neon' is missing or is not readable.".into())
+        );
+    }
+}

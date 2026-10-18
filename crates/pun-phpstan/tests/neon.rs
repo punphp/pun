@@ -18,7 +18,7 @@ fn run(name: &str) {
             };
             let got = match neon::decode_bytes(&bytes) {
                 Ok(v) => serde_json::json!({ "value": tagged(&v) }),
-                Err(e) => serde_json::json!({ "error": e.0 }),
+                Err(e) => serde_json::json!({ "error": e.to_string() }),
             };
             let want = match case.get("error") {
                 Some(e) => serde_json::json!({ "error": e }),

@@ -13,7 +13,7 @@ use pcre2::bytes::Regex;
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-/// `PHPStan\Analyser\Error`, with the fields ignoring looks at.
+/// `PHPStan\Analyser\Error`, with the fields ignoring and the baseline formatters look at.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Error {
     pub message: String,

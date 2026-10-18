@@ -2,19 +2,11 @@
 //! Reading a baseline back is ordinary config loading (`di::load_file`: NEON, or the PHP file's literal array).
 
 use crate::di::escape;
+use crate::ignore::Error;
 use crate::neon;
 use crate::php::{parent_relative_path, preg_quote};
 use crate::value::{Array, Key, Value};
 use std::collections::BTreeMap;
-
-/// One file-specific error of the analysis (`PHPStan\Analyser\Error`).
-pub struct Error<'a> {
-    /// Absolute path of the reported file.
-    pub file: &'a str,
-    pub message: &'a str,
-    pub identifier: Option<&'a str>,
-    pub can_be_ignored: bool,
-}
 
 /// One `ignoreErrors` entry: message (raw or as the `#^...$#` regex), identifier, count, path relative to the baseline.
 struct Entry {
@@ -39,11 +31,15 @@ fn entries(baseline_dir: &str, errors: &[Error], raw: bool, path_prefix: &str) -
     for e in errors.iter().filter(|e| e.can_be_ignored) {
         let file = format!(
             "{path_prefix}{}",
-            parent_relative_path(baseline_dir, e.file)
+            parent_relative_path(baseline_dir, &e.file_path)
         );
-        let (total, ids) = files.entry(file).or_default().entry(e.message).or_default();
+        let (total, ids) = files
+            .entry(file)
+            .or_default()
+            .entry(&e.message)
+            .or_default();
         *total += 1;
-        if let Some(id) = e.identifier {
+        if let Some(id) = &e.identifier {
             *ids.entry(id).or_default() += 1;
         }
     }

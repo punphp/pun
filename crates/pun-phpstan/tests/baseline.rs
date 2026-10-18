@@ -5,6 +5,7 @@
 mod common;
 
 use common::{fixture, tagged};
+use pun_phpstan::ignore::Error;
 use pun_phpstan::{Value, baseline, neon, phpfile};
 
 #[test]
@@ -13,21 +14,24 @@ fn phpstan_baseline_formatters() {
     let dir = all["dir"].as_str().unwrap();
     let mut failures = Vec::new();
     for case in all["cases"].as_array().unwrap() {
-        let errors: Vec<baseline::Error> = case["errors"]
+        let errors: Vec<Error> = case["errors"]
             .as_array()
             .unwrap()
             .iter()
-            .map(|e| baseline::Error {
-                file: e["file"].as_str().unwrap(),
-                message: e["message"].as_str().unwrap(),
-                identifier: e["identifier"].as_str(),
+            .map(|e| Error {
+                identifier: e["identifier"].as_str().map(Into::into),
                 can_be_ignored: e["ignorable"].as_bool().unwrap(),
+                ..Error::new(
+                    e["message"].as_str().unwrap(),
+                    e["file"].as_str().unwrap(),
+                    None,
+                )
             })
             .collect();
         let raw = case["raw"].as_bool().unwrap();
         let (got, read) = if case["format"] == "neon" {
             let out = baseline::neon(dir, &errors, case["existing"].as_str().unwrap(), raw);
-            let read = neon::decode(&out).map_err(|e| e.0);
+            let read = neon::decode(&out).map_err(|e| e.to_string());
             (out, read)
         } else {
             let out = baseline::php(dir, &errors, case["has_errors"].as_bool().unwrap(), raw);

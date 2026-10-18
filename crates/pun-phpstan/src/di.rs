@@ -256,9 +256,8 @@ pub fn dirname(path: &str) -> String {
 /// Source of config files: the filesystem, plus PHPStan's own `conf/` inside the PHAR (embedded in Pun).
 pub trait Files {
     fn read(&self, path: &str) -> Option<Vec<u8>>;
-    fn is_file(&self, path: &str) -> bool {
-        self.read(path).is_some()
-    }
+    /// PHP `is_file()`: true for an unreadable file too, without reading it.
+    fn is_file(&self, path: &str) -> bool;
 }
 
 /// `PHPStan\DependencyInjection\NeonAdapter::load()`.
@@ -270,8 +269,8 @@ pub fn load_neon(
     let contents = files
         .read(file)
         .ok_or_else(|| format!("File '{file}' is missing or is not readable."))?;
-    let decoded = neon::decode_bytes(&contents)
-        .map_err(|e| format!("Error while loading {file}: {}", e.0))?;
+    let decoded =
+        neon::decode_bytes(&contents).map_err(|e| format!("Error while loading {file}: {e}"))?;
     let arr = match decoded {
         Value::Array(a) => a,
         Value::Null => Array::new(),

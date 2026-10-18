@@ -142,6 +142,13 @@ impl Files for ProjectFiles {
             .then(|| std::fs::read(path).ok())
             .flatten()
     }
+
+    fn is_file(&self, path: &str) -> bool {
+        if path.starts_with("phar://") {
+            return self.embedded(path).is_some();
+        }
+        std::path::Path::new(path).is_file()
+    }
 }
 
 /// The resolved container parameters (`$container->getParameters()`, without `env`).

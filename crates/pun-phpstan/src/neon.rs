@@ -9,8 +9,17 @@ use crate::value::{Array, Entity, Key, Value, base_dec, float_json, numeric};
 
 pub const CHAIN: &str = "!!chain";
 
+/// nette/neon's `Exception` message.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Error(pub String);
+pub struct Error(String);
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl std::error::Error for Error {}
 
 const STRING: &str = r#"
 			'''\n (?:(?: [^\n] | \n(?![\t\ ]*+''') )*+ \n)?[\t\ ]*+''' |

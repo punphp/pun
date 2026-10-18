@@ -364,9 +364,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 76. `crates/pun-tokens/src/token.rs:8-11,202-208`: `Token` has public fields and getters for them (pun-fixers
   reads `.content` 213 times and `get_content()` 246 times), and struct literals skip `Token::new`'s check. Pick one.
   Needs a decision.
-- [ ] 77. Three `Error` types in pun-phpstan (`neon::Error(pub String)` with no `Display`, `ignore::Error`,
+- [x] 77. Three `Error` types in pun-phpstan (`neon::Error(pub String)` with no `Display`, `ignore::Error`,
   `baseline::Error<'a>` for the same PHPStan concept), and `trait Files` (`di.rs:257-262`) with one impl whose
-  default `is_file` reads the whole file, so a large baseline is read about four times per resolve.
+  default `is_file` reads the whole file, so a large baseline is read about four times per resolve. The read-based
+  `is_file` also skipped an unreadable `phpstan.neon` for `phpstan.neon.dist`, where PHPStan fails to read it. Fixed in
+  wf/audit-phpstan.
 - [ ] 78. `crates/pun-fixers/src/analyzers/classy_analyzer.rs:14`, `constant_invocation.rs:10`, `utils.rs:21` format
   `Option` with `{:?}`, printing `got "Some("T_OPEN_TAG")"` where upstream prints `got "T_OPEN_TAG"`, and the test at
   `classy_analyzer.rs:122` locks it in.
