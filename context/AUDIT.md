@@ -124,7 +124,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   threads on a fresh dir fail the rename with ENOENT. Fixed in e48bd81.
 - [x] 21. `crates/pun-tokens/src/tokens.rs:23-27`: the derived public `Default` leaves `found_kinds` empty, so
   `Tokens::default().is_token_kind_found(..)` and `insert_at` index out of bounds (`:681`, `:860`). No caller today.
-  Implement `Default` as `from_array(Vec::new())`, or make `found_kinds` a fixed-size array. Reproduced (index 134 out of bounds); `Default` now sizes `found_kinds`. Fixed in wf/audit-tokens.
+  Implement `Default` as `from_array(Vec::new())`, or make `found_kinds` a fixed-size array. Reproduced (index 134 out of bounds); `Default` now sizes `found_kinds`. Fixed in 84dc274.
 
 ## P2: Inconsistent or costly to change
 
@@ -192,11 +192,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `pun-fixers/src/analyzers/blocks_analyzer.rs:24` and `fixers/class_reference_name_casing.rs:78`; and
   `detect_block_type` rebuilds up to 30 prototypes per call on per-token paths (`tokens_analyzer.rs:164`, `:245`).
   Replace Type Code with Enum (`#[repr(u8)]`, `BlockType::ALL`, keeping the `BLOCK_TYPE_*` consts) and match
-  directly. Spans crates. Reproduced (`BlockType(0)` compiles and panics; the api cases' `blockEnd 0`/`16` throw). `BlockType` is now a `#[repr(u8)]` enum, `detect_block_type` matches the token directly, `blockEnd 0`/`16` in the api test index `BlockType::ALL` and still panic like upstream. Fixed in wf/audit-tokens.
+  directly. Spans crates. Reproduced (`BlockType(0)` compiles and panics; the api cases' `blockEnd 0`/`16` throw). `BlockType` is now a `#[repr(u8)]` enum, `detect_block_type` matches the token directly, `blockEnd 0`/`16` in the api test index `BlockType::ALL` and still panic like upstream. Fixed in 416ac92, 9b368e5.
 - [x] 36. `crates/pun-tokens/src/tokens.rs:30-31`, `:244-261` keep a `dyn Any` cache that downcasts a pun-fixers
   type (`NamespaceAnalysis`), and a second user's failed downcast would be swallowed by `.ok()`. Move
   `NamespaceAnalysis` and `NamespacesAnalyzer::compute` (pun-tokens-only dependencies) into pun-tokens, where upstream
-  keeps them, and type the cache. Spans crates. Holds: the cache took any `T`, and a call with another type would recompute and overwrite it on every call. `NamespaceAnalysis` and `NamespacesAnalyzer` now live in `pun-tokens/src/namespaces_analyzer.rs` (tested against PHP-CS-Fixer's NamespacesAnalyzer), `Tokens::namespace_declarations()` returns a typed `Arc<Vec<NamespaceAnalysis>>`, and `get_namespace_at` clones only the match (the `namespaces_analyzer.rs` part of item 88). Fixed in wf/audit-tokens.
+  keeps them, and type the cache. Spans crates. Holds: the cache took any `T`, and a call with another type would recompute and overwrite it on every call. `NamespaceAnalysis` and `NamespacesAnalyzer` now live in `pun-tokens/src/namespaces_analyzer.rs` (tested against PHP-CS-Fixer's NamespacesAnalyzer), `Tokens::namespace_declarations()` returns a typed `Arc<Vec<NamespaceAnalysis>>`, and `get_namespace_at` clones only the match (the `namespaces_analyzer.rs` part of item 88). Fixed in 475eb65.
 - [x] 37. `crates/pun-format/src/php_parser.rs:440-442` copies the reduction's right-hand side with `.to_vec()` on
   every grammar reduction of every linted file; `values` is a local, so `&values[values.len() - len..]` works. Hot
   path; removes an allocation. Fixed in 2cb0bbf.
@@ -422,7 +422,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   while `tests/parity.rs:10-16` and `tests/api.rs:285-296` return silently and pass. One helper, one policy. Reproduced with `php` off PATH: the two
   `php_compat` tests panicked, `api` and `parity` passed without comparing anything. Policy: the oracle is required
   (CI installs it), so `tests/common/mod.rs` (`php()`, `require_php_cs_fixer()`) fails every PHP-backed test with
-  "run scripts/oracle.sh"; the `php_compat` comparisons moved to `tests/php_compat.rs` to share it. Fixed in wf/audit-tokens.
+  "run scripts/oracle.sh"; the `php_compat` comparisons moved to `tests/php_compat.rs` to share it. Fixed in 02a3868.
 - [x] 82. Weak or stale assertions: `pun-format/src/lib.rs:595-603` checks only a `"Parse error: "` prefix under a
   comment about Mago, which lint no longer uses (also `context/reports/COVERAGE.md:38`); `docblock/tests.rs:332-343`
   uses `contains`. Assert the oracle's exact message. The pun-format test now asserts PHP 8.5's exact messages and the
@@ -451,7 +451,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `non_upper_case_globals` allows and `preg.rs`'s `len_without_is_empty` (an unfulfilled `expect` showed it) suppress
   nothing and are gone; the rest are `#[expect(.., reason)]`, or `allow` with a reason where a lint fires in only some
   builds (shared test modules, the generated grammar and its generator). `cargo clippy --workspace --all-targets -- -W
-  clippy::allow_attributes_without_reason` reports none. Fixed in wf/audit-tokens.
+  clippy::allow_attributes_without_reason` reports none. Fixed in ac0ee93.
 - [ ] 87. Visibility: 570 `unreachable_pub` hits, mostly the `pub fn fixer()`/`pub struct` items inside private
   fixer modules and pun-cli/pun-analyse internals; `pun-phpstan` makes every module `pub` (`di`, `schema`, `phpfile`
   internals have no outside caller); `docblock/regex.rs:4,13,187` exports three macros as the crate's public API;

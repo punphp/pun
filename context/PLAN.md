@@ -344,6 +344,9 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | perf: lint speed and memory, round by round against the bench, output unchanged | doing (workflow, wf/perf-lint-N) |
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |
 | perf lint 1 follow-up: scripts/bench.py lint and analyse modes report time from a run without the 20 ms RSS polling (or poll RSS in a separate run), so runs under 100 ms show real differences | todo |
+| tests: since audit item 81 the pun-tokens oracle tests (api, parity, php_compat) fail when php or .oracle/php-cs-fixer is missing; on macOS the default `php` (Herd 8.4) fails tools/api.php ('Cannot use the final modifier on a parameter'), so put PHP 8.5 first on PATH or point the helper at it | todo |
+| coverage: reports/COVERAGE.md still lists punphp-fixers at 100% while scripts/coverage.sh reports 99.99% (method_argument_space.rs:336, yoda_style.rs:426, same on main); update the row with the fix | todo |
+| audit item 88: the namespaces_analyzer.rs part (cloning the whole cached list) is done in the item 36 commit; the rest of item 88 is open | todo |
 | perf lint 1 follow-up: if the pun-lint tree walk grows with more rules, skip leaf node kinds no rule targets (about 28% of nodes: DirectVariable, Keyword, LocalIdentifier, Terminator, LiteralString); under 3% today | todo |
 | perf lint 2 follow-up: peak memory is Mago's parse arena (about 41x source size; a 462 KB file takes a 26 MB arena, 39k allocations of 376 bytes); cutting it needs an upstream change in Mago, not pun-lint | todo |
 | perf lint 2 follow-up: opening files is the largest system cost (about 25% of samples) and does not scale past 4 threads on macOS; openat through a held directory handle did not help | todo |
