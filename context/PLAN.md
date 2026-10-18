@@ -373,6 +373,9 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit item 12 follow-up: apply pun-wf/scratch/audit-format-item12.patch (`LintError`/`SyntaxError.message: Vec<u8>`, byte `console::format_bytes`, pun-cli report.rs/run.rs/console.rs writing the ERROR and `-q` lines as bytes) once the tracks reworking those pun-cli files release them; rerun pun-format/pun-cli tests and cli-parity, then tick item 12 | todo |
 | audit item 82 follow-up: docblock/tests.rs `type_expression_parse_invalid` still checks the message with `contains`; item 15 (var_export) has landed, so assert the full message with oracle values | todo |
 | wf tooling: shared heavy-slot target dirs make one worktree's workspace-crate build look fresh in another (cargo hashes are path-independent), giving stale types; touch sources before each run or use per-worktree target dirs | todo |
+| audit item 39 follow-up: docblock Annotation's types_content/types caches are still RefCell clones per read; a OnceCell needs set_types/remove to take &mut self, which DocBlock's OnceCell<Vec<Annotation>> does not allow | todo |
+| audit item 41 follow-up: other patterns built from file content still go through Preg's never-evicting cache (no_unused_imports' comment pattern, method_chaining_indentation); move them to the `_uncached` entry points | todo |
+| coverage: no_spaces_around_offset.rs:59 (the CT_ARRAY_INDEX_BRACE branch) is uncovered on main besides the method_argument_space and yoda_style lines above; add an oracle case | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
