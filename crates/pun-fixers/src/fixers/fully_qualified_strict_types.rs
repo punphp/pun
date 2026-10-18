@@ -477,7 +477,7 @@ impl FullyQualifiedStrictTypesFixer {
         let use_by_short_name_lower: HashSet<Vec<u8>> =
             uses.iter().map(|(_, short)| strtolower(short)).collect();
 
-                discovered_symbols.sort_by(|a, b| {
+        discovered_symbols.sort_by(|a, b| {
             a.starts_with(b"\\")
                 .cmp(&b.starts_with(b"\\"))
                 .then(substr_count(a, b"\\").cmp(&substr_count(b, b"\\")))
