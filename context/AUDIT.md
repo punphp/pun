@@ -53,7 +53,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `<script>` tag with 8 quoted attributes and no closing tag in a 34 KB template exhausts the backtrack limit (PHP
   returns `null` with "Backtrack limit exhausted"). Return the input unchanged, or bail so the PrettierException
   path reports the file; do the same for `php_block_formatting.rs:255`, `:478`. Reproduced the regex failure in PHP;
-  the empty write is read from the code.
+  the empty write is read from the code. Checked at 0c5bd30: Pint (`.oracle/pint`) empties the same 34 KB file too
+  (`(string) preg_replace_callback(..)` is `""`), and Pun's `RawPreg` fails on the same input, so Pun matches Pint
+  today; keeping the input would break parity on purpose. `:255`/`:478` (`/;$/`, `/^<\?php\s*\n/`) cannot exhaust
+  the limit. Needs a decision.
 - [ ] 10. `crates/pun-cli/src/report.rs:208-219` (`caret_satisfies`): with base `0.8.0` (`first == 1`) an installed
   `prettier-plugin-tailwindcss` version string `"1"` gives `v = [1]`, `v >= b` holds, and `v[..=1]` panics on the
   main thread outside `isolated`. Pad both to three parts before comparing. Traced by hand; the trigger is a
@@ -102,10 +105,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `crates/pun-config/src/migrate.rs:120` print "Permission denied (os error 13)" alone; `pun-cli/src/migrate.rs:443-458`
   discards PHP's stderr, so a fatal error in `.php-cs-fixer.php` prints `pun: ` with nothing after it. Add
   `.with_context(|| path)` and fall back to stderr.
-- [ ] 20. `crates/pun-fixers/src/fixers/pint_laravel_blade.rs:140-150` (`resources_in`) writes the Prettier worker
+- [x] 20. `crates/pun-fixers/src/fixers/pint_laravel_blade.rs:140-150` (`resources_in`) writes the Prettier worker
   through a temp name that is the same for every rayon thread (`worker.<pid>`), so on a cold temp dir two threads can
   truncate each other's file and one `rename` fails, reporting a Blade file as errored. The guard also checks only
-  `worker.cjs`. Build the files once per process in a `OnceLock`. Likely; not reproduced.
+  `worker.cjs`. Build the files once per process in a `OnceLock`. Likely; not reproduced. Reproduced at 0c5bd30: 16
+  threads on a fresh dir fail the rename with ENOENT. Fixed in wf/audit-blade.
 - [ ] 21. `crates/pun-tokens/src/tokens.rs:23-27`: the derived public `Default` leaves `found_kinds` empty, so
   `Tokens::default().is_token_kind_found(..)` and `insert_at` index out of bounds (`:681`, `:860`). No caller today.
   Implement `Default` as `from_array(Vec::new())`, or make `found_kinds` a fixed-size array.
@@ -129,9 +133,11 @@ items marked "not checked against Pint" still need one oracle run before the fix
 - [ ] 24. `crates/pun-fixers/src/fixers/general_phpdoc_tag_rename.rs:147-173` puts replacement keys into the pattern
   unquoted and unwraps the key lookup, so `{"replacements": {"a|b": "c"}}` with `/** @a */` panics inside `fix()`.
   Fall back to the matched text, or mirror upstream's error. Needs a decision.
-- [ ] 25. `crates/pun-fixers/src/fixers/pint_laravel_blade.rs:235-238` unwraps both worker markers in Node's output; a
+- [x] 25. `crates/pun-fixers/src/fixers/pint_laravel_blade.rs:235-238` unwraps both worker markers in Node's output; a
   template containing `[PINT_PRETTIER_WORKER_END]` desyncs the reply stream and the next file panics. Bail with
-  Pint's "worker terminated unexpectedly" message and search END after START.
+  Pint's "worker terminated unexpectedly" message and search END after START. Reproduced at 0c5bd30 with a stand-in
+  worker; Pint's own message for a missing marker is "did not return a valid response" (`Prettier::format`), and it
+  keeps the worker, so Pun does the same. Fixed in wf/audit-blade.
 - [ ] 26. Run configuration lives in process globals: `crates/pun-fixers/src/analyzers/active_preset.rs:6-18`
   (`static PRESET: RwLock`, set twice from `pun-cli/src/run.rs:83`, `:367`, read by the Blade fixer) and
   `pun-cli/src/agent.rs:16` (`MODE: OnceLock`, read at 11 sites, `expect`s it was initialised). A fixer's output
@@ -212,11 +218,12 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `lowercase_keywords.rs:27`, `lowercase_cast.rs:29`, `no_alias_functions.rs:99`, `mb_str_functions.rs:65`. All but
   the last are in the Laravel preset. Test with `eq_ignore_ascii_case` / "has uppercase" first and allocate only on
   rewrite. Hot path.
-- [ ] 45. Pipelines are built far more often than needed: `crates/pun-format/src/lib.rs:214` calls `factory()` (all
+- [x] 45. Pipelines are built far more often than needed: `crates/pun-format/src/lib.rs:214` calls `factory()` (all
   ~175 fixers) once per enabled rule, and `pint_laravel_blade/php_block_formatting.rs:57-79` builds one or two
   full-preset pipelines per Blade file, re-parsing the preset and swallowing errors (`unwrap_or_default()`, `.ok()`).
   That is ~22k boxed fixers per Blade file on Pinkary. Call the factory once and `take()` by name, and cache the Blade
-  pipelines per preset in a `LazyLock`. Spans crates.
+  pipelines per preset in a `LazyLock`. Spans crates. The preset's parse errors are still swallowed, as before.
+  Fixed in wf/audit-blade.
 - [ ] 46. Pest and Laravel `Pun/*` rules copy helpers that have already drifted: the global-call check in
   `pun_no_only.rs:99-105`, `pun_use_dedicated_expectation.rs:183-194`, `pun_use_simpler_expectation.rs:104-115` and
   `pun_use_specific_expectations.rs:103-105` (this copy accepts `Foo\expect(..)`); the matcher in
