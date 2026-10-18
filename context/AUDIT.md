@@ -224,12 +224,14 @@ items marked "not checked against Pint" still need one oracle run before the fix
   That is ~22k boxed fixers per Blade file on Pinkary. Call the factory once and `take()` by name, and cache the Blade
   pipelines per preset in a `LazyLock`. Spans crates. The preset's parse errors are still swallowed, as before.
   Fixed in 9ce385c.
-- [ ] 46. Pest and Laravel `Pun/*` rules copy helpers that have already drifted: the global-call check in
+- [x] 46. Pest and Laravel `Pun/*` rules copy helpers that have already drifted: the global-call check in
   `pun_no_only.rs:99-105`, `pun_use_dedicated_expectation.rs:183-194`, `pun_use_simpler_expectation.rs:104-115` and
   `pun_use_specific_expectations.rs:103-105` (this copy accepts `Foo\expect(..)`); the matcher in
   `pun_use_dedicated_expectation.rs:154-201` and `pun_use_simpler_expectation.rs:84-117`; compound-assignment lists
   in three files. Extract one Pest helper module and drop the dead `T_NAME_FULLY_QUALIFIED` branch and the
-  always-`true` `allow_not`.
+  always-`true` `allow_not`. Fixed in wf/audit-fixers-rules: `analyzers/pest.rs` holds the global-call check, the
+  chain-root walk and the `expect()` matcher; `analyzers/helpers.rs` holds `COMPOUND_ASSIGNMENTS`. `Foo\expect(..)` is
+  no longer rewritten (Mago 1.57.0 leaves it too).
 - [ ] 47. `ignoreErrors` entries are read by string key in `crates/pun-phpstan/src/config.rs:676-810`,
   `ignore.rs:83-492` and `baseline.rs:390-433` (58 literals), and `crates/pun-analyse/src/project.rs:47-100` re-digs
   `Resolved.parameters` by hand; `should_ignore` (`ignore.rs:276-283`) takes four `Option<String>`s rebuilt, with a

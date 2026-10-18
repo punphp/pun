@@ -6,6 +6,7 @@
 //! directories), `is_readable`/`is_writable` → `toBeReadable`/`toBeWritable` (no such Pest matchers),
 //! `ctype_alpha`/`ctype_alnum` (Pest casts to string first: `ctype_alpha(65)` is true, `toBeAlpha()` of 65 is not),
 //! `is_resource` (PHPUnit also accepts closed resources), and `in_array`/`array_key_exists` (Mago has no fix either).
+use crate::analyzers::pest::match_expect_matcher;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
 use pun_tokens::{Token, Tokens};
@@ -60,7 +61,7 @@ impl Fixer for UseDedicatedExpectation {
             {
                 continue;
             }
-            let Some(m) = match_expect_matcher(tokens, i, true) else {
+            let Some(m) = match_expect_matcher(tokens, i) else {
                 continue;
             };
             // The expect argument must be exactly one global call `f(...)`.
@@ -140,64 +141,6 @@ impl Fixer for UseDedicatedExpectation {
             }
         }
     }
-}
-
-struct ExpectMatcher {
-    expect_open: usize,
-    expect_close: usize,
-    has_not: bool,
-    close: usize,
-}
-
-/// Matches `expect(<arg>)[->not]-><method>()` with `method` at `i`: the matcher must apply directly to `expect()`
-/// (no `->and()` in between, where Mago would rewrite the wrong expectation).
-fn match_expect_matcher(tokens: &Tokens, i: usize, allow_not: bool) -> Option<ExpectMatcher> {
-    let arrow = tokens
-        .get_prev_meaningful_token(i)
-        .filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR))?;
-    let open = tokens
-        .get_next_meaningful_token(i)
-        .filter(|&o| tokens[o].equals("(", true))?;
-    let close = tokens
-        .get_next_meaningful_token(open)
-        .filter(|&c| tokens[c].equals(")", true))?;
-    let mut p = tokens.get_prev_meaningful_token(arrow)?;
-    let mut has_not = false;
-    if allow_not && tokens[p].is_kind(T_STRING) && tokens[p].get_content() == b"not" {
-        let a = tokens
-            .get_prev_meaningful_token(p)
-            .filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR))?;
-        p = tokens.get_prev_meaningful_token(a)?;
-        has_not = true;
-    }
-    if !tokens[p].equals(")", true) {
-        return None;
-    }
-    let expect_open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, p);
-    let name = tokens
-        .get_prev_meaningful_token(expect_open)
-        .filter(|&n| tokens[n].is_kind(T_STRING))?;
-    if !tokens[name].get_content().eq_ignore_ascii_case(b"expect") {
-        return None;
-    }
-    let is_function_call = tokens.get_prev_meaningful_token(name).is_none_or(|b| {
-        !tokens[b].is_given_kind(&[
-            T_OBJECT_OPERATOR,
-            T_NULLSAFE_OBJECT_OPERATOR,
-            T_DOUBLE_COLON,
-            T_FUNCTION,
-            T_NEW,
-        ]) && !(tokens[b].is_kind(T_NS_SEPARATOR)
-            && tokens
-                .get_prev_meaningful_token(b)
-                .is_some_and(|q| tokens[q].is_given_kind(&[T_STRING, T_NAMESPACE])))
-    });
-    is_function_call.then_some(ExpectMatcher {
-        expect_open,
-        expect_close: p,
-        has_not,
-        close,
-    })
 }
 
 /// (first, last) meaningful token of each argument; `None` for spread or named arguments.

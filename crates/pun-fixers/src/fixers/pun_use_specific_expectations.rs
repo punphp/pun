@@ -3,6 +3,7 @@
 //! Opt-in only (`Pun/use_specific_expectations`). Mago's other rewrites change what a test asserts and are
 //! not ported: `toEqual(true)` (loose) → `toBeTrue()` (strict), `toBe([])`/`toBe('')` → `toBeEmpty()` (looser),
 //! and `not->toBeFalse()` → `toBeTrue()` (`expect(1)->not->toBeFalse()` passes, `expect(1)->toBeTrue()` fails).
+use crate::analyzers::pest::chain_root_call;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
 use pun_tokens::{Token, Tokens};
@@ -78,49 +79,12 @@ impl Fixer for UseSpecificExpectations {
     }
 }
 
-/// Walks `...->a()->b->` back to its root and checks it is a function call `expect(<arg>)`.
+/// Whether the chain ending at `arrow` starts with `expect(<arg>)`.
 fn chain_starts_with_expect(tokens: &Tokens, arrow: usize) -> bool {
-    let is_arrow =
-        |k: usize| tokens[k].is_given_kind(&[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR]);
-    let mut p = tokens.get_prev_meaningful_token(arrow).expect("open tag");
-    loop {
-        if tokens[p].equals(")", true) {
-            let open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, p);
-            let name = tokens.get_prev_meaningful_token(open).expect("open tag");
-            if !tokens[name].is_given_kind(&[T_STRING, T_NAME_FULLY_QUALIFIED]) {
-                return false;
-            }
-            let before = tokens.get_prev_meaningful_token(name);
-            match before {
-                // An arrow always has at least the open tag before it.
-                Some(b) if is_arrow(b) => {
-                    p = tokens.get_prev_meaningful_token(b).expect("open tag")
-                }
-                _ => {
-                    let n = tokens[name].get_content();
-                    let is_expect =
-                        n.eq_ignore_ascii_case(b"expect") || n.eq_ignore_ascii_case(b"\\expect");
-                    let is_function_call = before.is_none_or(|b| {
-                        !tokens[b].is_given_kind(&[T_DOUBLE_COLON, T_FUNCTION, T_NEW])
-                    });
-                    let has_argument = tokens
-                        .get_next_meaningful_token(open)
-                        .is_some_and(|a| a != p);
-                    return is_expect && is_function_call && has_argument;
-                }
-            }
-        } else if tokens[p].is_kind(T_STRING) {
-            match tokens.get_prev_meaningful_token(p) {
-                // An arrow always has at least the open tag before it.
-                Some(b) if is_arrow(b) => {
-                    p = tokens.get_prev_meaningful_token(b).expect("open tag")
-                }
-                _ => return false,
-            }
-        } else {
-            return false;
-        }
-    }
+    chain_root_call(tokens, arrow).is_some_and(|(name, open, close)| {
+        tokens[name].get_content().eq_ignore_ascii_case(b"expect")
+            && tokens.get_next_meaningful_token(open) != Some(close)
+    })
 }
 
 #[cfg(test)]
@@ -192,6 +156,8 @@ mod tests {
             "<?php expect($x)->toBe(true, 'message');",
             "<?php $this->assertThat($x)->toBe(true);",
             "<?php Foo::expect($x)->toBe(true);",
+            // `Foo\expect` is not Pest's `expect` (Mago 1.57.0 leaves it too)
+            "<?php Foo\\expect($x)->toBe(true);",
             "<?php expect()->toBe(true);",
             "<?php $x->toBe(true);",
             "<?php expect($x)->toBe(\\true);",

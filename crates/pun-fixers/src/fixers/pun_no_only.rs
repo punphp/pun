@@ -1,6 +1,7 @@
 //! Port of Mago's `no-only` (Pest): removes `->only()` from `test()` / `it()` / `describe()` / hook chains.
 //! Opt-in only (`Pun/no_only`). Unlike Mago, the whitespace before `->only()` goes too, so a chain broken
 //! over lines doesn't leave a lone `;`.
+use crate::analyzers::pest::chain_root_call;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
 use pun_tokens::Tokens;
@@ -71,46 +72,14 @@ impl Fixer for NoOnly {
     }
 }
 
-/// Walks `...->a()->b->` back to its root and checks it is a call to one of Pest's test functions.
+/// Whether the chain ending at `arrow` starts with a call to one of Pest's test functions.
 fn chain_root_is_pest_function(tokens: &Tokens, arrow: usize) -> bool {
-    let is_arrow =
-        |k: usize| tokens[k].is_given_kind(&[T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR]);
-    let mut p = tokens.get_prev_meaningful_token(arrow).expect("open tag");
-    loop {
-        let name = if tokens[p].equals(")", true) {
-            let open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, p);
-            match tokens.get_prev_meaningful_token(open) {
-                Some(n) if tokens[n].is_kind(T_STRING) => n,
-                _ => return false,
-            }
-        } else if tokens[p].is_kind(T_STRING) {
-            p
-        } else {
-            return false;
-        };
-        match tokens.get_prev_meaningful_token(name) {
-            // An arrow always has at least the open tag before it.
-            Some(b) if is_arrow(b) => p = tokens.get_prev_meaningful_token(b).expect("open tag"),
-            before => {
-                // The root must be a call, `name(...)`, of a global function.
-                if p == name {
-                    return false;
-                }
-                let is_function_call = before.is_none_or(|b| {
-                    !tokens[b].is_given_kind(&[T_DOUBLE_COLON, T_FUNCTION, T_NEW])
-                        && !(tokens[b].is_kind(T_NS_SEPARATOR)
-                            && tokens
-                                .get_prev_meaningful_token(b)
-                                .is_some_and(|q| tokens[q].is_given_kind(&[T_STRING, T_NAMESPACE])))
-                });
-                let n = tokens[name].get_content();
-                return is_function_call
-                    && PEST_TEST_FUNCTIONS
-                        .iter()
-                        .any(|f| n.eq_ignore_ascii_case(f.as_bytes()));
-            }
-        }
-    }
+    chain_root_call(tokens, arrow).is_some_and(|(name, _, _)| {
+        let n = tokens[name].get_content();
+        PEST_TEST_FUNCTIONS
+            .iter()
+            .any(|f| n.eq_ignore_ascii_case(f.as_bytes()))
+    })
 }
 
 #[cfg(test)]

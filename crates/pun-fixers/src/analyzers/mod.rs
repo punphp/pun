@@ -24,6 +24,7 @@ pub(crate) mod import_processor;
 pub(crate) mod indentation_trait;
 pub(crate) mod namespace_uses_analyzer;
 pub(crate) mod namespaces_analyzer;
+pub(crate) mod pest;
 pub(crate) mod php_functions;
 pub(crate) mod php_unit_test_case_analyzer;
 pub(crate) mod preg;

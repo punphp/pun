@@ -2,6 +2,7 @@
 //! Opt-in only (`Pun/prefer_fake_helper`). Like Mago, occurrences inside string interpolation are left alone;
 //! unlike Mago, write contexts (`$this->faker = ...`, `isset($this->faker)`) are skipped too, since
 //! `fake()` there would not compile.
+use crate::analyzers::helpers::COMPOUND_ASSIGNMENTS;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
 use pun_tokens::{Token, Tokens};
@@ -79,23 +80,8 @@ fn try_fix(tokens: &mut Tokens, this: usize) {
     if next.is_some_and(|n| {
         let t = &tokens[n];
         t.equals_any(&["(".into(), "[".into(), "=".into()], true)
-            || t.is_given_kind(&[
-                T_INC,
-                T_DEC,
-                T_COALESCE_EQUAL,
-                T_PLUS_EQUAL,
-                T_MINUS_EQUAL,
-                T_MUL_EQUAL,
-                T_DIV_EQUAL,
-                T_CONCAT_EQUAL,
-                T_MOD_EQUAL,
-                T_POW_EQUAL,
-                T_AND_EQUAL,
-                T_OR_EQUAL,
-                T_XOR_EQUAL,
-                T_SL_EQUAL,
-                T_SR_EQUAL,
-            ])
+            || t.is_given_kind(&[T_INC, T_DEC])
+            || t.is_given_kind(COMPOUND_ASSIGNMENTS)
     }) {
         return;
     }

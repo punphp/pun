@@ -6,6 +6,8 @@
 //!   falsy value, `toBeFalse()` only for `false`.
 //! - matchers after `->not` or `->and()`: Mago's fix drops the `not` / rewrites the wrong expectation.
 //! - `instanceof $var`: `$var::class` fails when `$var` holds a class-name string.
+use crate::analyzers::helpers::COMPOUND_ASSIGNMENTS;
+use crate::analyzers::pest::{ExpectMatcher, match_expect_matcher};
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
 use pun_tokens::{Token, Tokens};
@@ -34,7 +36,12 @@ impl Fixer for UseSimplerExpectation {
             {
                 continue;
             }
-            let Some((expect_open, expect_close, close)) = match_expect_to_be_true(tokens, i)
+            let Some(ExpectMatcher {
+                expect_open,
+                expect_close,
+                has_not: false,
+                close,
+            }) = match_expect_matcher(tokens, i)
             else {
                 continue;
             };
@@ -80,42 +87,6 @@ impl Fixer for UseSimplerExpectation {
     }
 }
 
-/// Matches `expect(<arg>)->toBeTrue()` with `toBeTrue` at `i`; returns (expect `(`, expect `)`, matcher `)`).
-fn match_expect_to_be_true(tokens: &Tokens, i: usize) -> Option<(usize, usize, usize)> {
-    let arrow = tokens
-        .get_prev_meaningful_token(i)
-        .filter(|&a| tokens[a].is_kind(T_OBJECT_OPERATOR))?;
-    let open = tokens
-        .get_next_meaningful_token(i)
-        .filter(|&o| tokens[o].equals("(", true))?;
-    let close = tokens
-        .get_next_meaningful_token(open)
-        .filter(|&c| tokens[c].equals(")", true))?;
-    let p = tokens
-        .get_prev_meaningful_token(arrow)
-        .filter(|&p| tokens[p].equals(")", true))?;
-    let expect_open = tokens.find_block_start(Tokens::BLOCK_TYPE_PARENTHESIS, p);
-    let name = tokens
-        .get_prev_meaningful_token(expect_open)
-        .filter(|&n| tokens[n].is_kind(T_STRING))?;
-    if !tokens[name].get_content().eq_ignore_ascii_case(b"expect") {
-        return None;
-    }
-    let is_function_call = tokens.get_prev_meaningful_token(name).is_none_or(|b| {
-        !tokens[b].is_given_kind(&[
-            T_OBJECT_OPERATOR,
-            T_NULLSAFE_OBJECT_OPERATOR,
-            T_DOUBLE_COLON,
-            T_FUNCTION,
-            T_NEW,
-        ]) && !(tokens[b].is_kind(T_NS_SEPARATOR)
-            && tokens
-                .get_prev_meaningful_token(b)
-                .is_some_and(|q| tokens[q].is_given_kind(&[T_STRING, T_NAMESPACE])))
-    });
-    is_function_call.then_some((expect_open, p, close))
-}
-
 /// The one top-level comparison in `expect(...)` when it is the root of the argument expression: no other
 /// comparison and no operator of lower precedence (`==`, bitwise, logical, `??`, ternary, assignment, ...).
 fn single_comparison(tokens: &Tokens, open: usize, close: usize) -> Option<(usize, &'static str)> {
@@ -150,7 +121,8 @@ fn single_comparison(tokens: &Tokens, open: usize, close: usize) -> Option<(usiz
             found = Some((k, m));
         } else if t.equals("!", true) {
             has_not = true;
-        } else if t.is_given_kind(&[
+        } else if t.is_given_kind(COMPOUND_ASSIGNMENTS)
+            || t.is_given_kind(&[
             T_IS_EQUAL,
             T_IS_NOT_EQUAL,
             T_SPACESHIP,
@@ -160,19 +132,6 @@ fn single_comparison(tokens: &Tokens, open: usize, close: usize) -> Option<(usiz
             T_LOGICAL_OR,
             T_LOGICAL_XOR,
             T_COALESCE,
-            T_COALESCE_EQUAL,
-            T_PLUS_EQUAL,
-            T_MINUS_EQUAL,
-            T_MUL_EQUAL,
-            T_DIV_EQUAL,
-            T_CONCAT_EQUAL,
-            T_MOD_EQUAL,
-            T_AND_EQUAL,
-            T_OR_EQUAL,
-            T_XOR_EQUAL,
-            T_SL_EQUAL,
-            T_SR_EQUAL,
-            T_POW_EQUAL,
             T_DOUBLE_ARROW,
             T_FN,
             T_FUNCTION,
