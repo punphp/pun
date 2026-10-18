@@ -137,14 +137,14 @@ impl Fixer for BlankLineBeforeStatementFixer {
             &keys,
         )?;
         // `$fixTokenMap[$key] = ...` then array_values: duplicates keep their first position.
-        let mut fix_token_map: Vec<(&str, Kind)> = Vec::new();
+        let mut fix_token_map: Vec<Kind> = Vec::new();
         for key in &statements {
             let kind = TOKEN_MAP.iter().find(|(k, _)| k == key).unwrap().1;
-            if !fix_token_map.iter().any(|(k, _)| k == key) {
-                fix_token_map.push((TOKEN_MAP.iter().find(|(k, _)| k == key).unwrap().0, kind));
+            if !fix_token_map.contains(&kind) {
+                fix_token_map.push(kind);
             }
         }
-        self.fix_token_map = fix_token_map.into_iter().map(|(_, k)| k).collect();
+        self.fix_token_map = fix_token_map;
         Ok(())
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {

@@ -2,12 +2,13 @@
 name = "punphp"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
 description = "Pun: a fast, byte-for-byte Laravel Pint compatible PHP formatter written in Rust"
 repository.workspace = true
-homepage = "https://github.com/punphp/pun"
-keywords = ["php", "formatter", "pint", "laravel", "php-cs-fixer"]
-categories = ["development-tools"]
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
 readme = "../../README.md"
 
 # Release builds (dist) ship `pun lint --mago`.
@@ -19,7 +20,7 @@ name = "pun"
 path = "src/main.rs"
 
 [dependencies]
-pprof = { version = "0.15", optional = true, default-features = false }
+pprof = { workspace = true, optional = true }
 agent-detector.workspace = true
 anyhow.workspace = true
 clap.workspace = true

@@ -1437,7 +1437,6 @@ version = "0.0.1"
 dependencies = [
  "anyhow",
  "indexmap",
- "libc",
  "pcre2",
  "pcre2-sys",
  "punphp-config",

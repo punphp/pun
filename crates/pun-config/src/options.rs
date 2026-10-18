@@ -268,7 +268,7 @@ fn fixer_value(o: &RuleOption, v: toml::Value) -> Option<Value> {
 }
 
 /// A fixer's options (upstream names and values; `Null` for none) as pun.toml writes them for rule `id`: `true` for
-/// none, the bare value for a rule's only option ([`shorthand`]), else a table under Pun names. An option left at
+/// none, the bare value for a rule's only option (`shorthand`), else a table under Pun names. An option left at
 /// upstream's `null` with no Pun spelling is left out, which means the same. `Err` names what PHP-CS-Fixer itself
 /// rejects (an option it doesn't define, a value it doesn't accept), in its words.
 pub fn to_pun(fixer: &str, id: &str, options: &Value) -> Result<Value> {

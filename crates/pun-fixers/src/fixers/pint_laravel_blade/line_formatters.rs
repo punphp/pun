@@ -4,7 +4,7 @@
 use super::php::{join_lines, lines, ltrim, rtrim, strpos, trim};
 use crate::analyzers::preg::RawPreg;
 
-/// `StripSensitiveLeadingBlankLines`: drops the blank lines prettier injects after a wrapped <pre>/<textarea> tag.
+/// `StripSensitiveLeadingBlankLines`: drops the blank lines prettier injects after a wrapped `<pre>`/`<textarea>` tag.
 pub mod strip_sensitive_leading_blank_lines {
     use super::*;
 
@@ -205,7 +205,7 @@ pub mod dedent_hugged_terminator {
     }
 }
 
-/// `CollapseShortSlots`: collapses a short single-body <x-slot> back onto one line.
+/// `CollapseShortSlots`: collapses a short single-body `<x-slot>` back onto one line.
 pub mod collapse_short_slots {
     use super::*;
 

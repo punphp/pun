@@ -2,12 +2,13 @@
 name = "punphp-tokens"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
 description = "PHP tokenizer with token_get_all / PHP-CS-Fixer Tokens semantics"
 repository.workspace = true
-homepage = "https://github.com/punphp/pun"
-keywords = ["php", "formatter", "pint", "laravel", "php-cs-fixer"]
-categories = ["development-tools"]
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [lib]
 name = "pun_tokens"

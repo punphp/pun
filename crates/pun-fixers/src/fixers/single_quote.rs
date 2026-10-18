@@ -1,12 +1,12 @@
 //! Port of `PhpCsFixer\Fixer\StringNotation\SingleQuoteFixer`.
 use pun_tokens::php_compat::str_replace;
 use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::preg::Preg;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
 use pun_tokens::{Token, Tokens};
 use serde_json::Value;
 use std::path::Path;
-use std::sync::LazyLock;
 
 #[derive(Default)]
 struct SingleQuoteFixer {
@@ -16,10 +16,6 @@ struct SingleQuoteFixer {
 pub fn fixer() -> Box<dyn Fixer> {
     crate::configured(SingleQuoteFixer::default())
 }
-
-// regex: odd number of backslashes, not followed by double quote or dollar
-static ESCAPE: LazyLock<pcre2::bytes::Regex> =
-    LazyLock::new(|| pcre2::bytes::Regex::new(r#"(?<!\\)(?:\\{2})*\\(?!["$\\])"#).unwrap());
 
 impl Fixer for SingleQuoteFixer {
     fn name(&self) -> &'static str {
@@ -54,7 +50,8 @@ impl Fixer for SingleQuoteFixer {
             }
             if content[0] == b'"'
                 && (self.strings_containing_single_quote_chars || !content.contains(&b'\''))
-                && !ESCAPE.is_match(content).unwrap_or(false)
+                // regex: odd number of backslashes, not followed by double quote or dollar
+                && !Preg::r#match(r#"/(?<!\\)(?:\\{2})*\\(?!["$\\])/"#, content)
             {
                 let inner = &content[1..content.len() - 1];
                 // str_replace(['\"', '\$', '\''], ['"', '$', '\\\''], ...): sequential passes.

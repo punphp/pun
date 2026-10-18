@@ -23,11 +23,11 @@ fn main() {
         .collect();
     names.sort();
     let mut out = String::new();
+    let dir = Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()).join("src/fixers");
     for n in &names {
-        out += &format!(
-            "#[path = \"{}/src/fixers/{n}.rs\"] mod {n};\n",
-            env::var("CARGO_MANIFEST_DIR").unwrap()
-        );
+        // `{:?}` writes a Rust string literal, so a checkout path holding `"` or `\` still compiles.
+        let path = dir.join(format!("{n}.rs")).display().to_string();
+        out += &format!("#[path = {path:?}] mod {n};\n");
     }
     out += "pub fn all() -> Vec<Box<dyn pun_format::Fixer>> { vec![";
     for n in &names {

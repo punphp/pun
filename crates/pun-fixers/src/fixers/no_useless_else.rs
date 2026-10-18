@@ -1,5 +1,5 @@
 //! Port of `PhpCsFixer\Fixer\ControlStructure\NoUselessElseFixer`.
-use crate::analyzers::abstract_no_useless_else_fixer::is_superfluous_else;
+use crate::analyzers::abstract_no_useless_else_fixer::{PRIORITY, is_superfluous_else};
 use pun_format::Fixer;
 use pun_tokens::{Kind, Tokens, TokensAnalyzer};
 use std::path::Path;
@@ -15,7 +15,7 @@ impl Fixer for NoUselessElseFixer {
         "no_useless_else"
     }
     fn priority(&self) -> i32 {
-        39
+        PRIORITY
     }
     fn is_candidate(&self, tokens: &Tokens) -> bool {
         tokens.is_token_kind_found(Kind::T_ELSE)

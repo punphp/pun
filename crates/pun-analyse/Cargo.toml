@@ -2,12 +2,13 @@
 name = "punphp-analyse"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
 description = "Pun's `pun analyse`: PHPStan's rules on Mago's parser, names, codex and inference"
 repository.workspace = true
-homepage = "https://github.com/punphp/pun"
+homepage.workspace = true
 keywords = ["php", "phpstan", "static-analysis"]
-categories = ["development-tools"]
+categories.workspace = true
 
 [lib]
 name = "pun_analyse"

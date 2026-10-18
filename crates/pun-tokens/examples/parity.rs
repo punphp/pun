@@ -1,6 +1,6 @@
 //! Token parity against real PHP.
 //!
-//!   cargo run --release -p pun-tokens --example parity -- [--mode raw|parse|fixer] [-v] <path>...
+//!   cargo run --release -p punphp-tokens --example parity -- [--mode raw|parse|fixer] [-v] <path>...
 //!
 //! raw:   our lexer vs `token_get_all($code)` (kind, text, line)
 //! parse: our lexer + TOKEN_PARSE keyword demotion vs `token_get_all($code, TOKEN_PARSE)`

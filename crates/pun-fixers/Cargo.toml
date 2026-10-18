@@ -2,20 +2,22 @@
 name = "punphp-fixers"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
 description = "Pun's ports of the PHP-CS-Fixer and Pint fixers"
 repository.workspace = true
-homepage = "https://github.com/punphp/pun"
-keywords = ["php", "formatter", "pint", "laravel", "php-cs-fixer"]
-categories = ["development-tools"]
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
 indexmap.workspace = true
 anyhow.workspace = true
 serde_json.workspace = true
-pcre2 = "0.2"
-pcre2-sys = "0.2"
-libc = "0.2"
+pcre2-sys.workspace = true
 pun-tokens.workspace = true
 pun-format.workspace = true
 pun-config.workspace = true
+
+[dev-dependencies]
+pcre2.workspace = true

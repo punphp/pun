@@ -2,12 +2,13 @@
 name = "punphp-phpstan"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
 description = "Pun's PHPStan compatibility layer: NEON, phpstan.neon loading, baselines, ignoreErrors"
 repository.workspace = true
-homepage = "https://github.com/punphp/pun"
+homepage.workspace = true
 keywords = ["php", "phpstan", "neon", "static-analysis", "laravel"]
-categories = ["development-tools"]
+categories.workspace = true
 
 [lib]
 name = "pun_phpstan"
