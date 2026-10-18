@@ -381,21 +381,34 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `Argument::value()` and `ArrayElement::get_value()` are re-implemented in `scope.rs:131-155`,
   `laravel/schema.rs:70-75` and `pun-lint/src/rules/no_unused_catch_variable.rs:128-174`; the parse triple is copied
   six times in pun-analyse. Extract Function and call Mago's methods.
-- [ ] 66. Test helpers are copied across files and have drifted (some clear the environment, some don't; some
+- [x] 66. Test helpers are copied across files and have drifted (some clear the environment, some don't; some
   `snapshot` copies skip different entries): `oracle()`, temp-dir builders, `snapshot()`, `reset()`, `migrate()` and
   `pun` spawners across `crates/pun-cli/tests/{cli,flags,output,watch,agent,perf,migrate,rules_e2e}.rs` and
   `pun-workspace/tests/{finder,files}.rs`; doTest in `pun-fixers/tests/cases.rs:21-77` and `fixtures.rs:230-275`
   (cases.rs drops the "marked changed" check); `tests/blade.rs:217-229` re-implements `Pipeline::run` without
   `supports`; one 9-line `fix(code)` helper in all 17 `pun_*.rs`; four PHP file walkers in `pun-lint/examples/`. One
-  `tests/common/mod.rs` per crate.
-- [ ] 67. Small duplication in pun-workspace and list-files: `PINT_NOT_NAME` built twice (`lib.rs:69-72`, `:419-422`),
+  `tests/common/mod.rs` per crate. Held at d565ad2 (cases.rs had gained the "marked changed" check but still lacked
+  the candidate and "expected marked changed" checks). pun-cli's `tests/common` now holds `oracle`, `scratch`,
+  `project`, `write_files`, `read`, `snapshot` (one walker, a skip predicate per test), `migrate` and `clean_env`
+  (every spawner clears the environment the same way and keeps LLVM_PROFILE_FILE, which rules_e2e dropped), with `pty`
+  as its submodule; pun-workspace shares `tree`; pun-fixers' `tests/common::do_test` is doTest for both fixtures.rs
+  and cases.rs (the oracle cases pass the stricter checks), blade.rs runs `Pipeline::run`, and the 17 `Pun/*`
+  helpers call `fix_with`. Deferred: pun-lint's example walkers (pun-lint is claimed by the lint track). Fixed in
+  wf/audit-hygiene.
+- [x] 67. Small duplication in pun-workspace and list-files: `PINT_NOT_NAME` built twice (`lib.rs:69-72`, `:419-422`),
   the canonicalize-or-"not readable" block twice (`:212-216`, `:261-264`), and `CommandArg` mirroring
-  `pun_workspace::Command` (`pun-cli/src/list_files.rs:30-54`).
-- [ ] 68. Crate manifests repeat `homepage`, `keywords` and `categories` in every crate instead of
+  `pun_workspace::Command` (`pun-cli/src/list_files.rs:30-54`). `pint_not_name` and `real_path` now hold the two
+  blocks. `CommandArg` stays: it carries clap's `ValueEnum` derive, and moving that onto `Command` would make
+  pun-workspace depend on clap for three variants. Fixed in wf/audit-hygiene.
+- [x] 68. Crate manifests repeat `homepage`, `keywords` and `categories` in every crate instead of
   `[workspace.package]`; `pprof` (`pun-cli/Cargo.toml:24`) and `pcre2-sys` bypass `[workspace.dependencies]`;
   `pun-fixers/Cargo.toml:15-17` repeats the `pcre2` and `libc` versions, uses `pcre2` only in a test, and uses `libc`
   only for `c_int`/`c_void` (in `std::ffi`); the root has no `rust-version` while CI uses unpinned `@stable` and the
-  Mago crates need rustc 1.99 (this audit had to update from 1.97).
+  Mago crates need rustc 1.99 (this audit had to update from 1.97). `homepage`, `keywords` (the formatter set;
+  pun-analyse and pun-phpstan keep their own) and `categories` come from `[workspace.package]`, which also sets
+  `rust-version = "1.99"`; `pprof` and `pcre2-sys` are workspace dependencies; pun-fixers takes `c_int`/`c_void` from
+  `std::ffi` and `pcre2` as a dev-dependency (single_quote now goes through `Preg`, item 88). CI's `@stable` is left
+  while CI is off. Deferred: pun-lint's manifest (claimed by the lint track). Fixed in wf/audit-hygiene.
 
 ### Dead code
 
@@ -412,11 +425,14 @@ items marked "not checked against Pint" still need one oracle run before the fix
   first doc line belongs to `has_annotation` (`:378`), which has none. Also unused outside tests: `Kind::is_custom`,
   `php_compat::{strtoupper, strcmp, strnatcasecmp}`, `token::is_native_constant`, the names in `TRANSFORMERS`
   (`transformers.rs:15-39`). Needs a decision on test-only ports.
-- [ ] 72. Unused fields and parameters: `no_extra_blank_lines.rs:40,48,307` (`tokens_config`, written never read);
+- [x] 72. Unused fields and parameters: `no_extra_blank_lines.rs:40,48,307` (`tokens_config`, written never read);
   `no_unneeded_control_parentheses.rs:593-600` (always `Some`) and its dead `Option` parameter; `method_argument_space.rs:211`
   (`_override`, passed `true`/`false`); `embedded_blade_masker.rs:350-351` (`length`); `pun-lint/src/lib.rs:24-29`
   (`Context.path`, `Context.php_version`); `pun-lint/Cargo.toml:25` (`serde_json` dev-dependency); the orphan comment
-  at `no_unneeded_control_parentheses.rs:83`.
+  at `no_unneeded_control_parentheses.rs:83`. All held at d565ad2. `tokens_config`, the always-`Some` `Option`,
+  `_override` and `length` are gone (upstream's `fixNewline` and `echoSpan` never read `$override`/`$length` either);
+  the comment sits on `T_REQUIRE` in `KNOWN_NEGATIVE_PRE_TYPES`, as upstream has it. pun-lint's `Context` fields and
+  `serde_json` stay (owned by the lint track). Fixed in wf/audit-hygiene.
 - [x] 73. Forwarding wrappers: `ordered_imports.rs:153-155` (`spaceship`), `no_alias_functions.rs:56-58` (`merge`),
   `import_processor.rs:59-61` (`tokenize_name`), `type_expression.rs:358-364`, `helpers.rs:28-30` (`has_newline`,
   used twice while 28 sites call `Preg` directly), `pun-phpstan/src/types.rs:288-290`, and all of
@@ -427,13 +443,16 @@ items marked "not checked against Pint" still need one oracle run before the fix
 
 ### Types
 
-- [ ] 75. Tuples and sentinels that hide meaning: `pun-analyse/src/rules/params.rs:79` (`(usize, bool, bool)`),
+- [x] 75. Tuples and sentinels that hide meaning: `pun-analyse/src/rules/params.rs:79` (`(usize, bool, bool)`),
   `params.rs:119-170` (`Call.kind: &'static str`), `params.rs:99` (`Option<Result<usize, ()>>`), `rules/mod.rs:111-115`
   (`method_static: Option<bool>`), `pun-config/src/schema.rs:443` (`(Level, bool, Value, bool)`),
   `preg.rs:396-440` (`Captures::offset` returns `-1` that 11 callers cast to `usize`), `pun-tokens/src/lexer.rs:68-88`
   (`need_tokens: i32 = -1`), and signed-index casts in `tokens.rs:209-211,404-407,806-833` and
   `abstract_php_unit_fixer.rs:21-24` (use `checked_add_signed`/`checked_sub`). Name them with structs, enums and
-  `Option`.
+  `Option`. The lint rule tuple is a `LintRule` map; `Captures::offset`/`name_offset` return `Option<usize>` (plus
+  `start()` for group 0); `need_tokens` is `Option<u32>`; `step` uses `checked_add_signed`, the block walk and
+  `next_php_unit_class` count in `usize` (`before`, exclusive). pun-analyse's `params.rs` and `rules/mod.rs` are left
+  to the analyse track. Fixed in wf/audit-hygiene.
 - [ ] 76. `crates/pun-tokens/src/token.rs:8-11,202-208`: `Token` has public fields and getters for them (pun-fixers
   reads `.content` 213 times and `get_content()` 246 times), and struct literals skip `Token::new`'s check. Pick one.
   Needs a decision.
@@ -499,18 +518,29 @@ items marked "not checked against Pint" still need one oracle run before the fix
   nothing and are gone; the rest are `#[expect(.., reason)]`, or `allow` with a reason where a lint fires in only some
   builds (shared test modules, the generated grammar and its generator). `cargo clippy --workspace --all-targets -- -W
   clippy::allow_attributes_without_reason` reports none. Fixed in ac0ee93.
-- [ ] 87. Visibility: 570 `unreachable_pub` hits, mostly the `pub fn fixer()`/`pub struct` items inside private
+- [x] 87. Visibility: 570 `unreachable_pub` hits, mostly the `pub fn fixer()`/`pub struct` items inside private
   fixer modules and pun-cli/pun-analyse internals; `pun-phpstan` makes every module `pub` (`di`, `schema`, `phpfile`
   internals have no outside caller); `docblock/regex.rs:4,13,187` exports three macros as the crate's public API;
   `pun-format/src/lib.rs:83` (`DEPRECATED`), `parse_mode.rs:20`, `tokens.rs:209`. `pub(crate)` them; the workspace
-  lint in item 28 keeps them that way.
-- [ ] 88. Small fixes: `abstract_no_useless_else_fixer::PRIORITY` used by one of its two users
+  lint in item 28 keeps them that way. `cargo clippy --fix -- -W unreachable_pub` narrowed 470 items across
+  pun-fixers, pun-tokens, pun-format, pun-config, pun-phpstan, pun-analyse and pun-cli; `phpdoc` and `parse_mode`
+  are private modules, the `di`/`schema`/`phpfile` items no test or crate uses are `pub(crate)`, the regex macros are
+  crate-local, `DEPRECATED` is `pub(crate)` and `Tokens::offset_exists` lost its last caller (item 75) and is gone.
+  Deferred: the files the format, analyse and lint tracks claim (`pun-cli/src/{run,report,pint_error,fix_report,
+  watch,main,console}.rs`, `render/`, `pun-analyse/src/rules/`, pun-lint); the lint setting waits for item 28.
+  Fixed in wf/audit-hygiene.
+- [x] 88. Small fixes: `abstract_no_useless_else_fixer::PRIORITY` used by one of its two users
   (`no_useless_else.rs:17-19` hard-codes 39); `blank_line_before_statement.rs:146-153` looks each key up twice;
   `single_quote.rs:22-23,58` alone bypasses `Preg`; `namespaces_analyzer.rs:76-82` clones the whole cached list to
   find one entry; `build.rs:13-17` formats the path with `{}` (use `{:?}`); `pun-tokens/examples/parity.rs:3` names
   package `pun-tokens` (it is `punphp-tokens`); md5 is hand-written in `fix_report.rs:264-307` (the `md-5` crate gives
   the same bytes; Needs a decision); rustdoc warns about two broken links in `pun-analyse/src/rules/mod.rs:126,364`,
-  three unclosed HTML tags in pun-fixers docs and a public doc linking a private item in pun-config.
+  three unclosed HTML tags in pun-fixers docs and a public doc linking a private item in pun-config. At d565ad2:
+  `no_useless_else` uses `PRIORITY`, the statement map is looked up once, single_quote calls `Preg::r#match` with
+  upstream's pattern, `build.rs` writes `#[path = {:?}]`, the example names `punphp-tokens`, and the HTML tags and
+  the private link are fixed. Not reproduced: the namespaces clone (475eb65 moved the analyzer to pun-tokens and
+  `get_namespace_at` clones only the entry it finds) and pun-analyse's two broken links (`cargo doc` is clean there).
+  md5 left as it is (needs a decision). Fixed in wf/audit-hygiene.
 
 ### Lints
 
