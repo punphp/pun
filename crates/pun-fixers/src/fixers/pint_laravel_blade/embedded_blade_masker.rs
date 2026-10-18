@@ -160,7 +160,7 @@ fn match_construct(content: &[u8], offset: usize, length: usize) -> Option<usize
         return Some(end - offset);
     }
     // Blade echoes outside string literals.
-    if let Some(echo) = echo_span(content, offset, length) {
+    if let Some(echo) = echo_span(content, offset) {
         return Some(echo);
     }
     if c != b'@' {
@@ -328,7 +328,7 @@ fn scan_string_literal(content: &[u8], length: usize, offset: usize, quote: u8) 
             cursor += 2;
             continue;
         }
-        if let Some(echo) = echo_span(content, cursor, length) {
+        if let Some(echo) = echo_span(content, cursor) {
             cursor += echo;
             continue;
         }
@@ -340,8 +340,7 @@ fn scan_string_literal(content: &[u8], length: usize, offset: usize, quote: u8) 
     length
 }
 
-fn echo_span(content: &[u8], offset: usize, length: usize) -> Option<usize> {
-    let _ = length;
+fn echo_span(content: &[u8], offset: usize) -> Option<usize> {
     if content[offset] != b'{' {
         return None;
     }

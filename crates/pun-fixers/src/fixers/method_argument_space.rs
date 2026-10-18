@@ -203,7 +203,7 @@ impl MethodArgumentSpaceFixer {
             }
             if token.is_kind(CT_ATTRIBUTE_CLOSE) {
                 if self.attribute_placement == AttributePlacement::Standalone {
-                    self.fix_newline(tokens, index, &indentation, true);
+                    self.fix_newline(tokens, index, &indentation);
                 } else if self.attribute_placement == AttributePlacement::SameLine {
                     Self::ensure_single_line(tokens, index + 1);
                     tokens.ensure_whitespace_at_index(index + 1, 0, b" ");
@@ -213,14 +213,14 @@ impl MethodArgumentSpaceFixer {
                 continue;
             }
             if token.equals(",", true) {
-                self.fix_newline(tokens, index, &indentation, true);
+                self.fix_newline(tokens, index, &indentation);
             }
             index -= 1;
         }
-        self.fix_newline(tokens, start_function_index, &indentation, false);
+        self.fix_newline(tokens, start_function_index, &indentation);
     }
 
-    fn fix_newline(&self, tokens: &mut Tokens, index: usize, indentation: &[u8], _override: bool) {
+    fn fix_newline(&self, tokens: &mut Tokens, index: usize, indentation: &[u8]) {
         if tokens[index + 1].is_comment() {
             return;
         }

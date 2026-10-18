@@ -106,8 +106,6 @@ const TOKEN_TYPE_CONFIG_MAP: &[(Kind, Statement)] = &[
     (T_YIELD_FROM, Statement::YieldFrom),
 ];
 
-// handled by the `include` rule
-
 const KNOWN_NEGATIVE_PRE_TYPES: &[Kind] = &[
     CT_CLASS_CONSTANT,
     CT_DYNAMIC_VAR_BRACE_CLOSE,
@@ -135,6 +133,7 @@ const KNOWN_NEGATIVE_PRE_TYPES: &[Kind] = &[
     T_UNSET,
     T_VARIABLE,
     T_WHILE,
+    // handled by the `include` rule
     T_REQUIRE,
     T_REQUIRE_ONCE,
     T_INCLUDE,
@@ -221,7 +220,7 @@ impl NoUnneededControlParenthesesFixer {
                     after_close_index,
                     open_index,
                     close_index,
-                    Some(Statement::Others),
+                    Statement::Others,
                 );
             }
             return;
@@ -255,7 +254,7 @@ impl NoUnneededControlParenthesesFixer {
                     after_close_index,
                     open_index,
                     close_index,
-                    Some(Statement::Clone),
+                    Statement::Clone,
                 );
             }
             return;
@@ -281,7 +280,7 @@ impl NoUnneededControlParenthesesFixer {
                     after_close_index,
                     open_index,
                     close_index,
-                    Some(t),
+                    t,
                 );
             }
             return;
@@ -430,9 +429,9 @@ impl NoUnneededControlParenthesesFixer {
         after: usize,
         open: usize,
         close: usize,
-        config_type: Option<Statement>,
+        config_type: Statement,
     ) {
-        if !config_type.is_some_and(|c| self.statements.contains(&c)) {
+        if !self.statements.contains(&config_type) {
             return;
         }
         let needs_space_after = !is_access(tokens, after)
@@ -615,14 +614,15 @@ fn contains_operation(tokens: &Tokens, mut start: usize, end: usize) -> bool {
     }
 }
 
-/// Upstream returns null for require/include(_once); those are KNOWN_NEGATIVE_PRE_TYPES, rejected before any call.
-fn get_config_type(tokens: &Tokens, before: usize) -> Option<Statement> {
+/// Upstream returns null for require/include(_once); those are KNOWN_NEGATIVE_PRE_TYPES, rejected before any call,
+/// so the port never needs the null.
+fn get_config_type(tokens: &Tokens, before: usize) -> Statement {
     for &(k, item) in TOKEN_TYPE_CONFIG_MAP {
         if tokens[before].is_kind(k) {
-            return Some(item);
+            return item;
         }
     }
-    Some(Statement::Others)
+    Statement::Others
 }
 
 fn remove_brace(tokens: &mut Tokens, index: usize, mut needs_space: bool) {
