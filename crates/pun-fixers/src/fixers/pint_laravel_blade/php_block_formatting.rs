@@ -265,7 +265,9 @@ impl PhpBlockFormatting {
                 .formatter
                 .format(&[b"<?php\n", &core[..], b";\n"].concat(), true),
         );
-        let formatted = RawPreg::replace("/;$/", "", &formatted).unwrap_or_default();
+        // Pint's `(string) preg_replace(..)` turns a failure into `""`. This pattern does no backtracking, so it cannot
+        // reach a PCRE limit; a panic would fail only this file, like a failed masker regex.
+        let formatted = RawPreg::replace("/;$/", "", &formatted).expect("`/;$/` does not backtrack");
         if trim(&formatted).is_empty() {
             return None;
         }
@@ -488,7 +490,10 @@ fn indent_at(content: &[u8], offset: usize) -> Option<&[u8]> {
 }
 
 fn strip_php_wrapper(formatted: &[u8]) -> Vec<u8> {
-    rtrim(&RawPreg::replace("/^<\\?php\\s*\\n/", "", formatted).unwrap_or_default()).to_vec()
+    // Like `/;$/` in format_echo: one anchored attempt, whose `\s*` backtracks at most once per character.
+    let stripped = RawPreg::replace("/^<\\?php\\s*\\n/", "", formatted)
+        .expect("the anchored pattern backtracks linearly");
+    rtrim(&stripped).to_vec()
 }
 
 fn deindent(text: &[u8]) -> Vec<u8> {

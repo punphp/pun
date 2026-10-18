@@ -76,12 +76,27 @@ fn oracle_blade_fixtures() {
     let pipeline = pipeline();
     // Prettier would re-indent this; untouched means the fixer bailed out.
     let html: &[u8] = b"<div>\n<p>x</p></div>\n";
-    // Without prettier installed the worker dies: the file is reported and left untouched, and the next file
+    // Without prettier installed the worker dies: the fixer fails the file with the worker's error output (a panic,
+    // the runner's per-file exception, as Pint throws PrettierException), leaves it untouched, and the next file
     // starts a fresh worker.
     let bare = std::env::temp_dir().join(format!("pun-blade-test-{}", std::process::id()));
     std::fs::create_dir_all(&bare).unwrap();
     std::env::set_current_dir(&bare).unwrap();
-    assert_eq!(run(&pipeline, Path::new("a.blade.php"), html), html);
+    let blade = pipeline
+        .fixers()
+        .find(|f| f.name() == "Pint/laravel_blade")
+        .unwrap();
+    let mut tokens = pun_tokens::Tokens::from_code(html);
+    let error = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        blade.fix(Path::new("a.blade.php"), &mut tokens)
+    }))
+    .unwrap_err();
+    let error = error.downcast_ref::<String>().unwrap();
+    assert!(
+        error.contains("Error: Cannot find module 'prettier'"),
+        "{error}"
+    );
+    assert_eq!(tokens.generate_code(), html);
     std::env::set_current_dir(root).unwrap();
     // Not a Blade file.
     assert_eq!(run(&pipeline, Path::new("a.php"), html), html);

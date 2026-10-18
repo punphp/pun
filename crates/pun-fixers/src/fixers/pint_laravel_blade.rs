@@ -60,14 +60,9 @@ impl Fixer for LaravelBladeFixer {
         if is_ignored(&path_str) {
             return;
         }
-        let content = match format(&path_str, &content) {
-            Ok(c) => c,
-            Err(e) => {
-                // PrettierException: the runner reports the file as errored and leaves it untouched.
-                eprintln!("Pint/laravel_blade: {}: {e}", path.display());
-                return;
-            }
-        };
+        // PrettierException (or a failed masker regex): the runner reports the file as errored with the message and
+        // leaves it untouched. Pun's fixers panic where upstream throws.
+        let content = format(&path_str, &content).unwrap_or_else(|e| panic!("{e}"));
         // Tokens::setCode() rejects an empty string, so clear the tokens directly.
         if content.is_empty() {
             for index in 0..tokens.count() {
@@ -93,7 +88,7 @@ fn is_ignored(path: &str) -> bool {
 /// `BladeFormatter::format`: pre-formatters, prettier, then post-formatters in declaration order.
 fn format(path: &str, content: &[u8]) -> Result<Vec<u8>> {
     let mut masker = embedded_blade_masker::EmbeddedBladeMasker::default();
-    let content = masker.pre_format(content);
+    let content = masker.pre_format(content).map_err(anyhow::Error::msg)?;
     let formatted = prettier_format(path, &content)?;
     let formatted = strip_sensitive_leading_blank_lines::post_format(&formatted);
     let formatted = directive_trailing_commas::post_format(&formatted);
@@ -305,7 +300,7 @@ mod tests {
                 "JoinDanglingCloseBracket" => join_dangling_close_bracket::post_format(input),
                 "JoinDanglingOpenBracket" => join_dangling_open_bracket::post_format(input),
                 "DedentHuggedTerminator" => dedent_hugged_terminator::post_format(input),
-                "EmbeddedBladeMasker" => masker.pre_format(input),
+                "EmbeddedBladeMasker" => masker.pre_format(input).unwrap(),
                 _ => php_block_formatting::PhpBlockFormatting::new(
                     php_block_formatting::PhpFragmentFormatter::new(
                         case.get("preset").map_or("laravel", |p| p.as_str().unwrap()).into(),
@@ -327,6 +322,30 @@ mod tests {
                 );
             }
         }
+    }
+
+    /// An unclosed `<script>` with 8 quoted attributes in a 34 KB template: the masker's `<style|script>` pattern
+    /// exhausts PHP's backtrack limit (`preg_last_error_msg()` on PHP 8.5: "Backtrack limit exhausted"). Pint writes an
+    /// empty file there; Pun fails the file the way a PrettierException does (a panic is the runner's per-file error)
+    /// and leaves its tokens untouched. The failure comes before prettier, so no worker starts.
+    #[test]
+    fn masker_regex_failure_fails_the_file() {
+        let attributes: String = (1..=8).map(|i| format!(" data-a{i}=\"v{i}\"")).collect();
+        let mut code = format!("<script{attributes}>\nvar x = 1;\n<div>\n");
+        while code.len() < 34000 {
+            code.push_str("    <p>Hello world line</p>\n");
+        }
+        code.push_str("</div>\n");
+        let mut tokens = Tokens::from_code(code.as_bytes());
+        let panic = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            fixer().fix(Path::new("repro.blade.php"), &mut tokens)
+        }))
+        .unwrap_err();
+        assert_eq!(
+            panic.downcast_ref::<String>().unwrap(),
+            "preg_replace_callback(): Backtrack limit exhausted"
+        );
+        assert_eq!(tokens.generate_code(), code.as_bytes());
     }
 
     /// Pint's Prettier::format() failures, with stand-in workers: silence, exiting, and error output.

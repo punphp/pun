@@ -48,7 +48,9 @@ fn substr_count(haystack: &[u8], needle: &[u8]) -> usize {
 }
 
 impl EmbeddedBladeMasker {
-    pub fn pre_format(&mut self, content: &[u8]) -> Vec<u8> {
+    /// `Err` where Pint's `preg_replace_callback` returns `null` (e.g. the backtrack limit on an unclosed
+    /// `<script>` with quoted attributes): Pint casts it to `""` and empties the file; Pun reports the file instead.
+    pub fn pre_format(&mut self, content: &[u8]) -> Result<Vec<u8>, String> {
         self.map = Vec::new();
         self.original = content.to_vec();
         self.counter = 0;
@@ -67,7 +69,7 @@ impl EmbeddedBladeMasker {
             content,
         );
         *self = this.into_inner();
-        result.unwrap_or_default()
+        result.map_err(|e| format!("preg_replace_callback(): {e}"))
     }
 
     pub fn post_format(&self, content: &[u8]) -> Vec<u8> {

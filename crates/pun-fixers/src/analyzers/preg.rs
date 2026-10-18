@@ -862,16 +862,26 @@ fn expand_replacement(replacement: &[u8], c: &Captures) -> Vec<u8> {
 
 /// Plain PHP `preg_*` calls (no `/u` added, no fallback), for ports of code that calls the PHP
 /// functions directly instead of `PhpCsFixer\Preg` (e.g. Pint's Blade formatters). A pattern PHP
-/// cannot compile, or a match error, behaves like PHP's `false`/`null` return: no match / `None`.
+/// cannot compile, or a match error, behaves like PHP's `false`/`null` return: no match / `None`, or for the
+/// replace functions `Err` with `preg_last_error_msg()`.
 pub struct RawPreg;
 
 impl RawPreg {
-    fn run<T>(pattern: &[u8], subject: &[u8], f: impl Fn(&Regex) -> Result<T, i32>) -> Option<T> {
-        let re = compile(pattern)?;
+    fn try_run<T>(
+        pattern: &[u8],
+        subject: &[u8],
+        f: impl Fn(&Regex) -> Result<T, i32>,
+    ) -> Result<T, &'static str> {
+        // A pattern PHP cannot compile sets PREG_INTERNAL_ERROR.
+        let re = compile(pattern).ok_or(preg_last_error_msg(None))?;
         if re.utf && std::str::from_utf8(subject).is_err() {
-            return None;
+            return Err("Malformed UTF-8 characters, possibly incorrectly encoded");
         }
-        f(&re).ok()
+        f(&re).map_err(|rc| preg_last_error_msg(Some(rc)))
+    }
+
+    fn run<T>(pattern: &[u8], subject: &[u8], f: impl Fn(&Regex) -> Result<T, i32>) -> Option<T> {
+        Self::try_run(pattern, subject, f).ok()
     }
 
     /// `preg_match($pattern, $subject, $matches) === 1`.
@@ -902,14 +912,14 @@ impl RawPreg {
         .unwrap_or_default()
     }
 
-    /// `preg_replace_callback`; `None` = PHP's `null` (error).
+    /// `preg_replace_callback`; `Err` = PHP's `null`, with `preg_last_error_msg()`.
     pub fn replace_callback(
         pattern: impl AsRef<[u8]>,
         callback: impl Fn(&Captures) -> Vec<u8>,
         subject: impl AsRef<[u8]>,
-    ) -> Option<Vec<u8>> {
+    ) -> Result<Vec<u8>, &'static str> {
         let subject = subject.as_ref();
-        Self::run(pattern.as_ref(), subject, |re| {
+        Self::try_run(pattern.as_ref(), subject, |re| {
             let all = re.exec_all(subject, 0, None)?;
             let mut out = Vec::with_capacity(subject.len());
             let mut last = 0;
@@ -924,12 +934,12 @@ impl RawPreg {
         })
     }
 
-    /// `preg_replace`; `None` = PHP's `null` (error).
+    /// `preg_replace`; `Err` = PHP's `null`, with `preg_last_error_msg()`.
     pub fn replace(
         pattern: impl AsRef<[u8]>,
         replacement: impl AsRef<[u8]>,
         subject: impl AsRef<[u8]>,
-    ) -> Option<Vec<u8>> {
+    ) -> Result<Vec<u8>, &'static str> {
         let replacement = replacement.as_ref();
         Self::replace_callback(pattern, |c| expand_replacement(replacement, c), subject)
     }
@@ -1205,14 +1215,23 @@ mod tests {
         );
         assert!(!RawPreg::r#match("/a/u", b"\xff"));
         assert!(RawPreg::r#match("/a/", "ba"));
-        assert_eq!(RawPreg::replace("/(/", "", "a"), None);
+        // preg_replace() returns null; preg_last_error_msg() on PHP 8.5.
+        assert_eq!(RawPreg::replace("/(/", "", "a"), Err("Internal error"));
+        assert_eq!(
+            RawPreg::replace("/a/u", "", b"\xff"),
+            Err("Malformed UTF-8 characters, possibly incorrectly encoded")
+        );
+        assert_eq!(
+            RawPreg::replace("/(a*)*[bc]/", "", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!"),
+            Err("Backtrack limit exhausted")
+        );
         assert_eq!(
             RawPreg::replace("/(a)/", "[$1]", "aba"),
-            Some(b"[a]b[a]".to_vec())
+            Ok(b"[a]b[a]".to_vec())
         );
         assert_eq!(
             RawPreg::replace_callback("/b/", |c| c.str(0).to_ascii_uppercase(), "abcb"),
-            Some(b"aBcB".to_vec())
+            Ok(b"aBcB".to_vec())
         );
     }
 }
