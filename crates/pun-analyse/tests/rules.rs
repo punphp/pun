@@ -70,6 +70,7 @@ fn phpstan_rule_fixtures() {
                 })
                 .collect();
             let got: BTreeSet<Key> = run(&Project::new(paths("files"), paths("scan")))
+                .unwrap()
                 .into_iter()
                 .map(|e| {
                     let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();

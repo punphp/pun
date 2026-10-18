@@ -21,7 +21,7 @@ fn main() {
         root,
         parse_casts_method: false,
     };
-    let run = run_mago(&project, laravel.then_some(app));
+    let run = run_mago(&project, laravel.then_some(app)).unwrap_or_else(|e| panic!("{e}"));
     let prefix = format!("{}/", root.display());
     let rel = |f: &str| f.strip_prefix(&prefix).unwrap_or(f).to_string();
     let issues: Vec<_> = run

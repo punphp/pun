@@ -16,7 +16,7 @@ fn issues_match_the_mago_cli() {
         file.clone(),
         dir.join("missing.php"),
     ];
-    let run = run_mago(&Project::new(analysed, Vec::new()), None);
+    let run = run_mago(&Project::new(analysed, Vec::new()), None).unwrap();
     let got: Vec<_> = run
         .issues
         .iter()

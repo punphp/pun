@@ -278,7 +278,7 @@ fn models(
     for file in project
         .analysed
         .iter()
-        .filter_map(|p| read(p, FileType::Host))
+        .filter_map(|p| read(p, FileType::Host).ok().flatten())
     {
         let arena = LocalArena::new();
         let program = parse_file(&arena, &file);
@@ -297,7 +297,10 @@ fn models(
     // MigrationHelper: database/migrations, recursively, in file name order
     let mut migrations = php_files(&app.root.join("database/migrations"), &["php".to_string()]);
     migrations.sort_by(|a, b| a.file_name().cmp(&b.file_name()));
-    for file in migrations.iter().filter_map(|p| read(p, FileType::Host)) {
+    for file in migrations
+        .iter()
+        .filter_map(|p| read(p, FileType::Host).ok().flatten())
+    {
         let arena = LocalArena::new();
         let program = parse_file(&arena, &file);
         let names = NameResolver::new(&arena).resolve(program);

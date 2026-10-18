@@ -21,6 +21,7 @@ fn check(neon: &str) {
     let config = resolve(&options).unwrap_or_else(|e| panic!("{e}"));
     let prefix = format!("{dir}/");
     let mut got: Vec<Key> = analyse(&root, &config)
+        .unwrap()
         .into_iter()
         .map(|e| {
             let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();
@@ -70,6 +71,7 @@ fn void_cast_before_php_8_5() {
     let mut project = Project::new(vec![file], Vec::new());
     project.php_version = 80400;
     let got: Vec<_> = run(&project)
+        .unwrap()
         .into_iter()
         .map(|e| (e.line, e.identifier, e.message))
         .collect();

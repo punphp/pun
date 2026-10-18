@@ -33,15 +33,45 @@ pub fn php_version(id: u32) -> PHPVersion {
     PHPVersion::new(id / 10000, id / 100 % 100, id % 100)
 }
 
-pub fn read(path: &Path, file_type: FileType) -> Option<File> {
-    let contents = std::fs::read(path).ok()?;
+/// A file to analyse or scan that exists but can't be read. PHPStan stops the run on one (`FileReader`'s
+/// CouldNotReadFileException); a file that is gone is skipped instead.
+#[derive(Debug)]
+pub struct CouldNotReadFile {
+    pub path: PathBuf,
+    pub source: std::io::Error,
+}
+
+impl std::fmt::Display for CouldNotReadFile {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Could not read file: {}", self.path.display())
+    }
+}
+
+impl std::error::Error for CouldNotReadFile {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.source)
+    }
+}
+
+/// `path` as a Mago file, `None` when it does not exist.
+pub fn read(path: &Path, file_type: FileType) -> Result<Option<File>, CouldNotReadFile> {
+    let contents = match std::fs::read(path) {
+        Ok(contents) => contents,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(source) => {
+            return Err(CouldNotReadFile {
+                path: path.to_path_buf(),
+                source,
+            });
+        }
+    };
     let name = path.to_string_lossy().into_owned().into_bytes();
-    Some(File::new(
+    Ok(Some(File::new(
         Cow::Owned(name),
         file_type,
         Some(path.to_path_buf()),
         Cow::Owned(contents),
-    ))
+    )))
 }
 
 /// Scans `file`, then resets `arena`, so one arena serves many files.
@@ -115,12 +145,14 @@ const CHUNK: usize = 32;
 /// The analysed files as the scan read them, by path, for the rules to walk without reading them again.
 pub type Sources = HashMap<PathBuf, Arc<File>>;
 
-pub fn build(project: &Project) -> CodebaseMetadata {
-    build_with_sources(project).0
+pub fn build(project: &Project) -> Result<CodebaseMetadata, CouldNotReadFile> {
+    Ok(build_with_sources(project)?.0)
 }
 
 /// The codebase, and the analysed files' [`Sources`].
-pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
+pub fn build_with_sources(
+    project: &Project,
+) -> Result<(CodebaseMetadata, Sources), CouldNotReadFile> {
     let version = php_version(project.php_version);
     let mut seen = HashSet::new();
     let mut files: Vec<_> = project
@@ -155,7 +187,7 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
     // rounds) is scanned on its own thread as soon as an analysed file names PHPStan, beside the rounds; it is merged
     // after them, as before
     let api = OnceLock::new();
-    let (((mut metadata, mut references), _), (scanned, sources)) = rayon::join(
+    let (((mut metadata, mut references), _), scanned) = rayon::join(
         || rayon::join(prelude, php84),
         || {
             let mut loaded = vec![false; files.len()];
@@ -165,7 +197,7 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
             let mut sources = Sources::new();
             while !round.is_empty() {
                 let size = (round.len() / (rayon::current_num_threads() * 4)).clamp(1, CHUNK);
-                let chunks: Vec<_> = round
+                let chunks = round
                     .par_chunks(size)
                     .map_init(LocalArena::new, |arena, chunk| {
                         let mut metadata = CodebaseMetadata::default();
@@ -173,7 +205,7 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
                         let mut wanted = Vec::new();
                         for &i in chunk {
                             let (path, file_type) = files[i];
-                            let Some(file) = read(path, file_type) else {
+                            let Some(file) = read(path, file_type)? else {
                                 continue;
                             };
                             metadata.extend(scan(arena, &file, version));
@@ -188,9 +220,9 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
                                 sources.push((path.clone(), Arc::new(file)));
                             }
                         }
-                        (metadata, sources, wanted)
+                        Ok((metadata, sources, wanted))
                     })
-                    .collect();
+                    .collect::<Result<Vec<_>, CouldNotReadFile>>()?;
                 round.clear();
                 for (chunk, files, wanted) in chunks {
                     scanned.push(chunk);
@@ -203,9 +235,10 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
                     loaded[i] = true;
                 }
             }
-            (scanned, sources)
+            Ok((scanned, sources))
         },
     );
+    let (scanned, sources) = scanned?;
     for chunk in scanned {
         metadata.extend(chunk);
     }
@@ -218,5 +251,5 @@ pub fn build_with_sources(project: &Project) -> (CodebaseMetadata, Sources) {
         Default::default(),
         Default::default(),
     );
-    (metadata, sources)
+    Ok((metadata, sources))
 }

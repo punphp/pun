@@ -57,7 +57,8 @@ fn dumped(parse_casts_method: bool) -> BTreeMap<u64, String> {
             root: &root,
             parse_casts_method,
         }),
-    );
+    )
+    .unwrap();
     run.dumped
         .into_iter()
         .map(|d| {

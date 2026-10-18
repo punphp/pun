@@ -13,7 +13,7 @@ fn main() {
         ..Options::for_project(&args[1])
     };
     let config = resolve(&options).unwrap_or_else(|e| panic!("{e}"));
-    let errors = pun_analyse::analyse(root, &config);
+    let errors = pun_analyse::analyse(root, &config).unwrap_or_else(|e| panic!("{e}"));
     let prefix = format!("{}/", root.display());
     let errors: Vec<_> = errors
         .iter()

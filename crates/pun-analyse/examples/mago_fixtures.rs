@@ -41,7 +41,7 @@ fn main() {
                     .map(|p| data.join(p.as_str().unwrap()))
                     .collect()
             };
-            let run = run_mago(&Project::new(paths("files"), paths("scan")), None);
+            let run = run_mago(&Project::new(paths("files"), paths("scan")), None).unwrap();
             let issues: Vec<_> = run
                 .issues
                 .iter()

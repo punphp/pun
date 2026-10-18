@@ -5,7 +5,7 @@
 
 use std::path::Path;
 
-use pun_analyse::{IDENTIFIERS, analyse};
+use pun_analyse::{IDENTIFIERS, Project, analyse, run};
 use pun_phpstan::config::{Options, resolve};
 use serde_json::Value;
 
@@ -25,6 +25,7 @@ fn check_in(fixture: &str, neon: &str) {
     let config = resolve(&options).unwrap_or_else(|e| panic!("{e}"));
     let prefix = format!("{dir}/");
     let got: Vec<_> = analyse(&root, &config)
+        .unwrap()
         .into_iter()
         .map(|e| {
             let file = e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string();
@@ -88,4 +89,20 @@ fn declaration_rules_by_php_version() {
     check("phpstan-versions-70400");
     check("phpstan-versions-80000");
     check("phpstan-versions-80400");
+}
+
+/// A file that exists but can't be read stops the run with its path, as it stops PHPStan's ("Could not read file:
+/// <path>" for a chmod 000 file); a directory stands in for one, since root reads any file. A file that is gone is
+/// skipped.
+#[test]
+fn unreadable_file_stops_the_run() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/project");
+    let e = run(&Project::new(vec![dir.clone()], Vec::new())).unwrap_err();
+    assert_eq!(
+        e.to_string(),
+        format!("Could not read file: {}", dir.display())
+    );
+    assert!(std::error::Error::source(&e).is_some());
+    let gone = dir.join("gone.php");
+    assert_eq!(run(&Project::new(vec![gone], Vec::new())).unwrap(), []);
 }

@@ -16,7 +16,7 @@ use mago_syntax::cst::*;
 use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
 
-use crate::codebase::{self, read};
+use crate::codebase::{self, CouldNotReadFile, read};
 use crate::laravel::{self, Laravel};
 use crate::{Project, display};
 
@@ -45,8 +45,8 @@ pub struct MagoRun {
 
 /// Runs Mago's analyser over `project.analysed` with Mago's default plugins, plus Pun's Laravel plugin for the given
 /// Laravel app (its migrations and models).
-pub fn run_mago(project: &Project, laravel: Option<Laravel>) -> MagoRun {
-    let codebase = codebase::build(project);
+pub fn run_mago(project: &Project, laravel: Option<Laravel>) -> Result<MagoRun, CouldNotReadFile> {
+    let codebase = codebase::build(project)?;
     let version = codebase::php_version(project.php_version);
     let mut registry = create_registry_with_plugins(&[], false);
     if let Some(app) = laravel {
@@ -54,7 +54,7 @@ pub fn run_mago(project: &Project, laravel: Option<Laravel>) -> MagoRun {
     }
     let mut out = MagoRun::default();
     for path in &project.analysed {
-        let Some(file) = read(path, FileType::Host) else {
+        let Some(file) = read(path, FileType::Host)? else {
             continue;
         };
         let arena = LocalArena::new();
@@ -105,7 +105,7 @@ pub fn run_mago(project: &Project, laravel: Option<Laravel>) -> MagoRun {
     }
     out.issues.sort();
     out.dumped.sort();
-    out
+    Ok(out)
 }
 
 fn line(file: &File, span: Span) -> u32 {

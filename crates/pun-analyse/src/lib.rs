@@ -13,6 +13,7 @@ use std::path::{Path, PathBuf};
 use pun_phpstan::config::Resolved;
 use rayon::prelude::*;
 
+pub use codebase::CouldNotReadFile;
 pub use laravel::Laravel;
 pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
 pub use project::Project;
@@ -31,14 +32,15 @@ pub struct Error {
 pub const IDENTIFIERS: &[&str] = rules::IDENTIFIERS;
 
 /// Analyses the project the resolved `phpstan.neon` describes.
-pub fn analyse(project_root: &Path, config: &Resolved) -> Vec<Error> {
+pub fn analyse(project_root: &Path, config: &Resolved) -> Result<Vec<Error>, CouldNotReadFile> {
     run(&Project::from_config(project_root, &config.parameters))
 }
 
 /// Analyses `project.analysed`, knowing the symbols of `project.scanned` too, then drops what
-/// `@phpstan-ignore*` comments and `ignoreErrors` ignore, as `phpstan analyse` reports it.
-pub fn run(project: &Project) -> Vec<Error> {
-    let (codebase, sources) = codebase::build_with_sources(project);
+/// `@phpstan-ignore*` comments and `ignoreErrors` ignore, as `phpstan analyse` reports it. A file that exists but
+/// can't be read stops the run, as it stops PHPStan's.
+pub fn run(project: &Project) -> Result<Vec<Error>, CouldNotReadFile> {
+    let (codebase, sources) = codebase::build_with_sources(project)?;
     let files: std::collections::HashMap<_, _> = project
         .analysed
         .iter()
@@ -75,7 +77,7 @@ pub fn run(project: &Project) -> Vec<Error> {
         })
         .collect();
     errors.sort();
-    errors
+    Ok(errors)
 }
 
 fn display(p: &Path) -> String {

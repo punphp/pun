@@ -111,12 +111,20 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `crates/pun-analyse/src/rules/mod.rs:1003-1005` (`builtins`) and `codebase.rs:64` use 8.5 and `members.rs:123` uses
   `symbols::class`. So 8.5-only methods (`Closure::getCurrent`) are missing, `phpVersion: 80400` still knows
   `array_first()`, and symbols.json (5.8 MB) is parsed twice per run. Take the version as a parameter and map
-  `Project.php_version` to it once. Spans crates.
+  `Project.php_version` to it once. Spans crates. Validated at ff31836 against the standalone PHPStan phar (outside
+  a Composer project; the oracle's own vendor has symfony/polyfill-php85, which makes `array_first()` known at
+  80400): at 80400 `array_first()`, `pg_service()`, `IntlListFormatter`, `Closure::getCurrent()` are unknown, at
+  80500 all known, and Pun at 80500 wrongly reports `Closure::getCurrent()`, `Locale::isRightToLeft()` and
+  `new IntlListFormatter('en')` (noConstructor). Deferred: the fix (`PhpVersion::of`, a `builtins` field on the
+  Checker read by members.rs, a prelude per version) changes `crates/pun-analyse/src/rules/*`, which the analyse
+  tracks claim.
 - [ ] 17. `crates/pun-analyse/src/rules/names.rs:553` reports `property.trait`, which `IDENTIFIERS`
   (`rules/mod.rs:43-98`) lacks, so `tests/rules.rs:57-61` counts Pun's correct errors as extra, the
   `examples/analyse.rs` rule list is short, and `testPromotedProperties` sits in `gaps.txt`. Identifiers are also built
   with `format!` (`names.rs:514`), which grep can't check. Replace Type Code with Enum, or at least test that every
-  reported identifier is listed.
+  reported identifier is listed. Still holds at ff31836 (`property.trait` at `names.rs:553`, missing from
+  `IDENTIFIERS`, `rules/mod.rs:64-140`). Deferred: the fix is in `crates/pun-analyse/src/rules/*`, which the
+  analyse tracks claim.
 - [ ] 18. `crates/pun-cli/src/watch.rs:92-96` prints `{e}`, dropping anyhow's cause chain, so a broken pun.toml during
   `--watch` shows only "invalid /p/pun.toml" with no line or column, while the first run shows the chain. Errors are
   printed four ways (`main.rs:236-247`, `run.rs:53-60`, `pint_error.rs:12-14`, `watch.rs`). Extract one
@@ -274,7 +282,10 @@ items marked "not checked against Pint" still need one oracle run before the fix
   typed accessors on `Resolved`. Spans crates. Needs a decision.
 - [ ] 48. Two ports of `ReflectionProvider::getClass()` answer differently: `crates/pun-analyse/src/rules/mod.rs:995-1000`
   (`class_like`, Mago's prelude) and `names.rs:51-65` (`known`, PHPStan's export, trims `\`). Keep `known` and move
-  it with `function`/`builtins` into `reflection.rs`.
+  it with `function`/`builtins` into `reflection.rs`. Reproduced at ff31836: at `phpVersion: 80500`
+  `new \Filter\FilterFailedException()`, `new \CurlSharePersistentHandle()` and `http\Client\Request`
+  (`CallMethodsRuleTest::testBug5460`) are "not found" because Mago's prelude lacks them while PHPStan has them.
+  Deferred: the fix is in `crates/pun-analyse/src/rules/*`, which the analyse tracks claim.
 - [ ] 49. `crates/pun-analyse/src/rules/mod.rs` (1,005 lines) holds the identifier registry, 20 fields of checker
   state, the per-file driver, Mago type inference, guard bookkeeping (split with `scope.rs`) and reflection; the trait
   context is three fields that must change together (`:138-145`). Move Function into `driver.rs`, `infer.rs`,
@@ -292,10 +303,14 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `Ecosystem` (`Gates::locked` now matches all four, `doctrine` has no package). `FormatPreset` (`Config.preset`, read
   as a string in `pun-cli/src/run.rs` and `main.rs`) and `FixSafety` (`pun-cli/src/report.rs:398`) wait for the
   platform/format tracks that hold those files.
-- [ ] 52. Unreadable files are treated as missing: `crates/pun-config/src/composer.rs:124-126` skips the PHP 8.4 gate
+- [x] 52. Unreadable files are treated as missing: `crates/pun-config/src/composer.rs:124-126` skips the PHP 8.4 gate
   on any read error, and `crates/pun-analyse/src/codebase.rs:36` with `rules/mod.rs:204-206` reports nothing for an
   unreadable file. Treat only `ErrorKind::NotFound` as absent and propagate the rest with the path. The
-  `composer.rs` part (reproduced with a directory named composer.json) is fixed in afe5778.
+  `composer.rs` part (reproduced with a directory named composer.json) is fixed in afe5778. The pun-analyse part:
+  reproduced (`run()` on a directory as the analysed file returned no errors); PHPStan stops with "Could not read
+  file: <path>" (chmod 000 file). `codebase::read` now skips only `NotFound` and `run`, `analyse` and `run_mago`
+  return `CouldNotReadFile`, so `check_file` (`rules/mod.rs`) only misses a file deleted mid-run. Fixed in
+  wf/audit-analyse.
 - [ ] 53. The PHP target version has six representations: `Config.php: String`, `(u64, u64)` in
   `pun-config/src/schema.rs:220,264`, `composer::Version`, `constraint::V` (bridged by `From`), and `u32` ids in
   `pun-lint/src/lib.rs:28,136` and `pun-analyse/src/project.rs:21`. One `PhpVersion` in pun-config with `FromStr`,
