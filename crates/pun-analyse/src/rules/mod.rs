@@ -203,7 +203,6 @@ pub struct Checker<'a, 'arena> {
     php_version: u32,
     /// Line ranges of the traits declared in this file (their ignores are never unmatched here).
     trait_lines: Vec<(i64, i64)>,
-    php_version: u32,
     /// Scope boundaries: what `$scope->getFunction()` & co. see, and the goto labels of each.
     frames: Vec<Frame>,
     /// `$scope->getNamespace()` per namespace statement entered (`None`: the global one).
@@ -256,7 +255,6 @@ fn checker<'a, 'arena>(
         renamed: None,
         php_version,
         trait_lines: Vec::new(),
-        php_version,
         frames: Vec::new(),
         namespaces: Vec::new(),
         magic_defaults: HashSet::new(),
