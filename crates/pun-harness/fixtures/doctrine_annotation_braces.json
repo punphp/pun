@@ -1,0 +1,1619 @@
+{
+    "fixer": "doctrine_annotation_braces",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationBracesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/DoctrineAnnotation/DoctrineAnnotationBracesFixerTest.php",
+    "case_count": 143,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationBracesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo()\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo   ()\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo   ()\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo   ()\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n * (\n * )\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     * (\n     * )\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     * (\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\n/**\n * Foo.\n *\n * @author John Doe\n *\n * @Foo()\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * Foo.\n *\n * @author John Doe\n *\n * @Foo\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Foo.\n     *\n     * @author John Doe\n     *\n     * @Foo()\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Foo.\n     *\n     * @author John Doe\n     *\n     * @Foo\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Foo.\n     *\n     * @author John Doe\n     *\n     * @Foo()\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Foo.\n     *\n     * @author John Doe\n     *\n     * @Foo\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n/** @Foo() */\nclass FooClass\n{\n}",
+                        "<?php\n\n/** @Foo */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /** @Foo() */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /** @Foo */\n    private $foo;\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /** @Foo() */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /** @Foo */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(@Bar())\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo(@Bar)\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar())\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar)\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar())\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar)\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar()\n * )\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar\n * )\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar()\n     * )\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\n     * )\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar()\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar(),\n *     \"baz\"\n * )\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar,\n *     \"baz\"\n * )\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar(),\n     *     \"baz\"\n     * )\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar,\n     *     \"baz\"\n     * )\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar(),\n     *     \"baz\"\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar,\n     *     \"baz\"\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar\\Baz()\n * )\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar\\Baz\n * )\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\\Baz()\n     * )\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\\Baz\n     * )\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\\Baz()\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\\Baz\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo() @Bar\\Baz()\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo @Bar\\Baz\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo() @Bar\\Baz()\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo @Bar\\Baz\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo() @Bar\\Baz()\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo @Bar\\Baz\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\"@Bar\")\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\"@Bar\")\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\"@Bar\")\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n\n/**\n * Description with a single \" character.\n *\n * @Foo(\"string \"\" with inner quote\")\n *\n * @param mixed description with a single \" character.\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Description with a single \" character.\n     *\n     * @Foo(\"string \"\" with inner quote\")\n     *\n     * @param mixed description with a single \" character.\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Description with a single \" character.\n     *\n     * @Foo(\"string \"\" with inner quote\")\n     *\n     * @param mixed description with a single \" character.\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(@Bar\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo())@Bar)\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo)@Bar)\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo())@Bar)\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo)@Bar)\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo())@Bar)\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo)@Bar)\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n\n/**\n * See {@link https://help Help} or {@see BarClass} for details.\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * See {@link https://help Help} or {@see BarClass} for details.\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * See {@link https://help Help} or {@see BarClass} for details.\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n\n/**\n * @var int\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @var int\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @var int\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\n\n/**\n * // PHPDocumentor 1\n * @abstract\n * @access\n * @code\n * @deprec\n * @encode\n * @exception\n * @final\n * @ingroup\n * @inheritdoc\n * @inheritDoc\n * @magic\n * @name\n * @toc\n * @tutorial\n * @private\n * @static\n * @staticvar\n * @staticVar\n * @throw\n *\n * // PHPDocumentor 2\n * @api\n * @author\n * @category\n * @copyright\n * @deprecated\n * @example\n * @filesource\n * @global\n * @ignore\n * @internal\n * @license\n * @link\n * @method\n * @package\n * @param\n * @property\n * @property-read\n * @property-write\n * @return\n * @see\n * @since\n * @source\n * @subpackage\n * @throws\n * @todo\n * @TODO\n * @usedBy\n * @uses\n * @var\n * @version\n *\n * // PHPUnit\n * @after\n * @afterClass\n * @backupGlobals\n * @backupStaticAttributes\n * @before\n * @beforeClass\n * @codeCoverageIgnore\n * @codeCoverageIgnoreStart\n * @codeCoverageIgnoreEnd\n * @covers\n * @coversDefaultClass\n * @coversNothing\n * @dataProvider\n * @depends\n * @expectedException\n * @expectedExceptionCode\n * @expectedExceptionMessage\n * @expectedExceptionMessageRegExp\n * @group\n * @large\n * @medium\n * @preserveGlobalState\n * @requires\n * @runTestsInSeparateProcesses\n * @runInSeparateProcess\n * @small\n * @test\n * @testdox\n * @ticket\n * @uses\n *\n * // PHPCheckStyle\n * @SuppressWarnings\n *\n * // PHPStorm\n * @noinspection\n *\n * // PEAR\n * @package_version\n *\n * // PlantUML\n * @enduml\n * @startuml\n *\n * // Psalm\n * @psalm\n * @psalm-param\n *\n * // PHPStan\n * @phpstan\n * @phpstan-param\n *\n * // other\n * @fix\n * @FIXME\n * @fixme\n * @fixme: foo\n * @override\n * @todo: foo\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * // PHPDocumentor 1\n     * @abstract\n     * @access\n     * @code\n     * @deprec\n     * @encode\n     * @exception\n     * @final\n     * @ingroup\n     * @inheritdoc\n     * @inheritDoc\n     * @magic\n     * @name\n     * @toc\n     * @tutorial\n     * @private\n     * @static\n     * @staticvar\n     * @staticVar\n     * @throw\n     *\n     * // PHPDocumentor 2\n     * @api\n     * @author\n     * @category\n     * @copyright\n     * @deprecated\n     * @example\n     * @filesource\n     * @global\n     * @ignore\n     * @internal\n     * @license\n     * @link\n     * @method\n     * @package\n     * @param\n     * @property\n     * @property-read\n     * @property-write\n     * @return\n     * @see\n     * @since\n     * @source\n     * @subpackage\n     * @throws\n     * @todo\n     * @TODO\n     * @usedBy\n     * @uses\n     * @var\n     * @version\n     *\n     * // PHPUnit\n     * @after\n     * @afterClass\n     * @backupGlobals\n     * @backupStaticAttributes\n     * @before\n     * @beforeClass\n     * @codeCoverageIgnore\n     * @codeCoverageIgnoreStart\n     * @codeCoverageIgnoreEnd\n     * @covers\n     * @coversDefaultClass\n     * @coversNothing\n     * @dataProvider\n     * @depends\n     * @expectedException\n     * @expectedExceptionCode\n     * @expectedExceptionMessage\n     * @expectedExceptionMessageRegExp\n     * @group\n     * @large\n     * @medium\n     * @preserveGlobalState\n     * @requires\n     * @runTestsInSeparateProcesses\n     * @runInSeparateProcess\n     * @small\n     * @test\n     * @testdox\n     * @ticket\n     * @uses\n     *\n     * // PHPCheckStyle\n     * @SuppressWarnings\n     *\n     * // PHPStorm\n     * @noinspection\n     *\n     * // PEAR\n     * @package_version\n     *\n     * // PlantUML\n     * @enduml\n     * @startuml\n     *\n     * // Psalm\n     * @psalm\n     * @psalm-param\n     *\n     * // PHPStan\n     * @phpstan\n     * @phpstan-param\n     *\n     * // other\n     * @fix\n     * @FIXME\n     * @fixme\n     * @fixme: foo\n     * @override\n     * @todo: foo\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * // PHPDocumentor 1\n     * @abstract\n     * @access\n     * @code\n     * @deprec\n     * @encode\n     * @exception\n     * @final\n     * @ingroup\n     * @inheritdoc\n     * @inheritDoc\n     * @magic\n     * @name\n     * @toc\n     * @tutorial\n     * @private\n     * @static\n     * @staticvar\n     * @staticVar\n     * @throw\n     *\n     * // PHPDocumentor 2\n     * @api\n     * @author\n     * @category\n     * @copyright\n     * @deprecated\n     * @example\n     * @filesource\n     * @global\n     * @ignore\n     * @internal\n     * @license\n     * @link\n     * @method\n     * @package\n     * @param\n     * @property\n     * @property-read\n     * @property-write\n     * @return\n     * @see\n     * @since\n     * @source\n     * @subpackage\n     * @throws\n     * @todo\n     * @TODO\n     * @usedBy\n     * @uses\n     * @var\n     * @version\n     *\n     * // PHPUnit\n     * @after\n     * @afterClass\n     * @backupGlobals\n     * @backupStaticAttributes\n     * @before\n     * @beforeClass\n     * @codeCoverageIgnore\n     * @codeCoverageIgnoreStart\n     * @codeCoverageIgnoreEnd\n     * @covers\n     * @coversDefaultClass\n     * @coversNothing\n     * @dataProvider\n     * @depends\n     * @expectedException\n     * @expectedExceptionCode\n     * @expectedExceptionMessage\n     * @expectedExceptionMessageRegExp\n     * @group\n     * @large\n     * @medium\n     * @preserveGlobalState\n     * @requires\n     * @runTestsInSeparateProcesses\n     * @runInSeparateProcess\n     * @small\n     * @test\n     * @testdox\n     * @ticket\n     * @uses\n     *\n     * // PHPCheckStyle\n     * @SuppressWarnings\n     *\n     * // PHPStorm\n     * @noinspection\n     *\n     * // PEAR\n     * @package_version\n     *\n     * // PlantUML\n     * @enduml\n     * @startuml\n     *\n     * // Psalm\n     * @psalm\n     * @psalm-param\n     *\n     * // PHPStan\n     * @phpstan\n     * @phpstan-param\n     *\n     * // other\n     * @fix\n     * @FIXME\n     * @fixme\n     * @fixme: foo\n     * @override\n     * @todo: foo\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo()\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo   ()\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n * (\n * )\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n * Foo.\n *\n * @author John Doe\n *\n * @Foo()\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\n/** @Foo() */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(@Bar())\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar()\n * )\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar(),\n *     \"baz\"\n * )\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar\\Baz()\n * )\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo() @Bar\\Baz()\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\"@Bar\")\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\n/**\n * Description with a single \" character.\n *\n * @Foo(\"string \"\" with inner quote\")\n *\n * @param mixed description with a single \" character.\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(@Bar\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo())@Bar)\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\n/**\n * See {@link https://help Help} or {@see BarClass} for details.\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\n/**\n * @var int\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\n/**\n * // PHPDocumentor 1\n * @abstract\n * @access\n * @code\n * @deprec\n * @encode\n * @exception\n * @final\n * @ingroup\n * @inheritdoc\n * @inheritDoc\n * @magic\n * @name\n * @toc\n * @tutorial\n * @private\n * @static\n * @staticvar\n * @staticVar\n * @throw\n *\n * // PHPDocumentor 2\n * @api\n * @author\n * @category\n * @copyright\n * @deprecated\n * @example\n * @filesource\n * @global\n * @ignore\n * @internal\n * @license\n * @link\n * @method\n * @package\n * @param\n * @property\n * @property-read\n * @property-write\n * @return\n * @see\n * @since\n * @source\n * @subpackage\n * @throws\n * @todo\n * @TODO\n * @usedBy\n * @uses\n * @var\n * @version\n *\n * // PHPUnit\n * @after\n * @afterClass\n * @backupGlobals\n * @backupStaticAttributes\n * @before\n * @beforeClass\n * @codeCoverageIgnore\n * @codeCoverageIgnoreStart\n * @codeCoverageIgnoreEnd\n * @covers\n * @coversDefaultClass\n * @coversNothing\n * @dataProvider\n * @depends\n * @expectedException\n * @expectedExceptionCode\n * @expectedExceptionMessage\n * @expectedExceptionMessageRegExp\n * @group\n * @large\n * @medium\n * @preserveGlobalState\n * @requires\n * @runTestsInSeparateProcesses\n * @runInSeparateProcess\n * @small\n * @test\n * @testdox\n * @ticket\n * @uses\n *\n * // PHPCheckStyle\n * @SuppressWarnings\n *\n * // PHPStorm\n * @noinspection\n *\n * // PEAR\n * @package_version\n *\n * // PlantUML\n * @enduml\n * @startuml\n *\n * // Psalm\n * @psalm\n * @psalm-param\n *\n * // PHPStan\n * @phpstan\n * @phpstan-param\n *\n * // other\n * @fix\n * @FIXME\n * @fixme\n * @fixme: foo\n * @override\n * @todo: foo\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "with_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @see \\User getId()\n */\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * Foo.\n *\n * @author John Doe\n *\n * @Baz\\Bar\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * Foo.\n *\n * @author John Doe\n *\n * @Baz\\Bar ( )\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Foo.\n     *\n     * @author John Doe\n     *\n     * @Baz\\Bar\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Foo.\n     *\n     * @author John Doe\n     *\n     * @Baz\\Bar ( )\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Foo.\n     *\n     * @author John Doe\n     *\n     * @Baz\\Bar\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Foo.\n     *\n     * @author John Doe\n     *\n     * @Baz\\Bar ( )\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/** @Foo */\nclass FooClass\n{\n}",
+                        "<?php\n\n/** @Foo   () */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /** @Foo */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /** @Foo   () */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /** @Foo */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /** @Foo   () */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\"bar\")\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\"bar\")\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\"bar\")\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo\n * (\n * )\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     * (\n     * )\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     * (\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(@Bar)\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo(@Bar())\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar)\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar())\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar)\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar())\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar\n * )\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar()\n * )\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\n     * )\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar()\n     * )\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar()\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar,\n *     \"baz\"\n * )\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar(),\n *     \"baz\"\n * )\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar,\n     *     \"baz\"\n     * )\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar(),\n     *     \"baz\"\n     * )\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar,\n     *     \"baz\"\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar(),\n     *     \"baz\"\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar\\Baz\n * )\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar\\Baz()\n * )\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\\Baz\n     * )\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\\Baz()\n     * )\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\\Baz\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     *     @Bar\\Baz()\n     * )\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo @Bar\\Baz\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo() @Bar\\Baz()\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo @Bar\\Baz\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo() @Bar\\Baz()\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo @Bar\\Baz\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo() @Bar\\Baz()\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n\n/**\n * @\\Foo @\\Bar\\Baz\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @\\Foo() @\\Bar\\Baz()\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @\\Foo @\\Bar\\Baz\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @\\Foo() @\\Bar\\Baz()\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @\\Foo @\\Bar\\Baz\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @\\Foo() @\\Bar\\Baz()\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\"@Bar()\")\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\"@Bar()\")\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\"@Bar()\")\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n\n/**\n * Description with a single \" character.\n *\n * @Foo(\"string \"\" with inner quote\")\n *\n * @param mixed description with a single \" character.\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Description with a single \" character.\n     *\n     * @Foo(\"string \"\" with inner quote\")\n     *\n     * @param mixed description with a single \" character.\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * Description with a single \" character.\n     *\n     * @Foo(\"string \"\" with inner quote\")\n     *\n     * @param mixed description with a single \" character.\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo)\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo)\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo)\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(@Bar()\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar()\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(@Bar()\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n * @Bar\n * @Baz\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo()\n * @Bar()\n * @Baz()\n */\nclass FooClass\n{\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     * @Bar\n     * @Baz\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     * @Bar()\n     * @Baz()\n     */\n    private $foo;\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     * @Bar\n     * @Baz\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     * @Bar()\n     * @Baz()\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php\n\n/**\n * @FIXME ()\n * @fixme ()\n * @TODO ()\n * @todo ()\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @FIXME ()\n     * @fixme ()\n     * @TODO ()\n     * @todo ()\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @FIXME ()\n     * @fixme ()\n     * @TODO ()\n     * @todo ()\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php\n\n/**\n * // PHPDocumentor 1\n * @abstract()\n * @access()\n * @code()\n * @deprec()\n * @encode()\n * @exception()\n * @final()\n * @ingroup()\n * @inheritdoc()\n * @inheritDoc()\n * @magic()\n * @name()\n * @toc()\n * @tutorial()\n * @private()\n * @static()\n * @staticvar()\n * @staticVar()\n * @throw()\n *\n * // PHPDocumentor 2\n * @api()\n * @author()\n * @category()\n * @copyright()\n * @deprecated()\n * @example()\n * @filesource()\n * @global()\n * @ignore()\n * @internal()\n * @license()\n * @link()\n * @method()\n * @package()\n * @param()\n * @property()\n * @property-read()\n * @property-write()\n * @return()\n * @see()\n * @since()\n * @source()\n * @subpackage()\n * @throws()\n * @todo()\n * @TODO()\n * @usedBy()\n * @uses()\n * @var()\n * @version()\n *\n * // PHPUnit\n * @after()\n * @afterClass()\n * @backupGlobals()\n * @backupStaticAttributes()\n * @before()\n * @beforeClass()\n * @codeCoverageIgnore()\n * @codeCoverageIgnoreStart()\n * @codeCoverageIgnoreEnd()\n * @covers()\n * @coversDefaultClass()\n * @coversNothing()\n * @dataProvider()\n * @depends()\n * @expectedException()\n * @expectedExceptionCode()\n * @expectedExceptionMessage()\n * @expectedExceptionMessageRegExp()\n * @group()\n * @large()\n * @medium()\n * @preserveGlobalState()\n * @requires()\n * @runTestsInSeparateProcesses()\n * @runInSeparateProcess()\n * @small()\n * @test()\n * @testdox()\n * @ticket()\n * @uses()\n *\n * // PHPCheckStyle\n * @SuppressWarnings()\n *\n * // PHPStorm\n * @noinspection()\n *\n * // PEAR\n * @package_version()\n *\n * // PlantUML\n * @enduml()\n * @startuml()\n *\n * // Psalm\n * @psalm()\n * @psalm-param()\n *\n * // PHPStan\n * @phpstan()\n * @psalm-param()\n *\n *\n * // other\n * @fix()\n * @FIXME()\n * @fixme()\n * @fixme: foo()\n * @override()\n * @todo: foo()\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * // PHPDocumentor 1\n     * @abstract()\n     * @access()\n     * @code()\n     * @deprec()\n     * @encode()\n     * @exception()\n     * @final()\n     * @ingroup()\n     * @inheritdoc()\n     * @inheritDoc()\n     * @magic()\n     * @name()\n     * @toc()\n     * @tutorial()\n     * @private()\n     * @static()\n     * @staticvar()\n     * @staticVar()\n     * @throw()\n     *\n     * // PHPDocumentor 2\n     * @api()\n     * @author()\n     * @category()\n     * @copyright()\n     * @deprecated()\n     * @example()\n     * @filesource()\n     * @global()\n     * @ignore()\n     * @internal()\n     * @license()\n     * @link()\n     * @method()\n     * @package()\n     * @param()\n     * @property()\n     * @property-read()\n     * @property-write()\n     * @return()\n     * @see()\n     * @since()\n     * @source()\n     * @subpackage()\n     * @throws()\n     * @todo()\n     * @TODO()\n     * @usedBy()\n     * @uses()\n     * @var()\n     * @version()\n     *\n     * // PHPUnit\n     * @after()\n     * @afterClass()\n     * @backupGlobals()\n     * @backupStaticAttributes()\n     * @before()\n     * @beforeClass()\n     * @codeCoverageIgnore()\n     * @codeCoverageIgnoreStart()\n     * @codeCoverageIgnoreEnd()\n     * @covers()\n     * @coversDefaultClass()\n     * @coversNothing()\n     * @dataProvider()\n     * @depends()\n     * @expectedException()\n     * @expectedExceptionCode()\n     * @expectedExceptionMessage()\n     * @expectedExceptionMessageRegExp()\n     * @group()\n     * @large()\n     * @medium()\n     * @preserveGlobalState()\n     * @requires()\n     * @runTestsInSeparateProcesses()\n     * @runInSeparateProcess()\n     * @small()\n     * @test()\n     * @testdox()\n     * @ticket()\n     * @uses()\n     *\n     * // PHPCheckStyle\n     * @SuppressWarnings()\n     *\n     * // PHPStorm\n     * @noinspection()\n     *\n     * // PEAR\n     * @package_version()\n     *\n     * // PlantUML\n     * @enduml()\n     * @startuml()\n     *\n     * // Psalm\n     * @psalm()\n     * @psalm-param()\n     *\n     * // PHPStan\n     * @phpstan()\n     * @psalm-param()\n     *\n     *\n     * // other\n     * @fix()\n     * @FIXME()\n     * @fixme()\n     * @fixme: foo()\n     * @override()\n     * @todo: foo()\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * // PHPDocumentor 1\n     * @abstract()\n     * @access()\n     * @code()\n     * @deprec()\n     * @encode()\n     * @exception()\n     * @final()\n     * @ingroup()\n     * @inheritdoc()\n     * @inheritDoc()\n     * @magic()\n     * @name()\n     * @toc()\n     * @tutorial()\n     * @private()\n     * @static()\n     * @staticvar()\n     * @staticVar()\n     * @throw()\n     *\n     * // PHPDocumentor 2\n     * @api()\n     * @author()\n     * @category()\n     * @copyright()\n     * @deprecated()\n     * @example()\n     * @filesource()\n     * @global()\n     * @ignore()\n     * @internal()\n     * @license()\n     * @link()\n     * @method()\n     * @package()\n     * @param()\n     * @property()\n     * @property-read()\n     * @property-write()\n     * @return()\n     * @see()\n     * @since()\n     * @source()\n     * @subpackage()\n     * @throws()\n     * @todo()\n     * @TODO()\n     * @usedBy()\n     * @uses()\n     * @var()\n     * @version()\n     *\n     * // PHPUnit\n     * @after()\n     * @afterClass()\n     * @backupGlobals()\n     * @backupStaticAttributes()\n     * @before()\n     * @beforeClass()\n     * @codeCoverageIgnore()\n     * @codeCoverageIgnoreStart()\n     * @codeCoverageIgnoreEnd()\n     * @covers()\n     * @coversDefaultClass()\n     * @coversNothing()\n     * @dataProvider()\n     * @depends()\n     * @expectedException()\n     * @expectedExceptionCode()\n     * @expectedExceptionMessage()\n     * @expectedExceptionMessageRegExp()\n     * @group()\n     * @large()\n     * @medium()\n     * @preserveGlobalState()\n     * @requires()\n     * @runTestsInSeparateProcesses()\n     * @runInSeparateProcess()\n     * @small()\n     * @test()\n     * @testdox()\n     * @ticket()\n     * @uses()\n     *\n     * // PHPCheckStyle\n     * @SuppressWarnings()\n     *\n     * // PHPStorm\n     * @noinspection()\n     *\n     * // PEAR\n     * @package_version()\n     *\n     * // PlantUML\n     * @enduml()\n     * @startuml()\n     *\n     * // Psalm\n     * @psalm()\n     * @psalm-param()\n     *\n     * // PHPStan\n     * @phpstan()\n     * @psalm-param()\n     *\n     *\n     * // other\n     * @fix()\n     * @FIXME()\n     * @fixme()\n     * @fixme: foo()\n     * @override()\n     * @todo: foo()\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * Foo.\n *\n * @author John Doe\n *\n * @Baz\\Bar\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n/** @Foo */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\"bar\")\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(@Bar)\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar\n * )\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar,\n *     \"baz\"\n * )\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n *     @Bar\\Baz\n * )\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo @Bar\\Baz\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\n/**\n * @\\Foo @\\Bar\\Baz\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\"@Bar()\")\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\n/**\n * Description with a single \" character.\n *\n * @Foo(\"string \"\" with inner quote\")\n *\n * @param mixed description with a single \" character.\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo)\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(@Bar()\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n * @Bar\n * @Baz\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\n/**\n * @FIXME ()\n * @fixme ()\n * @TODO ()\n * @todo ()\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n\n/**\n * // PHPDocumentor 1\n * @abstract()\n * @access()\n * @code()\n * @deprec()\n * @encode()\n * @exception()\n * @final()\n * @ingroup()\n * @inheritdoc()\n * @inheritDoc()\n * @magic()\n * @name()\n * @toc()\n * @tutorial()\n * @private()\n * @static()\n * @staticvar()\n * @staticVar()\n * @throw()\n *\n * // PHPDocumentor 2\n * @api()\n * @author()\n * @category()\n * @copyright()\n * @deprecated()\n * @example()\n * @filesource()\n * @global()\n * @ignore()\n * @internal()\n * @license()\n * @link()\n * @method()\n * @package()\n * @param()\n * @property()\n * @property-read()\n * @property-write()\n * @return()\n * @see()\n * @since()\n * @source()\n * @subpackage()\n * @throws()\n * @todo()\n * @TODO()\n * @usedBy()\n * @uses()\n * @var()\n * @version()\n *\n * // PHPUnit\n * @after()\n * @afterClass()\n * @backupGlobals()\n * @backupStaticAttributes()\n * @before()\n * @beforeClass()\n * @codeCoverageIgnore()\n * @codeCoverageIgnoreStart()\n * @codeCoverageIgnoreEnd()\n * @covers()\n * @coversDefaultClass()\n * @coversNothing()\n * @dataProvider()\n * @depends()\n * @expectedException()\n * @expectedExceptionCode()\n * @expectedExceptionMessage()\n * @expectedExceptionMessageRegExp()\n * @group()\n * @large()\n * @medium()\n * @preserveGlobalState()\n * @requires()\n * @runTestsInSeparateProcesses()\n * @runInSeparateProcess()\n * @small()\n * @test()\n * @testdox()\n * @ticket()\n * @uses()\n *\n * // PHPCheckStyle\n * @SuppressWarnings()\n *\n * // PHPStorm\n * @noinspection()\n *\n * // PEAR\n * @package_version()\n *\n * // PlantUML\n * @enduml()\n * @startuml()\n *\n * // Psalm\n * @psalm()\n * @psalm-param()\n *\n * // PHPStan\n * @phpstan()\n * @psalm-param()\n *\n *\n * // other\n * @fix()\n * @FIXME()\n * @fixme()\n * @fixme: foo()\n * @override()\n * @todo: foo()\n */\n$foo = bar();",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n/**\n * @see \\User getId()\n */\n",
+                        null,
+                        {
+                            "syntax": "without_braces"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationBracesFixerTest",
+            "body": "    public function testFix82(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @author John Doe\n *\n * @Baz\\Bar\n */\nreadonly class FooClass{}",
+                        "<?php\n\n/**\n * @author John Doe\n *\n * @Baz\\Bar ( )\n */\nreadonly class FooClass{}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,911 @@
+{
+    "fixer": "doctrine_annotation_array_assignment",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationArrayAssignmentFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/DoctrineAnnotation/DoctrineAnnotationArrayAssignmentFixerTest.php",
+    "case_count": 82,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationArrayAssignmentFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n */\nclass FooClass\n{\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     */\n    private $foo;\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo()\n */\nclass FooClass\n{\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     */\n    private $foo;\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(bar=\"baz\")\n */\nclass FooClass\n{\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(bar=\"baz\")\n     */\n    private $foo;\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(bar=\"baz\")\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar=\"baz\"})\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo({bar:\"baz\"})\n */\nclass FooClass\n{\n}",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar=\"baz\"})\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar:\"baz\"})\n     */\n    private $foo;\n}",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar=\"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar:\"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar = \"baz\"})\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo({bar : \"baz\"})\n */\nclass FooClass\n{\n}",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar = \"baz\"})\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar : \"baz\"})\n     */\n    private $foo;\n}",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar = \"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar : \"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\n/**\n * See {@link https://help Help} or {@see BarClass} for details.\n */\nclass FooClass\n{\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * See {@link https://help Help} or {@see BarClass} for details.\n     */\n    private $foo;\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * See {@link https://help Help} or {@see BarClass} for details.\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n */\n$foo = bar();",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo()\n */\n$foo = bar();",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(bar=\"baz\")\n */\n$foo = bar();",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar=\"baz\"})\n */\n$foo = bar();",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar = \"baz\"})\n */\n$foo = bar();",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\n/**\n * See {@link https://help Help} or {@see BarClass} for details.\n */\n$foo = bar();",
+                        null,
+                        []
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo()\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(bar=\"baz\")\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(bar=\"baz\")\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(bar=\"baz\")\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar=\"baz\"})\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo({bar:\"baz\"})\n */\nclass FooClass\n{\n}",
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar=\"baz\"})\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar:\"baz\"})\n     */\n    private $foo;\n}",
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar=\"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar:\"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar = \"baz\"})\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo({bar : \"baz\"})\n */\nclass FooClass\n{\n}",
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar = \"baz\"})\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar : \"baz\"})\n     */\n    private $foo;\n}",
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar = \"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar : \"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\n/**\n * See {@link https://help Help} or {@see BarClass} for details.\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * See {@link https://help Help} or {@see BarClass} for details.\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * See {@link https://help Help} or {@see BarClass} for details.\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo()\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(bar=\"baz\")\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar=\"baz\"})\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar = \"baz\"})\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\n/**\n * See {@link https://help Help} or {@see BarClass} for details.\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n* @see \\User getId()\n*/\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n/**\n* @see \\User getId()\n*/\n",
+                        null,
+                        {
+                            "operator": "="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo()\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo()\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(bar:\"baz\")\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(bar:\"baz\")\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(bar:\"baz\")\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar:\"baz\"})\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo({bar=\"baz\"})\n */\nclass FooClass\n{\n}",
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar:\"baz\"})\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar=\"baz\"})\n     */\n    private $foo;\n}",
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar:\"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar=\"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar : \"baz\"})\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo({bar = \"baz\"})\n */\nclass FooClass\n{\n}",
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar : \"baz\"})\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar = \"baz\"})\n     */\n    private $foo;\n}",
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar : \"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo({bar = \"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(foo=\"bar\", {bar:\"baz\"})\n */\nclass FooClass\n{\n}",
+                        "<?php\n\n/**\n * @Foo(foo=\"bar\", {bar=\"baz\"})\n */\nclass FooClass\n{\n}",
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(foo=\"bar\", {bar:\"baz\"})\n     */\n    private $foo;\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(foo=\"bar\", {bar=\"baz\"})\n     */\n    private $foo;\n}",
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(foo=\"bar\", {bar:\"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * @Foo(foo=\"bar\", {bar=\"baz\"})\n     */\n    public function foo()\n    {\n    }\n}",
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n\n/**\n * See {@link https://help Help} or {@see BarClass} for details.\n */\nclass FooClass\n{\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * See {@link https://help Help} or {@see BarClass} for details.\n     */\n    private $foo;\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n\nclass FooClass\n{\n    /**\n     * See {@link https://help Help} or {@see BarClass} for details.\n     */\n    public function foo()\n    {\n    }\n}",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo()\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(bar:\"baz\")\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar:\"baz\"})\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo({bar : \"baz\"})\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n\n/**\n * @Foo(foo=\"bar\", {bar:\"baz\"})\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n\n/**\n * See {@link https://help Help} or {@see BarClass} for details.\n */\n$foo = bar();",
+                        null,
+                        {
+                            "operator": ":"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationArrayAssignmentFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class FooClass{\n    /**\n     * @Foo({bar = \"baz\"})\n     */\n    private readonly Foo $foo;\n}",
+                        "<?php class FooClass{\n    /**\n     * @Foo({bar : \"baz\"})\n     */\n    private readonly Foo $foo;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php class FooClass{\n    /**\n     * @Foo({bar = \"baz\"})\n     */\n    readonly private Foo $foo;\n}",
+                        "<?php class FooClass{\n    /**\n     * @Foo({bar : \"baz\"})\n     */\n    readonly private Foo $foo;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php class FooClass{\n    /**\n     * @Foo({bar = \"baz\"})\n     */\n    readonly Foo $foo;\n}",
+                        "<?php class FooClass{\n    /**\n     * @Foo({bar : \"baz\"})\n     */\n    readonly Foo $foo;\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\DoctrineAnnotation\\DoctrineAnnotationArrayAssignmentFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "asymmetric visibility",
+                    "args": [
+                        "<?php class Entity {\n    /**\n     * @Foo({foo = \"foo\"})\n     */\n    public public(set) Foo $foo;\n    /**\n     * @Bar({bar = \"bar\"})\n     */\n    public protected(set) Bar $bar;\n    /**\n     * @Baz({baz = \"baz\"})\n     */\n    protected private(set) Baz $baz;\n}",
+                        "<?php class Entity {\n    /**\n     * @Foo({foo : \"foo\"})\n     */\n    public public(set) Foo $foo;\n    /**\n     * @Bar({bar : \"bar\"})\n     */\n    public protected(set) Bar $bar;\n    /**\n     * @Baz({baz : \"baz\"})\n     */\n    protected private(set) Baz $baz;\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}
