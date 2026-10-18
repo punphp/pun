@@ -323,7 +323,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | --- | --- |
 | CI: get CI on main green, then re-enable it (disabled on GitHub 2026-10-18 by Pushpak: every agent push was billing a run; `gh workflow enable CI`) | todo |
 | tests: crates/pun-phpstan/tests/php.rs `php_helpers` fails on macOS on two error offsets (`/a)/` gives 2, PHP 1; `/(?<1a>x)/` gives 4, PHP 3); the linked pcre2 likely differs from PHP's PCRE2 | todo |
-| tests: crates/pun-phpstan/tests/config.rs `corpus_configs` fails in a wf worktree because `.oracle` is a symlink, so phar paths resolve to the main checkout instead of {repo}/.oracle | todo |
 | pun-phpstan: clippy collapsible_if at src/schema.rs:754 | todo |
 | pun-harness: the comment in src/main.rs about the starter's `preset = "recommended"` is stale (migrate no longer writes it) | todo |
 | CI: clippy gate (`-D warnings`); clippy is at 0 warnings | todo |
@@ -336,8 +335,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | reports/scoreboard.md: regenerate or mark obsolete the 'Delegate mode' section and `--native-only` timings | todo |
 | design/components/DocsPage/preview.html: remove the 'Needs PHP for those rules' / `--native-only` callout | todo |
 | wf tooling: shared target dirs let a punphp-fixers build-script output from another worktree go stale; use per-worktree OUT paths or rerun-if-changed on the manifest dir | todo |
-| request (pun-fixers owner): crates/pun-fixers/tests/blade.rs `oracle_blade_fixtures` asserts instead of skipping when crates/pun-fixers/node_modules is missing (as in a wf worktree); reuse the main-checkout lookup from crates/pun-cli/tests/common/prettier.rs (`git rev-parse --path-format=absolute --git-common-dir`) | todo |
-| tests: crates/pun-tokens tests/api.rs and tests/parity.rs fail on PHP 8.5 (tools/api.php: 'Cannot use the final modifier on a parameter' on one case), so scripts/coverage.sh punphp-tokens reports FAILED | todo |
 | pun-fixers Preg: compile rejects the `r` modifier (PCRE2_EXTRA_CASELESS_RESTRICT) that PHP 8.4+ accepts (`preg_match('/a/r', 'a')` panics); no upstream pattern uses it yet | todo |
 | oracle: the local PHP (Herd ini) runs with pcre.jit=Off, so preg limit errors read 'Recursion limit exhausted' where PHP's default (and Pun) give 'JIT stack limit exhausted'; run preg oracles with `-d pcre.jit=1` | todo |
 | fixers: binary_operator_spaces with an array in `operators` prints PHP's 'Warning: Array to string conversion' before the configure error upstream; Pun prints only the error | todo |
@@ -355,7 +352,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | coverage: pun-config lib.rs:389,395,397 (options(): Boolean and bail arms) are uncovered; its only caller (schema.rs:449) always passes a Table, so delete the dead arms | todo |
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |
 | perf lint 1 follow-up: scripts/bench.py lint and analyse modes report time from a run without the 20 ms RSS polling (or poll RSS in a separate run), so runs under 100 ms show real differences | todo |
-| tests: since audit item 81 the pun-tokens oracle tests (api, parity, php_compat) fail when php or .oracle/php-cs-fixer is missing; on macOS the default `php` (Herd 8.4) fails tools/api.php ('Cannot use the final modifier on a parameter'), so put PHP 8.5 first on PATH or point the helper at it | todo |
 | coverage: reports/COVERAGE.md still lists punphp-fixers at 100% while scripts/coverage.sh reports 99.99% (method_argument_space.rs:336, yoda_style.rs:426, same on main); update the row with the fix | todo |
 | audit item 88: the namespaces_analyzer.rs part (cloning the whole cached list) is done in the item 36 commit; the rest of item 88 is open | todo |
 | perf lint 1 follow-up: if the pun-lint tree walk grows with more rules, skip leaf node kinds no rule targets (about 28% of nodes: DirectVariable, Keyword, LocalIdentifier, Terminator, LiteralString); under 3% today | todo |
@@ -387,7 +383,6 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | audit item 31 follow-up: in pun-cli pint_error.rs, replace origin()'s message matching with downcast_ref on pun_workspace::FinderError, pun_format::AnnotationError and a pun-cli PintError for the read, write and report-file errors (library half done in 093609e) | todo |
 | audit item 11 follow-up: with --format=json -v and a non-UTF-8 diff, abort like Pint's JsonException ('Malformed UTF-8 characters, possibly incorrectly encoded', JsonReporter.php:63, exit 1); txt, junit and xml write the raw bytes (reuse item 12's console::format_bytes) | todo |
 | coverage: measure punphp (pun-cli) on Linux after audit item 33 (ef7c179); migrate::announce's decline branch is reached only by the Linux-only pty tests | todo |
-| tests: crates/pun-cli/tests/migrate.rs pty tests use util-linux `script -qec` and fail on macOS (checklist_on_a_terminal, starter_on_a_terminal) | todo |
 | later: LSP; install, run, test; native Blade; extension system | after 1.0 |
 | later: the 275 `later = true` lint rules (PHPUnit and Pest lint, rules in no set) | after 1.0 |
 | later: analyse 7, Pest and PHPUnit typing (analyse.md §9) | after 1.0 |
