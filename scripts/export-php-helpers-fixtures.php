@@ -38,7 +38,8 @@ $patterns = [
     ['/a(/A', 'a'], ['/x(/i', 'a'], ['/\p{Zz}/u', 'a'], ["/\xff/u", 'a'], ['/a/u', "\xff"], ['~^\d+~', '123'], ['/a #c/xA', 'a'], ['/a #c/xA', 'ba'],
     ['#\\Qfoo#A', 'foo'], ['#\\Qfoo#A', 'xfoo'], ['#\\Qa)#A', 'a)'], ['#\\Qa\\Eb#A', 'ab'], ['#\\\\Qa#A', '\\Qa'], ['/a #\\Q/xA', 'a'],
     ['#(*ANYCRLF)a#A', 'a'], ['#(*ANYCRLF)a#A', 'ba'], ['#(*ANYCRLF)(*UCP)a#AU', 'a'], ['#(*ANYCRLF)a#U', 'a'], ['#(*FOO)a#U', 'a'],
-    ['#(*FOO)a#A', 'a'], ['#(*CR)a(#U', 'a'],
+    ['#(*FOO)a#A', 'a'], ['#(*CR)a(#U', 'a'], ['#(*FAIL)|a#A', 'a'], ['#(*F)|a#A', 'a'], ['#(*COMMIT)a|b#A', 'b'],
+    ['#(*ACCEPT)|a#A', 'ba'], ['#(*CR)(*FAIL)|a#AU', 'a'],
 ];
 foreach ($patterns as [$pattern, $subject]) {
     try {

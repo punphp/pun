@@ -77,12 +77,14 @@ fn compile(pattern: &str) -> Result<Regex, String> {
         }
     }
     // PCRE2 accepts `(*VERB)` settings only at the very start, before the inline flags and the `A` wrapper.
+    // Backtracking verbs (`(*FAIL)|a`) belong to the first branch, so they stay inside it.
     let mut verbs = 0;
     while let Some(rest) = body[verbs..].strip_prefix("(*")
         && let Some(end) = rest.find(')')
         && rest[..end]
             .bytes()
             .all(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || b"_=".contains(&c))
+        && !["ACCEPT", "FAIL", "F", "COMMIT", "PRUNE", "SKIP", "THEN"].contains(&&rest[..end])
     {
         verbs += end + 3;
     }

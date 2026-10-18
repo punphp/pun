@@ -299,6 +299,31 @@
             "pattern": "#(*CR)a(#U",
             "subject": "a",
             "error": "Compilation failed: missing closing parenthesis at offset 7 in pattern: #(*CR)a(#U"
+        },
+        {
+            "pattern": "#(*FAIL)|a#A",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "#(*F)|a#A",
+            "subject": "a",
+            "matched": true
+        },
+        {
+            "pattern": "#(*COMMIT)a|b#A",
+            "subject": "b",
+            "matched": false
+        },
+        {
+            "pattern": "#(*ACCEPT)|a#A",
+            "subject": "ba",
+            "matched": true
+        },
+        {
+            "pattern": "#(*CR)(*FAIL)|a#AU",
+            "subject": "a",
+            "matched": true
         }
     ],
     "quote": [
