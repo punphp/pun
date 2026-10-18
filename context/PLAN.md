@@ -210,7 +210,9 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | format 4-5: memory target; 8-core benchmark in CI (laravel-framework under 1 s cold) | todo |
 | format 4-5 follow-up (from bench, needs Pushpak): BENCH=format runs Pint with Xdebug loaded on this Mac; set XDEBUG_MODE=off as the analyse and lint modes do (changes format-mode behaviour of scripts/bench.py) | todo |
 | format 6: swap `vendor/bin/pint` for Pun in Pinkary's CI | todo |
-| format 7: port the remaining format rules (151 of 208 native, 36 format rules left; batch 1 done: the PER-CS and Symfony operator, type and loop rules) | todo |
+| format 7: port the remaining format rules (158 of 208 native, 29 format rules left; batches 1-2 done: the PER-CS and Symfony operator, type and loop rules, then the Symfony comment, concat, phpdoc, semicolon and echo tag rules; the Symfony preset still lacks phpdoc_types_order, php_unit_fqcn_annotation and simple_to_complex_string_variable) | todo |
+| format 7 follow-up: heavy-slot target dirs are shared across worktrees, so cargo reuses another worktree's artifacts; give each worktree its own target dir or touch sources inside each heavy call | todo |
+| format 7 follow-up: crates/pun-cli/tests/migrate.rs pty tests (starter_on_a_terminal, checklist_on_a_terminal) run util-linux `script -qec`, which macOS's BSD script lacks | todo |
 | format 7 follow-up: run scripts/coverage.sh punphp-fixers over the whole crate to confirm switch_analyzer.rs (cache now keyed on the whole token list) stays at 100% | todo |
 | format: delete or re-justify `pun_ignored` and the delegate-mode comments in crates/pun-format/src/lib.rs (unused since config 6) | todo |
 | format: pun-fixers build.rs adds rerun-if-changed on the source dir (generated fixers.rs in a shared target dir can point at another worktree) | todo |
