@@ -114,7 +114,7 @@ impl TypeExpression {
         let value = self.value.clone();
         let mut index = 0;
         let matches = loop {
-            let Some(m) = Preg::match_at(pattern, &value, 0, index) else {
+            let Some(m) = Preg::match_at(pattern, &value, index) else {
                 return Err(ParseError(value));
             };
             let glue = m.name_str("glue");
@@ -245,7 +245,7 @@ impl TypeExpression {
         let pattern: &str = &COMMA_SEPARATED_PATTERN;
         let mut index = 0;
         while value.len() != index {
-            let m = Preg::match_at(pattern, value, 0, index)
+            let m = Preg::match_at(pattern, value, index)
                 .ok_or_else(|| ParseError(value.to_vec()))?;
             self.push(start_index + index, m.name_str("types"))?;
             index += m.str(0).len();
@@ -273,13 +273,13 @@ impl TypeExpression {
         let mut index = 0;
         while value.len() != index {
             let pm =
-                Preg::match_at(&pre, value, 0, index).ok_or_else(|| ParseError(value.to_vec()))?;
+                Preg::match_at(&pre, value, index).ok_or_else(|| ParseError(value.to_vec()))?;
             let consumed_value = pm.name_str(&format!("_{group}"));
             let consumed_value_length = consumed_value.len();
             let consumed_comma_length = pm.str(0).len() - consumed_value_length;
             let subject = [prefix, consumed_value, suffix].concat();
             let m =
-                Preg::match_groups(&full, &subject, 0).ok_or_else(|| ParseError(value.to_vec()))?;
+                Preg::match_groups(&full, &subject).ok_or_else(|| ParseError(value.to_vec()))?;
             let mut out = vec![];
             each(&m, start_index + index, &mut out);
             for (i, v) in out {

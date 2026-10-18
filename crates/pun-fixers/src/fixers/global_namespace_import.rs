@@ -8,7 +8,7 @@ use crate::analyzers::functions_analyzer::FunctionsAnalyzer;
 use crate::analyzers::import_processor::{ImportProcessor, ImportType};
 use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
 use pun_tokens::NamespacesAnalyzer;
-use crate::analyzers::preg::{PREG_OFFSET_CAPTURE, Preg};
+use crate::analyzers::preg::Preg;
 use anyhow::Result;
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use pun_tokens::{
@@ -482,7 +482,7 @@ impl GlobalNamespaceImportFixer {
                     let mut full_type = full_type.clone();
                     let source = full_type.clone();
                     let matches: Vec<(Vec<u8>, usize)> =
-                        Preg::match_all("/[\\\\\\w]+(?![\\\\\\w:])/", &source, PREG_OFFSET_CAPTURE)
+                        Preg::match_all("/[\\\\\\w]+(?![\\\\\\w:])/", &source)
                             .iter()
                             .map(|m| (m.str(0).to_vec(), m.offset(0) as usize))
                             .collect();

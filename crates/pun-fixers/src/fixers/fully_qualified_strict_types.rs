@@ -235,13 +235,13 @@ impl Fixer for FullyQualifiedStrictTypesFixer {
                     ]) {
                         self.fix_next_name(&st, tokens, index, &uses, &namespace_name);
                     } else if let Some(m) = (discover_symbols_phase && token.is_kind(T_COMMENT))
-                        .then(|| Preg::match_groups(&regex_comment_attribute, &token.content, 0))
+                        .then(|| Preg::match_groups(&regex_comment_attribute, &token.content))
                         .flatten()
                     {
                         // @TODO: drop when PHP 8.0+ is required
                         self.determine_short_type(&st, m.str(1), &uses, &namespace_name);
                     } else if token.is_kind(T_DOC_COMMENT) {
-                        for m in Preg::match_all(&regex_reserved, &token.content, 0) {
+                        for m in Preg::match_all(&regex_reserved, &token.content) {
                             st.reserved_identifiers_by_level
                                 .entry(opened_curly_brackets + 1)
                                 .or_default()

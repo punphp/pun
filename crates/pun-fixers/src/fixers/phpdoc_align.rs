@@ -322,7 +322,7 @@ impl PhpdocAlignFixer {
     fn get_matches(&self, line: &[u8], match_comment_only: bool) -> Option<Item> {
         if let Some(m) = line
             .contains(&b'@')
-            .then(|| Preg::match_groups(&self.regex, line, 0))
+            .then(|| Preg::match_groups(&self.regex, line))
             .flatten()
         {
             let g = |n: &str| m.name_str(n).to_vec();
@@ -351,7 +351,7 @@ impl PhpdocAlignFixer {
             item.hint = trim(&item.hint).to_vec();
             return Some(item);
         }
-        if match_comment_only && let Some(m) = Preg::match_groups(&self.regex_comment_line, line, 0)
+        if match_comment_only && let Some(m) = Preg::match_groups(&self.regex_comment_line, line)
         {
             return Some(Item {
                 indent: m.name_str("indent").to_vec(),

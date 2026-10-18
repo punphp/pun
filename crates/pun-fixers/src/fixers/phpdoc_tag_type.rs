@@ -136,7 +136,7 @@ impl Fixer for PhpdocTagTypeFixer {
             let mut i = 1;
             while i < max {
                 let part = parts[i].clone();
-                let Some(matches) = Preg::match_groups(TAG_REGEX, &part, 0) else {
+                let Some(matches) = Preg::match_groups(TAG_REGEX, &part) else {
                     i += 2;
                     continue;
                 };

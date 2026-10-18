@@ -165,7 +165,7 @@ fn tag_name() {
     for c in cases("TagTest::testName") {
         let (expected, input) = (s(&c[0]), s(&c[2]));
         let tag = Tag::new(Line::shared(input));
-        assert_eq!(lossy(&tag.get_name()), lossy(&expected));
+        assert_eq!(lossy(tag.get_name()), lossy(&expected));
     }
 }
 
@@ -504,7 +504,7 @@ fn type_expression_parses_sort_types_inputs() {
 #[test]
 fn type_regex_does_not_have_unnamed_capturing_group() {
     // PHP drops trailing unset groups from $matches; count only up to the last set one like upstream does.
-    let m = Preg::match_groups(format!("~{}~", type_expression::REGEX_TYPES), b"int", 0).unwrap();
+    let m = Preg::match_groups(format!("~{}~", type_expression::REGEX_TYPES), b"int").unwrap();
     let last = m.len() - 1;
     let re = pcre2::bytes::Regex::new(type_expression::REGEX_TYPES).unwrap();
     let named = re.capture_names()[..=last]

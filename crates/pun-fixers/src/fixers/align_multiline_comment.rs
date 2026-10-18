@@ -68,7 +68,7 @@ impl Fixer for AlignMultilineCommentFixer {
                 ]
                 .concat();
             }
-            let Some(m) = Preg::match_groups(r"/\R(\h*)$/", &whitespace, 0) else {
+            let Some(m) = Preg::match_groups(r"/\R(\h*)$/", &whitespace) else {
                 continue;
             };
             if token.is_kind(T_COMMENT)

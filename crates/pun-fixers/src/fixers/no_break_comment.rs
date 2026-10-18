@@ -200,7 +200,7 @@ impl NoBreakCommentFixer {
 
         if nb_newlines > 1 {
             let m =
-                Preg::match_groups("/^(.*?)(\\R\\h*)$/s", newline_token.get_content(), 0).unwrap();
+                Preg::match_groups("/^(.*?)(\\R\\h*)$/s", newline_token.get_content()).unwrap();
             let indent = WhitespacesAnalyzer::detect_indent(tokens, newline_position - 1);
             let content = [m.str(1), line_ending, &indent].concat();
             tokens.set(

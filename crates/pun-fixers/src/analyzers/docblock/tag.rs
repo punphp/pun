@@ -2,35 +2,34 @@
 
 use super::line::LineRef;
 use crate::analyzers::preg::Preg;
-use std::cell::RefCell;
+use std::cell::OnceCell;
 
 #[derive(Clone, Debug)]
 pub struct Tag {
     line: LineRef,
-    name: RefCell<Option<Vec<u8>>>,
+    name: OnceCell<Vec<u8>>,
 }
 
 impl Tag {
     pub fn new(line: LineRef) -> Self {
         Tag {
             line,
-            name: RefCell::new(None),
+            name: OnceCell::new(),
         }
     }
 
-    pub fn get_name(&self) -> Vec<u8> {
-        if self.name.borrow().is_none() {
-            let content = self.line.borrow().get_content().to_vec();
-            let name = match tag_name_ascii(&content) {
+    pub fn get_name(&self) -> &[u8] {
+        self.name.get_or_init(|| {
+            let line = self.line.borrow();
+            let content = line.get_content();
+            match tag_name_ascii(content) {
                 Some(name) => name,
-                None => match Preg::match_all(r"/@[a-zA-Z0-9_-]+(?=\s|$)/", &content, 0).first() {
+                None => match Preg::match_all(r"/@[a-zA-Z0-9_-]+(?=\s|$)/", content).first() {
                     Some(m) => m.str(0)[1..].to_vec(),
                     None => b"other".to_vec(),
                 },
-            };
-            *self.name.borrow_mut() = Some(name);
-        }
-        self.name.borrow().clone().unwrap()
+            }
+        })
     }
 }
 

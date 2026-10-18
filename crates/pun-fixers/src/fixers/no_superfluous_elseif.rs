@@ -49,7 +49,7 @@ fn convert_elseif_to_if(tokens: &mut Tokens, index: usize) {
     for previous in (1..index).rev() {
         let token = &tokens[previous];
         if token.is_whitespace(None)
-            && let Some(m) = Preg::match_groups("/(\\R\\N*)$/", &token.content, 0)
+            && let Some(m) = Preg::match_groups("/(\\R\\N*)$/", &token.content)
         {
             whitespace = m.str(1).to_vec();
             break;

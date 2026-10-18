@@ -44,7 +44,7 @@ impl BlankLineAfterNamespaceFixer {
         } else {
             format!("{ending}{ending}")
         };
-        let indent = Preg::match_groups("/^.*\\R( *)$/s", current_content, 0)
+        let indent = Preg::match_groups("/^.*\\R( *)$/s", current_content)
             .map(|m| m.str(1).to_vec())
             .unwrap_or_default();
         Token::new(T_WHITESPACE, [empty_lines.as_bytes(), &indent].concat())

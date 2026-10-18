@@ -190,7 +190,7 @@ impl FinalInternalClassFixer {
         let mut tags = BTreeMap::new();
         for annotation in doc.get_annotations() {
             let content = annotation.get_content();
-            let Some(m) = Preg::match_groups("/@([^\\(\\s]+)/", &content, 0) else {
+            let Some(m) = Preg::match_groups("/@([^\\(\\s]+)/", &content) else {
                 continue;
             };
             tags.insert(m.str(0)[1..].to_ascii_lowercase(), true);

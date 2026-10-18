@@ -71,7 +71,7 @@ impl Line {
     }
 
     pub fn add_blank(&mut self) {
-        let Some(m) = Preg::match_groups(r"/^(\h*\*)[^\r\n]*(\r?\n)$/", &self.content, 0) else {
+        let Some(m) = Preg::match_groups(r"/^(\h*\*)[^\r\n]*(\r?\n)$/", &self.content) else {
             return;
         };
         let add = [m.str(1), m.str(2)].concat();

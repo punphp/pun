@@ -164,7 +164,7 @@ fn ensure_are_separate(doc: &DocBlock, first: &Annotation, second: &Annotation) 
 
 fn tag_name(a: &Annotation) -> Option<Vec<u8>> {
     let content = a.get_content();
-    Preg::match_groups(r"/@([a-zA-Z0-9_\\\-]+(?=\s|$|\())/", &content, 0)
+    Preg::match_groups(r"/@([a-zA-Z0-9_\\\-]+(?=\s|$|\())/", &content)
         .and_then(|m| m.get(1).map(<[u8]>::to_vec))
 }
 

@@ -34,10 +34,10 @@ impl Fixer for NoTrailingWhitespaceFixer {
             if token.is_kind(T_OPEN_TAG)
                 && index + 1 < tokens.count()
                 && tokens[index + 1].is_whitespace(None)
-                && let Some(open_tag_matches) = Preg::match_groups("/(.*)\\h$/", &token.content, 0)
+                && let Some(open_tag_matches) = Preg::match_groups("/(.*)\\h$/", &token.content)
             {
                 let next = tokens[index + 1].content.clone();
-                if let Some(whitespace_matches) = Preg::match_groups("/^(\\R)(.*)$/s", &next, 0) {
+                if let Some(whitespace_matches) = Preg::match_groups("/^(\\R)(.*)$/s", &next) {
                     let content = [open_tag_matches.str(1), whitespace_matches.str(1)].concat();
                     let rest = whitespace_matches.str(2).to_vec();
                     tokens.set(index, Token::new(T_OPEN_TAG, content));

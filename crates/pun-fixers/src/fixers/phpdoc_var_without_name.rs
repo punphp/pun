@@ -65,7 +65,7 @@ impl Fixer for PhpdocVarWithoutNameFixer {
 fn fix_line(line: &LineRef) {
     let content = line.borrow().get_content().to_vec();
     let matches: Vec<Vec<u8>> =
-        Preg::match_all(format!(r"/ \${REGEX_IDENTIFIER}(?<!\$this)/"), &content, 0)
+        Preg::match_all(format!(r"/ \${REGEX_IDENTIFIER}(?<!\$this)/"), &content)
             .iter()
             .map(|m| m.str(0).to_vec())
             .collect();

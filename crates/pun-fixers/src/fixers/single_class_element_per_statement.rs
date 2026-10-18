@@ -81,7 +81,7 @@ fn expand_element(tokens: &mut Tokens, ty: &str, start_index: usize, end_index: 
     let mut division_content: Option<Vec<u8>> = None;
     if tokens[start_index - 1].is_whitespace(None) {
         let mut d = tokens[start_index - 1].content.clone();
-        if let Some(m) = Preg::match_groups("#(\\n|\\r\\n)#", &d, 0) {
+        if let Some(m) = Preg::match_groups("#(\\n|\\r\\n)#", &d) {
             d = [
                 m.str(0),
                 php_compat::ltrim_chars(php_compat::rtrim_chars(&d, b"\r\n"), b"\r\n"),

@@ -58,7 +58,7 @@ impl MethodChainingIndentationFixer {
     /// `index`: index of the indentation token.
     fn get_indent_at(tokens: &Tokens, index: usize) -> Option<Vec<u8>> {
         let content = Self::get_indent_content_at(tokens, index);
-        Preg::match_groups("/\\R{1}(\\h*)$/", &content, 0).map(|m| m.str(1).to_vec())
+        Preg::match_groups("/\\R{1}(\\h*)$/", &content).map(|m| m.str(1).to_vec())
     }
 
     fn get_indent_content_at(tokens: &Tokens, index: usize) -> Vec<u8> {

@@ -71,13 +71,13 @@ impl Annotation {
     pub fn get_variable_name(&self) -> Option<Vec<u8>> {
         let types = self.get_types_content().unwrap_or_default();
         let content = self.get_content();
-        if let Some(v) = variable_name_ascii(&content, &self.get_tag().get_name(), &types) {
+        if let Some(v) = variable_name_ascii(&content, self.get_tag().get_name(), &types) {
             return Some(v);
         }
         let ty = preg_quote(&types, Some(b'/'));
         let regex = [
             &b"/@"[..],
-            &self.get_tag().get_name(),
+            self.get_tag().get_name(),
             br"\s+(",
             &ty,
             br"\s*)?(&\s*)?(\.{3}\s*)?(?<variable>\$",
@@ -85,7 +85,8 @@ impl Annotation {
             b")(?:.*|$)/",
         ]
         .concat();
-        Preg::match_groups(&regex, &content, 0).map(|m| m.name_str("variable").to_vec())
+        // Built from the types, so kept out of the pattern cache (it would grow with every distinct type).
+        Preg::match_groups_uncached(&regex, &content).map(|m| m.name_str("variable").to_vec())
     }
 
     pub fn get_types(&self) -> Vec<Vec<u8>> {
@@ -135,7 +136,7 @@ impl Annotation {
             .concat();
             let content = self.lines[index].borrow().get_content().to_vec();
             // the replacement is a literal in upstream only by accident of content; keep preg_replace semantics
-            let new = Preg::replace_limit(&pattern, line, &content, 1).0;
+            let new = Preg::replace_limit_uncached(&pattern, line, &content, 1).0;
             self.lines[index].borrow_mut().set_content(new);
         }
         self.clear_cache();
@@ -169,9 +170,8 @@ impl Annotation {
     }
 
     pub fn support_types(&self) -> bool {
-        TAGS_WITH_TYPES
-            .iter()
-            .any(|t| t.as_bytes() == self.get_tag().get_name())
+        let name = self.get_tag().get_name();
+        TAGS_WITH_TYPES.iter().any(|t| t.as_bytes() == name)
     }
 
     /// Panics like upstream's RuntimeException when the tag does not support types.
@@ -183,14 +183,14 @@ impl Annotation {
             }
             let pattern = [
                 &br"{^(?:\h*\*|/\*\*)[\h*]*@"[..],
-                &name,
+                name,
                 br"\h+",
                 REGEX_TYPES.as_bytes(),
                 br"(?:(?:[*\h\v]|\&?[\.\$\s]).*)?\r?$}is",
             ]
             .concat();
             let content = self.get_content();
-            if let Some(m) = Preg::match_groups(&pattern, &content, 0) {
+            if let Some(m) = Preg::match_groups(&pattern, &content) {
                 *self.types_content.borrow_mut() = Some(m.name_str("types").to_vec());
             }
         }

@@ -334,8 +334,8 @@ impl NoSuperfluousPhpdocTagsFixer {
         // virtualise "hidden params" as if they would be regular ones
         if self.allow_hidden_params {
             let params_string = tokens.generate_partial_code(start, end);
-            for comment in Preg::match_all(r"~/\*.*?\*/~s", &params_string, 0) {
-                for hidden_param in Preg::match_all(r"~\$\w+~", comment.str(0), 0) {
+            for comment in Preg::match_all(r"~/\*.*?\*/~s", &params_string) {
+                for hidden_param in Preg::match_all(r"~\$\w+~", comment.str(0)) {
                     arguments_info.insert(hidden_param.str(0).to_vec(), no_type_info());
                 }
             }
@@ -373,7 +373,7 @@ impl NoSuperfluousPhpdocTagsFixer {
             &RETURN
         };
         let content = annotation.get_content();
-        let Some(matches) = Preg::match_groups(regex, &content, 0) else {
+        let Some(matches) = Preg::match_groups(regex, &content) else {
             // Unable to match the annotation, it must be malformed or has unsupported format.
             return false;
         };

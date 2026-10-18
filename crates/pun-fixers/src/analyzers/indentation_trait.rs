@@ -12,7 +12,7 @@ pub fn get_line_indentation(tokens: &Tokens, index: usize) -> Vec<u8> {
 
 pub fn extract_indent(content: &[u8]) -> Vec<u8> {
     if !content.is_ascii() {
-        return Preg::match_groups("/\\R(\\h*)[^\\r\\n]*$/D", content, 0)
+        return Preg::match_groups("/\\R(\\h*)[^\\r\\n]*$/D", content)
             .map(|m| m.str(1).to_vec())
             .unwrap_or_default();
     }
