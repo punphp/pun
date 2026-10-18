@@ -1,5 +1,5 @@
 //! `pun format --watch`: a normal run, then a run over each burst of changed files that a normal run would
-//! pick (same discovery, config and exclusions, re-read every time), with the usual Pint output.
+//! pick (same discovery, config and exclusions, re-read every time), with the usual output.
 //! Stops when the project directory goes away or the parent process exits.
 
 use crate::run::{Stage, format, load_config};

@@ -69,13 +69,14 @@ spelling. Risky PHP-CS-Fixer fixers (`strict_comparison`, `final_class`, `declar
 delete or restructure code (`no_unused_imports`, `no_superfluous_phpdoc_tags`, ...) are lint rules: `pun lint` reports
 what they would change, `pun lint --fix` applies every enabled rule but those with `fix = "off"`. `pun check` runs format and lint in one pass
 (fixers in PHP-CS-Fixer's priority order, as Pint runs them), so `pun check --fix` on a migrated project writes exactly
-what `pint` wrote; `pun analyse` joins it once it exists. Output is Pint's for all three (outside coding agents, see below).
+what `pint` wrote; `pun analyse` joins it once it exists. The human output is Pun's own (one line per changed file,
+one summary line); exit codes and the `--format` reporters are Pint's.
 
 **Coding agents.** Under a coding agent (detected from the agent's environment variables with
 [laravel/agent-detector](https://github.com/laravel/agent-detector)'s list, then the
 [agent-detector](https://crates.io/crates/agent-detector) crate; Cursor's `CURSOR_TRACE_ID` alone doesn't count, as
 Cursor sets it in human terminals too) every command prints a summary line and one line per finding instead of
-Pint's output, with no colours, boxes or progress. The list stops after 20 items (`-v` shows all, with diffs):
+the human output, with no colours, boxes or progress. The list stops after 20 items (`-v` shows all, with diffs):
 
 ```
 pun check: fail, 1 error, 2 files with fixes (412 checked, 0.21s)
@@ -100,7 +101,7 @@ in no preset, so default output stays identical to Pint; enable them under `[lin
 `pun lint --mago [paths...]` reports Mago's lint-only Laravel rules (no auto-fix, never edits).
 
 **Watch.** `pun format --watch [paths...]` does a normal run, then re-formats files as they change (same
-discovery, config and exclusions, Pint's output per run). Pun's own writes don't trigger runs.
+discovery, config and exclusions, the usual output per run). Pun's own writes don't trigger runs.
 
 ## Parity
 
