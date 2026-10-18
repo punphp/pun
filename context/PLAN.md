@@ -316,6 +316,11 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | coverage: the php_block_formatting.rs:221 exclusion in reports/COVERAGE.md is keyed by line number and moves with any edit above it; key it by something stable | todo |
 | audit item 46 follow-up: Pun/use_specific_expectations (like its sibling Pest rules) now skips `namespace\expect(..)`, which Mago 1.57.0 fixes in the global namespace; decide whether all Pest rules should accept it | todo |
 | fixers: switch_continue_to_break decodes `continue 0X1F;` as octal because it checks only lowercase `0x`/`0b`; this matches upstream SwitchContinueToBreakFixer.php, so keep it unless upstream changes | todo |
+| audit item 51 follow-up: FormatPreset enum for `Config.preset` (read as a string in pun-cli/src/run.rs and main.rs) and FixSafety via pun_problem::Safety for `RuleMeta.fix == "safe"` in pun-cli/src/report.rs; waits for the platform/format tracks that own those files | todo |
+| audit item 55 follow-up: switch to_fixer's `{at}: ` prefix and constraint::lowest's 'invalid constraint' prefix to `.with_context` once pun-cli/src/watch.rs prints `{e:#}` | todo |
+| audit item 52 follow-up: pun-analyse part (codebase.rs:36, rules/mod.rs:204-206) treats unreadable files as missing; tick item 52 once it lands (pun-config part done in afe5778) | todo |
+| coverage: pun-config lib.rs:389,395,397 (options(): Boolean and bail arms) are uncovered; its only caller (schema.rs:449) always passes a Table, so delete the dead arms | todo |
+| tests: crates/pun-cli/tests/cli.rs `blade_like_pint` fails on the Pint oracle's own output (expected substring missing), likely a change in the installed oracle's Blade plugin | todo |
 | perf: analyse speed and memory, round by round against the bench, errors unchanged | doing (workflow, wf/perf-analyse-N) |
 | perf: lint speed and memory, round by round against the bench, output unchanged | doing (workflow, wf/perf-lint-N) |
 | perf (from mapping): rerun scripts/bench.py after the perf rounds and keep iterating on parity and benchmarks | todo |

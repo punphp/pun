@@ -27,7 +27,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   `{"phpdoc_tag_type":{"tags":{"param":null}}}` and `{"group_import":{"group_types":[null]}}` (also through
   `.php-cs-fixer.php`). Handle a `null` entry first with upstream's message and return `Option` from `entry`; add the
   three inputs as oracle cases. Reproduced. Pint stops these at Symfony's `verifyTypes` ("one of the elements is of
-  type ..."), so `to_pun` now runs that check first. Fixed in wf/audit-config.
+  type ..."), so `to_pun` now runs that check first. Fixed in 239e5f5, covered by 46af956.
 - [x] 4. `crates/pun-phpstan/src/php.rs:134`: `normalize_path` slices `&original[1..3]` on a `&str`, so an
   `excludePaths` or `ignoreErrors.path` entry like `*/€uro/*` or `*€/a.php` panics ("byte index 3 is not a char
   boundary") in `FileExcluder::new` and `IgnoredErrors`. Compare bytes: `original.as_bytes().get(1..3) ==
@@ -249,19 +249,19 @@ items marked "not checked against Pint" still need one oracle run before the fix
   339-341, 371-376`, `schema.rs:272-273`, `options.rs:61-63`, `explain.rs:53-55, 117-121, 126-127`), each depending on
   section order and on no value line starting with `[`. Extract Function `section(name)` with one lazily parsed value
   per section. `crates/pun-config/src/mapping.rs` splits the file at the lines TOML reads as headers. Fixed in
-  wf/audit-config.
+  f498858.
 - [ ] 51. Presets, ecosystems and fix safety are strings matched in several places: `pun-config/src/lib.rs:28-51,
   236-243`, `migrate.rs:194-198`, `schema.rs:25-33, 511, 581, 597, 226-233, 256` (`Gates::locked("doctrine")` falls
   through to PHPUnit), and `RuleMeta.fix` compared as `== "safe"` in `pun-cli/src/report.rs:398` although
   `pun_problem::Safety` exists. Replace Type Code with Enum (`FormatPreset`, `AnalysePreset`, `Ecosystem`,
-  `FixSafety`) and build error lists from them. Spans crates. Partly done in wf/audit-config: `AnalysePreset` and
+  `FixSafety`) and build error lists from them. Spans crates. Partly done in 0be9ca3: `AnalysePreset` and
   `Ecosystem` (`Gates::locked` now matches all four, `doctrine` has no package). `FormatPreset` (`Config.preset`, read
   as a string in `pun-cli/src/run.rs` and `main.rs`) and `FixSafety` (`pun-cli/src/report.rs:398`) wait for the
   platform/format tracks that hold those files.
 - [ ] 52. Unreadable files are treated as missing: `crates/pun-config/src/composer.rs:124-126` skips the PHP 8.4 gate
   on any read error, and `crates/pun-analyse/src/codebase.rs:36` with `rules/mod.rs:204-206` reports nothing for an
   unreadable file. Treat only `ErrorKind::NotFound` as absent and propagate the rest with the path. The
-  `composer.rs` part (reproduced with a directory named composer.json) is fixed in wf/audit-config.
+  `composer.rs` part (reproduced with a directory named composer.json) is fixed in afe5778.
 - [ ] 53. The PHP target version has six representations: `Config.php: String`, `(u64, u64)` in
   `pun-config/src/schema.rs:220,264`, `composer::Version`, `constraint::V` (bridged by `From`), and `u32` ids in
   `pun-lint/src/lib.rs:28,136` and `pun-analyse/src/project.rs:21`. One `PhpVersion` in pun-config with `FromStr`,
@@ -273,7 +273,7 @@ items marked "not checked against Pint" still need one oracle run before the fix
   every caller converts (`composer.rs:118`, `lib.rs:270`, `migrate.rs:255`) and no caller branches on. Return
   `anyhow::Result` and use `.with_context` for the `{at}: ` prefix. They return `anyhow::Result` now, but the
   prefixes stay in one message: `pun format --watch` prints `{e}` (`crates/pun-cli/src/watch.rs:94`), which would
-  drop a context's cause; switch to `.with_context` once it prints `{e:#}`. Fixed in wf/audit-config.
+  drop a context's cause; switch to `.with_context` once it prints `{e:#}`. Fixed in 0b5ca8b.
 
 ## P3: Polish
 
