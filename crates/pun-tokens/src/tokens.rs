@@ -500,8 +500,9 @@ impl Tokens {
     }
 
     fn step(&self, index: usize, direction: isize) -> Option<usize> {
-        let i = index as isize + direction;
-        self.offset_exists(i).then_some(i as usize)
+        index
+            .checked_add_signed(direction)
+            .filter(|&i| i < self.tokens.len())
     }
 
     pub fn get_next_non_whitespace(
@@ -908,11 +909,7 @@ impl Tokens {
             return s;
         }
         let start_index = search_index;
-        let (end_index, offset): (isize, isize) = if find_end {
-            (self.tokens.len() as isize - 1, 1)
-        } else {
-            (0, -1)
-        };
+        let end_index = if find_end { self.tokens.len() - 1 } else { 0 };
         if !find_end {
             std::mem::swap(&mut start_edge, &mut end_edge);
         }
@@ -922,9 +919,9 @@ impl Tokens {
             if find_end { "start" } else { "end" }
         );
         let mut level = 0;
-        let mut index = start_index as isize;
+        let mut index = start_index;
         while index != end_index {
-            let token = &self.tokens[index as usize];
+            let token = &self.tokens[index];
             if token.equals(start_edge, true) {
                 level += 1;
             } else if token.equals(end_edge, true) {
@@ -933,9 +930,9 @@ impl Tokens {
                     break;
                 }
             }
-            index += offset;
+            // `index` walks towards `end_index`, the first or last token, so it stays in bounds.
+            index = if find_end { index + 1 } else { index - 1 };
         }
-        let index = index as usize;
         assert!(
             self.tokens[index].equals(end_edge, true),
             "Missing block \"{}\".",

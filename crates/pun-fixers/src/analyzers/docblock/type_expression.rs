@@ -256,7 +256,7 @@ impl TypeExpression {
 
         self.is_composite_type = false;
         let s = |n: &str| matches.name_str(n);
-        let at0 = |n: &str| !matches.name_str(n).is_empty() && matches.name_offset(n) == 0;
+        let at0 = |n: &str| !matches.name_str(n).is_empty() && matches.name_offset(n) == Some(0);
         let typ = s("type");
         if !s("nullable").is_empty() {
             let n = s("nullable").len();
@@ -381,14 +381,14 @@ impl TypeExpression {
             b">(): void",
             |m, base, out| {
                 if !m.name_str("callable_template_inner_b").is_empty() {
-                    let s = m.name_offset("callable_template_inner_b_types") as usize;
+                    let s = m.name_offset("callable_template_inner_b_types").unwrap();
                     out.push((
                         base + s - p,
                         m.name_str("callable_template_inner_b_types").to_vec(),
                     ));
                 }
                 if !m.name_str("callable_template_inner_d").is_empty() {
-                    let s = m.name_offset("callable_template_inner_d_types") as usize;
+                    let s = m.name_offset("callable_template_inner_d_types").unwrap();
                     out.push((
                         base + s - p,
                         m.name_str("callable_template_inner_d_types").to_vec(),
@@ -428,7 +428,7 @@ impl TypeExpression {
             b"array{",
             b"}",
             |m, base, out| {
-                let s = m.name_offset("array_shape_inner_value") as usize;
+                let s = m.name_offset("array_shape_inner_value").unwrap();
                 out.push((base + s - p, m.name_str("array_shape_inner_value").to_vec()));
             },
         )

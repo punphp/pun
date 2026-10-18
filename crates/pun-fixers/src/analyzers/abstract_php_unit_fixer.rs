@@ -18,10 +18,10 @@ pub fn apply_fix(
     mut apply_php_unit_class_fix: impl FnMut(&mut Tokens, usize, usize),
 ) {
     let analyzer = PhpUnitTestCaseAnalyzer;
-    let mut index = tokens.count() as isize - 1;
-    while let Some((class_index, (start, end))) = analyzer.next_php_unit_class(tokens, index) {
+    let mut before = tokens.count();
+    while let Some((class_index, (start, end))) = analyzer.next_php_unit_class(tokens, before) {
         apply_php_unit_class_fix(tokens, start, end);
-        index = class_index as isize - 1;
+        before = class_index;
     }
 }
 

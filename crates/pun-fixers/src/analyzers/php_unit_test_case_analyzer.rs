@@ -6,14 +6,14 @@ use pun_tokens::Tokens;
 pub struct PhpUnitTestCaseAnalyzer;
 
 impl PhpUnitTestCaseAnalyzer {
-    /// Generator step: the next PHPUnit class at or below `index` (its T_CLASS index and body range).
+    /// Generator step of `findPhpUnitClasses`: the last PHPUnit class whose T_CLASS index is below `before` (that
+    /// index and the body range), or `None`. Upstream starts at `count() - 1` and stops before index 0.
     pub fn next_php_unit_class(
         &self,
         tokens: &Tokens,
-        mut index: isize,
+        before: usize,
     ) -> Option<(usize, (usize, usize))> {
-        while index > 0 {
-            let i = index as usize;
+        for i in (1..before).rev() {
             if self.is_php_unit_class(tokens, i) {
                 let start_index = tokens
                     .get_next_token_of_kind(i, &["{".into()], true)
@@ -21,7 +21,6 @@ impl PhpUnitTestCaseAnalyzer {
                 let end_index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, start_index);
                 return Some((i, (start_index, end_index)));
             }
-            index -= 1;
         }
         None
     }

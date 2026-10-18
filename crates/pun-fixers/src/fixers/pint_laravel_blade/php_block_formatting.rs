@@ -165,7 +165,7 @@ impl PhpBlockFormatting {
         let mut edits = Vec::new();
         for m in RawPreg::match_all("/@php(?![\\w(]).*?@endphp|<\\?php.*?\\?>/is", content) {
             let region = m.str(0);
-            let offset = m.offset(0) as usize;
+            let offset = m.start();
             if within(offset, verbatim) {
                 continue;
             }
@@ -185,7 +185,7 @@ impl PhpBlockFormatting {
         let mut edits = Vec::new();
         for m in matches {
             let name = m.str(1);
-            let start = m.offset(0) as usize;
+            let start = m.start();
             if SKIP_DIRECTIVES.contains(&&name.to_ascii_lowercase()[..]) || within(start, &spans) {
                 continue;
             }
@@ -234,8 +234,8 @@ impl PhpBlockFormatting {
         let mut edits = Vec::new();
         for m in matches {
             let region = m.str(0);
-            let start = m.offset(0) as usize;
-            let unescaped = m.offset(1) == -1;
+            let start = m.start();
+            let unescaped = m.offset(1).is_none();
             let expr = if unescaped { m.str(2) } else { m.str(1) };
             if !contains(region, b"\n") || within(start, &spans) {
                 continue;
@@ -293,20 +293,19 @@ impl PhpBlockFormatting {
             content,
         ) {
             let name = m.str(1);
-            let start = m.offset(0) as usize;
+            let start = m.start();
             // "::attr" is an escaped literal attribute, not a bound expression.
             if name.starts_with(b"::") || !within(start, &tags) || within(start, &skip) {
                 continue;
             }
-            let (value, value_start) = if m.offset(2) != -1 {
-                (m.str(2), m.offset(2))
-            } else {
-                (m.str(3), m.offset(3))
+            let (value, value_start) = match m.offset(2) {
+                Some(at) => (m.str(2), at),
+                None => (m.str(3), m.offset(3).unwrap()),
             };
             if let Some(formatted) = self.format_attribute_expr(value)
                 && formatted != value
             {
-                edits.push((value_start as usize, value.len(), formatted));
+                edits.push((value_start, value.len(), formatted));
             }
         }
         edits
@@ -392,7 +391,7 @@ fn component_tag_spans(content: &[u8]) -> Vec<Span> {
     RawPreg::match_all(pattern, content)
         .iter()
         .map(|m| {
-            let start = m.offset(0) as usize;
+            let start = m.start();
             (start, tag_end(content, start + m.str(0).len()))
         })
         .collect()
@@ -419,14 +418,14 @@ fn tag_end(content: &[u8], cursor: usize) -> usize {
 fn comment_spans(content: &[u8]) -> Vec<Span> {
     RawPreg::match_all("/\\{\\{--.*?--\\}\\}/s", content)
         .iter()
-        .map(|m| (m.offset(0) as usize, m.offset(0) as usize + m.str(0).len()))
+        .map(|m| (m.start(), m.start() + m.str(0).len()))
         .collect()
 }
 
 fn verbatim_spans(content: &[u8]) -> Vec<Span> {
     RawPreg::match_all("/@verbatim\\b.*?@endverbatim/is", content)
         .iter()
-        .map(|m| (m.offset(0) as usize, m.offset(0) as usize + m.str(0).len()))
+        .map(|m| (m.start(), m.start() + m.str(0).len()))
         .collect()
 }
 

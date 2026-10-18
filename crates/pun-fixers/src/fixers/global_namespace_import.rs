@@ -468,7 +468,7 @@ impl GlobalNamespaceImportFixer {
                     let matches: Vec<(Vec<u8>, usize)> =
                         Preg::match_all("/[\\\\\\w]+(?![\\\\\\w:])/", &source)
                             .iter()
-                            .map(|m| (m.str(0).to_vec(), m.offset(0) as usize))
+                            .map(|m| (m.str(0).to_vec(), m.start()))
                             .collect();
                     for (ty, offset) in matches.into_iter().rev() {
                         if let Some(new_type) = callback(&ty)

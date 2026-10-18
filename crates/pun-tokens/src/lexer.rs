@@ -65,17 +65,18 @@ fn is_ws(c: u8) -> bool {
 pub fn tokenize(src: &[u8]) -> Vec<RawToken<'_>> {
     let mut lx = Lexer::new(src);
     let mut spans: Vec<(Option<Kind>, usize, usize)> = Vec::with_capacity(src.len() / 4);
-    let mut need_tokens: i32 = -1;
+    // Tokens still to read after `__halt_compiler` (PHP's `need_tokens`, -1 there until it is seen).
+    let mut need_tokens: Option<u32> = None;
     let mut halted = false;
     while let Some((kind, start, end)) = lx.next() {
         spans.push((kind, start, end));
-        if need_tokens != -1 {
+        if let Some(need) = need_tokens.as_mut() {
             if !matches!(
                 kind,
                 Some(T_WHITESPACE | T_OPEN_TAG | T_COMMENT | T_DOC_COMMENT)
             ) {
-                need_tokens -= 1;
-                if need_tokens == 0 {
+                *need -= 1;
+                if *need == 0 {
                     if end < src.len() {
                         spans.push((Some(T_INLINE_HTML), end, src.len()));
                         halted = true;
@@ -84,7 +85,7 @@ pub fn tokenize(src: &[u8]) -> Vec<RawToken<'_>> {
                 }
             }
         } else if kind == Some(T_HALT_COMPILER) {
-            need_tokens = 3;
+            need_tokens = Some(3);
         }
     }
 

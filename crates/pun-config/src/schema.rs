@@ -501,7 +501,15 @@ pub(crate) fn lint(path: &Path, t: LintToml, files: &Files, gates: &Gates) -> Re
 
     let ecosystems = gates.ecosystems(|e| groups.get(e) == Some(&None));
     // Sets and groups need every rule's data; a pun.toml with neither only runs what it names.
-    let mut on: BTreeMap<String, (Level, bool, Value, bool)> = BTreeMap::new();
+    let rule = |id: String, level, fix, options, named| LintRule {
+        fixer: fixer_of("lint", &id),
+        id,
+        level,
+        fix,
+        options,
+        named,
+    };
+    let mut on: BTreeMap<String, LintRule> = BTreeMap::new();
     if !t.sets.is_empty() || !groups.is_empty() {
         for (id, e) in rules().iter().filter(|(id, _)| id.starts_with("lint/")) {
             let group = group_of(id);
@@ -516,13 +524,16 @@ pub(crate) fn lint(path: &Path, t: LintToml, files: &Files, gates: &Gates) -> Re
                 }
             };
             if let Some(level) = level {
-                on.insert(id.clone(), (level, true, Value::Null, false));
+                on.insert(
+                    id.clone(),
+                    rule(id.clone(), level, true, Value::Null, false),
+                );
             }
         }
     }
     for s in named {
         match s.level {
-            Some(level) => drop(on.insert(s.id, (level, s.fix, s.options, true))),
+            Some(level) => drop(on.insert(s.id.clone(), rule(s.id, level, s.fix, s.options, true))),
             None => drop(on.remove(&s.id)),
         }
     }
@@ -530,16 +541,7 @@ pub(crate) fn lint(path: &Path, t: LintToml, files: &Files, gates: &Gates) -> Re
         sets: t.sets,
         exclude: [&files.exclude[..], &t.exclude[..]].concat(),
         ecosystems,
-        rules: (on.into_iter())
-            .map(|(id, (level, fix, options, named))| LintRule {
-                fixer: fixer_of("lint", &id),
-                id,
-                level,
-                fix,
-                options,
-                named,
-            })
-            .collect(),
+        rules: on.into_values().collect(),
         overrides,
     })
 }

@@ -14,6 +14,7 @@
 use pcre2_sys::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::ffi::{c_int, c_void};
 use std::hash::{BuildHasherDefault, Hasher};
 use std::rc::Rc;
 
@@ -161,7 +162,7 @@ fn compile_uncached(pattern: &[u8]) -> Result<Regex, String> {
     .filter(|o| o.0)
     .fold(0u32, |all, o| all | o.1);
     let utf = m.utf;
-    let mut err: libc::c_int = 0;
+    let mut err: c_int = 0;
     let mut erroff: usize = 0;
     // SAFETY: `body` is a live slice of `body.len()` bytes, which PCRE2 reads during the call and does not keep; the
     // out-parameters are live locals; a NULL compile context selects the defaults.
@@ -403,13 +404,14 @@ impl<'s> Captures<'s> {
         self.get(i).unwrap_or(b"")
     }
 
-    /// Byte offset of the group, -1 when unmatched (PREG_OFFSET_CAPTURE).
-    pub fn offset(&self, i: usize) -> isize {
-        self.groups
-            .get(i)
-            .copied()
-            .flatten()
-            .map_or(-1, |(s, _)| s as isize)
+    /// Byte offset of the group, `None` where PREG_OFFSET_CAPTURE gives -1 (unmatched).
+    pub fn offset(&self, i: usize) -> Option<usize> {
+        self.groups.get(i).copied().flatten().map(|(s, _)| s)
+    }
+
+    /// Byte offset of the whole match (group 0 always matched).
+    pub fn start(&self) -> usize {
+        self.offset(0).expect("group 0 always matched")
     }
 
     /// Number of numeric entries in `$matches` (never 0: group 0 always matched).
@@ -444,9 +446,9 @@ impl<'s> Captures<'s> {
         self.group_by_name(name.as_bytes()).is_some()
     }
 
-    pub fn name_offset(&self, name: &str) -> isize {
-        self.group_by_name(name.as_bytes())
-            .map_or(-1, |g| self.offset(g))
+    /// Byte offset of a named group, `None` when unmatched or absent.
+    pub fn name_offset(&self, name: &str) -> Option<usize> {
+        self.offset(self.group_by_name(name.as_bytes())?)
     }
 }
 
@@ -580,7 +582,7 @@ fn pcre_version() -> String {
     let mut buf = [0u8; 64];
     // Returns the length including the terminating NUL.
     // SAFETY: `buf` is a live 64-byte buffer, larger than any PCRE2 version string, that PCRE2 writes into.
-    let n = unsafe { pcre2_config_8(PCRE2_CONFIG_VERSION, buf.as_mut_ptr() as *mut libc::c_void) };
+    let n = unsafe { pcre2_config_8(PCRE2_CONFIG_VERSION, buf.as_mut_ptr() as *mut c_void) };
     String::from_utf8_lossy(&buf[..n as usize - 1]).into_owned()
 }
 
@@ -1011,9 +1013,12 @@ mod tests {
         let m = Preg::match_groups("/(a)(b)?(c)?/", b"a").unwrap();
         assert_eq!(m.len(), 2);
         let m = Preg::match_groups("/(a)(x)?(c)/", b"ac").unwrap();
-        assert_eq!((m.len(), m.str(2), m.offset(2)), (4, &b""[..], -1));
+        assert_eq!((m.len(), m.str(2), m.offset(2)), (4, &b""[..], None));
         let m = Preg::match_groups("/(?<n>b)/", b"ab").unwrap();
-        assert_eq!((m.name("n"), m.name_offset("n")), (Some(&b"b"[..]), 1));
+        assert_eq!(
+            (m.name("n"), m.name_offset("n")),
+            (Some(&b"b"[..]), Some(1))
+        );
         assert!(Preg::r#match(
             "{[/\\\\](stub|fixture)s?[/\\\\]}i",
             "a/Fixtures/b"
@@ -1249,7 +1254,7 @@ mod tests {
         let all = RawPreg::match_all("/a(\\d)/", b"a1 a2");
         assert_eq!(
             (all.len(), all[1].str(1), all[1].offset(1)),
-            (2, &b"2"[..], 4)
+            (2, &b"2"[..], Some(4))
         );
         assert!(!RawPreg::r#match("/a/u", b"\xff"));
         assert!(RawPreg::r#match("/a/", "ba"));
