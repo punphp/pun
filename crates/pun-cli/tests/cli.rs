@@ -5,6 +5,8 @@
 //! oracle. Pun-only behaviour (`--explain`, `config`, unported rules, no pun.toml) is checked by hand-derived
 //! expectations at the end.
 mod common;
+#[path = "common/prettier.rs"]
+mod prettier;
 
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -399,7 +401,8 @@ fn matches_pint() {
     );
 }
 
-/// Pint/laravel_blade (needs prettier in crates/pun-fixers/node_modules, resolved from the project dir):
+/// Pint/laravel_blade (needs prettier in crates/pun-fixers/node_modules, tests/common/prettier.rs, resolved from the
+/// project dir):
 /// - embedded PHP is formatted with the configured preset's rules: under preset empty `@if(!$a)` keeps `!$a`
 ///   (laravel would add a space);
 /// - a whitespace-only Blade file becomes empty and the later fixers are skipped (AbstractFixer::fix's
@@ -407,11 +410,10 @@ fn matches_pint() {
 #[test]
 fn blade_like_pint() {
     let Some(oracle) = oracle() else { return };
-    let modules = Path::new(env!("CARGO_MANIFEST_DIR")).join("../pun-fixers/node_modules");
-    if !modules.join("prettier").exists() {
+    let Some(modules) = prettier::node_modules() else {
         eprintln!("skipping: no prettier in crates/pun-fixers/node_modules (bun install there)");
         return;
-    }
+    };
     let dir = tmp("blade");
     for (preset, blade, check) in [
         (

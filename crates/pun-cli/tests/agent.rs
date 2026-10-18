@@ -420,6 +420,8 @@ fn git_selection() {
                 "user.email=t@t",
                 "-c",
                 "init.defaultBranch=main",
+                "-c",
+                "commit.gpgsign=false",
             ])
             .args(args)
             .current_dir(&d)

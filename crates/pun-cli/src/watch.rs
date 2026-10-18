@@ -53,9 +53,12 @@ pub fn run(mut a: FormatArgs) -> Result<u8> {
             }
         };
         let mut changed = HashSet::new();
-        let mut add = |e: notify::Result<notify::Event>| match e {
-            Ok(e) if !matches!(e.kind, EventKind::Access(_)) => changed.extend(e.paths),
-            _ => {}
+        // Reads (Linux inotify's open/close) and watcher errors change nothing.
+        let mut add = |e: notify::Result<notify::Event>| {
+            let events = e.into_iter();
+            changed.extend(
+                (events.filter(|e| !matches!(e.kind, EventKind::Access(_)))).flat_map(|e| e.paths),
+            )
         };
         add(first);
         while let Ok(e) = rx.recv_timeout(DEBOUNCE) {

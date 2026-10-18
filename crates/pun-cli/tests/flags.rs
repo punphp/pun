@@ -546,20 +546,18 @@ fn stdin_matches_pint() {
             cx.same_as(cfg, "", args, pint_args, input);
         }
     }
-    // A fixer exception (a panic in Pun) echoes the input too.
+    // A fixer exception (a panic in Pun) echoes the input too. combine_consecutive_unsets is a lint rule in Pun, so
+    // `pun format` leaves it out and `pun check --fix` is the run that throws.
     let cfg =
         r#"printf '{"preset":"empty","rules":{"combine_consecutive_unsets":true}}' > pint.json"#;
-    let r = cx.same_as(
-        cfg,
-        "",
-        &["-"],
-        &["-"],
-        b"<?php unset($a ); unset( $b );\nunset($x, ); unset( $y);",
-    );
+    let input = b"<?php unset($a ); unset( $b );\nunset($x, ); unset( $y);";
+    let r = cx.same_as(cfg, "", &["-"], &["-"], input);
     assert!(
         r.stdout.starts_with("<?php unset($a ); unset( $b );") && r.stderr.is_empty(),
         "{r:?}"
     );
+    let pun = [env!("CARGO_BIN_EXE_pun"), "check", "--fix"];
+    assert_eq!(run(&pun, cfg, "", &["-"], input, Some(&[])), r);
 }
 
 /// Pun's `--staged` (`git diff --cached`) and `--since=<ref>` (`git diff <ref>` against the worktree, no merge-base,

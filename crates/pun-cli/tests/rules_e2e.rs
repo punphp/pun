@@ -5,6 +5,9 @@
 //! `pun check --fix` must write the same file, and `pun check` must exit the same and name the same rule (in Pun's
 //! own output, under its Pun ID) or the same syntax error.
 
+#[path = "common/prettier.rs"]
+mod prettier;
+
 use serde_json::Value;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -52,24 +55,20 @@ fn pun(dir: &Path, args: &[&str]) -> (i32, String) {
 #[test]
 fn every_rule_matches_pint() {
     let cases: Vec<Value> = serde_json::from_str(include_str!("e2e/rules.json")).unwrap();
-    let node_modules = Path::new(env!("CARGO_MANIFEST_DIR")).join("../pun-fixers/node_modules");
+    let node_modules = prettier::node_modules();
     let mut failures = Vec::new();
     for (i, case) in cases.iter().enumerate() {
         let rule = case["rule"].as_str().unwrap();
         let dir = project(case, i);
         if rule == "Pint/laravel_blade" {
-            if !node_modules.join("prettier").exists() {
+            let Some(modules) = &node_modules else {
                 eprintln!(
                     "skipping {rule}: no prettier in crates/pun-fixers/node_modules (bun install there)"
                 );
                 continue;
-            }
+            };
             #[cfg(unix)]
-            std::os::unix::fs::symlink(
-                node_modules.canonicalize().unwrap(),
-                dir.join("node_modules"),
-            )
-            .unwrap();
+            std::os::unix::fs::symlink(modules, dir.join("node_modules")).unwrap();
         }
         let (code, stdout) = pun(&dir, &["check"]);
         if code != case["test_exit"].as_i64().unwrap() as i32 {
